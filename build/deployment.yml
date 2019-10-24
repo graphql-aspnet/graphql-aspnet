@@ -74,7 +74,7 @@ steps:
     condition: and(succeeded(), eq(variables['deployment.buildArtifacts'], 'allowed'))
     inputs:
       command: "pack"
-      packagesToPack: "**/azure-pipeline-project.csproj"
+      packagesToPack: "**/graphql-aspnet.csproj"
       includesymbols: true
       versioningScheme: "off"
       buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);PackageId=$(deployment.packageId)"
