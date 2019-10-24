@@ -26,11 +26,6 @@ namespace GraphQL.AspNet
         /// <value>The global template provider.</value>
         public static IGraphTypeTemplateProvider TemplateProvider { get; set; } = new DefaultTypeTemplateProvider();
 
-        /// <summary>
-        /// Gets or sets the globally available scalar manager used by this graphql server. This object manages all known scalars
-        /// across all schemas registered to this application domain.
-        /// </summary>
-        /// <value>The global scalar provider.</value>
         public static IScalarTypeProvider ScalarProvider { get; set; } = new DefaultScalarTypeProvider();
 
         /// <summary>
