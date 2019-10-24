@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Rules for StyleCop.Analyzers" Description="Code analysis rules for StyleCop.Analyzers.csproj." ToolsVersion="14.0">
+  <Rules AnalyzerId="AsyncUsageAnalyzers" RuleNamespace="AsyncUsageAnalyzers">
+    <Rule Id="AvoidAsyncSuffix" Action="Error" />
+    <Rule Id="AvoidAsyncVoid" Action="Error" />
+    <Rule Id="UseAsyncSuffix" Action="Error" />
+    <Rule Id="UseConfigureAwait" Action="Error" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1001" Action="Error" />
+    <Rule Id="CA1009" Action="Error" />
+    <Rule Id="CA1016" Action="Error" />
+    <Rule Id="CA1033" Action="Error" />
+    <Rule Id="CA1049" Action="Error" />
+    <Rule Id="CA1060" Action="Error" />
+    <Rule Id="CA1061" Action="Error" />
+    <Rule Id="CA1063" Action="Error" />
+    <Rule Id="CA1065" Action="Error" />
+    <Rule Id="CA1301" Action="Error" />
+    <Rule Id="CA1400" Action="Error" />
+    <Rule Id="CA1401" Action="Error" />
+    <Rule Id="CA1403" Action="Error" />
+    <Rule Id="CA1404" Action="Error" />
+    <Rule Id="CA1405" Action="Error" />
+    <Rule Id="CA1410" Action="Error" />
+    <Rule Id="CA1415" Action="Error" />
+    <Rule Id="CA1821" Action="Error" />
+    <Rule Id="CA1900" Action="Error" />
+    <Rule Id="CA1901" Action="Error" />
+    <Rule Id="CA2002" Action="Error" />
+    <Rule Id="CA2100" Action="Error" />
+    <Rule Id="CA2101" Action="Error" />
+    <Rule Id="CA2108" Action="Error" />
+    <Rule Id="CA2111" Action="Error" />
+    <Rule Id="CA2112" Action="Error" />
+    <Rule Id="CA2114" Action="Error" />
+    <Rule Id="CA2116" Action="Error" />
+    <Rule Id="CA2117" Action="Error" />
+    <Rule Id="CA2122" Action="Error" />
+    <Rule Id="CA2123" Action="Error" />
+    <Rule Id="CA2124" Action="Error" />
+    <Rule Id="CA2126" Action="Error" />
+    <Rule Id="CA2131" Action="Error" />
+    <Rule Id="CA2132" Action="Error" />
+    <Rule Id="CA2133" Action="Error" />
+    <Rule Id="CA2134" Action="Error" />
+    <Rule Id="CA2137" Action="Error" />
+    <Rule Id="CA2138" Action="Error" />
+    <Rule Id="CA2140" Action="Error" />
+    <Rule Id="CA2141" Action="Error" />
+    <Rule Id="CA2146" Action="Error" />
+    <Rule Id="CA2147" Action="Error" />
+    <Rule Id="CA2149" Action="Error" />
+    <Rule Id="CA2200" Action="Error" />
+    <Rule Id="CA2202" Action="Error" />
+    <Rule Id="CA2207" Action="Error" />
+    <Rule Id="CA2212" Action="Error" />
+    <Rule Id="CA2213" Action="Error" />
+    <Rule Id="CA2214" Action="Error" />
+    <Rule Id="CA2216" Action="Error" />
+    <Rule Id="CA2220" Action="Error" />
+    <Rule Id="CA2229" Action="Error" />
+    <Rule Id="CA2231" Action="Error" />
+    <Rule Id="CA2232" Action="Error" />
+    <Rule Id="CA2235" Action="Error" />
+    <Rule Id="CA2236" Action="Error" />
+    <Rule Id="CA2237" Action="Error" />
+    <Rule Id="CA2238" Action="Error" />
+    <Rule Id="CA2240" Action="Error" />
+    <Rule Id="CA2241" Action="Error" />
+    <Rule Id="CA2242" Action="Error" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="CS1591" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0003" Action="None" />
+	<Rule Id="IDE0018" Action="None" />	
+	<Rule Id="IDE0028" Action="None" />	
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1000" Action="Error" />
+    <Rule Id="SA1001" Action="Error" />
+    <Rule Id="SA1005" Action="Error" />
+	<Rule Id="SA1009" Action="Error" />
+    <Rule Id="SA1021" Action="Error" />
+	<Rule Id="SA1025" Action="Error" />
+	<Rule Id="SA1028" Action="Error" />
+    <Rule Id="SA1022" Action="Error" />
+    <Rule Id="SA1100" Action="Error" />
+    <Rule Id="SA1101" Action="None" />
+    <Rule Id="SA1106" Action="Error" />
+    <Rule Id="SA1111" Action="Error" />
+    <Rule Id="SA1112" Action="Error" />
+    <Rule Id="SA1118" Action="None" />
+    <Rule Id="SA1119" Action="Error" />
+    <Rule Id="SA1121" Action="Error" />
+    <Rule Id="SA1122" Action="Error" />
+	<Rule Id="SA1126" Action="Error" />
+    <Rule Id="SA1133" Action="Error" />
+    <Rule Id="SA1204" Action="None" />
+	<Rule Id="SA1210" Action="None" />
+    <Rule Id="SA1300" Action="Error" />
+    <Rule Id="SA1302" Action="Error" />
+    <Rule Id="SA1303" Action="Error" />
+    <Rule Id="SA1304" Action="Error" />
+    <Rule Id="SA1305" Action="Error" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1310" Action="None" />
+    <Rule Id="SA1311" Action="Error" />
+    <Rule Id="SA1312" Action="None" />
+    <Rule Id="SA1400" Action="Error" />
+    <Rule Id="SA1401" Action="None" />
+    <Rule Id="SA1402" Action="Error" />
+    <Rule Id="SA1403" Action="Error" />
+    <Rule Id="SA1404" Action="Error" />
+    <Rule Id="SA1405" Action="Error" />
+    <Rule Id="SA1406" Action="Error" />
+    <Rule Id="SA1407" Action="Error" />
+    <Rule Id="SA1408" Action="Error" />
+    <Rule Id="SA1410" Action="Error" />
+    <Rule Id="SA1411" Action="Error" />
+    <Rule Id="SA1412" Action="Error" />
+    <Rule Id="SA1503" Action="None" />
+    <Rule Id="SA1512" Action="Error" />
+    <Rule Id="SA1505" Action="Error" />
+    <Rule Id="SA1600" Action="Error" />
+    <Rule Id="SA1602" Action="None" />
+    <Rule Id="SA1603" Action="Error" />
+    <Rule Id="SA1609" Action="Error" />
+    <Rule Id="SA1633" Action="Error" />
+    <Rule Id="SA1636" Action="None" />
+    <Rule Id="SA1642" Action="Error" />
+    <Rule Id="SA1643" Action="Error" />
+    <Rule Id="SA1652" Action="None" />
+  </Rules>
+</RuleSet>

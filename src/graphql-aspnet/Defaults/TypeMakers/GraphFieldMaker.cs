@@ -1,0 +1,112 @@
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+namespace GraphQL.AspNet.Defaults.TypeMakers
+{
+    using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Security;
+
+    /// <summary>
+    /// A maker capable of turning a <see cref="IGraphFieldBaseTemplate"/> into a usable field in an object graph.
+    /// </summary>
+    public class GraphFieldMaker
+    {
+        private readonly ISchema _schema;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphFieldMaker"/> class.
+        /// </summary>
+        /// <param name="schema">The schema.</param>
+        public GraphFieldMaker(ISchema schema)
+        {
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+        }
+
+        /// <summary>
+        /// Creates a single graph field from the provided template using hte rules of this maker and the contained schema.
+        /// </summary>
+        /// <param name="template">The template to generate a field from.</param>
+        /// <returns>IGraphField.</returns>
+        public GraphFieldCreationResult CreateField(IGraphTypeFieldTemplate template)
+        {
+            var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+            var result = new GraphFieldCreationResult();
+
+            // if the owner of this field declared top level objects append them to the
+            // field for evaluation
+            var securityGroups = new List<FieldSecurityGroup>();
+
+            if (template.Parent?.SecurityPolicies?.Count > 0)
+                securityGroups.Add(template.Parent.SecurityPolicies);
+
+            if (template.SecurityPolicies?.Count > 0)
+                securityGroups.Add(template.SecurityPolicies);
+
+            MethodGraphField field = null;
+            switch (template.FieldSource)
+            {
+                case GraphFieldTemplateSource.Method:
+                case GraphFieldTemplateSource.Action:
+                    field = new MethodGraphField(
+                        formatter.FormatFieldName(template.Name),
+                        template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                        template.Route,
+                        template.Mode,
+                        template.CreateResolver(),
+                        securityGroups);
+                    break;
+
+                case GraphFieldTemplateSource.Property:
+                    field = new PropertyGraphField(
+                        formatter.FormatFieldName(template.Name),
+                        template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                        template.Route,
+                        template.DeclaredReturnType,
+                        template.DeclaredName,
+                        template.Mode,
+                        template.CreateResolver(),
+                        securityGroups);
+                    break;
+            }
+
+            field.Description = template.Description;
+            field.IsDeprecated = template.IsDeprecated;
+            field.DeprecationReason = template.DeprecationReason;
+            field.Complexity = template.Complexity;
+            field.FieldSource = template.FieldSource;
+
+            if (template.Arguments != null)
+            {
+                var argumentMaker = new GraphArgumentMaker(_schema);
+                foreach (var argTemplate in template.Arguments)
+                {
+                    var argumentResult = argumentMaker.CreateArgument(argTemplate);
+                    field.Arguments.AddArgument(argumentResult.Argument);
+
+                    result.MergeDependents(argumentResult);
+                }
+            }
+
+            result.AddDependentRange(template.RetrieveRequiredTypes());
+
+            if (template.UnionProxy != null)
+            {
+                var unionMaker = new UnionGraphTypeMaker(_schema);
+                result.AddDependent(unionMaker.CreateGraphType(template.UnionProxy, template.Kind));
+            }
+
+            result.Field = field;
+            return result;
+        }
+    }
+}

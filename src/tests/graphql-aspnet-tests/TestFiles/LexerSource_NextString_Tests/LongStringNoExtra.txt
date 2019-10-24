@@ -1,0 +1,8 @@
+﻿"""   This is a long string that starts and shares a line as teh start delimiter
+it contains some  really long
+and @#!#@!(#!  sometimes#) very strange
+text with some \"escaped\" quotes as well
+and keeps going for quite abstract while until finally hitting hte close delimiter...
+it has no extra characters
+
+final line here"""

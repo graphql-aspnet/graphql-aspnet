@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;RCS1021;IDE0060;IDE0052;IDE0044;IDE0059;IDE0052;IDE0017;IDE0039;RCS1090;RCS1118;SA1601;RCS1163</NoWarn>
+    <RootNamespace>GraphQL.AspNet.Tests</RootNamespace>
+    <AssemblyName>graphql-aspnet-tests</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\styles.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.11.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
+    <ProjectReference Include="..\graphql-aspnet-testframework\graphql-aspnet-testframework.csproj" />
+    <ProjectReference Include="..\graphql-aspnet-tests-thirdpartydll\graphql-aspnet-tests-thirdpartydll.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Integration\ExpectedOutput\CreateRecord.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Integration\ExpectedOutput\CreateNewArtist.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Integration\ExpectedOutput\RetrieveArtistsAndRecords.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\CompleteIntrospectionQuery.graphql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\KitchenSink\KitchenSink.graphql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\LexerSource_NextString_Tests\LongStringFromOffSet.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\LexerSource_NextString_Tests\LongStringNoExtra.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\LexerSource_NextString_Tests\LongStringWithExtra.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\Lexer_Tokenizing\SemiLongValidDocument.graphql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+</Project>

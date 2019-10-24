@@ -1,0 +1,48 @@
+# *************************************************************
+# project:  graphql-aspnet
+# --
+# repo: https://github.com/graphql-aspnet
+# docs: https://graphql-aspnet.github.io
+# --
+# License:  MIT
+# *************************************************************
+
+# This yaml file represents a set of automated checks
+# executed against any branch with an open PR against any of the protected branches.
+
+pool:
+  vmImage: ubuntu-18.04
+
+steps:
+  ## Nuget Package Restore
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "restore"
+      projects: "**/*.csproj"
+      feedsToUse: "select"
+      noCache: true
+    displayName: "Nuget Package Restore"
+
+  ## Copy in the linting rules for PRs/deployment
+  - task: Bash@3
+    inputs:
+      targetType: "inline"
+      script: |
+        rm src/styles.ruleset
+        cp ./build/strict-linting.ruleset src/styles.ruleset
+      failOnStderr: true
+    displayName: "Env. Configuration"
+
+  ## Build the solution with more restictive linting (will cause failure on linting errors)
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "./src/graphql-aspnet.sln"
+    displayName: "Build Solution"
+
+  ## Execute Unit Tests
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "test"
+      projects: "./src/tests/graphql-aspnet-tests/graphql-aspnet-tests.csproj"
+    displayName: "Execute Unit Tests"

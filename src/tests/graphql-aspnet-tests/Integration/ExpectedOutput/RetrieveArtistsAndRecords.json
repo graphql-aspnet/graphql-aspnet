@@ -1,0 +1,28 @@
+﻿{
+  "data": {
+    "artists": [
+      {
+        "id": 7,
+        "name": "Queen",
+        "records": [
+          {
+            "id": 11,
+            "name": "Bohemian Rhapsody",
+            "genre": {
+              "id": 3,
+              "name": "Rock"
+            }
+          },
+          {
+            "id": 12,
+            "name": "We are the Champions",
+            "genre": {
+              "id": 3,
+              "name": "Rock"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
