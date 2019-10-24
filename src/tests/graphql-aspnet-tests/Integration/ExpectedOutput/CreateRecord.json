@@ -1,0 +1,15 @@
+﻿{
+  "data": {
+    "music": {
+      "createRecord": {
+        "id": 14,
+        "artistId": 10,
+        "genre": {
+          "id": 2,
+          "name": "Pop"
+        },
+        "name": "다이아몬드"
+      }
+    }
+  }
+}

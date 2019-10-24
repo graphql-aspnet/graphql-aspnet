@@ -1,0 +1,34 @@
+﻿mutation {
+	createHero(name: "John", age: 22){
+		name
+		bodyType
+		friends
+		favoriteColor
+		hotChoclate
+	}
+	planets(color: "red"){
+	   shade
+	   hue,
+	   RBG,
+	   name,
+	   i18n_Name
+	}
+	music(description: $musicDesc){
+		tempo
+		timeSignature
+		mood
+		genre
+		time_Length
+	},
+	foodOrder(
+		drink: "so #da P0p@!", _main_dish: "chicken", sideDish: "18 characters\"", tempC: 45.6
+	){
+	  color
+
+
+
+	  texture
+
+
+	}
+}

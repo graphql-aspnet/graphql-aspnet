@@ -1,0 +1,100 @@
+# *************************************************************
+# project:  graphql-aspnet
+# --
+# repo: https://github.com/graphql-aspnet
+# docs: https://graphql-aspnet.github.io
+# --
+# License:  MIT
+# *************************************************************
+
+# This yaml file represents both the continuous integration
+# steps executed against all proected branches AFTER a code merge
+# as well as the pre-deployment build steps to create the
+# necessary nupkg and snupkg files for a release to nuget.org when
+# release build is staged.
+#
+# When created, these artifacts are stored in the azure-pipeline
+# container to be picked up by a release pipeline when triggered by a team member.
+
+pool:
+  vmImage: ubuntu-18.04
+
+steps:
+  ## Performa package restore
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "restore"
+      projects: "**/*.csproj"
+      feedsToUse: "select"
+      noCache: true
+    displayName: "Nuget Package Restore"
+
+  ## Copy in the linting rules for PRs/deployment
+  - task: Bash@3
+    inputs:
+      targetType: "inline"
+      script: |
+        rm src/styles.ruleset
+        cp ./build/strict-linting.ruleset src/styles.ruleset
+      failOnStderr: true
+    displayName: "Env. Configuration"
+
+  ## Build the solution with more restictive linting (will cause failure on linting errors)
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "build"
+      projects: "./src/graphql-aspnet.sln"
+    displayName: "Build Solution"
+
+  ## Execute Unit Test
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "test"
+      projects: "./src/tests/graphql-aspnet-tests/graphql-aspnet-tests.csproj"
+    displayName: "Execute Unit Tests"
+
+  ## Steps below this line are for publishing nupkg artifiacts staged for a release pipeline
+  ## ------------------------------------------------------------------------------------------
+
+  ## Perform some custom validation on pipeline input variables to make sure they
+  ## formulate a valid package version that doesnt' exist on nuget yet
+  - task: PowerShell@2
+    inputs:
+      filePath: "./build/ensurePackageData.ps1"
+      pwsh: true
+    env:
+      VersionNumber: $(deployment.versionNumber)
+      VersionSuffix: $(deployment.versionSuffix)
+      PackageId: $(deployment.packageId)
+      Branch: $(Build.SourceBranch)
+    displayName: Validate Build for Package Creation
+
+  ## Create the nupkg file
+  - task: DotNetCoreCLI@2
+    condition: and(succeeded(), eq(variables['deployment.buildArtifacts'], 'allowed'))
+    inputs:
+      command: "pack"
+      packagesToPack: "**/azure-pipeline-project.csproj"
+      includesymbols: true
+      versioningScheme: "off"
+      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);PackageId=$(deployment.packageId)"
+    displayName: Stage Nuget Package
+
+  ## Copy release script to the artifact package
+  - task: Bash@3
+    condition: and(succeeded(), eq(variables['deployment.buildArtifacts'], 'allowed'))
+    inputs:
+      targetType: "inline"
+      script: |
+        cp ./build/ensureReleaseVariables.ps1  $(Build.ArtifactStagingDirectory)/ensureReleaseVariables.ps1
+      failOnStderr: true
+    displayName: "Stage Aux. Release Files"
+
+  ## Save all artifacts to pipeline storage for deployment
+  - task: PublishBuildArtifacts@1
+    condition: and(succeeded(), ne(variables['deployment.fullVersionId'], ''))
+    inputs:
+      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+      ArtifactName: "drop"
+      publishLocation: "Container"
+    displayName: "Save Build Artifacts"

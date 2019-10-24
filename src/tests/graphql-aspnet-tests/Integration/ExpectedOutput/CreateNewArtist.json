@@ -1,0 +1,14 @@
+﻿{
+  "data": {
+    "music": {
+      "createArtist": {
+        "id": 10,
+        "name": "EXO",
+        "company": {
+          "id": 4,
+          "name": "SM"
+        }
+      }
+    }
+  }
+}
