@@ -69,3 +69,29 @@ query SearchGroceryStore($pastryName: String!) {
   }
 }
 ```
+
+#### Add the Package from Nuget:
+```
+> Install-Package GraphQL.AspNet -AllowPrereleaseVersions
+```
+
+#### Register GraphQL with your Application:
+
+```csharp
+// Startup.cs
+public void ConfigureServices(IServiceCollection services)
+{
+    // other code omitted for brevity
+    
+    services.AddGraphQL(schemaOptions =>
+    {
+        // Add additional configuration options here.
+    });
+}
+
+public void Configure(IApplicationBuilder appBuilder)
+{
+    // other code omitted for brevity
+    appBuilder.UseGraphQL();
+}
+```
