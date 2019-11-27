@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Messaging
     using GraphQL.AspNet.Execution;
 
     /// <summary>
-    /// A representation of a graphql message  sent or recieved over a presistent connection.
+    /// A representation of a graphql message sent or recieved over a presistent connection.
     /// </summary>
     public interface IOperationMessage
     {

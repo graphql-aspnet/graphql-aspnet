@@ -55,4 +55,8 @@
   <ItemGroup>
     <ProjectReference Include="..\graphql-aspnet\graphql-aspnet.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Execution\" />
+  </ItemGroup>
 </Project>

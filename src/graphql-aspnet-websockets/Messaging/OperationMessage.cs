@@ -14,13 +14,13 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// An implementation of the required operation message interface.
     /// </summary>
-    public class OperationMessage : IOperationMessage
+    public abstract class OperationMessage : IOperationMessage
     {
         /// <summary>
         /// Gets or sets the payload of the message as a stringified json object.
         /// </summary>
         /// <value>The payload.</value>
-        public string Payload { get; set; }
+        public abstract string Payload { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier for the scoped operation started by a client.
@@ -32,6 +32,6 @@ namespace GraphQL.AspNet.Execution
         /// Gets or sets the type of the message, indicating expected payload types.
         /// </summary>
         /// <value>The type.</value>
-        public OperationMessageType Type { get;set; }
+        public OperationMessageType Type { get; set; }
     }
 }
