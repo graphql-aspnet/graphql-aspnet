@@ -34,6 +34,21 @@ namespace GraphQL.AspNet.StarWarsAPI30
             services.AddSingleton<StarWarsDataRepository>();
             services.AddScoped<IStarWarsDataService, StarWarsDataService>();
 
+            // apply an unrestricted cors policy for the demo services
+            // to allow use on many of the tools for testing (graphiql, altair etc.)
+            // Do not do this in production
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "_allOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
+            });
+
             // ----------------------------------------------------------
             // Register GraphQL with the application
             // ----------------------------------------------------------
@@ -60,6 +75,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             app.AddStarWarsStartedMessageToConsole();
 
             if (env.IsDevelopment())
@@ -69,7 +85,14 @@ namespace GraphQL.AspNet.StarWarsAPI30
 
             app.UseRouting();
 
+            app.UseCors("_allOrigins");
+
             app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             // ************************************************************
             // Finalize the graphql setup by load the schema, build out the templates for all found graph types
@@ -77,11 +100,6 @@ namespace GraphQL.AspNet.StarWarsAPI30
             // be sure to register it after "UseAuthorization" if you require access to this.User
             // ************************************************************
             app.UseGraphQL();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
         }
     }
 }
