@@ -44,6 +44,21 @@ namespace GraphQL.AspNet.StarWarsAPI
             services.AddSingleton<StarWarsDataRepository>();
             services.AddScoped<IStarWarsDataService, StarWarsDataService>();
 
+            // apply an unrestricted cors policy for the demo services
+            // to allow use on many of the tools for testing (graphiql, altair etc.)
+            // Do not do this in production
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "_allOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
+            });
+
             // ----------------------------------------------------------
             // Add the MVC middleware
             // ----------------------------------------------------------
@@ -84,6 +99,8 @@ namespace GraphQL.AspNet.StarWarsAPI
         public void Configure(IApplicationBuilder application)
         {
             application.AddStarWarsStartedMessageToConsole();
+
+            application.UseCors("_allOrigins");
 
             application.UseMvc();
 
