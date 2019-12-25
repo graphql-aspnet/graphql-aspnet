@@ -14,6 +14,13 @@ pool:
   vmImage: ubuntu-18.04
 
 steps:
+  ## Install dotnetcore 3.1
+  - task: UseDotNet@2
+    inputs:
+      version: "3.1.x"
+      packageType: sdk
+    displayName: "Install .NET Core 3.1.x"
+
   ## Nuget Package Restore
   - task: DotNetCoreCLI@2
     inputs:
