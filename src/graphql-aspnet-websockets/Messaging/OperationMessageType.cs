@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution
+namespace GraphQL.AspNet.Messaging
 {
     /// <summary>
     /// An enumeration of the different types of messages carried over a presistent connection.

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution
+namespace GraphQL.AspNet.Messaging
 {
     using GraphQL.AspNet.Interfaces.Messaging;
 
