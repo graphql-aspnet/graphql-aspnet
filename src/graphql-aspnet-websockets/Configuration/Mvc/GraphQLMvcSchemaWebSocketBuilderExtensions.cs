@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
                 app.UseWebSockets();
             }
 
-            app.ApplicationServices.UseGraphQL();
+            GraphQLMvcSchemaBuilderExtensions.UseGraphQL(app);
         }
     }
 }
