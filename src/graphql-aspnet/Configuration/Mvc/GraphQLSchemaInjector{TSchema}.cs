@@ -56,7 +56,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             _serviceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _configureOptions = configureOptions;
-            _schemaBuilder = new SchemaBuilder<TSchema>();
+
+            _options = new SchemaOptions(typeof(TSchema));
+            _schemaBuilder = new SchemaBuilder<TSchema>(_options);
         }
 
         /// <summary>
@@ -65,10 +67,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
         public void ConfigureServices()
         {
             // create the builder to guide the rest of the setup operations
-            _options = new SchemaOptions(typeof(TSchema));
             _schemaBuilder.TypeReferenceAdded += this.TypeReferenced_EventHandler;
             _options.TypeReferenceAdded += this.TypeReferenced_EventHandler;
-
             _configureOptions?.Invoke(_options);
 
             // register global directives to the schema
@@ -169,7 +169,10 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// </summary>
         private void TypeReferenced_EventHandler(object sender, TypeReferenceEventArgs e)
         {
-            _serviceCollection.TryAdd(new ServiceDescriptor(e.Type, e.Type, e.LifeTime));
+            if (e.Descriptor != null)
+                _serviceCollection.TryAdd(e.Descriptor);
+            else
+                _serviceCollection.TryAdd(new ServiceDescriptor(e.Type, e.Type, e.LifeTime));
         }
 
         /// <summary>
@@ -196,32 +199,55 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <param name="appBuilder">The application builder.</param>
         public void UseSchema(IApplicationBuilder appBuilder)
         {
-            this.UseSchema(appBuilder?.ApplicationServices);
+            this.UseSchema(appBuilder?.ApplicationServices, false);
 
-            if (_options.QueryHandler.DisableDefaultRoute)
-                return;
+            if (!_options.QueryHandler.DisableDefaultRoute)
+            {
+                // when possible, create the singleton of hte processor up front to avoid any
+                // calls into the DI container at runtime.
+                _handler = new GraphQueryHandler<TSchema>();
+                appBuilder.Map(_options.QueryHandler.Route, _handler.CreateInvoker);
 
-            // when possible, create the singleton of hte processor up front to avoid any
-            // calls into the DI container at runtime.
-            _handler = new GraphQueryHandler<TSchema>();
-            appBuilder.Map(_options.QueryHandler.Route, _handler.CreateInvoker);
+                this.WriteLogEntry(
+                      appBuilder?.ApplicationServices,
+                      (l) => l.SchemaRouteRegistered<TSchema>(
+                      _options.QueryHandler.Route));
+            }
 
-            this.WriteLogEntry(
-                  appBuilder?.ApplicationServices,
-                  (l) => l.SchemaRouteRegistered<TSchema>(
-                  _options.QueryHandler.Route));
+            foreach (var additionalOptions in _options.Extensions)
+                additionalOptions.Value.UseExtension(appBuilder, appBuilder.ApplicationServices);
         }
 
         /// <summary>
         /// Performs final configuration on graphql and preparses any referenced types for their meta data.
-        /// Will NOT attempt to register an HTTP for the schema.
+        /// Will NOT attempt to register an HTTP route for the schema.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         public void UseSchema(IServiceProvider serviceProvider)
         {
+            this.UseSchema(serviceProvider, true);
+        }
+
+        /// <summary>
+        /// Uses the schema.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="invokeAdditionalOptions">if set to <c>true</c> any configured, additional
+        /// schema options on this instance are invoked with just the service provider.</param>
+        private void UseSchema(IServiceProvider serviceProvider, bool invokeAdditionalOptions)
+        {
             // pre-parse any types known to this schema
             var preCacher = new SchemaPreCacher();
             preCacher.PrecacheTemplates(_options.RegisteredSchemaTypes);
+
+            // only when the service provider is used for final configuration do we
+            // invoke extensions with just the service provider
+            // (mostly just for test harnessing, but may be used by developers as well)
+            if (invokeAdditionalOptions)
+            {
+                foreach (var additionalOptions in _options.Extensions)
+                    additionalOptions.Value.UseExtension(serviceProvider: serviceProvider);
+            }
         }
 
         /// <summary>

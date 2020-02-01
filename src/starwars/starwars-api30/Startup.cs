@@ -67,7 +67,11 @@ namespace GraphQL.AspNet.StarWarsAPI30
 
                  var assembly = typeof(StarWarsDataRepository).Assembly;
                  options.AddGraphAssembly(assembly);
-             });
+             })
+            .AddSubscriptions(options =>
+            {
+                options.SubscriptionRoute = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
+            });
 
             services.AddControllers();
         }

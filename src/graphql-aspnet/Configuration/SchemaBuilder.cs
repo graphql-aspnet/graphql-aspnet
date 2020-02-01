@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -32,8 +33,11 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaBuilder{TSchema}" /> class.
         /// </summary>
-        public SchemaBuilder()
+        /// <param name="options">The primary options for configuring the schema.</param>
+        public SchemaBuilder(SchemaOptions options)
         {
+            Validation.ThrowIfNull(options, nameof(options));
+
             this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
             this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext>(Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
             this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(Constants.Pipelines.QUERY_PIPELINE);
@@ -94,5 +98,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The query execution pipeline.</value>
         ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> ISchemaBuilder<TSchema>.QueryExecutionPipeline => this.QueryExecutionPipeline;
+
+        /// <summary>
+        /// Gets the completed options used to configure this schema.
+        /// </summary>
+        /// <value>The options.</value>
+        public SchemaOptions Options { get; }
     }
 }

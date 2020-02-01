@@ -13,11 +13,10 @@ namespace GraphQL.AspNet.Interfaces.Web
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 
-        /// <summary>
-    /// A processor that is created from a DI container by a runtime handler to handle the individual
-    /// request.
+    /// <summary>
+    /// A processor acting on a request to perform a subscription operation.
     /// </summary>
-    public interface IGraphQLHttpProcessor
+    public interface IGraphQLHttpSubscriptionProcessor
     {
         /// <summary>
         /// Accepts the post request and attempts to convert the body to a query data item.

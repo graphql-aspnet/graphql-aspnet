@@ -9,6 +9,9 @@
 
 namespace GraphQL.AspNet.Configuration.Mvc
 {
+    using System;
+    using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -18,22 +21,22 @@ namespace GraphQL.AspNet.Configuration.Mvc
     public static class GraphQLMvcSchemaWebSocketBuilderExtensions
     {
         /// <summary>
-        /// Configures and injects web socket support for GraphQL ASP.NET enabling subscriptions
-        /// on this server.  This method will also attempt to call "UseWebSockets" and assign all
-        /// applicable configuration options.
+        /// Adds subscription support to this schema.
         /// </summary>
-        /// <param name="app">The application.</param>
-        /// <param name="enableSubscriptions">if set to <c>true</c> websocket support will be
-        /// added to the server and subscription support will be enabled for all
-        /// schemas.</param>
-        public static void UseGraphQL(this IApplicationBuilder app, bool enableSubscriptions = false)
+        /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
+        /// <param name="schemaBuilder">The schema builder.</param>
+        /// <param name="action">The action.</param>
+        /// <returns>ISchemaBuilder&lt;TSchema&gt;.</returns>
+        public static ISchemaBuilder<TSchema> AddSubscriptions<TSchema>(
+            this ISchemaBuilder<TSchema> schemaBuilder,
+            Action<SchemaSubscriptionOptions<TSchema>> action = null)
+            where TSchema : class, ISchema
         {
-            if (enableSubscriptions)
-            {
-                app.UseWebSockets();
-            }
+            var subscriptionsOptions = new SchemaSubscriptionOptions<TSchema>();
+            action?.Invoke(subscriptionsOptions);
 
-            GraphQLMvcSchemaBuilderExtensions.UseGraphQL(app);
+            schemaBuilder.Options.RegisterExtension(subscriptionsOptions);
+            return schemaBuilder;
         }
     }
 }

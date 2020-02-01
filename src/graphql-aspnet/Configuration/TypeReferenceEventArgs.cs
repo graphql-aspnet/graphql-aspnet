@@ -29,6 +29,16 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TypeReferenceEventArgs"/> class.
+        /// </summary>
+        /// <param name="descriptor">The fully qualified service descriptor represneting the type
+        /// to be added.</param>
+        public TypeReferenceEventArgs(ServiceDescriptor descriptor)
+        {
+            this.Descriptor = descriptor;
+        }
+
+        /// <summary>
         /// Gets the type reference that should be added to the DI container.
         /// </summary>
         /// <value>The type.</value>
@@ -39,5 +49,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The life time.</value>
         public ServiceLifetime LifeTime { get; }
+
+        /// <summary>
+        /// Gets a fully qualified descriptor that represents the type being added.
+        /// </summary>
+        /// <value>The descriptor.</value>
+        public ServiceDescriptor Descriptor { get; }
     }
 }
