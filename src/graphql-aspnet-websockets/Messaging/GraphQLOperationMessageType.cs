@@ -13,22 +13,22 @@ namespace GraphQL.AspNet.Messaging
     /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>
     /// <para>Reference: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md .</para>
     /// </summary>
-    public enum OperationMessageType
+    public enum GraphQLOperationMessageType
     {
         UNKNOWN = 0,
 
         // Client -> Server Messages
-        GQL_CONNECTION_INIT = 10,
-        GQL_START = 20,
-        GQL_STOP = 30,
-        GQL_CONNECTION_TERMINATE = 40,
+        CONNECTION_INIT = 10,
+        START = 20,
+        STOP = 30,
+        CONNECTION_TERMINATE = 40,
 
         // Server -> Client Messages
-        GQL_CONNECTION_ERROR = 100,
-        GQL_CONNECTION_ACK = 110,
-        GQL_DATA = 120,
-        GQL_ERROR = 130,
-        GQL_COMPLETE = 140,
-        GQL_CONNECTION_KEEP_ALIVE = 150,
+        CONNECTION_ERROR = 100,
+        CONNECTION_ACK = 110,
+        DATA = 120,
+        ERROR = 130,
+        COMPLETE = 140,
+        CONNECTION_KEEP_ALIVE = 150,
     }
 }

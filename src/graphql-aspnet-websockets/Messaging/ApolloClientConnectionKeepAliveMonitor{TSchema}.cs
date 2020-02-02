@@ -13,47 +13,49 @@ namespace GraphQL.AspNet.Messaging
     using System.Net.WebSockets;
     using System.Threading;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>
     /// Replaces the default keep alive message sent by ASP.NET Core websockets with a message
     /// specifically for the Apollo GraphQL protocol.
     /// </summary>
-    internal class ApolloKeepAliveMonitor
+    /// <typeparam name="TSchema">The type of the schema this registration is built for.</typeparam>
+    internal class ApolloClientConnectionKeepAliveMonitor<TSchema>
+        where TSchema : class, ISchema
     {
-        private readonly WebSocket _socket;
+        private readonly ApolloClientConnection<TSchema> _connection;
         private readonly TimeSpan _interval;
         private Timer _timer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloKeepAliveMonitor"/> class.
+        /// Initializes a new instance of the <see cref="ApolloClientConnectionKeepAliveMonitor{TSchema}" /> class.
         /// </summary>
-        /// <param name="socket">The socket.</param>
+        /// <param name="connection">The connection.</param>
         /// <param name="interval">The interval.</param>
-        public ApolloKeepAliveMonitor(WebSocket socket, TimeSpan interval)
+        public ApolloClientConnectionKeepAliveMonitor(ApolloClientConnection<TSchema> connection, TimeSpan interval)
         {
-            _socket = Validation.ThrowIfNullOrReturn(socket, nameof(socket));
+            _connection = Validation.ThrowIfNullOrReturn(connection, nameof(connection));
             _interval = interval;
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="ApolloKeepAliveMonitor"/> class.
+        /// Finalizes an instance of the <see cref="ApolloClientConnectionKeepAliveMonitor{TSchema}"/> class.
         /// </summary>
-        ~ApolloKeepAliveMonitor()
+        ~ApolloClientConnectionKeepAliveMonitor()
         {
             _timer?.Dispose();
         }
 
         private void TimeForKeepAlive(object state)
         {
-            if (_socket == null || _socket.State != WebSocketState.Open)
+            if (_connection == null || _connection.State != WebSocketState.Open)
             {
                 this.Stop();
             }
             else
             {
-                lock (_socket)
-                {
-                }
+                _connection.SendMessage(new KeepAliveOperationMessage());
             }
         }
 

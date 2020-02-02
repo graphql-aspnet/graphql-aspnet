@@ -15,11 +15,11 @@ namespace GraphQL.AspNet.Messaging.Handlers
     using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>
-    /// A handler for processing the initial connection message sent by the client
-    /// after the websocket has been established.
+    /// A handler for processing the final connection message sent by the client
+    /// when the client wishes to kill the connection.
     /// </summary>
-    [DebuggerDisplay("Client Connection Initalized Handler")]
-    internal class ConnectionInitHandler : BaseOperationMessageHandler
+    [DebuggerDisplay("Client Connection Terminated Handler")]
+    internal class ConnectionTerminateHandler : BaseOperationMessageHandler
     {
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
@@ -28,14 +28,13 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
         public override IEnumerable<IGraphQLOperationMessage> HandleMessage(IGraphQLOperationMessage message)
         {
-            yield return new ServerAckOperationMessage();
-            yield return new KeepAliveOperationMessage();
+            return null;
         }
 
         /// <summary>
         /// Gets the type of the message this handler can process.
         /// </summary>
         /// <value>The type of the message.</value>
-        public override GraphQLOperationMessageType MessageType => GraphQLOperationMessageType.CONNECTION_INIT;
+        public override GraphQLOperationMessageType MessageType => GraphQLOperationMessageType.CONNECTION_TERMINATE;
     }
 }

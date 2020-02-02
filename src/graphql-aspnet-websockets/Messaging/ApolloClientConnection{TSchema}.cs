@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Messaging
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.WebSockets;
+    using System.Runtime.InteropServices.ComTypes;
     using System.Text;
     using System.Text.Json;
     using System.Threading;
@@ -24,15 +25,17 @@ namespace GraphQL.AspNet.Messaging
     using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Messaging.Handlers;
+    using GraphQL.AspNet.Messaging.Messages;
+    using GraphQL.AspNet.Messaging.Messages.Common;
     using GraphQL.AspNet.Messaging.ServerMessages;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// This object wraps a recieved websocket to characterize it and provide
-    /// GraphQL subscription operational context to it.
+    /// GraphQL subscription support.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this registration is built for.</typeparam>
-    public class ApolloSubscriptionRegistration<TSchema>
+    public class ApolloClientConnection<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -42,17 +45,18 @@ namespace GraphQL.AspNet.Messaging
 
         private SchemaSubscriptionOptions<TSchema> _options;
         private HttpContext _context;
+        private WebSocket _socket;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloSubscriptionRegistration{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ApolloClientConnection{TSchema}" /> class.
         /// </summary>
         /// <param name="context">The governing http context for this connection.</param>
         /// <param name="socket">The socket connection with the client.</param>
         /// <param name="options">The options used to configure the registration.</param>
-        public ApolloSubscriptionRegistration(HttpContext context, WebSocket socket, SchemaSubscriptionOptions<TSchema> options)
+        public ApolloClientConnection(HttpContext context, WebSocket socket, SchemaSubscriptionOptions<TSchema> options)
         {
             _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
-            this.WebSocket = Validation.ThrowIfNullOrReturn(socket, nameof(socket));
+            _socket = Validation.ThrowIfNullOrReturn(socket, nameof(socket));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
         }
 
@@ -64,7 +68,7 @@ namespace GraphQL.AspNet.Messaging
             if (e.Message == null)
                 return;
 
-            var handler = OperationMessageHandlerFactory.CreateHandler(e.Message.Type);
+            var handler = OperationMessageFactory.CreateHandler(e.Message.Type);
             var outgoingMessages = handler.HandleMessage(e.Message);
             if (outgoingMessages != null && outgoingMessages.Any())
             {
@@ -87,15 +91,15 @@ namespace GraphQL.AspNet.Messaging
         /// between the client and the graphql runtime for its lifetime.
         /// </summary>
         /// <returns>Task.</returns>
-        public async Task MonitorSubscription()
+        public async Task MaintainConnection()
         {
             this.MessageRecieved += this.ApolloSubscriptionRegistration_MessageRecieved;
 
-            (var result, var bytes) = await this.WebSocket.ReceiveFullMessage(_options.MessageBufferSize);
+            (var result, var bytes) = await _socket.ReceiveFullMessage(_options.MessageBufferSize);
 
             // register the socket with an "apollo level" keep alive monitor
             // that will send structured keep alive messages down the pipe
-            var keepAliveTimer = new ApolloKeepAliveMonitor(this.WebSocket, _options.KeepAliveInterval);
+            var keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor<TSchema>(this, _options.KeepAliveInterval);
             keepAliveTimer.Start();
 
             // message dispatch loop
@@ -107,12 +111,13 @@ namespace GraphQL.AspNet.Messaging
                     this.MessageRecieved?.Invoke(this, new SubscriptionMessageReceivedEventArgs(message));
                 }
 
-                (result, bytes) = await this.WebSocket.ReceiveFullMessage(_options.MessageBufferSize);
+                (result, bytes) = await _socket.ReceiveFullMessage(_options.MessageBufferSize);
             }
 
             // shut down the socket and the keep alive
             keepAliveTimer.Stop();
-            await this.WebSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+            await _socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+            _socket = null;
 
             // unregister any events that may be listening, this subscription is shutting down for good.
             foreach (Delegate d in this.MessageRecieved.GetInvocationList())
@@ -130,7 +135,15 @@ namespace GraphQL.AspNet.Messaging
         private IGraphQLOperationMessage DeserializeMessage(IEnumerable<byte> bytes)
         {
             var text = Encoding.UTF8.GetString(bytes.ToArray());
-            return JsonSerializer.Deserialize<GraphQLOperationMessage>(text);
+
+            var options = new JsonSerializerOptions();
+            options.PropertyNameCaseInsensitive = true;
+            options.AllowTrailingCommas = true;
+            options.ReadCommentHandling = JsonCommentHandling.Skip;
+
+            var partialMessage = JsonSerializer.Deserialize<AnonymousClientOperationMessage>(text, options);
+
+            return partialMessage.Convert();
         }
 
         /// <summary>
@@ -138,17 +151,20 @@ namespace GraphQL.AspNet.Messaging
         /// </summary>
         /// <param name="message">The message to send.</param>
         /// <returns>Task.</returns>
-        private Task SendMessage(IGraphQLOperationMessage message)
+        internal Task SendMessage(IGraphQLOperationMessage message)
         {
-            var text = JsonSerializer.Serialize(message);
-            if (this.WebSocket.State == WebSocketState.Open)
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new GraphQLOperationMessageConverter());
+
+            // graphql is defined to communcate in UTF-8
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(message, typeof(IGraphQLOperationMessage), options);
+            if (_socket.State == WebSocketState.Open)
             {
-                var bytes = Encoding.UTF8.GetBytes(text);
-                return this.WebSocket.SendAsync(
+                return _socket.SendAsync(
                     new ArraySegment<byte>(bytes, 0, bytes.Length),
                     WebSocketMessageType.Text,
                     true,
-                    CancellationToken.None);
+                    default);
             }
             else
             {
@@ -157,9 +173,9 @@ namespace GraphQL.AspNet.Messaging
         }
 
         /// <summary>
-        /// Gets the raw web socket underpinning this subscription registration.
+        /// Gets the state of the underlying websocket connection.
         /// </summary>
-        /// <value>The web socket.</value>
-        public WebSocket WebSocket { get; }
+        /// <value>The state.</value>
+        public WebSocketState State => _socket.State;
     }
 }

@@ -13,25 +13,18 @@ namespace GraphQL.AspNet.Messaging.Handlers
     using GraphQL.AspNet.Interfaces.Messaging;
 
     /// <summary>
-    /// A base handler for capturing common logic across all message handlers.
+    /// A handler for processing client operation stop requests.
     /// </summary>
-    internal abstract class BaseOperationMessageHandler : IGraphQLOperationMessageHandler
+    internal class UnknownMessageHandler : IGraphQLOperationMessageHandler
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseOperationMessageHandler"/> class.
-        /// </summary>
-        protected BaseOperationMessageHandler()
-        {
-        }
-
         /// <summary>
         /// Determines whether this instance can process the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns><c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.</returns>
-        public virtual bool CanHandleMessage(IGraphQLOperationMessage message)
+        public bool CanHandleMessage(IGraphQLOperationMessage message)
         {
-            return message != null && message.Type == this.MessageType;
+            return true;
         }
 
         /// <summary>
@@ -39,12 +32,9 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// </summary>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        public abstract IEnumerable<IGraphQLOperationMessage> HandleMessage(IGraphQLOperationMessage message);
-
-        /// <summary>
-        /// Gets the type of the message this handler can process.
-        /// </summary>
-        /// <value>The type of the message.</value>
-        public abstract GraphQLOperationMessageType MessageType { get; }
+        public IEnumerable<IGraphQLOperationMessage> HandleMessage(IGraphQLOperationMessage message)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

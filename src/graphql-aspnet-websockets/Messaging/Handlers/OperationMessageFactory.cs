@@ -9,12 +9,14 @@
 
 namespace GraphQL.AspNet.Messaging.Handlers
 {
+    using System.Collections;
     using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Messaging.Messages;
 
     /// <summary>
     /// Generates an appropriate handler for a given incoming message type.
     /// </summary>
-    internal static class OperationMessageHandlerFactory
+    internal static class OperationMessageFactory
     {
         /// <summary>
         /// Creates a handler that can process the message type requested. If unhandleable a default
@@ -22,15 +24,22 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// </summary>
         /// <param name="messageType">Type of the message.</param>
         /// <returns>IGraphQLOperationMessageHandler.</returns>
-        public static IGraphQLOperationMessageHandler CreateHandler(OperationMessageType messageType)
+        public static IGraphQLOperationMessageHandler CreateHandler(GraphQLOperationMessageType messageType)
         {
             switch (messageType)
             {
-                case OperationMessageType.GQL_CONNECTION_INIT:
-                    return null;
-            }
+                case GraphQLOperationMessageType.CONNECTION_INIT:
+                    return new ConnectionInitHandler();
 
-            return null;
+                case GraphQLOperationMessageType.START:
+                    return new OperationStartHandler();
+
+                case GraphQLOperationMessageType.STOP:
+                    return new OperationStoppedHandler();
+
+                default:
+                    return new UnknownMessageHandler();
+            }
         }
     }
 }
