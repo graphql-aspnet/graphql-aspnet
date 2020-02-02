@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Web
         /// Creates the delegate invoker to process an HTTP Request.
         /// </summary>
         /// <param name="appBuilder">The application builder.</param>
-        public void CreateInvoker(IApplicationBuilder appBuilder)
+        public void Execute(IApplicationBuilder appBuilder)
         {
             appBuilder.Run(this.Invoke);
         }

@@ -45,6 +45,8 @@ namespace GraphQL.AspNet.Configuration
             this.FieldExecutionPipeline.TypeReferenceAdded += this.Pipeline_TypeReferenceAdded;
             this.FieldAuthorizationPipeline.TypeReferenceAdded += this.Pipeline_TypeReferenceAdded;
             this.QueryExecutionPipeline.TypeReferenceAdded += this.Pipeline_TypeReferenceAdded;
+
+            this.Options = options;
         }
 
         /// <summary>

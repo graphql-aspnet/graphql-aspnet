@@ -35,7 +35,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var subscriptionsOptions = new SchemaSubscriptionOptions<TSchema>();
             action?.Invoke(subscriptionsOptions);
 
-            schemaBuilder.Options.RegisterExtension(subscriptionsOptions);
+            var extension = new SchemaSubscriptionsExtension<TSchema>(subscriptionsOptions);
+
+            schemaBuilder.Options.RegisterExtension(extension);
             return schemaBuilder;
         }
     }

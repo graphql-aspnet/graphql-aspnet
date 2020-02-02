@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using System;
     using System.Reflection;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -158,7 +159,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             return (sp) =>
             {
                 var pipeline = pipelineBuilder.Build();
-                this.WriteLogEntry(sp, (l) => l.SchemaPipelineRegistered<TSchema>(pipeline));
+                sp.WriteLogEntry((l) => l.SchemaPipelineRegistered<TSchema>(pipeline));
                 return pipeline;
             };
         }
@@ -186,36 +187,39 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var initializer = new GraphSchemaInitializer(_options);
             initializer.Initialize(schemaInstance);
 
-            this.WriteLogEntry(
-                  serviceProvider,
+            serviceProvider.WriteLogEntry(
                   (l) => l.SchemaInstanceCreated(schemaInstance));
 
             return schemaInstance;
         }
 
         /// <summary>
-        /// Uses the schema.
+        /// Invoke the schema to be part of the application performing final setup and configuration.
         /// </summary>
         /// <param name="appBuilder">The application builder.</param>
         public void UseSchema(IApplicationBuilder appBuilder)
         {
             this.UseSchema(appBuilder?.ApplicationServices, false);
 
+            if (_options.Extensions != null)
+            {
+                foreach (var additionalOptions in _options.Extensions)
+                    additionalOptions.Value.UseExtension(appBuilder, appBuilder.ApplicationServices);
+            }
+
             if (!_options.QueryHandler.DisableDefaultRoute)
             {
-                // when possible, create the singleton of hte processor up front to avoid any
+                // when possible, create the singleton of the processor up front to avoid any
                 // calls into the DI container at runtime.
                 _handler = new GraphQueryHandler<TSchema>();
-                appBuilder.Map(_options.QueryHandler.Route, _handler.CreateInvoker);
+                appBuilder.MapWhen(
+                    context => context.Request.Path == _options.QueryHandler.Route,
+                    _handler.Execute);
 
-                this.WriteLogEntry(
-                      appBuilder?.ApplicationServices,
+                appBuilder?.ApplicationServices.WriteLogEntry(
                       (l) => l.SchemaRouteRegistered<TSchema>(
                       _options.QueryHandler.Route));
             }
-
-            foreach (var additionalOptions in _options.Extensions)
-                additionalOptions.Value.UseExtension(appBuilder, appBuilder.ApplicationServices);
         }
 
         /// <summary>
@@ -229,7 +233,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         }
 
         /// <summary>
-        /// Uses the schema.
+        /// Invoke the schema, performing final setup and configuration.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="invokeAdditionalOptions">if set to <c>true</c> any configured, additional
@@ -247,24 +251,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
             {
                 foreach (var additionalOptions in _options.Extensions)
                     additionalOptions.Value.UseExtension(serviceProvider: serviceProvider);
-            }
-        }
-
-        /// <summary>
-        /// Writes the startup log entry to the event logger if it can be generated from the service provider.
-        /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="writeFunction">The write function.</param>
-        private void WriteLogEntry(IServiceProvider serviceProvider, Action<IGraphEventLogger> writeFunction)
-        {
-            if (serviceProvider != null)
-            {
-                using (var scopedProvider = serviceProvider.CreateScope())
-                {
-                    var logger = scopedProvider.ServiceProvider.GetService<IGraphEventLogger>();
-                    if (logger != null)
-                        writeFunction(logger);
-                }
             }
         }
 

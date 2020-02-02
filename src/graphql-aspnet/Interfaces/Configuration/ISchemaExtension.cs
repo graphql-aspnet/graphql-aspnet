@@ -16,10 +16,9 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// An interface that can be used to add additional, actionable options set to any
-    /// given <see cref="SchemaOptions" />.
+    /// An interface that can be used to configure extensions to a schema.
     /// </summary>
-    public interface ISchemaOptionsExtension
+    public interface ISchemaExtension
     {
         /// <summary>
         /// This method is called by the parent options just before it is added to the extensions

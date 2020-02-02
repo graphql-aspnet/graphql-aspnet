@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public class SchemaOptions
     {
-        private readonly Dictionary<Type, ISchemaOptionsExtension> _extensions;
+        private readonly Dictionary<Type, ISchemaExtension> _extensions;
         private readonly HashSet<Type> _possibleTypes;
         private readonly Type _schemaType;
 
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
             this.ExecutionOptions = new SchemaExecutionConfiguration();
             this.ResponseOptions = new SchemaResponseConfiguration();
             this.QueryHandler = new SchemaQueryHandlerConfiguration();
-            _extensions = new Dictionary<Type, ISchemaOptionsExtension>();
+            _extensions = new Dictionary<Type, ISchemaExtension>();
         }
 
         /// <summary>
@@ -128,11 +128,12 @@ namespace GraphQL.AspNet.Configuration
         /// <typeparam name="TExtensionType">The type of the t extension type.</typeparam>
         /// <param name="extension">The extension.</param>
         public void RegisterExtension<TExtensionType>(TExtensionType extension)
-            where TExtensionType : class, ISchemaOptionsExtension
+            where TExtensionType : class, ISchemaExtension
         {
             Validation.ThrowIfNull(extension, nameof(extension));
 
             extension.Configure(this);
+
             _extensions.Add(extension.GetType(), extension);
 
             if (extension.RequiredServices != null)
@@ -200,6 +201,6 @@ namespace GraphQL.AspNet.Configuration
         /// Gets the set of options extensions added to this schema configuration.
         /// </summary>
         /// <value>The extensions.</value>
-        public IReadOnlyDictionary<Type, ISchemaOptionsExtension> Extensions { get; }
+        public IReadOnlyDictionary<Type, ISchemaExtension> Extensions => _extensions;
     }
 }

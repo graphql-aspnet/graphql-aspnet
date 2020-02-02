@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.StarWarsAPI30
 {
+    using System;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
@@ -21,6 +22,8 @@ namespace GraphQL.AspNet.StarWarsAPI30
 
     public class Startup
     {
+        private const string ALL_ORIGINS_POLICY = "_allOrigins";
+
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -40,7 +43,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
             services.AddCors(options =>
             {
                 options.AddPolicy(
-                    "_allOrigins",
+                    ALL_ORIGINS_POLICY,
                     builder =>
                     {
                         builder.AllowAnyOrigin()
@@ -57,7 +60,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
             // you can control which assemblies are scanned and which classes are registered using
             // the schema configuration options set here.
             //
-            // in this example because of the two test projects netcore2.2 and netcore3.0
+            // in this example because of the two test projects (netcore2.2 and netcore3.0)
             // we have moved all the shared code to a common assembly (starwars-common) and are injecting it
             // as a single unit
             services.AddGraphQL(options =>
@@ -70,6 +73,8 @@ namespace GraphQL.AspNet.StarWarsAPI30
              })
             .AddSubscriptions(options =>
             {
+                // this route path is set by default
+                // it is listed here just as a matter of example
                 options.SubscriptionRoute = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
             });
 
@@ -89,9 +94,17 @@ namespace GraphQL.AspNet.StarWarsAPI30
 
             app.UseRouting();
 
-            app.UseCors("_allOrigins");
+            app.UseCors(ALL_ORIGINS_POLICY);
 
             app.UseAuthorization();
+
+            // enable web sockets on this server instance
+            // this must be done before graphql if subscriptions are enabled for any
+            // schema otherwise the subscriptions may not register correctly
+            app.UseWebSockets(new WebSocketOptions()
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+            });
 
             app.UseEndpoints(endpoints =>
             {
