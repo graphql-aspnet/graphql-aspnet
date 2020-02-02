@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
             {
                 // this route path is set by default
                 // it is listed here just as a matter of example
-                options.SubscriptionRoute = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
+                options.Route = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
             });
 
             services.AddControllers();

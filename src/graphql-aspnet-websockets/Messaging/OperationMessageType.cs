@@ -10,7 +10,8 @@
 namespace GraphQL.AspNet.Messaging
 {
     /// <summary>
-    /// An enumeration of the different types of messages carried over a presistent connection.
+    /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>
+    /// <para>Reference: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md .</para>
     /// </summary>
     public enum OperationMessageType
     {

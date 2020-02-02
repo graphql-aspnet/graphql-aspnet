@@ -14,13 +14,31 @@ namespace GraphQL.AspNet.Messaging
     /// <summary>
     /// An implementation of the required operation message interface.
     /// </summary>
-    public abstract class OperationMessage : IOperationMessage
+    public class GraphQLOperationMessage : IGraphQLOperationMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphQLOperationMessage"/> class.
+        /// </summary>
+        public GraphQLOperationMessage()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphQLOperationMessage"/> class.
+        /// </summary>
+        /// <param name="messageType">Type of the message.</param>
+        public GraphQLOperationMessage(OperationMessageType messageType)
+        {
+            this.Type = messageType;
+            this.Payload = null;
+            this.Id = null;
+        }
+
         /// <summary>
         /// Gets or sets the payload of the message as a stringified json object.
         /// </summary>
         /// <value>The payload.</value>
-        public abstract string Payload { get; set; }
+        public string Payload { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier for the scoped operation started by a client.

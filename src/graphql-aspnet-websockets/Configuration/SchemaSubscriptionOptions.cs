@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Net.WebSockets;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
@@ -31,8 +32,8 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Gets or sets a value indicating whether the default subscription processing handler
         /// should be registered to the application. If disabled, the application will not register
-        /// its internal handler as a public end point for handling subscriptions. The application will need to handle
-        /// websocket request routing manually (Default: false).
+        /// its middleware component to the asp.net pipeline for handling subscriptions. The application will need to handle
+        /// websocket request manually. (Default: false).
         /// </summary>
         /// <value><c>true</c> if the default subscription route should be disabled; otherwise, <c>false</c>.</value>
         public bool DisableDefaultRoute { get; set; } = false;
@@ -42,17 +43,33 @@ namespace GraphQL.AspNet.Configuration
         /// as part of your route to represent the primary configured route for this schema. (Default: "{schemaRoute}/subscriptions").
         /// </summary>
         /// <value>The route.</value>
-        public string SubscriptionRoute { get; set; } = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
+        public string Route { get; set; } = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
 
         /// <summary>
-        /// <para>Gets or sets an optional .NET type to use as the processor for Subscription requests. When set,
-        /// this type should accept as constructors a <see cref="RequestDelegate"/> and a <see cref="string"/> representing
-        /// the configured route for the subscription as constructor parameters.
+        /// <para>Gets or sets an optional .NET type to use as the middleware component
+        /// for Subscription requests. When set, this type should accept, as constructor arguments,
+        /// a <see cref="RequestDelegate"/>, the <see cref="SchemaSubscriptionOptions{TSchema}"/> for the
+        /// target schema and a <see cref="string"/> representing the configured route for the
+        /// subscription as constructor parameters.
         /// </para>
-        /// <para>It can be advantagous to override the default  <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> and register your custom
-        /// type here rather than overriding the entire subscription middleware component. See the documentation for further details.</para>
+        /// <para>It can be advantagous to override extend <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" />.  See the documentation for further details.</para>
         /// </summary>
         /// <value>The type of the middleware component to use when processing WebSocket Requests received by the application for subscriptions.</value>
-        public Type HttpProcessorType { get; set; } = null;
+        public Type HttpMiddlewareComponentType { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the amount of time between GraphQL keep alive operation messages (GQL_CONNECTION_KEEP_ALIVE)
+        /// to a connected client. This keep alive is seperate from the socket level keep alive timer. (Default: 2 minutes).
+        /// </summary>
+        /// <value>The keep alive interval.</value>
+        public TimeSpan KeepAliveInterval { get; set; } = TimeSpan.FromMinutes(2);
+
+        /// <summary>
+        /// Gets or sets the size of the message buffer (in bytes), at the application level, to extract and deserialize
+        /// the grpahql message on the websocket.  This value is seperate from the socket level buffer size receiving from
+        /// the connected size. (Default: 4kb).
+        /// </summary>
+        /// <value>The size of the message buffer.</value>
+        public int MessageBufferSize { get; set; } = 4 * 1024;
     }
 }

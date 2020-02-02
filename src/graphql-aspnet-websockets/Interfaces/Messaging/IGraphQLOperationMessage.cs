@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Messaging
     /// <summary>
     /// A representation of a graphql message sent or recieved over a presistent connection.
     /// </summary>
-    public interface IOperationMessage
+    public interface IGraphQLOperationMessage
     {
         /// <summary>
         /// Gets or sets the payload of the message as a stringified json object.

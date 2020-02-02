@@ -19,6 +19,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet
         /// <param name="options">The options.</param>
         public SchemaSubscriptionsExtension(SchemaSubscriptionOptions<TSchema> options)
         {
-            this.Options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             this.RequiredServices = new HashSet<ServiceDescriptor>();
         }
 
@@ -62,17 +63,19 @@ namespace GraphQL.AspNet
         {
             // configure the subscription route middleware for invoking the graphql
             // pipeline for the subscription
-            if (!this.Options.DisableDefaultRoute && app != null)
+            if (!this.SubscriptionOptions.DisableDefaultRoute && app != null)
             {
-                var routePath = this.Options.SubscriptionRoute.Replace(
+                var routePath = this.SubscriptionOptions.Route.Replace(
                 SubscriptionConstants.Routing.SCHEMA_ROUTE_KEY,
                 _primaryOptions.QueryHandler.Route);
 
-                var middlewareType = this.Options.HttpProcessorType
+                var middlewareType = this.SubscriptionOptions.HttpMiddlewareComponentType
                     ?? typeof(DefaultGraphQLHttpSubscriptionMiddleware<TSchema>);
 
-                app.UseMiddleware(middlewareType, routePath);
+                this.EnsureMiddlewareTypeOrThrow(middlewareType);
 
+                // register the middleware component
+                app.UseMiddleware(middlewareType, this.SubscriptionOptions, routePath);
                 app.ApplicationServices.WriteLogEntry(
                       (l) => l.SchemaSubscriptionRouteRegistered<TSchema>(
                       routePath));
@@ -80,10 +83,35 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// Ensures the middleware type contains a public constructor that can accept the
+        /// parameters required of it by the runtime.
+        /// </summary>
+        /// <param name="middlewareType">Type of the middleware to inspect.</param>
+        private void EnsureMiddlewareTypeOrThrow(Type middlewareType)
+        {
+            var constructor = middlewareType.GetConstructor(
+                new Type[]
+                {
+                    typeof(RequestDelegate),
+                    typeof(SchemaSubscriptionOptions<TSchema>),
+                    typeof(string),
+                });
+
+            if (constructor == null)
+            {
+                throw new InvalidOperationException(
+                      $"Unable to initialize subscriptions for schema '{typeof(TSchema).FriendlyName()}'. " +
+                      $"An attempt was made to use the type '{middlewareType.FriendlyName()}' as the middleware " +
+                      "component to handle subscription operation requests. However, this type does not contain a public " +
+                      $"constructor that accepts parameters of {typeof(RequestDelegate).FriendlyName()}, {typeof(SchemaSubscriptionOptions<TSchema>)}, and {typeof(string)}.");
+            }
+        }
+
+        /// <summary>
         /// Gets the options related to this extension instance.
         /// </summary>
         /// <value>The options.</value>
-        public SchemaSubscriptionOptions<TSchema> Options { get; }
+        public SchemaSubscriptionOptions<TSchema> SubscriptionOptions { get; }
 
         /// <summary>
         /// Gets a collection of services this extension has registered that should be included in
