@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Common.Extensions
     public static class WebSocketExtensions
     {
         /// <summary>
-        /// A helper method to garuntee receipt of a full message off the websocket. This method accounts
+        /// A helper method to guarantee receipt of a full message off the websocket. This method accounts
         /// for the quirkyness and semi-stream behavior of the websocket protocol.
         /// </summary>
         /// <param name="socket">The socket.</param>

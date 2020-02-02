@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Messaging
     using System.Linq;
     using System.Net.WebSockets;
     using System.Text;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -22,6 +23,7 @@ namespace GraphQL.AspNet.Messaging
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Messaging.Handlers;
     using GraphQL.AspNet.Messaging.ServerMessages;
     using Microsoft.AspNetCore.Http;
 
@@ -58,11 +60,31 @@ namespace GraphQL.AspNet.Messaging
         {
             if (sender != this)
                 return;
+
+            if (e.Message == null)
+                return;
+
+            var handler = OperationMessageHandlerFactory.CreateHandler(e.Message.Type);
+            var outgoingMessages = handler.HandleMessage(e.Message);
+            if (outgoingMessages != null && outgoingMessages.Any())
+            {
+                // messages must be sent in the order recieved
+                // each must be awaited individually
+                foreach (var message in outgoingMessages)
+                {
+                    var task = this.SendMessage(message);
+                    task.Wait();
+
+                    var exception = task.UnwrapException();
+                    if (exception != null)
+                        throw exception;
+                }
+            }
         }
 
         /// <summary>
         /// Performs initial setup and acknowledgement of this subscription instance and brokers messages
-        /// between the client and the graphql runtime.
+        /// between the client and the graphql runtime for its lifetime.
         /// </summary>
         /// <returns>Task.</returns>
         public async Task MonitorSubscription()
@@ -92,7 +114,7 @@ namespace GraphQL.AspNet.Messaging
             keepAliveTimer.Stop();
             await this.WebSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
 
-            // unregister any events that may be listening, this subscription is shutting down
+            // unregister any events that may be listening, this subscription is shutting down for good.
             foreach (Delegate d in this.MessageRecieved.GetInvocationList())
             {
                 this.MessageRecieved -= (SubscriptionMessageRecievedEventHandler)d;
@@ -107,39 +129,24 @@ namespace GraphQL.AspNet.Messaging
         /// <returns>IGraphQLOperationMessage.</returns>
         private IGraphQLOperationMessage DeserializeMessage(IEnumerable<byte> bytes)
         {
-            return System.Text.Json.JsonSerializer.Deserialize<GraphQLOperationMessage>(bytes.ToArray().AsSpan());
+            var text = Encoding.UTF8.GetString(bytes.ToArray());
+            return JsonSerializer.Deserialize<GraphQLOperationMessage>(text);
         }
 
         /// <summary>
-        /// Encodes the string message as UTF-8 (required by graphql) and sends the message
-        /// down the socket.
+        /// Serializes, encodes and sends the given message down to the client.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">The message to send.</param>
         /// <returns>Task.</returns>
-        private Task SendTextMessage(string message)
+        private Task SendMessage(IGraphQLOperationMessage message)
         {
+            var text = JsonSerializer.Serialize(message);
             if (this.WebSocket.State == WebSocketState.Open)
             {
-                var bytes = Encoding.UTF8.GetBytes(message);
+                var bytes = Encoding.UTF8.GetBytes(text);
                 return this.WebSocket.SendAsync(
                     new ArraySegment<byte>(bytes, 0, bytes.Length),
                     WebSocketMessageType.Text,
-                    true,
-                    CancellationToken.None);
-            }
-            else
-            {
-                return Task.CompletedTask;
-            }
-        }
-
-        private Task SendBinaryMessage(byte[] byteToSend, bool isEndOfMessage)
-        {
-            if (this.WebSocket.State == WebSocketState.Open)
-            {
-                return this.WebSocket.SendAsync(
-                    new ArraySegment<byte>(byteToSend, 0, byteToSend.Length),
-                    WebSocketMessageType.Binary,
                     true,
                     CancellationToken.None);
             }
