@@ -10,10 +10,8 @@
 namespace GraphQL.AspNet.Web
 {
     using System;
-    using System.Diagnostics;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.AspNetCore.Builder;

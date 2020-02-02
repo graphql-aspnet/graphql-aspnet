@@ -10,15 +10,9 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using System.Collections.Generic;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Web;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Configuration options relating to subscriptions for a given schema.

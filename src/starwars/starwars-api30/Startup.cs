@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.StarWarsAPI30
 {
     using System;
-    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;

@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Messaging
 {
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Messaging;
 
     /// <summary>

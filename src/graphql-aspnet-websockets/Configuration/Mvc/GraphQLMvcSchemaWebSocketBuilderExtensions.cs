@@ -12,8 +12,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using System;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A set of extensions to configure web socket support at startup.

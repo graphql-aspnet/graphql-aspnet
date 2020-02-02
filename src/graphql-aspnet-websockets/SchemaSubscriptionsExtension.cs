@@ -11,18 +11,14 @@ namespace GraphQL.AspNet
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Middleware;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

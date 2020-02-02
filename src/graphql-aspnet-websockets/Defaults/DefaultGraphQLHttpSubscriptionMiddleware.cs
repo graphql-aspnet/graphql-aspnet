@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Defaults
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
