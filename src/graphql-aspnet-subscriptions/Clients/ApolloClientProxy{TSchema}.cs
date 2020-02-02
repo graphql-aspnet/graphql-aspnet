@@ -31,36 +31,36 @@ namespace GraphQL.AspNet.Messaging
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// This object wraps a recieved websocket to characterize it and provide
+    /// This object wraps a connected websocket to characterize it and provide
     /// GraphQL subscription support.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this registration is built for.</typeparam>
-    public class ApolloClientConnection<TSchema>
+    public class ApolloClientProxy<TSchema> : IApolloClientProxy
         where TSchema : class, ISchema
     {
         /// <summary>
         /// Raised when a new message is received from a connected apollo client.
         /// </summary>
-        public event SubscriptionMessageRecievedEventHandler MessageRecieved;
+        public event OperationMessageRecievedEventHandler MessageRecieved;
 
         private SchemaSubscriptionOptions<TSchema> _options;
         private HttpContext _context;
         private WebSocket _socket;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloClientConnection{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ApolloClientProxy{TSchema}" /> class.
         /// </summary>
         /// <param name="context">The governing http context for this connection.</param>
         /// <param name="socket">The socket connection with the client.</param>
         /// <param name="options">The options used to configure the registration.</param>
-        public ApolloClientConnection(HttpContext context, WebSocket socket, SchemaSubscriptionOptions<TSchema> options)
+        public ApolloClientProxy(HttpContext context, WebSocket socket, SchemaSubscriptionOptions<TSchema> options)
         {
             _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
             _socket = Validation.ThrowIfNullOrReturn(socket, nameof(socket));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
         }
 
-        private void ApolloSubscriptionRegistration_MessageRecieved(object sender, SubscriptionMessageReceivedEventArgs e)
+        private void ApolloSubscriptionRegistration_MessageRecieved(object sender, OperationMessageReceivedEventArgs e)
         {
             if (sender != this)
                 return;
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Messaging
 
             // register the socket with an "apollo level" keep alive monitor
             // that will send structured keep alive messages down the pipe
-            var keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor<TSchema>(this, _options.KeepAliveInterval);
+            var keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor(this, _options.KeepAliveInterval);
             keepAliveTimer.Start();
 
             // message dispatch loop
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Messaging
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     var message = this.DeserializeMessage(bytes);
-                    this.MessageRecieved?.Invoke(this, new SubscriptionMessageReceivedEventArgs(message));
+                    this.MessageRecieved?.Invoke(this, new OperationMessageReceivedEventArgs(message));
                 }
 
                 (result, bytes) = await _socket.ReceiveFullMessage(_options.MessageBufferSize);
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Messaging
             // unregister any events that may be listening, this subscription is shutting down for good.
             foreach (Delegate d in this.MessageRecieved.GetInvocationList())
             {
-                this.MessageRecieved -= (SubscriptionMessageRecievedEventHandler)d;
+                this.MessageRecieved -= (OperationMessageRecievedEventHandler)d;
             }
         }
 
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Messaging
         /// </summary>
         /// <param name="message">The message to send.</param>
         /// <returns>Task.</returns>
-        internal Task SendMessage(IGraphQLOperationMessage message)
+        public Task SendMessage(IGraphQLOperationMessage message)
         {
             var options = new JsonSerializerOptions();
             options.Converters.Add(new GraphQLOperationMessageConverter());

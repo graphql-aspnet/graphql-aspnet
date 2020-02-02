@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\graphql-aspnet-websockets\graphql-aspnet-websockets.csproj" />
     <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
     <ProjectReference Include="..\starwars-common\starwars-common.csproj" />
   </ItemGroup>

@@ -13,6 +13,6 @@ namespace GraphQL.AspNet.Messaging
     /// graphql over websocket protocol from Apollo.
     /// </summary>
     /// <param name="sender">The sender.</param>
-    /// <param name="e">The <see cref="SubscriptionMessageReceivedEventArgs"/> instance containing the event data.</param>
-    public delegate void SubscriptionMessageRecievedEventHandler(object sender, SubscriptionMessageReceivedEventArgs e);
+    /// <param name="e">The <see cref="OperationMessageReceivedEventArgs"/> instance containing the event data.</param>
+    public delegate void OperationMessageRecievedEventHandler(object sender, OperationMessageReceivedEventArgs e);
 }

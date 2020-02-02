@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Defaults
             if (context.WebSockets.IsWebSocketRequest)
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                var subscription = new ApolloClientConnection<TSchema>(context, webSocket, _options);
+                var subscription = new ApolloClientProxy<TSchema>(context, webSocket, _options);
                 await subscription.MaintainConnection();
             }
             else

@@ -15,13 +15,13 @@ namespace GraphQL.AspNet.Messaging
     /// <summary>
     /// A set of arguments carried when a graphql subscription message is recieved from a connected client.
     /// </summary>
-    public class SubscriptionMessageReceivedEventArgs : EventArgs
+    public class OperationMessageReceivedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionMessageReceivedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="OperationMessageReceivedEventArgs"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public SubscriptionMessageReceivedEventArgs(IGraphQLOperationMessage message)
+        public OperationMessageReceivedEventArgs(IGraphQLOperationMessage message)
         {
             this.Message = message;
         }

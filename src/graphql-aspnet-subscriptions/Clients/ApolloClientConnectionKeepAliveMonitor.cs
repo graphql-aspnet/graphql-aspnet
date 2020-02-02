@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Messaging
     using System.Net.WebSockets;
     using System.Threading;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Messaging.ServerMessages;
 
@@ -20,27 +21,26 @@ namespace GraphQL.AspNet.Messaging
     /// Replaces the default keep alive message sent by ASP.NET Core websockets with a message
     /// specifically for the Apollo GraphQL protocol.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this registration is built for.</typeparam>
-    internal class ApolloClientConnectionKeepAliveMonitor<TSchema>
-        where TSchema : class, ISchema
+    internal class ApolloClientConnectionKeepAliveMonitor
     {
-        private readonly ApolloClientConnection<TSchema> _connection;
+        private readonly IApolloClientProxy _connection;
         private readonly TimeSpan _interval;
         private Timer _timer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloClientConnectionKeepAliveMonitor{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ApolloClientConnectionKeepAliveMonitor"/> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="interval">The interval.</param>
-        public ApolloClientConnectionKeepAliveMonitor(ApolloClientConnection<TSchema> connection, TimeSpan interval)
+        public ApolloClientConnectionKeepAliveMonitor(IApolloClientProxy connection, TimeSpan interval)
         {
             _connection = Validation.ThrowIfNullOrReturn(connection, nameof(connection));
             _interval = interval;
         }
 
+
         /// <summary>
-        /// Finalizes an instance of the <see cref="ApolloClientConnectionKeepAliveMonitor{TSchema}"/> class.
+        /// Finalizes an instance of the <see cref="ApolloClientConnectionKeepAliveMonitor"/> class.
         /// </summary>
         ~ApolloClientConnectionKeepAliveMonitor()
         {
