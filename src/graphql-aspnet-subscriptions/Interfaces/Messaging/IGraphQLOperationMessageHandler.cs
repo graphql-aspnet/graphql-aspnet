@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Interfaces.Messaging
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// An interface to define an object that can process <see cref="IGraphQLOperationMessage"/>.
@@ -26,8 +28,11 @@ namespace GraphQL.AspNet.Interfaces.Messaging
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
         /// </summary>
+        /// <param name="clientProxy">The client proxy processing the message.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        IEnumerable<IGraphQLOperationMessage> HandleMessage(IGraphQLOperationMessage message);
+        Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+            IApolloClientProxy clientProxy,
+            IGraphQLOperationMessage message);
     }
 }

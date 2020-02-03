@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Messaging
     using System.Linq;
     using System.Net.WebSockets;
     using System.Runtime.InteropServices.ComTypes;
+    using System.Security.Claims;
     using System.Text;
     using System.Text.Json;
     using System.Threading;
@@ -23,12 +24,15 @@ namespace GraphQL.AspNet.Messaging
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Messaging.Handlers;
     using GraphQL.AspNet.Messaging.Messages;
     using GraphQL.AspNet.Messaging.Messages.Common;
     using GraphQL.AspNet.Messaging.ServerMessages;
+    using GraphQL.AspNet.Middleware.QueryExecution;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide
@@ -44,6 +48,7 @@ namespace GraphQL.AspNet.Messaging
         public event OperationMessageRecievedEventHandler MessageRecieved;
 
         private SchemaSubscriptionOptions<TSchema> _options;
+        private ISchemaPipeline<TSchema, GraphQueryExecutionContext> _queryPipeline;
         private HttpContext _context;
         private WebSocket _socket;
 
@@ -58,6 +63,9 @@ namespace GraphQL.AspNet.Messaging
             _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
             _socket = Validation.ThrowIfNullOrReturn(socket, nameof(socket));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+
+            _queryPipeline = _context.RequestServices.GetRequiredService(typeof(ISchemaPipeline<TSchema, GraphQueryExecutionContext>))
+                as ISchemaPipeline<TSchema, GraphQueryExecutionContext>;
         }
 
         private void ApolloSubscriptionRegistration_MessageRecieved(object sender, OperationMessageReceivedEventArgs e)
@@ -68,18 +76,25 @@ namespace GraphQL.AspNet.Messaging
             if (e.Message == null)
                 return;
 
-            var handler = OperationMessageFactory.CreateHandler(e.Message.Type);
-            var outgoingMessages = handler.HandleMessage(e.Message);
+            var handler = OperationMessageFactory.CreateHandler<TSchema>(e.Message.Type);
+            var executionTask = handler.HandleMessage(this, e.Message);
+
+            executionTask.Wait();
+            var exception = executionTask.UnwrapException();
+            if (exception != null)
+                throw exception;
+
+            var outgoingMessages = executionTask.Result;
             if (outgoingMessages != null && outgoingMessages.Any())
             {
                 // messages must be sent in the order recieved
                 // each must be awaited individually
                 foreach (var message in outgoingMessages)
                 {
-                    var task = this.SendMessage(message);
-                    task.Wait();
+                    var sendTask = this.SendMessage(message);
+                    sendTask.Wait();
 
-                    var exception = task.UnwrapException();
+                    exception = sendTask.UnwrapException();
                     if (exception != null)
                         throw exception;
                 }
@@ -177,5 +192,17 @@ namespace GraphQL.AspNet.Messaging
         /// </summary>
         /// <value>The state.</value>
         public WebSocketState State => _socket.State;
+
+        /// <summary>
+        /// Gets the service provider instance assigned to this client for resolving object requests.
+        /// </summary>
+        /// <value>The service provider.</value>
+        public IServiceProvider ServiceProvider => _context.RequestServices;
+
+        /// <summary>
+        /// Gets the <see cref="ClaimsPrincipal" /> representing the user of the client.
+        /// </summary>
+        /// <value>The user.</value>
+        public ClaimsPrincipal User => _context.User;
     }
 }

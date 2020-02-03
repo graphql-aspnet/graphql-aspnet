@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
     using System;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -62,7 +63,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
             // in this example because of the two test projects (netcore2.2 and netcore3.0)
             // we have moved all the shared code to a common assembly (starwars-common) and are injecting it
             // as a single unit
-            services.AddGraphQL(options =>
+            var thing = services.AddGraphQL(options =>
              {
                  options.ResponseOptions.ExposeExceptions = true;
                  options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;

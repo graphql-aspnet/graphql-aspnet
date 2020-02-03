@@ -93,8 +93,8 @@ namespace GraphQL.AspNet.Tests.Controllers
             await processor.Invoke(httpContext);
 
             // headers that should be set
-            Assert.IsTrue(response.Headers.ContainsKey(HeaderNames.ContentType));
-            Assert.IsTrue(response.Headers.ContainsKey(Constants.ServerInformation.SERVER_INFORMATION_HEADER));
+            Assert.IsTrue(response.Headers.ContainsKey(HeaderNames.ContentType), "No content type header");
+            Assert.IsTrue(response.Headers.ContainsKey(Constants.ServerInformation.SERVER_INFORMATION_HEADER), "No server info header");
 
             // check the response body that was written
             var expectedOutput = @"

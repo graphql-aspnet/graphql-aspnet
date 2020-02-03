@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.DirectiveNodeSteps;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -70,7 +71,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <returns>GraphQLServiceCollectionBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<TSchema> AddGraphQL<TSchema>(
             this IServiceCollection serviceCollection,
-            Action<SchemaOptions> options = null)
+            Action<SchemaOptions<TSchema>> options = null)
             where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(serviceCollection, nameof(serviceCollection));
@@ -96,7 +97,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <returns>GraphQLServiceCollectionBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<GraphSchema> AddGraphQL(
             this IServiceCollection serviceCollection,
-            Action<SchemaOptions> options = null)
+            Action<SchemaOptions<GraphSchema>> options = null)
         {
             return AddGraphQL<GraphSchema>(serviceCollection, options);
         }

@@ -11,7 +11,10 @@ namespace GraphQL.AspNet.Messaging.Handlers
 {
     using System.Collections;
     using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Messaging.Messages;
+    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// Generates an appropriate handler for a given incoming message type.
@@ -24,7 +27,9 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// </summary>
         /// <param name="messageType">Type of the message.</param>
         /// <returns>IGraphQLOperationMessageHandler.</returns>
-        public static IGraphQLOperationMessageHandler CreateHandler(GraphQLOperationMessageType messageType)
+        public static IGraphQLOperationMessageHandler CreateHandler<TSchema>(
+            GraphQLOperationMessageType messageType)
+            where TSchema : class, ISchema
         {
             switch (messageType)
             {
@@ -32,7 +37,7 @@ namespace GraphQL.AspNet.Messaging.Handlers
                     return new ConnectionInitHandler();
 
                 case GraphQLOperationMessageType.START:
-                    return new OperationStartHandler();
+                    return new OperationStartHandler<TSchema>();
 
                 case GraphQLOperationMessageType.STOP:
                     return new OperationStoppedHandler();

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Configuration
 {
+    using System;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;

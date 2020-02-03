@@ -56,6 +56,5 @@
 
   <ItemGroup>
     <Folder Include="Execution\" />
-    <Folder Include="ApolloServer\" />
   </ItemGroup>
 </Project>

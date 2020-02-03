@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Messaging.Handlers
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Messaging.ServerMessages;
 
@@ -24,12 +25,20 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
         /// </summary>
+        /// <param name="clientProxy">The client proxy.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        public override IEnumerable<IGraphQLOperationMessage> HandleMessage(IGraphQLOperationMessage message)
+        public override Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+            IApolloClientProxy clientProxy,
+            IGraphQLOperationMessage message)
         {
-            yield return new ServerAckOperationMessage();
-            yield return new KeepAliveOperationMessage();
+            // kinda cludgy, need a better way without a 3rd party package
+            return Task.FromResult(
+                (IEnumerable<IGraphQLOperationMessage>)new List<IGraphQLOperationMessage>()
+                {
+                    new ServerAckOperationMessage(),
+                    new KeepAliveOperationMessage(),
+                });
         }
 
         /// <summary>

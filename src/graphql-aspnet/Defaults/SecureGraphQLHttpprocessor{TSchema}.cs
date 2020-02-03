@@ -28,17 +28,17 @@ namespace GraphQL.AspNet.Defaults
         /// Initializes a new instance of the <see cref="SecureGraphQLHttpProcessor{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        /// <param name="queryPipeline">The query pipeline.</param>
+        /// <param name="runtime">The runtime.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="metricsFactory">The metrics factory.</param>
         /// <param name="logger">The logger.</param>
         public SecureGraphQLHttpProcessor(
             TSchema schema,
-            ISchemaPipeline<TSchema, GraphQueryExecutionContext> queryPipeline,
+            IGraphQLRuntime<TSchema> runtime,
             IGraphResponseWriter<TSchema> writer,
             IGraphQueryExecutionMetricsFactory<TSchema> metricsFactory,
             IGraphEventLogger logger = null)
-            : base(schema, queryPipeline, writer, metricsFactory, logger)
+            : base(schema, runtime, writer, metricsFactory, logger)
         {
         }
 

@@ -42,9 +42,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
         where TSchema : class, ISchema
     {
         private readonly IServiceCollection _serviceCollection;
-        private readonly Action<SchemaOptions> _configureOptions;
+        private readonly Action<SchemaOptions<TSchema>> _configureOptions;
         private readonly SchemaBuilder<TSchema> _schemaBuilder;
-        private SchemaOptions _options;
+        private SchemaOptions<TSchema> _options;
         private GraphQueryHandler<TSchema> _handler;
 
         /// <summary>
@@ -53,12 +53,12 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <param name="serviceCollection">The service collection.</param>
         /// <param name="configureOptions">The use supplied action method to configure the
         /// primary options used to govern schema runtime operations.</param>
-        public GraphQLSchemaInjector(IServiceCollection serviceCollection, Action<SchemaOptions> configureOptions)
+        public GraphQLSchemaInjector(IServiceCollection serviceCollection, Action<SchemaOptions<TSchema>> configureOptions)
         {
             _serviceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _configureOptions = configureOptions;
 
-            _options = new SchemaOptions(typeof(TSchema));
+            _options = new SchemaOptions<TSchema>();
             _schemaBuilder = new SchemaBuilder<TSchema>(_options);
         }
 
@@ -93,6 +93,13 @@ namespace GraphQL.AspNet.Configuration.Mvc
                 else
                     _options.QueryHandler.HttpProcessorType = typeof(DefaultGraphQLHttpProcessor<TSchema>);
             }
+
+            // ensure a runtime is set
+            var runtimeDescriptor = _options.RuntimeDescriptor ?? new ServiceDescriptor(
+                typeof(IGraphQLRuntime<TSchema>),
+                typeof(DefaultGraphQLRuntime<TSchema>),
+                ServiceLifetime.Scoped);
+            _serviceCollection.TryAdd(runtimeDescriptor);
 
             // register the schema
             _serviceCollection.TryAddSingleton(this.BuildNewSchemaInstance);

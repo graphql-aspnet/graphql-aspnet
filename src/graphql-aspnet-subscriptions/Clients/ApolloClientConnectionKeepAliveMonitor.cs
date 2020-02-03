@@ -38,7 +38,6 @@ namespace GraphQL.AspNet.Messaging
             _interval = interval;
         }
 
-
         /// <summary>
         /// Finalizes an instance of the <see cref="ApolloClientConnectionKeepAliveMonitor"/> class.
         /// </summary>
