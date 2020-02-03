@@ -19,9 +19,12 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Clients;
+    using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Messaging;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A default implementation of the logic for handling a subscription request over a websocket.
@@ -73,7 +76,11 @@ namespace GraphQL.AspNet.Defaults
             if (context.WebSockets.IsWebSocketRequest)
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                var subscription = new ApolloClientProxy<TSchema>(context, webSocket, _options);
+
+                var subscriptionFactory = context.RequestServices.GetRequiredService(typeof(ISubscriptionClientFactory<TSchema>))
+                    as ISubscriptionClientFactory<TSchema>;
+
+                var subscription = subscriptionFactory.CreateClientProxy(context, webSocket, _options);
                 await subscription.MaintainConnection();
             }
             else

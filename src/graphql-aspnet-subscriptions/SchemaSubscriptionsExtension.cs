@@ -11,6 +11,7 @@ namespace GraphQL.AspNet
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.ApolloClient;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
@@ -51,6 +52,10 @@ namespace GraphQL.AspNet
         public void Configure(SchemaOptions options)
         {
             _primaryOptions = options;
+
+            // setup the apollo client for this schema if no other is explicitly provided
+            if (this.SubscriptionOptions.SubscriptionClientFactory == null)
+                this.SubscriptionOptions.SubscriptionClientFactory = new ApolloClientFactory<TSchema>();
         }
 
         /// <summary>

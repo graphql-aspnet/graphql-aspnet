@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Interfaces.Messaging
         /// Gets or sets the type of the message, indicating expected payload types.
         /// </summary>
         /// <value>The type.</value>
-        GraphQLOperationMessageType Type { get; set; }
+        ApolloMessageType Type { get; set; }
 
         /// <summary>
         /// Gets the payload of the message as a general object.

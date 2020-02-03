@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using System.Net.WebSockets;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Interfaces.Clients;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 
@@ -58,8 +59,16 @@ namespace GraphQL.AspNet.Configuration
         public Type HttpMiddlewareComponentType { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the amount of time between GraphQL keep alive operation messages (GQL_CONNECTION_KEEP_ALIVE)
-        /// to a connected client. This keep alive is seperate from the socket level keep alive timer. (Default: 2 minutes).
+        /// Gets or sets a singleton object that will create client proxies for this schema. If not provided,
+        /// the runtime will use the apollo graphql-over-websockets protocol and client stack. (Default: null).
+        /// </summary>
+        /// <value>The type of the subscription client factory.</value>
+        public ISubscriptionClientFactory<TSchema> SubscriptionClientFactory { get; set; } = null;
+
+        /// <summary>
+        /// <para>Gets or sets the amount of time between GraphQL keep alive operation messages
+        /// to a connected client for those protocols that support it.</para>
+        /// <para>This keep alive is seperate from the socket level keep alive timer. (Default: 2 minutes).</para>
         /// </summary>
         /// <value>The keep alive interval.</value>
         public TimeSpan KeepAliveInterval { get; set; } = TimeSpan.FromMinutes(2);

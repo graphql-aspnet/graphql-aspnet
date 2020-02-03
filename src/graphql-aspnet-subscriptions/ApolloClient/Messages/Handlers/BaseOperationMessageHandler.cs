@@ -7,32 +7,48 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Messaging
+namespace GraphQL.AspNet.Messaging.Handlers
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
+    using GraphQL.AspNet.Interfaces.Messaging;
 
     /// <summary>
-    /// An interface to define an object that can process <see cref="IGraphQLOperationMessage"/>.
+    /// A base handler for capturing common logic across all message handlers.
     /// </summary>
-    internal interface IGraphQLOperationMessageHandler
+    internal abstract class BaseOperationMessageHandler : IGraphQLOperationMessageHandler
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseOperationMessageHandler"/> class.
+        /// </summary>
+        protected BaseOperationMessageHandler()
+        {
+        }
+
         /// <summary>
         /// Determines whether this instance can process the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns><c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.</returns>
-        bool CanHandleMessage(IGraphQLOperationMessage message);
+        public virtual bool CanHandleMessage(IGraphQLOperationMessage message)
+        {
+            return message != null && message.Type == this.MessageType;
+        }
 
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
         /// </summary>
-        /// <param name="clientProxy">The client proxy processing the message.</param>
+        /// <param name="clientProxy">The client proxy.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+        public abstract Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
             ISubscriptionClientProxy clientProxy,
             IGraphQLOperationMessage message);
+
+        /// <summary>
+        /// Gets the type of the message this handler can process.
+        /// </summary>
+        /// <value>The type of the message.</value>
+        public abstract ApolloMessageType MessageType { get; }
     }
 }
