@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Messaging
         /// Initializes a new instance of the <see cref="ApolloMessageReceivedEventArgs"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public ApolloMessageReceivedEventArgs(IGraphQLOperationMessage message)
+        public ApolloMessageReceivedEventArgs(IApolloMessage message)
         {
             this.Message = message;
         }
@@ -30,6 +30,6 @@ namespace GraphQL.AspNet.Messaging
         /// Gets the message that was recieved by the client.
         /// </summary>
         /// <value>The message.</value>
-        public IGraphQLOperationMessage Message { get; }
+        public IApolloMessage Message { get; }
     }
 }

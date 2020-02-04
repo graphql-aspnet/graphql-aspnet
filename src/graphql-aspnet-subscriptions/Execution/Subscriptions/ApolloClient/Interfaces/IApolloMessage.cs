@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Messaging
     /// A base representation of a graphql message sent or recieved over a presistent connection. This interface does not
     /// include custom payload information.
     /// </summary>
-    public interface IGraphQLOperationMessage
+    public interface IApolloMessage
     {
         /// <summary>
         /// Gets or sets the identifier for the scoped operation started by a client.

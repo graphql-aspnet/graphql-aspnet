@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// <typeparam name="TSchema">The type of the target schema to generate the handler for.</typeparam>
         /// <param name="messageType">Type of the message.</param>
         /// <returns>IGraphQLOperationMessageHandler.</returns>
-        public static IGraphQLOperationMessageHandler CreateHandler<TSchema>(
+        public static IApolloMessageHandler CreateHandler<TSchema>(
             ApolloMessageType messageType)
             where TSchema : class, ISchema
         {

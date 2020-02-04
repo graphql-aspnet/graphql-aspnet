@@ -141,11 +141,11 @@ namespace GraphQL.AspNet.Messaging
 
         /// <summary>
         /// Deserializes the text message (represneted as a UTF-8 encoded byte array) into an
-        /// appropriate <see cref="IGraphQLOperationMessage"/>.
+        /// appropriate <see cref="IApolloMessage"/>.
         /// </summary>
         /// <param name="bytes">The bytes.</param>
         /// <returns>IGraphQLOperationMessage.</returns>
-        private IGraphQLOperationMessage DeserializeMessage(IEnumerable<byte> bytes)
+        private IApolloMessage DeserializeMessage(IEnumerable<byte> bytes)
         {
             var text = Encoding.UTF8.GetString(bytes.ToArray());
 
@@ -167,13 +167,13 @@ namespace GraphQL.AspNet.Messaging
         public Task SendMessage(object message)
         {
             Validation.ThrowIfNull(message, nameof(message));
-            Validation.ThrowIfNotCastable<IGraphQLOperationMessage>(message.GetType(), nameof(message));
+            Validation.ThrowIfNotCastable<IApolloMessage>(message.GetType(), nameof(message));
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(new ApolloMessageConverter());
 
             // graphql is defined to communcate in UTF-8
-            var bytes = JsonSerializer.SerializeToUtf8Bytes(message, typeof(IGraphQLOperationMessage), options);
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(message, typeof(IApolloMessage), options);
             if (_socket.State == WebSocketState.Open)
             {
                 return _socket.SendAsync(

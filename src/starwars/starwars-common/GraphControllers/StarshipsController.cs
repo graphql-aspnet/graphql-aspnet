@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Interfaces;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.StarwarsAPI.Common.Model;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
@@ -56,12 +57,27 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// </summary>
         /// <param name="starshipId">The starship identifier.</param>
         /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
-        [QueryRoot(typeof(Starship))]
+        [QueryRoot("starship", typeof(Starship))]
         [Description("Retrieves a single starship by its given id.")]
-        public async Task<IGraphActionResult> Starship([FromGraphQL("id")] GraphId starshipId)
+        public async Task<IGraphActionResult> RetrieveStarship([FromGraphQL("id")] GraphId starshipId)
         {
             var starship = await _starWarsData.RetrieveStarship(starshipId).ConfigureAwait(false);
             return this.Ok(starship);
+        }
+
+        /// <summary>
+        /// A subscription to which any altered starship is sent whenever any
+        /// user makes a change to it. Starships that are deleted are not communicated through this subscription.
+        /// </summary>
+        /// <param name="ship">The ship that was just updated.</param>
+        /// <param name="nameLike">A name filter, supplied by the subscriber to determine which
+        /// ships they actually recieve.</param>
+        /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
+        [SubscriptionRoot("starship", typeof(Starship))]
+        [Description("Returns an updated starship anytime it is altered.")]
+        public async Task<IGraphActionResult> StarshipUpdated(ISubscriptionEvent eventData, string nameLike = "*")
+        {
+            return null;
         }
     }
 }

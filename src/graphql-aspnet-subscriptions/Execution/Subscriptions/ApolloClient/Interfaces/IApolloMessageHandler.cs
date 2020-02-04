@@ -13,16 +13,16 @@ namespace GraphQL.AspNet.Interfaces.Messaging
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An interface to define an object that can process <see cref="IGraphQLOperationMessage"/>.
+    /// An interface to define an object that can process <see cref="IApolloMessage"/>.
     /// </summary>
-    internal interface IGraphQLOperationMessageHandler
+    internal interface IApolloMessageHandler
     {
         /// <summary>
         /// Determines whether this instance can process the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns><c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.</returns>
-        bool CanHandleMessage(IGraphQLOperationMessage message);
+        bool CanHandleMessage(IApolloMessage message);
 
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
@@ -30,8 +30,8 @@ namespace GraphQL.AspNet.Interfaces.Messaging
         /// <param name="clientProxy">The client proxy processing the message.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+        Task<IEnumerable<IApolloMessage>> HandleMessage(
             ISubscriptionClientProxy clientProxy,
-            IGraphQLOperationMessage message);
+            IApolloMessage message);
     }
 }

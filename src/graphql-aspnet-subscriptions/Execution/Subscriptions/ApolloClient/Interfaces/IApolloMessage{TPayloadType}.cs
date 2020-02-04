@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Messaging
     /// A representation of a graphql message sent or recieved over a presistent connection.
     /// </summary>
     /// <typeparam name="TPayloadType">The type of payload expected for this message.</typeparam>
-    public interface IGraphQLOperationMessage<TPayloadType> : IGraphQLOperationMessage
+    public interface IApolloMessage<TPayloadType> : IApolloMessage
         where TPayloadType : class
     {
         /// <summary>

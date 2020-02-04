@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Messaging.Handlers
     /// <summary>
     /// A base handler for capturing common logic across all message handlers.
     /// </summary>
-    internal abstract class ApolloMessageHandler : IGraphQLOperationMessageHandler
+    internal abstract class ApolloMessageHandler : IApolloMessageHandler
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloMessageHandler"/> class.
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns><c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.</returns>
-        public virtual bool CanHandleMessage(IGraphQLOperationMessage message)
+        public virtual bool CanHandleMessage(IApolloMessage message)
         {
             return message != null && message.Type == this.MessageType;
         }
@@ -41,9 +41,9 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// <param name="clientProxy">The client proxy.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        public abstract Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+        public abstract Task<IEnumerable<IApolloMessage>> HandleMessage(
             ISubscriptionClientProxy clientProxy,
-            IGraphQLOperationMessage message);
+            IApolloMessage message);
 
         /// <summary>
         /// Gets the type of the message this handler can process.

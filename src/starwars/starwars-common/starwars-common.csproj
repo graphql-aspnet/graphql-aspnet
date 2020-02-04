@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj" />
     <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
   </ItemGroup>
 

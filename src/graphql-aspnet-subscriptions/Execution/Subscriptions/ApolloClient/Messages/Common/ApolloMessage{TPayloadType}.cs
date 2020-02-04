@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Messaging
     /// An implementation of the required operation message interface.
     /// </summary>
     /// <typeparam name="TPayloadType">The type of the payload this message expects.</typeparam>
-    public abstract class ApolloMessage<TPayloadType> : IGraphQLOperationMessage<TPayloadType>
+    public abstract class ApolloMessage<TPayloadType> : IApolloMessage<TPayloadType>
         where TPayloadType : class
     {
         /// <summary>

@@ -28,13 +28,13 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// <param name="clientProxy">The client proxy.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        public override Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+        public override Task<IEnumerable<IApolloMessage>> HandleMessage(
             ISubscriptionClientProxy clientProxy,
-            IGraphQLOperationMessage message)
+            IApolloMessage message)
         {
             // kinda cludgy, need a better way without a 3rd party package
             return Task.FromResult(
-                (IEnumerable<IGraphQLOperationMessage>)new List<IGraphQLOperationMessage>()
+                (IEnumerable<IApolloMessage>)new List<IApolloMessage>()
                 {
                     new ApolloServerAckOperationMessage(),
                     new ApolloKeepAliveOperationMessage(),
