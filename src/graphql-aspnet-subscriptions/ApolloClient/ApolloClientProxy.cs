@@ -10,12 +10,9 @@
 namespace GraphQL.AspNet.Messaging
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http.Headers;
     using System.Net.WebSockets;
-    using System.Runtime.InteropServices.ComTypes;
     using System.Security.Claims;
     using System.Text;
     using System.Text.Json;
@@ -30,7 +27,6 @@ namespace GraphQL.AspNet.Messaging
     using GraphQL.AspNet.Messaging.Handlers;
     using GraphQL.AspNet.Messaging.Messages;
     using GraphQL.AspNet.Messaging.Messages.Common;
-    using GraphQL.AspNet.Messaging.ServerMessages;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;

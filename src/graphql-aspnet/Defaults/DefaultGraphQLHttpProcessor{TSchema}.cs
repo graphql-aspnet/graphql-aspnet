@@ -21,11 +21,9 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
 

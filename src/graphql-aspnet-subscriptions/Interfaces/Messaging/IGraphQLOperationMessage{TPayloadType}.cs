@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Interfaces.Messaging
         /// Gets the type of the payload handled by this message.
         /// </summary>
         /// <value>The type of the payload.</value>
-        public Type PayloadType { get; }
+        Type PayloadType { get; }
 
         /// <summary>
         /// Gets or sets the payload of the message as a stringified json object.

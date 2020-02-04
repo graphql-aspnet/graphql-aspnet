@@ -9,10 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Messaging
 {
-    using System;
-    using System.Net.WebSockets;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

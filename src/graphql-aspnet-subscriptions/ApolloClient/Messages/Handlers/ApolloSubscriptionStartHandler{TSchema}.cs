@@ -11,19 +11,12 @@ namespace GraphQL.AspNet.Messaging.Handlers
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Net.Http;
-    using System.Security.Claims;
-    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Messaging.Messages;
-    using GraphQL.AspNet.Middleware.QueryExecution;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Interfaces.Messaging
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// An interface to define an object that can process <see cref="IGraphQLOperationMessage"/>.

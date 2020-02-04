@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Messaging.Handlers
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>
     /// A handler for processing the final connection message sent by the client

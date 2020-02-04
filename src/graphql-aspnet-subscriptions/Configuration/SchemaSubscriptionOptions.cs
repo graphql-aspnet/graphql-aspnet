@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using System.Net.WebSockets;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.Clients;
     using GraphQL.AspNet.Interfaces.TypeSystem;

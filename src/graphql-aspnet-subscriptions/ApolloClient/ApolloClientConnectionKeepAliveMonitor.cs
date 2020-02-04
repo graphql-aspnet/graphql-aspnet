@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Messaging
     using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>

@@ -14,9 +14,6 @@ namespace GraphQL.AspNet.Messaging.Handlers
     using System.Diagnostics;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// A handler for processing client operation stop requests.

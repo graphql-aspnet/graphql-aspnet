@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Messaging.ServerMessages
 {
-    using System.Text.Json.Serialization;
     using GraphQL.AspNet.Messaging.Messages.Payloads;
 
     /// <summary>

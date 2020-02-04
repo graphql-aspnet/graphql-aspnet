@@ -13,9 +13,7 @@ namespace GraphQL.AspNet.Defaults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// An http processor that only allows authenticated requests through to the runtime.

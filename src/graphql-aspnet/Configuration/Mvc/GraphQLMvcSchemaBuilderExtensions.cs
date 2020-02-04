@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.DirectiveNodeSteps;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
