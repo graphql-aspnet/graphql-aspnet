@@ -10,41 +10,45 @@
 namespace GraphQL.AspNet.Messaging.Handlers
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>
-    /// A handler for processing the initial connection message sent by the client
-    /// after the websocket has been established.
+    /// A base handler for capturing common logic across all message handlers.
     /// </summary>
-    [DebuggerDisplay("Client Connection Initalized Handler")]
-    internal class ConnectionInitHandler : BaseOperationMessageHandler
+    internal abstract class ApolloMessageHandler : IGraphQLOperationMessageHandler
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApolloMessageHandler"/> class.
+        /// </summary>
+        protected ApolloMessageHandler()
+        {
+        }
+
+        /// <summary>
+        /// Determines whether this instance can process the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns><c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.</returns>
+        public virtual bool CanHandleMessage(IGraphQLOperationMessage message)
+        {
+            return message != null && message.Type == this.MessageType;
+        }
+
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
         /// </summary>
         /// <param name="clientProxy">The client proxy.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        public override Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+        public abstract Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
             ISubscriptionClientProxy clientProxy,
-            IGraphQLOperationMessage message)
-        {
-            // kinda cludgy, need a better way without a 3rd party package
-            return Task.FromResult(
-                (IEnumerable<IGraphQLOperationMessage>)new List<IGraphQLOperationMessage>()
-                {
-                    new ServerAckOperationMessage(),
-                    new KeepAliveOperationMessage(),
-                });
-        }
+            IGraphQLOperationMessage message);
 
         /// <summary>
         /// Gets the type of the message this handler can process.
         /// </summary>
         /// <value>The type of the message.</value>
-        public override ApolloMessageType MessageType => ApolloMessageType.CONNECTION_INIT;
+        public abstract ApolloMessageType MessageType { get; }
     }
 }

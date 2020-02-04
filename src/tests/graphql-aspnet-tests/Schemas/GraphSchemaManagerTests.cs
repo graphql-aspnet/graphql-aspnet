@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphCollection.Mutation));
 
             // field for the controller exists
-            var topFieldName = nameof(SimpleMethodController).Replace("Controller", string.Empty);
+            var topFieldName = nameof(SimpleMethodController).Replace(Constants.CommonSuffix.CONTROLLER_SUFFIX, string.Empty);
             Assert.IsTrue(schema.OperationTypes[GraphCollection.Query].Fields.ContainsKey(topFieldName));
 
             // ensure the field on the query is the right name (or throw)

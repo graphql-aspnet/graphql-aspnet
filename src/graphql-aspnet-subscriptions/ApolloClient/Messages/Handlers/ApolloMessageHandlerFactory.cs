@@ -9,23 +9,19 @@
 
 namespace GraphQL.AspNet.Messaging.Handlers
 {
-    using System.Collections;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Messaging.Messages;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// Generates an appropriate handler for a given incoming message type.
     /// </summary>
-    internal static class OperationMessageFactory
+    internal static class ApolloMessageHandlerFactory
     {
         /// <summary>
-        /// Creates a handler that can process the message type requested. If unhandleable a default
-        /// handler that will result in an error is returned.
+        /// Creates a handler that can process the message type that was recieved from a connected client.
+        /// If unhandleable a default handler that will result in an error is returned.
         /// </summary>
-        /// <typeparam name="TSchema">The type of the target schema for this handler.</typeparam>
+        /// <typeparam name="TSchema">The type of the target schema to generate the handler for.</typeparam>
         /// <param name="messageType">Type of the message.</param>
         /// <returns>IGraphQLOperationMessageHandler.</returns>
         public static IGraphQLOperationMessageHandler CreateHandler<TSchema>(
@@ -35,16 +31,19 @@ namespace GraphQL.AspNet.Messaging.Handlers
             switch (messageType)
             {
                 case ApolloMessageType.CONNECTION_INIT:
-                    return new ConnectionInitHandler();
+                    return new ApolloConnectionInitHandler();
 
                 case ApolloMessageType.START:
-                    return new OperationStartHandler<TSchema>();
+                    return new ApolloSubscriptionStartHandler<TSchema>();
 
                 case ApolloMessageType.STOP:
-                    return new OperationStoppedHandler();
+                    return new ApolloSubscriptionStoppedHandler();
+
+                case ApolloMessageType.CONNECTION_TERMINATE:
+                    return new ApolloConnectionTerminateHandler();
 
                 default:
-                    return new UnknownMessageHandler();
+                    return new ApolloUnknownMessageHandler();
             }
         }
     }

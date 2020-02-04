@@ -16,12 +16,12 @@ namespace GraphQL.AspNet.Messaging.ServerMessages
     /// A keep alive message sent periodically by the server to keep the connection
     /// open a the application level.
     /// </summary>
-    public class KeepAliveOperationMessage : ApolloMessage<NullPayload>
+    public class ApolloKeepAliveOperationMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="KeepAliveOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloKeepAliveOperationMessage"/> class.
         /// </summary>
-        public KeepAliveOperationMessage()
+        public ApolloKeepAliveOperationMessage()
             : base(ApolloMessageType.CONNECTION_KEEP_ALIVE)
         {
         }

@@ -16,13 +16,13 @@ namespace GraphQL.AspNet.Messaging.Messages.ClientMessages
     /// A message recieved from the client when it is notfiying the server that its dropping
     /// the connection and the server should dispose of it.
     /// </summary>
-    [DebuggerDisplay("Client Terminate")]
-    internal class ConnectionTerminateOperationMessage : ApolloMessage<NullPayload>
+    [DebuggerDisplay("Apollo Client Terminate")]
+    internal class ApolloConnectionTerminateMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionTerminateOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloConnectionTerminateMessage"/> class.
         /// </summary>
-        public ConnectionTerminateOperationMessage()
+        public ApolloConnectionTerminateMessage()
             : base(ApolloMessageType.CONNECTION_TERMINATE)
         {
         }

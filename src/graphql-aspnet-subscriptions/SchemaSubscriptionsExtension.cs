@@ -16,6 +16,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Interfaces.Clients;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
@@ -55,7 +56,16 @@ namespace GraphQL.AspNet
 
             // setup the apollo client for this schema if no other is explicitly provided
             if (this.SubscriptionOptions.SubscriptionClientFactory == null)
-                this.SubscriptionOptions.SubscriptionClientFactory = new ApolloClientFactory<TSchema>();
+                this.SubscriptionOptions.SubscriptionClientFactory = typeof(ApolloClientFactory<TSchema>);
+
+            Validation.ThrowIfNotCastable<ISubscriptionClientFactory<TSchema>>(
+                this.SubscriptionOptions.SubscriptionClientFactory,
+                nameof(this.SubscriptionOptions.SubscriptionClientFactory));
+
+            this.RequiredServices.Add(new ServiceDescriptor(
+                typeof(ISubscriptionClientFactory<TSchema>),
+                this.SubscriptionOptions.SubscriptionClientFactory,
+                ServiceLifetime.Singleton));
         }
 
         /// <summary>

@@ -16,12 +16,12 @@ namespace GraphQL.AspNet.Messaging.ServerMessages
     /// A message sent by the server to a client to acknowledge receipt of a message when no other
     /// specific message is warranted.
     /// </summary>
-    public class ServerAckOperationMessage : ApolloMessage<NullPayload>
+    public class ApolloServerAckOperationMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerAckOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloServerAckOperationMessage"/> class.
         /// </summary>
-        public ServerAckOperationMessage()
+        public ApolloServerAckOperationMessage()
             : base(ApolloMessageType.CONNECTION_ACK)
         {
         }

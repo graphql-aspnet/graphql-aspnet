@@ -9,19 +9,18 @@
 
 namespace GraphQL.AspNet.Messaging.Messages
 {
-    using System.Diagnostics;
+    using GraphQL.AspNet.Messaging.Messages.Payloads;
 
     /// <summary>
-    /// A message sent by the client when it wants to start a new subscription operation.
+    /// A message representing an unknown message type.
     /// </summary>
-    [DebuggerDisplay("Client Start (Id: {Id})")]
-    public class StartOperationMessage : ApolloMessage<GraphQueryData>
+    public class ApolloUnknownMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StartOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloUnknownMessage"/> class.
         /// </summary>
-        public StartOperationMessage()
-            : base(ApolloMessageType.START)
+        public ApolloUnknownMessage()
+            : base(ApolloMessageType.UNKNOWN)
         {
         }
     }

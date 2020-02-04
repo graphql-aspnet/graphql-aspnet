@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Messaging
             if (e.Message == null)
                 return;
 
-            var handler = OperationMessageFactory.CreateHandler<TSchema>(e.Message.Type);
+            var handler = ApolloMessageHandlerFactory.CreateHandler<TSchema>(e.Message.Type);
             var executionTask = handler.HandleMessage(this, e.Message);
 
             executionTask.Wait();
@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Messaging
             options.AllowTrailingCommas = true;
             options.ReadCommentHandling = JsonCommentHandling.Skip;
 
-            var partialMessage = JsonSerializer.Deserialize<AnonymousClientOperationMessage>(text, options);
+            var partialMessage = JsonSerializer.Deserialize<ApolloPartialClientMessage>(text, options);
 
             return partialMessage.Convert();
         }

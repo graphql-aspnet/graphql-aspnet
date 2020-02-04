@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Messaging
             }
             else
             {
-                _connection.SendMessage(new KeepAliveOperationMessage());
+                _connection.SendMessage(new ApolloKeepAliveOperationMessage());
             }
         }
 

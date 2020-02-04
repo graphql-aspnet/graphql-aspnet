@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Messaging.Messages.Payloads
     /// <summary>
     /// An object representing that no payload was or should be supplied with a message.
     /// </summary>
-    public class NullPayload
+    public class ApolloNullPayload
     {
     }
 }

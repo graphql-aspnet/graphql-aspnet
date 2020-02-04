@@ -59,11 +59,16 @@ namespace GraphQL.AspNet.Configuration
         public Type HttpMiddlewareComponentType { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets a singleton object that will create client proxies for this schema. If not provided,
+        /// <para>
+        /// Gets or sets a a type that will create client proxies for this schema. If not provided,
         /// the runtime will use the apollo graphql-over-websockets protocol and client stack. (Default: null).
+        /// </para>
+        /// <para>This type must implement <see cref="ISubscriptionClientFactory{TSchema}"/> and should be constructed
+        /// in a manner condusive to its use as a singleton component.
+        /// </para>
         /// </summary>
         /// <value>The type of the subscription client factory.</value>
-        public ISubscriptionClientFactory<TSchema> SubscriptionClientFactory { get; set; } = null;
+        public Type SubscriptionClientFactory { get; set; } = null;
 
         /// <summary>
         /// <para>Gets or sets the amount of time between GraphQL keep alive operation messages

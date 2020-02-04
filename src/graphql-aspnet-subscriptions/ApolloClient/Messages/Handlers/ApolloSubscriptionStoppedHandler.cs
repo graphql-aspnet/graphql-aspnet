@@ -9,23 +9,26 @@
 
 namespace GraphQL.AspNet.Messaging.Handlers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// A handler for processing client operation stop requests.
     /// </summary>
-    internal class UnknownMessageHandler : IGraphQLOperationMessageHandler
+    [DebuggerDisplay("Client Operation Stopped Handler")]
+    internal class ApolloSubscriptionStoppedHandler : ApolloMessageHandler
     {
         /// <summary>
-        /// Determines whether this instance can process the specified message.
+        /// Initializes a new instance of the <see cref="ApolloSubscriptionStoppedHandler"/> class.
         /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns><c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.</returns>
-        public bool CanHandleMessage(IGraphQLOperationMessage message)
+        public ApolloSubscriptionStoppedHandler()
         {
-            return true;
         }
 
         /// <summary>
@@ -34,11 +37,17 @@ namespace GraphQL.AspNet.Messaging.Handlers
         /// <param name="clientProxy">The client proxy.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        public Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+        public override Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
             ISubscriptionClientProxy clientProxy,
             IGraphQLOperationMessage message)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Gets the type of the message this handler can process.
+        /// </summary>
+        /// <value>The type of the message.</value>
+        public override ApolloMessageType MessageType => ApolloMessageType.STOP;
     }
 }

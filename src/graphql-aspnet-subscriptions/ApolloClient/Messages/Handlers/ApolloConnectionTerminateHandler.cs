@@ -10,45 +10,36 @@
 namespace GraphQL.AspNet.Messaging.Handlers
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>
-    /// A base handler for capturing common logic across all message handlers.
+    /// A handler for processing the final connection message sent by the client
+    /// when the client wishes to kill the connection.
     /// </summary>
-    internal abstract class BaseOperationMessageHandler : IGraphQLOperationMessageHandler
+    [DebuggerDisplay("Client Connection Terminated Handler")]
+    internal class ApolloConnectionTerminateHandler : ApolloMessageHandler
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseOperationMessageHandler"/> class.
-        /// </summary>
-        protected BaseOperationMessageHandler()
-        {
-        }
-
-        /// <summary>
-        /// Determines whether this instance can process the specified message.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns><c>true</c> if this instance can handle the specified message; otherwise, <c>false</c>.</returns>
-        public virtual bool CanHandleMessage(IGraphQLOperationMessage message)
-        {
-            return message != null && message.Type == this.MessageType;
-        }
-
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
         /// </summary>
         /// <param name="clientProxy">The client proxy.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        public abstract Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
+        public override Task<IEnumerable<IGraphQLOperationMessage>> HandleMessage(
             ISubscriptionClientProxy clientProxy,
-            IGraphQLOperationMessage message);
+            IGraphQLOperationMessage message)
+        {
+            return Task.FromResult(Enumerable.Empty<IGraphQLOperationMessage>());
+        }
 
         /// <summary>
         /// Gets the type of the message this handler can process.
         /// </summary>
         /// <value>The type of the message.</value>
-        public abstract ApolloMessageType MessageType { get; }
+        public override ApolloMessageType MessageType => ApolloMessageType.CONNECTION_TERMINATE;
     }
 }

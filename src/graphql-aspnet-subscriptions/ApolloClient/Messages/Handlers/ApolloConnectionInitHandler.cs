@@ -9,28 +9,19 @@
 
 namespace GraphQL.AspNet.Messaging.Handlers
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>
-    /// A handler for processing client operation stop requests.
+    /// A handler for processing the initial connection message sent by the client
+    /// after the websocket has been established.
     /// </summary>
-    [DebuggerDisplay("Client Operation Stopped Handler")]
-    internal class OperationStoppedHandler : BaseOperationMessageHandler
+    [DebuggerDisplay("Client Connection Initalized Handler")]
+    internal class ApolloConnectionInitHandler : ApolloMessageHandler
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OperationStoppedHandler"/> class.
-        /// </summary>
-        public OperationStoppedHandler()
-        {
-        }
-
         /// <summary>
         /// Handles the message, executing the logic of this handler against it.
         /// </summary>
@@ -41,13 +32,19 @@ namespace GraphQL.AspNet.Messaging.Handlers
             ISubscriptionClientProxy clientProxy,
             IGraphQLOperationMessage message)
         {
-            throw new NotImplementedException();
+            // kinda cludgy, need a better way without a 3rd party package
+            return Task.FromResult(
+                (IEnumerable<IGraphQLOperationMessage>)new List<IGraphQLOperationMessage>()
+                {
+                    new ApolloServerAckOperationMessage(),
+                    new ApolloKeepAliveOperationMessage(),
+                });
         }
 
         /// <summary>
         /// Gets the type of the message this handler can process.
         /// </summary>
         /// <value>The type of the message.</value>
-        public override ApolloMessageType MessageType => ApolloMessageType.STOP;
+        public override ApolloMessageType MessageType => ApolloMessageType.CONNECTION_INIT;
     }
 }

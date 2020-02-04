@@ -10,20 +10,18 @@
 namespace GraphQL.AspNet.Messaging.Messages
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Messaging.Messages.Payloads;
 
     /// <summary>
-    /// A message sent by the client when it wants to stop an inflight subscription operation.
+    /// A message sent by the client when it wants to start a new subscription operation.
     /// </summary>
-    ///
-    [DebuggerDisplay("Client Stop (Id: {Id})")]
-    public class StopOperationMessage : ApolloMessage<NullPayload>
+    [DebuggerDisplay("Apollo Subscription Start (Id: {Id})")]
+    public class ApolloSubscriptionStartMessage : ApolloMessage<GraphQueryData>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StopOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloSubscriptionStartMessage"/> class.
         /// </summary>
-        public StopOperationMessage()
-            : base(ApolloMessageType.STOP)
+        public ApolloSubscriptionStartMessage()
+            : base(ApolloMessageType.START)
         {
         }
     }

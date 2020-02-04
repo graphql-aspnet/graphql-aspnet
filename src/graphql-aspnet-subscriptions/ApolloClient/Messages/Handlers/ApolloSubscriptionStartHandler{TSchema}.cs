@@ -31,13 +31,13 @@ namespace GraphQL.AspNet.Messaging.Handlers
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema under which this handler is operating.</typeparam>
     [DebuggerDisplay("Client Operation Started Handler")]
-    internal class OperationStartHandler<TSchema> : BaseOperationMessageHandler
+    internal class ApolloSubscriptionStartHandler<TSchema> : ApolloMessageHandler
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="OperationStartHandler{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="ApolloSubscriptionStartHandler{TSchema}"/> class.
         /// </summary>
-        public OperationStartHandler()
+        public ApolloSubscriptionStartHandler()
         {
         }
 
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Messaging.Handlers
         {
             Validation.ThrowIfNull(clientProxy, nameof(clientProxy));
 
-            var startmessage = message as StartOperationMessage;
+            var startmessage = message as ApolloSubscriptionStartMessage;
             Validation.ThrowIfNull(startmessage, nameof(message));
 
             var resultMessages = new List<IGraphQLOperationMessage>();

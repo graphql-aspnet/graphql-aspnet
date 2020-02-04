@@ -16,13 +16,13 @@ namespace GraphQL.AspNet.Messaging.Messages
     /// A message recieved from the client after the establishment of the websocket to initialize the graphql
     /// session on the socket.
     /// </summary>
-    [DebuggerDisplay("Client Init")]
-    internal class ConnectionInitOperationMessage : ApolloMessage<NullPayload>
+    [DebuggerDisplay("Apollo Client Initialized")]
+    internal class ApolloConnectionInitMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionInitOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloConnectionInitMessage"/> class.
         /// </summary>
-        public ConnectionInitOperationMessage()
+        public ApolloConnectionInitMessage()
             : base(ApolloMessageType.CONNECTION_INIT)
         {
         }
