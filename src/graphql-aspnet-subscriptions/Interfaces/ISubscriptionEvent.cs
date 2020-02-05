@@ -18,21 +18,28 @@ namespace GraphQL.AspNet.Interfaces
     public interface ISubscriptionEvent
     {
         /// <summary>
-        /// Gets the data package that was supplied at the publisher when the event was raised.
+        /// Gets the data package that was supplied by the publisher when the event was raised.
         /// </summary>
         /// <value>The data.</value>
         object Data { get; }
 
         /// <summary>
-        /// Gets the name of the event that was raised.
+        /// Gets the schema-unique name of the event that was raised.
         /// </summary>
         /// <value>The name of the event.</value>
         string EventName { get; }
 
         /// <summary>
-        /// Gets the route of the method where this event was raised.
+        /// Gets the full field path representing the source method where this event was raised.
         /// </summary>
         /// <value>The source route.</value>
         GraphFieldPath SourceRoute { get; }
+
+        /// <summary>
+        /// Gets the globally unique schema id from which this event
+        /// was published..
+        /// </summary>
+        /// <value>The schema identifier.</value>
+        string SchemaId { get; }
     }
 }

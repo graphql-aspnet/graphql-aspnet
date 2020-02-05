@@ -51,5 +51,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The name.</value>
         string Name { get; }
+
+        /// <summary>
+        /// Gets a unique identifier that globally identifies this schema type on the server instance.
+        /// </summary>
+        /// <value>The identifier.</value>
+        string Id { get; }
     }
 }

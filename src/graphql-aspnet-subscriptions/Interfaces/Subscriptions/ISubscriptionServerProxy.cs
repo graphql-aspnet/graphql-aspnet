@@ -6,8 +6,11 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// An object that proxies the subscription server llowing your mutation/query operations to
     /// publish events that can then be sent to subscribed clients via graphql.
@@ -20,6 +23,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <param name="eventName">Unique name of the event.</param>
         /// <param name="data">The data package to send.</param>
-        void Publish(string eventName, object data);
+        /// <returns>Task.</returns>
+        Task Publish(string eventName, object data);
     }
 }
