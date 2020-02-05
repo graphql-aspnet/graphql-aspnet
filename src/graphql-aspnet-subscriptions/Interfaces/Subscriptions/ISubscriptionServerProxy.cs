@@ -9,19 +9,17 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     /// <summary>
-    /// An interface representing a pub/sub server contract to which events can be published
-    /// and automatically, and securely, routed to subscribers via graphql subscriptions.
+    /// An object that proxies the subscription server llowing your mutation/query operations to
+    /// publish events that can then be sent to subscribed clients via graphql.
     /// </summary>
-    public interface ISubscriptionServer
+    public interface ISubscriptionServerProxy
     {
         /// <summary>
-        /// Publishes the specified event with the supplied data to the subscription server
+        /// Publishes the specified event with the given data to the subscription server
         /// where it is delivered to authorized clients.
         /// </summary>
-        /// <param name="eventName">Name of the event.</param>
+        /// <param name="eventName">Unique name of the event.</param>
         /// <param name="data">The data package to send.</param>
         void Publish(string eventName, object data);
-
-        void Register();
     }
 }

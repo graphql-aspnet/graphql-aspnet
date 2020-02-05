@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Defaults
     /// <summary>
     /// The default implementation of graphql aspnet subscription server.
     /// </summary>
-    public class DefaultGraphQLSubscriptionServer : ISubscriptionServer
+    public class DefaultGraphQLSubscriptionServer : ISubscriptionServerProxy
     {
         public void Publish(string eventName, object data)
         {
