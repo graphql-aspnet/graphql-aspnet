@@ -154,6 +154,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         }
 
         [TestCaseSource(nameof(_inputValueResolverTestCases_WithValidData))]
+        [SetCulture("en-US")]
         public void DefaultScalarValueResolvers(string expressionText, string inputText, object expectedOutput)
         {
             var generator = new InputResolverMethodGenerator(this.CreateSchema());
@@ -177,6 +178,13 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = resolver.Resolve(inputValue);
 
             Assert.AreEqual(expectedOutput, result);
+        }
+
+        [TestCaseSource(nameof(_inputValueResolverTestCases_WithValidData))]
+        [SetCulture("de-DE")]
+        public void DefaultScalarValueResolvers_WithGermanCulture(string expressionText, string inputText, object expectedOutput)
+        {
+             DefaultScalarValueResolvers(expressionText, inputText, expectedOutput);
         }
 
         [TestCaseSource(nameof(_inputValueResolverTestCases_WithInvalidData))]
