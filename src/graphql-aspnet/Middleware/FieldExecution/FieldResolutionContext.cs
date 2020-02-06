@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A context passed to a field resolver to complete its resolution task and generate data for a field.

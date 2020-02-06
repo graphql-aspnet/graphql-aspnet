@@ -10,11 +10,13 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
-    /// The default implementation of graphql aspnet subscription proxy available to all 
-    /// graph controllers so they can 
+    /// The default implementation of graphql aspnet subscription proxy available exposed via an extension
+    /// method to all <see cref="GraphController"/> to publish events that will be transmitted
+    /// to the subscription server at the end of the current request.
     /// </summary>
     public class DefaultGraphQLSubscriptionServerProxy : ISubscriptionServerProxy
     {
