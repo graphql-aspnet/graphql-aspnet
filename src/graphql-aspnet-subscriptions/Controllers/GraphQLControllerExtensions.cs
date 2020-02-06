@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>Task.</returns>
         public static Task PublishSubscriptionEvent(this GraphController controller, string eventName, object dataObject)
         {
-            var schema = controller.sc
+            // var schema = controller.sc
             return Task.CompletedTask;
         }
     }

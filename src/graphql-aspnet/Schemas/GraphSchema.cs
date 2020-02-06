@@ -28,6 +28,10 @@ namespace GraphQL.AspNet.Schemas
         /// The human-friendly named assigned to the default graph schema type (this schema type).
         /// </summary>
         public const string DEFAULT_NAME = "-Default-";
+
+        /// <summary>
+        /// The unique schema identifer for <see cref="GraphSchema"/>.
+        /// </summary>
         public const string DEFAULT_SCHEMA_ID = "45a3bad5-32b0-46d9-aa49-1543c605a12f";
 
         /// <summary>
