@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Globalization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -50,7 +51,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// <returns>The final native value of the converted data.</returns>
         public override object Resolve(ReadOnlySpan<char> data)
         {
-            if (float.TryParse(data.ToString(), out var i))
+            if (float.TryParse(data.ToString(), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out var i))
                 return i;
 
             throw new UnresolvedValueException(data);
