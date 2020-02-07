@@ -21,12 +21,12 @@ namespace GraphQL.AspNet.Interfaces.Messaging
     public interface ISubscriptionClientProxy
     {
         /// <summary>
-        /// Performs initial setup and acknowledgement of this subscription instance and brokers messages
+        /// Performs acknowledges the setup of the subscription through the websocket and brokers messages
         /// between the client and the graphql runtime for its lifetime. When this method completes the socket is
         /// closed.
         /// </summary>
         /// <returns>Task.</returns>
-        Task MaintainConnection();
+        Task StartConnection();
 
         /// <summary>
         /// Gets the service provider instance assigned to this client for resolving object requests.

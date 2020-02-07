@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System.Globalization;
+    using System.Net;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -74,11 +75,11 @@ namespace GraphQL.AspNet.Defaults
                     as ISubscriptionClientFactory<TSchema>;
 
                 var subscription = subscriptionFactory.CreateClientProxy(context, webSocket, _options);
-                await subscription.MaintainConnection();
+                await subscription.StartConnection();
             }
             else
             {
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await context.Response.WriteAsync(
                     $"This route, '{_routePath}', is configured to only accept subscription operation requests " +
                     $"for target schema '{typeof(TSchema).FriendlyName()}'. These requests" +

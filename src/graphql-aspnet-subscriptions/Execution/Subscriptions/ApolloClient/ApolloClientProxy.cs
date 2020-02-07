@@ -98,13 +98,13 @@ namespace GraphQL.AspNet.Messaging
             }
         }
 
-         /// <summary>
-        /// Performs initial setup and acknowledgement of this subscription instance and brokers messages
+        /// <summary>
+        /// Performs acknowledges the setup of the subscription through the websocket and brokers messages
         /// between the client and the graphql runtime for its lifetime. When this method completes the socket is
         /// closed.
         /// </summary>
         /// <returns>Task.</returns>
-        public async Task MaintainConnection()
+        public async Task StartConnection()
         {
             this.MessageRecieved += this.ApolloSubscriptionRegistration_MessageRecieved;
 

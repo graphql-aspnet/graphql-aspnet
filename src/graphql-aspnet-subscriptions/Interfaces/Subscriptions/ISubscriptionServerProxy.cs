@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An object that proxies the subscription server llowing your mutation/query operations to
+    /// An object that proxies the subscription server allowing mutation/query operations to
     /// publish events that can then be sent to subscribed clients via graphql.
     /// </summary>
     public interface ISubscriptionServerProxy
