@@ -10,7 +10,9 @@
 namespace GraphQL.AspNet.ApolloClient
 {
     using System.Net.WebSockets;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Subscriptions.ApolloServer;
     using GraphQL.AspNet.Interfaces.Clients;
     using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -25,6 +27,17 @@ namespace GraphQL.AspNet.ApolloClient
     public class ApolloClientFactory<TSchema> : ISubscriptionClientFactory<TSchema>
             where TSchema : class, ISchema
     {
+        private readonly ApolloClientSupervisor<TSchema> _clientSupervisor;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApolloClientFactory{TSchema}" /> class.
+        /// </summary>
+        /// <param name="clientSupervisor">The client supervisor.</param>
+        public ApolloClientFactory(ApolloClientSupervisor<TSchema> clientSupervisor)
+        {
+            _clientSupervisor = Validation.ThrowIfNullOrReturn(clientSupervisor, nameof(clientSupervisor));
+        }
+
         /// <summary>
         /// Creates the client proxy using the underlying <see cref="T:Microsoft.AspNetCore.Http.HttpContext" /> and connected
         /// <see cref="T:System.Net.WebSockets.WebSocket" />.
@@ -35,7 +48,10 @@ namespace GraphQL.AspNet.ApolloClient
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
         public ISubscriptionClientProxy CreateClientProxy(HttpContext context, WebSocket connectedSocket, SchemaSubscriptionOptions<TSchema> options)
         {
-            return new ApolloClientProxy<TSchema>(context, connectedSocket, options);
+            var client = new ApolloClientProxy<TSchema>(context, connectedSocket, options);
+            _clientSupervisor.RegisterNewClient(client);
+
+            return client;
         }
     }
 }

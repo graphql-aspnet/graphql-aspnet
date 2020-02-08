@@ -23,18 +23,20 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
     using GraphQL.AspNet.Messaging.ServerMessages;
 
     /// <summary>
-    /// A manager to contain and act on the collection of clients known to this server.
+    /// An intermediary between an apollo client and the apollo server instance. This object
+    /// acts as a liason to hold client connections, respond to some house-keeping events and filter
+    /// data level events to ensure proper routing to any known clients.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
-    public class ApolloClientManager<TSchema>
+    /// <typeparam name="TSchema">The type of the schema this supervisor's clients are built for.</typeparam>
+    public class ApolloClientSupervisor<TSchema>
         where TSchema : class, ISchema
     {
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloClientManager{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="ApolloClientSupervisor{TSchema}"/> class.
         /// </summary>
-        public ApolloClientManager()
+        public ApolloClientSupervisor()
         {
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
         }
@@ -43,7 +45,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
         /// Register a newly connected subscription with the server so that it can start sending messages.
         /// </summary>
         /// <param name="client">The client.</param>
-        public void RegisterClient(ISubscriptionClientProxy client)
+        public void RegisterNewClient(ISubscriptionClientProxy client)
         {
             Validation.ThrowIfNull(client, nameof(client));
             Validation.ThrowIfNotCastable<ApolloClientProxy<TSchema>>(client.GetType(), nameof(client));

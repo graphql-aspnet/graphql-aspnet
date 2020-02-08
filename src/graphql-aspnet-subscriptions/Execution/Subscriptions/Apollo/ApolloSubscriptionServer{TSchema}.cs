@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces;
     using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -24,23 +25,16 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
     public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>
         where TSchema : class, ISchema
     {
-        private ApolloClientManager<TSchema> _clientManager;
+        private ApolloClientSupervisor<TSchema> _supervisor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloSubscriptionServer{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="ApolloSubscriptionServer{TSchema}" /> class.
         /// </summary>
-        public ApolloSubscriptionServer()
+        /// <param name="supervisor">The supervisor in charge of managing client connections for a
+        /// given schema.</param>
+        public ApolloSubscriptionServer(ApolloClientSupervisor<TSchema> supervisor)
         {
-            _clientManager = new ApolloClientManager<TSchema>();
-        }
-
-        /// <summary>
-        /// Registers a newly connected client with the server.
-        /// </summary>
-        /// <param name="client">The client.</param>
-        public void RegisterClient(ISubscriptionClientProxy client)
-        {
-            _clientManager.RegisterClient(client);
+            _supervisor = Validation.ThrowIfNullOrReturn(supervisor, nameof(supervisor));
         }
 
         /// <summary>
