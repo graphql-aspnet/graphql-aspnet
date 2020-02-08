@@ -47,8 +47,10 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionAttribute" /> class.
         /// </summary>
+        /// <param name="eventName">The schema-unique name of the event that published whenever
+        /// subscribed clients should receive new data.</param>
         /// <param name="returnType">The type of the data object returned from this method. If this type implements
-        /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
+        /// <see cref="IGraphUnionProxy" /> this field will be declared as returning the union defined by the type.</param>
         public SubscriptionAttribute(string eventName, Type returnType)
         : this(eventName, Constants.Routing.ACTION_METHOD_META_NAME, returnType)
         {
@@ -71,6 +73,8 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionAttribute" /> class.
         /// </summary>
+        /// <param name="eventName">The schema-unique name of the event that published whenever
+        /// subscribed clients should receive new data.</param>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         /// <param name="returnType">The type of the data object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>

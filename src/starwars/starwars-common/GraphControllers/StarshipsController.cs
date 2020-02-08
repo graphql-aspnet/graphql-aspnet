@@ -69,13 +69,13 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// A subscription to which any altered starship is sent whenever any
         /// user makes a change to it. Starships that are deleted are not communicated through this subscription.
         /// </summary>
-        /// <param name="ship">The ship that was just updated.</param>
+        /// <param name="eventData">The event data.</param>
         /// <param name="nameLike">A name filter, supplied by the subscriber to determine which
         /// ships they actually recieve.</param>
         /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
         [SubscriptionRoot("starship", typeof(Starship))]
         [Description("Returns an updated starship anytime it is altered.")]
-        public async Task<IGraphActionResult> StarshipUpdated(ISubscriptionEvent eventData, string nameLike = "*")
+        public async Task<IGraphActionResult> StarshipUpdated(Starship eventData, string nameLike = "*")
         {
             return null;
         }

@@ -10,13 +10,17 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// An interface representing a subscription server that can accept events published
-    /// by other graphql operations and process them for connected subscribers.
+    /// The subscription manager coordinates connected clients via their <see cref="ISubscriptionServer{TSchema}" />
+    /// and routes recieved events to the appropriate clients as needed.
     /// </summary>
-    public interface ISubscriptionServer
+    /// <typeparam name="TSchema">The schema type this client manager is registered to handle.</typeparam>
+    public interface ISubscriptionClientManager<TSchema>
+        where TSchema : class, ISchema
     {
         /// <summary>
         /// Register a newly connected subscription with the server so that it can start sending messages.
@@ -26,11 +30,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task RegisterSubscription(ISubscriptionClientProxy client);
 
         /// <summary>
-        /// Receives the event (packaged and published by the proxy) and performs
-        /// the required work to send it to connected clients.
+        /// Sends the event data to clients.
         /// </summary>
-        /// <param name="subscriptionEvent">A subscription event.</param>
+        /// <param name="eventData">The event data.</param>
         /// <returns>Task.</returns>
-        Task ReceiveEvent(ISubscriptionEvent subscriptionEvent);
+        Task SendEventDataToClients(SubscriptionEvent eventData);
     }
 }

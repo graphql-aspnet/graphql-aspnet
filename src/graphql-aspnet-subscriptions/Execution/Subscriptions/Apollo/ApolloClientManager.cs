@@ -13,30 +13,32 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
     using GraphQL.AspNet.Interfaces;
     using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A subscription server capable of filtering and sending new data to
-    /// subscribed clients using the apollo graphql messaging protocol.
+    /// A client manager (for routing data to clients) based on the apollo graphql over websocket
+    /// protocol.
     /// </summary>
-    public class ApolloSubscriptionServer : ISubscriptionServer
+    /// <typeparam name="TSchema">The schema type this client manager is registered to handle.</typeparam>
+    public class ApolloClientManager<TSchema> : ISubscriptionClientManager<TSchema>
+        where TSchema : class, ISchema
     {
-        /// <summary>
-        /// Receives the event (packaged and published by the proxy) and performs
-        /// the required work to send it to connected clients.
-        /// </summary>
-        /// <param name="subscriptionEvent">A subscription event.</param>
-        /// <returns>Task.</returns>
-        public Task ReceiveEvent(ISubscriptionEvent subscriptionEvent)
-        {
-            throw new System.NotImplementedException();
-        }
-
         /// <summary>
         /// Register a newly connected subscription with the server so that it can start sending messages.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <returns>Task.</returns>
         public Task RegisterSubscription(ISubscriptionClientProxy client)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Sends the event data to clients.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        /// <returns>Task.</returns>
+        public Task SendEventDataToClients(SubscriptionEvent eventData)
         {
             throw new System.NotImplementedException();
         }
