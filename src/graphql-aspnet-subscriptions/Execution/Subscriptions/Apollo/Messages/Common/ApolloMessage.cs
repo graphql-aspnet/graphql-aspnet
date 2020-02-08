@@ -7,32 +7,45 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Messaging
+namespace GraphQL.AspNet.Messaging
 {
-    using GraphQL.AspNet.Messaging;
+    using System;
+    using System.Text.Json.Serialization;
+    using GraphQL.AspNet.Interfaces.Messaging;
 
     /// <summary>
-    /// A base representation of a graphql message sent or recieved over a presistent connection. This interface does not
-    /// include custom payload information.
+    /// A common base class for all apollo messages.
     /// </summary>
-    public interface IApolloMessage
+    public abstract class ApolloMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApolloMessage" /> class.
+        /// </summary>
+        /// <param name="messageType">Type of the message.</param>
+        public ApolloMessage(ApolloMessageType messageType)
+        {
+            this.Type = messageType;
+            this.Id = null;
+        }
+
         /// <summary>
         /// Gets or sets the identifier for the scoped operation started by a client.
         /// </summary>
         /// <value>The identifier.</value>
-        string Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the message, indicating expected payload types.
         /// </summary>
         /// <value>The type.</value>
-        ApolloMessageType Type { get; set; }
+        [JsonConverter(typeof(ApolloMessageTypeConverter))]
+        public ApolloMessageType Type { get; set; }
 
         /// <summary>
         /// Gets the payload of the message as a general object.
         /// </summary>
         /// <value>The payload object.</value>
-        object PayloadObject { get; }
+        [JsonIgnore]
+        public abstract object PayloadObject { get; }
     }
 }

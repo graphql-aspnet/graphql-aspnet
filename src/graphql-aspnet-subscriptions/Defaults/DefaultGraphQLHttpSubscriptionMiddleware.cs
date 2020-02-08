@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Clients;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -74,8 +75,14 @@ namespace GraphQL.AspNet.Defaults
                 var subscriptionFactory = context.RequestServices.GetRequiredService(typeof(ISubscriptionClientFactory<TSchema>))
                     as ISubscriptionClientFactory<TSchema>;
 
-                var subscription = subscriptionFactory.CreateClientProxy(context, webSocket, _options);
-                await subscription.StartConnection();
+                var subscriptionServer = context.RequestServices.GetRequiredService(typeof(ISubscriptionServer<TSchema>))
+                    as ISubscriptionServer<TSchema>;
+
+                var subscriptionClient = subscriptionFactory.CreateClientProxy(context, webSocket, _options);
+                subscriptionServer.RegisterClient(subscriptionClient);
+
+                // hold the client connection until its released
+                await subscriptionClient.StartConnection();
             }
             else
             {

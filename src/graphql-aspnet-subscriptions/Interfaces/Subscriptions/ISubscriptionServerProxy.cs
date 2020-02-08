@@ -25,9 +25,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions.Server
         /// Raises a new event to the subscription server so that it may send the supplied
         /// data to listening clients.
         /// </summary>
+        /// <typeparam name="TData">The type of the data being sent.</typeparam>
         /// <param name="eventName">The schema-unique name of the event.</param>
         /// <param name="dataObject">The data object to send.</param>
         /// <returns>Task.</returns>
-        Task PublishEvent(string eventName, object dataObject);
+        Task PublishEvent<TData>(string eventName, TData dataObject);
     }
 }

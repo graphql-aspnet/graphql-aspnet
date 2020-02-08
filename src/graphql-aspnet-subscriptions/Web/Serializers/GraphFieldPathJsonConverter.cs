@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Web.Serializers
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -28,7 +29,26 @@ namespace GraphQL.AspNet.Web.Serializers
         /// <returns>The converted value.</returns>
         public override GraphFieldPath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (typeToConvert != typeof(GraphFieldPath))
+            {
+                throw new JsonException($"The {typeof(GraphFieldPathJsonConverter).FriendlyName()} cannot convert {typeToConvert.FriendlyName()}.");
+            }
+
+            string fieldPath;
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                fieldPath = reader.GetString();
+            }
+            else if (reader.TokenType == JsonTokenType.Null)
+            {
+                fieldPath = null;
+            }
+            else
+            {
+                throw new JsonException($"The {typeof(GraphFieldPathJsonConverter).FriendlyName()} expects to deserialize a string containing the field path.");
+            }
+
+            return new GraphFieldPath(fieldPath);
         }
 
         /// <summary>
@@ -39,7 +59,10 @@ namespace GraphQL.AspNet.Web.Serializers
         /// <param name="options">An object that specifies serialization options to use.</param>
         public override void Write(Utf8JsonWriter writer, GraphFieldPath value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (value == null)
+                writer.WriteNullValue();
+            else
+                writer.WriteStringValue(value.Path);
         }
     }
 }

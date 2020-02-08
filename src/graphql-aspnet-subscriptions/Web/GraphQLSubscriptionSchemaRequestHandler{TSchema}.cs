@@ -18,11 +18,11 @@ namespace GraphQL.AspNet.Web
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// A publically available request delegate that acts as the primary entry point for receiving a graph query from an HTTP Request
-    /// and processing it against the runtime.
+    /// This handler is registered to the ASP.NET runtime to field requests for subscription schema
+    /// information from an out-of-process subscription server.
     /// </summary>
     /// <typeparam name="TSchema">The schema type this handler works for.</typeparam>
-    public class GraphQueryHandler<TSchema>
+    public class GraphQLSubscriptionSchemaRequestHandler<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -32,14 +32,14 @@ namespace GraphQL.AspNet.Web
         /// <returns>Task.</returns>
         private Task Invoke(HttpContext context)
         {
-            var processor = context.RequestServices.GetService(typeof(IGraphQLHttpProcessor<TSchema>))
-                as IGraphQLHttpProcessor<TSchema>;
+            var processor = context.RequestServices.GetService(typeof(ISubscriptionSchemaHttpProcessor<TSchema>))
+                as ISubscriptionSchemaHttpProcessor<TSchema>;
 
             if (processor == null)
             {
                 throw new InvalidOperationException(
-                    $"No {nameof(IGraphQLHttpProcessor)} of type " +
-                    $"{typeof(IGraphQLHttpProcessor<TSchema>).FriendlyName()} " +
+                    $"No {nameof(ISubscriptionSchemaHttpProcessor)} of type " +
+                    $"{typeof(ISubscriptionSchemaHttpProcessor<TSchema>).FriendlyName()} " +
                     "is registered with the DI container. The GraphQL runtime cannot invoke the schema.");
             }
 

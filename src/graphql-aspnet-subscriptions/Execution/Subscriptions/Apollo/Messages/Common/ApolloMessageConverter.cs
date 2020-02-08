@@ -16,20 +16,20 @@ namespace GraphQL.AspNet.Messaging.Messages.Common
     using GraphQL.AspNet.Interfaces.Messaging;
 
     /// <summary>
-    /// A general converter for serializing an <see cref="IApolloMessage"/> to json.
+    /// A general converter for serializing an <see cref="ApolloMessage"/> to json.
     /// </summary>
-    public class ApolloMessageConverter : JsonConverter<IApolloMessage>
+    public class ApolloMessageConverter : JsonConverter<ApolloMessage>
     {
         /// <summary>
-        /// Reads and converts the JSON to type <see cref="IApolloMessage"/>. Not Supported.
+        /// Reads and converts the JSON to type <see cref="ApolloMessage"/>. Not Supported.
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="typeToConvert">The type to convert.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
         /// <returns>The converted value.</returns>
-        public override IApolloMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override ApolloMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotSupportedException($"{typeof(IApolloMessage).FriendlyName()} cannot be deserialized.");
+            throw new NotSupportedException($"{typeof(ApolloMessage).FriendlyName()} cannot be deserialized.");
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Messaging.Messages.Common
         /// <param name="writer">The writer to write to.</param>
         /// <param name="value">The value to convert to JSON.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
-        public override void Write(Utf8JsonWriter writer, IApolloMessage value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, ApolloMessage value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
 

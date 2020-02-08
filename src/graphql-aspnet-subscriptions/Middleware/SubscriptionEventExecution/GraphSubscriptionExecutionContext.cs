@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Middleware.SubscriptionExecution
     using GraphQL.AspNet.Interfaces.Middleware;
 
     /// <summary>
-    /// An execution context carried throughout the operation of completing one event recieved by the
-    /// subscription server.
+    /// An execution context carried throughout the subscription execution pipeline to
+    /// complete processing of one event received by this subscription server.
     /// </summary>
     public class GraphSubscriptionExecutionContext : BaseGraphMiddlewareContext
     {

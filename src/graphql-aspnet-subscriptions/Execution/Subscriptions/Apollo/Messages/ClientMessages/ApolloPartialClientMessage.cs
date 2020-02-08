@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Messaging.Messages
         /// Converts this instance into its final, payload focused message.
         /// </summary>
         /// <returns>IGraphQLOperationMessage.</returns>
-        public IApolloMessage Convert()
+        public ApolloMessage Convert()
         {
             switch (this.Type)
             {
