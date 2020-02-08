@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ApolloClient
 
     /// <summary>
     /// A abstract factory for generating instances of apollo client proxies to communicate
-    /// using the apollo graphql over websocket protocol.
+    /// using the apollo graphql-over-websocket protocol.
     /// </summary>
     /// <typeparam name="TSchema">The type of the t schema.</typeparam>
     public class ApolloClientFactory<TSchema> : ISubscriptionClientFactory<TSchema>
@@ -29,8 +29,8 @@ namespace GraphQL.AspNet.ApolloClient
         /// Creates the client proxy using the underlying <see cref="T:Microsoft.AspNetCore.Http.HttpContext" /> and connected
         /// <see cref="T:System.Net.WebSockets.WebSocket" />.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="connectedSocket">The connected socket.</param>
+        /// <param name="context">The original http context that initiated the web socket.</param>
+        /// <param name="connectedSocket">The connected socket resolved by the aspnet runtime.</param>
         /// <param name="options">The configured options for subscriptions for the target schema.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
         public ISubscriptionClientProxy CreateClientProxy(HttpContext context, WebSocket connectedSocket, SchemaSubscriptionOptions<TSchema> options)
