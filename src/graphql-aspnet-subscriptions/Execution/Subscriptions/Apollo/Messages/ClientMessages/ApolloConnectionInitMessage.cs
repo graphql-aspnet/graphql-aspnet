@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages
     /// session on the socket.
     /// </summary>
     [DebuggerDisplay("Apollo Client Initialized")]
-    internal class ApolloConnectionInitMessage : ApolloMessage<ApolloNullPayload>
+    public class ApolloConnectionInitMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloConnectionInitMessage"/> class.

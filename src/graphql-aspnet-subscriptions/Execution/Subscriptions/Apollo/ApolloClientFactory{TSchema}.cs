@@ -41,12 +41,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <see cref="T:System.Net.WebSockets.WebSocket" />.
         /// </summary>
         /// <param name="context">The original http context that initiated the web socket.</param>
-        /// <param name="connectedSocket">The connected socket resolved by the aspnet runtime.</param>
+        /// <param name="socketProxy">The connected socket resolved by the aspnet runtime.</param>
         /// <param name="options">The configured options for subscriptions for the target schema.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public ISubscriptionClientProxy CreateClientProxy(HttpContext context, WebSocket connectedSocket, SchemaSubscriptionOptions<TSchema> options)
+        public ISubscriptionClientProxy CreateClientProxy(HttpContext context, IClientConnection socketProxy, SchemaSubscriptionOptions<TSchema> options)
         {
-            var client = new ApolloClientProxy<TSchema>(context, connectedSocket, options);
+            var client = new ApolloClientProxy<TSchema>(context.RequestServices, context.User, socketProxy, options);
             _clientSupervisor.RegisterNewClient(client);
 
             return client;

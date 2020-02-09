@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// Extension methods for working with web sockets.
@@ -28,11 +29,14 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <param name="messageReceiveBufferSize">Size of the message receive buffer.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task&lt;System.ValueTuple&lt;WebSocketReceiveResult, IEnumerable&lt;System.Byte&gt;&gt;&gt;.</returns>
-        public static async Task<(WebSocketReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(this WebSocket socket, int messageReceiveBufferSize = 4096, CancellationToken cancelToken = default(CancellationToken))
+        public static async Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(
+            this IClientConnection socket,
+            int messageReceiveBufferSize = 4096,
+            CancellationToken cancelToken = default(CancellationToken))
         {
             Validation.ThrowIfNull(socket, nameof(socket));
 
-            WebSocketReceiveResult response;
+            IClientConnectionReceiveResult response;
             var message = new List<byte>();
 
             var buffer = new byte[messageReceiveBufferSize];

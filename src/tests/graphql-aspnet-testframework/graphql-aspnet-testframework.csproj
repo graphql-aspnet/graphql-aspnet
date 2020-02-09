@@ -39,4 +39,8 @@
     <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="WebSockets\" />
+  </ItemGroup>
+
 </Project>

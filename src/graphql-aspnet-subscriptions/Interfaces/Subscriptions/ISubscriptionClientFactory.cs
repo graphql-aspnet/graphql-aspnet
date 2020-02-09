@@ -32,6 +32,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="connectedSocket">The connected socket resolved by the aspnet runtime.</param>
         /// <param name="options">The configured options for subscriptions for the target schema.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        ISubscriptionClientProxy CreateClientProxy(HttpContext context, WebSocket connectedSocket, SchemaSubscriptionOptions<TSchema> options);
+        ISubscriptionClientProxy CreateClientProxy(HttpContext context, IClientConnection connection, SchemaSubscriptionOptions<TSchema> options);
     }
 }

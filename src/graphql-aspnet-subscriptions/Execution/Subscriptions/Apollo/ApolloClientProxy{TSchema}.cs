@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
@@ -36,9 +37,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     public class ApolloClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
         where TSchema : class, ISchema
     {
-        private SchemaSubscriptionOptions<TSchema> _options;
-        private HttpContext _context;
-        private WebSocket _socket;
+        private readonly bool _enableKeepAlive;
+        private readonly SchemaSubscriptionOptions<TSchema> _options;
+        private IClientConnection _connection;
         private ApolloMessageRecievedDelegate _messageDelegate;
 
         /// <summary>
@@ -55,14 +56,25 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientProxy{TSchema}" /> class.
         /// </summary>
-        /// <param name="context">The governing http context for this connection.</param>
-        /// <param name="socket">The socket connection with the client.</param>
+        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="clientConnection">The underlying client connection for apollo to manage.</param>
         /// <param name="options">The options used to configure the registration.</param>
-        public ApolloClientProxy(HttpContext context, WebSocket socket, SchemaSubscriptionOptions<TSchema> options)
+        /// <param name="enableKeepAlive">if set to <c>true</c> this client proxy will ensure
+        /// apollo specific keep alives are sent to the underlying connection on an appropriate schedule.</param>
+        public ApolloClientProxy(
+            IServiceProvider serviceProvider,
+            ClaimsPrincipal user,
+            IClientConnection clientConnection,
+            SchemaSubscriptionOptions<TSchema> options,
+            bool enableKeepAlive = true)
         {
-            _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
-            _socket = Validation.ThrowIfNullOrReturn(socket, nameof(socket));
+            this.User = user;
+            this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
+
+            _connection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _enableKeepAlive = enableKeepAlive;
         }
 
         /// <summary>
@@ -87,27 +99,31 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
             // register the socket with an "apollo level" keep alive monitor
             // that will send structured keep alive messages down the pipe
-            var keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor(this, _options.KeepAliveInterval);
-            keepAliveTimer.Start();
+            ApolloClientConnectionKeepAliveMonitor keepAliveTimer = null;
+            if (_enableKeepAlive)
+            {
+                keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor(this, _options.KeepAliveInterval);
+                keepAliveTimer.Start();
+            }
 
-            (var result, var bytes) = await _socket.ReceiveFullMessage(_options.MessageBufferSize);
+            (var result, var bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
 
             // message dispatch loop
             while (!result.CloseStatus.HasValue)
             {
-                if (result.MessageType == WebSocketMessageType.Text)
+                if (result.MessageType == ClientMessageType.Text)
                 {
                     var message = this.DeserializeMessage(bytes);
                     await _messageDelegate?.Invoke(this, message);
                 }
 
-                (result, bytes) = await _socket.ReceiveFullMessage(_options.MessageBufferSize);
+                (result, bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
             }
 
             // shut down the socket and the apollo-protocol-specific keep alive
-            keepAliveTimer.Stop();
-            await _socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
-            _socket = null;
+            keepAliveTimer?.Stop();
+            await _connection.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+            _connection = null;
 
             this.ConnectionClosed?.Invoke(this, new EventArgs());
 
@@ -181,11 +197,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
             // graphql is defined to communcate in UTF-8
             var bytes = JsonSerializer.SerializeToUtf8Bytes(message, typeof(ApolloMessage), options);
-            if (_socket.State == WebSocketState.Open)
+            if (_connection.State == ClientConnectionState.Open)
             {
-                return _socket.SendAsync(
+                return _connection.SendAsync(
                     new ArraySegment<byte>(bytes, 0, bytes.Length),
-                    WebSocketMessageType.Text,
+                    ClientMessageType.Text,
                     true,
                     default);
             }
@@ -196,21 +212,21 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         }
 
         /// <summary>
-        /// Gets the state of the underlying websocket connection.
+        /// Gets the state of the underlying connection.
         /// </summary>
         /// <value>The state.</value>
-        public WebSocketState State => _socket.State;
+        public ClientConnectionState State => _connection.State;
 
         /// <summary>
         /// Gets the service provider instance assigned to this client for resolving object requests.
         /// </summary>
         /// <value>The service provider.</value>
-        public IServiceProvider ServiceProvider => _context.RequestServices;
+        public IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Gets the <see cref="ClaimsPrincipal" /> representing the user of the client.
         /// </summary>
         /// <value>The user.</value>
-        public ClaimsPrincipal User => _context.User;
+        public ClaimsPrincipal User { get; }
     }
 }

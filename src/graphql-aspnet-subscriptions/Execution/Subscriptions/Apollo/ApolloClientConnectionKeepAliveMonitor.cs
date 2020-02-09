@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
         private void TimeForKeepAlive(object state)
         {
-            if (_connection == null || _connection.State != WebSocketState.Open)
+            if (_connection == null || _connection.State != ClientConnectionState.Open)
             {
                 this.Stop();
             }

@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Net.WebSockets;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
 
     /// <summary>
     /// An interface representing an established connection to a client that can process
@@ -41,10 +42,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         ClaimsPrincipal User { get; }
 
         /// <summary>
-        /// Gets the state of the underlying websocket connection.
+        /// Gets the state of the underlying connection.
         /// </summary>
         /// <value>The state.</value>
-        WebSocketState State { get; }
+        ClientConnectionState State { get; }
 
         /// <summary>
         /// Serializes, encodes and sends the given message down to the client.
