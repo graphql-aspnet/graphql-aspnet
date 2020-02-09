@@ -17,10 +17,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
     public abstract class ApolloMessage
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ApolloMessage"/> class.
+        /// </summary>
+        public ApolloMessage()
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ApolloMessage" /> class.
         /// </summary>
         /// <param name="messageType">Type of the message.</param>
-        public ApolloMessage(ApolloMessageType messageType)
+        protected ApolloMessage(ApolloMessageType messageType)
         {
             this.Type = messageType;
             this.Id = null;

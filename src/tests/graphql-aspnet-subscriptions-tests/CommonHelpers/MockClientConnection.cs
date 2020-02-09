@@ -12,8 +12,11 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Text;
+    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using Castle.DynamicProxy.Generators;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
@@ -28,6 +31,9 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
     {
         // a queue of messages send by the client and recieved server side
         private Queue<MockClientMessage> _incomingMessageQueue;
+
+        // a queue of message sent by the server to the client
+        private Queue<MockClientMessage> _outgoingMessageQueue;
         private MockClientMessage _currentMessage;
 
         private bool _connectionClosed;
@@ -39,7 +45,7 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
         {
             _incomingMessageQueue = new Queue<MockClientMessage>();
 
-            this.MessagesSentToClient = new List<MockClientMessage>();
+            _outgoingMessageQueue = new Queue<MockClientMessage>();
             this.State = ClientConnectionState.Open;
         }
 
@@ -48,8 +54,24 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
             this.QueueClientMessage(new MockClientRemoteCloseMessage());
         }
 
+        internal T DequeueReturnMessageTo<T>()
+            where T : class
+        {
+            if (_outgoingMessageQueue.Count == 0)
+                return null;
+
+            var message = _outgoingMessageQueue.Dequeue();
+            var str = Encoding.UTF8.GetString(message.Data);
+
+            var options = new JsonSerializerOptions();
+            options.PropertyNameCaseInsensitive = true;
+            options.AllowTrailingCommas = true;
+
+            return System.Text.Json.JsonSerializer.Deserialize<T>(str, options);
+        }
+
         /// <summary>
-        /// Simulates the client closing this socket connection.
+        /// Simulates a client message being sent to the server.
         /// </summary>
         /// <param name="message">The message.</param>
         public void QueueClientMessage(MockClientMessage message)
@@ -108,6 +130,10 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
                 await this.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, cancelToken);
             }
 
+            // clear the message from the being read if its complete
+            if (!hasRemainingBytes)
+                _currentMessage = null;
+
             return result;
         }
 
@@ -121,17 +147,14 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
         /// <returns>Task.</returns>
         public Task SendAsync(ArraySegment<byte> buffer, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
-            var message = new MockClientMessage(buffer.ToArray(), messageType,  endOfMessage);
-            this.MessagesSentToClient.Add(message);
+            var message = new MockClientMessage(buffer.ToArray(), messageType, endOfMessage);
+            lock (_outgoingMessageQueue)
+            {
+                _outgoingMessageQueue.Enqueue(message);
+            }
+
             return Task.CompletedTask;
         }
-
-        /// <summary>
-        /// Gets a collection of messages that would ahve been transmitted to the client if one
-        /// was attached.
-        /// </summary>
-        /// <value>The messages sent to client.</value>
-        public List<MockClientMessage> MessagesSentToClient { get; }
 
         /// <summary>
         /// Getsa description applied by the remote endpoint to describe the why the connection was closed.
@@ -150,5 +173,11 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
         /// </summary>
         /// <value>The current state of this connection.</value>
         public ClientConnectionState State { get; private set; }
+
+        /// <summary>
+        /// Gets the number of messages recorded as sent by the server to the client.
+        /// </summary>
+        /// <value>The response message count.</value>
+        public int ResponseMessageCount => _outgoingMessageQueue.Count;
     }
 }
