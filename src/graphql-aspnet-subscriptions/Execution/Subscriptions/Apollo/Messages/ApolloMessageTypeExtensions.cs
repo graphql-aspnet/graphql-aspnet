@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages
 {
     using System;
 

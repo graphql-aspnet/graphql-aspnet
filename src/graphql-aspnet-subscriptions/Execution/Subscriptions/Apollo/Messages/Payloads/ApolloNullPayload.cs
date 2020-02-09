@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging.Messages.Payloads
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Payloads
 {
     /// <summary>
     /// An object representing that no payload was or should be supplied with a message.

@@ -7,19 +7,20 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Messaging;
-    using GraphQL.AspNet.Messaging.Messages;
-    using GraphQL.AspNet.Messaging.ServerMessages;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// An intermediary between an apollo client and the apollo server instance. This object

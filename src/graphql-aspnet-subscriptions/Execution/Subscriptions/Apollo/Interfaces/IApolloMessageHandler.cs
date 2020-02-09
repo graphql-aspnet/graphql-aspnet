@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Messaging
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Interfaces
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Messaging;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// An interface to define an object that can process <see cref="ApolloMessage"/>.

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages
 {
     /// <summary>
     /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>

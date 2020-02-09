@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.SubscriptionExecution
+namespace GraphQL.AspNet.Middleware.SubscriptionEventExecution
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Configuration;

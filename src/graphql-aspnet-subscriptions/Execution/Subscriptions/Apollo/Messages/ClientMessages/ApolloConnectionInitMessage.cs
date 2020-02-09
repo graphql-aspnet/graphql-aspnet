@@ -7,10 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging.Messages
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Messaging.Messages.Payloads;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Payloads;
 
     /// <summary>
     /// A message recieved from the client after the establishment of the websocket to initialize the graphql

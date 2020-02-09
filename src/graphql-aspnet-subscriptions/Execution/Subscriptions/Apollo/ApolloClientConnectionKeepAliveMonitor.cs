@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System;
     using System.Net.WebSockets;
     using System.Threading;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Messaging.ServerMessages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// Sends a periodic keep-alive message that conforms to the expectations of the apollo graphql-over-websockets
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Messaging
         public void Start()
         {
             _timer?.Dispose();
-            _timer = new Timer(TimeForKeepAlive, null, _interval, _interval);
+            _timer = new Timer(this.TimeForKeepAlive, null, _interval, _interval);
         }
 
         /// <summary>

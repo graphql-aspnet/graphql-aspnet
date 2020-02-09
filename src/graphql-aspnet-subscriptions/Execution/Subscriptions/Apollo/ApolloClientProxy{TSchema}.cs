@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System;
     using System.Collections.Generic;
@@ -21,10 +21,11 @@ namespace GraphQL.AspNet.Messaging
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Messaging.Messages;
-    using GraphQL.AspNet.Messaging.Messages.Common;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

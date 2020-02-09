@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.SubscriptionExecution
+namespace GraphQL.AspNet.Middleware.SubscriptionEventExecution
 {
     using System;
     using System.Security.Claims;

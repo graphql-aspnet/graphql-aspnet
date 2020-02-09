@@ -7,16 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ApolloClient
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System.Net.WebSockets;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions.ApolloServer;
-    using GraphQL.AspNet.Interfaces.Clients;
-    using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Messaging;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

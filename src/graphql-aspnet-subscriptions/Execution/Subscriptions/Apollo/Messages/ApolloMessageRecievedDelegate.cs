@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
 
     /// <summary>
     /// A handler used when subscribing to messages raised by a connected client using the

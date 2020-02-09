@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.Subscriptions.Tests.Configuration.ConfigurationTestData
+namespace GraphQL.Subscrptions.Tests.Configuration.ConfigurationTestData
 {
     using GraphQL.AspNet.Attributes;
 

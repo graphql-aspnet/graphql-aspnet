@@ -7,7 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.AspNet.Tests.Framework
 {
     using System;

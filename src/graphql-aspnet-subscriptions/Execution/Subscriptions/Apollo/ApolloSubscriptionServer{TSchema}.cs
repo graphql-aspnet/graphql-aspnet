@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;

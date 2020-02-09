@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Middleware
 {
-    using GraphQL.AspNet.Middleware.SubscriptionExecution;
+    using GraphQL.AspNet.Middleware.SubscriptionEventExecution;
 
     /// <summary>
     /// A middleware component in the subscription event processing pipeline.

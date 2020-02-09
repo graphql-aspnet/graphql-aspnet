@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging.ServerMessages
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages
 {
-    using GraphQL.AspNet.Messaging.Messages.Payloads;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Payloads;
 
     /// <summary>
     /// A message sent by the server to a client to acknowledge receipt of a message when no other

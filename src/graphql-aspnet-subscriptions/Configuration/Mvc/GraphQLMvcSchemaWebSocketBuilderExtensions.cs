@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
-        /// <param name="action">The action.</param>
+        /// <param name="options">An action function to configure the subscription options.</param>
         /// <returns>ISchemaBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<TSchema> AddSubscriptions<TSchema>(
             this ISchemaBuilder<TSchema> schemaBuilder,

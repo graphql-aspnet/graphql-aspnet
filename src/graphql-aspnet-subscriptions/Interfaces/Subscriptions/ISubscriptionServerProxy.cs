@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Subscriptions.Server
+namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers;

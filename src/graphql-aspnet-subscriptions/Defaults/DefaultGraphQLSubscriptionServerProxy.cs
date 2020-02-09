@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Defaults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.Subscriptions.Server;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

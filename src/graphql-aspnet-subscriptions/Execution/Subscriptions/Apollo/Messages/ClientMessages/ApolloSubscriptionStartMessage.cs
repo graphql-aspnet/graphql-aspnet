@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging.Messages
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages
 {
     using System.Diagnostics;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
 
     /// <summary>
     /// A message sent by the client when it wants to start a new subscription operation.

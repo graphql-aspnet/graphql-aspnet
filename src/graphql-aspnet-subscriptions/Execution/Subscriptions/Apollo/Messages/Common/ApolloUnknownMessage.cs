@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging.Messages
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
 {
-    using GraphQL.AspNet.Messaging.Messages.Payloads;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Payloads;
 
     /// <summary>
     /// A message representing an unknown message type.

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Messaging.Messages.Common
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
 {
     using System;
     using System.Text.Json;
