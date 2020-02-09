@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Interfaces;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.StarwarsAPI.Common.Model;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;

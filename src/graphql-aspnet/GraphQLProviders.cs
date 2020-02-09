@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet
 {
-    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;

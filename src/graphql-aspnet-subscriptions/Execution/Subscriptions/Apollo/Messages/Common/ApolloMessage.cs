@@ -9,9 +9,7 @@
 
 namespace GraphQL.AspNet.Messaging
 {
-    using System;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.Interfaces.Messaging;
 
     /// <summary>
     /// A common base class for all apollo messages.

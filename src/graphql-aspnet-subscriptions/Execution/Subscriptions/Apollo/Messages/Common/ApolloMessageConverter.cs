@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Messaging.Messages.Common
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.Messaging;
 
     /// <summary>
     /// A general converter for serializing an <see cref="ApolloMessage"/> to json.

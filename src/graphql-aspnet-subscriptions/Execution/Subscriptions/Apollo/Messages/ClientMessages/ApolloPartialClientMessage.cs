@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Messaging.Messages
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Interfaces.Messaging;
 
     /// <summary>
     /// A partially deserialized operation message recieved from the client. Converts the actual paylaod

@@ -22,13 +22,10 @@ namespace GraphQL.AspNet.Messaging
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Messaging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Messaging.Messages;
     using GraphQL.AspNet.Messaging.Messages.Common;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide

@@ -11,8 +11,6 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.Clients;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 

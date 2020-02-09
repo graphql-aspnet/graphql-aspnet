@@ -11,11 +11,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces;
-    using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Messaging;
 
     /// <summary>
     /// A baseline component acts to centralize the subscription server operations, regardless of if

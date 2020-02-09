@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Web
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
