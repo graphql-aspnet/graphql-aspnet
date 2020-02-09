@@ -355,7 +355,7 @@ namespace GraphQL.AspNet
             /// <summary>
             /// A phrase, used at the start of a route string, to indicate its part of the subscription root.
             /// </summary>
-            public const string SUBSCRIPTION_ROOT = DELIMITER_ROOT_START + "sub" + DELIMITER_ROOT_END;
+            public const string SUBSCRIPTION_ROOT = DELIMITER_ROOT_START + "subscription" + DELIMITER_ROOT_END;
 
             /// <summary>
             /// A phrase, used at the start of a route string, to indicate its part of the enum type tree.

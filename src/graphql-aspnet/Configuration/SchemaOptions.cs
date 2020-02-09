@@ -140,7 +140,15 @@ namespace GraphQL.AspNet.Configuration
             {
                 foreach (var descriptor in extension.RequiredServices)
                 {
-                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(descriptor));
+                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(descriptor, true));
+                }
+            }
+
+            if (extension.OptionalServices != null)
+            {
+                foreach (var descriptor in extension.OptionalServices)
+                {
+                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(descriptor, false));
                 }
             }
         }

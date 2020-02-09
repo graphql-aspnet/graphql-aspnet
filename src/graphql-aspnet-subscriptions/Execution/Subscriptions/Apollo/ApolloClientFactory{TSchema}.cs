@@ -32,7 +32,8 @@ namespace GraphQL.AspNet.ApolloClient
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientFactory{TSchema}" /> class.
         /// </summary>
-        /// <param name="clientSupervisor">The client supervisor.</param>
+        /// <param name="clientSupervisor">The master supervisor to which any created client proxy
+        /// will automatically be registered.</param>
         public ApolloClientFactory(ApolloClientSupervisor<TSchema> clientSupervisor)
         {
             _clientSupervisor = Validation.ThrowIfNullOrReturn(clientSupervisor, nameof(clientSupervisor));

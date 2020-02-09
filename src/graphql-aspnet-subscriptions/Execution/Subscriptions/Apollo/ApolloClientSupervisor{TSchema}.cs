@@ -16,11 +16,16 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Messaging;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Messaging;
     using GraphQL.AspNet.Messaging.Messages;
     using GraphQL.AspNet.Messaging.ServerMessages;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// An intermediary between an apollo client and the apollo server instance. This object
@@ -32,6 +37,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
         where TSchema : class, ISchema
     {
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
+        private readonly Dictionary<string, ConcurrentHashSet<ClientSubscription<TSchema>>> _activeSubscriptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientSupervisor{TSchema}"/> class.
@@ -39,6 +45,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
         public ApolloClientSupervisor()
         {
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
+            _activeSubscriptions = new Dictionary<string, ConcurrentHashSet<ClientSubscription<TSchema>>>();
         }
 
         /// <summary>
@@ -132,9 +139,30 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
             throw new NotImplementedException();
         }
 
-        private Task StartNewSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
+        /// <summary>
+        /// Parses the message contents to generate a valid client subscription and adds it to the watched
+        /// set for this instance.
+        /// </summary>
+        /// <param name="client">The client requesting a subscription.</param>
+        /// <param name="message">The message with the subscription details.</param>
+        private async Task StartNewSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
         {
-            throw new NotImplementedException();
+            var maker = client.ServiceProvider.GetRequiredService(typeof(ClientSubscriptionMaker<TSchema>)) as ClientSubscriptionMaker<TSchema>;
+            var subscription = await maker.Create(message.Payload);
+
+            if (subscription.IsValid)
+            {
+                if (!_activeSubscriptions.ContainsKey(subscription.EventName))
+                {
+                    lock (_activeSubscriptions)
+                    {
+                        if (!_activeSubscriptions.ContainsKey(subscription.EventName))
+                            _activeSubscriptions.Add(subscription.EventName, new ConcurrentHashSet<ClientSubscription<TSchema>>());
+                    }
+                }
+
+                _activeSubscriptions[subscription.EventName].Add(subscription);
+            }
         }
 
         /// <summary>

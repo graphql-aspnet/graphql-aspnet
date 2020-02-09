@@ -18,14 +18,14 @@ namespace GraphQL.AspNet.Configuration
     public class TypeReferenceEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeReferenceEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="TypeReferenceEventArgs" /> class.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="lifetime">The lifetime.</param>
-        public TypeReferenceEventArgs(Type type, ServiceLifetime lifetime)
+        /// <param name="required">if set to <c>true</c> the type must be registered.</param>
+        public TypeReferenceEventArgs(Type type, ServiceLifetime lifetime, bool required = false)
+            : this(new ServiceDescriptor(type, type, lifetime), required)
         {
-            this.Type = type;
-            this.LifeTime = lifetime;
         }
 
         /// <summary>
@@ -33,27 +33,24 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="descriptor">The fully qualified service descriptor represneting the type
         /// to be added.</param>
-        public TypeReferenceEventArgs(ServiceDescriptor descriptor)
+        /// <param name="required">if set to <c>true</c> the type must be registered.</param>
+        public TypeReferenceEventArgs(ServiceDescriptor descriptor, bool required = false)
         {
             this.Descriptor = descriptor;
+            this.Required = required;
         }
-
-        /// <summary>
-        /// Gets the type reference that should be added to the DI container.
-        /// </summary>
-        /// <value>The type.</value>
-        public Type Type { get; }
-
-        /// <summary>
-        /// Gets the service life time needed of the type.
-        /// </summary>
-        /// <value>The life time.</value>
-        public ServiceLifetime LifeTime { get; }
 
         /// <summary>
         /// Gets a fully qualified descriptor that represents the type being added.
         /// </summary>
         /// <value>The descriptor.</value>
         public ServiceDescriptor Descriptor { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this type reference is required. A required reference MUST
+        /// be registered to the service collection, an exception is thrown if it fails.
+        /// </summary>
+        /// <value><c>true</c> if required; otherwise, <c>false</c>.</value>
+        public bool Required { get; }
     }
 }

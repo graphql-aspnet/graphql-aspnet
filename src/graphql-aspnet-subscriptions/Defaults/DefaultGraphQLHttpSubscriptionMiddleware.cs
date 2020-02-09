@@ -28,10 +28,6 @@ namespace GraphQL.AspNet.Defaults
     public class DefaultGraphQLHttpSubscriptionMiddleware<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly RequestDelegate _next;
-        private readonly string _routePath;
-        private readonly SchemaSubscriptionOptions<TSchema> _options;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> class.
         /// </summary>
@@ -44,9 +40,9 @@ namespace GraphQL.AspNet.Defaults
             SchemaSubscriptionOptions<TSchema> options,
             string routePath)
         {
-            _next = next;
-            _routePath = Validation.ThrowIfNullWhiteSpaceOrReturn(routePath, nameof(routePath));
-            _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            this.Next = next;
+            this.RoutePath = Validation.ThrowIfNullWhiteSpaceOrReturn(routePath, nameof(routePath));
+            this.Options = Validation.ThrowIfNullOrReturn(options, nameof(options));
         }
 
         /// <summary>
@@ -60,11 +56,11 @@ namespace GraphQL.AspNet.Defaults
             // immediate bypass if not aimed at this schema subscription route
             if (string.Compare(
                 context.Request.Path,
-                _routePath,
+                this.RoutePath,
                 CultureInfo.InvariantCulture,
                 CompareOptions.OrdinalIgnoreCase) != 0)
             {
-                await _next(context);
+                await this.Next(context);
                 return;
             }
 
@@ -75,7 +71,7 @@ namespace GraphQL.AspNet.Defaults
                 var subscriptionFactory = context.RequestServices.GetRequiredService(typeof(ISubscriptionClientFactory<TSchema>))
                     as ISubscriptionClientFactory<TSchema>;
 
-                var subscriptionClient = subscriptionFactory.CreateClientProxy(context, webSocket, _options);
+                var subscriptionClient = subscriptionFactory.CreateClientProxy(context, webSocket, this.Options);
 
                 // hold the client connection until its released
                 await subscriptionClient.StartConnection();
@@ -84,10 +80,28 @@ namespace GraphQL.AspNet.Defaults
             {
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await context.Response.WriteAsync(
-                    $"This route, '{_routePath}', is configured to only accept subscription operation requests " +
+                    $"The route '{this.RoutePath}', is configured to only accept subscription operation requests " +
                     $"for target schema '{typeof(TSchema).FriendlyName()}'. These requests" +
                     "must be sent via an appropriate websocket protocol.");
             }
         }
+
+        /// <summary>
+        /// Gets the delegate representing the next middleware component to invoke in the pipeline.
+        /// </summary>
+        /// <value>The next.</value>
+        protected RequestDelegate Next { get; }
+
+        /// <summary>
+        /// Gets the subscription options configured for the target schema.
+        /// </summary>
+        /// <value>The options.</value>
+        protected SchemaSubscriptionOptions<TSchema> Options { get; }
+
+        /// <summary>
+        /// Gets the fully qualified internal path representing the route to the subscription server. (e.g. '/graphql/subscriptions' ).
+        /// </summary>
+        /// <value>The route path.</value>
+        protected string RoutePath { get; }
     }
 }

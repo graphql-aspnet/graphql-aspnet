@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.Clients;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 
@@ -35,39 +36,28 @@ namespace GraphQL.AspNet.Configuration
         /// its middleware component to the asp.net pipeline for handling subscriptions. The application will need to handle
         /// websocket request manually. (Default: false).
         /// </summary>
-        /// <value><c>true</c> if the default subscription route should be disabled; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if the default subscription route and middleware component should not be registered; otherwise, <c>false</c>.</value>
         public bool DisableDefaultRoute { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the route path where any subscription clients should connect. use <see cref="SubscriptionConstants.Routing.SCHEMA_ROUTE_KEY"/>
-        /// as part of your route to represent the primary configured route for this schema. (Default: "{schemaRoute}/subscriptions").
+        /// Gets or sets the route path where any subscription clients will connect. use <see cref="SubscriptionConstants.Routing.SCHEMA_ROUTE_KEY"/>
+        /// as a placeholder for the primary route for this schema. (Default: "{schemaRoute}/subscriptions").
         /// </summary>
-        /// <value>The route.</value>
+        /// <value>The route path for a websocket to connect to.</value>
         public string Route { get; set; } = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
 
         /// <summary>
         /// <para>Gets or sets an optional .NET type to use as the middleware component
-        /// for Subscription requests. When set, this type should accept, as constructor arguments,
+        /// for Subscription requests. When set, this type should accept, as constructor arguments, accept
         /// a <see cref="RequestDelegate"/>, the <see cref="SchemaSubscriptionOptions{TSchema}"/> for the
         /// target schema and a <see cref="string"/> representing the configured route for the
-        /// subscription as constructor parameters.
+        /// subscription as constructor parameters. When set to null, Apollo's graphql-over-websocket.
+        ///
         /// </para>
-        /// <para>It can be advantagous to override extend <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" />.  See the documentation for further details.</para>
+        /// <para>It can be advantagous to extend <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" />.  See the documentation for further details.</para>
         /// </summary>
         /// <value>The type of the middleware component to use when processing WebSocket Requests received by the application for subscriptions.</value>
         public Type HttpMiddlewareComponentType { get; set; } = null;
-
-        /// <summary>
-        /// <para>
-        /// Gets or sets a a type that will create client proxies for this schema. If not provided,
-        /// the runtime will use the apollo graphql-over-websockets protocol and client stack. (Default: null).
-        /// </para>
-        /// <para>This type must implement <see cref="ISubscriptionClientFactory{TSchema}"/> and should be constructed
-        /// in a manner condusive to its use as a singleton component.
-        /// </para>
-        /// </summary>
-        /// <value>The type of the subscription client factory.</value>
-        public Type SubscriptionClientFactory { get; set; } = null;
 
         /// <summary>
         /// <para>Gets or sets the amount of time between GraphQL keep alive operation messages

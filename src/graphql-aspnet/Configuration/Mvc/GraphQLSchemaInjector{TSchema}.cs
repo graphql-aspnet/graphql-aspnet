@@ -177,10 +177,13 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// </summary>
         private void TypeReferenced_EventHandler(object sender, TypeReferenceEventArgs e)
         {
-            if (e.Descriptor != null)
-                _serviceCollection.TryAdd(e.Descriptor);
-            else
-                _serviceCollection.TryAdd(new ServiceDescriptor(e.Type, e.Type, e.LifeTime));
+            if (e?.Descriptor != null)
+            {
+                if (e.Required)
+                    _serviceCollection.Add(e.Descriptor);
+                else
+                    _serviceCollection.TryAdd(e.Descriptor);
+            }
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
@@ -20,6 +21,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// <summary>
     /// A helper object for parsing and reasoning about a route path string.
     /// </summary>
+    [DebuggerDisplay("{Path}")]
     public class GraphFieldPath : IEnumerable<string>
     {
         /// <summary>
@@ -83,6 +85,9 @@ namespace GraphQL.AspNet.Schemas.Structural
                     break;
                 case RouteConstants.DIRECTIVE_ROOT:
                     this.RootCollection = GraphCollection.Directives;
+                    break;
+                case RouteConstants.SUBSCRIPTION_ROOT:
+                    this.RootCollection = GraphCollection.Subscription;
                     break;
             }
 

@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Parses the template contents according to the rules of the template.
         /// </summary>
-        public void Parse()
+        public virtual void Parse()
         {
             this.DeclaredArgumentType = this.Parameter.ParameterType;
             this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.Parameter.ParameterType);
@@ -68,7 +68,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             name = name.Replace(Constants.Routing.PARAMETER_META_NAME, this.Parameter.Name);
             this.Route = new GraphArgumentFieldPath(this.Parent.Route, name);
 
-            // set the description
             this.Description = this.Parameter.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
 
             if (this.Parameter.HasDefaultValue && this.Parameter.DefaultValue != null)
@@ -88,10 +87,25 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.TypeExpression = GraphValidation.GenerateTypeExpression(this.DeclaredArgumentType, this);
             this.TypeExpression = this.TypeExpression.CloneTo(GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT));
 
-            // if this argument accepts the same data type as the data returned by its owners target source type
+            // when this argument accepts the same data type as the data returned by its owners target source type
             // i.e. if the source data supplied to the field for resolution is the same as this argument
             // then assume this argument is to contain the source data
             // since the source data will be an OBJECT type (not INPUT_OBJECT) there is no way the user could have supplied it
+            if (this.IsSourceDataArgument())
+            {
+                this.ArgumentModifiers = this.ArgumentModifiers
+                                         | GraphArgumentModifiers.ParentFieldResult
+                                         | GraphArgumentModifiers.Internal;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether this instance represents a parameter that should be marked as the "source data"
+        /// for the field its attached to.
+        /// </summary>
+        /// <returns>System.Boolean.</returns>
+        protected virtual bool IsSourceDataArgument()
+        {
             if (this.ObjectType == this.Parent.SourceObjectType)
             {
                 var sourceType = this.ObjectType;
@@ -100,27 +114,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     sourceType = typeof(IEnumerable<>).MakeGenericType(sourceType);
                 }
 
-                if (this.IsSourceDataArgument(sourceType))
-                {
-                    this.ArgumentModifiers = this.ArgumentModifiers
-                                             | GraphArgumentModifiers.ParentFieldResult
-                                             | GraphArgumentModifiers.Internal;
-                }
+                if (this.Parent.Arguments.Any(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
+                    return false;
+
+                return sourceType == this.DeclaredArgumentType;
             }
-        }
 
-        /// <summary>
-        /// Determines whether this instance should be tagged as the parameter to accept the parent field's
-        /// supplied source data.
-        /// </summary>
-        /// <param name="sourceType">Type of the source.</param>
-        /// <returns>System.Boolean.</returns>
-        private bool IsSourceDataArgument(Type sourceType)
-        {
-            if (this.Parent.Arguments.Any(x => x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.ParentFieldResult)))
-                return false;
-
-            return sourceType == this.DeclaredArgumentType;
+            return false;
         }
 
         /// <summary>
@@ -228,12 +228,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public Type ObjectType { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether this argument represents the resolved data item created
+        /// Gets or sets a value indicating whether this argument represents the resolved data item created
         /// by the resolution of the parent field to this field. If true, this argument will not be available
         /// on the object graph.
         /// </summary>
         /// <value><c>true</c> if this instance is source data field; otherwise, <c>false</c>.</value>
-        public GraphArgumentModifiers ArgumentModifiers { get; private set; }
+        public GraphArgumentModifiers ArgumentModifiers { get; protected set; }
 
         /// <summary>
         /// Gets the name of the argument as its declared in the server side code.

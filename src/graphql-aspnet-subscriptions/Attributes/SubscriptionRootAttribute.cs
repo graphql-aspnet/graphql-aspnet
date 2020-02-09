@@ -25,93 +25,75 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionRootAttribute" /> class.
         /// </summary>
-        /// <param name="eventName">The schema-unique name of the event that published whenever
-        /// subscribed clients should receive new data.</param>
-        public SubscriptionRootAttribute(string eventName)
-            : this(eventName, Constants.Routing.ACTION_METHOD_META_NAME)
+        public SubscriptionRootAttribute()
+            : this(Constants.Routing.ACTION_METHOD_META_NAME)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionRootAttribute" /> class.
         /// </summary>
-        /// <param name="eventName">The schema-unique name of the event that published whenever
-        /// subscribed clients should receive new data.</param>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
-        public SubscriptionRootAttribute(string eventName, string template)
-            : this(eventName, template, null)
+        public SubscriptionRootAttribute(string template)
+            : this(template, null)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionRootAttribute" /> class.
         /// </summary>
-        /// <param name="eventName">The schema-unique name of the event that published whenever
-        /// subscribed clients should receive new data.</param>
         /// <param name="returnType">The type of the object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
-        public SubscriptionRootAttribute(string eventName, Type returnType)
-            : this(eventName, Constants.Routing.ACTION_METHOD_META_NAME, returnType)
+        public SubscriptionRootAttribute(Type returnType)
+            : this(Constants.Routing.ACTION_METHOD_META_NAME, returnType)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionRootAttribute" /> class.
         /// </summary>
-        /// <param name="eventName">The schema-unique name of the event that published whenever
-        /// subscribed clients should receive new data.</param>
         /// <param name="returnType">The type of the data object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type. In the event that the return type is an interface
         /// be sure to supply any additional concrete types so that they may be included in the object graph.</param>
-        /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method. If multiple
-        /// types are provided they will be concatenated into a union return type.</param>
-        public SubscriptionRootAttribute(string eventName, Type returnType, params Type[] additionalTypes)
-            : this(eventName, Constants.Routing.ACTION_METHOD_META_NAME, returnType, additionalTypes)
+        /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.</param>
+        public SubscriptionRootAttribute(Type returnType, params Type[] additionalTypes)
+            : this(Constants.Routing.ACTION_METHOD_META_NAME, returnType, additionalTypes)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionRootAttribute" /> class.
         /// </summary>
-        /// <param name="eventName">The schema-unique name of the event that published whenever
-        /// subscribed clients should receive new data.</param>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         /// <param name="returnType">The type of the object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type.</param>
-        public SubscriptionRootAttribute(string eventName, string template, Type returnType)
+        public SubscriptionRootAttribute(string template, Type returnType)
             : base(true, GraphCollection.Subscription, template, returnType)
         {
-            this.EventName = eventName;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionRootAttribute" /> class.
         /// </summary>
-        /// <param name="eventName">The schema-unique name of the event that published whenever
-        /// subscribed clients should receive new data.</param>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         /// <param name="returnType">The type of the object returned from this method. If this type implements
         /// <see cref="IGraphUnionProxy"/> this field will be declared as returning the union defined by the type. In the event that the return type is an interface
         /// be sure to supply any additional concrete types so that they may be included in the object graph.</param>
-        /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.If multiple
-        /// types are provided they will be concatenated into a union return type.</param>
-        public SubscriptionRootAttribute(string eventName, string template, Type returnType, params Type[] additionalTypes)
+        /// <param name="additionalTypes">Any additional types to include in the object graph on behalf of this method.</param>
+        public SubscriptionRootAttribute(string template, Type returnType, params Type[] additionalTypes)
             : base(true, GraphCollection.Subscription, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
         {
-            this.EventName = eventName;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionRootAttribute" /> class.
         /// </summary>
-        /// <param name="eventName">The schema-unique name of the event that published whenever
-        /// subscribed clients should receive new data.</param>
         /// <param name="template">The template naming scheme to use to generate a graph field from this method.</param>
         /// <param name="unionTypeName">Name of the union type.</param>
         /// <param name="unionTypeA">The first of two required types to include in the union.</param>
         /// <param name="unionTypeB">The second of two required types to include in the union.</param>
         /// <param name="additionalUnionTypes">Any additional union types.</param>
-        public SubscriptionRootAttribute(string eventName, string template, string unionTypeName, Type unionTypeA, Type unionTypeB, params Type[] additionalUnionTypes)
+        public SubscriptionRootAttribute(string template, string unionTypeName, Type unionTypeA, Type unionTypeB, params Type[] additionalUnionTypes)
             : base(
                 true,
                 GraphCollection.Subscription,
@@ -119,7 +101,6 @@ namespace GraphQL.AspNet.Attributes
                 unionTypeName,
                 unionTypeA.AsEnumerable().Concat(unionTypeB.AsEnumerable()).Concat(additionalUnionTypes).ToArray())
         {
-            this.EventName = eventName;
         }
 
         /// <summary>

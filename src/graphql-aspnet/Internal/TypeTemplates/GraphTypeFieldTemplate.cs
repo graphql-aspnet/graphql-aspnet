@@ -454,8 +454,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public bool IsAsyncField { get; private set; }
 
         /// <summary>
-        /// Gets the type of the object that owns this field; that is the type which supplies source data
-        /// to this field in the object graph. This is usually the <see cref="Parent"/>'s object type but not always; such
+        /// Gets the type of the object that owns this field. That is to say the type of source data
+        /// given to this field in the object graph. This is usually the <see cref="Parent"/>'s object type but not always; such
         /// is the case with type extensions.
         /// </summary>
         /// <value>The type of the source object.</value>

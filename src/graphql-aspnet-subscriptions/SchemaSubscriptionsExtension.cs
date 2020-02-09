@@ -16,8 +16,11 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
+    using GraphQL.AspNet.Execution.Subscriptions.ApolloServer;
     using GraphQL.AspNet.Interfaces.Clients;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using Microsoft.AspNetCore.Builder;
@@ -40,7 +43,8 @@ namespace GraphQL.AspNet
         public SchemaSubscriptionsExtension(SchemaSubscriptionOptions<TSchema> options)
         {
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            this.RequiredServices = new HashSet<ServiceDescriptor>();
+            this.RequiredServices = new List<ServiceDescriptor>();
+            this.OptionalServices = new List<ServiceDescriptor>();
         }
 
         /// <summary>
@@ -54,18 +58,37 @@ namespace GraphQL.AspNet
         {
             _primaryOptions = options;
 
-            // setup the apollo client for this schema if no other is explicitly provided
-            if (this.SubscriptionOptions.SubscriptionClientFactory == null)
-                this.SubscriptionOptions.SubscriptionClientFactory = typeof(ApolloClientFactory<TSchema>);
+            // swap out the master templater for the one that includes
+            // support for the subscription action type
+            if (!(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider))
+                GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
 
-            Validation.ThrowIfNotCastable<ISubscriptionClientFactory<TSchema>>(
-                this.SubscriptionOptions.SubscriptionClientFactory,
-                nameof(this.SubscriptionOptions.SubscriptionClientFactory));
+            // add the needed apollo's classes as optional services
+            // if the user has already added support for their own handlers
+            // they will be safely ignored
+            this.OptionalServices.Add(
+                new ServiceDescriptor(
+                    typeof(ISubscriptionServer<TSchema>),
+                    typeof(ApolloSubscriptionServer<TSchema>),
+                    ServiceLifetime.Singleton));
 
-            this.RequiredServices.Add(new ServiceDescriptor(
-                typeof(ISubscriptionClientFactory<TSchema>),
-                this.SubscriptionOptions.SubscriptionClientFactory,
-                ServiceLifetime.Singleton));
+            this.OptionalServices.Add(
+                  new ServiceDescriptor(
+                      typeof(ISubscriptionClientFactory<TSchema>),
+                      typeof(ApolloClientFactory<TSchema>),
+                      ServiceLifetime.Singleton));
+
+            this.OptionalServices.Add(
+                new ServiceDescriptor(
+                    typeof(ApolloClientSupervisor<TSchema>),
+                    typeof(ApolloClientSupervisor<TSchema>),
+                    ServiceLifetime.Singleton));
+
+            this.OptionalServices.Add(
+               new ServiceDescriptor(
+                   typeof(ClientSubscriptionMaker<TSchema>),
+                   typeof(ClientSubscriptionMaker<TSchema>),
+                   ServiceLifetime.Transient));
         }
 
         /// <summary>
@@ -98,8 +121,8 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
-        /// Ensures the middleware type contains a public constructor that can accept the
-        /// parameters required of it by the runtime.
+        /// Ensures the middleware type contains a public constructor that accepts the
+        /// three parameters required of it by the runtime.
         /// </summary>
         /// <param name="middlewareType">Type of the middleware to inspect.</param>
         private void EnsureMiddlewareTypeOrThrow(Type middlewareType)
@@ -133,6 +156,13 @@ namespace GraphQL.AspNet
         /// a DI container.
         /// </summary>
         /// <value>The additional types as formal descriptors.</value>
-        public HashSet<ServiceDescriptor> RequiredServices { get; }
+        public List<ServiceDescriptor> RequiredServices { get; }
+
+        /// <summary>
+        /// Gets a collection of services this extension has registered that may be included in
+        /// a DI container. If they cannot be added, because a reference already exists, they will be skipped.
+        /// </summary>
+        /// <value>The additional types as formal descriptors.</value>
+        public List<ServiceDescriptor> OptionalServices { get; }
     }
 }

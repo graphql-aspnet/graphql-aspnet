@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         {
             return new EventHandler<TypeReferenceEventArgs>((o, e) =>
             {
-                serviceCollection.Add(new ServiceDescriptor(e.Type, e.Type, e.LifeTime));
+                serviceCollection.Add(e.Descriptor);
             });
         }
 

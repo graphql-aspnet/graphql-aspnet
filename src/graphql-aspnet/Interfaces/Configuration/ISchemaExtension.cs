@@ -42,6 +42,13 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// a DI container.
         /// </summary>
         /// <value>The additional types as formal descriptors.</value>
-        HashSet<ServiceDescriptor> RequiredServices { get; }
+        List<ServiceDescriptor> RequiredServices { get; }
+
+        /// <summary>
+        /// Gets a collection of services this extension has registered that may be included in
+        /// a DI container. If they cannot be added, because a reference already exists, they will be skipped.
+        /// </summary>
+        /// <value>The additional types as formal descriptors.</value>
+        List<ServiceDescriptor> OptionalServices { get; }
     }
 }
