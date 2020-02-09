@@ -127,7 +127,7 @@ namespace GraphQL.Subscrptions.Tests.Internal.Templating
         }
 
         [Test]
-        public void ActionTemplate_Parse_WhenMethodDoesNotDeclareASourceInputArgument_AndOneCannotBeFound_ThrowException()
+        public void ActionTemplate_Parse_WhenMethodDoesNotDeclareASourceInputArgument_AndOneCannotBeInferred_ThrowException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {

@@ -9,9 +9,11 @@
 
 namespace GraphQL.AspNet.Interfaces.Configuration
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -53,5 +55,11 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </summary>
         /// <value>The graph naming formatter.</value>
         GraphNameFormatter GraphNamingFormatter { get; }
+
+        /// <summary>
+        /// Gets the set of operation types that can be registered to this schema.
+        /// </summary>
+        /// <value>The allowed operations.</value>
+        HashSet<GraphCollection> AllowedOperations { get; }
     }
 }

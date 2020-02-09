@@ -33,12 +33,5 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="subscriptionEvent">A subscription event.</param>
         /// <returns>Task.</returns>
         Task PublishEvent<TData>(SubscriptionEvent<TData> subscriptionEvent);
-
-        /// <summary>
-        /// Retrieves the well known introspection data about the subscription fields supported
-        /// by the schema.
-        /// </summary>
-        /// <returns>Task&lt;SubscriptionOperationDTO&gt;.</returns>
-        Task<SubscriptionOperationDTO> RetrieveSubscriptionSchema();
     }
 }

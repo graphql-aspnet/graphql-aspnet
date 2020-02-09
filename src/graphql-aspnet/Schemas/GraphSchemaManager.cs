@@ -129,20 +129,18 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="action">The action to add to the schema.</param>
         private void AddAction(IGraphTypeFieldTemplate action)
         {
-            switch (action.Route.RootCollection)
+            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
             {
-                case GraphCollection.Query:
-                case GraphCollection.Mutation:
-                    this.EnsureGraphOperationType(action.Route.RootCollection);
-                    var parentField = this.AddOrRetrieveRoutePath(action);
-                    this.AddActionAsField(parentField, action);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(
-                        nameof(action),
-                        $"The '{action.InternalFullName}' action's operation root ({action.Route.RootCollection}) is not " +
-                        $"supported.");
+                this.EnsureGraphOperationType(action.Route.RootCollection);
+                var parentField = this.AddOrRetrieveRoutePath(action);
+                this.AddActionAsField(parentField, action);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(action),
+                    $"The '{action.InternalFullName}' action's operation root ({action.Route.RootCollection}) is not " +
+                    $"allowed by the schema's current configuration (Schema: {this.Schema.Name}).");
             }
         }
 

@@ -48,15 +48,5 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
         {
             throw new System.NotImplementedException();
         }
-
-        /// <summary>
-        /// Retrieves the well known introspection data about the subscription fields supported
-        /// by the schema.
-        /// </summary>
-        /// <returns>Task&lt;SubscriptionOperationDTO&gt;.</returns>
-        public Task<SubscriptionOperationDTO> RetrieveSubscriptionSchema()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

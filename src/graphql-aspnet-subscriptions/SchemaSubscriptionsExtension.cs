@@ -16,6 +16,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.ApolloServer;
     using GraphQL.AspNet.Interfaces.Clients;
@@ -57,6 +58,7 @@ namespace GraphQL.AspNet
         public void Configure(SchemaOptions options)
         {
             _primaryOptions = options;
+            _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
 
             // swap out the master templater for the one that includes
             // support for the subscription action type
@@ -86,19 +88,24 @@ namespace GraphQL.AspNet
 
             this.OptionalServices.Add(
                new ServiceDescriptor(
-                   typeof(ClientSubscriptionMaker<TSchema>),
+                   typeof(IClientSubscriptionMaker<TSchema>),
                    typeof(ClientSubscriptionMaker<TSchema>),
                    ServiceLifetime.Transient));
+
+            if (this.SubscriptionOptions.HttpMiddlewareComponentType != null)
+                this.EnsureMiddlewareTypeOrThrow(this.SubscriptionOptions.HttpMiddlewareComponentType);
         }
 
         /// <summary>
         /// Invokes this instance to perform any final setup requirements as part of
         /// its configuration during startup.
         /// </summary>
-        /// <param name="app">The application builder.</param>
-        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="app">The application builder, no middleware will be registered if not supplied.</param>
+        /// <param name="serviceProvider">The service provider to use.</param>
         public void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
         {
+            serviceProvider ??= app?.ApplicationServices;
+
             // configure the subscription route middleware for invoking the graphql
             // pipeline for the subscription
             if (!this.SubscriptionOptions.DisableDefaultRoute && app != null)

@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Messaging;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Messaging;
@@ -147,7 +148,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ApolloServer
         /// <param name="message">The message with the subscription details.</param>
         private async Task StartNewSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
         {
-            var maker = client.ServiceProvider.GetRequiredService(typeof(ClientSubscriptionMaker<TSchema>)) as ClientSubscriptionMaker<TSchema>;
+            var maker = client.ServiceProvider.GetRequiredService(typeof(IClientSubscriptionMaker<TSchema>)) as IClientSubscriptionMaker<TSchema>;
             var subscription = await maker.Create(message.Payload);
 
             if (subscription.IsValid)

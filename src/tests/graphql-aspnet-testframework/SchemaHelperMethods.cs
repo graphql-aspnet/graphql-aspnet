@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework
 {
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -36,6 +37,15 @@ namespace GraphQL.AspNet.Tests.Framework
                 schema.Configuration.QueryCacheOptions);
 
             schema.Configuration.Merge(config);
+        }
+
+        /// <summary>
+        /// Sets the schema configuration to allow the processing of subscriptions in test mode.
+        /// </summary>
+        /// <param name="schema">The schema.</param>
+        public static void SetSubscriptionAllowances(this ISchema schema)
+        {
+            schema.Configuration.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
         }
     }
 }

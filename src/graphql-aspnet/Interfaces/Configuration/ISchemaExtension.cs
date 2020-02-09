@@ -33,8 +33,8 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// Invokes this instance to perform any final setup requirements as part of
         /// its configuration during startup.
         /// </summary>
-        /// <param name="app">The application builder representing the app being configured.</param>
-        /// <param name="serviceProvider">A service provider that can be used for final setup.</param>
+        /// <param name="app">The application builder, no middleware will be registered if not supplied.</param>
+        /// <param name="serviceProvider">The service provider to use. </param>
         void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null);
 
         /// <summary>

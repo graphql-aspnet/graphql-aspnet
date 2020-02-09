@@ -27,11 +27,11 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <returns>ISchemaBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<TSchema> AddSubscriptions<TSchema>(
             this ISchemaBuilder<TSchema> schemaBuilder,
-            Action<SchemaSubscriptionOptions<TSchema>> action = null)
+            Action<SchemaSubscriptionOptions<TSchema>> options = null)
             where TSchema : class, ISchema
         {
             var subscriptionsOptions = new SchemaSubscriptionOptions<TSchema>();
-            action?.Invoke(subscriptionsOptions);
+            options?.Invoke(subscriptionsOptions);
 
             var extension = new SchemaSubscriptionsExtension<TSchema>(subscriptionsOptions);
 

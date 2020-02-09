@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
 
@@ -20,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     /// A helper object that will create a client subscription with the proper DI scope.
     /// </summary>
     /// <typeparam name="TSchema">The type of the t schema.</typeparam>
-    public class ClientSubscriptionMaker<TSchema>
+    public class ClientSubscriptionMaker<TSchema> : IClientSubscriptionMaker<TSchema>
         where TSchema : class, ISchema
     {
         private IGraphQLDocumentParser _parser;
