@@ -55,25 +55,38 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             // a subscription that it contains only one operation and
             // that a top level field will be a subscription-ready field.
             //
-            // However, ensure that the query docuemnt does in fact represent a subscription
-            // operation and that a field is defined
+            // However, ensure that the operation that will be executed
+            // does in fact represent a subscription being harnesssed
             _operation = _queryPlan?.RetrieveOperation(operationName);
-            if (_operation != null
-                && _operation.OperationType == GraphCollection.Subscription
-                && _operation.FieldContexts.Count == 1)
+            if (_operation == null)
             {
-                _field = _operation.FieldContexts[0]?.Field as ISubscriptionGraphField;
-                if (_field == null)
-                {
-                    this.Messages.Add(
-                      GraphMessageSeverity.Critical,
-                      $"The subscription query's top level field, '{_operation.FieldContexts[0]?.Field?.Name}', is not a valid subscription field.",
-                      Constants.ErrorCodes.BAD_REQUEST);
-                }
-                else
-                {
-                    this.Route = _field.Route;
-                }
+                this.Messages.Critical(
+                        $"No operation found with the name '{operationName}'.",
+                        Constants.ErrorCodes.BAD_REQUEST);
+                return;
+            }
+
+            if (_operation.OperationType != GraphCollection.Subscription)
+            {
+                this.Messages.Critical(
+                        $"The chosen operation is not a subscription operation.",
+                        Constants.ErrorCodes.BAD_REQUEST);
+                return;
+            }
+
+            _field = _operation.FieldContexts[0]?.Field as ISubscriptionGraphField;
+            if (_field == null)
+            {
+                // theoretically not possible but just in case
+                // the user swaps out some DI components incorrectly or by mistake...
+                this.Messages.Add(
+                  GraphMessageSeverity.Critical,
+                  $"The subscription's top level field, '{_operation.FieldContexts[0]?.Field?.Name ?? "-null-" }', is not a valid subscription field.",
+                  Constants.ErrorCodes.BAD_REQUEST);
+            }
+            else
+            {
+                this.Route = _field.Route;
             }
 
             this.IsValid = this.Messages.IsSucessful && _operation != null && _field != null;
