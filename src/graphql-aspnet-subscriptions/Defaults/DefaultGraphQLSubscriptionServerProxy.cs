@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="eventName">The schema-unique name of the event.</param>
         /// <param name="dataObject">The data object to send.</param>
         /// <returns>Task.</returns>
-        public async Task PublishEvent<TData>(string eventName, TData dataObject)
+        public Task PublishEvent<TData>(string eventName, TData dataObject)
         {
             throw new NotImplementedException();
         }

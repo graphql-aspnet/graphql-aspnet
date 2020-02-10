@@ -10,18 +10,17 @@
 namespace GraphQL.Subscrptions.Tests.CommonHelpers
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using Castle.DynamicProxy.Generators;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using NUnit.Framework;
 
     /// <summary>
     /// A fake client connection to mock how a websocket would send and recieve data
@@ -49,25 +48,12 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
             this.State = ClientConnectionState.Open;
         }
 
-        public void QueueConnectionClose()
+        /// <summary>
+        /// Queues a "connection closed" message that will close the underlying "socket" when dequeued.
+        /// </summary>
+        public void QueueConnectionCloseMessage()
         {
             this.QueueClientMessage(new MockClientRemoteCloseMessage());
-        }
-
-        internal T DequeueReturnMessageTo<T>()
-            where T : class
-        {
-            if (_outgoingMessageQueue.Count == 0)
-                return null;
-
-            var message = _outgoingMessageQueue.Dequeue();
-            var str = Encoding.UTF8.GetString(message.Data);
-
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-
-            return System.Text.Json.JsonSerializer.Deserialize<T>(str, options);
         }
 
         /// <summary>
@@ -83,6 +69,34 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
             }
         }
 
+        /// <summary>
+        /// Dequeues the next received message and returns it.
+        /// </summary>
+        /// <returns>MockClientMessage.</returns>
+        public MockClientMessage DequeueNextReceivedMessage()
+        {
+            lock (_outgoingMessageQueue)
+                return _outgoingMessageQueue.Dequeue();
+        }
+
+        /// <summary>
+        /// Peeks at the next received message.
+        /// </summary>
+        /// <returns>MockClientMessage.</returns>
+        public MockClientMessage PeekNextReceivedMessage()
+        {
+            lock (_outgoingMessageQueue)
+                return _outgoingMessageQueue.Peek();
+        }
+
+        /// <summary>
+        /// Closes the connection as an asynchronous operation using the close handshake defined by the underlying implementation.
+        /// </summary>
+        /// <param name="closeStatus">Indicates the reason for closing the connection.</param>
+        /// <param name="statusDescription">Specifies a human readable explanation as to why the connection is closed.</param>
+        /// <param name="cancellationToken">The token that can be used to propagate notification that operations should be
+        /// canceled.</param>
+        /// <returns>Task.</returns>
         public Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
             _connectionClosed = true;
@@ -92,11 +106,17 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Receives data from the connection asynchronously.
+        /// </summary>
+        /// <param name="buffer">References the application buffer that is the storage location for the received
+        ///  data.</param>
+        /// <param name="cancelToken">Propagates the notification that operations should be canceled.</param>
+        /// <returns>Task&lt;IClientConnectionResult&gt;.</returns>
         public async Task<IClientConnectionReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancelToken = default)
         {
             if (_connectionClosed)
             {
-                Assert.Fail("Attempted to recieve on a closed connection");
                 throw new InvalidOperationException("can't recieve on a closed connection");
             }
 

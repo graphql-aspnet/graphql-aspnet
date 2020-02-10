@@ -14,11 +14,19 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
     /// <summary>
     /// A representation of a data object with two properties. The property data types differ from <see cref="TwoPropertyObject"/>.
     /// </summary>
-    public class TwoPropertyObjectV2
+    public class TwoPropertyObjectV3 : ITwoPropertyObject
     {
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>value.</value>
         [GraphField]
-        public float Property1 { get; set; }
+        public string Property1 { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>value.</value>
         [GraphField]
         public DateTime Property2 { get; set; }
     }

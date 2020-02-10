@@ -5,7 +5,7 @@
     <LangVersion>8</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;IDE0019;IDE0017;RCS1146;RCS1194;</NoWarn>
     <RootNamespace>GraphQL.AspNet</RootNamespace>
-    <AssemblyName>GraphQL.AspNet.WebSockets</AssemblyName>
+    <AssemblyName>GraphQL.AspNet.Subscriptions</AssemblyName>
     <Title>GraphQL ASP.NET WebSockets</Title>
     <Product>GraphQL ASP.NET</Product>
     <Authors>Kevin Carroll</Authors>
@@ -14,8 +14,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageDescription>A websocket integration package for GraphQL ASP.NET. Provides the required functionality
-    to setup a websocket connection and perform graphql over web sockets.</PackageDescription>
+    <PackageDescription>A package to support subscriptions for GraphQL ASP.NET. Provides the required functionality
+    to setup a websocket connection and perform graphql subscriptions over web sockets.</PackageDescription>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
     <PackageTags>GraphQL ASPNET graphql ASP.NET mvc dotnet core</PackageTags>
     <RepositoryType>git</RepositoryType>
@@ -58,6 +58,7 @@
 
   <ItemGroup>
     <Folder Include="Execution\Subscriptions\Apollo\Middleware\" />
+    <Folder Include="Interfaces\TypeSystem\" />
     <Folder Include="Middleware\ClientNotification\Components\" />
     <Folder Include="Middleware\SubscriptionEventExecution\Components\" />
   </ItemGroup>

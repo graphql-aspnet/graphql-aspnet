@@ -32,6 +32,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         where TSchema : class, ISchema
     {
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
+
+        // a collection of subscriptions this supervisor is watching for
+        // keyed on teh full field path within the target schema (not against the alternate, short event name)
         private readonly Dictionary<string, ConcurrentHashSet<ClientSubscription<TSchema>>> _activeSubscriptions;
 
         /// <summary>
@@ -147,16 +150,21 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
             if (subscription.IsValid)
             {
-                if (!_activeSubscriptions.ContainsKey(subscription.EventName))
+                if (!_activeSubscriptions.ContainsKey(subscription.Route.Path))
                 {
                     lock (_activeSubscriptions)
                     {
-                        if (!_activeSubscriptions.ContainsKey(subscription.EventName))
-                            _activeSubscriptions.Add(subscription.EventName, new ConcurrentHashSet<ClientSubscription<TSchema>>());
+                        if (!_activeSubscriptions.ContainsKey(subscription.Route.Path))
+                            _activeSubscriptions.Add(subscription.Route.Path, new ConcurrentHashSet<ClientSubscription<TSchema>>());
                     }
                 }
 
-                _activeSubscriptions[subscription.EventName].Add(subscription);
+                _activeSubscriptions[subscription.Route.Path].Add(subscription);
+            }
+            else
+            {
+                // TODO: Send error if the document failed to parse or the subscription
+                //       couldnt otherwise we registered with the supervisor
             }
         }
 

@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Framework
     /// </summary>
     /// <typeparam name="TSchema">The type of the t schema.</typeparam>
     public partial class TestServerBuilder<TSchema> : ServiceCollection
-        where TSchema : class, ISchema, new()
+        where TSchema : class, ISchema
     {
         private readonly List<IGraphTestFrameworkComponent> _testComponents;
         private readonly TestOptions _initialSetup;
@@ -35,6 +36,7 @@ namespace GraphQL.AspNet.Tests.Framework
         private readonly HashSet<Type> _additionalTypes = new HashSet<Type>();
 
         private Action<SchemaOptions> _configureOptions;
+        private List<ISchemaExtension> _extensions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestServerBuilder{TSchema}" /> class.
@@ -43,7 +45,9 @@ namespace GraphQL.AspNet.Tests.Framework
         public TestServerBuilder(TestOptions initialSetup = TestOptions.None)
         {
             _testComponents = new List<IGraphTestFrameworkComponent>();
+            _extensions = new List<ISchemaExtension>();
             _initialSetup = initialSetup;
+
             this.Authorization = new TestAuthorizationBuilder();
             this.User = new TestUserAccountBuilder();
             this.Logging = new TestLoggingBuilder();
@@ -63,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             options.AutoRegisterLocalGraphEntities = false;
 
-            if (_initialSetup.HasFlag(TestOptions.CodeDeclaredNames))
+            if (_initialSetup.HasFlag(TestOptions.UseCodeDeclaredNames))
             {
                 options.DeclarationOptions.GraphNamingFormatter = new GraphNameFormatter(GraphNameFormatStrategy.NoChanges);
             }
@@ -88,6 +92,17 @@ namespace GraphQL.AspNet.Tests.Framework
         public TestServerBuilder<TSchema> AddTestComponent(IGraphTestFrameworkComponent component)
         {
             _testComponents.Add(component);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds an extension to the schema when the test server is built.
+        /// </summary>
+        /// <param name="extension">The extension.</param>
+        /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
+        public TestServerBuilder<TSchema> AddSchemaExtension(ISchemaExtension extension)
+        {
+            _extensions.Add(extension);
             return this;
         }
 
@@ -164,6 +179,9 @@ namespace GraphQL.AspNet.Tests.Framework
             // inject staged graph types
             var injector = new GraphQLSchemaInjector<TSchema>(serviceCollection, _configureOptions);
             injector.ConfigureServices();
+
+            foreach (var extension in _extensions)
+                extension.Configure(injector.SchemaBuilder.Options);
 
             var userAccount = this.User.CreateUserAccount();
             var serviceProvider = serviceCollection.BuildServiceProvider();

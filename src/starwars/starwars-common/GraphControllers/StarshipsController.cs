@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Threading.Tasks;
@@ -74,9 +75,9 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
         [SubscriptionRoot("starship", typeof(Starship))]
         [Description("Returns an updated starship anytime it is altered.")]
-        public async Task<IGraphActionResult> StarshipUpdated(Starship eventData, string nameLike = "*")
+        public  Task<IGraphActionResult> StarshipUpdated(Starship eventData, string nameLike = "*")
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

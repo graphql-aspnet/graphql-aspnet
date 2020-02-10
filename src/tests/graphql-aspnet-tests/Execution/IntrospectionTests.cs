@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void IntrospectedInputValueType_PropertyCheck()
         {
-            var serverBuilder = new TestServerBuilder(TestOptions.CodeDeclaredNames)
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<SodaCanBuildingController>();
 
             var server = serverBuilder.Build();
@@ -262,7 +262,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void IntrospectedEnum_PropertyCheck()
         {
-            var serverBuilder = new TestServerBuilder(TestOptions.CodeDeclaredNames);
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             var server = serverBuilder
                 .AddGraphType<IntrospectableEnum>()
                 .Build();
@@ -309,7 +309,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void IntrospectedObject_PropertyCheck()
         {
-            var serverBuilder = new TestServerBuilder(TestOptions.CodeDeclaredNames);
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             var server = serverBuilder
                 .AddGraphType<IntrospectableObject>()
                 .Build();

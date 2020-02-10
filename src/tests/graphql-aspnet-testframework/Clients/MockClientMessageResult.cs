@@ -7,7 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.Subscrptions.Tests.CommonHelpers
 {
     using System;
@@ -15,15 +14,14 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
-    /// A fake message mimicing what would be generating when
+    /// A fake result mimicing what would be generating when
     /// a client connection recieves data form its underlying implementaiton.
     /// </summary>
     public class MockClientMessageResult : IClientConnectionReceiveResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MockClientMessage" /> class.
+        /// Initializes a new instance of the <see cref="MockClientMessageResult" /> class.
         /// </summary>
-        /// <param name="data">The data.</param>
         /// <param name="byteCount">The byte count.</param>
         /// <param name="messageType">Type of the message.</param>
         /// <param name="isEndOfMessage">The is end of message.</param>

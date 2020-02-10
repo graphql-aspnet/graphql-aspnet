@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             var syntaxTree = _parser.ParseQueryDocument(data.Query.AsMemory());
             var plan = await _planGenerator.CreatePlan(syntaxTree);
 
-            return new ClientSubscription<TSchema>(plan);
+            return new ClientSubscription<TSchema>(plan, data.OperationName);
         }
     }
 }

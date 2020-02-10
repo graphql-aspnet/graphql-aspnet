@@ -18,9 +18,17 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
     [DebuggerDisplay("TwoProp: {Property1}")]
     public class TwoPropertyObject : ITwoPropertyObject
     {
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>value.</value>
         [GraphField]
         public string Property1 { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>value.</value>
         [GraphField]
         public int Property2 { get; set; }
     }

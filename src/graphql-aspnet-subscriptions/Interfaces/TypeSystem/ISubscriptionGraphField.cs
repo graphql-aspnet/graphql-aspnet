@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A <see cref="IGraphField"/> containing information specificly related to subscriptions.
     /// </summary>
-    public interface IGraphSubscriptionField : IGraphField
+    public interface ISubscriptionGraphField : IGraphField
     {
         /// <summary>
         /// Gets the name of the event assigned to this subscription field.

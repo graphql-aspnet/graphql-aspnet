@@ -7,7 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.Subscrptions.Tests.CommonHelpers
 {
     using System;
@@ -16,9 +15,8 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
-
       /// <summary>
-    /// A messag that indicates the remote client has/is closing hte connection
+    /// A messag that indicates the remote client has/is closing hte connection.
     /// </summary>
     public class MockClientRemoteCloseMessage : MockClientMessage
     {
@@ -38,6 +36,5 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
                   closeDescription)
         {
         }
-
     }
 }

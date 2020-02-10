@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
-{using System.Net.WebSockets;
+{
+    using System.Net.WebSockets;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+
     /// <summary>
     /// A connection receive result that can wrap a raw result retrieved from a websocket.
     /// </summary>

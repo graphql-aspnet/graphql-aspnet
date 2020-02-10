@@ -9,25 +9,23 @@
 
 namespace GraphQL.Subscrptions.Tests.Apollo
 {
+    using System;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.Subscriptions.Tests.Apollo;
+    using GraphQL.Subscriptions.Tests.CommonHelpers;
     using GraphQL.Subscrptions.Tests.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;
-    using Newtonsoft.Json;
     using NUnit.Framework;
 
     [TestFixture]
     public partial class ApolloClientProxyTests
     {
-
         [Test]
-        public async Task WhenConnectionEstablished_RequiredMessagesReturned()
+        public async Task Supervisor_WhenConnectionEstablished_RequiredMessagesReturned()
         {
             var socketClient = new MockClientConnection();
             var options = new SchemaSubscriptionOptions<GraphSchema>();
@@ -42,7 +40,7 @@ namespace GraphQL.Subscrptions.Tests.Apollo
 
             // queue a message sequence to the server
             socketClient.QueueClientMessage(new MockClientMessage(new ApolloConnectionInitMessage()));
-            socketClient.QueueConnectionClose();
+            socketClient.QueueConnectionCloseMessage();
 
             // execute the connection sequence
             await apolloClient.StartConnection();
@@ -52,13 +50,8 @@ namespace GraphQL.Subscrptions.Tests.Apollo
             Assert.AreEqual(2, socketClient.ResponseMessageCount);
 
             // ensure the two response messages are of the appropriate type
-            var returnMessage = socketClient.DequeueReturnMessageTo<ApolloResponseMessage>();
-            Assert.IsNotNull(returnMessage, "message could not be converted");
-            Assert.AreEqual(ApolloMessageType.CONNECTION_ACK, returnMessage.Type);
-
-            returnMessage = socketClient.DequeueReturnMessageTo<ApolloResponseMessage>();
-            Assert.IsNotNull(returnMessage, "message could not be converted");
-            Assert.AreEqual(ApolloMessageType.CONNECTION_KEEP_ALIVE, returnMessage.Type);
+            socketClient.AssertServerSentMessageType(ApolloMessageType.CONNECTION_ACK, true);
+            socketClient.AssertServerSentMessageType(ApolloMessageType.CONNECTION_KEEP_ALIVE, true);
         }
     }
 }

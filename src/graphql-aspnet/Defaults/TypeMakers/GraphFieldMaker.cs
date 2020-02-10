@@ -8,8 +8,11 @@
 // *************************************************************
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
+    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -19,7 +22,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     /// <summary>
     /// A maker capable of turning a <see cref="IGraphFieldBaseTemplate"/> into a usable field in an object graph.
     /// </summary>
-    public class GraphFieldMaker
+    public class GraphFieldMaker : IGraphFieldMaker
     {
         private readonly ISchema _schema;
 
@@ -52,32 +55,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             if (template.SecurityPolicies?.Count > 0)
                 securityGroups.Add(template.SecurityPolicies);
 
-            MethodGraphField field = null;
-            switch (template.FieldSource)
-            {
-                case GraphFieldTemplateSource.Method:
-                case GraphFieldTemplateSource.Action:
-                    field = new MethodGraphField(
-                        formatter.FormatFieldName(template.Name),
-                        template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
-                        template.Route,
-                        template.Mode,
-                        template.CreateResolver(),
-                        securityGroups);
-                    break;
-
-                case GraphFieldTemplateSource.Property:
-                    field = new PropertyGraphField(
-                        formatter.FormatFieldName(template.Name),
-                        template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
-                        template.Route,
-                        template.DeclaredReturnType,
-                        template.DeclaredName,
-                        template.Mode,
-                        template.CreateResolver(),
-                        securityGroups);
-                    break;
-            }
+            MethodGraphField field = this.InstantiateField(formatter, template, securityGroups);
 
             field.Description = template.Description;
             field.IsDeprecated = template.IsDeprecated;
@@ -107,6 +85,46 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             result.Field = field;
             return result;
+        }
+
+        /// <summary>
+        /// Instantiates the graph field according to the data provided.
+        /// </summary>
+        /// <param name="formatter">The formatter.</param>
+        /// <param name="template">The template.</param>
+        /// <param name="securityGroups">The security groups.</param>
+        /// <returns>MethodGraphField.</returns>
+        protected virtual MethodGraphField InstantiateField(
+            GraphNameFormatter formatter,
+            IGraphTypeFieldTemplate template,
+            List<FieldSecurityGroup> securityGroups)
+        {
+            switch (template.FieldSource)
+            {
+                case GraphFieldTemplateSource.Method:
+                case GraphFieldTemplateSource.Action:
+                    return new MethodGraphField(
+                        formatter.FormatFieldName(template.Name),
+                        template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                        template.Route,
+                        template.Mode,
+                        template.CreateResolver(),
+                        securityGroups);
+
+                case GraphFieldTemplateSource.Property:
+                    return new PropertyGraphField(
+                        formatter.FormatFieldName(template.Name),
+                        template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                        template.Route,
+                        template.DeclaredReturnType,
+                        template.DeclaredName,
+                        template.Mode,
+                        template.CreateResolver(),
+                        securityGroups);
+
+                default:
+                    throw new ArgumentOutOfRangeException($"Template field source of {template.FieldSource.ToString()} is not supported by {this.GetType().FriendlyName()}.");
+            }
         }
     }
 }

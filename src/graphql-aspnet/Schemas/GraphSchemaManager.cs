@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="extension">The extension to add.</param>
         private void AddTypeExtension(IGraphTypeFieldTemplate extension)
         {
-            var fieldMaker = new GraphFieldMaker(this.Schema);
+            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(this.Schema);
             var fieldResult = fieldMaker.CreateField(extension);
 
             if (fieldResult != null)
@@ -280,7 +280,7 @@ namespace GraphQL.AspNet.Schemas
         private void AddActionAsField(IObjectGraphType parentField, IGraphTypeFieldTemplate action)
         {
             // apend the action as a field on the parent
-            var maker = new GraphFieldMaker(this.Schema);
+            var maker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(this.Schema);
             var fieldResult = maker.CreateField(action);
 
             if (fieldResult != null)

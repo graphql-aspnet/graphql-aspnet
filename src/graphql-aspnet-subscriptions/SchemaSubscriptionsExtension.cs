@@ -58,10 +58,13 @@ namespace GraphQL.AspNet
             _primaryOptions = options;
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
 
-            // swap out the master templater for the one that includes
+            // swap out the master providers for the ones that includes
             // support for the subscription action type
             if (!(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider))
                 GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
+
+            if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
+                GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
 
             // add the needed apollo's classes as optional services
             // if the user has already added support for their own handlers

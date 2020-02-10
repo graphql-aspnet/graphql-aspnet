@@ -7,15 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.Subscrptions.Tests.CommonHelpers
 {
     using System;
     using System.Text;
-    using System.Text.Unicode;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
-
 
       /// <summary>
     /// A fake message mimicing what would be generating when
@@ -71,6 +67,11 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
             this.CloseStatusDescription = null;
         }
 
+        /// <summary>
+        /// Converts the data raw data stream to a string, with the assumption the raw data
+        /// is UTF8 encoded.
+        /// </summary>
+        /// <returns>System.String.</returns>
         public string ConvertDataToUTF8()
         {
             if (this.Data == null)
@@ -112,19 +113,20 @@ namespace GraphQL.Subscrptions.Tests.CommonHelpers
         /// <returns><c>true</c> if there are more bytes to read, <c>false</c> otherwise.</returns>
         internal bool ReadNextBytes(ArraySegment<byte> buffer, out int bytesRead)
         {
-            var segment = new ArraySegment<byte>(this.Data, _lastIndexRead, this.Data.Length - _lastIndexRead);
-            if (segment.Count <= buffer.Count)
+            var lengthRemaining = this.Data.Length - _lastIndexRead;
+            if (lengthRemaining <= buffer.Count)
             {
-                segment.CopyTo(buffer);
+                Array.Copy(this.Data, _lastIndexRead, buffer.Array, 0, lengthRemaining);
                 _lastIndexRead = this.Data.Length;
-                bytesRead = segment.Count;
+                bytesRead = lengthRemaining;
                 return false;
             }
             else
             {
-                segment.CopyTo(buffer);
-                _lastIndexRead += buffer.Count;
-                bytesRead = buffer.Count;
+                lengthRemaining = buffer.Count;
+                Array.Copy(this.Data, _lastIndexRead, buffer.Array, 0, lengthRemaining);
+                _lastIndexRead += lengthRemaining;
+                bytesRead = lengthRemaining;
                 return true;
             }
         }

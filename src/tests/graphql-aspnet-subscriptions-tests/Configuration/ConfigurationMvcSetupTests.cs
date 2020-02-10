@@ -9,28 +9,14 @@
 
 namespace GraphQL.Subscrptions.Tests.Configuration
 {
-    using System.Reflection;
-    using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
-    using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Web;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
-    using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.ThirdPartyDll;
-    using GraphQL.AspNet.Tests.ThirdPartyDll.Model;
     using GraphQL.Subscrptions.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;

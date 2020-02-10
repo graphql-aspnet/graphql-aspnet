@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <see cref="T:System.Net.WebSockets.WebSocket" />.
         /// </summary>
         /// <param name="context">The original http context that initiated the web socket.</param>
-        /// <param name="connectedSocket">The connected socket resolved by the aspnet runtime.</param>
+        /// <param name="connection">The connected socket resolved by the aspnet runtime.</param>
         /// <param name="options">The configured options for subscriptions for the target schema.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
         ISubscriptionClientProxy CreateClientProxy(HttpContext context, IClientConnection connection, SchemaSubscriptionOptions<TSchema> options);

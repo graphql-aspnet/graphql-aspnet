@@ -6,14 +6,14 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.CommonHelpers
+
+namespace GraphQL.Subscriptions.Tests.ValidationRuless.RuleCheckTestData
 {
     using GraphQL.AspNet.Attributes;
 
-    [GraphType("TwoPropertyInterface")]
-    public interface ITwoPropertyObject
+    [GraphType("HorizontalMover")]
+    public interface IHorizontalMover
     {
-        [GraphField]
-        string Property1 { get; }
+        int Id { get; }
     }
 }
