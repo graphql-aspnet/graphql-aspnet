@@ -41,14 +41,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <summary>
         /// Creates a new encapsulated subscription from a graphql data package.
         /// </summary>
+        /// <param name="clientProxy">The proxy representing the client requesting the subscription.</param>
         /// <param name="data">The data package recieved from the client.</param>
+        /// <param name="clientProvidedId">The provided identifier, from the client, that should be
+        /// sent when ever this subscription is provided data.</param>
         /// <returns>Task&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        public async Task<ClientSubscription<TSchema>> Create(GraphQueryData data)
+        public async Task<ClientSubscription<TSchema>> Create(ISubscriptionClientProxy clientProxy, GraphQueryData data, string clientProvidedId)
         {
             var syntaxTree = _parser.ParseQueryDocument(data.Query.AsMemory());
             var plan = await _planGenerator.CreatePlan(syntaxTree);
 
-            return new ClientSubscription<TSchema>(plan, data.OperationName);
+            return new ClientSubscription<TSchema>(clientProxy, clientProvidedId, plan, data.OperationName);
         }
     }
 }

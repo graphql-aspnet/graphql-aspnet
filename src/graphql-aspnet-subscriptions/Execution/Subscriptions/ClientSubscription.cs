@@ -9,7 +9,9 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
@@ -28,11 +30,21 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientSubscription{TSchema}" /> class.
         /// </summary>
+        /// <param name="clientProxy">The client proxy that will own this subscription.</param>
+        /// <param name="clientProvidedId">The identifier, provided by the client, that will be sent
+        /// whenever a response to this subscription is sent.</param>
         /// <param name="queryPlan">The query plan.</param>
         /// <param name="operationName">Name of the subscription operation within the document to use.</param>
-        public ClientSubscription(IGraphQueryPlan queryPlan, string operationName = null)
+        public ClientSubscription(
+            ISubscriptionClientProxy clientProxy,
+            string clientProvidedId,
+            IGraphQueryPlan queryPlan,
+            string operationName = null)
         {
+            this.Client = Validation.ThrowIfNullOrReturn(clientProxy, nameof(clientProxy));
+            this.ClientProvidedId = Validation.ThrowIfNullWhiteSpaceOrReturn(clientProvidedId, nameof(clientProvidedId));
             this.Messages = _queryPlan?.Messages ?? new GraphMessageCollection();
+
             _queryPlan = queryPlan;
 
             this.IsValid = false;
@@ -81,28 +93,42 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 // the user swaps out some DI components incorrectly or by mistake...
                 this.Messages.Add(
                   GraphMessageSeverity.Critical,
-                  $"The subscription's top level field, '{_operation.FieldContexts[0]?.Field?.Name ?? "-null-" }', is not a valid subscription field.",
+                  $"The subscription's top level field, '{_operation.FieldContexts[0]?.Field?.Name ?? "-null-"}', is not a valid subscription field.",
                   Constants.ErrorCodes.BAD_REQUEST);
-            }
-            else
-            {
-                this.Route = _field.Route;
             }
 
             this.IsValid = this.Messages.IsSucessful && _operation != null && _field != null;
         }
 
         /// <summary>
+        /// Gets a reference to the the top-level graph field that has been subscribed to.
+        /// </summary>
+        /// <value>The field.</value>
+        public IGraphField Field => _field;
+
+        /// <summary>
         /// Gets the unique route within a schema this subscription is pointed at.
         /// </summary>
         /// <value>The route.</value>
-        public GraphFieldPath Route { get; }
+        public GraphFieldPath Route => _field?.Route;
 
         /// <summary>
         /// Gets a value indicating whether this subscription has been properly configured.
         /// </summary>
         /// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
         public bool IsValid { get; }
+
+        /// <summary>
+        /// Gets the client proxy that owns this subscription.
+        /// </summary>
+        /// <value>The client.</value>
+        public ISubscriptionClientProxy Client { get; }
+
+        /// <summary>
+        /// Gets the client provided identifier that should be sent whenever data is sent for this subscription.
+        /// </summary>
+        /// <value>The client provided identifier.</value>
+        public string ClientProvidedId { get; }
 
         /// <summary>
         /// Gets the messages.

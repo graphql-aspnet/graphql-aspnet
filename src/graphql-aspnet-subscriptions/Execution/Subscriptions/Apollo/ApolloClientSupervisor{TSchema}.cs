@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
@@ -76,6 +77,19 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                 return;
 
             client.RegisterAsyncronousMessageDelegate(this.ApolloClient_MessageRecieved);
+        }
+
+        /// <summary>
+        /// Retrieves the set of subscriptions.
+        /// </summary>
+        /// <param name="eventName">Name of the event.</param>
+        /// <returns>IEnumerable&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
+        public IEnumerable<ClientSubscription<TSchema>> RetrieveSubscriptions(string eventName)
+        {
+            if (!_activeSubscriptions.ContainsKey(eventName))
+                return new List<ClientSubscription<TSchema>>();
+
+            return _activeSubscriptions[eventName];
         }
 
         /// <summary>
@@ -146,7 +160,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         private async Task StartNewSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
         {
             var maker = client.ServiceProvider.GetRequiredService(typeof(IClientSubscriptionMaker<TSchema>)) as IClientSubscriptionMaker<TSchema>;
-            var subscription = await maker.Create(message.Payload);
+            var subscription = await maker.Create(client, message.Payload, message.Id);
 
             if (subscription.IsValid)
             {

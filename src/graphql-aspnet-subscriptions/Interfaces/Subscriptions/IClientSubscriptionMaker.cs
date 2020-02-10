@@ -24,8 +24,11 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <summary>
         /// Creates a new encapsulated subscription from a graphql data package.
         /// </summary>
+        /// <param name="clientProxy">The proxy representing the client requesting the subscription.</param>
         /// <param name="data">The data package recieved from the client.</param>
+        /// <param name="clientProvidedId">The provided identifier, from the client, that should be
+        /// sent when ever this subscription is provided data.</param>
         /// <returns>Task&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        Task<ClientSubscription<TSchema>> Create(GraphQueryData data);
+        Task<ClientSubscription<TSchema>> Create(ISubscriptionClientProxy clientProxy, GraphQueryData data, string clientProvidedId)
     }
 }
