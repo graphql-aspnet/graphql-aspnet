@@ -10,10 +10,8 @@
 namespace GraphQL.AspNet.Defaults
 {
     using GraphQL.AspNet.Defaults.TypeMakers;
-    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An abstract factory for creating type makers using all the default, built in type makers.

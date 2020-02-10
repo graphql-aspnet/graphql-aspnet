@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscrptions.Tests.Internal.Templating.ControllerTestData
+namespace GraphQL.Subscriptions.Tests.Internal.Templating.ControllerTestData
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;

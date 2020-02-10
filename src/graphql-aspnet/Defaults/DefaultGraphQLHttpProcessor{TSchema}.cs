@@ -129,52 +129,51 @@ namespace GraphQL.AspNet.Defaults
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         protected virtual async Task ExecuteGraphQLQuery(GraphQueryData queryData)
         {
-            using (var cancelSource = new CancellationTokenSource())
+            using var cancelSource = new CancellationTokenSource();
+
+            try
             {
-                try
+                // *******************************
+                // Setup
+                // *******************************
+                this.GraphQLRequest = _runtime.CreateRequest(queryData);
+                if (this.GraphQLRequest == null)
                 {
-                    // *******************************
-                    // Setup
-                    // *******************************
-                    this.GraphQLRequest = _runtime.CreateRequest(queryData);
-                    if (this.GraphQLRequest == null)
-                    {
-                        await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
-                        return;
-                    }
-
-                    // *******************************
-                    // Primary query execution
-                    // *******************************
-                    var metricPackage = this.EnableMetrics ? _metricsFactory.CreateMetricsPackage() : null;
-
-                    var queryResponse = await _runtime.ExecuteRequest(
-                        this.HttpContext.RequestServices,
-                        this.HttpContext.User,
-                        this.GraphQLRequest,
-                        metricPackage);
-
-                    // if any metrics were populated in the execution, allow a child class to process them
-                    if (metricPackage != null)
-                        this.HandleQueryMetrics(metricPackage);
-
-                    // all done, finalize and return
-                    queryResponse = this.FinalizeResult(queryResponse);
-                    await this.WriteResponse(queryResponse).ConfigureAwait(false);
+                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
+                    return;
                 }
-                catch (Exception ex)
+
+                // *******************************
+                // Primary query execution
+                // *******************************
+                var metricPackage = this.EnableMetrics ? _metricsFactory.CreateMetricsPackage() : null;
+
+                var queryResponse = await _runtime.ExecuteRequest(
+                    this.HttpContext.RequestServices,
+                    this.HttpContext.User,
+                    this.GraphQLRequest,
+                    metricPackage);
+
+                // if any metrics were populated in the execution, allow a child class to process them
+                if (metricPackage != null)
+                    this.HandleQueryMetrics(metricPackage);
+
+                // all done, finalize and return
+                queryResponse = this.FinalizeResult(queryResponse);
+                await this.WriteResponse(queryResponse).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                var exceptionResult = this.HandleQueryException(ex);
+                if (exceptionResult == null)
                 {
-                    var exceptionResult = this.HandleQueryException(ex);
-                    if (exceptionResult == null)
-                    {
-                        // no one was able to handle hte exception. Log it if able and just fail out to the caller
-                        _logger?.UnhandledExceptionEvent(ex);
-                        await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await this.WriteResponse(exceptionResult).ConfigureAwait(false);
-                    }
+                    // no one was able to handle hte exception. Log it if able and just fail out to the caller
+                    _logger?.UnhandledExceptionEvent(ex);
+                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE).ConfigureAwait(false);
+                }
+                else
+                {
+                    await this.WriteResponse(exceptionResult).ConfigureAwait(false);
                 }
             }
         }

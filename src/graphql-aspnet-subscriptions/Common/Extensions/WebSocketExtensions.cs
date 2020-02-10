@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Common.Extensions
 {
     using System;
     using System.Collections.Generic;
-    using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Subscriptions;

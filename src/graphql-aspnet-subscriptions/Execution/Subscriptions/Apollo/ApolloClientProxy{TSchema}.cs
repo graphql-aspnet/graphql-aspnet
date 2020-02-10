@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.WebSockets;
     using System.Security.Claims;
     using System.Text;
     using System.Text.Json;
@@ -27,7 +26,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide

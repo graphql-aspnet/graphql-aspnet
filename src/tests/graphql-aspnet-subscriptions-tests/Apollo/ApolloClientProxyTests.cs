@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscrptions.Tests.Apollo
+namespace GraphQL.Subscriptions.Tests.Apollo
 {
     using System;
     using System.Threading.Tasks;
@@ -17,7 +17,6 @@ namespace GraphQL.Subscrptions.Tests.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Schemas;
     using GraphQL.Subscriptions.Tests.CommonHelpers;
-    using GraphQL.Subscrptions.Tests.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 

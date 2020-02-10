@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
-    using System.Net.WebSockets;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;

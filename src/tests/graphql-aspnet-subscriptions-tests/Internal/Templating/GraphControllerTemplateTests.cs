@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscrptions.Tests.Internal.Templating
+namespace GraphQL.Subscriptions.Tests.Internal.Templating
 {
     using System.Linq;
     using GraphQL.AspNet;
@@ -15,7 +15,7 @@ namespace GraphQL.Subscrptions.Tests.Internal.Templating
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.Subscrptions.Tests.Internal.Templating.ControllerTestData;
+    using GraphQL.Subscriptions.Tests.Internal.Templating.ControllerTestData;
     using NUnit.Framework;
 
     [TestFixture]

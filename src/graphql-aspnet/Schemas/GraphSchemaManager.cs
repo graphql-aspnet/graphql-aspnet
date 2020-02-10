@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;

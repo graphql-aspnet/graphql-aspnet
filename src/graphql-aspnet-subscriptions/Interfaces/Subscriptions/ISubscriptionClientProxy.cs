@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
-    using System.Net.WebSockets;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;

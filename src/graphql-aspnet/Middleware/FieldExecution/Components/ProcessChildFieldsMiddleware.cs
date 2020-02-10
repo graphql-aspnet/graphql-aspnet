@@ -93,7 +93,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // downstream child contexts
             var sourceItemLookup = allSourceItems.ToLookup(x => x.ResultData.GetType());
 
-            IEnumerable<GraphFieldExecutionContext> childContexts = null;
             foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
             {
                 // Step 1
@@ -120,7 +119,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // ----------------------------
                 // when the invocation is as a batch, create one execution context for all children
                 // when its "per source" create a context for each child individually
-                childContexts = this.CreateChildExecutionContexts(context, childInvocationContext, sourceItemsToInclude);
+                IEnumerable<GraphFieldExecutionContext> childContexts = this.CreateChildExecutionContexts(context, childInvocationContext, sourceItemsToInclude);
 
                 // Step 3
                 // --------------------

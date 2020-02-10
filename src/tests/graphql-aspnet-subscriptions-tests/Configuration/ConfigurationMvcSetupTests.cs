@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscrptions.Tests.Configuration
+namespace GraphQL.Subscriptions.Tests.Configuration
 {
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration.Mvc;
@@ -17,7 +17,7 @@ namespace GraphQL.Subscrptions.Tests.Configuration
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscrptions.Tests.Configuration.ConfigurationTestData;
+    using GraphQL.Subscriptions.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 

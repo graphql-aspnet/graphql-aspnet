@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscrptions.Tests
+namespace GraphQL.Subscriptions.Tests
 {
     using System;
+    using System.Threading;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;

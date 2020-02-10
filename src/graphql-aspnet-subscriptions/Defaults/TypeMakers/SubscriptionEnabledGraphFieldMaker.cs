@@ -9,7 +9,6 @@
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;

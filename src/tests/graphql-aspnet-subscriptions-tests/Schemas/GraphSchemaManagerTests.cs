@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscrptions.Tests.Schemas
+namespace GraphQL.Subscriptions.Tests.Schemas
 {
     using System;
     using GraphQL.AspNet;
@@ -17,7 +17,7 @@ namespace GraphQL.Subscrptions.Tests.Schemas
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscrptions.Tests.Schemas.SchemaTestData;
+    using GraphQL.Subscriptions.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
 
     [TestFixture]

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscrptions.Tests.Internal.Templating.ActionTestData
+namespace GraphQL.Subscriptions.Tests.Internal.Templating.ActionTestData
 {
     using System.ComponentModel;
     using System.Threading.Tasks;

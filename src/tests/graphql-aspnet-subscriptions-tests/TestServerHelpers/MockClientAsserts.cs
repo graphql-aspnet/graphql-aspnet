@@ -13,7 +13,7 @@ namespace GraphQL.Subscriptions.Tests.CommonHelpers
     using System.Text.Json;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.Subscriptions.Tests.Apollo;
-    using GraphQL.Subscrptions.Tests.CommonHelpers;
+    using GraphQL.Subscriptions.Tests.CommonHelpers;
     using NUnit.Framework;
 
     public static class MockClientAsserts

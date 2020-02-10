@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System;
-    using System.Net.WebSockets;
     using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
