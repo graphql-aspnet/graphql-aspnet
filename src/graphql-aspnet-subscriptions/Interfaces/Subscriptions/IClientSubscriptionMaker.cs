@@ -29,6 +29,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="clientProvidedId">The provided identifier, from the client, that should be
         /// sent when ever this subscription is provided data.</param>
         /// <returns>Task&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        Task<ClientSubscription<TSchema>> Create(ISubscriptionClientProxy clientProxy, GraphQueryData data, string clientProvidedId)
+        Task<ClientSubscription<TSchema>> Create(ISubscriptionClientProxy clientProxy, GraphQueryData data, string clientProvidedId);
     }
 }

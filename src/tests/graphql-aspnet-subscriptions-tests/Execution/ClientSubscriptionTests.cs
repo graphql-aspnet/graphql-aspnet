@@ -71,7 +71,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var name = field.GetType().FullName;
 
             // create subscription against a non existant operation
-            var sub = new ClientSubscription<GraphSchema>(queryPlan, "wrongOperationName");
+            var sub = new ClientSubscription<GraphSchema>(queryPlan, "fakeId123", "wrongOperationName");
 
             Assert.IsFalse(sub.IsValid);
             Assert.AreEqual(1, sub.Messages.Count);

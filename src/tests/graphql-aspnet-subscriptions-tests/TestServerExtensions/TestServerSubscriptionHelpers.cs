@@ -17,6 +17,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerHelpers
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.Subscriptions.Tests.CommonHelpers;
 
     public static class TestServerSubscriptionHelpers
     {
@@ -49,6 +50,18 @@ namespace GraphQL.Subscriptions.Tests.TestServerHelpers
             where TSchema : class, ISchema
         {
             return server.ServiceProvider.GetService(typeof(ISubscriptionServer<TSchema>)) as ISubscriptionServer<TSchema>;
+        }
+
+        /// <summary>
+        /// Creates a test client that mimics an always-connected websocket client.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of the schema the server is hosting.</typeparam>
+        /// <param name="server">The server.</param>
+        /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
+        public static IClientConnection CreateClient<TSchema>(this TestServer<TSchema> server)
+            where TSchema : class, ISchema
+        {
+            return new MockClientConnection();
         }
     }
 }
