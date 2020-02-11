@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-using GraphQL.AspNet.Interfaces.TypeSystem;
-
-namespace GraphQL.Subscriptions.Tests.TestServerHelpers
+namespace GraphQL.Subscriptions.Tests.Apollo
 {
-    public interface IClientConnection<TSchema> where TSchema : class, ISchema
+    using NUnit.Framework;
+
+    [TestFixture]
+    public class ApolloServerTests
     {
     }
 }

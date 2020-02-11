@@ -30,6 +30,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <typeparam name="TData">The type of the data being recieved on the event.</typeparam>
         /// <param name="subscriptionEvent">A subscription event.</param>
         /// <returns>Task.</returns>
-        Task PublishEvent<TData>(SubscriptionEvent<TData> subscriptionEvent);
+        Task HandleEvent<TData>(SubscriptionEvent<TData> subscriptionEvent);
     }
 }

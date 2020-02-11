@@ -26,9 +26,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>
         where TSchema : class, ISchema
     {
-        private ApolloClientSupervisor<TSchema> _supervisor;
-        private Dictionary<string, string> _eventMap;
         private readonly TSchema _schema;
+        private readonly ApolloClientSupervisor<TSchema> _supervisor;
+        private readonly Dictionary<string, string> _eventMap;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloSubscriptionServer{TSchema}" /> class.
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <typeparam name="TData">The type of the data being recieved on the event.</typeparam>
         /// <param name="subscriptionEvent">A subscription event.</param>
         /// <returns>Task.</returns>
-        public Task PublishEvent<TData>(SubscriptionEvent<TData> subscriptionEvent)
+        public Task HandleEvent<TData>(SubscriptionEvent<TData> subscriptionEvent)
         {
             if (subscriptionEvent != null && _eventMap.ContainsKey(subscriptionEvent.EventName))
             {

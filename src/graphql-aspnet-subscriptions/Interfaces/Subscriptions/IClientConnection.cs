@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
 
     /// <summary>

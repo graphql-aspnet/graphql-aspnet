@@ -23,34 +23,5 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     [TestFixture]
     public partial class ApolloClientProxyTests
     {
-        [Test]
-        public async Task Supervisor_WhenConnectionEstablished_RequiredMessagesReturned()
-        {
-            var socketClient = new MockClientConnection();
-            var options = new SchemaSubscriptionOptions<GraphSchema>();
-
-            var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
-
-            var supervisor = new ApolloClientSupervisor<GraphSchema>();
-            supervisor.RegisterNewClient(apolloClient);
-
-            var message = new ApolloConnectionInitMessage();
-
-            // queue a message sequence to the server
-            socketClient.QueueClientMessage(new MockClientMessage(new ApolloConnectionInitMessage()));
-            socketClient.QueueConnectionCloseMessage();
-
-            // execute the connection sequence
-            await apolloClient.StartConnection();
-
-            // the server should have sent back two messages to the client (ack, keep alive)
-            // per the protocol
-            Assert.AreEqual(2, socketClient.ResponseMessageCount);
-
-            // ensure the two response messages are of the appropriate type
-            socketClient.AssertServerSentMessageType(ApolloMessageType.CONNECTION_ACK, true);
-            socketClient.AssertServerSentMessageType(ApolloMessageType.CONNECTION_KEEP_ALIVE, true);
-        }
     }
 }

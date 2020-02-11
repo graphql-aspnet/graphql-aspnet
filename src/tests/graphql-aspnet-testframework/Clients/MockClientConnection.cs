@@ -24,7 +24,9 @@ namespace GraphQL.Subscriptions.Tests.CommonHelpers
 
     /// <summary>
     /// A fake client connection to mock how a websocket would send and recieve data
-    /// that is also inspectable for unit tests.
+    /// that is also inspectable for unit tests. This client executes by storing a sequence of messages
+    /// in a specific order then, through the connection interface, delivering each in turn to the server listening
+    /// to this client.
     /// </summary>
     public class MockClientConnection : IClientConnection
     {

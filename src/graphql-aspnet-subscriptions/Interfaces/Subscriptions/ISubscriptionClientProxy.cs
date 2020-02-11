@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
+    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
 
     /// <summary>
     /// An interface representing an established connection to a client that can process
