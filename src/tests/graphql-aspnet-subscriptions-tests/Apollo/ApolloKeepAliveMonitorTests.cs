@@ -9,14 +9,10 @@
 
 namespace GraphQL.Subscriptions.Tests.Apollo
 {
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
-    using Newtonsoft.Json;
+    using NUnit.Framework;
 
-    /// <summary>
-    /// A general message to deserialize server messages into for inspection in testing.
-    /// </summary>
-    public class ApolloResponseMessage : ApolloMessage
+    [TestFixture]
+    public class ApolloKeepAliveMonitorTests
     {
-        public override object PayloadObject { get; }
     }
 }

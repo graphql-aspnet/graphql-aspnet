@@ -163,9 +163,20 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             options.AllowTrailingCommas = true;
             options.ReadCommentHandling = JsonCommentHandling.Skip;
 
-            var partialMessage = JsonSerializer.Deserialize<ApolloPartialClientMessage>(text, options);
+            ApolloMessage recievedMessage = null;
 
-            return partialMessage.Convert();
+            try
+            {
+                var partialMessage = JsonSerializer.Deserialize<ApolloPartialClientMessage>(text, options);
+                recievedMessage = partialMessage.Convert();
+            }
+            catch
+            {
+                // TODO: Capture deserialization errors as a structured event
+                recievedMessage = new ApolloUnknownMessage(text);
+            }
+
+            return recievedMessage;
         }
 
         /// <summary>

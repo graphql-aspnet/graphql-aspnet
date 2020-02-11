@@ -14,14 +14,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
     /// <summary>
     /// A message representing an unknown message type.
     /// </summary>
-    public class ApolloUnknownMessage : ApolloMessage<ApolloNullPayload>
+    public class ApolloUnknownMessage : ApolloMessage<object>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloUnknownMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloUnknownMessage" /> class.
         /// </summary>
-        public ApolloUnknownMessage()
+        /// <param name="decodedTexxt">The decoded text, if any, that was recieved from the client that
+        /// was not convertable to an apollo message.</param>
+        public ApolloUnknownMessage(string decodedTexxt = null)
             : base(ApolloMessageType.UNKNOWN)
         {
+            this.Payload = decodedTexxt;
         }
     }
 }
