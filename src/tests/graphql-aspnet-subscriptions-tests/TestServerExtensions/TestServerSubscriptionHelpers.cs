@@ -18,6 +18,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerHelpers
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.CommonHelpers;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
 
     public static class TestServerSubscriptionHelpers
     {
@@ -62,6 +64,25 @@ namespace GraphQL.Subscriptions.Tests.TestServerHelpers
             where TSchema : class, ISchema
         {
             return new MockClientConnection();
+        }
+
+        /// <summary>
+        /// Creates a subscription client based on the DI setup of the test server.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of the schema to create the client for.</typeparam>
+        /// <param name="server">The server.</param>
+        /// <returns>GraphQL.AspNet.Interfaces.Subscriptions.ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
+        public static ISubscriptionClientProxy<TSchema> CreateSubscriptionClient<TSchema>(this TestServer<TSchema> server)
+                    where TSchema : class, ISchema
+        {
+            var factory = server.ServiceProvider.GetService<ISubscriptionClientFactory<TSchema>>();
+            var options = server.ServiceProvider.GetService<SchemaSubscriptionOptions<TSchema>>();
+
+            var context = new DefaultHttpContext();
+            context.RequestServices = server.ServiceProvider;
+            context.User = server.User;
+
+            return factory.CreateClientProxy(context, server.CreateClient(), options);
         }
     }
 }

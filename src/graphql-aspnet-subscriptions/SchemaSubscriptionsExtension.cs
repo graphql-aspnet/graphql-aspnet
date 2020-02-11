@@ -66,6 +66,8 @@ namespace GraphQL.AspNet
             if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
                 GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
 
+            this.RequiredServices.Add(new ServiceDescriptor(typeof(SchemaSubscriptionOptions<TSchema>), this.SubscriptionOptions));
+
             // add the needed apollo's classes as optional services
             // if the user has already added support for their own handlers
             // they will be safely ignored

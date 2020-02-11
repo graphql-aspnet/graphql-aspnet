@@ -35,4 +35,8 @@
     <ProjectReference Include="..\graphql-aspnet-testframework\graphql-aspnet-testframework.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Execution\ClientSubscriptionTestData\" />
+  </ItemGroup>
+
 </Project>

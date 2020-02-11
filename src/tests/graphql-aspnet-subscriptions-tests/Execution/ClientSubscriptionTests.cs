@@ -26,33 +26,85 @@ namespace GraphQL.Subscriptions.Tests.Execution
     public class ClientSubscriptionTests
     {
         [Test]
-        public async Task ClientSubscription_FromQueryData_PropertyCheck()
+        public async Task ClientSubscription_FromQueryData_GeneralPropertyCheck()
         {
-            var testServer = new TestServerBuilder<GraphSchema>()
-                .AddGraphController<SingleMethodController>()
+            var testServer = new TestServerBuilder()
+                .AddGraphController<ClientSubscriptionTestController>()
                 .AddSubscriptions()
                 .Build();
 
             var schema = testServer.Schema;
             var subServer = testServer.RetrieveSubscriptionServer();
             var queryPlan = await testServer.CreateQueryPlan("subscription { watchObjects { property1 property2  }} ");
+            var client = testServer.CreateSubscriptionClient();
 
             Assert.AreEqual(1, queryPlan.Operations.Count);
             Assert.AreEqual(0, queryPlan.Messages.Count);
 
             var field = queryPlan.Operations.Values.First().FieldContexts[0].Field;
             var name = field.GetType().FullName;
-            var sub = new ClientSubscription<GraphSchema>(queryPlan);
+            var sub = new ClientSubscription<GraphSchema>(
+                client,
+                "abc123",
+                queryPlan);
 
             Assert.IsTrue(sub.IsValid);
             Assert.AreEqual("[subscription]/WatchObjects", sub.Route.Path);
+            Assert.AreEqual("abc123", sub.ClientProvidedId);
+            Assert.AreEqual(field, sub.Field);
+            Assert.AreEqual(client, sub.Client);
+        }
+
+        [Test]
+        public async Task ClientSubscription_ReferencedOperationIsNotASubscription_InvalidSub()
+        {
+            var testServer = new TestServerBuilder()
+                .AddGraphController<ClientSubscriptionTestController>()
+                .AddSubscriptions()
+                .Build();
+
+            var schema = testServer.Schema;
+            var subServer = testServer.RetrieveSubscriptionServer();
+            var queryPlan = await testServer.CreateQueryPlan("subscription Operation1{ watchObjects { property1 property2  }} " +
+                "query Operation2{ retrieveObject(id: 5){ property1 } } ");
+
+            Assert.AreEqual(2, queryPlan.Operations.Count);
+            Assert.AreEqual(0, queryPlan.Messages.Count);
+
+            var sub = new ClientSubscription<GraphSchema>(
+                testServer.CreateSubscriptionClient(),
+                "abc123",
+                queryPlan,
+                "Operation2");
+
+            Assert.IsFalse(sub.IsValid);
+            Assert.AreEqual(1, sub.Messages.Count);
+            Assert.AreEqual(GraphMessageSeverity.Critical, sub.Messages.Severity);
+        }
+
+        [Test]
+        public void ClientSubscription_NoQueryPlan_InvalidSub()
+        {
+            var testServer = new TestServerBuilder()
+                .AddGraphController<ClientSubscriptionTestController>()
+                .AddSubscriptions()
+                .Build();
+
+            var sub = new ClientSubscription<GraphSchema>(
+                testServer.CreateSubscriptionClient(),
+                "abc123",
+                null);
+
+            Assert.IsFalse(sub.IsValid);
+            Assert.AreEqual(1, sub.Messages.Count);
+            Assert.AreEqual(GraphMessageSeverity.Critical, sub.Messages.Severity);
         }
 
         [Test]
         public async Task ClientSubscription_NamedOperationNotFound_InvalidSub()
         {
-            var testServer = new TestServerBuilder<GraphSchema>()
-                .AddGraphController<SingleMethodController>()
+            var testServer = new TestServerBuilder()
+                .AddGraphController<ClientSubscriptionTestController>()
                 .AddSubscriptions()
                 .Build();
 
@@ -62,7 +114,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             // two operations in the query
             var queryPlan = await testServer.CreateQueryPlan(
                 "subscription DoThings{ watchObjects { property1 property2 } } " +
-                "subscription DoOtherThings{ watchObjects { property1 } }" ) ;
+                "subscription DoOtherThings{ watchObjects { property1 } }");
 
             Assert.AreEqual(2, queryPlan.Operations.Count);
             Assert.AreEqual(0, queryPlan.Messages.Count);
@@ -71,11 +123,16 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var name = field.GetType().FullName;
 
             // create subscription against a non existant operation
-            var sub = new ClientSubscription<GraphSchema>(queryPlan, "fakeId123", "wrongOperationName");
+            var sub = new ClientSubscription<GraphSchema>(
+                testServer.CreateSubscriptionClient(),
+                "abc123",
+                queryPlan,
+                "wrongOperationname");
 
             Assert.IsFalse(sub.IsValid);
             Assert.AreEqual(1, sub.Messages.Count);
             Assert.AreEqual(GraphMessageSeverity.Critical, sub.Messages.Severity);
+            Assert.IsTrue(sub.Messages[0].Message.Contains("wrongOperationname"));
         }
     }
 }

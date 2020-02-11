@@ -13,7 +13,7 @@ namespace GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.CommonHelpers;
 
-    public class SingleMethodController : GraphController
+    public class ClientSubscriptionTestController : GraphController
     {
         [SubscriptionRoot]
         public TwoPropertyObject WatchObjects(TwoPropertyObject data, string propLike = "*")
@@ -24,6 +24,12 @@ namespace GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData
             if (data.Property1.Contains(propLike))
                 return data;
 
+            return null;
+        }
+
+        [QueryRoot]
+        public TwoPropertyObject RetrieveObject(int id)
+        {
             return null;
         }
     }

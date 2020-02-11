@@ -180,8 +180,9 @@ namespace GraphQL.AspNet.Tests.Framework
             var injector = new GraphQLSchemaInjector<TSchema>(serviceCollection, _configureOptions);
             injector.ConfigureServices();
 
+            // register each extension
             foreach (var extension in _extensions)
-                extension.Configure(injector.SchemaBuilder.Options);
+                injector.SchemaBuilder.Options.RegisterExtension(extension);
 
             var userAccount = this.User.CreateUserAccount();
             var serviceProvider = serviceCollection.BuildServiceProvider();

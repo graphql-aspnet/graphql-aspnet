@@ -73,14 +73,16 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <returns>Task.</returns>
         public Task PublishEvent<TData>(SubscriptionEvent<TData> subscriptionEvent)
         {
-            if (subscriptionEvent == null || !_eventMap.ContainsKey(subscriptionEvent.EventName))
-                return;
+            if (subscriptionEvent != null && _eventMap.ContainsKey(subscriptionEvent.EventName))
+            {
+                // normalize the event name by its full path
+                var eventName = _eventMap[subscriptionEvent.EventName];
 
-            // normalize the event name by its full path
-            var eventName = _eventMap[subscriptionEvent.EventName];
+                // fetch all subscriptions that need to be altered
+                var subscriptions = _supervisor.RetrieveSubscriptions(eventName);
+            }
 
-            // fetch all subscriptions that need to be altered
-            var subscriptions = _supervisor.RetrieveSubscriptions(eventName);
+            return Task.CompletedTask;
         }
     }
 }
