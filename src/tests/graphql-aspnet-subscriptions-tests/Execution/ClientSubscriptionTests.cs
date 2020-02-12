@@ -19,6 +19,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData;
     using GraphQL.Subscriptions.Tests.TestServerHelpers;
+    using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
     using NUnit.Framework;
     using NUnit.Framework.Internal;
 
@@ -36,15 +37,17 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var schema = testServer.Schema;
             var subServer = testServer.RetrieveSubscriptionServer();
             var queryPlan = await testServer.CreateQueryPlan("subscription { watchObjects { property1 property2  }} ");
-            var client = testServer.CreateSubscriptionClient();
 
             Assert.AreEqual(1, queryPlan.Operations.Count);
             Assert.AreEqual(0, queryPlan.Messages.Count);
 
             var field = queryPlan.Operations.Values.First().FieldContexts[0].Field;
             var name = field.GetType().FullName;
+
+            (var socketClient, var testClient) = testServer.CreateSubscriptionClient();
+
             var sub = new ClientSubscription<GraphSchema>(
-                client,
+                testClient,
                 "abc123",
                 queryPlan);
 
@@ -52,7 +55,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             Assert.AreEqual("[subscription]/WatchObjects", sub.Route.Path);
             Assert.AreEqual("abc123", sub.ClientProvidedId);
             Assert.AreEqual(field, sub.Field);
-            Assert.AreEqual(client, sub.Client);
+            Assert.AreEqual(testClient, sub.Client);
         }
 
         [Test]
@@ -71,8 +74,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
             Assert.AreEqual(2, queryPlan.Operations.Count);
             Assert.AreEqual(0, queryPlan.Messages.Count);
 
+            (var socketClient, var testClient) = testServer.CreateSubscriptionClient();
+
             var sub = new ClientSubscription<GraphSchema>(
-                testServer.CreateSubscriptionClient(),
+                testClient,
                 "abc123",
                 queryPlan,
                 "Operation2");
@@ -90,8 +95,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 .AddSubscriptions()
                 .Build();
 
+            (var socketClient, var testClient) = testServer.CreateSubscriptionClient();
+
             var sub = new ClientSubscription<GraphSchema>(
-                testServer.CreateSubscriptionClient(),
+                testClient,
                 "abc123",
                 null);
 
@@ -111,6 +118,9 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var schema = testServer.Schema;
             var subServer = testServer.RetrieveSubscriptionServer();
 
+
+            (var socketClient, var testClient) = testServer.CreateSubscriptionClient();
+
             // two operations in the query
             var queryPlan = await testServer.CreateQueryPlan(
                 "subscription DoThings{ watchObjects { property1 property2 } } " +
@@ -124,7 +134,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             // create subscription against a non existant operation
             var sub = new ClientSubscription<GraphSchema>(
-                testServer.CreateSubscriptionClient(),
+                testClient,
                 "abc123",
                 queryPlan,
                 "wrongOperationname");

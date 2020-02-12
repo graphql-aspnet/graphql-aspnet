@@ -60,7 +60,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerHelpers
         /// <typeparam name="TSchema">The type of the schema the server is hosting.</typeparam>
         /// <param name="server">The server.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public static IClientConnection CreateClient<TSchema>(this TestServer<TSchema> server)
+        public static MockClientConnection CreateClient<TSchema>(this TestServer<TSchema> server)
             where TSchema : class, ISchema
         {
             return new MockClientConnection();
@@ -72,7 +72,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerHelpers
         /// <typeparam name="TSchema">The type of the schema to create the client for.</typeparam>
         /// <param name="server">The server.</param>
         /// <returns>GraphQL.AspNet.Interfaces.Subscriptions.ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public static ISubscriptionClientProxy<TSchema> CreateSubscriptionClient<TSchema>(this TestServer<TSchema> server)
+        public static (MockClientConnection, ISubscriptionClientProxy<TSchema>) CreateSubscriptionClient<TSchema>(this TestServer<TSchema> server)
                     where TSchema : class, ISchema
         {
             var factory = server.ServiceProvider.GetService<ISubscriptionClientFactory<TSchema>>();
@@ -82,7 +82,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerHelpers
             context.RequestServices = server.ServiceProvider;
             context.User = server.User;
 
-            return factory.CreateClientProxy(context, server.CreateClient(), options);
+            var connection = server.CreateClient();
+            return (connection, factory.CreateClientProxy(context, connection, options));
         }
     }
 }

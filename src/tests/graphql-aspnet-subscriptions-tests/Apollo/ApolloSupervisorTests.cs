@@ -9,14 +9,20 @@
 
 namespace GraphQL.Subscriptions.Tests.Apollo
 {
+    using System.Linq;
     using System.Threading.Tasks;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
     using GraphQL.Subscriptions.Tests.CommonHelpers;
+    using GraphQL.Subscriptions.Tests.TestServerHelpers;
     using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -54,7 +60,31 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task Supervisor_WhenSubscriptionStarted_GeneratesNewSubscriptionRegistration()
         {
-            Assert.Inconclusive("Write this test");
+            var testServer = new TestServerBuilder()
+                .AddGraphController<ApolloSubscriptionController>()
+                .AddSubscriptions()
+                .Build();
+
+            (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
+
+            var supervisor = new ApolloClientSupervisor<GraphSchema>();
+            supervisor.RegisterNewClient(apolloClient);
+
+            var message = new ApolloConnectionInitMessage();
+
+            // queue a message sequence to the server
+            socketClient.QueueClientMessage(new ApolloConnectionInitMessage());
+            socketClient.QueueNewSubscription(
+                "abc123",
+                "subscription { apolloSubscription { watchForPropObject { property1 property2} } }");
+
+            socketClient.QueueConnectionCloseMessage();
+
+            // execute the connection sequence
+            await apolloClient.StartConnection();
+
+            var registeredSubs = supervisor.RetrieveSubscriptions(apolloClient);
+            Assert.AreEqual(1, registeredSubs.Count());
         }
 
         [Test]

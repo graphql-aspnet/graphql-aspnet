@@ -16,9 +16,12 @@ namespace GraphQL.Subscriptions.Tests.CommonHelpers
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
@@ -51,7 +54,8 @@ namespace GraphQL.Subscriptions.Tests.CommonHelpers
         }
 
         /// <summary>
-        /// Queues a "connection closed" message that will close the underlying "socket" when dequeued.
+        /// Queues a fake "connection closed" message to tell this mock connection to "close itself" mimicing
+        /// a websocket disconnecting. that will close the underlying "socket" when dequeued.
         /// </summary>
         public void QueueConnectionCloseMessage()
         {
@@ -69,6 +73,33 @@ namespace GraphQL.Subscriptions.Tests.CommonHelpers
             {
                 _incomingMessageQueue.Enqueue(message);
             }
+        }
+
+               /// <summary>
+        /// Simulates a client message being sent to the server.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        public void QueueClientMessage(ApolloMessage message)
+        {
+            Validation.ThrowIfNull(message, nameof(message));
+            this.QueueClientMessage(new MockClientMessage(message));
+        }
+
+        /// <summary>
+        /// Simulates a client message that starts a new subscription on the server.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="queryText">The query text.</param>
+        public void QueueNewSubscription(string id, string queryText)
+        {
+            this.QueueClientMessage(new ApolloSubscriptionStartMessage()
+            {
+                Id = id,
+                Payload = new GraphQueryData()
+                {
+                    Query = queryText,
+                },
+            });
         }
 
         /// <summary>

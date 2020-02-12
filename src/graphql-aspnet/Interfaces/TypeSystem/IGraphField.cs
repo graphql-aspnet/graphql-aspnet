@@ -90,5 +90,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The security groups.</value>
         IEnumerable<FieldSecurityGroup> SecurityGroups { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
+        /// a user defined graph structure. When false, this field points to developer created code.
+        /// </summary>
+        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        bool IsVirtual { get; }
     }
 }
