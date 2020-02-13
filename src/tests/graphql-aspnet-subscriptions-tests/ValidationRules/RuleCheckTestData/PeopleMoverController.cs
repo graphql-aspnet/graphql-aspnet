@@ -32,5 +32,24 @@ namespace GraphQL.Subscriptions.Tests.ValidationRuless.RuleCheckTestData
         {
             return elevator;
         }
+
+        [Subscription("elevatorNested1")]
+        public Elevator RetrieveNestedElevator(Elevator elevator, int id)
+        {
+            if (elevator.Id == id)
+                return elevator;
+            else
+                return null;
+        }
+
+
+         [Subscription("/elevators/elevatorNested2")]
+        public Elevator RetrieveDeepNestedElevator(Elevator elevator, int id)
+        {
+            if (elevator.Id == id)
+                return elevator;
+            else
+                return null;
+        }
     }
 }

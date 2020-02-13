@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperationSteps
 {
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
@@ -41,14 +43,17 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         public override bool Execute(DocumentValidationContext context)
         {
             // due to the use of virtual fields used by controllers to make a dynamic schema,
-            // extend rule 5.2.3.1 to mean the top-level operation and each virtual child field has 1 and only 1 child field declaration
-            // up to and including a subscription action being located
+            // this rule extend rule 5.2.3.1 to include the top-level operation and each virtual child field
+            // has 1 and only 1 child field declaration up to and including a subscription action being located.
+            // that is to say the nested fieldsets must not branch until AFTER a subscription field is encountered
+            // as its this field that is registered as the subscription, not the virtual field paths
 
             /*
+                -----------------------------------------------------
                 Valid:
-                --------
+                -----------------------------------------------------
                 subscription {
-                    controllerPath {
+                    ctrlPath {
                         routePath1 {
                             routePath2 {
                                 subscriptionAction { }
@@ -63,10 +68,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                 }
 
 
+                -----------------------------------------------------
                 Invalid:
-                -------
+                -----------------------------------------------------
                 subscription {
-                    controllerPath {
+                    ctrlPath {
                         routePath1 {
                             routePath2 {
                                 subscriptionAction1 { }
@@ -77,7 +83,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                 }
 
                 subscription {
-                    controller {
+                    ctrlPath {
                         routePath1 {
                             routePath2 {
                                 queryActionField { }   // not a subscription field
@@ -93,76 +99,32 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                                 subscriptionActionField2 { }
                             }
                         }
-                        subscriptionActionField2 { }  // split pathing allows for two possible subscription fields (must be 1)
+                        subscriptionActionField2 { }  // split pathing allows for two possible subscription fields
+                                                      //(must encounter only 1)
                     }
                 }
             */
 
-            var operation = (QueryOperation)context.ActivePart;
-            if (fieldCollection == null || fieldCollection.Children.Count != 1)
+            var operation =context.ActivePart as QueryOperation;
+            var fieldCollection = operation?.FieldSelectionSet;
+
+            while (fieldCollection != null && fieldCollection.Count == 1)
             {
-                this.ValidationError(
-                    context,
-                    $"Invalid Subscription. Expected exactly 1 root child field, recieved {fieldCollection?.Children.Count ?? 0} child fields.");
-                return false;
-            }
-            var n = fieldCollection.Children[0];
+                // did we encounter a field collection with exactly one child that is not virtual?
+                // i.e. one "top-level user action" to be called for the subscription?
+                var childField = fieldCollection[0];
+                if (!childField.GraphType.IsVirtual)
+                    return true;
 
-            while (_field != null)
-            {
-                // when pointing at a subscription field we're done
-                if (currentField is ISubscriptionGraphField)
-                {
-                    _field = currentField as ISubscriptionGraphField;
-                    break;
-                }
-
-                // when not pointing at a subscription field
-                // we must be pointing at a virtual field or error
-                // this allows us to walk down a controller custom route path to find
-                // our subscription field while preserving the user's expected graph structure
-                if (!currentField.IsVirtual)
-                {
-                    this.Messages.Add(
-                      GraphMessageSeverity.Critical,
-                      $"The first non-virtual field found in the subscription operation is not a valid subscription field (Path: {currentField.Route.Path})",
-                      Constants.ErrorCodes.BAD_REQUEST);
-                    break;
-                }
-
-                // when looking at a controller level field (or an intermediary)
-                // it must have child fields for us to continue searching
-                if (!(currentField is IGraphFieldContainer fieldSet) || fieldSet.Fields.Count != 1)
-                {
-                    this.Messages.Add(
-                      GraphMessageSeverity.Critical,
-                      $"The virtual field, {currentField.Route.Path}, contains no children found in the subscription operation is not a valid subscription field (Path: {currentField.Route.Path})",
-                      Constants.ErrorCodes.BAD_REQUEST);
-                    break;
-                    break;
-                }
-
-                // also, said field must have exactly 1 child
-                // in order to keep the data in tact. Otherwise its possible
-                // that we have two "top level subscription fields" (indicating two seperate events)
-                // in cased in one subscription.
-                if (fieldSet.Fields.Count != 1)
-                {
-                }
+                fieldCollection = childField.FieldSelectionSet;
             }
 
-            if (_field == null && !fieldErrorRecorded)
-            {
-                // theoretically not possible but just in case
-                // the user swaps out some DI components incorrectly or by mistake...
-                this.Messages.Add(
-                  GraphMessageSeverity.Critical,
-                  $"An eventable field could not found in the subscription operation. Ensure you include a field declared " +
-                  $"as a subscription field.",
-                  Constants.ErrorCodes.BAD_REQUEST);
-            }
-
-            return true;
+            this.ValidationError(
+                context,
+                operation.Node,
+                "Invalid Subscription. Expected exactly 1 child field, " +
+                $"recieved {fieldCollection?.Count ?? 0} child fields at {fieldCollection?.RootPath.DotString() ?? "-null-"}.");
+            return false;
         }
 
         /// <summary>

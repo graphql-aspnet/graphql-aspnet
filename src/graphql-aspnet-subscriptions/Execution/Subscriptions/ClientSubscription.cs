@@ -86,63 +86,32 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 return;
             }
 
-            // find the first non-virtual field referenced, it should be a controller
-            // field and a subscription-based field
-
             var currentContext = _operation.FieldContexts[0];
-            var fieldErrorRecorded = false;
-            while (_field != null)
+
+            // find the first non-virtual field referenced, it should be a controller
+            // its garunteed to exist via the document generation rule engine
+            // but it could be deep, walk down the subscirption tree to find it
+            while (currentContext?.Field != null)
             {
                 // when pointing at a subscription field we're done
-                if (currentField is ISubscriptionGraphField)
+                if (currentContext?.Field.IsVirtual != true)
                 {
-                    _field = currentField as ISubscriptionGraphField;
+                    _field = currentContext?.Field as ISubscriptionGraphField;
                     break;
                 }
 
-                // when not pointing at a subscription field
-                // we must be pointing at a virtual field or error
-                // this allows us to walk down a controller custom route path to find
-                // our subscription field while preserving the user's expected graph structure
-                if (!currentField.IsVirtual)
-                {
-                    this.Messages.Add(
-                      GraphMessageSeverity.Critical,
-                      $"The first non-virtual field found in the subscription operation is not a valid subscription field (Path: {currentField.Route.Path})",
-                      Constants.ErrorCodes.BAD_REQUEST);
-                    break;
-                }
-
-                // when looking at a controller level field (or an intermediary)
-                // it must have child fields for us to continue searching
-                if (!(currentField is IGraphFieldContainer fieldSet) || fieldSet.Fields.Count != 1)
-                {
-                    this.Messages.Add(
-                      GraphMessageSeverity.Critical,
-                      $"The virtual field, {currentField.Route.Path}, contains no children found in the subscription operation is not a valid subscription field (Path: {currentField.Route.Path})",
-                      Constants.ErrorCodes.BAD_REQUEST);
-                    break;
-                    break;
-                }
-
-                // also, said field must have exactly 1 child
-                // in order to keep the data in tact. Otherwise its possible
-                // that we have two "top level subscription fields" (indicating two seperate events)
-                // in cased in one subscription.
-                if (fieldSet.Fields.Count != 1)
-                {
-
-                }
+                currentContext = currentContext?.ChildContexts.Count == 1 ? currentContext.ChildContexts?[0] : null;
             }
 
-            if (_field == null && !fieldErrorRecorded)
+            // just in case it wasn't found...
+            // this is theoretically not possible but just in case
+            // the user swaps out some DI components incorrectly or by mistake...
+            if (_field == null)
             {
-                // theoretically not possible but just in case
-                // the user swaps out some DI components incorrectly or by mistake...
                 this.Messages.Add(
                   GraphMessageSeverity.Critical,
-                  $"An eventable field could not found in the subscription operation. Ensure you include a field declared " +
-                  $"as a subscription field.",
+                  "An eventable field could not found in the subscription operation. Ensure you include a field declared " +
+                  "as a subscription field.",
                   Constants.ErrorCodes.BAD_REQUEST);
             }
 

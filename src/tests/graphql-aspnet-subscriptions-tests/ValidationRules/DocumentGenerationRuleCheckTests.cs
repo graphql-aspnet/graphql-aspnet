@@ -32,6 +32,19 @@ namespace GraphQL.Subscriptions.Tests.ValidationRuless
 
             // two top level fields in a subscription operation results in an error
             AddQuery("5.2.3.1", "subscription {  elevatorMoved(id: 5) { id, name }   anyElevatorMoved { id, name }     } ");
+
+            // one top level field, but the hierarchy splits before a non-virtual field
+            // is encountered by itself at a level of the hierarchy (elevatorNested1, elevatorNested2)
+            AddQuery(
+                "5.2.3.1.1",
+                @"subscription {
+                            peopleMovers {
+                                elevatorNested1(id: 5) { id, name }
+                                elevators {
+                                    elevatorNested2(id: 15) { id, name }
+                                }
+                            }
+                }");
         }
 
         [TestCaseSource(nameof(TestQueries))]

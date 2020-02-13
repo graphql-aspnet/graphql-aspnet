@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
 
-
     /// <summary>
     /// An intermediary between an apollo client and the apollo server instance. This object
     /// acts as a liason to hold client connections, respond to some house-keeping events and filter
@@ -36,14 +35,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     {
         private class SubscriptionsByEvent : Dictionary<string, ConcurrentHashSet<ClientSubscription<TSchema>>>
         {
-            internal bool ContainsKey(object eventName)
-            {
-                throw new NotImplementedException();
-            }
         }
 
         private class SubscriptionsByClient : Dictionary<ISubscriptionClientProxy, ConcurrentHashSet<ClientSubscription<TSchema>>>
-        { }
+        {
+        }
 
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
 
@@ -221,6 +217,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                 }
 
                 _activeSubscriptionsByEvent[subscription.Route.Path].Add(subscription);
+                _activeSubscriptionsByClient[client].Add(subscription);
                 this.NewSubscriptionRegistered?.Invoke(this, subscription);
             }
             else

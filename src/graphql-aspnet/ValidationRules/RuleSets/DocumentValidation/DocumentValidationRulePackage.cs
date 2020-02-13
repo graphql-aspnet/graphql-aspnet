@@ -77,6 +77,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             var steps = new List<IRuleStep<DocumentValidationContext>>();
 
             steps.Add(new Rule_5_2_2_1_LoneAnonymousOperation());
+            steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
 
             _stepCollection.Add(typeof(QueryOperation), steps);
         }

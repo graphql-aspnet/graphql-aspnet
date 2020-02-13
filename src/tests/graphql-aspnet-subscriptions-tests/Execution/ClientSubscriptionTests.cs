@@ -118,7 +118,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var schema = testServer.Schema;
             var subServer = testServer.RetrieveSubscriptionServer();
 
-
             (var socketClient, var testClient) = testServer.CreateSubscriptionClient();
 
             // two operations in the query
