@@ -33,21 +33,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     public class ApolloClientSupervisor<TSchema>
         where TSchema : class, ISchema
     {
-        private class SubscriptionsByEvent : Dictionary<string, ConcurrentHashSet<ClientSubscription<TSchema>>>
-        {
-        }
-
-        private class SubscriptionsByClient : Dictionary<ISubscriptionClientProxy, ConcurrentHashSet<ClientSubscription<TSchema>>>
-        {
-        }
-
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
-
-        // a collection of subscriptions this supervisor is watching for
-        // keyed on teh full field path within the target schema (not against the alternate, short event name)
-        private readonly SubscriptionsByEvent _activeSubscriptionsByEvent;
-
-        private readonly SubscriptionsByClient _activeSubscriptionsByClient;
 
         /// <summary>
         /// Raised when the supervisor begins monitoring a new subscription.
@@ -60,8 +46,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         public ApolloClientSupervisor()
         {
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
-            _activeSubscriptionsByEvent = new SubscriptionsByEvent();
-            _activeSubscriptionsByClient = new SubscriptionsByClient();
+            this.Subscriptions = new ApolloSubscriptionCollection<TSchema>();
         }
 
         /// <summary>
@@ -93,34 +78,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             if (client == null)
                 return;
 
-            _activeSubscriptionsByClient.Add(client, new ConcurrentHashSet<ClientSubscription<TSchema>>());
             client.RegisterAsyncronousMessageDelegate(this.ApolloClient_MessageRecieved);
-        }
-
-        /// <summary>
-        /// Retrieves a set of subscriptions by their fully qualified name (route path of the field).
-        /// </summary>
-        /// <param name="eventName">Name of the event.</param>
-        /// <returns>IEnumerable&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        public IEnumerable<ClientSubscription<TSchema>> RetrieveSubscriptions(string eventName)
-        {
-            if (!_activeSubscriptionsByEvent.ContainsKey(eventName))
-                return Enumerable.Empty<ClientSubscription<TSchema>>();
-
-            return _activeSubscriptionsByEvent[eventName];
-        }
-
-        /// <summary>
-        /// Retrieves the set of subscriptions registered for a given client.
-        /// </summary>
-        /// <param name="client">The client to retrieve subs for.</param>
-        /// <returns>IEnumerable&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        public IEnumerable<ClientSubscription<TSchema>> RetrieveSubscriptions(ISubscriptionClientProxy client)
-        {
-            if (!_activeSubscriptionsByClient.ContainsKey(client))
-                return Enumerable.Empty<ClientSubscription<TSchema>>();
-
-            return _activeSubscriptionsByClient[client];
         }
 
         /// <summary>
@@ -139,17 +97,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             client.ConnectionClosed -= this.ApolloClient_ConnectionClosed;
             client.ConnectionOpening -= this.ApolloClient_ConnectionOpening;
 
-            // clean up the tracked subscriptions for the client that just closed
-            if (_activeSubscriptionsByClient.ContainsKey(client))
-            {
-                foreach (var sub in _activeSubscriptionsByClient[client])
-                {
-                    if (_activeSubscriptionsByEvent.ContainsKey(sub.Field.EventName))
-                        _activeSubscriptionsByEvent[sub.Field.EventName].TryRemove(sub);
-                }
-
-                _activeSubscriptionsByClient.Remove(client);
-            }
+            this.Subscriptions.RemoveAllSubscriptions(client);
         }
 
         /// <summary>
@@ -207,17 +155,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
             if (subscription.IsValid)
             {
-                if (!_activeSubscriptionsByEvent.ContainsKey(subscription.Route.Path))
-                {
-                    lock (_activeSubscriptionsByEvent)
-                    {
-                        if (!_activeSubscriptionsByEvent.ContainsKey(subscription.Route.Path))
-                            _activeSubscriptionsByEvent.Add(subscription.Route.Path, new ConcurrentHashSet<ClientSubscription<TSchema>>());
-                    }
-                }
-
-                _activeSubscriptionsByEvent[subscription.Route.Path].Add(subscription);
-                _activeSubscriptionsByClient[client].Add(subscription);
+                this.Subscriptions.Add(subscription);
                 this.NewSubscriptionRegistered?.Invoke(this, subscription);
             }
             else
@@ -236,5 +174,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             await client.SendMessage(new ApolloServerAckOperationMessage());
             await client.SendMessage(new ApolloKeepAliveOperationMessage());
         }
+
+        /// <summary>
+        /// Gets the collection of subscriptions this supervisor is managing.
+        /// </summary>
+        /// <value>The subscriptions.</value>
+        public ApolloSubscriptionCollection<TSchema> Subscriptions { get; }
     }
 }

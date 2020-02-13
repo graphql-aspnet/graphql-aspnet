@@ -83,7 +83,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             // execute the connection sequence
             await apolloClient.StartConnection();
 
-            var registeredSubs = supervisor.RetrieveSubscriptions(apolloClient);
+            var registeredSubs = supervisor.Subscriptions.RetrieveSubscriptions(apolloClient);
             Assert.AreEqual(1, registeredSubs.Count());
         }
 

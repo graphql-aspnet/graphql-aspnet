@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                 }
             */
 
-            var operation =context.ActivePart as QueryOperation;
+            var operation = context.ActivePart as QueryOperation;
             var fieldCollection = operation?.FieldSelectionSet;
 
             while (fieldCollection != null && fieldCollection.Count == 1)

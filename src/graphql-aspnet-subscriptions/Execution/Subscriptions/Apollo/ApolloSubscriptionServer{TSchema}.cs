@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                 var eventName = _eventMap[subscriptionEvent.EventName];
 
                 // fetch all subscriptions that need to be altered
-                var subscriptions = _supervisor.RetrieveSubscriptions(eventName);
+                var subscriptions = _supervisor.Subscriptions.RetrieveSubscriptions(eventName);
             }
 
             return Task.CompletedTask;
