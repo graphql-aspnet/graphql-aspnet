@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// A client subscription containing the details of what event is being listened for.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the subscription exists for.</typeparam>
-    public class ClientSubscription<TSchema>
+    public class ClientSubscription<TSchema> : IClientSubscription<TSchema>
         where TSchema : class, ISchema
     {
         private readonly IGraphQueryPlan _queryPlan;

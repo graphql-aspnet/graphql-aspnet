@@ -83,10 +83,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
 
-            bool eventCalled = false;
+            bool delegateCalled = false;
             Task MessageRecieved(object sender, ApolloMessage message)
             {
-                eventCalled = true;
+                delegateCalled = true;
                 return Task.CompletedTask;
             }
 
@@ -99,7 +99,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             // execute the connection sequence
             await apolloClient.StartConnection();
 
-            Assert.IsTrue(eventCalled, "Apollo message not transmitted to delegate");
+            Assert.IsTrue(delegateCalled, "Apollo message not transmitted to delegate");
         }
 
         [Test]

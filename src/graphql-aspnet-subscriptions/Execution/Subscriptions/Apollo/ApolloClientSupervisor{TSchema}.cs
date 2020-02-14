@@ -38,12 +38,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <summary>
         /// Raised when the supervisor begins monitoring a new subscription.
         /// </summary>
-        public event EventHandler<ClientSubscription<TSchema>> SubscriptionRegistered;
+        public event EventHandler<IClientSubscription<TSchema>> SubscriptionRegistered;
 
         /// <summary>
         /// Raised when the supervisor stops monitoring a new subscription.
         /// </summary>
-        public event EventHandler<ClientSubscription<TSchema>> SubscriptionRemoved;
+        public event EventHandler<IClientSubscription<TSchema>> SubscriptionRemoved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientSupervisor{TSchema}"/> class.
