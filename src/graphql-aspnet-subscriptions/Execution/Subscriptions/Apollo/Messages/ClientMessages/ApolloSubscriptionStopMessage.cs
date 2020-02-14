@@ -27,5 +27,15 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages
             : base(ApolloMessageType.STOP)
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApolloSubscriptionStopMessage" /> class.
+        /// </summary>
+        /// <param name="id">The identifier of the subscription to stop.</param>
+        public ApolloSubscriptionStopMessage(string id)
+            : this()
+        {
+            this.Id = id;
+        }
     }
 }

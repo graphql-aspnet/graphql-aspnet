@@ -38,7 +38,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <summary>
         /// Raised when the supervisor begins monitoring a new subscription.
         /// </summary>
-        public event EventHandler<ClientSubscription<TSchema>> NewSubscriptionRegistered;
+        public event EventHandler<ClientSubscription<TSchema>> SubscriptionRegistered;
+
+        /// <summary>
+        /// Raised when the supervisor stops monitoring a new subscription.
+        /// </summary>
+        public event EventHandler<ClientSubscription<TSchema>> SubscriptionRemoved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientSupervisor{TSchema}"/> class.
@@ -46,7 +51,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         public ApolloClientSupervisor()
         {
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
-            this.Subscriptions = new ApolloSubscriptionCollection<TSchema>();
+            this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
         }
 
         /// <summary>
@@ -137,9 +142,20 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Attempts to find and remove a subscription with the given client id on the message for the target subscription.
+        /// </summary>
+        /// <param name="client">The client to search.</param>
+        /// <param name="message">The message containing the subscription id to stop.</param>
+        /// <returns>Task.</returns>
         private Task StopSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStopMessage message)
         {
-            throw new NotImplementedException();
+            var removedSubscription = this.Subscriptions.TryRemoveSubscription(client, message.Id);
+
+            if (removedSubscription != null)
+                this.SubscriptionRemoved?.Invoke(this, removedSubscription);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -156,7 +172,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             if (subscription.IsValid)
             {
                 this.Subscriptions.Add(subscription);
-                this.NewSubscriptionRegistered?.Invoke(this, subscription);
+                this.SubscriptionRegistered?.Invoke(this, subscription);
             }
             else
             {
@@ -179,6 +195,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// Gets the collection of subscriptions this supervisor is managing.
         /// </summary>
         /// <value>The subscriptions.</value>
-        public ApolloSubscriptionCollection<TSchema> Subscriptions { get; }
+        public ClientSubscriptionCollection<TSchema> Subscriptions { get; }
     }
 }
