@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A middleware component that, when a result exists on the context, invokes the next set
@@ -88,7 +89,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             if (!allSourceItems.Any())
                 return;
 
-            // create a lookup of source item by result type for easy seperation to the individual
+            // create a lookup of source items by result type for easy seperation to the individual
             // downstream child contexts
             var sourceItemLookup = allSourceItems.ToLookup(x => x.ResultData.GetType());
 
@@ -114,11 +115,28 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     sourceItemsToInclude = sourceItemLookup[childInvocationContext.ExpectedSourceType];
                 }
 
+                // Step 1B
+                // For any source items replace any virtual objects with defaults found
+                // on the context for the field in question
+                if (context.DefaultFieldSources.TryRetrieveSource(childInvocationContext.Field, out var defaultSource))
+                {
+                    sourceItemsToInclude = sourceItemsToInclude.Select((currentValue) =>
+                    {
+                        if (currentValue.ResultData is VirtualResolvedObject)
+                            currentValue.AssignResult(defaultSource);
+
+                        return currentValue;
+                    });
+                }
+
                 // Step 2
                 // ----------------------------
                 // when the invocation is as a batch, create one execution context for all children
                 // when its "per source" create a context for each child individually
-                IEnumerable<GraphFieldExecutionContext> childContexts = this.CreateChildExecutionContexts(context, childInvocationContext, sourceItemsToInclude);
+                IEnumerable<GraphFieldExecutionContext> childContexts = this.CreateChildExecutionContexts(
+                    context,
+                    childInvocationContext,
+                    sourceItemsToInclude);
 
                 // Step 3
                 // --------------------
@@ -168,9 +186,14 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 foreach (var sourceItem in sourceItemsToInclude)
                 {
                     var child = sourceItem.AddChildField(childInvocationContext);
+
                     var dataSource = new GraphFieldDataSource(sourceItem.ResultData, child.Origin.Path, child);
                     var request = new GraphFieldRequest(childInvocationContext, dataSource, child.Origin, context.Request.Items);
-                    yield return new GraphFieldExecutionContext(context, request, context.VariableData);
+                    yield return new GraphFieldExecutionContext(
+                        context,
+                        request,
+                        context.VariableData,
+                        context.DefaultFieldSources);
                 }
             }
             else if (childInvocationContext.Field.Mode == FieldResolutionMode.Batch)
@@ -211,7 +234,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     sourceItemList);
 
                 var request = new GraphFieldRequest(childInvocationContext, dataSource, batchOrigin, context.Request.Items);
-                yield return new GraphFieldExecutionContext(context, request, context.VariableData);
+                yield return new GraphFieldExecutionContext(
+                    context,
+                    request,
+                    context.VariableData,
+                    context.DefaultFieldSources);
             }
             else
             {

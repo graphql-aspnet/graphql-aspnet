@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.SubscriptionEventExecution;
+    using GraphQL.AspNet.Middleware.QueryExecution;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -94,14 +94,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
             foreach (var subscription in subscriptions)
             {
-                var context = new GraphSubscriptionExecutionContext(
-                    eventData,
-                    subscription,
-                    null,
-                    _logger);
-
-                var pipeline = subscription.Client.ServiceProvider.GetRequiredService<ISchemaPipeline<TSchema, GraphSubscriptionExecutionContext>>();
-                var task = pipeline.InvokeAsync(context, cancelSource.Token);
+                // TODO: render object
+                var pipeline = subscription.Client.ServiceProvider.GetRequiredService<ISchemaPipeline<TSchema, GraphQueryExecutionContext>>();
+                var task = pipeline.InvokeAsync(null, cancelSource.Token);
                 pipelineExecutions.Add(task);
             }
 
@@ -117,11 +112,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             Validation.ThrowIfNull(client, nameof(client));
             Validation.ThrowIfNotCastable<ApolloClientProxy<TSchema>>(client.GetType(), nameof(client));
 
-            var apolloClient = client as ApolloClientProxy<TSchema>;
-            _clients.Add(apolloClient);
+            if (client is ApolloClientProxy<TSchema> apolloClient)
+            {
+                _clients.Add(apolloClient);
 
-            apolloClient.ConnectionOpening += this.ApolloClient_ConnectionOpening;
-            apolloClient.ConnectionClosed += this.ApolloClient_ConnectionClosed;
+                apolloClient.ConnectionOpening += this.ApolloClient_ConnectionOpening;
+                apolloClient.ConnectionClosed += this.ApolloClient_ConnectionClosed;
+            }
         }
 
         /// <summary>

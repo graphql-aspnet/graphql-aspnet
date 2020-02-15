@@ -18,7 +18,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A top level context for the execution of a query through the runtime. Functions similarly to how HttpContext works for
@@ -48,6 +51,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
             this.Request = Validation.ThrowIfNullOrReturn(request, nameof(request));
             this.FieldResults = new List<GraphDataItem>();
             this.PostProcessingActions = new List<Action>();
+            this.DefaultFieldSources = new DefaultFieldSourceCollection();
         }
 
         /// <summary>
@@ -93,5 +97,12 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// </summary>
         /// <value>The post processing actions.</value>
         public IList<Action> PostProcessingActions { get; }
+
+        /// <summary>
+        /// Gets a collection of source objects that can, if needed, be used as the source input values to a
+        /// field execution when no other sources exist.
+        /// </summary>
+        /// <value>The default field sources.</value>
+        public DefaultFieldSourceCollection DefaultFieldSources { get; }
     }
 }

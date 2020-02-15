@@ -15,7 +15,6 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.SubscriptionEventExecution;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using Microsoft.AspNetCore.Http;
@@ -38,8 +37,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var pipelineBuilder = new SchemaPipelineBuilder<TSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext>("Subscription Execution Pipeline");
-            var extension = new SubscriptionServerExtension<TSchema>(subscriptionsOptions, pipelineBuilder);
+            var extension = new SubscriptionServerExtension<TSchema>(subscriptionsOptions);
 
             serverBuilder.AddSchemaExtension(extension);
             return serverBuilder;

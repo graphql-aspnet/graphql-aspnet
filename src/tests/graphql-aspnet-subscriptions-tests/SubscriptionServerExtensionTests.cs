@@ -18,7 +18,6 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Middleware.SubscriptionEventExecution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Http;
@@ -28,18 +27,6 @@ namespace GraphQL.Subscriptions.Tests
     [TestFixture]
     public class SubscriptionServerExtensionTests
     {
-        private ISchemaPipelineBuilder<GraphSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext> CreateEmptyBuilder()
-        {
-            var pipelineBuilder = new Mock<ISchemaPipelineBuilder<GraphSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext>>();
-            pipelineBuilder.Setup(x => x.Build()).Returns(() =>
-            {
-                var pipeline = new Mock<ISchemaPipeline<GraphSchema, GraphSubscriptionExecutionContext>>();
-                return pipeline.Object;
-            });
-
-            return pipelineBuilder.Object;
-        }
-
         public class InvalidSubscriptionMiddlewareTester
         {
             public InvalidSubscriptionMiddlewareTester(
@@ -71,18 +58,14 @@ namespace GraphQL.Subscriptions.Tests
             var primaryOptions = new SchemaOptions<GraphSchema>();
             var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
 
-            var extension = new SubscriptionServerExtension<GraphSchema>(subscriptionOptions, this.CreateEmptyBuilder());
+            var extension = new SubscriptionServerExtension<GraphSchema>(subscriptionOptions);
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
 
-            // 1. SchemaSubscriptionOptions
-            // 2. execution pipeline
-            Assert.AreEqual(2, extension.RequiredServices.Count);
+            Assert.AreEqual(1, extension.RequiredServices.Count);
             Assert.IsNotNull(extension.RequiredServices.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
-            Assert.IsNotNull(extension.RequiredServices.SingleOrDefault(x => x.ServiceType == typeof(ISchemaPipeline<GraphSchema, GraphSubscriptionExecutionContext>)));
 
-            // Apollo:  Server, Client Factory, SubscriptionMaker, in-proc listener
             Assert.AreEqual(4, extension.OptionalServices.Count);
             Assert.IsNotNull(extension.OptionalServices.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServer<GraphSchema>)));
             Assert.IsNotNull(extension.OptionalServices.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionClientFactory<GraphSchema>)));
@@ -93,7 +76,7 @@ namespace GraphQL.Subscriptions.Tests
         }
 
         [Test]
-        public void CustomMiddlewareComponent_WithoutProperSignature_throwsException()
+        public void CustomHttpMiddlewareComponent_WithoutProperConstructor_throwsException()
         {
             using var restorePoint = new GraphQLProviderRestorePoint();
 
@@ -107,13 +90,13 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var extension = new SubscriptionServerExtension<GraphSchema>(subscriptionOptions, this.CreateEmptyBuilder());
+                var extension = new SubscriptionServerExtension<GraphSchema>(subscriptionOptions);
                 extension.Configure(primaryOptions);
             });
         }
 
         [Test]
-        public void CustomMiddlewareComponent_WithProperSignature_Succeeds()
+        public void CustomHttpMiddlewareComponent_WithProperConstructor_Succeeds()
         {
             using var restorePoint = new GraphQLProviderRestorePoint();
 
@@ -126,7 +109,7 @@ namespace GraphQL.Subscriptions.Tests
             subscriptionOptions.HttpMiddlewareComponentType = typeof(ValidSubscriptionMiddlewareTester);
 
             // no exception should be thrown
-            var extension = new SubscriptionServerExtension<GraphSchema>(subscriptionOptions, this.CreateEmptyBuilder());
+            var extension = new SubscriptionServerExtension<GraphSchema>(subscriptionOptions);
             extension.Configure(primaryOptions);
         }
     }

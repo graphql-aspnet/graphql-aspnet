@@ -24,7 +24,6 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Middleware.SubscriptionEventExecution;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -37,21 +36,16 @@ namespace GraphQL.AspNet
     public class SubscriptionServerExtension<TSchema> : ISchemaExtension
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext> _pipelineBuilder;
         private SchemaOptions _primaryOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionServerExtension{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        /// <param name="pipelineBuilder">The builder that is constructing the pipeline for processing
-        /// subscription events.</param>
         public SubscriptionServerExtension(
-            SubscriptionServerOptions<TSchema> options,
-            ISchemaPipelineBuilder<TSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext> pipelineBuilder)
+            SubscriptionServerOptions<TSchema> options)
         {
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
 
             this.RequiredServices = new List<ServiceDescriptor>();
             this.OptionalServices = new List<ServiceDescriptor>();
@@ -79,13 +73,6 @@ namespace GraphQL.AspNet
 
             // the primary subscription options for the schema
             this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
-
-            // the master pipeline to process any raised events
-            this.RequiredServices.Add(
-                new ServiceDescriptor(
-                    typeof(ISchemaPipeline<TSchema, GraphSubscriptionExecutionContext>),
-                    GraphQLSchemaInjector<TSchema>.CreatePipelineFactory(_pipelineBuilder),
-                    ServiceLifetime.Scoped));
 
             // add the needed apollo's classes as optional services
             // if the user has already added support for their own handlers
