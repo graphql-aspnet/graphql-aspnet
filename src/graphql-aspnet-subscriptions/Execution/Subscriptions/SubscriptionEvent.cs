@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// An event, raised by a <see cref="GraphController" />, and handled by a <see cref="ISubscriptionServer{TSchema}" />
     /// to transfer the given data package to connected clients.
     /// </summary>
-    /// <typeparam name="TData">The type of the data the event is transmitting.</typeparam>
     public class SubscriptionEvent
     {
         /// <summary>

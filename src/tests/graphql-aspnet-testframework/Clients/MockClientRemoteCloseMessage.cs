@@ -7,15 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.CommonHelpers
+namespace GraphQL.AspNet.Tests.Framework.Clients
 {
-    using System;
-    using System.Text;
-    using System.Text.Unicode;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
 
-      /// <summary>
+    /// <summary>
     /// A messag that indicates the remote client has/is closing hte connection.
     /// </summary>
     public class MockClientRemoteCloseMessage : MockClientMessage

@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.CommonHelpers
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 {
     using System.Text;
     using System.Text.Json;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
-    using GraphQL.Subscriptions.Tests.Apollo;
-    using GraphQL.Subscriptions.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Clients;
+    using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
     using NUnit.Framework;
 
     public static class MockClientAsserts

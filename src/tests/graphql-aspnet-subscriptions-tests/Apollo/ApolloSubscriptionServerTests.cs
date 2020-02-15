@@ -19,9 +19,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
-    using GraphQL.Subscriptions.Tests.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.TestServerHelpers;
+    using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;

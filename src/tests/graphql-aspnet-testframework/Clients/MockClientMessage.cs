@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.CommonHelpers
+namespace GraphQL.AspNet.Tests.Framework.Clients
 {
     using System;
     using System.Text;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
 
-      /// <summary>
+    /// <summary>
     /// A fake message mimicing what would be generating when
     /// a client connection recieves data form its underlying implementaiton.
     /// </summary>

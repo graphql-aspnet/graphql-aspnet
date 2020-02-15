@@ -11,8 +11,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
@@ -32,7 +30,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         where TSchema : class, ISchema
     {
         private readonly ISubscriptionEventListener<TSchema> _listener;
-        private readonly Dictionary<string, string> _eventMap;
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
 
         /// <summary>
@@ -53,11 +50,10 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         public ApolloSubscriptionServer(ISubscriptionEventListener<TSchema> listener)
         {
             _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
-            _eventMap = new Dictionary<string, string>();
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
             this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
 
-            _listener.NewSubscriptionEvent += this.HandleNewSubscriptionEvent;
+            _listener.NewSubscriptionEvent += this.Listener_HandleNewSubscriptionEvent;
         }
 
         /// <summary>
@@ -66,7 +62,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="SubscriptionEventEventArgs"/> instance containing the event data.</param>
-        private void HandleNewSubscriptionEvent(object sender, SubscriptionEventEventArgs args)
+        private void Listener_HandleNewSubscriptionEvent(object sender, SubscriptionEventEventArgs args)
         {
         }
 
@@ -152,10 +148,20 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                     break;
 
                 default:
-                    break;
+                    return this.UnknownMessageRecieved(client);
             }
 
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Returns a generic error to the client indicating that the last message recieved was unknown or invalid.
+        /// </summary>
+        /// <param name="client">The client to return the error to.</param>
+        /// <returns>Task.</returns>
+        private Task UnknownMessageRecieved(ApolloClientProxy<TSchema> client)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

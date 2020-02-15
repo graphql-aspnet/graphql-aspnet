@@ -7,15 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions
+namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
 {
     using System;
     using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
@@ -23,7 +21,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// </summary>
     public class WebSocketClientConnection : IClientConnection
     {
-        private WebSocket _webSocket;
+        private readonly WebSocket _webSocket;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketClientConnection"/> class.

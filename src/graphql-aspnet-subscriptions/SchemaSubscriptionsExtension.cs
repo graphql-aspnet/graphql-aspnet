@@ -138,7 +138,7 @@ namespace GraphQL.AspNet
         private void EnsureMiddlewareTypeOrThrow(Type middlewareType)
         {
             var constructor = middlewareType.GetConstructor(
-                new Type[]
+                new[]
                 {
                     typeof(RequestDelegate),
                     typeof(SchemaSubscriptionOptions<TSchema>),

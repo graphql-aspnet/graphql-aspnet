@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     using System;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// Event arguments containing the details of the event change.

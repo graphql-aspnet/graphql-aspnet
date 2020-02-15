@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo
+namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
 {
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// A general message to deserialize server sent messages into for inspection in testing.

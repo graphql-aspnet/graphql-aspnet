@@ -70,6 +70,7 @@ namespace GraphQL.AspNet.Attributes
         public SubscriptionRootAttribute(string template, Type returnType)
             : base(true, GraphCollection.Subscription, template, returnType)
         {
+            this.EventName = null;
         }
 
         /// <summary>
@@ -83,6 +84,7 @@ namespace GraphQL.AspNet.Attributes
         public SubscriptionRootAttribute(string template, Type returnType, params Type[] additionalTypes)
             : base(true, GraphCollection.Subscription, template, returnType.AsEnumerable().Concat(additionalTypes).ToArray())
         {
+            this.EventName = null;
         }
 
         /// <summary>
@@ -101,6 +103,7 @@ namespace GraphQL.AspNet.Attributes
                 unionTypeName,
                 unionTypeA.AsEnumerable().Concat(unionTypeB.AsEnumerable()).Concat(additionalUnionTypes).ToArray())
         {
+            this.EventName = null;
         }
 
         /// <summary>

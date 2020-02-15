@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.CommonHelpers
+namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;

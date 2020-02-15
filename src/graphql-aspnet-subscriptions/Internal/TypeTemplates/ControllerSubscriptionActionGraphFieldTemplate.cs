@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     [DebuggerDisplay("Route: {Route.Path}")]
     public class ControllerSubscriptionActionGraphFieldTemplate : ControllerActionGraphFieldTemplate
     {
-        private Type _explicitlyDeclaredSubscriptionSourceType = null;
+        private Type _explicitlyDeclaredSubscriptionSourceType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ControllerSubscriptionActionGraphFieldTemplate"/> class.

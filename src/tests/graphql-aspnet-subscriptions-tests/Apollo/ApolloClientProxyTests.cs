@@ -18,7 +18,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.Subscriptions.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Clients;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
     using NUnit.Framework.Internal.Execution;

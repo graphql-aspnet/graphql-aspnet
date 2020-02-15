@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
 {
     using System.Net.WebSockets;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
 
     /// <summary>
     /// Helpful enumeration conversions for websocket specific stati.

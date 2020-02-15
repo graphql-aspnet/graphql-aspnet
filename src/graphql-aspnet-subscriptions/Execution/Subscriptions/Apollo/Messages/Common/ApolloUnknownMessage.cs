@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
 {
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Payloads;
-
     /// <summary>
     /// A message representing an unknown message type.
     /// </summary>

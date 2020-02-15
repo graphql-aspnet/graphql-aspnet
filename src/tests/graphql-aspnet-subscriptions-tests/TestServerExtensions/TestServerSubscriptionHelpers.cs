@@ -7,17 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerHelpers
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 {
     using System;
-    using System.Runtime.InteropServices.ComTypes;
-    using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.Clients;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 

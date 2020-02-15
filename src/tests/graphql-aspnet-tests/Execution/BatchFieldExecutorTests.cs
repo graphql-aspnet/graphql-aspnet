@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.BatchResolverTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Moq;
     using NUnit.Framework;
     using Microsoft.Extensions.DependencyInjection;

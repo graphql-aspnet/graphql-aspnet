@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ValidationRuless
+namespace GraphQL.Subscriptions.Tests.ValidationRules
 {
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.TestServerHelpers;
-    using GraphQL.Subscriptions.Tests.ValidationRuless.RuleCheckTestData;
+    using GraphQL.Subscriptions.Tests.TestServerExtensions;
+    using GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData;
     using NUnit.Framework;
 
     [TestFixture]

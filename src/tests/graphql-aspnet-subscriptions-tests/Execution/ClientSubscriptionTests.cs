@@ -18,7 +18,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData;
-    using GraphQL.Subscriptions.Tests.TestServerHelpers;
+    using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
     using NUnit.Framework;
     using NUnit.Framework.Internal;

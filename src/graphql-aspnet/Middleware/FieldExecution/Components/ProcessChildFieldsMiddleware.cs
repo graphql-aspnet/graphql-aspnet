@@ -33,7 +33,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
-        private readonly TSchema _schema;
         private readonly bool _awaitEachPipeline;
 
         /// <summary>
@@ -43,8 +42,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <param name="fieldExecutionPipeline">The field execution pipeline.</param>
         public ProcessChildFieldsMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _awaitEachPipeline = _schema.Configuration.ExecutionOptions.AwaitEachRequestedField;
+            Validation.ThrowIfNull(schema, nameof(schema));
+            _awaitEachPipeline = schema.Configuration.ExecutionOptions.AwaitEachRequestedField;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
 

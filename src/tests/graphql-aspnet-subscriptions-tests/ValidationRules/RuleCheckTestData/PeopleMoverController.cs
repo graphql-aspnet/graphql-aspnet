@@ -7,13 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ValidationRuless.RuleCheckTestData
+namespace GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphRoute("peopleMovers")]
     public class PeopleMoverController : GraphController
@@ -42,8 +39,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRuless.RuleCheckTestData
                 return null;
         }
 
-
-         [Subscription("/elevators/elevatorNested2")]
+        [Subscription("/elevators/elevatorNested2")]
         public Elevator RetrieveDeepNestedElevator(Elevator elevator, int id)
         {
             if (elevator.Id == id)

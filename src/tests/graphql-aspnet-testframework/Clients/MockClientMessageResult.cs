@@ -7,9 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.CommonHelpers
+namespace GraphQL.AspNet.Tests.Framework.Clients
 {
-    using System;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 

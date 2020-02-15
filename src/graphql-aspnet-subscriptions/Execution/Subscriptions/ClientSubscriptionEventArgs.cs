@@ -11,12 +11,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A set of event args representing an action that occured with the attached <see cref="IClientSubscription{TSchema}"/>.
+    /// A set of event args representing an action that occured with the attached <see cref="ISubscription{TSchema}"/>.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the subscription is related to.</typeparam>
     public class ClientSubscriptionEventArgs<TSchema> : EventArgs

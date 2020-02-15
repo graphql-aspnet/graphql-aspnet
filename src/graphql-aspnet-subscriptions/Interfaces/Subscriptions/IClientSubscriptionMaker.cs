@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

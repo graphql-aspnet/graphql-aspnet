@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Extensions
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

@@ -12,7 +12,7 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating.ActionTestData
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class SubscriptionMethodController : GraphController
     {

@@ -7,17 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo
+namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System.Linq;
-    using System.Net.Http;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.TestServerHelpers;
     using Moq;
     using NUnit.Framework;
 
@@ -86,7 +83,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public void EventRegistered_OnlyTriggeredOnFirstAdditionOfEvent()
         {
-
             var subscription = this.MakeSubscription("abc124");
             var subscription2 = this.MakeSubscription("abc125");
             var collection = new ClientSubscriptionCollection<GraphSchema>();

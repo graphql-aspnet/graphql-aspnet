@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     public class ArgumentGenerator
     {
         private readonly IQueryInputArgumentCollection _suppliedArguments;
-        private readonly ISchema _schema;
         private readonly InputResolverMethodGenerator _inputResolverGenerator;
 
         /// <summary>
@@ -36,8 +35,8 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         public ArgumentGenerator(ISchema schema, IQueryInputArgumentCollection suppliedArguments)
         {
             _suppliedArguments = Validation.ThrowIfNullOrReturn(suppliedArguments, nameof(suppliedArguments));
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _inputResolverGenerator = new InputResolverMethodGenerator(_schema);
+            Validation.ThrowIfNull(schema, nameof(schema));
+            _inputResolverGenerator = new InputResolverMethodGenerator(schema);
         }
 
         /// <summary>

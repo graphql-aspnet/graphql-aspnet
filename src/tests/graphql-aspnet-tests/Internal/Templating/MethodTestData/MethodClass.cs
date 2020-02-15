@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class MethodClass
     {

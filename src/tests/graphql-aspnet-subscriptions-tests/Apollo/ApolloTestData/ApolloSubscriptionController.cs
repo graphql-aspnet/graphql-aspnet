@@ -11,7 +11,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class ApolloSubscriptionController : GraphController
     {

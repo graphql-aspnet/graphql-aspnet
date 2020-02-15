@@ -41,6 +41,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// defined by a developer.
         /// </summary>
         /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
-        public bool IsVirtual { get; }
+        bool IsVirtual { get; }
     }
 }

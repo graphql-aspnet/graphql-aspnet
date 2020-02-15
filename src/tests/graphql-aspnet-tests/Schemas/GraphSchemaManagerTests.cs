@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
 

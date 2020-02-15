@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.PlanGeneration.ArgumentGeneratorTestData;
     using GraphQL.AspNet.Variables;
     using NUnit.Framework;

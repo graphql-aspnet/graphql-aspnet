@@ -7,19 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.CommonHelpers
+namespace GraphQL.AspNet.Tests.Framework.Clients
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;

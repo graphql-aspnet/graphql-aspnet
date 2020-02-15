@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages
             // thinking the static constant in apollo client is the connection type
             // handle it appropriately
             text = $"gql_{text}";
-            if (Enum.TryParse<ApolloMessageType>(text, true, out result))
+            if (Enum.TryParse(text, true, out result))
                 return result;
 
             // dunno what the message type is

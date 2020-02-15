@@ -7,14 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
+namespace GraphQL.AspNet.Execution.Subscriptions
 {
-    using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
