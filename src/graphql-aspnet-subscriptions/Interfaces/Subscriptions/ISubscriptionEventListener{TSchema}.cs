@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -25,6 +26,13 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// its monitoring.
         /// </summary>
         event SubscriptionEventHandler NewSubscriptionEvent;
+
+        /// <summary>
+        /// Forces this listener to raise the given event. May not be invocable by all listeners.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        /// <returns>Task.</returns>
+        Task RaiseEvent(SubscriptionEvent eventData);
 
         /// <summary>
         /// Adds the event name to the list of events this listener should listen for. The listener

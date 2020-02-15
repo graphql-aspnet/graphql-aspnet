@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -81,6 +82,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
             if (newlyCreatedEventType)
                 this.EventRegistered?.Invoke(this, new ApolloTrackedEventArgs(subscription.Field));
+        }
+
+        internal object RetrieveSubscriptions(object eventName)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

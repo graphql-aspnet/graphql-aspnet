@@ -29,19 +29,19 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// Gets or sets the fully qualified type name of the data object.
         /// </summary>
         /// <value>The type.</value>
-        public string TypeName { get; set; }
+        public string DataTypeName { get; set; }
 
         /// <summary>
-        /// Gets or sets the full field path representing the source method where this event was raised.
+        /// Gets or sets the name of the event that was raised from the graphql server.
         /// </summary>
         /// <value>The source route.</value>
-        public GraphFieldPath SourceRoute { get; set; }
+        public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets the globally unique schema id from which this event
-        /// was published.
+        /// Gets or sets the fully qualified type name of the schema to which this
+        /// event is targeted.
         /// </summary>
         /// <value>The schema identifier.</value>
-        public string SchemaId { get; set; }
+        public string SchemaTypeName { get; set; }
     }
 }
