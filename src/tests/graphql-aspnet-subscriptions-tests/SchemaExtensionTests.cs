@@ -62,7 +62,7 @@ namespace GraphQL.Subscriptions.Tests
             // SchemaSubscriptionOptions
             Assert.AreEqual(1, extension.RequiredServices.Count);
 
-            // Apollo:  Server, Client Factory, Supervisor, SubscriptionMaker
+            // Apollo:  Server, Client Factory, SubscriptionMaker, in-proc listener
             Assert.AreEqual(4, extension.OptionalServices.Count);
 
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);

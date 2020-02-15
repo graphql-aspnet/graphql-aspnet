@@ -37,8 +37,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
         // a collection of subscriptions this supervisor is watching for
         // keyed on teh full field path within the target schema (not against the alternate, short event name)
-        private readonly Dictionary<string, HashSet<IClientSubscription<TSchema>>> _activeSubscriptionsByEvent;
-        private readonly Dictionary<ISubscriptionClientProxy, List<IClientSubscription<TSchema>>> _activeSubscriptionsByClient;
+        private readonly Dictionary<string, HashSet<ISubscription<TSchema>>> _activeSubscriptionsByEvent;
+        private readonly Dictionary<ISubscriptionClientProxy, List<ISubscription<TSchema>>> _activeSubscriptionsByClient;
 
         private ReaderWriterLockSlim _collectionLock;
 
@@ -47,8 +47,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// </summary>
         public ClientSubscriptionCollection()
         {
-            _activeSubscriptionsByEvent = new Dictionary<string, HashSet<IClientSubscription<TSchema>>>();
-            _activeSubscriptionsByClient = new Dictionary<ISubscriptionClientProxy, List<IClientSubscription<TSchema>>>();
+            _activeSubscriptionsByEvent = new Dictionary<string, HashSet<ISubscription<TSchema>>>();
+            _activeSubscriptionsByClient = new Dictionary<ISubscriptionClientProxy, List<ISubscription<TSchema>>>();
             _collectionLock = new ReaderWriterLockSlim();
         }
 
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// Adds a tracked subscription for a given client.
         /// </summary>
         /// <param name="subscription">The subscription to begin tracking.</param>
-        public void Add(IClientSubscription<TSchema> subscription)
+        public void Add(ISubscription<TSchema> subscription)
         {
             bool newlyCreatedEventType = false;
 
@@ -65,11 +65,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             try
             {
                 if (!_activeSubscriptionsByClient.ContainsKey(subscription.Client))
-                    _activeSubscriptionsByClient.Add(subscription.Client, new List<IClientSubscription<TSchema>>());
+                    _activeSubscriptionsByClient.Add(subscription.Client, new List<ISubscription<TSchema>>());
 
                 if (!_activeSubscriptionsByEvent.ContainsKey(subscription.Field.Route.Path))
                 {
-                    _activeSubscriptionsByEvent.Add(subscription.Field.Route.Path, new HashSet<IClientSubscription<TSchema>>());
+                    _activeSubscriptionsByEvent.Add(subscription.Field.Route.Path, new HashSet<ISubscription<TSchema>>());
                     newlyCreatedEventType = true;
                 }
 
@@ -130,13 +130,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <param name="client">The client.</param>
         /// <param name="clientProvidedId">The original client supplied identifier for the subscription.</param>
         /// <returns>ClientSubscription&lt;TSchema&gt;.</returns>
-        public IClientSubscription<TSchema> TryRemoveSubscription(ISubscriptionClientProxy client, string clientProvidedId)
+        public ISubscription<TSchema> TryRemoveSubscription(ISubscriptionClientProxy client, string clientProvidedId)
         {
             _collectionLock.EnterWriteLock();
 
             bool eventCleared = false;
 
-            IClientSubscription<TSchema> subscription = null;
+            ISubscription<TSchema> subscription = null;
             try
             {
                 if (!_activeSubscriptionsByClient.ContainsKey(client))
@@ -176,14 +176,14 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// </summary>
         /// <param name="eventName">The fully qualified event name.</param>
         /// <returns>IEnumerable&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        public IEnumerable<IClientSubscription<TSchema>> RetrieveSubscriptions(string eventName)
+        public IEnumerable<ISubscription<TSchema>> RetrieveSubscriptions(string eventName)
         {
             _collectionLock.EnterReadLock();
 
             try
             {
                 if (!_activeSubscriptionsByEvent.ContainsKey(eventName))
-                    return Enumerable.Empty<IClientSubscription<TSchema>>();
+                    return Enumerable.Empty<ISubscription<TSchema>>();
 
                 return _activeSubscriptionsByEvent[eventName];
             }
@@ -198,13 +198,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// </summary>
         /// <param name="client">The client.</param>
         /// <returns>IEnumerable&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        public IEnumerable<IClientSubscription<TSchema>> RetrieveSubscriptions(ISubscriptionClientProxy client)
+        public IEnumerable<ISubscription<TSchema>> RetrieveSubscriptions(ISubscriptionClientProxy client)
         {
             _collectionLock.EnterReadLock();
             try
             {
                 if (!_activeSubscriptionsByClient.ContainsKey(client))
-                    return Enumerable.Empty<IClientSubscription<TSchema>>();
+                    return Enumerable.Empty<ISubscription<TSchema>>();
 
                 return _activeSubscriptionsByClient[client];
             }

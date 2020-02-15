@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// <summary>
     /// A helper object that will create a client subscription with the proper DI scope.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the t schema.</typeparam>
+    /// <typeparam name="TSchema">The type of schema this maker operates for.</typeparam>
     public class ClientSubscriptionMaker<TSchema> : IClientSubscriptionMaker<TSchema>
         where TSchema : class, ISchema
     {
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <param name="clientProvidedId">The provided identifier, from the client, that should be
         /// sent when ever this subscription is provided data.</param>
         /// <returns>Task&lt;ClientSubscription&lt;TSchema&gt;&gt;.</returns>
-        public async Task<ClientSubscription<TSchema>> Create(ISubscriptionClientProxy clientProxy, GraphQueryData data, string clientProvidedId)
+        public async Task<ISubscription<TSchema>> Create(ISubscriptionClientProxy clientProxy, GraphQueryData data, string clientProvidedId)
         {
             var syntaxTree = _parser.ParseQueryDocument(data.Query.AsMemory());
             var plan = await _planGenerator.CreatePlan(syntaxTree);

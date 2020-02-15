@@ -18,19 +18,19 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// to transfer the given data package to connected clients.
     /// </summary>
     /// <typeparam name="TData">The type of the data the event is transmitting.</typeparam>
-    public class SubscriptionEvent<TData>
+    public class SubscriptionEvent
     {
         /// <summary>
         /// Gets or sets the data package that was supplied by the publisher when the event was raised.
         /// </summary>
         /// <value>The data.</value>
-        public TData Data { get; set; }
+        public object Data { get; set; }
 
         /// <summary>
-        /// Gets or sets the schema-unique name of the event that was raised.
+        /// Gets or sets the fully qualified type name of the data object.
         /// </summary>
-        /// <value>The name of the event.</value>
-        public string EventName { get; set; }
+        /// <value>The type.</value>
+        public string TypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the full field path representing the source method where this event was raised.

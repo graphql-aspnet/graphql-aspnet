@@ -53,9 +53,6 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionClientFactory<GraphSchema>)));
             Assert.IsNotNull(sp.GetService(typeof(IClientSubscriptionMaker<GraphSchema>)));
 
-            // ensure additional required apollo things are added
-            Assert.IsNotNull(sp.GetService(typeof(ApolloClientSupervisor<GraphSchema>)));
-
             // ensure the template provider for the runtime is swapped
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
         }

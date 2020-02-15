@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Apollo
 {
     using System.Linq;
+    using System.Net.Http;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -23,9 +24,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     [TestFixture]
     public class ClientSubscriptionCollectionTests
     {
-        private IClientSubscription<GraphSchema> MakeSubscription(string id = "abc123", string routePath = "path1/path2")
+        private ISubscription<GraphSchema> MakeSubscription(string id = "abc123", string routePath = "path1/path2")
         {
-            var subscription = new Mock<IClientSubscription<GraphSchema>>();
+            var subscription = new Mock<ISubscription<GraphSchema>>();
 
             var field = new Mock<ISubscriptionGraphField>();
             var path = new GraphFieldPath(AspNet.Execution.GraphCollection.Subscription, routePath);
@@ -80,6 +81,54 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             // ensure nothing exists that can be found
             Assert.AreEqual(0, foundSubs.Count());
             Assert.AreEqual(0, collection.RetrieveSubscriptions(subscription.Route.Path).Count());
+        }
+
+        [Test]
+        public void EventRegistered_OnlyTriggeredOnFirstAdditionOfEvent()
+        {
+
+            var subscription = this.MakeSubscription("abc124");
+            var subscription2 = this.MakeSubscription("abc125");
+            var collection = new ClientSubscriptionCollection<GraphSchema>();
+
+            var totalInvocations = 0;
+            collection.EventRegistered += (sender, args) =>
+            {
+                totalInvocations += 1;
+            };
+
+            collection.Add(subscription);
+            collection.Add(subscription2);
+
+            Assert.AreEqual(1, totalInvocations);
+            Assert.AreEqual(2, collection.RetrieveSubscriptions(subscription.Field.Route.Path).Count());
+        }
+
+        [Test]
+        public void EventAbandoned_OnlyTriggeredOnLastRemovalOfEvent()
+        {
+            var subscription = this.MakeSubscription("abc124");
+            var subscription2 = this.MakeSubscription("abc125");
+            var collection = new ClientSubscriptionCollection<GraphSchema>();
+
+            var totalInvocations = 0;
+            collection.EventAbandoned += (sender, args) =>
+            {
+                totalInvocations += 1;
+            };
+
+            collection.Add(subscription);
+            collection.Add(subscription2);
+
+            // take out one, ensure event not triggered
+            var subRemoved = collection.TryRemoveSubscription(subscription2.Client, subscription2.ClientProvidedId);
+            Assert.AreEqual(subRemoved, subscription2);
+            Assert.AreEqual(0, totalInvocations);
+
+            // take out last one ensure event triggered
+            subRemoved = collection.TryRemoveSubscription(subscription.Client, subscription.ClientProvidedId);
+            Assert.AreEqual(subRemoved, subscription);
+            Assert.AreEqual(1, totalInvocations);
         }
     }
 }

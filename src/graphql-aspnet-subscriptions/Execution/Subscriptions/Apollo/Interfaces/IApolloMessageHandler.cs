@@ -32,8 +32,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Interfaces
         /// <param name="clientProxy">The client proxy processing the message.</param>
         /// <param name="message">The message to be handled.</param>
         /// <returns>A newly set of messages (if any) to be sent back to the client.</returns>
-        Task<IEnumerable<ApolloMessage>> HandleMessage(
-            ISubscriptionClientProxy clientProxy,
-            ApolloMessage message);
+        Task<IEnumerable<ApolloMessage>> HandleMessage(ISubscriptionClientProxy clientProxy, ApolloMessage message);
     }
 }

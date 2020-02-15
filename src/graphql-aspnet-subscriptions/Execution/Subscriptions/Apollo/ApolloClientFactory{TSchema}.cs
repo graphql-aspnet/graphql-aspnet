@@ -23,16 +23,15 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     public class ApolloClientFactory<TSchema> : ISubscriptionClientFactory<TSchema>
             where TSchema : class, ISchema
     {
-        private readonly ApolloClientSupervisor<TSchema> _clientSupervisor;
+        private readonly ISubscriptionServer<TSchema> _subscriptionServer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientFactory{TSchema}" /> class.
         /// </summary>
-        /// <param name="clientSupervisor">The master supervisor to which any created client proxy
-        /// will automatically be registered.</param>
-        public ApolloClientFactory(ApolloClientSupervisor<TSchema> clientSupervisor)
+        /// <param name="subscriptionServer">The subscription server in charge of clients for the target schema.</param>
+        public ApolloClientFactory(ISubscriptionServer<TSchema> subscriptionServer)
         {
-            _clientSupervisor = Validation.ThrowIfNullOrReturn(clientSupervisor, nameof(clientSupervisor));
+            _subscriptionServer = Validation.ThrowIfNullOrReturn(subscriptionServer, nameof(subscriptionServer));
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             SchemaSubscriptionOptions<TSchema> options)
         {
             var client = new ApolloClientProxy<TSchema>(context.RequestServices, context.User, socketProxy, options);
-            _clientSupervisor.RegisterNewClient(client);
+            _subscriptionServer.RegisterNewClient(client);
 
             return client;
         }

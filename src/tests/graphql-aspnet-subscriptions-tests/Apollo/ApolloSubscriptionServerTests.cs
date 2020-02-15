@@ -16,6 +16,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
@@ -26,10 +27,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using NUnit.Framework;
 
     [TestFixture]
-    public class ApolloSupervisorTests
+    public class ApolloSubscriptionServerTests
     {
         [Test]
-        public async Task Supervisor_WhenConnectionEstablished_RequiredMessagesReturned()
+        public async Task WhenConnectionEstablished_RequiredMessagesReturned()
         {
             var socketClient = new MockClientConnection();
             var options = new SchemaSubscriptionOptions<GraphSchema>();
@@ -37,8 +38,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
 
-            var supervisor = new ApolloClientSupervisor<GraphSchema>();
-            supervisor.RegisterNewClient(apolloClient);
+            var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
+                new Mock<ISubscriptionEventListener<GraphSchema>>().Object);
+
+            subscriptionServer.RegisterNewClient(apolloClient);
 
             var message = new ApolloConnectionInitMessage();
 
@@ -58,7 +61,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         }
 
         [Test]
-        public async Task Supervisor_WhenSubscriptionStarted_GeneratesNewSubscriptionRegistration()
+        public async Task WhenSubscriptionStarted_GeneratesNewSubscriptionRegistration()
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ApolloSubscriptionController>()
@@ -79,15 +82,17 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             bool eventTriggered = false;
 
-            var supervisor = new ApolloClientSupervisor<GraphSchema>();
-            supervisor.SubscriptionRegistered += (sender, args) =>
+            var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
+                new Mock<ISubscriptionEventListener<GraphSchema>>().Object);
+
+            subscriptionServer.SubscriptionRegistered += (sender, args) =>
             {
                 eventTriggered = true;
-                Assert.AreEqual(1, supervisor.Subscriptions.RetrieveSubscriptions(apolloClient).Count());
-                Assert.AreEqual(1, supervisor.Subscriptions.RetrieveSubscriptions("[subscription]/ApolloSubscription/WatchForPropObject").Count());
+                Assert.AreEqual(1, subscriptionServer.Subscriptions.RetrieveSubscriptions(apolloClient).Count());
+                Assert.AreEqual(1, subscriptionServer.Subscriptions.RetrieveSubscriptions("[subscription]/ApolloSubscription/WatchForPropObject").Count());
             };
 
-            supervisor.RegisterNewClient(apolloClient);
+            subscriptionServer.RegisterNewClient(apolloClient);
 
             // execute the connection sequence
             await apolloClient.StartConnection();
@@ -95,7 +100,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         }
 
         [Test]
-        public async Task Supervisor_WhenSubscriptionStoped_SubscriptionRegistrationIsDropped()
+        public async Task WhenSubscriptionStoped_SubscriptionRegistrationIsDropped()
         {
             var testServer = new TestServerBuilder()
               .AddGraphController<ApolloSubscriptionController>()
@@ -118,20 +123,22 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             bool subscribeEventFired = false;
             bool unsubscribeEventFired = false;
 
-            var supervisor = new ApolloClientSupervisor<GraphSchema>();
-            supervisor.SubscriptionRegistered += (sender, args) =>
+            var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
+                new Mock<ISubscriptionEventListener<GraphSchema>>().Object);
+
+            subscriptionServer.SubscriptionRegistered += (sender, args) =>
             {
                 subscribeEventFired = true;
             };
 
-            supervisor.SubscriptionRemoved += (sender, args) =>
+            subscriptionServer.SubscriptionRemoved += (sender, args) =>
             {
                 unsubscribeEventFired = true;
-                Assert.AreEqual(0, supervisor.Subscriptions.RetrieveSubscriptions(apolloClient).Count());
-                Assert.AreEqual(0, supervisor.Subscriptions.RetrieveSubscriptions("[subscription]/ApolloSubscription/WatchForPropObject").Count());
+                Assert.AreEqual(0, subscriptionServer.Subscriptions.RetrieveSubscriptions(apolloClient).Count());
+                Assert.AreEqual(0, subscriptionServer.Subscriptions.RetrieveSubscriptions("[subscription]/ApolloSubscription/WatchForPropObject").Count());
             };
 
-            supervisor.RegisterNewClient(apolloClient);
+            subscriptionServer.RegisterNewClient(apolloClient);
 
             // execute the connection sequence
             await apolloClient.StartConnection();

@@ -47,6 +47,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         {
             this.Request = Validation.ThrowIfNullOrReturn(request, nameof(request));
             this.FieldResults = new List<GraphDataItem>();
+            this.PostProcessingActions = new List<Action>();
         }
 
         /// <summary>
@@ -86,5 +87,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// </summary>
         /// <value>The top level field results.</value>
         public IList<GraphDataItem> FieldResults { get; }
+
+        /// <summary>
+        /// Gets a list of registered actions to be executed after processing is complete.
+        /// </summary>
+        /// <value>The post processing actions.</value>
+        public IList<Action> PostProcessingActions { get; }
     }
 }

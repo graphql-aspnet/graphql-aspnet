@@ -84,15 +84,15 @@ namespace GraphQL.AspNet
                       ServiceLifetime.Singleton));
 
             this.OptionalServices.Add(
-                new ServiceDescriptor(
-                    typeof(ApolloClientSupervisor<TSchema>),
-                    typeof(ApolloClientSupervisor<TSchema>),
-                    ServiceLifetime.Singleton));
-
-            this.OptionalServices.Add(
                new ServiceDescriptor(
                    typeof(IClientSubscriptionMaker<TSchema>),
                    typeof(ClientSubscriptionMaker<TSchema>),
+                   ServiceLifetime.Transient));
+
+            this.OptionalServices.Add(
+               new ServiceDescriptor(
+                   typeof(ISubscriptionEventListener<TSchema>),
+                   typeof(InProcessSubscriptionEventListener<TSchema>),
                    ServiceLifetime.Transient));
 
             if (this.SubscriptionOptions.HttpMiddlewareComponentType != null)

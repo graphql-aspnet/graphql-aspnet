@@ -57,7 +57,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Execution\Subscriptions\Apollo\Middleware\" />
     <Folder Include="Interfaces\TypeSystem\" />
     <Folder Include="Middleware\ClientNotification\Components\" />
     <Folder Include="Middleware\SubscriptionEventExecution\Components\" />

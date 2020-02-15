@@ -14,8 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A proxy object used by <see cref="GraphController" /> to submit new events to the
-    /// attached subscription server.
+    /// A proxy object used to queue events to a subscription server.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this server proxy is sending events for.</typeparam>
     public interface ISubscriptionServerProxy<TSchema>

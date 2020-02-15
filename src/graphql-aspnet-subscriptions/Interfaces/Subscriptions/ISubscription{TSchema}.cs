@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     /// A client subscription containing the details of what event is being listened for.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the subscription exists for.</typeparam>
-    public interface IClientSubscription<TSchema>
+    public interface ISubscription<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>

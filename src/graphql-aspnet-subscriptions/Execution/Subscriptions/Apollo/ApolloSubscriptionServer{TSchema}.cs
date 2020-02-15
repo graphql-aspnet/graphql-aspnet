@@ -15,8 +15,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A baseline component acts to centralize the subscription server operations, regardless of if
@@ -26,63 +31,189 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly TSchema _schema;
-        private readonly ApolloClientSupervisor<TSchema> _supervisor;
+        private readonly ISubscriptionEventListener<TSchema> _listener;
         private readonly Dictionary<string, string> _eventMap;
+        private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
+
+        /// <summary>
+        /// Raised when the supervisor begins monitoring a new subscription.
+        /// </summary>
+        public event EventHandler<ClientSubscriptionEventArgs<TSchema>> SubscriptionRegistered;
+
+        /// <summary>
+        /// Raised when the supervisor stops monitoring a new subscription.
+        /// </summary>
+        public event EventHandler<ClientSubscriptionEventArgs<TSchema>> SubscriptionRemoved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloSubscriptionServer{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The schema this server will function with.</param>
-        /// <param name="supervisor">The supervisor in charge of managing client connections for a
-        /// given schema.</param>
-        public ApolloSubscriptionServer(TSchema schema, ApolloClientSupervisor<TSchema> supervisor)
+        /// <param name="listener">The listener watching for new events that need to be communicated
+        /// to clients managed by this server.</param>
+        public ApolloSubscriptionServer(ISubscriptionEventListener<TSchema> listener)
         {
-            _supervisor = Validation.ThrowIfNullOrReturn(supervisor, nameof(supervisor));
+            _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
             _eventMap = new Dictionary<string, string>();
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _clients = new HashSet<ApolloClientProxy<TSchema>>();
+            this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
 
-            this.PopulateEventMap();
+            _listener.NewSubscriptionEvent += this.HandleNewSubscriptionEvent;
         }
 
         /// <summary>
-        /// Populates the event map to map any friendly secondary event names to their primary route paths.
+        /// Handles the new subscription event raised by the listener, dispatching it to any events
+        /// as appropriate.
         /// </summary>
-        private void PopulateEventMap()
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The <see cref="SubscriptionEventEventArgs"/> instance containing the event data.</param>
+        private void HandleNewSubscriptionEvent(object sender, SubscriptionEventEventArgs args)
         {
-            var subscriptionOperation = _schema.KnownTypes.SingleOrDefault(x => x is IGraphOperation && ((IGraphOperation)x).OperationType == GraphCollection.Subscription) as IGraphOperation;
-
-            // TODO: need some validation to prevent duplicate event names for subscriptions
-            if (subscriptionOperation != null)
-            {
-                foreach (var field in subscriptionOperation.Fields.OfType<ISubscriptionGraphField>())
-                {
-                    _eventMap.Add(field.Route.Path, field.Route.Path);
-                    if (!string.IsNullOrWhiteSpace(field.EventName))
-                        _eventMap.Add(field.EventName, field.Route.Path);
-                }
-            }
         }
 
         /// <summary>
-        /// Receives the event (packaged and published by the proxy) and performs
-        /// the required work to send it to connected clients.
+        /// Register a newly connected subscription with the server so that it can start sending messages.
         /// </summary>
-        /// <typeparam name="TData">The type of the data being recieved on the event.</typeparam>
-        /// <param name="subscriptionEvent">A subscription event.</param>
-        /// <returns>Task.</returns>
-        public Task HandleEvent<TData>(SubscriptionEvent<TData> subscriptionEvent)
+        /// <param name="client">The client.</param>
+        public void RegisterNewClient(ISubscriptionClientProxy client)
         {
-            if (subscriptionEvent != null && _eventMap.ContainsKey(subscriptionEvent.EventName))
-            {
-                // normalize the event name by its full path
-                var eventName = _eventMap[subscriptionEvent.EventName];
+            Validation.ThrowIfNull(client, nameof(client));
+            Validation.ThrowIfNotCastable<ApolloClientProxy<TSchema>>(client.GetType(), nameof(client));
 
-                // fetch all subscriptions that need to be altered
-                var subscriptions = _supervisor.Subscriptions.RetrieveSubscriptions(eventName);
+            var apolloClient = client as ApolloClientProxy<TSchema>;
+            _clients.Add(apolloClient);
+
+            apolloClient.ConnectionOpening += this.ApolloClient_ConnectionOpening;
+            apolloClient.ConnectionClosed += this.ApolloClient_ConnectionClosed;
+        }
+
+        /// <summary>
+        /// Handles the ConnectionOpening event of the ApolloClient control. The client raises this event
+        /// when its socket connection is fully realized and it starts listening for messages (and can send messages to)
+        /// the client.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ApolloClient_ConnectionOpening(object sender, EventArgs e)
+        {
+            var client = sender as ApolloClientProxy<TSchema>;
+            if (client == null)
+                return;
+
+            client.RegisterAsyncronousMessageDelegate(this.ApolloClient_MessageRecieved);
+        }
+
+        /// <summary>
+        /// Handles the ConnectionClosed event of the ApolloClient control. The client raises this event
+        /// when its underlying websocket is no longer maintained and has shutdown.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ApolloClient_ConnectionClosed(object sender, EventArgs e)
+        {
+            var client = sender as ApolloClientProxy<TSchema>;
+            if (client == null)
+                return;
+
+            _clients.Remove(client);
+            client.ConnectionClosed -= this.ApolloClient_ConnectionClosed;
+            client.ConnectionOpening -= this.ApolloClient_ConnectionOpening;
+
+            this.Subscriptions.RemoveAllSubscriptions(client);
+        }
+
+        /// <summary>
+        /// Handles the MessageRecieved event of the ApolloClient control. The client raises this event
+        /// whenever a message is recieved and successfully parsed from the under lying websocket.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>TaskMethodBuilder.</returns>
+        private Task ApolloClient_MessageRecieved(object sender, ApolloMessage message)
+        {
+            var client = sender as ApolloClientProxy<TSchema>;
+            if (client == null)
+                return Task.CompletedTask;
+
+            if (message == null)
+                return Task.CompletedTask;
+
+            switch (message.Type)
+            {
+                case ApolloMessageType.CONNECTION_INIT:
+                    return this.AcknowledgeNewConnection(client);
+
+                case ApolloMessageType.START:
+                    return this.StartNewSubscriptionForClient(client, message as ApolloSubscriptionStartMessage);
+
+                case ApolloMessageType.STOP:
+                    return this.StopSubscriptionForClient(client, message as ApolloSubscriptionStopMessage);
+
+                case ApolloMessageType.CONNECTION_TERMINATE:
+                    break;
+
+                default:
+                    break;
             }
 
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Attempts to find and remove a subscription with the given client id on the message for the target subscription.
+        /// </summary>
+        /// <param name="client">The client to search.</param>
+        /// <param name="message">The message containing the subscription id to stop.</param>
+        /// <returns>Task.</returns>
+        private Task StopSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStopMessage message)
+        {
+            if (message?.Id != null)
+            {
+                var subFound = this.Subscriptions.TryRemoveSubscription(client, message.Id);
+
+                if (subFound != null)
+                    this.SubscriptionRemoved?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subFound));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Parses the message contents to generate a valid client subscription and adds it to the watched
+        /// set for this instance.
+        /// </summary>
+        /// <param name="client">The client requesting a subscription.</param>
+        /// <param name="message">The message with the subscription details.</param>
+        private async Task StartNewSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
+        {
+            var maker = client.ServiceProvider.GetRequiredService(typeof(IClientSubscriptionMaker<TSchema>)) as IClientSubscriptionMaker<TSchema>;
+            var subscription = await maker.Create(client, message.Payload, message.Id);
+
+            if (subscription.IsValid)
+            {
+                this.Subscriptions.Add(subscription);
+                this.SubscriptionRegistered?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subscription));
+            }
+            else
+            {
+                // TODO: Send error if the document failed to parse or the subscription
+                //       couldnt otherwise we registered with the supervisor
+            }
+        }
+
+        /// <summary>
+        /// Sends the required startup messages down to the connected client to acknowledge the connection/protocol.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        private async Task AcknowledgeNewConnection(ApolloClientProxy<TSchema> client)
+        {
+            await client.SendMessage(new ApolloServerAckOperationMessage());
+            await client.SendMessage(new ApolloKeepAliveOperationMessage());
+        }
+
+        /// <summary>
+        /// Gets the collection of subscriptions this supervisor is managing.
+        /// </summary>
+        /// <value>The subscriptions.</value>
+        public ClientSubscriptionCollection<TSchema> Subscriptions { get; }
     }
 }
