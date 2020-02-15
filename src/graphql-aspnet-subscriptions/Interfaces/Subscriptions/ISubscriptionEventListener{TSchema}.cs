@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -21,12 +22,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     public interface ISubscriptionEventListener<TSchema>
         where TSchema : class, ISchema
     {
-        /// <summary>
-        /// An event raised whenever this listener recieves a new event from the source
-        /// its monitoring.
-        /// </summary>
-        event SubscriptionEventHandler NewSubscriptionEvent;
-
         /// <summary>
         /// Forces this listener to raise the given event. May not be invocable by all listeners.
         /// </summary>
@@ -47,5 +42,17 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <param name="name">The fully qualified name of the event.</param>
         void RemoveEventType(string name);
+
+        /// <summary>
+        /// Adds a new receiver to forward any raised events to.
+        /// </summary>
+        /// <param name="receiver">The receiver to add.</param>
+        void AddReceiver(ISubscriptionEventReceiver receiver);
+
+        /// <summary>
+        /// Removes the receiver from the list of objects to receive raised events.
+        /// </summary>
+        /// <param name="receiver">The receiver to remove.</param>
+        void RemoveReceiver(ISubscriptionEventReceiver receiver);
     }
 }

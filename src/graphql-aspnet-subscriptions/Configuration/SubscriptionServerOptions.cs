@@ -18,13 +18,13 @@ namespace GraphQL.AspNet.Configuration
     /// Configuration options relating to subscriptions for a given schema.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this processor is built for.</typeparam>
-    public class SchemaSubscriptionOptions<TSchema>
+    public class SubscriptionServerOptions<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SchemaSubscriptionOptions{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionServerOptions{TSchema}"/> class.
         /// </summary>
-        public SchemaSubscriptionOptions()
+        public SubscriptionServerOptions()
         {
         }
 
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// <para>Gets or sets an optional .NET type to use as the middleware component
         /// for Subscription requests. When set, this type should accept, as constructor arguments, accept
-        /// a <see cref="RequestDelegate"/>, the <see cref="SchemaSubscriptionOptions{TSchema}"/> for the
+        /// a <see cref="RequestDelegate"/>, the <see cref="SubscriptionServerOptions{TSchema}"/> for the
         /// target schema and a <see cref="string"/> representing the configured route for the
         /// subscription as constructor parameters. When set to null, Apollo's graphql-over-websocket.
         ///

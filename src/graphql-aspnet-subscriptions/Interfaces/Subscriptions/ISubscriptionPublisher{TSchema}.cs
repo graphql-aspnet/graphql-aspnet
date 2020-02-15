@@ -13,15 +13,15 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A proxy object used to queue events to a subscription server.
+    /// A proxy object used to publish events to a subscription server.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this server proxy is sending events for.</typeparam>
-    public interface ISubscriptionServerProxy<TSchema>
+    /// <typeparam name="TSchema">The type of the schema this publisher is sending events for.</typeparam>
+    public interface ISubscriptionPublisher<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Raises a new event to the subscription server so that it may send the supplied
-        /// data to listening clients.
+        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventListener{TSchema}"/> could
+        /// receive it for processing.
         /// </summary>
         /// <typeparam name="TData">The type of the data being sent.</typeparam>
         /// <param name="eventName">The schema-unique name of the event.</param>

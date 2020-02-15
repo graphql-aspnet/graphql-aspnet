@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Defaults
     /// </para>
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this proxy is sending events for.</typeparam>
-    public class DefaultGraphQLSubscriptionServerProxy<TSchema> : ISubscriptionServerProxy<TSchema>
+    public class DefaultGraphQLSubscriptionServerProxy<TSchema> : ISubscriptionPublisher<TSchema>
         where TSchema : class, ISchema
     {
         private readonly ISubscriptionServer<TSchema> _subscriptionServer;

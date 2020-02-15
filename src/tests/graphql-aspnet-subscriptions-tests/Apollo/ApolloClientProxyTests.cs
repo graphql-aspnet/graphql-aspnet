@@ -30,7 +30,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public async Task WhenConnectionOpened_EventFires()
         {
             var socketClient = new MockClientConnection();
-            var options = new SchemaSubscriptionOptions<GraphSchema>();
+            var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
@@ -54,7 +54,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public async Task WhenConnectionCloses_EventFires()
         {
             var socketClient = new MockClientConnection();
-            var options = new SchemaSubscriptionOptions<GraphSchema>();
+            var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
@@ -78,7 +78,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public async Task WhenMessageRecieved_SingleAsyncDelegateIsActivated()
         {
             var socketClient = new MockClientConnection();
-            var options = new SchemaSubscriptionOptions<GraphSchema>();
+            var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
@@ -106,7 +106,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public async Task WhenMessageRecieved_ThatIsntAnApolloMessage_UnknownMessageIsRaised()
         {
             var socketClient = new MockClientConnection();
-            var options = new SchemaSubscriptionOptions<GraphSchema>();
+            var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);

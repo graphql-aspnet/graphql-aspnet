@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     /// this server is in-process with the primary graphql runtime or out-of-process on a seperate instance.
     /// </summary>
     /// <typeparam name="TSchema">The schema type this server is registered to handle.</typeparam>
-    public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>
+    public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>, ISubscriptionEventReceiver
         where TSchema : class, ISchema
     {
         private readonly ISubscriptionEventListener<TSchema> _listener;
@@ -53,6 +53,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// </summary>
         /// <param name="listener">The listener watching for new events that need to be communicated
         /// to clients managed by this server.</param>
+        /// <param name="logger">The logger used to record events as the server performs its operations.</param>
         public ApolloSubscriptionServer(ISubscriptionEventListener<TSchema> listener, IGraphEventLogger logger = null)
         {
             _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
@@ -62,21 +63,28 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
             this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
 
-            _listener.NewSubscriptionEvent += this.Listener_HandleNewSubscriptionEvent;
+            _listener.AddReceiver(this);
         }
 
         /// <summary>
-        /// Handles the new subscription event raised by the listener, dispatching it to any events
-        /// as appropriate.
+        /// Finalizes an instance of the <see cref="ApolloSubscriptionServer{TSchema}"/> class.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="SubscriptionEventEventArgs"/> instance containing the event data.</param>
-        private void Listener_HandleNewSubscriptionEvent(object sender, SubscriptionEventEventArgs args)
+        ~ApolloSubscriptionServer()
         {
-            if (args?.SubscriptionEvent == null)
+            _listener?.RemoveReceiver(this);
+        }
+
+        /// <summary>
+        /// Receives a new event that was raised by a listener.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        /// <returns>Task.</returns>
+        public async Task ReceiveEvent(SubscriptionEvent eventData)
+        {
+            if (eventData == null)
                 return;
 
-            var subscriptions = this.Subscriptions.RetrieveSubscriptions(args.SubscriptionEvent.EventName);
+            var subscriptions = this.Subscriptions.RetrieveSubscriptions(eventData.EventName);
             if (subscriptions == null && !subscriptions.Any())
                 return;
 
@@ -87,7 +95,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             foreach (var subscription in subscriptions)
             {
                 var context = new GraphSubscriptionExecutionContext(
-                    args.SubscriptionEvent,
+                    eventData,
                     subscription,
                     null,
                     _logger);
@@ -97,7 +105,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                 pipelineExecutions.Add(task);
             }
 
-            Task.WhenAll(pipelineExecutions);
+            await Task.WhenAll(pipelineExecutions);
         }
 
         /// <summary>

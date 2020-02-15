@@ -33,7 +33,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public async Task WhenConnectionEstablished_RequiredMessagesReturned()
         {
             var socketClient = new MockClientConnection();
-            var options = new SchemaSubscriptionOptions<GraphSchema>();
+            var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
@@ -65,7 +65,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ApolloSubscriptionController>()
-                .AddSubscriptions()
+                .AddSubscriptionServer()
                 .Build();
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
@@ -104,7 +104,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         {
             var testServer = new TestServerBuilder()
               .AddGraphController<ApolloSubscriptionController>()
-              .AddSubscriptions()
+              .AddSubscriptionServer()
               .Build();
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();

@@ -41,6 +41,26 @@ namespace GraphQL.AspNet.Configuration.Mvc
     public class GraphQLSchemaInjector<TSchema> : ISchemaInjector<TSchema>
         where TSchema : class, ISchema
     {
+        /// <summary>
+        /// Creates the factory for the DI container to createa  pipeline of the given type.
+        /// </summary>
+        /// <typeparam name="TMiddleware">The type of middleware supported by the pipeline.</typeparam>
+        /// <typeparam name="TContext">The type of the context the middleware components can handle.</typeparam>
+        /// <param name="pipelineBuilder">The pipeline builder.</param>
+        /// <returns>ISchemaPipeline&lt;TSchema, TContext&gt;.</returns>
+        public static Func<IServiceProvider, ISchemaPipeline<TSchema, TContext>>
+            CreatePipelineFactory<TMiddleware, TContext>(ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> pipelineBuilder)
+                where TMiddleware : class, IGraphMiddlewareComponent<TContext>
+                where TContext : class, IGraphMiddlewareContext
+        {
+            return (sp) =>
+            {
+                var pipeline = pipelineBuilder.Build();
+                sp.WriteLogEntry((l) => l.SchemaPipelineRegistered<TSchema>(pipeline));
+                return pipeline;
+            };
+        }
+
         private readonly IServiceCollection _serviceCollection;
         private readonly Action<SchemaOptions<TSchema>> _configureOptions;
         private readonly SchemaBuilder<TSchema> _schemaBuilder;
@@ -115,9 +135,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
             authPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
             // register the DI entries for each pipeline
-            _serviceCollection.TryAddSingleton(this.CreatePipelineFactory(_schemaBuilder.FieldExecutionPipeline));
-            _serviceCollection.TryAddSingleton(this.CreatePipelineFactory(_schemaBuilder.FieldAuthorizationPipeline));
-            _serviceCollection.TryAddSingleton(this.CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
+            _serviceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldExecutionPipeline));
+            _serviceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldAuthorizationPipeline));
+            _serviceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
 
             this.RegisterEngineComponents();
         }
@@ -149,26 +169,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
                 return new DefaultGraphLogger(factory);
             });
-        }
-
-        /// <summary>
-        /// Creates the factory for the DI container to createa  pipeline of the given type.
-        /// </summary>
-        /// <typeparam name="TMiddleware">The type of middleware supported by the pipeline.</typeparam>
-        /// <typeparam name="TContext">The type of the context the middleware components can handle.</typeparam>
-        /// <param name="pipelineBuilder">The pipeline builder.</param>
-        /// <returns>ISchemaPipeline&lt;TSchema, TContext&gt;.</returns>
-        private Func<IServiceProvider, ISchemaPipeline<TSchema, TContext>>
-            CreatePipelineFactory<TMiddleware, TContext>(SchemaPipelineBuilder<TSchema, TMiddleware, TContext> pipelineBuilder)
-                where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-                where TContext : class, IGraphMiddlewareContext
-        {
-            return (sp) =>
-            {
-                var pipeline = pipelineBuilder.Build();
-                sp.WriteLogEntry((l) => l.SchemaPipelineRegistered<TSchema>(pipeline));
-                return pipeline;
-            };
         }
 
         /// <summary>

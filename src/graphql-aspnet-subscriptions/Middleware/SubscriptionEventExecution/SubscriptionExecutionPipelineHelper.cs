@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Middleware.SubscriptionEventExecution
 {
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -30,6 +31,20 @@ namespace GraphQL.AspNet.Middleware.SubscriptionEventExecution
         public SubscriptionExecutionPipelineHelper(ISchemaPipelineBuilder<TSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext> pipelineBuilder)
         {
             _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
+        }
+
+        /// <summary>
+        /// Adds all default middleware components, in standard order, to the pipeline.
+        /// </summary>
+        /// <param name="primaryOptions">The primary options for the schema being configured.</param>
+        /// <param name="subscriptionOptions">The subscription options for the schema being
+        /// configured.</param>
+        /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        public SubscriptionExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(
+            SchemaOptions primaryOptions,
+            SubscriptionServerOptions<TSchema> subscriptionOptions = null)
+        {
+            return this;
         }
     }
 }

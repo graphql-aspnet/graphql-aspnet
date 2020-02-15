@@ -19,5 +19,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     /// <typeparam name="TSchema">The type of the schema the subscription exists for.</typeparam>
     public interface ISubscription<TSchema> : ISubscription
         where TSchema : class, ISchema
-    { }
+    {
+    }
 }

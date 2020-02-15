@@ -84,11 +84,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 this.EventRegistered?.Invoke(this, new ApolloTrackedEventArgs(subscription.Field));
         }
 
-        internal object RetrieveSubscriptions(object eventName)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Removes all subscriptions currently tracked for the given client.
         /// </summary>

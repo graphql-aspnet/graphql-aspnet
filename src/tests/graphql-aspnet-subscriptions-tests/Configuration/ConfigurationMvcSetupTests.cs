@@ -37,7 +37,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             {
                 options.AddGraphType<FanController>();
             })
-            .AddSubscriptions();
+            .AddSubscriptionServer();
 
             var sp = serviceCollection.BuildServiceProvider();
             var controller = sp.GetService(typeof(FanController));

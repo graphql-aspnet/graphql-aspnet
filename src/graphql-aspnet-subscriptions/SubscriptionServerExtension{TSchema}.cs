@@ -14,34 +14,45 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
+    using GraphQL.AspNet.Middleware.SubscriptionEventExecution;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A schema extentation encapsulating subscriptions for a given schema.
+    /// A schema extension encapsulating a subscription server that can accept clients and respond to
+    /// subscription events for connected clients.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this processor is built for.</typeparam>
-    public class SchemaSubscriptionsExtension<TSchema> : ISchemaExtension
+    /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
+    public class SubscriptionServerExtension<TSchema> : ISchemaExtension
         where TSchema : class, ISchema
     {
+        private readonly ISchemaPipelineBuilder<TSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext> _pipelineBuilder;
         private SchemaOptions _primaryOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SchemaSubscriptionsExtension{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionServerExtension{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public SchemaSubscriptionsExtension(SchemaSubscriptionOptions<TSchema> options)
+        /// <param name="pipelineBuilder">The builder that is constructing the pipeline for processing
+        /// subscription events.</param>
+        public SubscriptionServerExtension(
+            SubscriptionServerOptions<TSchema> options,
+            ISchemaPipelineBuilder<TSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext> pipelineBuilder)
         {
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
+
             this.RequiredServices = new List<ServiceDescriptor>();
             this.OptionalServices = new List<ServiceDescriptor>();
         }
@@ -66,7 +77,15 @@ namespace GraphQL.AspNet
             if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
                 GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
 
-            this.RequiredServices.Add(new ServiceDescriptor(typeof(SchemaSubscriptionOptions<TSchema>), this.SubscriptionOptions));
+            // the primary subscription options for the schema
+            this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
+
+            // the master pipeline to process any raised events
+            this.RequiredServices.Add(
+                new ServiceDescriptor(
+                    typeof(ISchemaPipeline<TSchema, GraphSubscriptionExecutionContext>),
+                    GraphQLSchemaInjector<TSchema>.CreatePipelineFactory(_pipelineBuilder),
+                    ServiceLifetime.Scoped));
 
             // add the needed apollo's classes as optional services
             // if the user has already added support for their own handlers
@@ -93,7 +112,7 @@ namespace GraphQL.AspNet
                new ServiceDescriptor(
                    typeof(ISubscriptionEventListener<TSchema>),
                    typeof(InProcessSubscriptionEventListener<TSchema>),
-                   ServiceLifetime.Transient));
+                   ServiceLifetime.Singleton));
 
             if (this.SubscriptionOptions.HttpMiddlewareComponentType != null)
                 this.EnsureMiddlewareTypeOrThrow(this.SubscriptionOptions.HttpMiddlewareComponentType);
@@ -141,7 +160,7 @@ namespace GraphQL.AspNet
                 new[]
                 {
                     typeof(RequestDelegate),
-                    typeof(SchemaSubscriptionOptions<TSchema>),
+                    typeof(SubscriptionServerOptions<TSchema>),
                     typeof(string),
                 });
 
@@ -151,7 +170,7 @@ namespace GraphQL.AspNet
                       $"Unable to initialize subscriptions for schema '{typeof(TSchema).FriendlyName()}'. " +
                       $"An attempt was made to use the type '{middlewareType.FriendlyName()}' as the middleware " +
                       "component to handle subscription operation requests. However, this type does not contain a public " +
-                      $"constructor that accepts parameters of {typeof(RequestDelegate).FriendlyName()}, {typeof(SchemaSubscriptionOptions<TSchema>)}, and {typeof(string)}.");
+                      $"constructor that accepts parameters of {typeof(RequestDelegate).FriendlyName()}, {typeof(SubscriptionServerOptions<TSchema>)}, and {typeof(string)}.");
             }
         }
 
@@ -159,7 +178,7 @@ namespace GraphQL.AspNet
         /// Gets the options related to this extension instance.
         /// </summary>
         /// <value>The options.</value>
-        public SchemaSubscriptionOptions<TSchema> SubscriptionOptions { get; }
+        public SubscriptionServerOptions<TSchema> SubscriptionOptions { get; }
 
         /// <summary>
         /// Gets a collection of services this extension has registered that should be included in

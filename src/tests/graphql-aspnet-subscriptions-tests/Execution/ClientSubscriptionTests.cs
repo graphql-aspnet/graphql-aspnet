@@ -31,7 +31,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
-                .AddSubscriptions()
+                .AddSubscriptionServer()
                 .Build();
 
             var schema = testServer.Schema;
@@ -63,7 +63,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
-                .AddSubscriptions()
+                .AddSubscriptionServer()
                 .Build();
 
             var schema = testServer.Schema;
@@ -92,7 +92,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
-                .AddSubscriptions()
+                .AddSubscriptionServer()
                 .Build();
 
             (var socketClient, var testClient) = testServer.CreateSubscriptionClient();
@@ -112,7 +112,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
-                .AddSubscriptions()
+                .AddSubscriptionServer()
                 .Build();
 
             var schema = testServer.Schema;

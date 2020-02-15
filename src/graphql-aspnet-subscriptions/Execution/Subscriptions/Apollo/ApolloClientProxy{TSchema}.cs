@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         where TSchema : class, ISchema
     {
         private readonly bool _enableKeepAlive;
-        private readonly SchemaSubscriptionOptions<TSchema> _options;
+        private readonly SubscriptionServerOptions<TSchema> _options;
         private IClientConnection _connection;
         private ApolloMessageRecievedDelegate _messageDelegate;
 
@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             IServiceProvider serviceProvider,
             ClaimsPrincipal user,
             IClientConnection clientConnection,
-            SchemaSubscriptionOptions<TSchema> options,
+            SubscriptionServerOptions<TSchema> options,
             bool enableKeepAlive = true)
         {
             this.User = user;

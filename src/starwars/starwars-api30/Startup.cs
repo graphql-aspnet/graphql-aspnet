@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
                  var assembly = typeof(StarWarsDataRepository).Assembly;
                  options.AddGraphAssembly(assembly);
              })
-            .AddSubscriptions(options =>
+            .AddSubscriptionServer(options =>
             {
                 // this route path is set by default
                 // it is listed here just as a matter of example

@@ -12,8 +12,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Middleware.SubscriptionEventExecution;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using Microsoft.AspNetCore.Http;
@@ -22,20 +24,38 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     public static class TestServerSubscriptionHelpers
     {
         /// <summary>
-        /// Adds subscription support to the test server builder.
+        /// Adds subscription server support to the test server builder.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the builder supports.</typeparam>
         /// <param name="serverBuilder">The server builder.</param>
         /// <param name="options">The options to configure the schema with.</param>
         /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        public static TestServerBuilder<TSchema> AddSubscriptions<TSchema>(
+        public static TestServerBuilder<TSchema> AddSubscriptionServer<TSchema>(
             this TestServerBuilder<TSchema> serverBuilder,
-            Action<SchemaSubscriptionOptions<TSchema>> options = null)
+            Action<SubscriptionServerOptions<TSchema>> options = null)
             where TSchema : class, ISchema
         {
-            var subOptions = new SchemaSubscriptionOptions<TSchema>();
-            options?.Invoke(subOptions);
-            serverBuilder.AddSchemaExtension(new SchemaSubscriptionsExtension<TSchema>(subOptions));
+            var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
+            options?.Invoke(subscriptionsOptions);
+
+            var pipelineBuilder = new SchemaPipelineBuilder<TSchema, ISubscriptionExecutionMiddleware, GraphSubscriptionExecutionContext>("Subscription Execution Pipeline");
+            var extension = new SubscriptionServerExtension<TSchema>(subscriptionsOptions, pipelineBuilder);
+
+            serverBuilder.AddSchemaExtension(extension);
+            return serverBuilder;
+        }
+
+        /// <summary>
+        /// Adds the ability for this test server to raise subscription events.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of schema being configured.</typeparam>
+        /// <param name="serverBuilder">The server builder.</param>
+        /// <returns>GraphQL.AspNet.Interfaces.Configuration.ISchemaBuilder&lt;TSchema&gt;.</returns>
+        public static TestServerBuilder<TSchema> AddSubscriptionPublishing<TSchema>(this TestServerBuilder<TSchema> serverBuilder)
+            where TSchema : class, ISchema
+        {
+            var extension = new SubscriptionPublisherExtension<TSchema>();
+            serverBuilder.AddSchemaExtension(extension);
 
             return serverBuilder;
         }
@@ -74,7 +94,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
                     where TSchema : class, ISchema
         {
             var factory = server.ServiceProvider.GetService<ISubscriptionClientFactory<TSchema>>();
-            var options = server.ServiceProvider.GetService<SchemaSubscriptionOptions<TSchema>>();
+            var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
             var context = new DefaultHttpContext();
             context.RequestServices = server.ServiceProvider;

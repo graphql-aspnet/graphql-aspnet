@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         public ISubscriptionClientProxy<TSchema> CreateClientProxy(
             HttpContext context,
             IClientConnection socketProxy,
-            SchemaSubscriptionOptions<TSchema> options)
+            SubscriptionServerOptions<TSchema> options)
         {
             var client = new ApolloClientProxy<TSchema>(context.RequestServices, context.User, socketProxy, options);
             _subscriptionServer.RegisterNewClient(client);

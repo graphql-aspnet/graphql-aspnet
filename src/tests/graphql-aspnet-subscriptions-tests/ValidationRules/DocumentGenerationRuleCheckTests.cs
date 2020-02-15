@@ -56,7 +56,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
                 .AddGraphType<PeopleMoverController>()
                 .AddGraphType<AllowDirective>()
                 .AddGraphType<RestrictDirective>()
-                .AddSubscriptions()
+                .AddSubscriptionServer()
                 .Build();
 
             // parse the query

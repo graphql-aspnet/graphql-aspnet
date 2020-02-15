@@ -58,7 +58,6 @@
 
   <ItemGroup>
     <Folder Include="Interfaces\TypeSystem\" />
-    <Folder Include="Middleware\ClientNotification\Components\" />
     <Folder Include="Middleware\SubscriptionEventExecution\Components\" />
   </ItemGroup>
 </Project>

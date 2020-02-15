@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="routePath">The route path where subscriptions should be pointed.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
-            SchemaSubscriptionOptions<TSchema> options,
+            SubscriptionServerOptions<TSchema> options,
             string routePath)
         {
             this.Next = next;
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Defaults
         /// Gets the subscription options configured for the target schema.
         /// </summary>
         /// <value>The options.</value>
-        protected SchemaSubscriptionOptions<TSchema> Options { get; }
+        protected SubscriptionServerOptions<TSchema> Options { get; }
 
         /// <summary>
         /// Gets the fully qualified internal path representing the route to the subscription server. (e.g. '/graphql/subscriptions' ).

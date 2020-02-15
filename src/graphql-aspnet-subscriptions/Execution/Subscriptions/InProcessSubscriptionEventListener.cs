@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -26,12 +27,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         where TSchema : class, ISchema
     {
         private ConcurrentHashSet<string> _monitoredEvents;
-
-        /// <summary>
-        /// An event raised whenever this listener recieves a new event from the source
-        /// its monitoring.
-        /// </summary>
-        public event SubscriptionEventHandler NewSubscriptionEvent;
+        private HashSet<ISubscriptionEventReceiver> _receivers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InProcessSubscriptionEventListener{TSchema}"/> class.
@@ -39,6 +35,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         public InProcessSubscriptionEventListener()
         {
             _monitoredEvents = new ConcurrentHashSet<string>();
+            _receivers = new HashSet<ISubscriptionEventReceiver>();
         }
 
         /// <summary>
@@ -46,17 +43,27 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// </summary>
         /// <param name="eventData">The event data.</param>
         /// <returns>Task.</returns>
-        public Task RaiseEvent(SubscriptionEvent eventData)
+        public async Task RaiseEvent(SubscriptionEvent eventData)
         {
             Validation.ThrowIfNull(eventData, nameof(eventData));
+
+            if (!_monitoredEvents.Contains(eventData.EventName))
+                return;
+
             if (eventData.SchemaTypeName != typeof(TSchema).FullName)
             {
                 throw new InvalidOperationException($"The event listener, '{this.GetType().FriendlyName()}', can only raise events " +
                     $"for the schema '{typeof(TSchema).FriendlyName()}' (Event Schema: {eventData.SchemaTypeName}).");
             }
 
-            this.NewSubscriptionEvent?.Invoke(this, new SubscriptionEventEventArgs(eventData));
-            return Task.CompletedTask;
+            var tasks = new List<Task>();
+            foreach (var receiver in _receivers)
+            {
+                var task = receiver.ReceiveEvent(eventData);
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -77,6 +84,32 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         public void RemoveEventType(string name)
         {
             _monitoredEvents.TryRemove(name);
+        }
+
+        /// <summary>
+        /// Registers a new receiver to forward any raised events to.
+        /// </summary>
+        /// <param name="receiver">The receiver to add.</param>
+        public void AddReceiver(ISubscriptionEventReceiver receiver)
+        {
+            if (receiver == null)
+                return;
+
+            lock (_receivers)
+                _receivers.Add(receiver);
+        }
+
+        /// <summary>
+        /// Removes the receiver from the list of objects to receive raised events.
+        /// </summary>
+        /// <param name="receiver">The receiver to remove.</param>
+        public void RemoveReceiver(ISubscriptionEventReceiver receiver)
+        {
+            if (receiver == null)
+                return;
+
+            lock (_receivers)
+                _receivers.Remove(receiver);
         }
     }
 }
