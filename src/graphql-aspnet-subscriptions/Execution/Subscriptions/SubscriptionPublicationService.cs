@@ -23,29 +23,19 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// sending from a disconnected task so as not to imped the execution of the task/pipeline where
     /// the subscription events were initially raised.
     /// </summary>
-    public class SubscriptionPublicationEventQueue : BackgroundService
+    public class SubscriptionPublicationService : BackgroundService
     {
         private readonly IServiceProvider _provider;
-        private ConcurrentQueue<SubscriptionEvent> _eventsToRaise;
+        private SubscriptionEventQueue _eventsToRaise;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionPublicationEventQueue"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionPublicationService"/> class.
         /// </summary>
         /// <param name="provider">The provider.</param>
-        public SubscriptionPublicationEventQueue(IServiceProvider provider)
+        public SubscriptionPublicationService(IServiceProvider provider, SubscriptionEventQueue eventQueue)
         {
-            _eventsToRaise = new ConcurrentQueue<SubscriptionEvent>();
+            _eventsToRaise = Validation.ThrowIfNullOrReturn(eventQueue, nameof(eventQueue));
             _provider = Validation.ThrowIfNullOrReturn(provider, nameof(provider));
-        }
-
-        /// <summary>
-        /// Queues the event for publishing on the next heartbeat.
-        /// </summary>
-        /// <param name="eventData">The event data to queue.</param>
-        public void EnqueueEvent(SubscriptionEvent eventData)
-        {
-            if (eventData != null)
-                _eventsToRaise.Enqueue(eventData);
         }
 
         /// <summary>

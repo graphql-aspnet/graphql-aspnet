@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.WebSockets;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -70,14 +71,18 @@ namespace GraphQL.AspNet.StarWarsAPI30
                  var assembly = typeof(StarWarsDataRepository).Assembly;
                  options.AddGraphAssembly(assembly);
              })
-            .AddSubscriptionServer(options =>
-            {
-                // this route path is set by default
-                // it is listed here just as a matter of example
-                options.Route = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
-            });
+             .AddSubscriptions(options =>
+             {
+                 // this route path is set by default
+                 // it is listed here just as a matter of example
+                 options.Route = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
+             });
 
             services.AddControllers();
+            services.AddWebSockets((options) =>
+            {
+                options.AllowedOrigins.Add("http://localhost:5000/");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,7 +101,7 @@ namespace GraphQL.AspNet.StarWarsAPI30
             app.UseCors(ALL_ORIGINS_POLICY);
 
             app.UseAuthorization();
-
+            
             // enable web sockets on this server instance
             // this must be done before graphql if subscriptions are enabled for any
             // schema otherwise the subscriptions may not register correctly

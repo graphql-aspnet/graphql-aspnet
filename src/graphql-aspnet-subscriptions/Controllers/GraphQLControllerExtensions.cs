@@ -9,7 +9,12 @@
 
 namespace GraphQL.AspNet.Controllers
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
     /// Extension methods to expose subscription to graph controllers.
@@ -17,17 +22,41 @@ namespace GraphQL.AspNet.Controllers
     public static class GraphQLControllerExtensions
     {
         /// <summary>
-        /// Publishes an event to the subscription server so it can be sent to
-        /// the appropriate subscribed clients.
+        /// Publishes the subscription event. If the <paramref name="dataObject"/> is null the event
+        /// is automatically canceled.
         /// </summary>
-        /// <param name="controller">The controller initiating the event.</param>
-        /// <param name="eventName">Name schema-unique name of the event being raised .</param>
-        /// <param name="dataObject">The data object being published.</param>
-        /// <returns>Task.</returns>
-        public static Task PublishSubscriptionEvent(this GraphController controller, string eventName, object dataObject)
+        /// <param name="controller">The controller from where the event is originating.</param>
+        /// <param name="eventName">Name of the event to be raised.</param>
+        /// <param name="dataObject">The data object to pass with the event.</param>
+        public static void PublishSubscriptionEvent(this GraphController controller, string eventName, object dataObject)
         {
-            // var schema = controller.sc
-            return Task.CompletedTask;
+            if (dataObject == null)
+                return;
+
+            eventName = Validation.ThrowIfNullEmptyOrReturn(eventName, nameof(eventName));
+
+            var itemsCollection = controller.Request.Items;
+
+            // add or reference the list of events
+            if (!itemsCollection.TryGetValue(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY, out var listObject))
+            {
+                listObject = new List<SubscriptionEventProxy>();
+                itemsCollection.TryAdd(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY, listObject);
+            }
+
+            var eventList = listObject as IList<SubscriptionEventProxy>;
+            if (eventList == null)
+            {
+                throw new GraphExecutionException(
+                    $"Unable to cast the context item '{SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY}' into " +
+                    $"{typeof(IList<SubscriptionEvent>).FriendlyName()}. Event '{eventName}' could not be published.",
+                    controller.Request.Origin);
+            }
+
+            lock (eventList)
+            {
+                eventList.Add(new SubscriptionEventProxy(eventName, dataObject));
+            }
         }
     }
 }

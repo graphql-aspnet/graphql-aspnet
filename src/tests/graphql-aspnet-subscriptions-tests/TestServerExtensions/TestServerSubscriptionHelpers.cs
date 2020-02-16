@@ -72,7 +72,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             serverBuilder.AddSchemaBuilderAction(builder =>
             {
                 builder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>();
-                builder.AsServiceCollection().TryAddSingleton<SubscriptionPublicationEventQueue>();
+                builder.AsServiceCollection().TryAddSingleton<SubscriptionPublicationService>();
                 builder.AsServiceCollection().AddScoped<ISubscriptionEventPublisher, InProcessSubscriptionPublisher>();
             });
 

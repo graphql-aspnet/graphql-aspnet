@@ -22,21 +22,27 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// Standard middleware component that pulls any raised events off the execution context
+    /// Standard middleware component that pulls any raised events off the field execution context
     /// and publishes them using the configured publisher.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this middleware component exists for.</typeparam>
     public class PublishRaisedSubscriptionEventsMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
+        private SubscriptionEventQueue _eventQueue;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="PublishRaisedSubscriptionEventsMiddleware{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="PublishRaisedSubscriptionEventsMiddleware{TSchema}" /> class.
         /// </summary>
-        public PublishRaisedSubscriptionEventsMiddleware()
+        /// <param name="eventQueue">The event queue to add outgoing events to.</param>
+        public PublishRaisedSubscriptionEventsMiddleware(SubscriptionEventQueue eventQueue)
         {
+            _eventQueue = Validation.ThrowIfNullOrReturn(eventQueue, nameof(eventQueue));
         }
 
         /// <summary>
@@ -46,26 +52,20 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(
+            GraphQueryExecutionContext context,
+            GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
+            CancellationToken cancelToken)
         {
-            if (context?.Items != null)
+            if (context?.Items != null && context.IsValid && !context.IsCancelled)
             {
                 // if a context item for the subscription event was added by one of the extension methods
                 // inspect it to try and find the events that were registered
                 if (context.Items.ContainsKey(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY))
                 {
                     var collection = context.Items[SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY] as IList<SubscriptionEventProxy>;
-                    var eventQueue = context.ServiceProvider.GetService(typeof(SubscriptionPublicationEventQueue)) as SubscriptionPublicationEventQueue;
 
-                    if (eventQueue == null)
-                    {
-                        throw new GraphExecutionException(
-                            $"No configured event queue exists to publish subscription events for {typeof(TSchema).FriendlyName()}. Be sure to " +
-                            $"register a '{typeof(ISubscriptionEventPublisher).FriendlyName()}' class and '{typeof(SubscriptionPublicationEventQueue).FriendlyName()}'to the DI container " +
-                            $"at startup. Published subscription events could not be raised.",
-                            SourceOrigin.None);
-                    }
-                    else if (collection == null)
+                    if (collection == null)
                     {
                         throw new GraphExecutionException(
                             $"Unable to cast the context item '{SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY}' into " +
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                                 EventName = proxy.EventName?.Trim(),
                             };
 
-                            eventQueue.EnqueueEvent(eventData);
+                            _eventQueue.Enqueue(eventData);
                         }
                     }
                 }

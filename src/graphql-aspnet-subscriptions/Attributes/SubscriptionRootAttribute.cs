@@ -107,10 +107,10 @@ namespace GraphQL.AspNet.Attributes
         }
 
         /// <summary>
-        /// Gets the schema-unique name of the event that should be raised by the runtime
-        /// whenever a object should be sent to clients subscribed to this graph route.
+        /// Gets or sets an alterate schema-specific name for this event that can be referenced
+        /// when raising it, rather than the full path to the field.
         /// </summary>
         /// <value>The name of the event.</value>
-        public string EventName { get; }
+        public string EventName { get; set; }
     }
 }

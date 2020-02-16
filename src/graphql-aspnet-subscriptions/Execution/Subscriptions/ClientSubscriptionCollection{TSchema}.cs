@@ -36,7 +36,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
         // a collection of subscriptions this supervisor is watching for
         // keyed on teh full field path within the target schema (not against the alternate, short event name)
-        private readonly Dictionary<string, HashSet<ISubscription<TSchema>>> _activeSubscriptionsByEvent;
+        private readonly Dictionary<string, HashSet<ISubscription<TSchema>>> _activeSubscriptionsByRoute;
+        private readonly Dictionary<string, HashSet<ISubscription<TSchema>>> _activeSubscriptionsByShortEventName;
         private readonly Dictionary<ISubscriptionClientProxy, List<ISubscription<TSchema>>> _activeSubscriptionsByClient;
 
         private ReaderWriterLockSlim _collectionLock;
@@ -46,7 +47,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// </summary>
         public ClientSubscriptionCollection()
         {
-            _activeSubscriptionsByEvent = new Dictionary<string, HashSet<ISubscription<TSchema>>>();
+            _activeSubscriptionsByRoute = new Dictionary<string, HashSet<ISubscription<TSchema>>>();
+            _activeSubscriptionsByShortEventName = new Dictionary<string, HashSet<ISubscription<TSchema>>>();
             _activeSubscriptionsByClient = new Dictionary<ISubscriptionClientProxy, List<ISubscription<TSchema>>>();
             _collectionLock = new ReaderWriterLockSlim();
         }
@@ -57,7 +59,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <param name="subscription">The subscription to begin tracking.</param>
         public void Add(ISubscription<TSchema> subscription)
         {
-            bool newlyCreatedEventType = false;
+            var newlyCreatedEventType = false;
 
             _collectionLock.EnterWriteLock();
 
@@ -66,13 +68,24 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 if (!_activeSubscriptionsByClient.ContainsKey(subscription.Client))
                     _activeSubscriptionsByClient.Add(subscription.Client, new List<ISubscription<TSchema>>());
 
-                if (!_activeSubscriptionsByEvent.ContainsKey(subscription.Field.Route.Path))
+                if (!_activeSubscriptionsByRoute.ContainsKey(subscription.Field.Route.Path))
                 {
-                    _activeSubscriptionsByEvent.Add(subscription.Field.Route.Path, new HashSet<ISubscription<TSchema>>());
+                    _activeSubscriptionsByRoute.Add(subscription.Field.Route.Path, new HashSet<ISubscription<TSchema>>());
                     newlyCreatedEventType = true;
                 }
 
-                _activeSubscriptionsByEvent[subscription.Field.Route.Path].Add(subscription);
+                if (!string.IsNullOrWhiteSpace(subscription.Field.EventName))
+                {
+                    if (!_activeSubscriptionsByShortEventName.ContainsKey(subscription.Field.EventName))
+                    {
+                        _activeSubscriptionsByShortEventName.Add(subscription.Field.EventName, new HashSet<ISubscription<TSchema>>());
+                        newlyCreatedEventType = true;
+                    }
+
+                    _activeSubscriptionsByShortEventName[subscription.Field.EventName].Add(subscription);
+                }
+
+                _activeSubscriptionsByRoute[subscription.Field.Route.Path].Add(subscription);
                 _activeSubscriptionsByClient[subscription.Client].Add(subscription);
             }
             finally
@@ -99,13 +112,22 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 {
                     foreach (var subscription in _activeSubscriptionsByClient[client])
                     {
-                        if (_activeSubscriptionsByEvent.ContainsKey(subscription.Field.Route.Path))
+                        if (_activeSubscriptionsByRoute.ContainsKey(subscription.Field.Route.Path))
                         {
-                            _activeSubscriptionsByEvent[subscription.Field.Route.Path].Remove(subscription);
-                            if (_activeSubscriptionsByEvent[subscription.Field.Route.Path].Count == 0)
+                            _activeSubscriptionsByRoute[subscription.Field.Route.Path].Remove(subscription);
+                            if (_activeSubscriptionsByRoute[subscription.Field.Route.Path].Count == 0)
                             {
                                 newlyUntrackedEvents.Add(subscription.Field);
-                                _activeSubscriptionsByEvent.Remove(subscription.Field.Route.Path);
+                                _activeSubscriptionsByRoute.Remove(subscription.Field.Route.Path);
+                            }
+                        }
+
+                        if (_activeSubscriptionsByShortEventName.ContainsKey(subscription.Field.EventName))
+                        {
+                            _activeSubscriptionsByShortEventName[subscription.Field.EventName].Remove(subscription);
+                            if (_activeSubscriptionsByShortEventName[subscription.Field.EventName].Count == 0)
+                            {
+                                _activeSubscriptionsByShortEventName.Remove(subscription.Field.EventName);
                             }
                         }
                     }
@@ -134,7 +156,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             _collectionLock.EnterWriteLock();
 
             bool eventCleared = false;
-
             ISubscription<TSchema> subscription = null;
             try
             {
@@ -146,13 +167,22 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                     return null;
 
                 _activeSubscriptionsByClient[client].Remove(subscription);
-                if (_activeSubscriptionsByEvent.ContainsKey(subscription.Field.Route.Path))
+                if (_activeSubscriptionsByRoute.ContainsKey(subscription.Field.Route.Path))
                 {
-                    _activeSubscriptionsByEvent[subscription.Field.Route.Path].Remove(subscription);
-                    if (_activeSubscriptionsByEvent[subscription.Field.Route.Path].Count == 0)
+                    _activeSubscriptionsByRoute[subscription.Field.Route.Path].Remove(subscription);
+                    if (_activeSubscriptionsByRoute[subscription.Field.Route.Path].Count == 0)
                     {
                         eventCleared = true;
-                        _activeSubscriptionsByEvent.Remove(subscription.Field.Route.Path);
+                        _activeSubscriptionsByRoute.Remove(subscription.Field.Route.Path);
+                    }
+                }
+
+                if (_activeSubscriptionsByShortEventName.ContainsKey(subscription.Field.EventName))
+                {
+                    _activeSubscriptionsByShortEventName[subscription.Field.EventName].Remove(subscription);
+                    if (_activeSubscriptionsByShortEventName[subscription.Field.EventName].Count == 0)
+                    {
+                        _activeSubscriptionsByShortEventName.Remove(subscription.Field.EventName);
                     }
                 }
 
@@ -181,10 +211,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
             try
             {
-                if (!_activeSubscriptionsByEvent.ContainsKey(eventName))
-                    return Enumerable.Empty<ISubscription<TSchema>>();
+                if (_activeSubscriptionsByRoute.ContainsKey(eventName))
+                    return _activeSubscriptionsByRoute[eventName];
 
-                return _activeSubscriptionsByEvent[eventName];
+                if (_activeSubscriptionsByShortEventName.ContainsKey(eventName))
+                    return _activeSubscriptionsByShortEventName[eventName];
+
+                return Enumerable.Empty<ISubscription<TSchema>>();
             }
             finally
             {

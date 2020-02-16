@@ -114,7 +114,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var fieldRequest = new GraphFieldRequest(
                         invocationContext,
                         sourceData,
-                        new SourceOrigin(invocationContext.Origin.Location, path));
+                        new SourceOrigin(invocationContext.Origin.Location, path),
+                        context.Items);
 
                     var fieldContext = new GraphFieldExecutionContext(
                         context,

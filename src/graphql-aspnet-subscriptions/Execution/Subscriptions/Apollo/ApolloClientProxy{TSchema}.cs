@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Security.Claims;
     using System.Text;
     using System.Text.Json;
@@ -23,6 +24,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Converters;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -201,11 +203,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         {
             Validation.ThrowIfNull(message, nameof(message));
 
+            // create and register the proper message serializer for this message
             var options = new JsonSerializerOptions();
-            options.Converters.Add(new ApolloMessageConverter<TSchema>(this.ServiceProvider));
+            (var converter, var asType) = ApolloMessageConverterFactory.CreateConverter<TSchema>(this, message);
+            options.Converters.Add(converter);
 
-            // graphql is defined to communcate in UTF-8
-            var bytes = JsonSerializer.SerializeToUtf8Bytes(message, typeof(ApolloMessage), options);
+            // graphql is defined to communcate in UTF-8, serialize the result to that
+            var bytes = JsonSerializer.SerializeToUtf8Bytes(message, asType, options);
             if (_connection.State == ClientConnectionState.Open)
             {
                 return _connection.SendAsync(

@@ -38,7 +38,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     {
         private readonly ISubscriptionEventListener _listener;
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
-        private readonly IGraphEventLogger _logger;
 
         /// <summary>
         /// Raised when the supervisor begins monitoring a new subscription.
@@ -55,13 +54,10 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// </summary>
         /// <param name="listener">The listener watching for new events that need to be communicated
         /// to clients managed by this server.</param>
-        /// <param name="logger">The logger used to record events as the server performs its operations.</param>
-        public ApolloSubscriptionServer(ISubscriptionEventListener listener, IGraphEventLogger logger = null)
+        public ApolloSubscriptionServer(ISubscriptionEventListener listener)
         {
             _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
-
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
-            _logger = logger;
 
             this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
             this.Subscriptions.EventRegistered += this.Subscriptions_EventRegistered;

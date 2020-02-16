@@ -80,7 +80,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
             schemaBuilder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>(
                 ServiceLifetime.Singleton);
 
-            schemaBuilder.AsServiceCollection().AddHostedService<SubscriptionPublicationEventQueue>();
+            schemaBuilder.AsServiceCollection().AddSingleton<SubscriptionEventQueue>();
+            schemaBuilder.AsServiceCollection().AddHostedService<SubscriptionPublicationService>();
 
             return schemaBuilder;
         }

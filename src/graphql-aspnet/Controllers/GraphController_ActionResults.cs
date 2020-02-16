@@ -32,6 +32,15 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
+        /// Returns an action with a null value as the the result provided to graphQL as the resolved object for the field query.
+        /// </summary>
+        /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
+        protected virtual IGraphActionResult Ok()
+        {
+            return new ObjectReturnedGraphActionResult(null);
+        }
+
+        /// <summary>
         /// Returns an error indicating that an issue occured.
         /// </summary>
         /// <param name="message">The human-friendly error message to assign ot the reported error in the graph result.</param>

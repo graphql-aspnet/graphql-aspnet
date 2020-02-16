@@ -44,14 +44,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             var tasks = new List<Task>();
             lock (_receivers)
             {
-                var eventString = $"{eventData.SchemaTypeName}:{eventData.EventName}";
-                if (!_receivers.ContainsKey(eventString))
-                    return;
-
-                foreach (var receiver in _receivers[eventString])
+                if (_receivers.Count > 0)
                 {
-                    var task = receiver.ReceiveEvent(eventData);
-                    tasks.Add(task);
+                    var eventString = $"{eventData.SchemaTypeName}:{eventData.EventName}";
+                    if (!_receivers.ContainsKey(eventString))
+                        return;
+
+                    foreach (var receiver in _receivers[eventString])
+                    {
+                        var task = receiver.ReceiveEvent(eventData);
+                        tasks.Add(task);
+                    }
                 }
             }
 
@@ -78,7 +81,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
                 if (!string.IsNullOrWhiteSpace(eventType.EventName))
                 {
-                    eventString = $"{eventType.EventName}:{eventType.Route.Path}";
+                    eventString = $"{eventType.SchemaType.FullName}:{eventType.EventName}";
                     if (!_receivers.ContainsKey(eventString))
                         _receivers.Add(eventString, new HashSet<ISubscriptionEventReceiver>());
 
@@ -111,11 +114,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 if (!string.IsNullOrWhiteSpace(eventType.EventName))
                 {
                     eventString = $"{eventType.SchemaType.FullName}:{eventType.EventName}";
-
-                    if (_receivers[eventString].Contains(receiver))
-                        _receivers[eventString].Remove(receiver);
-                    if (_receivers[eventString].Count == 0)
-                        _receivers.Remove(eventString);
+                    if (_receivers.ContainsKey(eventString))
+                    {
+                        if (_receivers[eventString].Contains(receiver))
+                            _receivers[eventString].Remove(receiver);
+                        if (_receivers[eventString].Count == 0)
+                            _receivers.Remove(eventString);
+                    }
                 }
             }
         }

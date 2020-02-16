@@ -7,13 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
+namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Converters
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -24,19 +25,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
     /// <summary>
     /// A general converter for serializing an <see cref="ApolloMessage" /> to json.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this converter is translating for.</typeparam>
-    public class ApolloMessageConverter<TSchema> : JsonConverter<ApolloMessage>
-        where TSchema : class, ISchema
+    public class ApolloMessageConverter : JsonConverter<ApolloMessage>
     {
-        private IServiceProvider _serviceProvider;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloMessageConverter{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="ApolloMessageConverter"/> class.
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
-        public ApolloMessageConverter(IServiceProvider serviceProvider)
+        public ApolloMessageConverter()
         {
-            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
         /// <summary>
@@ -71,33 +66,10 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common
             if (value.PayloadObject != null)
             {
                 writer.WritePropertyName("payload");
-                if (value is ApolloServerDataMessage)
-                    this.WriteGraphOperationpayloadPayload(writer, (value as ApolloServerDataMessage)?.Payload);
-                else
-                    JsonSerializer.Serialize(writer, value.PayloadObject, value.PayloadObject.GetType());
+                JsonSerializer.Serialize(writer, value.PayloadObject, value.PayloadObject.GetType());
             }
 
             writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Writes the data payload.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="result">The result to write.</param>
-        private void WriteGraphOperationpayloadPayload(Utf8JsonWriter writer, IGraphOperationResult result)
-        {
-            var responseWriter = _serviceProvider.GetRequiredService<IGraphResponseWriter<TSchema>>();
-            var schema = _serviceProvider.GetRequiredService<TSchema>();
-
-            responseWriter.WriteAsync(
-                writer,
-                result,
-                new GraphQLResponseOptions()
-                {
-                    ExposeExceptions = schema.Configuration.ResponseOptions.ExposeExceptions,
-                    ExposeMetrics = schema.Configuration.ResponseOptions.ExposeMetrics,
-                });
         }
     }
 }
