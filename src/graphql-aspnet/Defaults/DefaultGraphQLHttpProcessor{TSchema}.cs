@@ -208,7 +208,7 @@ namespace GraphQL.AspNet.Defaults
                 result,
                 _writer,
                 this.ExposeMetrics,
-                this.ExposeMetrics);
+                this.ExposeExceptions);
 
             await localWriter.WriteResultAsync(this.HttpContext).ConfigureAwait(false);
         }

@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -122,11 +123,23 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             {
                 var serviceProvider = subscription.Client.ServiceProvider;
                 var runtime = serviceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
+                var schema = serviceProvider.GetRequiredService<TSchema>();
+
+                IGraphQueryExecutionMetrics metricsPackage = null;
+                IGraphEventLogger logger = serviceProvider.GetService<IGraphEventLogger>();
+
+                if (schema.Configuration.ExecutionOptions.EnableMetrics)
+                {
+                    var factory = serviceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
+                    metricsPackage = factory.CreateMetricsPackage();
+                }
 
                 var context = new GraphQueryExecutionContext(
                     runtime.CreateRequest(subscription.QueryData),
                     serviceProvider,
-                    subscription.Client.User);
+                    subscription.Client.User,
+                    metricsPackage,
+                    logger);
 
                 // register the event data as a source input for the target subscription field
                 context.DefaultFieldSources.AddSource(subscription.Field, eventData.Data);
@@ -141,8 +154,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                         if (task.IsFaulted)
                             return task;
 
-                        var handler = new ApolloSubscriptionNewDataHandler(subscription);
-                        return handler.SendNewData(task.Result);
+                        // send the message with the data package
+                        var message = new ApolloServerDataMessage(subscription.ClientProvidedId, task.Result);
+                        return subscription.Client.SendMessage(message);
                     });
 
                 pipelineExecutions.Add(task);

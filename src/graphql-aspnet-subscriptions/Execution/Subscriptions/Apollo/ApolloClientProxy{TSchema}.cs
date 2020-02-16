@@ -202,7 +202,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             Validation.ThrowIfNull(message, nameof(message));
 
             var options = new JsonSerializerOptions();
-            options.Converters.Add(new ApolloMessageConverter());
+            options.Converters.Add(new ApolloMessageConverter<TSchema>(this.ServiceProvider));
 
             // graphql is defined to communcate in UTF-8
             var bytes = JsonSerializer.SerializeToUtf8Bytes(message, typeof(ApolloMessage), options);
