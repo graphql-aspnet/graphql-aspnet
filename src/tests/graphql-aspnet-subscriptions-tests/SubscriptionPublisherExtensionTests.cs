@@ -36,11 +36,6 @@ namespace GraphQL.Subscriptions.Tests
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
-
-            // server proxy
-            Assert.AreEqual(1, extension.OptionalServices.Count);
-            Assert.IsNotNull(extension.OptionalServices.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionPublisher<GraphSchema>)));
-
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
         }
     }

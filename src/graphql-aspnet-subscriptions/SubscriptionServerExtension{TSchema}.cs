@@ -36,17 +36,19 @@ namespace GraphQL.AspNet
     public class SubscriptionServerExtension<TSchema> : ISchemaExtension
         where TSchema : class, ISchema
     {
+        private readonly ISchemaBuilder<TSchema> _schemaBuilder;
         private SchemaOptions _primaryOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionServerExtension{TSchema}" /> class.
         /// </summary>
+        /// <param name="schemaBuilder">The schema builder providing access to the pipelines for the target schema.</param>
         /// <param name="options">The options.</param>
-        public SubscriptionServerExtension(
-            SubscriptionServerOptions<TSchema> options)
+        public SubscriptionServerExtension(ISchemaBuilder<TSchema> schemaBuilder, SubscriptionServerOptions<TSchema> options)
         {
-            this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _schemaBuilder = Validation.ThrowIfNullOrReturn(schemaBuilder, nameof(schemaBuilder));
 
+            this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             this.RequiredServices = new List<ServiceDescriptor>();
             this.OptionalServices = new List<ServiceDescriptor>();
         }
@@ -58,7 +60,7 @@ namespace GraphQL.AspNet
         /// service collection before being incorporated with the DI container.
         /// </summary>
         /// <param name="options">The parent options which owns this extension.</param>
-        public void Configure(SchemaOptions options)
+        public virtual void Configure(SchemaOptions options)
         {
             _primaryOptions = options;
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
@@ -94,12 +96,6 @@ namespace GraphQL.AspNet
                    typeof(IClientSubscriptionMaker<TSchema>),
                    typeof(ClientSubscriptionMaker<TSchema>),
                    ServiceLifetime.Transient));
-
-            this.OptionalServices.Add(
-               new ServiceDescriptor(
-                   typeof(ISubscriptionEventListener<TSchema>),
-                   typeof(InProcessSubscriptionEventListener<TSchema>),
-                   ServiceLifetime.Singleton));
 
             if (this.SubscriptionOptions.HttpMiddlewareComponentType != null)
                 this.EnsureMiddlewareTypeOrThrow(this.SubscriptionOptions.HttpMiddlewareComponentType);

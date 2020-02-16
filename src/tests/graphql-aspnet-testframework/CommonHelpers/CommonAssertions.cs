@@ -14,6 +14,9 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
     using GraphQL.AspNet.Tests.CommonHelpers.JsonComparing;
     using NUnit.Framework;
 
+    /// <summary>
+    /// Test helper methods to assert various claims about items.
+    /// </summary>
     public static class CommonAssertions
     {
         /// <summary>

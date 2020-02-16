@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             _configureOptions = configureOptions;
 
             _options = new SchemaOptions<TSchema>();
-            _schemaBuilder = new SchemaBuilder<TSchema>(_options);
+            _schemaBuilder = new SchemaBuilder<TSchema>(_options, serviceCollection);
         }
 
         /// <summary>

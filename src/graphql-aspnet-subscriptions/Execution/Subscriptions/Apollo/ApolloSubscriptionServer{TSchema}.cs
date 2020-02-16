@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -34,7 +35,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>, ISubscriptionEventReceiver
         where TSchema : class, ISchema
     {
-        private readonly ISubscriptionEventListener<TSchema> _listener;
+        private readonly ISubscriptionEventListener _listener;
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
         private readonly IGraphEventLogger _logger;
 
@@ -54,7 +55,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <param name="listener">The listener watching for new events that need to be communicated
         /// to clients managed by this server.</param>
         /// <param name="logger">The logger used to record events as the server performs its operations.</param>
-        public ApolloSubscriptionServer(ISubscriptionEventListener<TSchema> listener, IGraphEventLogger logger = null)
+        public ApolloSubscriptionServer(ISubscriptionEventListener listener, IGraphEventLogger logger = null)
         {
             _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
 
@@ -62,8 +63,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             _logger = logger;
 
             this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
-
-            _listener.AddReceiver(this);
+            this.Subscriptions.EventRegistered += this.Subscriptions_EventRegistered;
+            this.Subscriptions.EventAbandoned += this.Subscriptions_EventAbandoned;
         }
 
         /// <summary>
@@ -72,6 +73,32 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         ~ApolloSubscriptionServer()
         {
             _listener?.RemoveReceiver(this);
+            this.Subscriptions.EventRegistered -= this.Subscriptions_EventRegistered;
+            this.Subscriptions.EventAbandoned -= this.Subscriptions_EventAbandoned;
+        }
+
+        /// <summary>
+        /// Unregister this server as a listener for a given event when the last client disconnects its
+        /// subscription registration.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="args">The <see cref="ApolloTrackedEventArgs"/> instance containing the event data.</param>
+        private void Subscriptions_EventAbandoned(object sender, ApolloTrackedEventArgs args)
+        {
+            var monitoredEvent = new MonitoredSubscriptionEvent<TSchema>(args.Field);
+            _listener.RemoveReceiver(monitoredEvent, this);
+        }
+
+        /// <summary>
+        /// Register this server as a listener for the given event when a client first
+        /// requests a subscription from it.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="args">The <see cref="ApolloTrackedEventArgs"/> instance containing the event data.</param>
+        private void Subscriptions_EventRegistered(object sender, ApolloTrackedEventArgs args)
+        {
+            var monitoredEvent = new MonitoredSubscriptionEvent<TSchema>(args.Field);
+            _listener.AddReceiver(monitoredEvent, this);
         }
 
         /// <summary>
@@ -89,18 +116,43 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                 return;
 
             var pipelineExecutions = new List<Task>();
-
             var cancelSource = new CancellationTokenSource();
 
             foreach (var subscription in subscriptions)
             {
-                // TODO: render object
-                var pipeline = subscription.Client.ServiceProvider.GetRequiredService<ISchemaPipeline<TSchema, GraphQueryExecutionContext>>();
-                var task = pipeline.InvokeAsync(null, cancelSource.Token);
+                var serviceProvider = subscription.Client.ServiceProvider;
+                var runtime = serviceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
+
+                var context = new GraphQueryExecutionContext(
+                    runtime.CreateRequest(subscription.QueryData),
+                    serviceProvider,
+                    subscription.Client.User);
+
+                // register the event data as a source input for the target subscription field
+                context.DefaultFieldSources.AddSource(subscription.Field, eventData.Data);
+
+                context.QueryPlan = subscription.QueryPlan;
+                context.QueryOperation = subscription.QueryOperation;
+
+                // execute the request through the runtime
+                var task = runtime.ExecuteRequest(context)
+                    .ContinueWith(task =>
+                    {
+                        if (task.IsFaulted)
+                            return task;
+
+                        var handler = new ApolloSubscriptionNewDataHandler(subscription);
+                        return handler.SendNewData(task.Result);
+                    });
+
                 pipelineExecutions.Add(task);
             }
 
             await Task.WhenAll(pipelineExecutions);
+
+            // reawait any faulted tasks so tehy can unbuble any exceptions
+            foreach (var task in pipelineExecutions.Where(x => x.IsFaulted))
+                await task;
         }
 
         /// <summary>

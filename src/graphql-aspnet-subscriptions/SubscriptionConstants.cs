@@ -6,8 +6,11 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet
 {
+    using GraphQL.AspNet.Middleware.QueryExecution;
+
     /// <summary>
     /// A set of constants related to the configuration and processing of subscriptions
     /// through websockets.
@@ -30,5 +33,11 @@ namespace GraphQL.AspNet
             /// </summary>
             public const string DEFAULT_SUBSCRIPTIONS_ROUTE = SCHEMA_ROUTE_KEY + "/subscriptions";
         }
+
+        /// <summary>
+        /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
+        /// any events that were raised during the query execution.
+        /// </summary>
+        public const string RAISED_EVENTS_COLLECTION_KEY = "RaisedSubscriptionEvents";
     }
 }

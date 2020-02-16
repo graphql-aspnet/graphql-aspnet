@@ -10,23 +10,20 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A proxy object used to publish events to a subscription server.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this publisher is sending events for.</typeparam>
-    public interface ISubscriptionPublisher<TSchema>
-        where TSchema : class, ISchema
+    public interface ISubscriptionEventPublisher
     {
         /// <summary>
-        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventListener{TSchema}"/> could
+        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventPublisher" /> could
         /// receive it for processing.
         /// </summary>
-        /// <typeparam name="TData">The type of the data being sent.</typeparam>
-        /// <param name="eventName">The schema-unique name of the event.</param>
-        /// <param name="dataObject">The data object to send.</param>
+        /// <param name="eventData">The event to publish.</param>
         /// <returns>Task.</returns>
-        Task PublishEvent<TData>(string eventName, TData dataObject);
+        Task PublishEvent(SubscriptionEvent eventData);
     }
 }

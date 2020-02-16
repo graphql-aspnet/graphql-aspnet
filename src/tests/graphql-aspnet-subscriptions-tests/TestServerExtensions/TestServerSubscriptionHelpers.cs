@@ -12,13 +12,19 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Middleware.QueryExecution.Components;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Moq;
 
     public static class TestServerSubscriptionHelpers
     {
@@ -37,9 +43,17 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var extension = new SubscriptionServerExtension<TSchema>(subscriptionsOptions);
+            var mock = new Mock<ISchemaBuilder<TSchema>>();
+
+            var extension = new SubscriptionServerExtension<TSchema>(mock.Object, subscriptionsOptions);
 
             serverBuilder.AddSchemaExtension(extension);
+
+            serverBuilder.AddSchemaBuilderAction(builder =>
+            {
+                builder.AsServiceCollection().AddSingleton<ISubscriptionEventListener, InProcessSubscriptionEventListener>();
+            });
+
             return serverBuilder;
         }
 
@@ -54,6 +68,13 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         {
             var extension = new SubscriptionPublisherExtension<TSchema>();
             serverBuilder.AddSchemaExtension(extension);
+
+            serverBuilder.AddSchemaBuilderAction(builder =>
+            {
+                builder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>();
+                builder.AsServiceCollection().TryAddSingleton<SubscriptionPublicationEventQueue>();
+                builder.AsServiceCollection().AddScoped<ISubscriptionEventPublisher, InProcessSubscriptionPublisher>();
+            });
 
             return serverBuilder;
         }

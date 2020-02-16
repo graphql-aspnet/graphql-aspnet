@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using System.Security.Claims;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// An interface representing an object acting as the runtime for the core graphql
@@ -28,6 +29,13 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// that need to be packaged.</param>
         /// <returns>A fully qualified request context that can be executed.</returns>
         IGraphOperationRequest CreateRequest(GraphQueryData queryData);
+
+        /// <summary>
+        /// Accepts a query context to execute and renders the result.
+        /// </summary>
+        /// <param name="context">The execution context to process.</param>
+        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        Task<IGraphOperationResult> ExecuteRequest(GraphQueryExecutionContext context);
 
         /// <summary>
         /// Accepts a qualified operation request and renders the result.

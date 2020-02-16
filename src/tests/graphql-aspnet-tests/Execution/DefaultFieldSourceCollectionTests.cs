@@ -42,6 +42,35 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
+        public void UpdatedFieldIsAdded_CanBeRetrieved()
+        {
+            var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
+            var mock = new Mock<IGraphField>();
+            mock.Setup(x => x.Route).Returns(path);
+            mock.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Action);
+
+            var o = new object();
+            var o1 = new object();
+
+            var collection = new DefaultFieldSourceCollection(GraphFieldTemplateSource.Action);
+
+            // add then update the source
+            collection.AddSource(mock.Object, o);
+            collection.AddSource(mock.Object, o1);
+
+            var found = collection.TryRetrieveSource(mock.Object, out var result);
+
+            Assert.IsTrue(collection.ContainsKey(mock.Object));
+            Assert.AreEqual(1, collection.Count);
+
+            Assert.IsTrue(found);
+            Assert.IsNotNull(result);
+
+            // ensure retrieved result is the second object added
+            Assert.AreEqual(o1, result);
+        }
+
+        [Test]
         public void DisallowedFieldIsNotAdded_CanNotBeRetrieved()
         {
             var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");

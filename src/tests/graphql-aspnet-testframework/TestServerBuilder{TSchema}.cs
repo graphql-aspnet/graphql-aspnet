@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.Tests.Framework
         private readonly HashSet<Type> _additionalTypes = new HashSet<Type>();
 
         private Action<SchemaOptions> _configureOptions;
+        private List<Action<ISchemaBuilder<TSchema>>> _schemaBuilderAdditions;
         private List<ISchemaExtension> _extensions;
 
         /// <summary>
@@ -44,8 +45,10 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="initialSetup">A set of flags for common preconfigured settings for the test server.</param>
         public TestServerBuilder(TestOptions initialSetup = TestOptions.None)
         {
+            this.ServiceCollection = new ServiceCollection();
             _testComponents = new List<IGraphTestFrameworkComponent>();
             _extensions = new List<ISchemaExtension>();
+            _schemaBuilderAdditions = new List<Action<ISchemaBuilder<TSchema>>>();
             _initialSetup = initialSetup;
 
             this.Authorization = new TestAuthorizationBuilder();
@@ -151,12 +154,26 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
+        /// Adds an action to execute against the master schema builder when this server is built.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <returns>GraphQL.AspNet.Tests.Framework.TestServerBuilder&lt;TSchema&gt;.</returns>
+        public TestServerBuilder<TSchema> AddSchemaBuilderAction(Action<ISchemaBuilder<TSchema>> action)
+        {
+            _schemaBuilderAdditions.Add(action);
+            return this;
+        }
+
+        /// <summary>
         /// Creates a new test server instance from the current settings in this builder.
         /// </summary>
         /// <returns>TestServer.</returns>
         public TestServer<TSchema> Build()
         {
             var serviceCollection = new ServiceCollection();
+
+            foreach (var descriptor in this.ServiceCollection)
+                serviceCollection.Insert(serviceCollection.Count, descriptor);
 
             // any additional, 1 off services added to the builder?
             foreach (var service in this)
@@ -184,6 +201,9 @@ namespace GraphQL.AspNet.Tests.Framework
             foreach (var extension in _extensions)
                 injector.SchemaBuilder.Options.RegisterExtension(extension);
 
+            foreach (var action in _schemaBuilderAdditions)
+                action.Invoke(injector.SchemaBuilder);
+
             var userAccount = this.User.CreateUserAccount();
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -209,5 +229,11 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <value>The logging.</value>
         public TestLoggingBuilder Logging { get; }
+
+        /// <summary>
+        /// Gets the service collection that will create a DI provider when this instance is built.
+        /// </summary>
+        /// <value>The service collection.</value>
+        public IServiceCollection ServiceCollection { get; }
     }
 }

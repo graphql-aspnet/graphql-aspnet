@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Controllers
         /// Gets the raw request for this operation provided by the action invoker.
         /// </summary>
         /// <value>The field context.</value>
-        protected TRequest Request { get; private set; }
+        public TRequest Request { get; private set; }
 
         /// <summary>
         /// Gets the resolved <see cref="ClaimsPrincipal"/> that was passed recieved on the request.

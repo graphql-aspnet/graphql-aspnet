@@ -39,7 +39,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
-                new Mock<ISubscriptionEventListener<GraphSchema>>().Object);
+                new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.RegisterNewClient(apolloClient);
 
@@ -83,7 +83,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             bool eventTriggered = false;
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
-                new Mock<ISubscriptionEventListener<GraphSchema>>().Object);
+                new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.SubscriptionRegistered += (sender, args) =>
             {
@@ -124,7 +124,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             bool unsubscribeEventFired = false;
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
-                new Mock<ISubscriptionEventListener<GraphSchema>>().Object);
+                new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.SubscriptionRegistered += (sender, args) =>
             {

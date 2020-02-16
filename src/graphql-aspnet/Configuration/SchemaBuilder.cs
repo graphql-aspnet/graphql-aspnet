@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -17,12 +19,13 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Middleware.FieldAuthorization;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A builder for constructing hte individual pipelines the schema will use when executing a query.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this builder exists for.</typeparam>
-    public class SchemaBuilder<TSchema> : ISchemaBuilder<TSchema>
+    public partial class SchemaBuilder<TSchema> : ISchemaBuilder<TSchema>, IServiceCollection
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -30,11 +33,14 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         internal event EventHandler<TypeReferenceEventArgs> TypeReferenceAdded;
 
+        private readonly IServiceCollection _serviceCollection;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaBuilder{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The primary options for configuring the schema.</param>
-        public SchemaBuilder(SchemaOptions options)
+        /// <param name="serviceCollection">The service collection this builder will decorate.</param>
+        public SchemaBuilder(SchemaOptions options, IServiceCollection serviceCollection)
         {
             Validation.ThrowIfNull(options, nameof(options));
 
@@ -47,6 +53,7 @@ namespace GraphQL.AspNet.Configuration
             this.QueryExecutionPipeline.TypeReferenceAdded += this.Pipeline_TypeReferenceAdded;
 
             this.Options = options;
+            _serviceCollection = serviceCollection;
         }
 
         /// <summary>
@@ -57,6 +64,15 @@ namespace GraphQL.AspNet.Configuration
         private void Pipeline_TypeReferenceAdded(object sender, TypeReferenceEventArgs e)
         {
             this.TypeReferenceAdded?.Invoke(sender, e);
+        }
+
+        /// <summary>
+        /// Convienence method to convert this builder into a lower-level service collection.
+        /// </summary>
+        /// <returns>IServiceCollection.</returns>
+        public IServiceCollection AsServiceCollection()
+        {
+            return this;
         }
 
         /// <summary>

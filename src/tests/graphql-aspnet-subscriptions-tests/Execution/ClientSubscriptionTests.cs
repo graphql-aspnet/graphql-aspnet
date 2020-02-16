@@ -48,6 +48,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var sub = new ClientSubscription<GraphSchema>(
                 testClient,
+                GraphQueryData.Empty,
                 "abc123",
                 queryPlan);
 
@@ -78,6 +79,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var sub = new ClientSubscription<GraphSchema>(
                 testClient,
+                GraphQueryData.Empty,
                 "abc123",
                 queryPlan,
                 "Operation2");
@@ -99,6 +101,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var sub = new ClientSubscription<GraphSchema>(
                 testClient,
+                GraphQueryData.Empty,
                 "abc123",
                 null);
 
@@ -134,6 +137,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             // create subscription against a non existant operation
             var sub = new ClientSubscription<GraphSchema>(
                 testClient,
+                GraphQueryData.Empty,
                 "abc123",
                 queryPlan,
                 "wrongOperationname");

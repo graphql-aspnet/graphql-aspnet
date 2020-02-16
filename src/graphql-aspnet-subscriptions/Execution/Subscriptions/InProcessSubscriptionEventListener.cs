@@ -10,32 +10,26 @@
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// The default listener for raised subscription events. This object only listens to the locally attached
     /// graphql server and DOES NOT scale. See demo projects for scalable subscription configurations.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this listener is invoked for.</typeparam>
-    public class InProcessSubscriptionEventListener<TSchema> : ISubscriptionEventListener<TSchema>
-        where TSchema : class, ISchema
+    public class InProcessSubscriptionEventListener : ISubscriptionEventListener
     {
-        private ConcurrentHashSet<string> _monitoredEvents;
-        private HashSet<ISubscriptionEventReceiver> _receivers;
+        private Dictionary<string, HashSet<ISubscriptionEventReceiver>> _receivers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InProcessSubscriptionEventListener{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="InProcessSubscriptionEventListener"/> class.
         /// </summary>
         public InProcessSubscriptionEventListener()
         {
-            _monitoredEvents = new ConcurrentHashSet<string>();
-            _receivers = new HashSet<ISubscriptionEventReceiver>();
+            _receivers = new Dictionary<string, HashSet<ISubscriptionEventReceiver>>();
         }
 
         /// <summary>
@@ -47,60 +41,87 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         {
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
-            if (!_monitoredEvents.Contains(eventData.EventName))
-                return;
-
-            if (eventData.SchemaTypeName != typeof(TSchema).FullName)
-            {
-                throw new InvalidOperationException($"The event listener, '{this.GetType().FriendlyName()}', can only raise events " +
-                    $"for the schema '{typeof(TSchema).FriendlyName()}' (Event Schema: {eventData.SchemaTypeName}).");
-            }
-
             var tasks = new List<Task>();
-            foreach (var receiver in _receivers)
+            lock (_receivers)
             {
-                var task = receiver.ReceiveEvent(eventData);
-                tasks.Add(task);
+                var eventString = $"{eventData.SchemaTypeName}:{eventData.EventName}";
+                if (!_receivers.ContainsKey(eventString))
+                    return;
+
+                foreach (var receiver in _receivers[eventString])
+                {
+                    var task = receiver.ReceiveEvent(eventData);
+                    tasks.Add(task);
+                }
             }
 
             await Task.WhenAll(tasks);
         }
 
         /// <summary>
-        /// Adds the event name to the list of events this listener should listen for. The listener
-        /// will begin processing events of this type.
+        /// Registers a new receiver to receive any raised events of the given type.
         /// </summary>
-        /// <param name="name">The fully qualified name of the event.</param>
-        public void AddEventType(string name)
-        {
-            _monitoredEvents.Add(name);
-        }
-
-        /// <summary>
-        /// Removes the event name from the list of events this listener should listen for. No more
-        /// events of this type will be processed.
-        /// </summary>
-        /// <param name="name">The fully qualified name of the event.</param>
-        public void RemoveEventType(string name)
-        {
-            _monitoredEvents.TryRemove(name);
-        }
-
-        /// <summary>
-        /// Registers a new receiver to forward any raised events to.
-        /// </summary>
+        /// <param name="eventType">Type of the event.</param>
         /// <param name="receiver">The receiver to add.</param>
-        public void AddReceiver(ISubscriptionEventReceiver receiver)
+        public void AddReceiver(IMonitoredSubscriptionEvent eventType, ISubscriptionEventReceiver receiver)
+        {
+            Validation.ThrowIfNull(eventType, nameof(eventType));
+            Validation.ThrowIfNull(receiver, nameof(receiver));
+
+            lock (_receivers)
+            {
+                var eventString = $"{eventType.SchemaType.FullName}:{eventType.Route.Path}";
+                if (!_receivers.ContainsKey(eventString))
+                    _receivers.Add(eventString, new HashSet<ISubscriptionEventReceiver>());
+
+                _receivers[eventString].Add(receiver);
+
+                if (!string.IsNullOrWhiteSpace(eventType.EventName))
+                {
+                    eventString = $"{eventType.EventName}:{eventType.Route.Path}";
+                    if (!_receivers.ContainsKey(eventString))
+                        _receivers.Add(eventString, new HashSet<ISubscriptionEventReceiver>());
+
+                    _receivers[eventString].Add(receiver);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the receiver from the list of events to be delivered for the given event type.
+        /// </summary>
+        /// <param name="eventType">Type of the event.</param>
+        /// <param name="receiver">The receiver to remove.</param>
+        public void RemoveReceiver(IMonitoredSubscriptionEvent eventType, ISubscriptionEventReceiver receiver)
         {
             if (receiver == null)
                 return;
 
             lock (_receivers)
-                _receivers.Add(receiver);
+            {
+                var eventString = $"{eventType.SchemaType.FullName}:{eventType.Route.Path}";
+                if (_receivers.ContainsKey(eventString))
+                {
+                    if (_receivers[eventString].Contains(receiver))
+                        _receivers[eventString].Remove(receiver);
+                    if (_receivers[eventString].Count == 0)
+                        _receivers.Remove(eventString);
+                }
+
+                if (!string.IsNullOrWhiteSpace(eventType.EventName))
+                {
+                    eventString = $"{eventType.SchemaType.FullName}:{eventType.EventName}";
+
+                    if (_receivers[eventString].Contains(receiver))
+                        _receivers[eventString].Remove(receiver);
+                    if (_receivers[eventString].Count == 0)
+                        _receivers.Remove(eventString);
+                }
+            }
         }
 
-        /// <summary>
-        /// Removes the receiver from the list of objects to receive raised events.
+         /// <summary>
+        /// Removes the receiver from the list of events to be delivered for any event type.
         /// </summary>
         /// <param name="receiver">The receiver to remove.</param>
         public void RemoveReceiver(ISubscriptionEventReceiver receiver)
@@ -109,7 +130,21 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 return;
 
             lock (_receivers)
-                _receivers.Remove(receiver);
+            {
+                var toRemove = new List<string>();
+                foreach (var kvp in _receivers)
+                {
+                    if (kvp.Value.Contains(receiver))
+                        kvp.Value.Remove(receiver);
+
+                    if (kvp.Value.Count == 0)
+                        toRemove.Add(kvp.Key);
+                }
+
+                // remove any collections that no longer have listeners
+                foreach (var key in toRemove)
+                    _receivers.Remove(key);
+            }
         }
     }
 }

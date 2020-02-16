@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="request">The primary data request.</param>
         /// <param name="metricsPackage">An optional metrics package to populate during the run.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        public async Task<IGraphOperationResult> ExecuteRequest(
+        public Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
             ClaimsPrincipal user,
             IGraphOperationRequest request,
@@ -80,18 +80,30 @@ namespace GraphQL.AspNet.Defaults
             Validation.ThrowIfNull(user, nameof(user));
             Validation.ThrowIfNull(request, nameof(request));
 
+            var context = new GraphQueryExecutionContext(
+                request,
+                serviceProvider,
+                user,
+                metricsPackage,
+                _logger);
+
+            return this.ExecuteRequest(context);
+        }
+
+        /// <summary>
+        /// Accepts a qualified operation request and renders the result.
+        /// </summary>
+        /// <param name="context">The execution context to process.</param>
+        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        public async Task<IGraphOperationResult> ExecuteRequest(GraphQueryExecutionContext context)
+        {
+            Validation.ThrowIfNull(context, nameof(context));
+
             using (var cancelSource = new CancellationTokenSource())
             {
                 // *******************************
                 // Primary query execution
                 // *******************************
-                var context = new GraphQueryExecutionContext(
-                    request,
-                    serviceProvider,
-                    user,
-                    metricsPackage,
-                    _logger);
-
                 await _pipeline.InvokeAsync(context, cancelSource.Token).ConfigureAwait(false);
 
                 // *******************************
@@ -100,7 +112,7 @@ namespace GraphQL.AspNet.Defaults
                 var queryResponse = context.Result;
                 if (queryResponse == null)
                 {
-                    queryResponse = new GraphOperationResult(request);
+                    queryResponse = new GraphOperationResult(context.Request);
                     queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
                 }
 

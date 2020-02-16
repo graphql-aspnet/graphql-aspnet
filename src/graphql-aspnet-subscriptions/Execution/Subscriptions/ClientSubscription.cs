@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -23,35 +24,34 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     public class ClientSubscription<TSchema> : ISubscription<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly IGraphQueryPlan _queryPlan;
-        private readonly IGraphFieldExecutableOperation _operation;
-        private ISubscriptionGraphField _field;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientSubscription{TSchema}" /> class.
         /// </summary>
         /// <param name="clientProxy">The client proxy that will own this subscription.</param>
+        /// <param name="originalQuerydata">The original querydata that generated this subscription.</param>
         /// <param name="clientProvidedId">The identifier, provided by the client, that will be sent
         /// whenever a response to this subscription is sent.</param>
         /// <param name="queryPlan">The query plan.</param>
         /// <param name="operationName">Name of the subscription operation within the document to use.</param>
         public ClientSubscription(
             ISubscriptionClientProxy clientProxy,
+            GraphQueryData originalQuerydata,
             string clientProvidedId,
             IGraphQueryPlan queryPlan,
             string operationName = null)
         {
             this.Client = Validation.ThrowIfNullOrReturn(clientProxy, nameof(clientProxy));
             this.ClientProvidedId = Validation.ThrowIfNullWhiteSpaceOrReturn(clientProvidedId, nameof(clientProvidedId));
-            this.Messages = _queryPlan?.Messages ?? new GraphMessageCollection();
+            this.QueryData = Validation.ThrowIfNullOrReturn(originalQuerydata, nameof(originalQuerydata));
+            this.Messages = this.QueryPlan?.Messages ?? new GraphMessageCollection();
 
-            _queryPlan = queryPlan;
+            this.QueryPlan = queryPlan;
 
             this.IsValid = false;
-            if (_queryPlan != null)
+            if (this.QueryPlan != null)
             {
-                this.Messages.AddRange(_queryPlan.Messages);
-                if (!_queryPlan.IsValid)
+                this.Messages.AddRange(this.QueryPlan.Messages);
+                if (!this.QueryPlan.IsValid)
                     return;
             }
             else
@@ -69,8 +69,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             //
             // However, ensure that the operation that will be executed
             // does in fact represent a subscription being harnesssed
-            _operation = _queryPlan?.RetrieveOperation(operationName);
-            if (_operation == null)
+            this.QueryOperation = this.QueryPlan?.RetrieveOperation(operationName);
+            if (this.QueryOperation == null)
             {
                 this.Messages.Critical(
                         $"No operation found with the name '{operationName}'.",
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 return;
             }
 
-            if (_operation.OperationType != GraphCollection.Subscription)
+            if (this.QueryOperation.OperationType != GraphCollection.Subscription)
             {
                 this.Messages.Critical(
                         $"The chosen operation is not a subscription operation.",
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 return;
             }
 
-            var currentContext = _operation.FieldContexts[0];
+            var currentContext = this.QueryOperation.FieldContexts[0];
 
             // find the first non-virtual field referenced, it should be a controller
             // its garunteed to exist via the document generation rule engine
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 // when pointing at a subscription field we're done
                 if (currentContext.Field.IsVirtual != true)
                 {
-                    _field = currentContext?.Field as ISubscriptionGraphField;
+                    this.Field = currentContext?.Field as ISubscriptionGraphField;
                     break;
                 }
 
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             // just in case it wasn't found...
             // this is theoretically not possible but just in case
             // the user swaps out some DI components incorrectly or by mistake...
-            if (_field == null)
+            if (Field == null)
             {
                 this.Messages.Add(
                   GraphMessageSeverity.Critical,
@@ -115,20 +115,20 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                   Constants.ErrorCodes.BAD_REQUEST);
             }
 
-            this.IsValid = this.Messages.IsSucessful && _operation != null && _field != null;
+            this.IsValid = this.Messages.IsSucessful && this.QueryOperation != null && this.Field != null;
         }
 
         /// <summary>
         /// Gets a reference to the the top-level graph field that has been subscribed to.
         /// </summary>
         /// <value>The field.</value>
-        public ISubscriptionGraphField Field => _field;
+        public ISubscriptionGraphField Field { get; }
 
         /// <summary>
         /// Gets the unique route within a schema this subscription is pointed at.
         /// </summary>
         /// <value>The route.</value>
-        public GraphFieldPath Route => _field?.Route;
+        public GraphFieldPath Route => this.Field?.Route;
 
         /// <summary>
         /// Gets a value indicating whether this subscription has been properly configured.
@@ -153,5 +153,24 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// </summary>
         /// <value>The messages.</value>
         public IGraphMessageCollection Messages { get; }
+
+        /// <summary>
+        /// Gets the original query data object that generated this subscription.
+        /// </summary>
+        /// <value>The query data.</value>
+        public GraphQueryData QueryData { get; }
+
+        /// <summary>
+        /// Gets the generated query plan that was preparsed and represents the original subscription request.
+        /// </summary>
+        /// <value>The query plan.</value>
+        public IGraphQueryPlan QueryPlan { get; }
+
+        /// <summary>
+        /// Gets the selected query operation that will be executed when new data is recieved for
+        /// this subscription.
+        /// </summary>
+        /// <value>The query operation.</value>
+        public IGraphFieldExecutableOperation QueryOperation { get; }
     }
 }

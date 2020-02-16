@@ -12,8 +12,20 @@ namespace GraphQL.AspNet.Tests.CommonHelpers.JsonComparing
     using System.Text.Json;
     using NUnit.Framework;
 
+    /// <summary>
+    /// A set of helper method for comparing json data.
+    /// </summary>
     public static class JsonComparer
     {
+        /// <summary>
+        /// Deteremines if two <see cref="JsonElement"/> are identical or not.
+        /// </summary>
+        /// <param name="expected">The expected.</param>
+        /// <param name="actual">The actual.</param>
+        /// <param name="message">The message.</param>
+        /// <param name="location">The location.</param>
+        /// <param name="assertOnFailure">if set to <c>true</c> [assert on failure].</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public static bool AreEqualJson(JsonElement expected, JsonElement actual, string message = null, string location = "<top>", bool assertOnFailure = true)
         {
             if (expected.ValueKind == JsonValueKind.Object

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -47,7 +49,7 @@ namespace GraphQL.AspNet
         /// service collection before being incorporated with the DI container.
         /// </summary>
         /// <param name="options">The parent options which owns this extension.</param>
-        public void Configure(SchemaOptions options)
+        public virtual void Configure(SchemaOptions options)
         {
             _primaryOptions = options;
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
@@ -59,11 +61,6 @@ namespace GraphQL.AspNet
 
             if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
                 GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
-
-            this.OptionalServices.Add(new ServiceDescriptor(
-                typeof(ISubscriptionPublisher<TSchema>),
-                typeof(InProcessSubscriptionServerProxy<TSchema>),
-                ServiceLifetime.Scoped));
         }
 
         /// <summary>
