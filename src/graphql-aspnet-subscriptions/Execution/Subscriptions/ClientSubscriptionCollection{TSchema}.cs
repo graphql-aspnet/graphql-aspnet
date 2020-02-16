@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                             }
                         }
 
-                        if (_activeSubscriptionsByShortEventName.ContainsKey(subscription.Field.EventName))
+                        if (!string.IsNullOrWhiteSpace(subscription.Field.EventName) && _activeSubscriptionsByShortEventName.ContainsKey(subscription.Field.EventName))
                         {
                             _activeSubscriptionsByShortEventName[subscription.Field.EventName].Remove(subscription);
                             if (_activeSubscriptionsByShortEventName[subscription.Field.EventName].Count == 0)
@@ -177,7 +177,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                     }
                 }
 
-                if (_activeSubscriptionsByShortEventName.ContainsKey(subscription.Field.EventName))
+                if (!string.IsNullOrWhiteSpace(subscription.Field.EventName) && _activeSubscriptionsByShortEventName.ContainsKey(subscription.Field.EventName))
                 {
                     _activeSubscriptionsByShortEventName[subscription.Field.EventName].Remove(subscription);
                     if (_activeSubscriptionsByShortEventName[subscription.Field.EventName].Count == 0)
@@ -211,11 +211,14 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
             try
             {
-                if (_activeSubscriptionsByRoute.ContainsKey(eventName))
-                    return _activeSubscriptionsByRoute[eventName];
+                if (!string.IsNullOrWhiteSpace(eventName))
+                {
+                    if (_activeSubscriptionsByRoute.ContainsKey(eventName))
+                        return _activeSubscriptionsByRoute[eventName];
 
-                if (_activeSubscriptionsByShortEventName.ContainsKey(eventName))
-                    return _activeSubscriptionsByShortEventName[eventName];
+                    if (_activeSubscriptionsByShortEventName.ContainsKey(eventName))
+                        return _activeSubscriptionsByShortEventName[eventName];
+                }
 
                 return Enumerable.Empty<ISubscription<TSchema>>();
             }
