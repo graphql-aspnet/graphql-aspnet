@@ -14,6 +14,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
@@ -22,6 +23,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
@@ -153,6 +155,58 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             await apolloClient.StartConnection();
             Assert.IsTrue(subscribeEventFired, "Subscribe event never fired");
             Assert.IsTrue(unsubscribeEventFired, "Unsubscribe never fired");
+        }
+
+        [Test]
+        public async Task RecieveEvent_IsCommunicatedToTheSubscriber()
+        {
+            var testServer = new TestServerBuilder()
+                .AddGraphController<ApolloSubscriptionController>()
+                .AddSubscriptionServer()
+                .Build();
+
+            (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
+
+            var message = new ApolloConnectionInitMessage();
+
+            var data = new GraphQueryData()
+            {
+                Query = "subscription { apolloSubscription { watchForPropObject { property1 property2} } }",
+            };
+
+            var queryPlan = await testServer.CreateQueryPlan(data.Query);
+
+            var provider = testServer.ServiceProvider.CreateScope();
+            var mockConnection = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            mockConnection.Setup(x => x.ServiceProvider).Returns(provider.ServiceProvider);
+            mockConnection.Setup(x => x.SendMessage(It.IsAny<object>()))
+                .Returns(Task.CompletedTask);
+
+            var subscription = new ClientSubscription<GraphSchema>(
+                mockConnection.Object,
+                data,
+                "abc123",
+                queryPlan);
+
+            var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
+                testServer.Schema,
+                new Mock<ISubscriptionEventListener>().Object);
+
+            subscriptionServer.AddSubscription(subscription);
+
+            await subscriptionServer.ReceiveEvent(new SubscriptionEvent()
+            {
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "prop1",
+                    Property2 = 55,
+                },
+                DataTypeName = typeof(TwoPropertyObject).FullName,
+                SchemaTypeName = typeof(GraphSchema).FullName,
+                EventName = "[subscription]/ApolloSubscription/WatchForPropObject",
+            });
+
+            mockConnection.Verify(x => x.SendMessage(It.IsAny<object>()), "No Message was sent to the connection");
         }
     }
 }

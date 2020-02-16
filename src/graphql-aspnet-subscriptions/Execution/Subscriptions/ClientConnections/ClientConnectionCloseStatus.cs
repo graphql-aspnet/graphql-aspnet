@@ -14,6 +14,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
     public enum ClientConnectionCloseStatus
     {
         /// <summary>
+        /// An unknown, unused status
+        /// </summary>
+        Unknown = 0,
+
+        /// <summary>
         /// The connection has closed after the request was fulfilled.
         /// </summary>
         NormalClosure = 1000,

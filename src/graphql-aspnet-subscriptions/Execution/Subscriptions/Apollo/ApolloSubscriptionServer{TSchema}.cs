@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
                         // send the message with the data package
                         var message = new ApolloServerDataMessage(subscription.ClientProvidedId, task.Result);
                         return subscription.Client.SendMessage(message);
-                    });
+                    }, cancelSource.Token);
 
                 pipelineExecutions.Add(task);
             }
@@ -170,6 +170,24 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             // reawait any faulted tasks so tehy can unbuble any exceptions
             foreach (var task in pipelineExecutions.Where(x => x.IsFaulted))
                 await task;
+        }
+
+        /// <summary>
+        /// Adds a new subscription to this server to be monitored.
+        /// </summary>
+        /// <param name="subscription">The subscription.</param>
+        public void AddSubscription(ISubscription<TSchema> subscription)
+        {
+            if (subscription != null && subscription.IsValid)
+            {
+                this.Subscriptions.Add(subscription);
+                this.SubscriptionRegistered?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subscription));
+            }
+            else
+            {
+                // TODO: Send error if the document failed to parse or the subscription
+                //       couldnt otherwise we registered with the supervisor
+            }
         }
 
         /// <summary>
@@ -301,17 +319,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         {
             var maker = client.ServiceProvider.GetRequiredService(typeof(IClientSubscriptionMaker<TSchema>)) as IClientSubscriptionMaker<TSchema>;
             var subscription = await maker.Create(client, message.Payload, message.Id);
-
-            if (subscription.IsValid)
-            {
-                this.Subscriptions.Add(subscription);
-                this.SubscriptionRegistered?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subscription));
-            }
-            else
-            {
-                // TODO: Send error if the document failed to parse or the subscription
-                //       couldnt otherwise we registered with the supervisor
-            }
+            this.AddSubscription(subscription);
         }
 
         /// <summary>

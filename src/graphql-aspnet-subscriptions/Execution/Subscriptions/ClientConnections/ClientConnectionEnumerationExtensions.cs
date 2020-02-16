@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
     /// <summary>
     /// Helpful enumeration conversions for websocket specific stati.
     /// </summary>
-    internal static class ClientWebSocketEnumerationExtensions
+    public static class ClientConnectionEnumerationExtensions
     {
         /// <summary>
         /// Converts the web socket close status into its equivilant internal status.
