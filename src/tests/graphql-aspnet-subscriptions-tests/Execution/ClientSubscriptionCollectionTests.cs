@@ -49,7 +49,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var foundSubs = collection.RetrieveSubscriptions(subscription.Client);
             Assert.AreEqual(1, foundSubs.Count());
-            Assert.AreEqual(1, collection.RetrieveSubscriptions(subscription.Route.Path).Count());
+            Assert.AreEqual(1, collection.RetrieveSubscriptions(subscription.Route).Count());
 
             Assert.AreEqual(subscription, foundSubs.Single());
         }
@@ -77,7 +77,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             // ensure nothing exists that can be found
             Assert.AreEqual(0, foundSubs.Count());
-            Assert.AreEqual(0, collection.RetrieveSubscriptions(subscription.Route.Path).Count());
+            Assert.AreEqual(0, collection.RetrieveSubscriptions(subscription.Route).Count());
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var collection = new ClientSubscriptionCollection<GraphSchema>();
 
             var totalInvocations = 0;
-            collection.EventRegistered += (sender, args) =>
+            collection.SubscriptionFieldRegistered += (sender, args) =>
             {
                 totalInvocations += 1;
             };
@@ -97,7 +97,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             collection.Add(subscription2);
 
             Assert.AreEqual(1, totalInvocations);
-            Assert.AreEqual(2, collection.RetrieveSubscriptions(subscription.Field.Route.Path).Count());
+            Assert.AreEqual(2, collection.RetrieveSubscriptions(subscription.Field.Route).Count());
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var collection = new ClientSubscriptionCollection<GraphSchema>();
 
             var totalInvocations = 0;
-            collection.EventAbandoned += (sender, args) =>
+            collection.SubscriptionFieldAbandoned += (sender, args) =>
             {
                 totalInvocations += 1;
             };

@@ -30,11 +30,6 @@ namespace GraphQL.AspNet.Schemas
         public const string DEFAULT_NAME = "-Default-";
 
         /// <summary>
-        /// The unique schema identifer for <see cref="GraphSchema"/>.
-        /// </summary>
-        public const string DEFAULT_SCHEMA_ID = "45a3bad5-32b0-46d9-aa49-1543c605a12f";
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchema"/> class.
         /// </summary>
         public GraphSchema()
@@ -70,12 +65,6 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <value>The name.</value>
         public virtual string Name => DEFAULT_NAME;
-
-        /// <summary>
-        /// Gets a unique identifier that globally identifies this schema type on the server instance.
-        /// </summary>
-        /// <value>The identifier.</value>
-        public virtual string Id => DEFAULT_SCHEMA_ID;
 
         /// <summary>
         /// Gets the configuration options that governs the handling of this schema by graphql.

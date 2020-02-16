@@ -13,11 +13,13 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
@@ -39,6 +41,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
+                new GraphSchema(),
                 new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.RegisterNewClient(apolloClient);
@@ -83,13 +86,16 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             bool eventTriggered = false;
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
+                testServer.Schema,
                 new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.SubscriptionRegistered += (sender, args) =>
             {
                 eventTriggered = true;
                 Assert.AreEqual(1, subscriptionServer.Subscriptions.RetrieveSubscriptions(apolloClient).Count());
-                Assert.AreEqual(1, subscriptionServer.Subscriptions.RetrieveSubscriptions("[subscription]/ApolloSubscription/WatchForPropObject").Count());
+
+                var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject");
+                Assert.AreEqual(1, subscriptionServer.Subscriptions.RetrieveSubscriptions(route).Count());
             };
 
             subscriptionServer.RegisterNewClient(apolloClient);
@@ -124,6 +130,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             bool unsubscribeEventFired = false;
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
+                testServer.Schema,
                 new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.SubscriptionRegistered += (sender, args) =>
@@ -135,7 +142,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             {
                 unsubscribeEventFired = true;
                 Assert.AreEqual(0, subscriptionServer.Subscriptions.RetrieveSubscriptions(apolloClient).Count());
-                Assert.AreEqual(0, subscriptionServer.Subscriptions.RetrieveSubscriptions("[subscription]/ApolloSubscription/WatchForPropObject").Count());
+
+                var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject");
+                Assert.AreEqual(0, subscriptionServer.Subscriptions.RetrieveSubscriptions(route).Count());
             };
 
             subscriptionServer.RegisterNewClient(apolloClient);

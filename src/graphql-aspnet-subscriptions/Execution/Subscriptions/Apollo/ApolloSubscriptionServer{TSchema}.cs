@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Schemas;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -38,6 +39,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     {
         private readonly ISubscriptionEventListener _listener;
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
+        private readonly TSchema _schema;
 
         /// <summary>
         /// Raised when the supervisor begins monitoring a new subscription.
@@ -52,16 +54,18 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloSubscriptionServer{TSchema}" /> class.
         /// </summary>
+        /// <param name="schema">The schema instance this sever will use for various comparisons.</param>
         /// <param name="listener">The listener watching for new events that need to be communicated
         /// to clients managed by this server.</param>
-        public ApolloSubscriptionServer(ISubscriptionEventListener listener)
+        public ApolloSubscriptionServer(TSchema schema, ISubscriptionEventListener listener)
         {
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
 
             this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
-            this.Subscriptions.EventRegistered += this.Subscriptions_EventRegistered;
-            this.Subscriptions.EventAbandoned += this.Subscriptions_EventAbandoned;
+            this.Subscriptions.SubscriptionFieldRegistered += this.Subscriptions_EventRegistered;
+            this.Subscriptions.SubscriptionFieldAbandoned += this.Subscriptions_EventAbandoned;
         }
 
         /// <summary>
@@ -70,8 +74,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         ~ApolloSubscriptionServer()
         {
             _listener?.RemoveReceiver(this);
-            this.Subscriptions.EventRegistered -= this.Subscriptions_EventRegistered;
-            this.Subscriptions.EventAbandoned -= this.Subscriptions_EventAbandoned;
+            this.Subscriptions.SubscriptionFieldRegistered -= this.Subscriptions_EventRegistered;
+            this.Subscriptions.SubscriptionFieldAbandoned -= this.Subscriptions_EventAbandoned;
         }
 
         /// <summary>
@@ -79,11 +83,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// subscription registration.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The <see cref="ApolloTrackedEventArgs"/> instance containing the event data.</param>
-        private void Subscriptions_EventAbandoned(object sender, ApolloTrackedEventArgs args)
+        /// <param name="args">The <see cref="ApolloTrackedFieldArgs"/> instance containing the event data.</param>
+        private void Subscriptions_EventAbandoned(object sender, ApolloTrackedFieldArgs args)
         {
-            var monitoredEvent = new MonitoredSubscriptionEvent<TSchema>(args.Field);
-            _listener.RemoveReceiver(monitoredEvent, this);
+            foreach (var eventName in SubscriptionEventName.FromGraphField<TSchema>(args.Field))
+                _listener.RemoveReceiver(eventName, this);
         }
 
         /// <summary>
@@ -91,11 +95,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         /// requests a subscription from it.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="args">The <see cref="ApolloTrackedEventArgs"/> instance containing the event data.</param>
-        private void Subscriptions_EventRegistered(object sender, ApolloTrackedEventArgs args)
+        /// <param name="args">The <see cref="ApolloTrackedFieldArgs"/> instance containing the event data.</param>
+        private void Subscriptions_EventRegistered(object sender, ApolloTrackedFieldArgs args)
         {
-            var monitoredEvent = new MonitoredSubscriptionEvent<TSchema>(args.Field);
-            _listener.AddReceiver(monitoredEvent, this);
+            foreach (var eventName in SubscriptionEventName.FromGraphField<TSchema>(args.Field))
+                _listener.AddReceiver(eventName, this);
         }
 
         /// <summary>
@@ -108,7 +112,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
             if (eventData == null)
                 return;
 
-            var subscriptions = this.Subscriptions.RetrieveSubscriptions(eventData.EventName);
+            var eventRoute = _schema.RetrieveSubscriptionFieldPath(eventData.ToSubscriptionEventName());
+            if (eventRoute == null)
+                return;
+
+            var subscriptions = this.Subscriptions.RetrieveSubscriptions(eventRoute);
             if (subscriptions == null && !subscriptions.Any())
                 return;
 

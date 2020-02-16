@@ -122,7 +122,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
             // shut down the socket and the apollo-protocol-specific keep alive
             keepAliveTimer?.Stop();
-            await _connection.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+
+            if (_connection.State == ClientConnectionState.Open)
+            {
+                await _connection.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+            }
+
             _connection = null;
 
             this.ConnectionClosed?.Invoke(this, new EventArgs());

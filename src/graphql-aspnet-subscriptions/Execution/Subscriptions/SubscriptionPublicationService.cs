@@ -29,9 +29,10 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         private SubscriptionEventQueue _eventsToRaise;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionPublicationService"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionPublicationService" /> class.
         /// </summary>
         /// <param name="provider">The provider.</param>
+        /// <param name="eventQueue">The event queue.</param>
         public SubscriptionPublicationService(IServiceProvider provider, SubscriptionEventQueue eventQueue)
         {
             _eventsToRaise = Validation.ThrowIfNullOrReturn(eventQueue, nameof(eventQueue));

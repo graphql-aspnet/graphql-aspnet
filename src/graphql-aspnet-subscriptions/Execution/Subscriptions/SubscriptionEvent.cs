@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas.Structural;
@@ -43,5 +44,14 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// </summary>
         /// <value>The schema identifier.</value>
         public string SchemaTypeName { get; set; }
+
+        /// <summary>
+        /// Converts this instance to a fully qualified <see cref="SubscriptionEventName"/> object.
+        /// </summary>
+        /// <returns>SubscriptionEventName.</returns>
+        public SubscriptionEventName ToSubscriptionEventName()
+        {
+            return new SubscriptionEventName(this.SchemaTypeName, this.EventName);
+        }
     }
 }

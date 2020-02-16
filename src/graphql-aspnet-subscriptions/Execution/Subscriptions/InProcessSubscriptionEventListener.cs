@@ -22,14 +22,14 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// </summary>
     public class InProcessSubscriptionEventListener : ISubscriptionEventListener
     {
-        private Dictionary<string, HashSet<ISubscriptionEventReceiver>> _receivers;
+        private Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>> _receivers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InProcessSubscriptionEventListener"/> class.
         /// </summary>
         public InProcessSubscriptionEventListener()
         {
-            _receivers = new Dictionary<string, HashSet<ISubscriptionEventReceiver>>();
+            _receivers = new Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>>(SubscriptionEventNameEqualityComparer.Instance);
         }
 
         /// <summary>
@@ -46,11 +46,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             {
                 if (_receivers.Count > 0)
                 {
-                    var eventString = $"{eventData.SchemaTypeName}:{eventData.EventName}";
-                    if (!_receivers.ContainsKey(eventString))
+                    var eventName = eventData.ToSubscriptionEventName();
+                    if (!_receivers.ContainsKey(eventName))
                         return;
 
-                    foreach (var receiver in _receivers[eventString])
+                    foreach (var receiver in _receivers[eventName])
                     {
                         var task = receiver.ReceiveEvent(eventData);
                         tasks.Add(task);
@@ -64,68 +64,45 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <summary>
         /// Registers a new receiver to receive any raised events of the given type.
         /// </summary>
-        /// <param name="eventType">Type of the event.</param>
+        /// <param name="eventName">Name of the event.</param>
         /// <param name="receiver">The receiver to add.</param>
-        public void AddReceiver(IMonitoredSubscriptionEvent eventType, ISubscriptionEventReceiver receiver)
+        public void AddReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver)
         {
-            Validation.ThrowIfNull(eventType, nameof(eventType));
+            Validation.ThrowIfNull(eventName, nameof(eventName));
             Validation.ThrowIfNull(receiver, nameof(receiver));
 
             lock (_receivers)
             {
-                var eventString = $"{eventType.SchemaType.FullName}:{eventType.Route.Path}";
-                if (!_receivers.ContainsKey(eventString))
-                    _receivers.Add(eventString, new HashSet<ISubscriptionEventReceiver>());
+                if (!_receivers.ContainsKey(eventName))
+                    _receivers.Add(eventName, new HashSet<ISubscriptionEventReceiver>());
 
-                _receivers[eventString].Add(receiver);
-
-                if (!string.IsNullOrWhiteSpace(eventType.EventName))
-                {
-                    eventString = $"{eventType.SchemaType.FullName}:{eventType.EventName}";
-                    if (!_receivers.ContainsKey(eventString))
-                        _receivers.Add(eventString, new HashSet<ISubscriptionEventReceiver>());
-
-                    _receivers[eventString].Add(receiver);
-                }
+                _receivers[eventName].Add(receiver);
             }
         }
 
         /// <summary>
         /// Removes the receiver from the list of events to be delivered for the given event type.
         /// </summary>
-        /// <param name="eventType">Type of the event.</param>
+        /// <param name="eventName">Type of the event.</param>
         /// <param name="receiver">The receiver to remove.</param>
-        public void RemoveReceiver(IMonitoredSubscriptionEvent eventType, ISubscriptionEventReceiver receiver)
+        public void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver)
         {
-            if (receiver == null)
+            if (receiver == null || eventName == null)
                 return;
 
             lock (_receivers)
             {
-                var eventString = $"{eventType.SchemaType.FullName}:{eventType.Route.Path}";
-                if (_receivers.ContainsKey(eventString))
+                if (_receivers.ContainsKey(eventName))
                 {
-                    if (_receivers[eventString].Contains(receiver))
-                        _receivers[eventString].Remove(receiver);
-                    if (_receivers[eventString].Count == 0)
-                        _receivers.Remove(eventString);
-                }
-
-                if (!string.IsNullOrWhiteSpace(eventType.EventName))
-                {
-                    eventString = $"{eventType.SchemaType.FullName}:{eventType.EventName}";
-                    if (_receivers.ContainsKey(eventString))
-                    {
-                        if (_receivers[eventString].Contains(receiver))
-                            _receivers[eventString].Remove(receiver);
-                        if (_receivers[eventString].Count == 0)
-                            _receivers.Remove(eventString);
-                    }
+                    if (_receivers[eventName].Contains(receiver))
+                        _receivers[eventName].Remove(receiver);
+                    if (_receivers[eventName].Count == 0)
+                        _receivers.Remove(eventName);
                 }
             }
         }
 
-         /// <summary>
+        /// <summary>
         /// Removes the receiver from the list of events to be delivered for any event type.
         /// </summary>
         /// <param name="receiver">The receiver to remove.</param>
@@ -136,7 +113,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
             lock (_receivers)
             {
-                var toRemove = new List<string>();
+                var toRemove = new List<SubscriptionEventName>();
                 foreach (var kvp in _receivers)
                 {
                     if (kvp.Value.Contains(receiver))

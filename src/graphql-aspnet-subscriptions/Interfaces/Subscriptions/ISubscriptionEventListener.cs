@@ -28,16 +28,16 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <summary>
         /// Registers a new receiver to receive any raised events of the given type.
         /// </summary>
-        /// <param name="eventType">Type of the event.</param>
+        /// <param name="eventName">Name of the event.</param>
         /// <param name="receiver">The receiver to add.</param>
-        void AddReceiver(IMonitoredSubscriptionEvent eventType, ISubscriptionEventReceiver receiver);
+        void AddReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
 
         /// <summary>
         /// Removes the receiver from the list of events to be delivered for the given event type.
         /// </summary>
-        /// <param name="eventType">Type of the event.</param>
+        /// <param name="eventName">Name of the event.</param>
         /// <param name="receiver">The receiver to remove.</param>
-        void RemoveReceiver(IMonitoredSubscriptionEvent eventType, ISubscriptionEventReceiver receiver);
+        void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
 
          /// <summary>
         /// Removes the receiver from the list of events to be delivered for any event type.

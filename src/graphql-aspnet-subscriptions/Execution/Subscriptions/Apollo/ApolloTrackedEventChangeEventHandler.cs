@@ -9,9 +9,9 @@
 namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 {
     /// <summary>
-    /// An event handler called when some status change occurs with a tracked event by the apollo server.
+    /// An event handler called when some status change occurs with a tracked field by the apollo server.
     /// </summary>
     /// <param name="sender">The sender.</param>
-    /// <param name="args">The <see cref="ApolloTrackedEventArgs"/> instance containing the event data.</param>
-    public delegate void ApolloTrackedEventChangeEventHandler(object sender, ApolloTrackedEventArgs args);
+    /// <param name="args">The <see cref="ApolloTrackedFieldArgs"/> instance containing the event data.</param>
+    public delegate void ApolloTrackedFieldChangeEventHandler(object sender, ApolloTrackedFieldArgs args);
 }

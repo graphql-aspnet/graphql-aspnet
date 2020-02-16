@@ -258,6 +258,52 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
+        /// Creates a list of all the fully qualified parent paths this route is nested under.
+        /// </summary>
+        /// <returns>List&lt;GraphRoutePath&gt;.</returns>
+        public List<GraphFieldPath> GenerateParentPathSegments()
+        {
+            if (this.IsTopLevelField || !this.IsValid)
+                return new List<GraphFieldPath>();
+
+            var list = this.Parent.GenerateParentPathSegments();
+            list.Add(this.Parent);
+
+            return list;
+        }
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>GraphFieldPath.</returns>
+        public GraphFieldPath Clone()
+        {
+            return new GraphFieldPath(this.Path);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            return this.Path?.GetHashCode() ?? 0;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is GraphFieldPath grp)
+                return grp.Path == this.Path;
+
+            return false;
+        }
+
+        /// <summary>
         /// Joins a parent and child route segments under the top level field type provided.
         /// </summary>
         /// <param name="routeSegments">The route segments to join.</param>
@@ -280,34 +326,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Creates a list of all the fully qualified parent paths this route is nested under.
-        /// </summary>
-        /// <returns>List&lt;GraphRoutePath&gt;.</returns>
-        public List<GraphFieldPath> GenerateParentPathSegments()
-        {
-            if (this.IsTopLevelField || !this.IsValid)
-                return new List<GraphFieldPath>();
-
-            var list = this.Parent.GenerateParentPathSegments();
-            list.Add(this.Parent);
-
-            return list;
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="object" /> is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is GraphFieldPath grp)
-                return grp.Path == this.Path;
-
-            return false;
-        }
-
-        /// <summary>
         /// Implements the == operator.
         /// </summary>
         /// <param name="obj1">The obj1.</param>
@@ -327,15 +345,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         public static bool operator !=(GraphFieldPath obj1, GraphFieldPath obj2)
         {
             return !(obj1 == obj2);
-        }
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            return this.Path?.GetHashCode() ?? 0;
         }
     }
 }

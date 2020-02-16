@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Converters
 
             if (value.Id != null)
             {
-                writer.WriteStringValue(value.Id);
+                writer.WriteString("id", value.Id);
             }
 
             writer.WritePropertyName("payload");

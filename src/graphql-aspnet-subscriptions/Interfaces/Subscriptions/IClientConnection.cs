@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         ClientConnectionCloseStatus? CloseStatus { get; }
 
         /// <summary>
-        /// Gets the current state of the WebSocket connection.
+        /// Gets the current state of the connection.
         /// </summary>
         /// <value>The current state of this connection.</value>
         ClientConnectionState State { get; }

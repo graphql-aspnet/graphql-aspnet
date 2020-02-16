@@ -15,13 +15,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
     /// <summary>
     /// Event arguments containing the details of the event change.
     /// </summary>
-    public class ApolloTrackedEventArgs : EventArgs
+    public class ApolloTrackedFieldArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloTrackedEventArgs" /> class.
+        /// Initializes a new instance of the <see cref="ApolloTrackedFieldArgs" /> class.
         /// </summary>
         /// <param name="field">The field.</param>
-        public ApolloTrackedEventArgs(ISubscriptionGraphField field)
+        public ApolloTrackedFieldArgs(ISubscriptionGraphField field)
         {
             this.Field = field;
         }
