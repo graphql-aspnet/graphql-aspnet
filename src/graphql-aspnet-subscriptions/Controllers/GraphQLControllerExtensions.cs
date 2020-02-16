@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Controllers
 {
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;

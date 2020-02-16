@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A proxy object used to publish events to a subscription server.

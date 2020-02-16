@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Execution
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.FieldResolution;

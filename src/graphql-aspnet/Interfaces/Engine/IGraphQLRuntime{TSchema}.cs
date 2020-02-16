@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
-    using System.Threading.Tasks;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

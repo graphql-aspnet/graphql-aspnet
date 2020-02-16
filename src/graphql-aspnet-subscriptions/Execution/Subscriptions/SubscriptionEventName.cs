@@ -11,10 +11,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A qualified subscription name representing both the unique path in a schema

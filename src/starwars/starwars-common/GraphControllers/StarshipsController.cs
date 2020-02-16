@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
 {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Threading.Tasks;

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// An equality comaprer for <see cref="SubscriptionEventName"/> objects.

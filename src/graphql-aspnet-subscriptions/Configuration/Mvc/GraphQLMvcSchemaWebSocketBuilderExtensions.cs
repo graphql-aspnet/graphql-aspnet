@@ -10,10 +10,8 @@
 namespace GraphQL.AspNet.Configuration.Mvc
 {
     using System;
-    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;

@@ -12,15 +12,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Converters
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ServerMessages;
-    using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Response;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A general converter for serializing an <see cref="ApolloMessage" /> to json.

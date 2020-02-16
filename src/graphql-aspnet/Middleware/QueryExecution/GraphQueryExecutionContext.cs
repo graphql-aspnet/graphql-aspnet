@@ -18,10 +18,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A top level context for the execution of a query through the runtime. Functions similarly to how HttpContext works for

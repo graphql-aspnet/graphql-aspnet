@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -20,11 +18,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Standard middleware component that pulls any raised events off the field execution context

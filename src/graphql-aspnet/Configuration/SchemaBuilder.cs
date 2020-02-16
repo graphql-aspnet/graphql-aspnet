@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;

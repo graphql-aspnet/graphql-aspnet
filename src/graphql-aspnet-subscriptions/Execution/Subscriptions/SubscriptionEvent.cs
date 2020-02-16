@@ -9,10 +9,8 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
-    using System;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// An event, raised by a <see cref="GraphController" />, and handled by a <see cref="ISubscriptionServer{TSchema}" />
