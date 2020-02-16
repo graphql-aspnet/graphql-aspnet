@@ -152,15 +152,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
 
                 // execute the request through the runtime
                 var task = runtime.ExecuteRequest(context)
-                    .ContinueWith(task =>
-                    {
-                        if (task.IsFaulted)
-                            return task;
+                    .ContinueWith(
+                        task =>
+                        {
+                            if (task.IsFaulted)
+                                return task;
 
-                        // send the message with the data package
-                        var message = new ApolloServerDataMessage(subscription.ClientProvidedId, task.Result);
-                        return subscription.Client.SendMessage(message);
-                    }, cancelSource.Token);
+                            // send the message with the data package
+                            var message = new ApolloServerDataMessage(subscription.ClientProvidedId, task.Result);
+                            return subscription.Client.SendMessage(message);
+                        },
+                        cancelSource.Token);
 
                 pipelineExecutions.Add(task);
             }
