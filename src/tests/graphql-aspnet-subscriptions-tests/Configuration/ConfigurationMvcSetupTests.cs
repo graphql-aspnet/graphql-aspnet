@@ -9,6 +9,7 @@
 
 namespace GraphQL.Subscriptions.Tests.Configuration
 {
+    using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
@@ -27,6 +28,30 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     public class ConfigurationMvcSetupTests
     {
         [Test]
+        public void AddSubscriptions_RegistrationChecks()
+        {
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            // ensure the runtime is in a default state (just in case the statics got messed up)
+            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
+            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
+            GraphQLMvcSchemaBuilderExtensions.Clear();
+
+            var serviceCollection = new ServiceCollection();
+            var returned = serviceCollection.AddGraphQL(options =>
+            {
+                options.AddGraphType<FanController>();
+            })
+            .AddSubscriptions();
+
+            var sp = serviceCollection.BuildServiceProvider();
+
+            // ensure both publishing and server stuff has been registered
+            this.EnsureSubscriptionServerRegistrations(sp);
+            this.EnsureSubscriptionPublishingRegistrations(sp);
+        }
+
+        [Test]
         public void AddSubscriptionServer_RegistrationChecks()
         {
             using var restorePoint = new GraphQLProviderRestorePoint();
@@ -43,7 +68,11 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             })
             .AddSubscriptionServer();
 
-            var sp = serviceCollection.BuildServiceProvider();
+            this.EnsureSubscriptionServerRegistrations(serviceCollection.BuildServiceProvider());
+        }
+
+        private void EnsureSubscriptionServerRegistrations(IServiceProvider sp)
+        {
             var controller = sp.GetService(typeof(FanController));
             Assert.IsNotNull(controller);
 
@@ -78,7 +107,11 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             })
             .AddSubscriptionPublishing();
 
-            var sp = serviceCollection.BuildServiceProvider();
+            this.EnsureSubscriptionPublishingRegistrations(serviceCollection.BuildServiceProvider());
+        }
+
+        private void EnsureSubscriptionPublishingRegistrations(ServiceProvider sp)
+        {
             var controller = sp.GetService(typeof(FanController));
             Assert.IsNotNull(controller);
 
