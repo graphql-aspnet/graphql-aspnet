@@ -175,20 +175,34 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         }
 
         /// <summary>
-        /// Adds a new subscription to this server to be monitored.
+        /// Adds a new subscription to this apollo server. If the subscription is invalid or otherwise
+        /// not able to be added to the monitored subscription collection the subscription's client is automatically
+        /// notified.
         /// </summary>
         /// <param name="subscription">The subscription.</param>
-        public void AddSubscription(ISubscription<TSchema> subscription)
+        /// <returns>Task.</returns>
+        public async Task AddSubscription(ISubscription<TSchema> subscription)
         {
-            if (subscription != null && subscription.IsValid)
+            Validation.ThrowIfNull(subscription, nameof(subscription));
+
+            if (this.Subscriptions.Contains(subscription.Client, subscription.ClientProvidedId))
             {
-                this.Subscriptions.Add(subscription);
-                this.SubscriptionRegistered?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subscription));
+                await subscription.Client.SendMessage(
+                    new ApolloServerErrorMessage(
+                        "A client subscription with id '{subscription.ClientProvidedId}' is already registered.",
+                        Constants.ErrorCodes.BAD_REQUEST));
+            }
+            else if (!subscription.IsValid)
+            {
+                var response = GraphOperationRequest.FromMessages(subscription.Messages, subscription.QueryData);
+
+                await subscription.Client.SendMessage(new ApolloServerDataMessage(subscription.ClientProvidedId, response));
+                await subscription.Client.SendMessage(new ApolloServerCompleteMessage(subscription.ClientProvidedId));
             }
             else
             {
-                // TODO: Send error if the document failed to parse or the subscription
-                //       couldnt otherwise we registered with the supervisor
+                this.Subscriptions.Add(subscription);
+                this.SubscriptionRegistered?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subscription));
             }
         }
 
@@ -321,7 +335,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.Apollo
         {
             var maker = client.ServiceProvider.GetRequiredService(typeof(IClientSubscriptionMaker<TSchema>)) as IClientSubscriptionMaker<TSchema>;
             var subscription = await maker.Create(client, message.Payload, message.Id);
-            this.AddSubscription(subscription);
+            await this.AddSubscription(subscription);
         }
 
         /// <summary>

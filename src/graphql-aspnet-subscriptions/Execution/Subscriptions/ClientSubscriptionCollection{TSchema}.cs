@@ -125,6 +125,23 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <summary>
+        /// Determines whether this instance contains a subscription for the given client with the provided id.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns><c>true</c> if the client has already registered the given id; otherwise, <c>false</c>.</returns>
+        public bool Contains(ISubscriptionClientProxy client, string id)
+        {
+            if (string.IsNullOrWhiteSpace(id) || client == null)
+                return false;
+
+            if (!_activeSubscriptionsByClient.ContainsKey(client))
+                return false;
+
+            return _activeSubscriptionsByClient[client].Any(x => x.ClientProvidedId == id);
+        }
+
+        /// <summary>
         /// Attempts to remove a subscription for a given client based on the client supplied subscription id. If found, the subscription
         /// is removed from the collection and returned.  Null is returned if the subscription or the client is not found.
         /// </summary>

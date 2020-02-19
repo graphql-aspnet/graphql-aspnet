@@ -192,7 +192,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 testServer.Schema,
                 new Mock<ISubscriptionEventListener>().Object);
 
-            subscriptionServer.AddSubscription(subscription);
+            await subscriptionServer.AddSubscription(subscription);
 
             await subscriptionServer.ReceiveEvent(new SubscriptionEvent()
             {
