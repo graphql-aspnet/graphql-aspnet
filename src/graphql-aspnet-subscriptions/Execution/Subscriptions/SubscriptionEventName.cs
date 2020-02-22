@@ -73,8 +73,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             if (string.IsNullOrWhiteSpace(value) || !value.Contains(":"))
                 return null;
 
-            var left = value.Substring(0, value.IndexOf(":"));
-            var right = value.Substring(value.IndexOf(":") + 1);
+            var left = value.Substring(0, value.IndexOf(":", StringComparison.Ordinal));
+            var right = value.Substring(value.IndexOf(":", StringComparison.Ordinal) + 1);
 
             if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))
                 return null;
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             if (ReferenceEquals(null, other) || string.IsNullOrWhiteSpace(other))
                 return false;
 
-            return this._eventName != null && string.Equals(this._eventName, other, System.StringComparison.Ordinal);
+            return this._eventName != null && string.Equals(this._eventName, other, StringComparison.Ordinal);
         }
 
         /// <summary>

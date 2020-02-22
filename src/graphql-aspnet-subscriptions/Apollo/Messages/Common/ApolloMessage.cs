@@ -37,6 +37,7 @@ namespace GraphQL.AspNet.Apollo.Messages.Common
         /// Gets or sets the identifier for the scoped operation started by a client.
         /// </summary>
         /// <value>The identifier.</value>
+        [JsonPropertyName(ApolloConstants.Messaging.MESSAGE_ID)]
         public string Id { get; set; }
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace GraphQL.AspNet.Apollo.Messages.Common
         /// </summary>
         /// <value>The type.</value>
         [JsonConverter(typeof(ApolloMessageTypeConverter))]
+        [JsonPropertyName(ApolloConstants.Messaging.MESSAGE_TYPE)]
         public ApolloMessageType Type { get; set; }
 
         /// <summary>

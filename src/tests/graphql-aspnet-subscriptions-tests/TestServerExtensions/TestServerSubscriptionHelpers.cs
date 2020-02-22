@@ -44,9 +44,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var mock = new Mock<ISchemaBuilder<TSchema>>();
-
-            var extension = new SubscriptionServerSchemaExtension<TSchema>(mock.Object, subscriptionsOptions);
+            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(subscriptionsOptions);
 
             serverBuilder.AddSchemaExtension(extension);
 

@@ -12,6 +12,7 @@ namespace GraphQL.Subscriptions.Tests
     using System;
     using System.Linq;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
@@ -58,15 +59,14 @@ namespace GraphQL.Subscriptions.Tests
             var primaryOptions = new SchemaOptions<GraphSchema>();
             var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
 
-            var builder = new Mock<ISchemaBuilder<GraphSchema>>();
-
-            var extension = new SubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new ApolloSubscriptionServerSchemaExtension<GraphSchema>(subscriptionOptions);
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
 
-            Assert.AreEqual(1, extension.RequiredServices.Count);
+            Assert.AreEqual(2, extension.RequiredServices.Count);
             Assert.IsNotNull(extension.RequiredServices.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
+            Assert.IsNotNull(extension.RequiredServices.SingleOrDefault(x => x.ServiceType == typeof(ApolloMessageConverterFactory)));
 
             Assert.AreEqual(3, extension.OptionalServices.Count);
             Assert.IsNotNull(extension.OptionalServices.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServer<GraphSchema>)));
@@ -91,8 +91,7 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var mock = new Mock<ISchemaBuilder<GraphSchema>>();
-                var extension = new SubscriptionServerSchemaExtension<GraphSchema>(mock.Object, subscriptionOptions);
+                var extension = new ApolloSubscriptionServerSchemaExtension<GraphSchema>(subscriptionOptions);
                 extension.Configure(primaryOptions);
             });
         }
@@ -110,10 +109,8 @@ namespace GraphQL.Subscriptions.Tests
             // invalid constructor
             subscriptionOptions.HttpMiddlewareComponentType = typeof(ValidSubscriptionMiddlewareTester);
 
-            var mock = new Mock<ISchemaBuilder<GraphSchema>>();
-
             // no exception should be thrown
-            var extension = new SubscriptionServerSchemaExtension<GraphSchema>(mock.Object, subscriptionOptions);
+            var extension = new ApolloSubscriptionServerSchemaExtension<GraphSchema>(subscriptionOptions);
             extension.Configure(primaryOptions);
         }
     }

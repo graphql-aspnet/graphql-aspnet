@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Apollo.Messages.Common;
+    using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.Clients;
@@ -32,7 +33,13 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
+            var apolloClient = new ApolloClientProxy<GraphSchema>(
+                provider,
+                null,
+                socketClient,
+                options,
+                new ApolloMessageConverterFactory(),
+                false);
 
             bool eventCalled = false;
             void ConnectionOpening(object sender, EventArgs e)
@@ -56,7 +63,13 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
+            var apolloClient = new ApolloClientProxy<GraphSchema>(
+                provider,
+                null,
+                socketClient,
+                options,
+                new ApolloMessageConverterFactory(),
+                false);
 
             bool eventCalled = false;
             void ConnectionClosed(object sender, EventArgs e)
@@ -80,7 +93,13 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
+            var apolloClient = new ApolloClientProxy<GraphSchema>(
+                provider,
+                null,
+                socketClient,
+                options,
+                new ApolloMessageConverterFactory(),
+                false);
 
             bool delegateCalled = false;
             Task MessageRecieved(object sender, ApolloMessage message)
@@ -108,7 +127,13 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
+            var apolloClient = new ApolloClientProxy<GraphSchema>(
+                provider,
+                null,
+                socketClient,
+                options,
+                new ApolloMessageConverterFactory(),
+                false);
 
             bool unknownMessageRecieved = false;
             Task MessageRecieved(object sender, ApolloMessage message)

@@ -27,16 +27,16 @@ namespace GraphQL.AspNet.Schemas
     /// </summary>
     public static class SchemaSubscriptionEventMap
     {
-        private static ConcurrentHashSet<Type> _parsedSchemaTypes;
-        private static ConcurrentDictionary<SubscriptionEventName, GraphFieldPath> _nameCatalog;
+        private static readonly ConcurrentHashSet<Type> PARSED_SCHEMA_TYPES;
+        private static readonly ConcurrentDictionary<SubscriptionEventName, GraphFieldPath> NAME_CATALOG;
 
         /// <summary>
         /// Initializes static members of the <see cref="SchemaSubscriptionEventMap"/> class.
         /// </summary>
         static SchemaSubscriptionEventMap()
         {
-            _nameCatalog = new ConcurrentDictionary<SubscriptionEventName, GraphFieldPath>(SubscriptionEventNameEqualityComparer.Instance);
-            _parsedSchemaTypes = new ConcurrentHashSet<Type>();
+            NAME_CATALOG = new ConcurrentDictionary<SubscriptionEventName, GraphFieldPath>(SubscriptionEventNameEqualityComparer.Instance);
+            PARSED_SCHEMA_TYPES = new ConcurrentHashSet<Type>();
         }
 
         /// <summary>
@@ -79,11 +79,12 @@ namespace GraphQL.AspNet.Schemas
         /// <returns><c>true</c> if the schema was just now loaded, <c>false</c> if it was loaded previously.</returns>
         internal static bool PreLoadSubscriptionEventNames(this ISchema schema)
         {
-            if (schema == null || _parsedSchemaTypes.Contains(schema.GetType()))
+            if (schema == null || PARSED_SCHEMA_TYPES.Contains(schema.GetType()))
                 return false;
 
+            PARSED_SCHEMA_TYPES.Add(schema.GetType());
             foreach (var kvp in CreateEventMap(schema))
-                _nameCatalog.TryAdd(kvp.Key, kvp.Value);
+                NAME_CATALOG.TryAdd(kvp.Key, kvp.Value);
 
             return true;
         }
@@ -102,13 +103,13 @@ namespace GraphQL.AspNet.Schemas
             if (eventName.OwnerSchemaType != schema.GetType().FullName)
                 return null;
 
-            if (_nameCatalog.TryGetValue(eventName, out var routePath))
+            if (NAME_CATALOG.TryGetValue(eventName, out var routePath))
                 return routePath;
 
             // attempt to load the schema into the cache in case it wasnt before
             if (PreLoadSubscriptionEventNames(schema))
             {
-                if (_nameCatalog.TryGetValue(eventName, out routePath))
+                if (NAME_CATALOG.TryGetValue(eventName, out routePath))
                     return routePath;
             }
 

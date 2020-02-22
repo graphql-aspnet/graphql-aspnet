@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Apollo
 {
+    using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -47,7 +48,12 @@ namespace GraphQL.AspNet.Apollo
             IClientConnection socketProxy,
             SubscriptionServerOptions<TSchema> options)
         {
-            var client = new ApolloClientProxy<TSchema>(context.RequestServices, context.User, socketProxy, options);
+            var client = new ApolloClientProxy<TSchema>(
+                context.RequestServices,
+                context.User,
+                socketProxy,
+                options,
+                new ApolloMessageConverterFactory());
             _subscriptionServer.RegisterNewClient(client);
 
             return client;

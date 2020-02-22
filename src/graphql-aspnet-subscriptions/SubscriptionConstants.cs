@@ -18,6 +18,13 @@ namespace GraphQL.AspNet
     public static class SubscriptionConstants
     {
         /// <summary>
+        /// Initializes static members of the <see cref="SubscriptionConstants"/> class.
+        /// </summary>
+        static SubscriptionConstants()
+        {
+        }
+
+        /// <summary>
         /// A collection of constants related to subscription routing.
         /// </summary>
         public static class Routing

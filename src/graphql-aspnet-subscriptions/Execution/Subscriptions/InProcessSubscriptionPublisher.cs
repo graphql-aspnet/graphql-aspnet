@@ -9,9 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
-    using System.Diagnostics;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>

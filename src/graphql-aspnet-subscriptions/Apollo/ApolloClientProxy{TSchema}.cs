@@ -38,6 +38,7 @@ namespace GraphQL.AspNet.Apollo
     {
         private readonly bool _enableKeepAlive;
         private readonly SubscriptionServerOptions<TSchema> _options;
+        private readonly ApolloMessageConverterFactory _messageConverter;
         private IClientConnection _connection;
         private ApolloMessageRecievedDelegate _messageDelegate;
 
@@ -59,6 +60,8 @@ namespace GraphQL.AspNet.Apollo
         /// <param name="user">The user.</param>
         /// <param name="clientConnection">The underlying client connection for apollo to manage.</param>
         /// <param name="options">The options used to configure the registration.</param>
+        /// <param name="messageConverter">The message converter factory that will generate
+        /// json converters for the various <see cref="ApolloMessage"/> the proxy shuttles to the client.</param>
         /// <param name="enableKeepAlive">if set to <c>true</c> this client proxy will ensure
         /// apollo specific keep alives are sent to the underlying connection on an appropriate schedule.</param>
         public ApolloClientProxy(
@@ -66,6 +69,7 @@ namespace GraphQL.AspNet.Apollo
             ClaimsPrincipal user,
             IClientConnection clientConnection,
             SubscriptionServerOptions<TSchema> options,
+            ApolloMessageConverterFactory messageConverter,
             bool enableKeepAlive = true)
         {
             this.User = user;
@@ -73,6 +77,7 @@ namespace GraphQL.AspNet.Apollo
 
             _connection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _messageConverter = Validation.ThrowIfNullOrReturn(messageConverter, nameof(messageConverter));
             _enableKeepAlive = enableKeepAlive;
         }
 
@@ -95,7 +100,10 @@ namespace GraphQL.AspNet.Apollo
         /// the server.</param>
         /// <param name="cancelToken">A cancellation token.</param>
         /// <returns>Task.</returns>
-        public Task CloseConnection(ClientConnectionCloseStatus reason,string message = null, CancellationToken cancelToken = default)
+        public Task CloseConnection(
+            ClientConnectionCloseStatus reason,
+            string message = null,
+            CancellationToken cancelToken = default)
         {
             if (_connection.State == ClientConnectionState.Open)
             {
@@ -228,7 +236,7 @@ namespace GraphQL.AspNet.Apollo
 
             // create and register the proper message serializer for this message
             var options = new JsonSerializerOptions();
-            (var converter, var asType) = ApolloMessageConverterFactory.CreateConverter<TSchema>(this, message);
+            (var converter, var asType) = _messageConverter.CreateConverter<TSchema>(this, message);
             options.Converters.Add(converter);
 
             // graphql is defined to communcate in UTF-8, serialize the result to that

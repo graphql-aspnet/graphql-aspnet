@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Apollo
             _serverOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
-            _eventSendSemaphore = new SemaphoreSlim(options.MaxConcurrentClientNotifications);
+            _eventSendSemaphore = new SemaphoreSlim(_serverOptions.MaxConcurrentClientNotifications);
 
             this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
             this.Subscriptions.SubscriptionFieldRegistered += this.Subscriptions_EventRegistered;
@@ -131,7 +131,6 @@ namespace GraphQL.AspNet.Apollo
             if (subscriptions == null && !subscriptions.Any())
                 return;
 
-            var pipelineExecutions = new List<Task>();
             var cancelSource = new CancellationTokenSource();
 
             // TODO: Add some timing wrappers with cancel token to ensure no spun out
@@ -214,7 +213,10 @@ namespace GraphQL.AspNet.Apollo
                 await subscription.Client.SendMessage(
                     new ApolloServerErrorMessage(
                         "A client subscription with id '{subscription.ClientProvidedId}' is already registered.",
-                        Constants.ErrorCodes.BAD_REQUEST));
+                        Constants.ErrorCodes.BAD_REQUEST,
+                        lastMessageId: subscription.ClientProvidedId,
+                        lastMessageType: ApolloMessageType.START,
+                        clientProvidedId: subscription.ClientProvidedId));
             }
             else if (!subscription.IsValid)
             {
@@ -257,8 +259,7 @@ namespace GraphQL.AspNet.Apollo
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ApolloClient_ConnectionOpening(object sender, EventArgs e)
         {
-            var client = sender as ApolloClientProxy<TSchema>;
-            if (client == null)
+            if (!(sender is ApolloClientProxy<TSchema> client))
                 return;
 
             client.RegisterAsyncronousMessageDelegate(this.ApolloClient_MessageRecieved);
@@ -305,19 +306,17 @@ namespace GraphQL.AspNet.Apollo
                     return this.AcknowledgeNewConnection(client);
 
                 case ApolloMessageType.START:
-                    return this.StartNewSubscriptionForClient(client, message as ApolloSubscriptionStartMessage);
+                    return this.StartClientSubscription(client, message as ApolloSubscriptionStartMessage);
 
                 case ApolloMessageType.STOP:
-                    return this.StopSubscriptionForClient(client, message as ApolloSubscriptionStopMessage);
+                    return this.StopClientSubscription(client, message as ApolloSubscriptionStopMessage);
 
                 case ApolloMessageType.CONNECTION_TERMINATE:
                     return this.ShutDownConnection(client);
 
                 default:
-                    return this.UnknownMessageRecieved(client);
+                    return this.UnknownMessageRecieved(client, message);
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -341,22 +340,24 @@ namespace GraphQL.AspNet.Apollo
         /// Returns a generic error to the client indicating that the last message recieved was unknown or invalid.
         /// </summary>
         /// <param name="client">The client to return the error to.</param>
+        /// <param name="lastMessage">The last message that was received that was unprocessable.</param>
         /// <returns>Task.</returns>
-        private Task UnknownMessageRecieved(ApolloClientProxy<TSchema> client, string id = null, string type = null)
+        private Task UnknownMessageRecieved(ApolloClientProxy<TSchema> client, ApolloMessage lastMessage)
         {
             var apolloError = new ApolloServerErrorMessage(
                     "The last message recieved was unknown or could not be processed " +
-                    "by this server. This server is configured to use the Apollo over GraphQL " +
+                    "by this server. This graph ql is configured to use Apollo's GraphQL over websockets " +
                     "message schema.",
-                    Constants.ErrorCodes.BAD_REQUEST);
-
-            if (!string.IsNullOrWhiteSpace(id))
-                apolloError.Payload.MetaData.Add("LastMessage_Id", id);
-            if (!string.IsNullOrWhiteSpace(type))
-                apolloError.Payload.MetaData.Add("LastMessage_Type", type);
+                    Constants.ErrorCodes.BAD_REQUEST,
+                    lastMessage: lastMessage,
+                    clientProvidedId: lastMessage.Id);
 
             apolloError.Payload.MetaData.Add(
-                "ReferenceUrl",
+                Constants.Messaging.REFERENCE_RULE_NUMBER,
+                "Unknown Message Type");
+
+            apolloError.Payload.MetaData.Add(
+                Constants.Messaging.REFERENCE_RULE_URL,
                 "https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md");
 
             return client.SendMessage(apolloError);
@@ -368,7 +369,7 @@ namespace GraphQL.AspNet.Apollo
         /// <param name="client">The client to search.</param>
         /// <param name="message">The message containing the subscription id to stop.</param>
         /// <returns>Task.</returns>
-        private async Task StopSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStopMessage message)
+        private async Task StopClientSubscription(ApolloClientProxy<TSchema> client, ApolloSubscriptionStopMessage message)
         {
             if (message?.Id != null)
             {
@@ -383,9 +384,10 @@ namespace GraphQL.AspNet.Apollo
                 {
                     var errorMessage = new ApolloServerErrorMessage(
                         $"No active subscription exists with id '{message.Id}'",
-                        Constants.ErrorCodes.BAD_REQUEST);
-                    errorMessage.Payload.MetaData.Add("LastMessage_Id", message.Id);
-                    errorMessage.Payload.MetaData.Add("LastMessage_Type", ApolloMessageTypeExtensions.Serialize(message.Type));
+                        Constants.ErrorCodes.BAD_REQUEST,
+                        lastMessage: message,
+                        clientProvidedId: message.Id);
+
                     await client.SendMessage(errorMessage);
                 }
             }
@@ -397,7 +399,7 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="client">The client requesting a subscription.</param>
         /// <param name="message">The message with the subscription details.</param>
-        private async Task StartNewSubscriptionForClient(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
+        private async Task StartClientSubscription(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
         {
             var maker = client.ServiceProvider.GetRequiredService(typeof(IClientSubscriptionMaker<TSchema>)) as IClientSubscriptionMaker<TSchema>;
             var subscription = await maker.Create(client, message.Payload, message.Id);
@@ -410,6 +412,8 @@ namespace GraphQL.AspNet.Apollo
         /// <param name="client">The client.</param>
         private async Task AcknowledgeNewConnection(ApolloClientProxy<TSchema> client)
         {
+            // protocol dictates the messages must be sent in this order
+            // await each send before attempting the next one
             await client.SendMessage(new ApolloServerAckOperationMessage());
             await client.SendMessage(new ApolloKeepAliveOperationMessage());
         }

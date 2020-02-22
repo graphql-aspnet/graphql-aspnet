@@ -38,7 +38,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// the server.</param>
         /// <param name="cancelToken">A cancellation token.</param>
         /// <returns>Task.</returns>
-        Task CloseConnection(ClientConnectionCloseStatus reason,string message = null, CancellationToken cancelToken = default);
+        Task CloseConnection(
+            ClientConnectionCloseStatus reason,
+            string message = null,
+            CancellationToken cancelToken = default);
 
         /// <summary>
         /// Gets the service provider instance assigned to this client for resolving object requests.

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Apollo;
+    using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
@@ -31,21 +32,17 @@ namespace GraphQL.AspNet
     /// subscription events for connected clients.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class SubscriptionServerSchemaExtension<TSchema> : ISchemaExtension
+    public class ApolloSubscriptionServerSchemaExtension<TSchema> : ISchemaExtension
         where TSchema : class, ISchema
     {
-        private readonly ISchemaBuilder<TSchema> _schemaBuilder;
         private SchemaOptions _primaryOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionServerSchemaExtension{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ApolloSubscriptionServerSchemaExtension{TSchema}" /> class.
         /// </summary>
-        /// <param name="schemaBuilder">The schema builder providing access to the pipelines for the target schema.</param>
         /// <param name="options">The options.</param>
-        public SubscriptionServerSchemaExtension(ISchemaBuilder<TSchema> schemaBuilder, SubscriptionServerOptions<TSchema> options)
+        public ApolloSubscriptionServerSchemaExtension(SubscriptionServerOptions<TSchema> options)
         {
-            _schemaBuilder = Validation.ThrowIfNullOrReturn(schemaBuilder, nameof(schemaBuilder));
-
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             this.RequiredServices = new List<ServiceDescriptor>();
             this.OptionalServices = new List<ServiceDescriptor>();
@@ -73,6 +70,12 @@ namespace GraphQL.AspNet
 
             // the primary subscription options for the schema
             this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
+
+            this.RequiredServices.Add(
+                new ServiceDescriptor(
+                    typeof(ApolloMessageConverterFactory),
+                    typeof(ApolloMessageConverterFactory),
+                    ServiceLifetime.Singleton));
 
             // add the needed apollo's classes as optional services
             // if the user has already added support for their own handlers

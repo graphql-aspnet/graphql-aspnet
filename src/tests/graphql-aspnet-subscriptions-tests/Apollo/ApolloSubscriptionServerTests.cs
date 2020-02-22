@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Apollo.Messages;
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -41,7 +42,13 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(provider, null, socketClient, options, false);
+            var apolloClient = new ApolloClientProxy<GraphSchema>(
+                provider,
+                null,
+                socketClient,
+                options,
+                new ApolloMessageConverterFactory(),
+                false);
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
                 new GraphSchema(),

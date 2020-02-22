@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var extension = new SubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
+            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(subscriptionsOptions);
 
             // register the custom listener type to the service collection before
             // the extension can register the default

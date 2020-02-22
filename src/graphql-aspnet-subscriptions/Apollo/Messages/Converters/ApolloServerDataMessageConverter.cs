@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Apollo.Messages.Converters
     using GraphQL.AspNet.Response;
 
     /// <summary>
-    /// A json convert for the <see cref="ApolloServerDataMessage"/>.
+    /// A json converter for the <see cref="ApolloServerDataMessage"/>.
     /// </summary>
     public class ApolloServerDataMessageConverter : JsonConverter<ApolloServerDataMessage>
     {
@@ -59,14 +59,14 @@ namespace GraphQL.AspNet.Apollo.Messages.Converters
         public override void Write(Utf8JsonWriter writer, ApolloServerDataMessage value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteString("type", ApolloMessageTypeExtensions.Serialize(value.Type));
+            writer.WriteString(ApolloConstants.Messaging.MESSAGE_TYPE, ApolloMessageTypeExtensions.Serialize(value.Type));
 
             if (value.Id != null)
             {
-                writer.WriteString("id", value.Id);
+                writer.WriteString(ApolloConstants.Messaging.MESSAGE_ID, value.Id);
             }
 
-            writer.WritePropertyName("payload");
+            writer.WritePropertyName(ApolloConstants.Messaging.MESSAGE_PAYLOAD);
             if (value.Payload == null)
             {
                 writer.WriteNullValue();
