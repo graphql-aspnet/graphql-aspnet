@@ -14,7 +14,6 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;

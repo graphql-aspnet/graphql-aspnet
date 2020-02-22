@@ -12,12 +12,12 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Apollo;
+    using GraphQL.AspNet.Apollo.Messages;
+    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -29,6 +29,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
+    using NUnit.Framework.Internal;
 
     [TestFixture]
     public class ApolloSubscriptionServerTests
@@ -44,6 +45,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
                 new GraphSchema(),
+                options,
                 new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.RegisterNewClient(apolloClient);
@@ -89,6 +91,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
                 testServer.Schema,
+                testServer.RetrieveSubscriptionServerOptions(),
                 new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.SubscriptionRegistered += (sender, args) =>
@@ -133,6 +136,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
                 testServer.Schema,
+                testServer.RetrieveSubscriptionServerOptions(),
                 new Mock<ISubscriptionEventListener>().Object);
 
             subscriptionServer.SubscriptionRegistered += (sender, args) =>
@@ -190,6 +194,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
                 testServer.Schema,
+                testServer.RetrieveSubscriptionServerOptions(),
                 new Mock<ISubscriptionEventListener>().Object);
 
             await subscriptionServer.AddSubscription(subscription);

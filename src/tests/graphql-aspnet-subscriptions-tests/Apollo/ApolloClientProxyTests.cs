@@ -12,11 +12,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using System;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Apollo;
+    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages.Common;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using Microsoft.Extensions.DependencyInjection;

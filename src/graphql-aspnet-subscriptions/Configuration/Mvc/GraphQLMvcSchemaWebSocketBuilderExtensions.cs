@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
                     where TPublisher : class, ISubscriptionEventPublisher
                     where TSchema : class, ISchema
         {
-            var extension = new SubscriptionPublisherExtension<TSchema>();
+            var extension = new SubscriptionPublisherSchemaExtension<TSchema>();
 
             // register the custom publisher type to the service collection before
             // the extension can register the default
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var extension = new SubscriptionServerExtension<TSchema>(schemaBuilder, subscriptionsOptions);
+            var extension = new SubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
 
             // register the custom listener type to the service collection before
             // the extension can register the default

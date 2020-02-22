@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo;
+    using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;

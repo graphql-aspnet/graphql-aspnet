@@ -72,5 +72,15 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The size of the message buffer.</value>
         public int MessageBufferSize { get; set; } = 4 * 1024;
+
+        /// <summary>
+        /// <para>
+        /// Gets or sets the maximum number of connected clients the server will communicate with
+        /// at any given time.  If the collected sum total of subscriptions set to receive any given event (or events) exceeds
+        /// this value additional subscription communications are throttled (Default: 50 connections).
+        /// </para>
+        /// </summary>
+        /// <value>The maximum concurrent client notifications.</value>
+        public int MaxConcurrentClientNotifications { get; set; } = 50;
     }
 }

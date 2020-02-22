@@ -32,7 +32,7 @@ namespace GraphQL.Subscriptions.Tests
             var primaryOptions = new SchemaOptions<GraphSchema>();
             var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
 
-            var extension = new SubscriptionPublisherExtension<GraphSchema>();
+            var extension = new SubscriptionPublisherSchemaExtension<GraphSchema>();
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));

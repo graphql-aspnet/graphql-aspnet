@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
 
@@ -27,6 +28,17 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <returns>Task.</returns>
         Task StartConnection();
+
+        /// <summary>
+        /// Instructs the client proxy to close its connection from the server side, no additional messages will be sent to it.
+        /// </summary>
+        /// <param name="reason">The status reason why the connection is being closed. This may be
+        /// sent to the client depending on implementation.</param>
+        /// <param name="message">A human readonable description as to why the connection was closed by
+        /// the server.</param>
+        /// <param name="cancelToken">A cancellation token.</param>
+        /// <returns>Task.</returns>
+        Task CloseConnection(ClientConnectionCloseStatus reason,string message = null, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Gets the service provider instance assigned to this client for resolving object requests.

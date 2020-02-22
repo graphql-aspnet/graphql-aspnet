@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Controllers
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Controllers.GraphQueryControllerData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Net.Http.Headers;

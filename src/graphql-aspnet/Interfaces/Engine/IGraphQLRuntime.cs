@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.QueryExecution;
@@ -34,8 +35,11 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Accepts a query context to execute and renders the result.
         /// </summary>
         /// <param name="context">The execution context to process.</param>
+        /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        Task<IGraphOperationResult> ExecuteRequest(GraphQueryExecutionContext context);
+        Task<IGraphOperationResult> ExecuteRequest(
+            GraphQueryExecutionContext context,
+            CancellationToken cancelToken = default);
 
         /// <summary>
         /// Accepts a qualified operation request and renders the result.
@@ -43,14 +47,16 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="serviceProvider">The service provider to use for resolving
         /// graph objects.</param>
         /// <param name="user">The claims principal representing the user to authorize
-        ///  on the query.</param>
+        /// on the query.</param>
         /// <param name="request">The primary data request.</param>
         /// <param name="metricsPackage">An optional metrics package to populate during the run.</param>
+        /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
             ClaimsPrincipal user,
             IGraphOperationRequest request,
-            IGraphQueryExecutionMetrics metricsPackage = null);
+            IGraphQueryExecutionMetrics metricsPackage = null,
+            CancellationToken cancelToken = default);
     }
 }

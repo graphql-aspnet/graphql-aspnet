@@ -60,7 +60,7 @@ namespace GraphQL.Subscriptions.Tests
 
             var builder = new Mock<ISchemaBuilder<GraphSchema>>();
 
-            var extension = new SubscriptionServerExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new SubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
@@ -92,7 +92,7 @@ namespace GraphQL.Subscriptions.Tests
             Assert.Throws<InvalidOperationException>(() =>
             {
                 var mock = new Mock<ISchemaBuilder<GraphSchema>>();
-                var extension = new SubscriptionServerExtension<GraphSchema>(mock.Object, subscriptionOptions);
+                var extension = new SubscriptionServerSchemaExtension<GraphSchema>(mock.Object, subscriptionOptions);
                 extension.Configure(primaryOptions);
             });
         }
@@ -113,7 +113,7 @@ namespace GraphQL.Subscriptions.Tests
             var mock = new Mock<ISchemaBuilder<GraphSchema>>();
 
             // no exception should be thrown
-            var extension = new SubscriptionServerExtension<GraphSchema>(mock.Object, subscriptionOptions);
+            var extension = new SubscriptionServerSchemaExtension<GraphSchema>(mock.Object, subscriptionOptions);
             extension.Configure(primaryOptions);
         }
     }

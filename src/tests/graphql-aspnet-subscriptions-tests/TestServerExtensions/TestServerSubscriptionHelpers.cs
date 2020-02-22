@@ -25,6 +25,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Moq;
+    using NUnit.Framework.Internal;
 
     public static class TestServerSubscriptionHelpers
     {
@@ -45,7 +46,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             var mock = new Mock<ISchemaBuilder<TSchema>>();
 
-            var extension = new SubscriptionServerExtension<TSchema>(mock.Object, subscriptionsOptions);
+            var extension = new SubscriptionServerSchemaExtension<TSchema>(mock.Object, subscriptionsOptions);
 
             serverBuilder.AddSchemaExtension(extension);
 
@@ -66,7 +67,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         public static TestServerBuilder<TSchema> AddSubscriptionPublishing<TSchema>(this TestServerBuilder<TSchema> serverBuilder)
             where TSchema : class, ISchema
         {
-            var extension = new SubscriptionPublisherExtension<TSchema>();
+            var extension = new SubscriptionPublisherSchemaExtension<TSchema>();
             serverBuilder.AddSchemaExtension(extension);
 
             serverBuilder.AddSchemaBuilderAction(builder =>
@@ -121,6 +122,19 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             var connection = server.CreateClient();
             return (connection, factory.CreateClientProxy(context, connection, options));
+        }
+
+        /// <summary>
+        /// Retrieves an instance of the <see cref="SubscriptionServerOptions{TSchema}"/> from the test
+        /// server's service provider.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of the schema configured on the server.</typeparam>
+        /// <param name="testServer">The test server.</param>
+        /// <returns>SubscriptionServerOptions&lt;TSchema&gt;.</returns>
+        public static SubscriptionServerOptions<TSchema> RetrieveSubscriptionServerOptions<TSchema>(this TestServer<TSchema> testServer)
+            where TSchema : class, ISchema
+        {
+            return testServer.ServiceProvider.GetRequiredService<SubscriptionServerOptions<TSchema>>();
         }
     }
 }

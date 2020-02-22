@@ -11,7 +11,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 {
     using System.Text;
     using System.Text.Json;
-    using GraphQL.AspNet.Execution.Subscriptions.Apollo.Messages;
+    using GraphQL.AspNet.Apollo.Messages;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
     using NUnit.Framework;

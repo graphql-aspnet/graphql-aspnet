@@ -66,15 +66,17 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="serviceProvider">The service provider to use for resolving
         /// graph objects.</param>
         /// <param name="user">The claims principal representing the user to authorize
-        ///  on the query.</param>
+        /// on the query.</param>
         /// <param name="request">The primary data request.</param>
         /// <param name="metricsPackage">An optional metrics package to populate during the run.</param>
+        /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         public Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
             ClaimsPrincipal user,
             IGraphOperationRequest request,
-            IGraphQueryExecutionMetrics metricsPackage = null)
+            IGraphQueryExecutionMetrics metricsPackage = null,
+            CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
             Validation.ThrowIfNull(user, nameof(user));
@@ -87,37 +89,37 @@ namespace GraphQL.AspNet.Defaults
                 metricsPackage,
                 _logger);
 
-            return this.ExecuteRequest(context);
+            return this.ExecuteRequest(context, cancelToken);
         }
 
         /// <summary>
         /// Accepts a qualified operation request and renders the result.
         /// </summary>
         /// <param name="context">The execution context to process.</param>
+        /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
-        public async Task<IGraphOperationResult> ExecuteRequest(GraphQueryExecutionContext context)
+        public async Task<IGraphOperationResult> ExecuteRequest(
+            GraphQueryExecutionContext context,
+            CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(context, nameof(context));
 
-            using (var cancelSource = new CancellationTokenSource())
+            // *******************************
+            // Primary query execution
+            // *******************************
+            await _pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
+
+            // *******************************
+            // Response Generation
+            // *******************************
+            var queryResponse = context.Result;
+            if (queryResponse == null)
             {
-                // *******************************
-                // Primary query execution
-                // *******************************
-                await _pipeline.InvokeAsync(context, cancelSource.Token).ConfigureAwait(false);
-
-                // *******************************
-                // Response Generation
-                // *******************************
-                var queryResponse = context.Result;
-                if (queryResponse == null)
-                {
-                    queryResponse = new GraphOperationResult(context.Request);
-                    queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
-                }
-
-                return queryResponse;
+                queryResponse = new GraphOperationResult(context.Request);
+                queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
             }
+
+            return queryResponse;
         }
     }
 }
