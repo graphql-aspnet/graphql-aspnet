@@ -25,6 +25,29 @@ namespace GraphQL.AspNet.Apollo.Messages.ServerMessages
         /// Initializes a new instance of the <see cref="ApolloServerErrorMessage" /> class.
         /// </summary>
         /// <param name="message">The message to put into the generated error.</param>
+        /// <param name="lastMessage">The last message received by the server, generally the message
+        /// that resulted in this error being generated.</param>
+        /// <param name="clientProvidedId">The client provided identifier of the failed operation.</param>
+        public ApolloServerErrorMessage(
+            IGraphMessage message,
+            ApolloMessage lastMessage = null,
+            string clientProvidedId = null)
+            : this(
+                  message?.Message,
+                  message?.Code,
+                  message?.Severity ?? GraphMessageSeverity.Critical,
+                  lastMessage?.Id,
+                  lastMessage?.Type,
+                  message?.Exception,
+                  clientProvidedId)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApolloServerErrorMessage" /> class.
+        /// </summary>
+        /// <param name="message">The message to put into the generated error.</param>
         /// <param name="code">The custom code to apply to the error message.</param>
         /// <param name="severity">The severity of the error message being generated.</param>
         /// <param name="lastMessage">The last message received by the server, generally the message

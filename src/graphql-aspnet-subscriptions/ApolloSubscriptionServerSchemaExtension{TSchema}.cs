@@ -23,6 +23,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
+    using GraphQL.AspNet.Middleware.SubscriptionCreation;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -35,14 +36,18 @@ namespace GraphQL.AspNet
     public class ApolloSubscriptionServerSchemaExtension<TSchema> : ISchemaExtension
         where TSchema : class, ISchema
     {
+        private readonly ISchemaBuilder<TSchema> _schemaBuilder;
         private SchemaOptions _primaryOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloSubscriptionServerSchemaExtension{TSchema}" /> class.
         /// </summary>
+        /// <param name="schemaBuilder">The schema builder created when adding graphql to the server
+        /// originally.</param>
         /// <param name="options">The options.</param>
-        public ApolloSubscriptionServerSchemaExtension(SubscriptionServerOptions<TSchema> options)
+        public ApolloSubscriptionServerSchemaExtension(ISchemaBuilder<TSchema> schemaBuilder, SubscriptionServerOptions<TSchema> options)
         {
+            _schemaBuilder = Validation.ThrowIfNullOrReturn(schemaBuilder, nameof(schemaBuilder));
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             this.RequiredServices = new List<ServiceDescriptor>();
             this.OptionalServices = new List<ServiceDescriptor>();
@@ -67,6 +72,10 @@ namespace GraphQL.AspNet
 
             if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
                 GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
+
+            // wipe out the current execution pipeline and rebuild with subscription creation middleware injected
+            _schemaBuilder.QueryExecutionPipeline.Clear();
+            var subscriptionQueryExecutionHelper = new SubscriptionQueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
 
             // the primary subscription options for the schema
             this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));

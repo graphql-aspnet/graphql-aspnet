@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Apollo
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Apollo.Messages;
@@ -220,9 +221,19 @@ namespace GraphQL.AspNet.Apollo
             }
             else if (!subscription.IsValid)
             {
-                var response = GraphOperationRequest.FromMessages(subscription.Messages, subscription.QueryData);
+                if (subscription.Messages.Count == 1)
+                {
+                    await subscription.Client.SendMessage(
+                        new ApolloServerErrorMessage(
+                            subscription.Messages[0],
+                            clientProvidedId: subscription.ClientProvidedId));
+                }
+                else
+                {
+                    var response = GraphOperationRequest.FromMessages(subscription.Messages, subscription.QueryData);
+                    await subscription.Client.SendMessage(new ApolloServerDataMessage(subscription.ClientProvidedId, response));
+                }
 
-                await subscription.Client.SendMessage(new ApolloServerDataMessage(subscription.ClientProvidedId, response));
                 await subscription.Client.SendMessage(new ApolloServerCompleteMessage(subscription.ClientProvidedId));
             }
             else

@@ -44,13 +44,12 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(subscriptionsOptions);
-
-            serverBuilder.AddSchemaExtension(extension);
-
             serverBuilder.AddSchemaBuilderAction(builder =>
             {
                 builder.AsServiceCollection().AddSingleton<ISubscriptionEventListener, InProcessSubscriptionEventListener>();
+                var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(builder, subscriptionsOptions);
+
+            serverBuilder.AddSchemaExtension(extension);
             });
 
             return serverBuilder;
@@ -115,7 +114,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
             var context = new DefaultHttpContext();
-            context.RequestServices = server.ServiceProvider;
+            var scope =server.ServiceProvider.CreateScope();
+            context.RequestServices = scope.ServiceProvider;
             context.User = server.User;
 
             var connection = server.CreateClient();

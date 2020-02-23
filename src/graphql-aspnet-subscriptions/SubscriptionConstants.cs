@@ -46,5 +46,18 @@ namespace GraphQL.AspNet
         /// any events that were raised during the query execution.
         /// </summary>
         public const string RAISED_EVENTS_COLLECTION_KEY = "RaisedSubscriptionEvents";
+
+        /// <summary>
+        /// Constnats pertaining to the execution of subscription type queries
+        /// </summary>
+        public static class Execution
+        {
+            /// <summary>
+            /// A key value, pointing to an item in the Items collection of an executed
+            /// <see cref="GraphQueryExecutionContext"/> if a subscription was created.  If a subscription
+            /// was not created but should have been this value will be null.
+            /// </summary>
+            public const string CREATED_SUBSCRIPTION = "PIPELINE_CREATED_SUBSCRIPTION";
+        }
     }
 }

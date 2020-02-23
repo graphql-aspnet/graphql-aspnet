@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
 
         private static bool AreEqualJValue(JsonElement expectedValue, JsonElement actualValue, string location, bool assertOnFailure, string message = null)
         {
-            var isEqual = expectedValue.GetRawText() == actualValue.GetRawText();
+            var isEqual = expectedValue.GetRawText() == actualValue.GetRawText() || expectedValue.GetRawText() == "\"<anyValue>\"";
             if (!isEqual)
             {
                 if (assertOnFailure)
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
                         return false;
                     }
 
-                    isEqual = AreEqualJson(prop.Value, expectedElement, message, $"{location}.{prop.Name}", assertOnFailure);
+                    isEqual = AreEqualJson(expectedElement, prop.Value, message, $"{location}.{prop.Name}", assertOnFailure);
                     if (!isEqual)
                         break;
                 }

@@ -24,7 +24,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
     {
         /// <summary>
         /// Adds the ability for this graphql server to raise subscription events as well
-        /// as creates a subscription server that can accept connected clients and respond to subscription events.
+        /// as creates a subscription server that can accept connected clients and respond to subscription events. This extension will attempt to inject subscription related
+        /// middleware into the primary query excution pipeline and replace it. Call this method before injecting or
+        /// adding your own query execution middleware items.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
@@ -86,7 +88,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
         /// <summary>
         /// Adds a subscription server to this instance that will accept connected clients and
-        /// process subscription requests from those clients.
+        /// process subscription requests from those clients. This extension will attempt to inject subscription related
+        /// middleware into the primary query excution pipeline and replace it. Call this method before injecting or
+        /// adding your own query execution middleware items.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
@@ -102,7 +106,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
         /// <summary>
         /// Adds a subscription server to this instance that will accept connected clients and
-        /// process subscription requests from those clients.
+        /// process subscription requests from those clients. This extension will attempt to inject subscription related
+        /// middleware into the primary query excution pipeline and replace it. Call this method before injecting or
+        /// adding your own query execution middleware items.
         /// </summary>
         /// <typeparam name="TListener">The type of the event listener to use on this subscription server.</typeparam>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
@@ -118,7 +124,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(subscriptionsOptions);
+            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
 
             // register the custom listener type to the service collection before
             // the extension can register the default
