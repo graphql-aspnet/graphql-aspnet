@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet
 {
+    using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
@@ -48,7 +49,19 @@ namespace GraphQL.AspNet
         public const string RAISED_EVENTS_COLLECTION_KEY = "RaisedSubscriptionEvents";
 
         /// <summary>
-        /// Constnats pertaining to the execution of subscription type queries
+        /// Common error codes used in graph resolution errors.
+        /// </summary>
+        public static class ErrorCodes
+        {
+            /// <summary>
+            /// An error raised when a client attempts to process a start request
+            /// against a message id that is already in flight for the client.
+            /// </summary>
+            public const string DUPLICATE_MESSAGE_ID = "DUPLICATE_MESSAGE_ID";
+        }
+
+        /// <summary>
+        /// Constants pertaining to the execution of subscription type queries.
         /// </summary>
         public static class Execution
         {
@@ -57,7 +70,19 @@ namespace GraphQL.AspNet
             /// <see cref="GraphQueryExecutionContext"/> if a subscription was created.  If a subscription
             /// was not created but should have been this value will be null.
             /// </summary>
-            public const string CREATED_SUBSCRIPTION = "PIPELINE_CREATED_SUBSCRIPTION";
+            public const string CREATED_SUBSCRIPTION = "GRAPHQL_SUBSCRIPTIONS_PIPELINE_CREATED_SUBSCRIPTION";
+
+            /// <summary>
+            /// The client provided identifier on the request to uniquely identify
+            /// this invocation instance. This value becomes the subscription id if/when
+            /// a subscription is generated.
+            /// </summary>
+            public const string CLIENT_PROVIDED_ID = "GRAPHQL_SUBSCRIPTIONS_CLIENT_PROVIDED_ID";
+
+            /// <summary>
+            /// A key to a reference of the client that is making the request.
+            /// </summary>
+            public const string CLIENT = "GRAPHQL_SUBSCRIPTIONS_CLIENT_REFERENCE";
         }
     }
 }

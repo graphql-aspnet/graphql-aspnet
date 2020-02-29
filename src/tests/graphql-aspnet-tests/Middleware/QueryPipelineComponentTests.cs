@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
-    using GraphQL.AspNet.Middleware.QueryGeneration.Components;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
     using GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData;

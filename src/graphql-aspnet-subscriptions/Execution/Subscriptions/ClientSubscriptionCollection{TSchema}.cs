@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
         private readonly Dictionary<ISubscriptionClientProxy, List<ISubscription<TSchema>>> _activeSubscriptionsByClient;
 
-        private ReaderWriterLockSlim _collectionLock;
+        private readonly ReaderWriterLockSlim _collectionLock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientSubscriptionCollection{TSchema}"/> class.
@@ -128,17 +128,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// Determines whether this instance contains a subscription for the given client with the provided id.
         /// </summary>
         /// <param name="client">The client.</param>
-        /// <param name="id">The identifier.</param>
+        /// <param name="subscriptionId">The unique id for the subscription.</param>
         /// <returns><c>true</c> if the client has already registered the given id; otherwise, <c>false</c>.</returns>
-        public bool Contains(ISubscriptionClientProxy client, string id)
+        public bool Contains(ISubscriptionClientProxy client, string subscriptionId)
         {
-            if (string.IsNullOrWhiteSpace(id) || client == null)
+            if (string.IsNullOrWhiteSpace(subscriptionId) || client == null)
                 return false;
 
             if (!_activeSubscriptionsByClient.ContainsKey(client))
                 return false;
 
-            return _activeSubscriptionsByClient[client].Any(x => x.ClientProvidedId == id);
+            return _activeSubscriptionsByClient[client].Any(x => x.Id == subscriptionId);
         }
 
         /// <summary>
@@ -146,9 +146,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// is removed from the collection and returned.  Null is returned if the subscription or the client is not found.
         /// </summary>
         /// <param name="client">The client.</param>
-        /// <param name="clientProvidedId">The original client supplied identifier for the subscription.</param>
+        /// <param name="subscriptionId">The unique id for the subscription.</param>
         /// <returns>ClientSubscription&lt;TSchema&gt;.</returns>
-        public ISubscription<TSchema> TryRemoveSubscription(ISubscriptionClientProxy client, string clientProvidedId)
+        public ISubscription<TSchema> TryRemoveSubscription(
+            ISubscriptionClientProxy client,
+            string subscriptionId)
         {
             _collectionLock.EnterWriteLock();
 
@@ -159,7 +161,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 if (!_activeSubscriptionsByClient.ContainsKey(client))
                     return null;
 
-                subscription = _activeSubscriptionsByClient[client].FirstOrDefault(x => x.ClientProvidedId == clientProvidedId);
+                subscription = _activeSubscriptionsByClient[client]
+                    .Find(x => x.Id == subscriptionId);
+
                 if (subscription == null)
                     return null;
 

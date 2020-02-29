@@ -45,25 +45,25 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="queryData">The query data.</param>
         public GraphOperationRequest(GraphQueryData queryData)
-            : this(queryData?.Query, queryData?.OperationName, queryData?.Variables)
         {
+            this.Id = Guid.NewGuid().ToString("N");
+            this.OperationName = queryData.OperationName?.Trim();
+            this.QueryText = queryData.Query;
+            this.VariableData = queryData.Variables ?? new InputVariableCollection();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphOperationRequest" /> class.
+        /// Extracts a raw data package from this request .
         /// </summary>
-        /// <param name="queryText">The query text.</param>
-        /// <param name="operationName">Name of the operation.</param>
-        /// <param name="variableData">The variable data package received from the user.</param>
-        public GraphOperationRequest(
-            string queryText = null,
-            string operationName = null,
-            IInputVariableCollection variableData = null)
+        /// <returns>GraphQueryData.</returns>
+        public GraphQueryData ToDataPackage()
         {
-            this.Id = Guid.NewGuid().ToString("N");
-            this.QueryText = queryText;
-            this.OperationName = operationName?.Trim();
-            this.VariableData = variableData ?? new InputVariableCollection();
+            return new GraphQueryData()
+            {
+                Query = this.QueryText,
+                Variables = new InputVariableCollection(this.VariableData),
+                OperationName = this.OperationName,
+            };
         }
 
         /// <summary>

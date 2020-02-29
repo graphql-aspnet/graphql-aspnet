@@ -57,10 +57,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             subscriptionServer.RegisterNewClient(apolloClient);
 
-            var message = new ApolloConnectionInitMessage();
+            var message = new ApolloClientConnectionInitMessage();
 
             // queue a message sequence to the server
-            socketClient.QueueClientMessage(new MockClientMessage(new ApolloConnectionInitMessage()));
+            socketClient.QueueClientMessage(new MockClientMessage(new ApolloClientConnectionInitMessage()));
             socketClient.QueueConnectionCloseMessage();
 
             // execute the connection sequence
@@ -84,10 +84,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
 
-            var message = new ApolloConnectionInitMessage();
+            var message = new ApolloClientConnectionInitMessage();
 
             // queue a message sequence to the server
-            socketClient.QueueClientMessage(new ApolloConnectionInitMessage());
+            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
             socketClient.QueueNewSubscription(
                 "abc123",
                 "subscription { apolloSubscription { watchForPropObject { property1 property2} } }");
@@ -127,15 +127,15 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
 
-            var message = new ApolloConnectionInitMessage();
+            var message = new ApolloClientConnectionInitMessage();
 
             // queue a message sequence to the server
-            socketClient.QueueClientMessage(new ApolloConnectionInitMessage());
+            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
             socketClient.QueueNewSubscription(
                 "abc123",
                 "subscription { apolloSubscription { watchForPropObject { property1 property2} } }");
 
-            socketClient.QueueClientMessage(new ApolloSubscriptionStopMessage("abc123"));
+            socketClient.QueueClientMessage(new ApolloClientStopMessage("abc123"));
             socketClient.QueueConnectionCloseMessage();
 
             bool subscribeEventFired = false;
@@ -163,7 +163,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             subscriptionServer.RegisterNewClient(apolloClient);
             socketClient.QueueConnectionCloseMessage();
 
-
             // execute the connection sequence
             await apolloClient.StartConnection();
             Assert.IsTrue(subscribeEventFired, "Subscribe event never fired");
@@ -180,7 +179,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
 
-            var message = new ApolloConnectionInitMessage();
+            var message = new ApolloClientConnectionInitMessage();
 
             var data = new GraphQueryData()
             {
@@ -198,8 +197,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var subscription = new ClientSubscription<GraphSchema>(
                 mockConnection.Object,
                 data,
-                "abc123",
-                queryPlan);
+                queryPlan,
+                queryPlan.Operations.First().Value,
+                "abc123");
 
             var subscriptionServer = new ApolloSubscriptionServer<GraphSchema>(
                 testServer.Schema,
@@ -232,9 +232,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
 
-            var initMessage = new ApolloConnectionInitMessage();
+            var initMessage = new ApolloClientConnectionInitMessage();
             socketClient.QueueClientMessage(initMessage);
-            var startMessage = new ApolloSubscriptionStartMessage()
+            var startMessage = new ApolloClientStartMessage()
             {
                 Id = "abc123",
                 Payload = new GraphQueryData()
@@ -272,11 +272,11 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
 
-            var initMessage = new ApolloConnectionInitMessage();
+            var initMessage = new ApolloClientConnectionInitMessage();
             socketClient.QueueClientMessage(initMessage);
 
             // invalid subscription query, missing {
-            var startMessage = new ApolloSubscriptionStartMessage()
+            var startMessage = new ApolloClientStartMessage()
             {
                 Id = "abc123",
                 Payload = new GraphQueryData()
@@ -294,7 +294,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             // the client should receive, in order
             // init => ack, KA
             // startSub => error, complete
-            //
             await apolloClient.StartConnection();
             socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_ACK);
             socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_KEEP_ALIVE);
@@ -312,11 +311,11 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             (var socketClient, var apolloClient) = testServer.CreateSubscriptionClient();
 
-            var initMessage = new ApolloConnectionInitMessage();
+            var initMessage = new ApolloClientConnectionInitMessage();
             socketClient.QueueClientMessage(initMessage);
 
             // invalid property names
-            var startMessage = new ApolloSubscriptionStartMessage()
+            var startMessage = new ApolloClientStartMessage()
             {
                 Id = "abc123",
                 Payload = new GraphQueryData()

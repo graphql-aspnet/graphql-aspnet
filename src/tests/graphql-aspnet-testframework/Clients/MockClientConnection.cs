@@ -30,10 +30,10 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     public class MockClientConnection : IClientConnection
     {
         // a queue of messages send by the client and recieved server side
-        private Queue<MockClientMessage> _incomingMessageQueue;
+        private readonly Queue<MockClientMessage> _incomingMessageQueue;
 
         // a queue of message sent by the server to the client
-        private Queue<MockClientMessage> _outgoingMessageQueue;
+        private readonly Queue<MockClientMessage> _outgoingMessageQueue;
         private MockClientMessage _currentMessage;
 
         private bool _connectionClosed;
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <param name="queryText">The query text.</param>
         public void QueueNewSubscription(string id, string queryText)
         {
-            this.QueueClientMessage(new ApolloSubscriptionStartMessage()
+            this.QueueClientMessage(new ApolloClientStartMessage()
             {
                 Id = id,
                 Payload = new GraphQueryData()
@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                 }
 
                 if (_currentMessage == null)
-                    await Task.Delay(5);
+                    await Task.Delay(5).ConfigureAwait(false);
             }
 
             if (_currentMessage == null)
@@ -176,7 +176,9 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             _connectionClosed = !hasRemainingBytes && result.CloseStatus != null;
             if (_connectionClosed)
             {
-                await this.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, cancelToken);
+                await this
+                    .CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, cancelToken)
+                    .ConfigureAwait(false);
             }
 
             // clear the message from the being read if its complete

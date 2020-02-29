@@ -200,7 +200,7 @@ namespace GraphQL.AspNet.Apollo
 
             try
             {
-                var partialMessage = JsonSerializer.Deserialize<ApolloPartialClientMessage>(text, options);
+                var partialMessage = JsonSerializer.Deserialize<ApolloClientPartialMessage>(text, options);
                 recievedMessage = partialMessage.Convert();
             }
             catch

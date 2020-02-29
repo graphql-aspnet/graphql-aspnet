@@ -30,6 +30,8 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Middleware.SubscriptionQueryExecution;
+    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Schemas;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -46,6 +48,7 @@ namespace GraphQL.AspNet.Apollo
         private readonly TSchema _schema;
         private readonly SubscriptionServerOptions<TSchema> _serverOptions;
         private readonly SemaphoreSlim _eventSendSemaphore;
+        private readonly ClientTrackedMessageIdSet _trackedIds;
 
         /// <summary>
         /// Raised when the supervisor begins monitoring a new subscription.
@@ -74,6 +77,7 @@ namespace GraphQL.AspNet.Apollo
             _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
             _eventSendSemaphore = new SemaphoreSlim(_serverOptions.MaxConcurrentClientNotifications);
+            _trackedIds = new ClientTrackedMessageIdSet();
 
             this.Subscriptions = new ClientSubscriptionCollection<TSchema>();
             this.Subscriptions.SubscriptionFieldRegistered += this.Subscriptions_EventRegistered;
@@ -137,11 +141,11 @@ namespace GraphQL.AspNet.Apollo
             // TODO: Add some timing wrappers with cancel token to ensure no spun out
             // comms.
             var allTasks = subscriptions.Select((sub) => this.ExecuteSubscriptionEvent(sub, eventData, cancelSource.Token));
-            await Task.WhenAll(allTasks);
+            await Task.WhenAll(allTasks).ConfigureAwait(false);
 
             // reawait any faulted tasks so tehy can unbuble any exceptions
             foreach (var task in allTasks.Where(x => x.IsFaulted))
-                await task;
+                await task.ConfigureAwait(false);
         }
 
         private async Task ExecuteSubscriptionEvent(
@@ -179,7 +183,7 @@ namespace GraphQL.AspNet.Apollo
             try
             {
                 // execute the request through the runtime
-                await _eventSendSemaphore.WaitAsync();
+                await _eventSendSemaphore.WaitAsync().ConfigureAwait(false);
                 await runtime.ExecuteRequest(context, cancelToken)
                     .ContinueWith(
                         task =>
@@ -188,10 +192,11 @@ namespace GraphQL.AspNet.Apollo
                                 return task;
 
                             // send the message with the resultant data package
-                            var message = new ApolloServerDataMessage(subscription.ClientProvidedId, task.Result);
+                            var message = new ApolloServerDataMessage(subscription.Id, task.Result);
                             return subscription.Client.SendMessage(message);
                         },
-                        cancelToken);
+                        cancelToken)
+                    .ConfigureAwait(false);
             }
             finally
             {
@@ -204,20 +209,45 @@ namespace GraphQL.AspNet.Apollo
         /// not able to be added to the monitored subscription collection the subscription's client is automatically
         /// notified via a dispatched message.
         /// </summary>
-        /// <param name="subscription">The subscription.</param>
-        /// <returns>Task.</returns>
-        public async Task AddSubscription(ISubscription<TSchema> subscription)
+        /// <param name="subscription">The subscription to add.</param>
+        /// <returns>True if the subscription was successfully added to the tracked collection, otherwise false.</returns>
+        public async Task<bool> AddSubscription(ISubscription subscription)
+        {
+            bool subAdded = false;
+            if (_trackedIds.ReserveMessageId(subscription.Client, subscription.Id))
+            {
+                subAdded = await this.RegisterSubscriptionOrRespond(subscription)
+                    .ConfigureAwait(false);
+
+                if (!subAdded)
+                    _trackedIds.ReleaseMessageId(subscription.Client, subscription.Id);
+            }
+
+            return subAdded;
+        }
+
+        /// <summary>
+        /// Attempts to add the subscription to the server tracked collection. THis method
+        /// does not validate in flight message ids.
+        /// </summary>
+        /// <param name="subscription">The subscription to add.</param>
+        /// <returns>A value indicating if the subscription was successfully added.</returns>
+        private async Task<bool> RegisterSubscriptionOrRespond(ISubscription subscription)
         {
             Validation.ThrowIfNull(subscription, nameof(subscription));
-            if (this.Subscriptions.Contains(subscription.Client, subscription.ClientProvidedId))
+            Validation.ThrowIfNotCastable<ISubscription<TSchema>>(subscription.GetType(), nameof(subscription));
+
+            var registrationComplete = false;
+            if (this.Subscriptions.Contains(subscription.Client, subscription.Id))
             {
                 await subscription.Client.SendMessage(
                     new ApolloServerErrorMessage(
-                        "A client subscription with id '{subscription.ClientProvidedId}' is already registered.",
+                        $"A client subscription with id '{subscription.Id}' is already registered.",
                         Constants.ErrorCodes.BAD_REQUEST,
-                        lastMessageId: subscription.ClientProvidedId,
+                        lastMessageId: subscription.Id,
                         lastMessageType: ApolloMessageType.START,
-                        clientProvidedId: subscription.ClientProvidedId));
+                        clientProvidedId: subscription.Id))
+                    .ConfigureAwait(false);
             }
             else if (!subscription.IsValid)
             {
@@ -226,21 +256,30 @@ namespace GraphQL.AspNet.Apollo
                     await subscription.Client.SendMessage(
                         new ApolloServerErrorMessage(
                             subscription.Messages[0],
-                            clientProvidedId: subscription.ClientProvidedId));
+                            clientProvidedId: subscription.Id))
+                        .ConfigureAwait(false);
                 }
                 else
                 {
                     var response = GraphOperationRequest.FromMessages(subscription.Messages, subscription.QueryData);
-                    await subscription.Client.SendMessage(new ApolloServerDataMessage(subscription.ClientProvidedId, response));
+                    await subscription.Client
+                        .SendMessage(new ApolloServerDataMessage(subscription.Id, response))
+                        .ConfigureAwait(false);
                 }
 
-                await subscription.Client.SendMessage(new ApolloServerCompleteMessage(subscription.ClientProvidedId));
+                await subscription.Client
+                    .SendMessage(new ApolloServerCompleteMessage(subscription.Id))
+                    .ConfigureAwait(false);
             }
             else
             {
-                this.Subscriptions.Add(subscription);
-                this.SubscriptionRegistered?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subscription));
+                var schemaSubscription = subscription as ISubscription<TSchema>;
+                this.Subscriptions.Add(schemaSubscription);
+                this.SubscriptionRegistered?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(schemaSubscription));
+                registrationComplete = true;
             }
+
+            return registrationComplete;
         }
 
         /// <summary>
@@ -293,6 +332,7 @@ namespace GraphQL.AspNet.Apollo
             client.ConnectionOpening -= this.ApolloClient_ConnectionOpening;
 
             this.Subscriptions.RemoveAllSubscriptions(client);
+            _trackedIds.ReleaseClient(client);
         }
 
         /// <summary>
@@ -317,10 +357,10 @@ namespace GraphQL.AspNet.Apollo
                     return this.AcknowledgeNewConnection(client);
 
                 case ApolloMessageType.START:
-                    return this.StartClientSubscription(client, message as ApolloSubscriptionStartMessage);
+                    return this.ExecuteStartRequest(client, message as ApolloClientStartMessage);
 
                 case ApolloMessageType.STOP:
-                    return this.StopClientSubscription(client, message as ApolloSubscriptionStopMessage);
+                    return this.ExecuteStopRequest(client, message as ApolloClientStopMessage);
 
                 case ApolloMessageType.CONNECTION_TERMINATE:
                     return this.ShutDownConnection(client);
@@ -380,7 +420,7 @@ namespace GraphQL.AspNet.Apollo
         /// <param name="client">The client to search.</param>
         /// <param name="message">The message containing the subscription id to stop.</param>
         /// <returns>Task.</returns>
-        private async Task StopClientSubscription(ApolloClientProxy<TSchema> client, ApolloSubscriptionStopMessage message)
+        private async Task ExecuteStopRequest(ApolloClientProxy<TSchema> client, ApolloClientStopMessage message)
         {
             if (message?.Id != null)
             {
@@ -388,7 +428,11 @@ namespace GraphQL.AspNet.Apollo
 
                 if (subFound != null)
                 {
-                    await client.SendMessage(new ApolloServerCompleteMessage(subFound.ClientProvidedId));
+                    _trackedIds.ReleaseMessageId(client, message.Id);
+                    await client
+                        .SendMessage(new ApolloServerCompleteMessage(subFound.Id))
+                        .ConfigureAwait(false);
+
                     this.SubscriptionRemoved?.Invoke(this, new ClientSubscriptionEventArgs<TSchema>(subFound));
                 }
                 else
@@ -399,7 +443,9 @@ namespace GraphQL.AspNet.Apollo
                         lastMessage: message,
                         clientProvidedId: message.Id);
 
-                    await client.SendMessage(errorMessage);
+                    await client
+                        .SendMessage(errorMessage)
+                        .ConfigureAwait(false);
                 }
             }
         }
@@ -410,11 +456,76 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="client">The client requesting a subscription.</param>
         /// <param name="message">The message with the subscription details.</param>
-        private async Task StartClientSubscription(ApolloClientProxy<TSchema> client, ApolloSubscriptionStartMessage message)
+        private async Task ExecuteStartRequest(ApolloClientProxy<TSchema> client, ApolloClientStartMessage message)
         {
-            var maker = client.ServiceProvider.GetRequiredService(typeof(IClientSubscriptionMaker<TSchema>)) as IClientSubscriptionMaker<TSchema>;
-            var subscription = await maker.Create(client, message.Payload, message.Id);
-            await this.AddSubscription(subscription);
+            // ensure the id isnt already in use
+            if (!_trackedIds.ReserveMessageId(client, message.Id))
+            {
+                await client
+                    .SendMessage(new ApolloServerErrorMessage(
+                        $"The message id {message.Id} is already reserved for an outstanding request and cannot " +
+                        "be processed against. Allow the in-progress request to complete or stop the associated subscription.",
+                        SubscriptionConstants.ErrorCodes.DUPLICATE_MESSAGE_ID,
+                        lastMessage: message,
+                        clientProvidedId: message.Id))
+                    .ConfigureAwait(false);
+
+                return;
+            }
+
+            var retainMessageId = false;
+
+            var runtime = client.ServiceProvider.GetRequiredService(typeof(IGraphQLRuntime<TSchema>)) as IGraphQLRuntime<TSchema>;
+            var request = runtime.CreateRequest(message.Payload);
+
+            var metricsPackage = _schema.Configuration.ExecutionOptions.EnableMetrics ? runtime.CreateMetricsPackage() : null;
+
+            var context = new ApolloQueryExecutionContext(
+                client,
+                request,
+                message.Id,
+                metricsPackage);
+
+            var result = await runtime
+                            .ExecuteRequest(context)
+                            .ConfigureAwait(false);
+
+            if (context.IsSubscriptionOperation)
+            {
+                retainMessageId = await this
+                    .RegisterSubscriptionOrRespond(context.Subscription)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                // not a subscription, just send back the generated response and close out the id
+                ApolloMessage responseMessage;
+
+                // report syntax errors as error messages
+                // allow others to bubble into a fully reslt (per apollo spec)
+                if (result.Messages.Count == 1
+                    && result.Messages[0].Code == Constants.ErrorCodes.SYNTAX_ERROR)
+                {
+                    responseMessage = new ApolloServerErrorMessage(
+                          result.Messages[0],
+                          message,
+                          message.Id);
+                }
+                else
+                {
+                    responseMessage = new ApolloServerDataMessage(message.Id, result);
+                }
+
+                await client
+                    .SendMessage(responseMessage)
+                    .ConfigureAwait(false);
+                await client
+                    .SendMessage(new ApolloServerCompleteMessage(message.Id))
+                    .ConfigureAwait(false);
+            }
+
+            if (!retainMessageId)
+                _trackedIds.ReleaseMessageId(client, message.Id);
         }
 
         /// <summary>
@@ -425,8 +536,8 @@ namespace GraphQL.AspNet.Apollo
         {
             // protocol dictates the messages must be sent in this order
             // await each send before attempting the next one
-            await client.SendMessage(new ApolloServerAckOperationMessage());
-            await client.SendMessage(new ApolloKeepAliveOperationMessage());
+            await client.SendMessage(new ApolloServerAckOperationMessage()).ConfigureAwait(false);
+            await client.SendMessage(new ApolloKeepAliveOperationMessage()).ConfigureAwait(false);
         }
 
         /// <summary>

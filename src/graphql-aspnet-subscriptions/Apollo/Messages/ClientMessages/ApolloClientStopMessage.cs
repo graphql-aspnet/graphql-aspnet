@@ -18,21 +18,21 @@ namespace GraphQL.AspNet.Apollo.Messages.ClientMessages
     /// </summary>
     ///
     [DebuggerDisplay("Apollo Subscription Stop (Id: {Id})")]
-    public class ApolloSubscriptionStopMessage : ApolloMessage<ApolloNullPayload>
+    public class ApolloClientStopMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloSubscriptionStopMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloClientStopMessage"/> class.
         /// </summary>
-        public ApolloSubscriptionStopMessage()
+        public ApolloClientStopMessage()
             : base(ApolloMessageType.STOP)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloSubscriptionStopMessage" /> class.
+        /// Initializes a new instance of the <see cref="ApolloClientStopMessage" /> class.
         /// </summary>
         /// <param name="id">The identifier of the subscription to stop.</param>
-        public ApolloSubscriptionStopMessage(string id)
+        public ApolloClientStopMessage(string id)
             : this()
         {
             this.Id = id;

@@ -43,7 +43,6 @@ namespace GraphQL.AspNet.Apollo.Messages.ServerMessages
         {
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloServerErrorMessage" /> class.
         /// </summary>

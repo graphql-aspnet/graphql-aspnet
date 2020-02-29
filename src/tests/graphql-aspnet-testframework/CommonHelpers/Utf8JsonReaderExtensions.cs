@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
     using System.Text.Json;
 
     /// <summary>
-    /// Deserialization helpers for converting json data
+    /// Deserialization helpers for converting json data.
     /// </summary>
     public static class Utf8JsonReaderExtensions
     {
@@ -93,6 +93,8 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
         /// read the token IS consumed in the process.
         /// </summary>
         /// <param name="reader">The reader.</param>
+        /// <param name="data">The parameter populated with the read string value
+        /// when it is successfully read.</param>
         /// <returns>System.String.</returns>
         public static bool ReadValueAsJsonString(this ref Utf8JsonReader reader, out string data)
         {
@@ -192,7 +194,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
                     default:
                         bool valueRead = reader.ReadValueAsJsonString(out var data);
                         if (valueRead)
-                            builder.Append(valueRead);
+                            builder.Append(data);
                         else
                             reader.Read();
                         break;

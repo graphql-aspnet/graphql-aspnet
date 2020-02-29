@@ -79,7 +79,6 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             bool compareJson,
             bool dequeue = true)
         {
-
             if (connection.ResponseMessageCount == 0)
                 Assert.Fail("No messages queued.");
 

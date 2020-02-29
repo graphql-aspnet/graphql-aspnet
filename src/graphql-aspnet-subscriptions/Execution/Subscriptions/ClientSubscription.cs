@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -29,39 +30,29 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// </summary>
         /// <param name="clientProxy">The client proxy that will own this subscription.</param>
         /// <param name="originalQuerydata">The original querydata that generated this subscription.</param>
-        /// <param name="clientProvidedId">The identifier, provided by the client, that will be sent
-        /// whenever a response to this subscription is sent.</param>
         /// <param name="queryPlan">The query plan.</param>
-        /// <param name="operationName">Name of the subscription operation within the document to use.</param>
+        /// <param name="selectedOperation">The selected operation from the query plan
+        /// from which to generate the subscription.</param>
+        /// <param name="subscriptionid">A unique id to assign to this subscription. A guid id
+        /// will be generated if this value is not supplied.</param>
         public ClientSubscription(
             ISubscriptionClientProxy clientProxy,
             GraphQueryData originalQuerydata,
-            string clientProvidedId,
             IGraphQueryPlan queryPlan,
-            string operationName = null)
+            IGraphFieldExecutableOperation selectedOperation,
+            string subscriptionid = null)
         {
             this.Client = Validation.ThrowIfNullOrReturn(clientProxy, nameof(clientProxy));
-            this.ClientProvidedId = Validation.ThrowIfNullWhiteSpaceOrReturn(clientProvidedId, nameof(clientProvidedId));
             this.QueryData = Validation.ThrowIfNullOrReturn(originalQuerydata, nameof(originalQuerydata));
+            this.QueryOperation = Validation.ThrowIfNullOrReturn(selectedOperation, nameof(selectedOperation));
+            this.QueryPlan = Validation.ThrowIfNullOrReturn(queryPlan, nameof(queryPlan));
             this.Messages = this.QueryPlan?.Messages ?? new GraphMessageCollection();
 
-            this.QueryPlan = queryPlan;
+            this.Id = string.IsNullOrWhiteSpace(subscriptionid)
+                ? Guid.NewGuid().ToString("N")
+                : subscriptionid.Trim();
 
             this.IsValid = false;
-            if (this.QueryPlan != null)
-            {
-                this.Messages.AddRange(this.QueryPlan.Messages);
-                if (!this.QueryPlan.IsValid)
-                    return;
-            }
-            else
-            {
-                this.Messages.Add(
-                    GraphMessageSeverity.Critical,
-                    "No query plan was generated for the requested subscription.",
-                    Constants.ErrorCodes.BAD_REQUEST);
-                return;
-            }
 
             // parsing the query plan will garuntee that if the document contains
             // a subscription that it contains only one operation and
@@ -69,15 +60,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             //
             // However, ensure that the operation that will be executed
             // does in fact represent a subscription being harnesssed
-            this.QueryOperation = this.QueryPlan?.RetrieveOperation(operationName);
-            if (this.QueryOperation == null)
-            {
-                this.Messages.Critical(
-                        $"No operation found with the name '{operationName}'.",
-                        Constants.ErrorCodes.BAD_REQUEST);
-                return;
-            }
-
             if (this.QueryOperation.OperationType != GraphCollection.Subscription)
             {
                 this.Messages.Critical(
@@ -94,7 +76,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             while (currentContext?.Field != null)
             {
                 // when pointing at a subscription field we're done
-                if (currentContext.Field.IsVirtual != true)
+                if (!currentContext.Field.IsVirtual)
                 {
                     this.Field = currentContext?.Field as ISubscriptionGraphField;
                     break;
@@ -119,6 +101,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <summary>
+        /// Gets a unique identifier for this subscription instance.
+        /// </summary>
+        /// <value>A unique id for this subscription.</value>
+        public string Id { get; }
+
+        /// <summary>
         /// Gets a reference to the the top-level graph field that has been subscribed to.
         /// </summary>
         /// <value>The field.</value>
@@ -141,12 +129,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// </summary>
         /// <value>The client.</value>
         public ISubscriptionClientProxy Client { get; }
-
-        /// <summary>
-        /// Gets the client provided identifier that should be sent whenever data is sent for this subscription.
-        /// </summary>
-        /// <value>The client provided identifier.</value>
-        public string ClientProvidedId { get; }
 
         /// <summary>
         /// Gets the messages.

@@ -28,15 +28,13 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="schema">The schema.</param>
         /// <param name="runtime">The runtime.</param>
         /// <param name="writer">The writer.</param>
-        /// <param name="metricsFactory">The metrics factory.</param>
         /// <param name="logger">The logger.</param>
         public SecureGraphQLHttpProcessor(
             TSchema schema,
             IGraphQLRuntime<TSchema> runtime,
             IGraphResponseWriter<TSchema> writer,
-            IGraphQueryExecutionMetricsFactory<TSchema> metricsFactory,
             IGraphEventLogger logger = null)
-            : base(schema, runtime, writer, metricsFactory, logger)
+            : base(schema, runtime, writer, logger)
         {
         }
 
@@ -53,7 +51,9 @@ namespace GraphQL.AspNet.Defaults
                 return;
             }
 
-            await base.SubmitGraphQLQuery(queryData);
+            await base
+                .SubmitGraphQLQuery(queryData)
+                .ConfigureAwait(false);
         }
     }
 }

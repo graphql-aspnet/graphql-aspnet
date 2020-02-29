@@ -14,17 +14,17 @@ namespace GraphQL.AspNet.Apollo.Messages.ClientMessages
     using GraphQL.AspNet.Apollo.Messages.Payloads;
 
     /// <summary>
-    /// A message recieved from the client when it is notfiying the server that its dropping
-    /// the connection and the server should dispose of it.
+    /// A message recieved from the client after the establishment of the websocket to initialize the graphql
+    /// session on the socket.
     /// </summary>
-    [DebuggerDisplay("Apollo Client Terminate")]
-    internal class ApolloConnectionTerminateMessage : ApolloMessage<ApolloNullPayload>
+    [DebuggerDisplay("Apollo Client Initialized")]
+    public class ApolloClientConnectionInitMessage : ApolloMessage<ApolloNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloConnectionTerminateMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloClientConnectionInitMessage"/> class.
         /// </summary>
-        public ApolloConnectionTerminateMessage()
-            : base(ApolloMessageType.CONNECTION_TERMINATE)
+        public ApolloClientConnectionInitMessage()
+            : base(ApolloMessageType.CONNECTION_INIT)
         {
         }
     }

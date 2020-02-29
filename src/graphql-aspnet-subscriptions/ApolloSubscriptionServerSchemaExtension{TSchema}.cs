@@ -75,7 +75,8 @@ namespace GraphQL.AspNet
 
             // wipe out the current execution pipeline and rebuild with subscription creation middleware injected
             _schemaBuilder.QueryExecutionPipeline.Clear();
-            var subscriptionQueryExecutionHelper = new SubscriptionQueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
+            var subscriptionQueryExecutionHelper = new ApolloQueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
+            subscriptionQueryExecutionHelper.AddDefaultMiddlewareComponents();
 
             // the primary subscription options for the schema
             this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
@@ -100,12 +101,6 @@ namespace GraphQL.AspNet
                       typeof(ISubscriptionClientFactory<TSchema>),
                       typeof(ApolloClientFactory<TSchema>),
                       ServiceLifetime.Singleton));
-
-            this.OptionalServices.Add(
-               new ServiceDescriptor(
-                   typeof(IClientSubscriptionMaker<TSchema>),
-                   typeof(ClientSubscriptionMaker<TSchema>),
-                   ServiceLifetime.Transient));
 
             if (this.SubscriptionOptions.HttpMiddlewareComponentType != null)
                 this.EnsureMiddlewareTypeOrThrow(this.SubscriptionOptions.HttpMiddlewareComponentType);

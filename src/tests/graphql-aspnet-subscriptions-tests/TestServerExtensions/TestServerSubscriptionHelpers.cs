@@ -44,12 +44,11 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            serverBuilder.AddSchemaBuilderAction(builder =>
+            serverBuilder.AddSchemaBuilderAction(schemaBuilder =>
             {
-                builder.AsServiceCollection().AddSingleton<ISubscriptionEventListener, InProcessSubscriptionEventListener>();
-                var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(builder, subscriptionsOptions);
-
-            serverBuilder.AddSchemaExtension(extension);
+                schemaBuilder.AsServiceCollection().AddSingleton<ISubscriptionEventListener, InProcessSubscriptionEventListener>();
+                var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
+                schemaBuilder.Options.RegisterExtension(extension);
             });
 
             return serverBuilder;
@@ -64,11 +63,11 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         public static TestServerBuilder<TSchema> AddSubscriptionPublishing<TSchema>(this TestServerBuilder<TSchema> serverBuilder)
             where TSchema : class, ISchema
         {
-            var extension = new SubscriptionPublisherSchemaExtension<TSchema>();
-            serverBuilder.AddSchemaExtension(extension);
-
             serverBuilder.AddSchemaBuilderAction(builder =>
             {
+                var extension = new SubscriptionPublisherSchemaExtension<TSchema>();
+                builder.Options.RegisterExtension(extension);
+
                 builder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>();
                 builder.AsServiceCollection().TryAddSingleton<SubscriptionPublicationService>();
                 builder.AsServiceCollection().AddScoped<ISubscriptionEventPublisher, InProcessSubscriptionPublisher>();
@@ -114,7 +113,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
             var context = new DefaultHttpContext();
-            var scope =server.ServiceProvider.CreateScope();
+            var scope = server.ServiceProvider.CreateScope();
             context.RequestServices = scope.ServiceProvider;
             context.User = server.User;
 

@@ -31,7 +31,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             subscription.Setup(x => x.Route).Returns(path);
             subscription.Setup(x => x.Field).Returns(field.Object);
             subscription.Setup(x => x.IsValid).Returns(true);
-            subscription.Setup(x => x.ClientProvidedId).Returns(id);
+            subscription.Setup(x => x.Id).Returns(id);
 
             var subClient = new Mock<ISubscriptionClientProxy>();
             subscription.Setup(x => x.Client).Returns(subClient.Object);
@@ -117,12 +117,18 @@ namespace GraphQL.Subscriptions.Tests.Execution
             collection.Add(subscription2);
 
             // take out one, ensure event not triggered
-            var subRemoved = collection.TryRemoveSubscription(subscription2.Client, subscription2.ClientProvidedId);
+            var subRemoved = collection.TryRemoveSubscription(
+                subscription2.Client,
+                subscription2.Id);
+
             Assert.AreEqual(subRemoved, subscription2);
             Assert.AreEqual(0, totalInvocations);
 
             // take out last one ensure event triggered
-            subRemoved = collection.TryRemoveSubscription(subscription.Client, subscription.ClientProvidedId);
+            subRemoved = collection.TryRemoveSubscription(
+                subscription.Client,
+                subscription.Id);
+
             Assert.AreEqual(subRemoved, subscription);
             Assert.AreEqual(1, totalInvocations);
         }

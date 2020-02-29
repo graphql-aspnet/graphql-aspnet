@@ -22,14 +22,14 @@ namespace GraphQL.AspNet.Middleware.SubscriptionCreation
     /// A decorator for the query execution pipeline builder to configure default components.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this helper will add components for.</typeparam>
-    public class SubscriptionQueryExecutionPipelineHelper<TSchema> : QueryExecutionPipelineHelper<TSchema>
+    public class ApolloQueryExecutionPipelineHelper<TSchema> : QueryExecutionPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionQueryExecutionPipelineHelper{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="ApolloQueryExecutionPipelineHelper{TSchema}"/> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public SubscriptionQueryExecutionPipelineHelper(
+        public ApolloQueryExecutionPipelineHelper(
             ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> pipelineBuilder)
             : base(pipelineBuilder)
         {
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Middleware.SubscriptionCreation
         /// </summary>
         /// <param name="options">The configuration options to use when deriving the components to include.</param>
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
-        public virtual SubscriptionQueryExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(SchemaOptions options = null)
+        public new ApolloQueryExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(SchemaOptions options = null)
         {
             this.AddValidateRequestMiddleware()
                 .AddRecordQueryMetricsMiddleware();
@@ -72,9 +72,9 @@ namespace GraphQL.AspNet.Middleware.SubscriptionCreation
         /// as <see cref="SubscriptionConstants.Execution.CREATED_SUBSCRIPTION"/>.
         /// </summary>
         /// <returns>SubscriptionQueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
-        public SubscriptionQueryExecutionPipelineHelper<TSchema> AddSubscriptionCreationMiddleware()
+        public ApolloQueryExecutionPipelineHelper<TSchema> AddSubscriptionCreationMiddleware()
         {
-            this.PipelineBuilder.AddMiddleware<SubscriptionCreationMiddleware>();
+            this.PipelineBuilder.AddMiddleware<SubscriptionCreationMiddleware<TSchema>>();
             return this;
         }
     }

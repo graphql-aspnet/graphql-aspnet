@@ -49,7 +49,6 @@ namespace GraphQL.AspNet.Defaults
         private readonly TSchema _schema;
         private readonly IGraphQLRuntime<TSchema> _runtime;
         private readonly IGraphResponseWriter<TSchema> _writer;
-        private readonly IGraphQueryExecutionMetricsFactory<TSchema> _metricsFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpProcessor{TSchema}" /> class.
@@ -57,19 +56,16 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="schema">The schema.</param>
         /// <param name="runtime">The primary runtime in which requests are processed.</param>
         /// <param name="writer">The writer.</param>
-        /// <param name="metricsFactory">The metrics factory.</param>
         /// <param name="logger">The logger.</param>
         public DefaultGraphQLHttpProcessor(
             TSchema schema,
             IGraphQLRuntime<TSchema> runtime,
             IGraphResponseWriter<TSchema> writer,
-            IGraphQueryExecutionMetricsFactory<TSchema> metricsFactory,
             IGraphEventLogger logger = null)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _runtime = Validation.ThrowIfNullOrReturn(runtime, nameof(runtime));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
-            _metricsFactory = Validation.ThrowIfNullOrReturn(metricsFactory, nameof(metricsFactory));
             _logger = logger;
         }
 
@@ -146,17 +142,17 @@ namespace GraphQL.AspNet.Defaults
                 // *******************************
                 // Primary query execution
                 // *******************************
-                var metricPackage = this.EnableMetrics ? _metricsFactory.CreateMetricsPackage() : null;
-
-                var queryResponse = await _runtime.ExecuteRequest(
-                    this.HttpContext.RequestServices,
-                    this.HttpContext.User,
-                    this.GraphQLRequest,
-                    metricPackage);
+                var queryResponse = await _runtime
+                    .ExecuteRequest(
+                        this.HttpContext.RequestServices,
+                        this.HttpContext.User,
+                        this.GraphQLRequest,
+                        this.EnableMetrics)
+                    .ConfigureAwait(false);
 
                 // if any metrics were populated in the execution, allow a child class to process them
-                if (metricPackage != null)
-                    this.HandleQueryMetrics(metricPackage);
+                if (queryResponse.Metrics != null)
+                    this.HandleQueryMetrics(queryResponse.Metrics);
 
                 // all done, finalize and return
                 queryResponse = this.FinalizeResult(queryResponse);

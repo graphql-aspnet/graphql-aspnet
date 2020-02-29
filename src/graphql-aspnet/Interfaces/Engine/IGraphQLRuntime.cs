@@ -32,6 +32,12 @@ namespace GraphQL.AspNet.Interfaces.Engine
         IGraphOperationRequest CreateRequest(GraphQueryData queryData);
 
         /// <summary>
+        /// Creates a new metrics package using the default means available to this runtime instance.
+        /// </summary>
+        /// <returns>Task&lt;IGraphQueryExecutionMetrics&gt;.</returns>
+        IGraphQueryExecutionMetrics CreateMetricsPackage();
+
+        /// <summary>
         /// Accepts a query context to execute and renders the result.
         /// </summary>
         /// <param name="context">The execution context to process.</param>
@@ -57,6 +63,25 @@ namespace GraphQL.AspNet.Interfaces.Engine
             ClaimsPrincipal user,
             IGraphOperationRequest request,
             IGraphQueryExecutionMetrics metricsPackage = null,
+            CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Accepts a qualified operation request and renders the result.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider to use for resolving
+        /// graph objects.</param>
+        /// <param name="user">The claims principal representing the user to authorize
+        /// on the query.</param>
+        /// <param name="request">The primary data request.</param>
+        /// <param name="enableMetrics">if set to <c>true</c> a metrics package will be created and automatically
+        /// supplied to the execution request.</param>
+        /// <param name="cancelToken">The cancel token.</param>
+        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        Task<IGraphOperationResult> ExecuteRequest(
+            IServiceProvider serviceProvider,
+            ClaimsPrincipal user,
+            IGraphOperationRequest request,
+            bool enableMetrics = false,
             CancellationToken cancelToken = default);
     }
 }

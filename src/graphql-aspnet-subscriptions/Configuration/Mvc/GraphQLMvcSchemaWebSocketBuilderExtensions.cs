@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             Action<SubscriptionServerOptions<TSchema>> options = null)
             where TSchema : class, ISchema
         {
-            return schemaBuilder.AddSubscriptionServer<InProcessSubscriptionEventListener, TSchema>();
+            return schemaBuilder.AddSubscriptionServer<InProcessSubscriptionEventListener, TSchema>(options);
         }
 
         /// <summary>

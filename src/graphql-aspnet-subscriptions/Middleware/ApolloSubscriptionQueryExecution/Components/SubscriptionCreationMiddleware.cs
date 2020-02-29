@@ -7,20 +7,23 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubscriptionCreation;
+    using GraphQL.AspNet.Middleware.SubscriptionQueryExecution;
 
     /// <summary>
     /// This middleware assemblies the final subscription if and when warranted. If assembled the query
     /// is not immediately processed.
     /// </summary>
-    public class SubscriptionCreationMiddleware : IQueryExecutionMiddleware
+    /// <typeparam name="TSchema">The type of the schema this middleware component exists for.</typeparam>
+    public class SubscriptionCreationMiddleware<TSchema> : IQueryExecutionMiddleware
+        where TSchema : class, ISchema
     {
         /// <summary>
         /// Invokes this middleware component allowing it to perform its work against the supplied context.
@@ -31,6 +34,21 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <returns>Task.</returns>
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
+            if (context is ApolloQueryExecutionContext subContext
+                && subContext.IsSubscriptionOperation
+                && subContext.QueryPlan != null
+                && subContext.QueryOperation != null)
+            {
+                subContext.Subscription = new ClientSubscription<TSchema>(
+                    subContext.Client,
+                    subContext.Request.ToDataPackage(),
+                    subContext.QueryPlan,
+                    subContext.QueryOperation,
+                    subContext.ClientProvidedId);
+
+                return Task.CompletedTask;
+            }
+
             return next(context, cancelToken);
         }
     }

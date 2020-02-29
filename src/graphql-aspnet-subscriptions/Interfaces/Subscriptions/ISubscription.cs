@@ -20,6 +20,12 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     public interface ISubscription
     {
         /// <summary>
+        /// Gets a unique identifier for this subscription instance.
+        /// </summary>
+        /// <value>A unique id for this subscription.</value>
+        string Id { get; }
+
+        /// <summary>
         /// Gets a reference to the the top-level graph field that has been subscribed to.
         /// </summary>
         /// <value>The field.</value>
@@ -61,12 +67,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <value>The client.</value>
         ISubscriptionClientProxy Client { get; }
-
-        /// <summary>
-        /// Gets the client provided identifier that should be sent whenever data is sent for this subscription.
-        /// </summary>
-        /// <value>The client provided identifier.</value>
-        string ClientProvidedId { get; }
 
         /// <summary>
         /// Gets the messages.

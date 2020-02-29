@@ -11,20 +11,18 @@ namespace GraphQL.AspNet.Apollo.Messages.ClientMessages
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Apollo.Messages.Common;
-    using GraphQL.AspNet.Apollo.Messages.Payloads;
 
     /// <summary>
-    /// A message recieved from the client after the establishment of the websocket to initialize the graphql
-    /// session on the socket.
+    /// A message sent by the client when it wants to start a new subscription operation.
     /// </summary>
-    [DebuggerDisplay("Apollo Client Initialized")]
-    public class ApolloConnectionInitMessage : ApolloMessage<ApolloNullPayload>
+    [DebuggerDisplay("Apollo Subscription Start (Id: {Id})")]
+    public class ApolloClientStartMessage : ApolloMessage<GraphQueryData>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloConnectionInitMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloClientStartMessage"/> class.
         /// </summary>
-        public ApolloConnectionInitMessage()
-            : base(ApolloMessageType.CONNECTION_INIT)
+        public ApolloClientStartMessage()
+            : base(ApolloMessageType.START)
         {
         }
     }

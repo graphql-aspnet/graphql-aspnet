@@ -30,7 +30,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
 
             while (reader.TokenType != JsonTokenType.EndObject)
             {
-
                 if (reader.TokenType != JsonTokenType.PropertyName)
                     throw new InvalidOperationException("expected prop name");
 
@@ -59,9 +58,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
                 }
             }
 
-
             return message;
-
         }
 
         public override void Write(Utf8JsonWriter writer, ApolloResponseMessage value, JsonSerializerOptions options)

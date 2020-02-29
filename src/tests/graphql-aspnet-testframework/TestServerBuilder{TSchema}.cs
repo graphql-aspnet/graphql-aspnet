@@ -34,10 +34,9 @@ namespace GraphQL.AspNet.Tests.Framework
 
         // colleciton of types added to this server external to the AddGraphQL call.
         private readonly HashSet<Type> _additionalTypes = new HashSet<Type>();
+        private readonly List<Action<ISchemaBuilder<TSchema>>> _schemaBuilderAdditions;
 
         private Action<SchemaOptions> _configureOptions;
-        private List<Action<ISchemaBuilder<TSchema>>> _schemaBuilderAdditions;
-        private List<ISchemaExtension> _extensions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestServerBuilder{TSchema}" /> class.
@@ -47,7 +46,6 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             this.ServiceCollection = new ServiceCollection();
             _testComponents = new List<IGraphTestFrameworkComponent>();
-            _extensions = new List<ISchemaExtension>();
             _schemaBuilderAdditions = new List<Action<ISchemaBuilder<TSchema>>>();
             _initialSetup = initialSetup;
 
@@ -99,17 +97,6 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Adds an extension to the schema when the test server is built.
-        /// </summary>
-        /// <param name="extension">The extension.</param>
-        /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        public TestServerBuilder<TSchema> AddSchemaExtension(ISchemaExtension extension)
-        {
-            _extensions.Add(extension);
-            return this;
-        }
-
-        /// <summary>
         /// Helpful overload for direct access to inject a graph type into the server.
         /// </summary>
         /// <typeparam name="TType">The concrete type to parse when creating a graph type.</typeparam>
@@ -154,7 +141,9 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Adds an action to execute against the master schema builder when this server is built.
+        /// Adds an action to execute against the master schema builder when this server is built. Mimics a
+        /// call to <see cref="AddGraphQL(Action{SchemaOptions})"/> then taking further action against
+        /// the returned <see cref="ISchemaBuilder{TSchema}"/>.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <returns>GraphQL.AspNet.Tests.Framework.TestServerBuilder&lt;TSchema&gt;.</returns>
@@ -196,10 +185,6 @@ namespace GraphQL.AspNet.Tests.Framework
             // inject staged graph types
             var injector = new GraphQLSchemaInjector<TSchema>(serviceCollection, _configureOptions);
             injector.ConfigureServices();
-
-            // register each extension
-            foreach (var extension in _extensions)
-                injector.SchemaBuilder.Options.RegisterExtension(extension);
 
             foreach (var action in _schemaBuilderAdditions)
                 action.Invoke(injector.SchemaBuilder);

@@ -109,7 +109,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             }
 
             // queue a message that would trigger the delegate
-            socketClient.QueueClientMessage(new MockClientMessage(new ApolloSubscriptionStartMessage()));
+            socketClient.QueueClientMessage(new MockClientMessage(new ApolloClientStartMessage()));
             socketClient.QueueConnectionCloseMessage();
 
             apolloClient.RegisterAsyncronousMessageDelegate(MessageRecieved);

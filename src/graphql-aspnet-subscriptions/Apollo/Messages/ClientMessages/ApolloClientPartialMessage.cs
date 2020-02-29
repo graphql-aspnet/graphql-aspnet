@@ -18,12 +18,12 @@ namespace GraphQL.AspNet.Apollo.Messages.ClientMessages
     /// double deserialization of a message via json deserializer.
     /// </summary>
     [DebuggerDisplay("Message Type: {Type}")]
-    internal class ApolloPartialClientMessage : ApolloMessage<GraphQueryData>
+    internal class ApolloClientPartialMessage : ApolloMessage<GraphQueryData>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloPartialClientMessage"/> class.
+        /// Initializes a new instance of the <see cref="ApolloClientPartialMessage"/> class.
         /// </summary>
-        public ApolloPartialClientMessage()
+        public ApolloClientPartialMessage()
             : base(ApolloMessageType.UNKNOWN)
         {
         }
@@ -37,27 +37,27 @@ namespace GraphQL.AspNet.Apollo.Messages.ClientMessages
             switch (this.Type)
             {
                 case ApolloMessageType.CONNECTION_INIT:
-                    return new ApolloConnectionInitMessage()
+                    return new ApolloClientConnectionInitMessage()
                     {
                         Payload = null, // TODO: connection may have params, need to handle it
                     };
 
                 case ApolloMessageType.START:
-                    return new ApolloSubscriptionStartMessage()
+                    return new ApolloClientStartMessage()
                     {
                         Id = this.Id,
                         Payload = this.Payload,
                     };
 
                 case ApolloMessageType.STOP:
-                    return new ApolloSubscriptionStopMessage()
+                    return new ApolloClientStopMessage()
                     {
                         Id = this.Id,
                         Payload = null, // stop message has no expected payload
                     };
 
                 case ApolloMessageType.CONNECTION_TERMINATE:
-                    return new ApolloConnectionInitMessage()
+                    return new ApolloClientConnectionInitMessage()
                     {
                         Id = this.Id,
                         Payload = null, // terminate message has no expected
