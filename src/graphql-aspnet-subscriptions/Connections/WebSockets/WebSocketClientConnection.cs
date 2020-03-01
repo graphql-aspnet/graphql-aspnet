@@ -49,15 +49,40 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
         }
 
         /// <summary>
-        /// Receives the asynchronous.
+        /// Receives data from the connection asynchronously.
         /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Task&lt;IClientConnectionReceiveResult&gt;.</returns>
-        public Task<IClientConnectionReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken = default)
+        /// <param name="buffer">References the application buffer that is the storage location for the received
+        ///  data.</param>
+        /// <param name="cancelToken">Propagates the notification that operations should be canceled.</param>
+        /// <returns>Task&lt;IClientConnectionResult&gt;.</returns>
+        public async Task<IClientConnectionReceiveResult> ReceiveAsync(
+            ArraySegment<byte> buffer,
+            CancellationToken cancelToken = default)
         {
-            return _webSocket.ReceiveAsync(buffer, cancellationToken)
-                .ContinueWith(result => new WebSocketReceiveResultProxy(result.Result) as IClientConnectionReceiveResult);
+            try
+            {
+                var result = await _webSocket.ReceiveAsync(buffer, cancelToken)
+                    .ContinueWith(result =>
+                    new WebSocketReceiveResultProxy(result.Result) as IClientConnectionReceiveResult);
+
+                return result;
+            }
+            catch (WebSocketException webSocketException)
+            {
+                return new WebSocketFailureResult(webSocketException) as IClientConnectionReceiveResult;
+            }
+            catch (AggregateException ae)
+            {
+                var inner = ae.InnerException;
+                if (inner is WebSocketException wse)
+                    return new WebSocketFailureResult(wse);
+                else
+                    return new ClientConnectionFailureResult(inner ?? ae);
+            }
+            catch (Exception ex)
+            {
+                return new ClientConnectionFailureResult(ex);
+            }
         }
 
         /// <summary>

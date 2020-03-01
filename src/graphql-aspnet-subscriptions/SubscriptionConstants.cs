@@ -26,6 +26,12 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
+        /// any events that were raised during the query execution.
+        /// </summary>
+        public const string RAISED_EVENTS_COLLECTION_KEY = "RaisedSubscriptionEvents";
+
+        /// <summary>
         /// A collection of constants related to subscription routing.
         /// </summary>
         public static class Routing
@@ -39,14 +45,8 @@ namespace GraphQL.AspNet
             /// <summary>
             /// The default route fragment, appended to the end of a Graphl QL route.
             /// </summary>
-            public const string DEFAULT_SUBSCRIPTIONS_ROUTE = SCHEMA_ROUTE_KEY + "/subscriptions";
+            public const string DEFAULT_SUBSCRIPTIONS_ROUTE = SCHEMA_ROUTE_KEY;
         }
-
-        /// <summary>
-        /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
-        /// any events that were raised during the query execution.
-        /// </summary>
-        public const string RAISED_EVENTS_COLLECTION_KEY = "RaisedSubscriptionEvents";
 
         /// <summary>
         /// Common error codes used in graph resolution errors.
@@ -73,16 +73,30 @@ namespace GraphQL.AspNet
             public const string CREATED_SUBSCRIPTION = "GRAPHQL_SUBSCRIPTIONS_PIPELINE_CREATED_SUBSCRIPTION";
 
             /// <summary>
-            /// The client provided identifier on the request to uniquely identify
-            /// this invocation instance. This value becomes the subscription id if/when
+            /// A key value, pointing to an item in the Items collection of an executed
+            /// <see cref="GraphQueryExecutionContext"/>of the client provided identifier on the request
+            /// to uniquely identify this invocation instance. This value becomes the subscription id if/when
             /// a subscription is generated.
             /// </summary>
             public const string CLIENT_PROVIDED_ID = "GRAPHQL_SUBSCRIPTIONS_CLIENT_PROVIDED_ID";
 
             /// <summary>
-            /// A key to a reference of the client that is making the request.
+            /// A key value, pointing to an item in the Items collection of an executed
+            /// <see cref="GraphQueryExecutionContext"/> to a reference of the client that is making the request.
             /// </summary>
             public const string CLIENT = "GRAPHQL_SUBSCRIPTIONS_CLIENT_REFERENCE";
+        }
+
+        /// <summary>
+        /// Constants pertaining to web socket specifics.
+        /// </summary>
+        public static class WebSockets
+        {
+            /// <summary>
+            /// The the key value used as the default sub protocol this subscription
+            /// server can support.
+            /// </summary>
+            public const string DEFAULT_SUB_PROTOCOL = "graphql-ws";
         }
     }
 }

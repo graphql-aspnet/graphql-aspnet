@@ -38,8 +38,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
                     where TSchema : class, ISchema
         {
             return schemaBuilder
-                .AddSubscriptionPublishing()
-                .AddSubscriptionServer(options);
+                .AddSubscriptionServer(options)
+                .AddSubscriptionPublishing();
         }
 
         /// <summary>

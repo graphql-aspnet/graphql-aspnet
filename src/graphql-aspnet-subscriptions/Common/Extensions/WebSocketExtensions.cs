@@ -24,16 +24,16 @@ namespace GraphQL.AspNet.Common.Extensions
         /// A helper method to guarantee receipt of a full message off the websocket. This method accounts
         /// for the quirkyness and semi-stream behavior of the websocket protocol.
         /// </summary>
-        /// <param name="socket">The socket.</param>
+        /// <param name="connection">The connection to receive teh message from.</param>
         /// <param name="messageReceiveBufferSize">Size of the message receive buffer.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task&lt;System.ValueTuple&lt;WebSocketReceiveResult, IEnumerable&lt;System.Byte&gt;&gt;&gt;.</returns>
         public static async Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(
-            this IClientConnection socket,
+            this IClientConnection connection,
             int messageReceiveBufferSize = 4096,
             CancellationToken cancelToken = default(CancellationToken))
         {
-            Validation.ThrowIfNull(socket, nameof(socket));
+            Validation.ThrowIfNull(connection, nameof(connection));
 
             IClientConnectionReceiveResult response;
             var message = new List<byte>();
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Common.Extensions
             var buffer = new byte[messageReceiveBufferSize];
             do
             {
-                response = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), cancelToken);
+                response = await connection.ReceiveAsync(new ArraySegment<byte>(buffer), cancelToken);
                 message.AddRange(new ArraySegment<byte>(buffer, 0, response.Count));
             }
             while (!response.EndOfMessage);

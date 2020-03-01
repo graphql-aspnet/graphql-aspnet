@@ -126,39 +126,50 @@ namespace GraphQL.AspNet.Apollo
             // register the socket with an "apollo level" keep alive monitor
             // that will send structured keep alive messages down the pipe
             ApolloClientConnectionKeepAliveMonitor keepAliveTimer = null;
-            if (_enableKeepAlive)
-            {
-                keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor(this, _options.KeepAliveInterval);
-                keepAliveTimer.Start();
-            }
 
-            (var result, var bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
-
-            // message dispatch loop
-            while (!result.CloseStatus.HasValue && _connection.State == ClientConnectionState.Open)
+            try
             {
-                if (result.MessageType == ClientMessageType.Text)
+                if (_enableKeepAlive)
                 {
-                    var message = this.DeserializeMessage(bytes);
-                    await _messageDelegate?.Invoke(this, message);
+                    keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor(this, _options.KeepAliveInterval);
+                    keepAliveTimer.Start();
                 }
 
-                (result, bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
+                (var result, var bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
+
+                // message dispatch loop
+                while (!result.CloseStatus.HasValue && _connection.State == ClientConnectionState.Open)
+                {
+                    if (result.MessageType == ClientMessageType.Text)
+                    {
+                        var message = this.DeserializeMessage(bytes);
+                        await _messageDelegate?.Invoke(this, message);
+                    }
+
+                    (result, bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
+                }
+
+                // shut down the socket and the apollo-protocol-specific keep alive
+                keepAliveTimer?.Stop();
+                keepAliveTimer = null;
+
+                if (_connection.State == ClientConnectionState.Open)
+                {
+                    await _connection.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                }
+
+                _connection = null;
+
+                this.ConnectionClosed?.Invoke(this, new EventArgs());
             }
-
-            // shut down the socket and the apollo-protocol-specific keep alive
-            keepAliveTimer?.Stop();
-
-            if (_connection.State == ClientConnectionState.Open)
+            finally
             {
-                await _connection.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                // ensure keep alive is stopped even when a server exception may be thrown
+                // during message receiving
+                keepAliveTimer?.Stop();
             }
 
-            _connection = null;
-
-            this.ConnectionClosed?.Invoke(this, new EventArgs());
-
-            // unregister any events that may be listening, this subscription is shutting down for good.
+            // unregister any events that may be listening to this client as its shutting down for good.
             this.DoActionForAllInvokers(this.ConnectionOpening, x => this.ConnectionOpening -= x);
             this.DoActionForAllInvokers(this.ConnectionClosed, x => this.ConnectionClosed -= x);
         }

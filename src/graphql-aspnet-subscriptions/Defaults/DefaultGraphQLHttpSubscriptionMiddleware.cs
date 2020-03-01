@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Defaults
 {
+    using System;
     using System.Globalization;
     using System.Net;
     using System.Threading.Tasks;
@@ -54,38 +55,37 @@ namespace GraphQL.AspNet.Defaults
         public virtual async Task InvokeAsync(HttpContext context)
         {
             // immediate bypass if not aimed at this schema subscription route
-            if (string.Compare(
+            var isListeningToPath = string.Compare(
                 context.Request.Path,
                 this.RoutePath,
                 CultureInfo.InvariantCulture,
-                CompareOptions.OrdinalIgnoreCase) != 0)
+                CompareOptions.OrdinalIgnoreCase) == 0;
+
+            if (isListeningToPath && context.WebSockets.IsWebSocketRequest)
             {
-                await this.Next(context);
+                try
+                {
+                    var webSocket = await context.WebSockets.AcceptWebSocketAsync(SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL);
+
+                    var subscriptionFactory = context.RequestServices.GetRequiredService(typeof(ISubscriptionClientFactory<TSchema>))
+                        as ISubscriptionClientFactory<TSchema>;
+
+                    var socketProxy = new WebSocketClientConnection(webSocket);
+
+                    var subscriptionClient = subscriptionFactory.CreateClientProxy(context, socketProxy, this.Options);
+
+                    // hold the client connection until its released
+                    await subscriptionClient.StartConnection();
+                }
+                catch (Exception ex)
+                {
+                    string str = "";
+                }
+
                 return;
             }
 
-            if (context.WebSockets.IsWebSocketRequest)
-            {
-                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-
-                var subscriptionFactory = context.RequestServices.GetRequiredService(typeof(ISubscriptionClientFactory<TSchema>))
-                    as ISubscriptionClientFactory<TSchema>;
-
-                var socketProxy = new WebSocketClientConnection(webSocket);
-
-                var subscriptionClient = subscriptionFactory.CreateClientProxy(context, socketProxy, this.Options);
-
-                // hold the client connection until its released
-                await subscriptionClient.StartConnection();
-            }
-            else
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                await context.Response.WriteAsync(
-                    $"The route '{this.RoutePath}', is configured to only accept subscription operation requests " +
-                    $"for target schema '{typeof(TSchema).FriendlyName()}'. These requests" +
-                    "must be sent via an appropriate websocket protocol.");
-            }
+            await this.Next(context);
         }
 
         /// <summary>
