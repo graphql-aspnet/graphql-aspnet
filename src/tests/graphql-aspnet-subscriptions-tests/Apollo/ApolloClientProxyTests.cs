@@ -20,6 +20,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
     using NUnit.Framework.Internal.Execution;
 
@@ -34,8 +35,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(
-                provider,
-                null,
                 socketClient,
                 options,
                 new ApolloMessageConverterFactory(),
@@ -64,8 +63,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var provider = new ServiceCollection().BuildServiceProvider();
             var apolloClient = new ApolloClientProxy<GraphSchema>(
-                provider,
-                null,
                 socketClient,
                 options,
                 new ApolloMessageConverterFactory(),
@@ -84,74 +81,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             await apolloClient.StartConnection();
 
             Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
-        }
-
-        [Test]
-        public async Task WhenMessageRecieved_SingleAsyncDelegateIsActivated()
-        {
-            var socketClient = new MockClientConnection();
-            var options = new SubscriptionServerOptions<GraphSchema>();
-
-            var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(
-                provider,
-                null,
-                socketClient,
-                options,
-                new ApolloMessageConverterFactory(),
-                false);
-
-            bool delegateCalled = false;
-            Task MessageRecieved(object sender, ApolloMessage message)
-            {
-                delegateCalled = true;
-                return Task.CompletedTask;
-            }
-
-            // queue a message that would trigger the delegate
-            socketClient.QueueClientMessage(new MockClientMessage(new ApolloClientStartMessage()));
-            socketClient.QueueConnectionCloseMessage();
-
-            apolloClient.RegisterAsyncronousMessageDelegate(MessageRecieved);
-
-            // execute the connection sequence
-            await apolloClient.StartConnection();
-
-            Assert.IsTrue(delegateCalled, "Apollo message not transmitted to delegate");
-        }
-
-        [Test]
-        public async Task WhenMessageRecieved_ThatIsntAnApolloMessage_UnknownMessageIsRaised()
-        {
-            var socketClient = new MockClientConnection();
-            var options = new SubscriptionServerOptions<GraphSchema>();
-
-            var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(
-                provider,
-                null,
-                socketClient,
-                options,
-                new ApolloMessageConverterFactory(),
-                false);
-
-            bool unknownMessageRecieved = false;
-            Task MessageRecieved(object sender, ApolloMessage message)
-            {
-                unknownMessageRecieved = message is ApolloUnknownMessage;
-                return Task.CompletedTask;
-            }
-
-            // queue a message that would trigger the delegate
-            socketClient.QueueClientMessage(new MockClientMessage("non-apollo-message-payload"));
-            socketClient.QueueConnectionCloseMessage();
-
-            apolloClient.RegisterAsyncronousMessageDelegate(MessageRecieved);
-
-            // execute the connection sequence
-            await apolloClient.StartConnection();
-
-            Assert.IsTrue(unknownMessageRecieved, "Invalid Apollo message payload not converted to proper unknown message type");
         }
     }
 }

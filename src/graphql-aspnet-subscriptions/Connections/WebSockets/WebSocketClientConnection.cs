@@ -11,10 +11,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
 {
     using System;
     using System.Net.WebSockets;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// A client connection created from a <see cref="WebSocket"/>.
@@ -22,14 +24,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
     public class WebSocketClientConnection : IClientConnection
     {
         private readonly WebSocket _webSocket;
+        private readonly HttpContext _context;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebSocketClientConnection"/> class.
+        /// Initializes a new instance of the <see cref="WebSocketClientConnection" /> class.
         /// </summary>
         /// <param name="webSocket">The web socket.</param>
-        public WebSocketClientConnection(WebSocket webSocket)
+        /// <param name="context">The context.</param>
+        public WebSocketClientConnection(WebSocket webSocket, HttpContext context)
         {
             _webSocket = Validation.ThrowIfNullOrReturn(webSocket, nameof(WebSocket));
+            _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
         }
 
         /// <summary>
@@ -61,11 +66,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
         {
             try
             {
-                var result = await _webSocket.ReceiveAsync(buffer, cancelToken)
-                    .ContinueWith(result =>
-                    new WebSocketReceiveResultProxy(result.Result) as IClientConnectionReceiveResult);
-
-                return result;
+                var result = await _webSocket.ReceiveAsync(buffer, cancelToken);
+                return new WebSocketReceiveResultProxy(result);
             }
             catch (WebSocketException webSocketException)
             {
@@ -119,5 +121,18 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
         /// </summary>
         /// <value>The current state of this connection.</value>
         public ClientConnectionState State => _webSocket.State.ToClientState();
+
+        /// <summary>
+        /// Gets the configured service provider for the client connection.
+        /// </summary>
+        /// <value>The service provider.</value>
+        ///
+        public IServiceProvider ServiceProvider => _context.RequestServices;
+
+        /// <summary>
+        /// Gets the authenticated user on the client connection, if any.
+        /// </summary>
+        /// <value>The user.</value>
+        public ClaimsPrincipal User => _context.User;
     }
 }

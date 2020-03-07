@@ -92,9 +92,8 @@ namespace GraphQL.Subscriptions.Tests
             Assert.IsNotNull(extension.RequiredServices.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
             Assert.IsNotNull(extension.RequiredServices.SingleOrDefault(x => x.ServiceType == typeof(ApolloMessageConverterFactory)));
 
-            Assert.AreEqual(2, extension.OptionalServices.Count);
+            Assert.AreEqual(1, extension.OptionalServices.Count);
             Assert.IsNotNull(extension.OptionalServices.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServer<GraphSchema>)));
-            Assert.IsNotNull(extension.OptionalServices.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionClientFactory<GraphSchema>)));
 
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
 

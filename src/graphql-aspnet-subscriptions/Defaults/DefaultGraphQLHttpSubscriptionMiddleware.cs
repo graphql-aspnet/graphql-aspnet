@@ -29,21 +29,30 @@ namespace GraphQL.AspNet.Defaults
     public class DefaultGraphQLHttpSubscriptionMiddleware<TSchema>
         where TSchema : class, ISchema
     {
+        private readonly ISubscriptionServer<TSchema> _subscriptionServer;
+        private readonly RequestDelegate _next;
+        private readonly SubscriptionServerOptions<TSchema> _options;
+        private readonly string _routePath;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> class.
         /// </summary>
         /// <param name="next">The delegate pointing to the next middleware component
         /// in the pipeline.</param>
+        /// <param name="subscriptionServer">The subscription server configured for
+        /// this web host.</param>
         /// <param name="options">The options.</param>
         /// <param name="routePath">The route path where subscriptions should be pointed.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
+            ISubscriptionServer<TSchema> subscriptionServer,
             SubscriptionServerOptions<TSchema> options,
             string routePath)
         {
-            this.Next = next;
-            this.RoutePath = Validation.ThrowIfNullWhiteSpaceOrReturn(routePath, nameof(routePath));
-            this.Options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _next = next;
+            _routePath = Validation.ThrowIfNullWhiteSpaceOrReturn(routePath, nameof(routePath));
+            _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _subscriptionServer = Validation.ThrowIfNullOrReturn(subscriptionServer, nameof(subscriptionServer));
         }
 
         /// <summary>
@@ -57,7 +66,7 @@ namespace GraphQL.AspNet.Defaults
             // immediate bypass if not aimed at this schema subscription route
             var isListeningToPath = string.Compare(
                 context.Request.Path,
-                this.RoutePath,
+                _routePath,
                 CultureInfo.InvariantCulture,
                 CompareOptions.OrdinalIgnoreCase) == 0;
 
@@ -65,45 +74,29 @@ namespace GraphQL.AspNet.Defaults
             {
                 try
                 {
-                    var webSocket = await context.WebSockets.AcceptWebSocketAsync(SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL);
+                    var webSocket = await context.WebSockets.AcceptWebSocketAsync(
+                        SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL);
 
-                    var subscriptionFactory = context.RequestServices.GetRequiredService(typeof(ISubscriptionClientFactory<TSchema>))
-                        as ISubscriptionClientFactory<TSchema>;
+                    var socketProxy = new WebSocketClientConnection(webSocket, context);
 
-                    var socketProxy = new WebSocketClientConnection(webSocket);
-
-                    var subscriptionClient = subscriptionFactory.CreateClientProxy(context, socketProxy, this.Options);
+                    var subscriptionClient = await _subscriptionServer.RegisterNewClient(socketProxy);
 
                     // hold the client connection until its released
                     await subscriptionClient.StartConnection();
                 }
                 catch (Exception ex)
                 {
-                    string str = "";
+                    // TODO: LOG Exception
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    await context.Response.WriteAsync(
+                        "An unexpected error occured attempting to configure the web socket connection. " +
+                        "Check the server event logs for further details.");
                 }
 
                 return;
             }
 
-            await this.Next(context);
+            await _next(context);
         }
-
-        /// <summary>
-        /// Gets the delegate representing the next middleware component to invoke in the pipeline.
-        /// </summary>
-        /// <value>The next.</value>
-        protected RequestDelegate Next { get; }
-
-        /// <summary>
-        /// Gets the subscription options configured for the target schema.
-        /// </summary>
-        /// <value>The options.</value>
-        protected SubscriptionServerOptions<TSchema> Options { get; }
-
-        /// <summary>
-        /// Gets the fully qualified internal path representing the route to the subscription server. (e.g. '/graphql/subscriptions' ).
-        /// </summary>
-        /// <value>The route path.</value>
-        protected string RoutePath { get; }
     }
 }

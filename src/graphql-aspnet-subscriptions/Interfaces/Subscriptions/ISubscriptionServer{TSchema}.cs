@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -24,25 +25,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Raised when the supervisor begins monitoring a new subscription.
-        /// </summary>
-        event EventHandler<ClientSubscriptionEventArgs<TSchema>> SubscriptionRegistered;
-
-        /// <summary>
-        /// Raised when the supervisor stops monitoring a new subscription.
-        /// </summary>
-        event EventHandler<ClientSubscriptionEventArgs<TSchema>> SubscriptionRemoved;
-
-        /// <summary>
         /// Register a newly connected subscription with the server so that it can start sending messages.
         /// </summary>
-        /// <param name="client">The client.</param>
-        void RegisterNewClient(ISubscriptionClientProxy client);
-
-        /// <summary>
-        /// Gets the collection of subscriptions this server is managing.
-        /// </summary>
-        /// <value>The subscriptions.</value>
-        ClientSubscriptionCollection<TSchema> Subscriptions { get; }
+        /// <param name="client">The abstracted client connection to host in this server instance.</param>
+        /// <returns>Task.</returns>
+        Task<ISubscriptionClientProxy> RegisterNewClient(IClientConnection client);
     }
 }

@@ -7,7 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
 {
     using System;
@@ -19,18 +18,16 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
     /// A receive result returned by a client when the recieve message fails to complete
     /// successfully or as intended, likely due to an exception.
     /// </summary>
-    public class ClientConnectionFailureResult : IClientConnectionReceiveResult
+    public class WebSocketFailureResult : IClientConnectionReceiveResult
     {
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientConnectionFailureResult" /> class.
+        /// Initializes a new instance of the <see cref="WebSocketFailureResult"/> class.
         /// </summary>
-        /// <param name="exception">The exception  thrown to cause the failure, if any.</param>
-        /// <param name="closeMessage">The close status message to apply to the result.</param>
-        public ClientConnectionFailureResult(Exception exception = null, string closeMessage = null)
+        /// <param name="exception">The exception.</param>
+        public WebSocketFailureResult(WebSocketException exception)
         {
             this.Exception = exception;
-            this.CloseStatusDescription = closeMessage?.Trim();
+            this.CloseStatusDescription = exception.Message;
             this.CloseStatus = ClientConnectionCloseStatus.InternalServerError;
             this.Count = 0;
             this.EndOfMessage = true;
@@ -72,6 +69,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
         /// Gets the exception thrown that caused this failure result, if any.
         /// </summary>
         /// <value>The exception.</value>
-        public Exception Exception { get; }
+        public WebSocketException Exception { get; }
     }
 }

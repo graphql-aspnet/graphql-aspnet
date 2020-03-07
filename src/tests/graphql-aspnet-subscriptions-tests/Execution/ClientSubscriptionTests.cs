@@ -44,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var field = queryPlan.Operations.Values.First().FieldContexts[0].Field;
             var name = field.GetType().FullName;
 
-            (var socketClient, var testClient) = testServer.CreateSubscriptionClient();
+            (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
                 testClient,

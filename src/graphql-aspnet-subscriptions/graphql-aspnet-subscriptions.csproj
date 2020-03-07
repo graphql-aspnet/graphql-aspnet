@@ -59,6 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\TypeSystem\" />
+    <Folder Include="Interfaces\Schema\TypeSystem\" />
   </ItemGroup>
 </Project>

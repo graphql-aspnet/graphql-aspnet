@@ -24,14 +24,21 @@ namespace GraphQL.AspNet.StarWarsAPI30
     {
         private const string ALL_ORIGINS_POLICY = "_allOrigins";
 
+        private readonly static TimeSpan SOCKET_CONNECTION_KEEPALIVE = TimeSpan.FromSeconds(10);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// Configures the service collection to be built for this application instance.
+        /// </summary>
+        /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<StarWarsDataRepository>();
@@ -76,39 +83,55 @@ namespace GraphQL.AspNet.StarWarsAPI30
                  // this route path is set by default
                  // it is listed here just as a matter of example
                  options.Route = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
+
+                 // for some web based graphql tools such as graphiql and graphql-playground
+                 // the default keep-alive timeout of 2 minutes is too long.
+                 //
+                 // still others (like graphql-playground running in electron) do not respond/configure
+                 // for socket-level ping/pong frames to allow for socket-level keep alives
+                 //
+                 // here we set this demo project websocket keep-alive (at the apollo server level)
+                 // to be below all those thresholds to ensure a hassle free experience.
+                 // In practice, you should configure your server (both apollo keep alives and socket keep alives)
+                 // with an interval that is compatiable with your client side environment.
+                 options.KeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
              });
 
             services.AddControllers();
             services.AddWebSockets((options) =>
             {
-                options.AllowedOrigins.Add("http://localhost:5000/");
+                // add some common origins of various tools that may be
+                // used for running this demo
+                // do not add these in a production app
+                options.AllowedOrigins.Add("http://localhost:5000");
+                options.AllowedOrigins.Add("http://localhost:4000");
+                options.AllowedOrigins.Add("http://localhost:3000");
+
+                // sent by some electron-based graphql tools
+                options.AllowedOrigins.Add("file://");
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app">The asp.net application builder.</param>
+        /// <param name="env">The configured host environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
             app.AddStarWarsStartedMessageToConsole();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
 
             app.UseRouting();
 
             app.UseCors(ALL_ORIGINS_POLICY);
 
             app.UseAuthorization();
-            
+
             // enable web sockets on this server instance
-            // this must be done before graphql if subscriptions are enabled for any
+            // this must be done before a call to 'UseGraphQL' if subscriptions are enabled for any
             // schema otherwise the subscriptions may not register correctly
-            app.UseWebSockets(new WebSocketOptions()
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(120),
-            });
+            app.UseWebSockets();
 
             app.UseEndpoints(endpoints =>
             {
@@ -122,5 +145,11 @@ namespace GraphQL.AspNet.StarWarsAPI30
             // ************************************************************
             app.UseGraphQL();
         }
+
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>The configuration.</value>
+        public IConfiguration Configuration { get; }
     }
 }

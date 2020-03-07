@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 {
     using System;
+    using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -106,10 +107,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <typeparam name="TSchema">The type of the schema to create the client for.</typeparam>
         /// <param name="server">The server.</param>
         /// <returns>GraphQL.AspNet.Interfaces.Subscriptions.ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public static (MockClientConnection, ISubscriptionClientProxy<TSchema>) CreateSubscriptionClient<TSchema>(this TestServer<TSchema> server)
+        public static async Task<(MockClientConnection, ISubscriptionClientProxy<TSchema>)> CreateSubscriptionClient<TSchema>(this TestServer<TSchema> server)
                     where TSchema : class, ISchema
         {
-            var factory = server.ServiceProvider.GetService<ISubscriptionClientFactory<TSchema>>();
+            var subServer = server.ServiceProvider.GetService<ISubscriptionServer<TSchema>>();
             var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
             var context = new DefaultHttpContext();
@@ -118,7 +119,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             context.User = server.User;
 
             var connection = server.CreateClient();
-            return (connection, factory.CreateClientProxy(context, connection, options));
+            var subClient = await subServer.RegisterNewClient(connection) as ISubscriptionClientProxy<TSchema>;
+            return (connection, subClient);
         }
 
         /// <summary>

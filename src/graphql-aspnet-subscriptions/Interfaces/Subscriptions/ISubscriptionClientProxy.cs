@@ -13,7 +13,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// An interface representing an established connection to a client that can process
@@ -30,6 +32,18 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task StartConnection();
 
         /// <summary>
+        /// Instructs the client to process the new event. If this is an event the client subscribes
+        /// to it should process the data appropriately and send down any data to its underlying connection
+        /// as necessary.
+        /// </summary>
+        /// <param name="field">The unique field corrisponding to the event that was raised
+        /// by the publisher.</param>
+        /// <param name="sourceData">The source data sent from the publisher when the event was raised.</param>
+        /// <param name="cancelToken">A cancellation token.</param>
+        /// <returns>Task.</returns>
+        Task ReceiveEvent(GraphFieldPath field, object sourceData, CancellationToken cancelToken = default);
+
+        /// <summary>
         /// Instructs the client proxy to close its connection from the server side, no additional messages will be sent to it.
         /// </summary>
         /// <param name="reason">The status reason why the connection is being closed. This may be
@@ -42,6 +56,12 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
             ClientConnectionCloseStatus reason,
             string message = null,
             CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Gets the unique id assigned to this client instance.
+        /// </summary>
+        /// <value>The identifier.</value>
+        string Id { get; }
 
         /// <summary>
         /// Gets the service provider instance assigned to this client for resolving object requests.

@@ -23,42 +23,11 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var client = new Mock<ISubscriptionClientProxy>().Object;
             var idSet = new ClientTrackedMessageIdSet();
 
-            var result = idSet.ReserveMessageId(client, "abc123");
+            var result = idSet.ReserveMessageId("abc123");
             Assert.IsTrue(result);
 
-            result = idSet.ReserveMessageId(client, "abc123");
+            result = idSet.ReserveMessageId("abc123");
             Assert.IsFalse(result);
-        }
-
-        [Test]
-        public void SameIdCanBeAddedToMultipleClients()
-        {
-            var clientA = new Mock<ISubscriptionClientProxy>().Object;
-            var clientB = new Mock<ISubscriptionClientProxy>().Object;
-            var idSet = new ClientTrackedMessageIdSet();
-
-            var result = idSet.ReserveMessageId(clientA, "abc123");
-            Assert.IsTrue(result);
-
-            result = idSet.ReserveMessageId(clientB, "abc123");
-            Assert.IsTrue(result);
-
-            Assert.IsTrue(idSet.Contains(clientA, "abc123"));
-            Assert.IsTrue(idSet.Contains(clientB, "abc123"));
-        }
-
-        [Test]
-        public void Contains_ClientWithoutReservedIdReturnsFalse()
-        {
-            var clientA = new Mock<ISubscriptionClientProxy>().Object;
-            var clientB = new Mock<ISubscriptionClientProxy>().Object;
-            var idSet = new ClientTrackedMessageIdSet();
-
-            var result = idSet.ReserveMessageId(clientA, "abc123");
-            Assert.IsTrue(result);
-
-            Assert.IsTrue(idSet.Contains(clientA, "abc123"));
-            Assert.IsFalse(idSet.Contains(clientB, "abc123"));
         }
 
         [Test]
@@ -67,10 +36,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var client = new Mock<ISubscriptionClientProxy>().Object;
             var idSet = new ClientTrackedMessageIdSet();
 
-            var result = idSet.ReserveMessageId(client, "abc123");
+            var result = idSet.ReserveMessageId("abc123");
 
             Assert.IsTrue(result);
-            Assert.IsTrue(idSet.Contains(client, "abc123"));
+            Assert.IsTrue(idSet.Contains("abc123"));
         }
 
         [Test]
@@ -79,28 +48,28 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var client = new Mock<ISubscriptionClientProxy>().Object;
             var idSet = new ClientTrackedMessageIdSet();
 
-            var result = idSet.ReserveMessageId(client, "abc123");
+            var result = idSet.ReserveMessageId("abc123");
             Assert.IsTrue(result);
 
-            idSet.ReleaseMessageId(client, "abc123");
-            result = idSet.ReserveMessageId(client, "abc123");
+            idSet.ReleaseMessageId("abc123");
+            result = idSet.ReserveMessageId("abc123");
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void ReleasedClientDropsAllIds()
+        public void ClearDropsAllIds()
         {
             var client = new Mock<ISubscriptionClientProxy>().Object;
             var idSet = new ClientTrackedMessageIdSet();
 
-            var result = idSet.ReserveMessageId(client, "abc123");
+            var result = idSet.ReserveMessageId("abc123");
             Assert.IsTrue(result);
-            result = idSet.ReserveMessageId(client, "abc1234");
+            result = idSet.ReserveMessageId("abc1234");
             Assert.IsTrue(result);
 
-            idSet.ReleaseClient(client);
-            Assert.IsFalse(idSet.Contains(client, "abc123"));
-            Assert.IsFalse(idSet.Contains(client, "abc1234"));
+            idSet.Clear();
+            Assert.IsFalse(idSet.Contains("abc123"));
+            Assert.IsFalse(idSet.Contains("abc1234"));
         }
     }
 }

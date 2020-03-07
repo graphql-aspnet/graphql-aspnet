@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
@@ -66,5 +67,18 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <value>The current state of this connection.</value>
         ClientConnectionState State { get; }
+
+        /// <summary>
+        /// Gets the configured service provider for the client connection.
+        /// </summary>
+        /// <value>The service provider.</value>
+        ///
+        IServiceProvider ServiceProvider { get; }
+
+        /// <summary>
+        /// Gets the authenticated user on the client connection, if any.
+        /// </summary>
+        /// <value>The user.</value>
+        ClaimsPrincipal User { get; }
     }
 }

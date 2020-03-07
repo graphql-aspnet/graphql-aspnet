@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
@@ -20,6 +21,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using Moq;
 
     /// <summary>
     /// A fake client connection to mock how a websocket would send and recieve data
@@ -39,10 +41,14 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         private bool _connectionClosed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MockClientConnection"/> class.
+        /// Initializes a new instance of the <see cref="MockClientConnection" /> class.
         /// </summary>
-        public MockClientConnection()
+        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="user">The user.</param>
+        public MockClientConnection(IServiceProvider serviceProvider = null, ClaimsPrincipal user = null)
         {
+            this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
+            this.User = user;
             _incomingMessageQueue = new Queue<MockClientMessage>();
 
             _outgoingMessageQueue = new Queue<MockClientMessage>();
@@ -230,5 +236,17 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value>The response message count.</value>
         public int ResponseMessageCount => _outgoingMessageQueue.Count;
+
+        /// <summary>
+        /// Gets the configured service provider for the client connection.
+        /// </summary>
+        /// <value>The service provider.</value>
+        public IServiceProvider ServiceProvider { get; }
+
+        /// <summary>
+        /// Gets the authenticated user on the client connection, if any.
+        /// </summary>
+        /// <value>The user.</value>
+        public ClaimsPrincipal User { get; }
     }
 }

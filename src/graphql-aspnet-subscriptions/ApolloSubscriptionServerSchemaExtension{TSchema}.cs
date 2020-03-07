@@ -96,12 +96,6 @@ namespace GraphQL.AspNet
                     typeof(ApolloSubscriptionServer<TSchema>),
                     ServiceLifetime.Singleton));
 
-            this.OptionalServices.Add(
-                  new ServiceDescriptor(
-                      typeof(ISubscriptionClientFactory<TSchema>),
-                      typeof(ApolloClientFactory<TSchema>),
-                      ServiceLifetime.Singleton));
-
             if (this.SubscriptionOptions.HttpMiddlewareComponentType != null)
                 this.EnsureMiddlewareTypeOrThrow(this.SubscriptionOptions.HttpMiddlewareComponentType);
         }
@@ -124,13 +118,15 @@ namespace GraphQL.AspNet
                 SubscriptionConstants.Routing.SCHEMA_ROUTE_KEY,
                 _primaryOptions.QueryHandler.Route);
 
+                var server = serviceProvider.GetRequiredService<ISubscriptionServer<TSchema>>();
+
                 var middlewareType = this.SubscriptionOptions.HttpMiddlewareComponentType
                     ?? typeof(DefaultGraphQLHttpSubscriptionMiddleware<TSchema>);
 
                 this.EnsureMiddlewareTypeOrThrow(middlewareType);
 
                 // register the middleware component
-                app.UseMiddleware(middlewareType, this.SubscriptionOptions, routePath);
+                app.UseMiddleware(middlewareType, server, this.SubscriptionOptions, routePath);
                 app.ApplicationServices.WriteLogEntry(
                       (l) => l.SchemaSubscriptionRouteRegistered<TSchema>(
                       routePath));
@@ -148,6 +144,7 @@ namespace GraphQL.AspNet
                 new[]
                 {
                     typeof(RequestDelegate),
+                    typeof(ISubscriptionServer<TSchema>),
                     typeof(SubscriptionServerOptions<TSchema>),
                     typeof(string),
                 });
