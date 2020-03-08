@@ -28,14 +28,12 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution;
-    using GraphQL.AspNet.Middleware.SubscriptionQueryExecution;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.NodeMakers;
     using GraphQL.AspNet.Schemas;

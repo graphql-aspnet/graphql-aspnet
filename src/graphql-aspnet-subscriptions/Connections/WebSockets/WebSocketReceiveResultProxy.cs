@@ -7,10 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
+namespace GraphQL.AspNet.Connections.WebSockets
 {
     using System.Net.WebSockets;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>

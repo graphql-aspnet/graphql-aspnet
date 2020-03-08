@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.QueryExecution.Components
+namespace GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution.Components
 {
     using System.Collections.Generic;
     using System.Threading;

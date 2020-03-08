@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;

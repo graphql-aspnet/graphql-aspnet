@@ -7,10 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.SubscriptionQueryExecution
+namespace GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution
 {
-    using System;
-    using System.Security.Claims;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;

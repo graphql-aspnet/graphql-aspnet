@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Framework.Clients
 {
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Apollo
     using System.Threading;
     using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>

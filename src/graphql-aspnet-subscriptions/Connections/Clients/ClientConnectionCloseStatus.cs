@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
+namespace GraphQL.AspNet.Connections.Clients
 {
     /// <summary>
     /// Possible reasons why the client connection was closed.

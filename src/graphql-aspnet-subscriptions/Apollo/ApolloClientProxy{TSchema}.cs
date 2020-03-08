@@ -28,16 +28,16 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
-    using GraphQL.AspNet.Middleware.SubscriptionQueryExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -56,6 +56,7 @@ namespace GraphQL.AspNet.Apollo
         private readonly ClientTrackedMessageIdSet _reservedMessageIds;
         private IClientConnection _connection;
         private ApolloSubscriptionCollection<TSchema> _subscriptions;
+        private bool _connectionClosedForever = false;
 
         /// <summary>
         /// Occurs just before the underlying websocket is opened. Once completed messages
@@ -67,6 +68,13 @@ namespace GraphQL.AspNet.Apollo
         /// Raised by a client just after the underlying websocket is shut down. No further messages will be sent.
         /// </summary>
         public event EventHandler ConnectionClosed;
+
+        /// <summary>
+        /// Raised by the client as it begins to shut down. The underlying websocket may
+        /// already be closed if the close is client initiated. This event occurs before
+        /// any subscriptions are stopped or removed.
+        /// </summary>
+        public event EventHandler ConnectionClosing;
 
         /// <summary>
         /// Raised by a client when it starts monitoring a subscription for a given route.
@@ -139,6 +147,7 @@ namespace GraphQL.AspNet.Apollo
             _subscriptions.Clear();
             _reservedMessageIds.Clear();
             this.ConnectionClosed?.Invoke(this, new EventArgs());
+            _connectionClosedForever = true;
         }
 
         /// <summary>
@@ -149,6 +158,13 @@ namespace GraphQL.AspNet.Apollo
         /// <returns>Task.</returns>
         public async Task StartConnection()
         {
+            if (_connection == null || _connectionClosedForever)
+            {
+                throw new InvalidOperationException(
+                    $"Unable to start this client proxy (id: {this.Id}). It has already " +
+                    "been previously closed and cannot be reopened.");
+            }
+
             this.ConnectionOpening?.Invoke(this, new EventArgs());
 
             // register the socket with an "apollo level" keep alive monitor
@@ -177,11 +193,13 @@ namespace GraphQL.AspNet.Apollo
                     (result, bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
                 }
 
+                this.ConnectionClosing?.Invoke(this, new EventArgs());
+
                 // shut down the socket and the apollo-protocol-specific keep alive
                 keepAliveTimer?.Stop();
                 keepAliveTimer = null;
 
-                if (_connection.State == ClientConnectionState.Open)
+                if (this.State == ClientConnectionState.Open)
                 {
                     await this.CloseConnection(
                         result.CloseStatus.Value,
@@ -285,7 +303,7 @@ namespace GraphQL.AspNet.Apollo
 
             // graphql is defined to communcate in UTF-8, serialize the result to that
             var bytes = JsonSerializer.SerializeToUtf8Bytes(message, asType, options);
-            if (_connection.State == ClientConnectionState.Open)
+            if (this.State == ClientConnectionState.Open)
             {
                 return _connection.SendAsync(
                     new ArraySegment<byte>(bytes, 0, bytes.Length),
@@ -596,5 +614,11 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <value>The identifier.</value>
         public string Id { get; } = Guid.NewGuid().ToString();
+
+        /// <summary>
+        /// Gets an enumeration of all the currently tracked subscriptions for this client.
+        /// </summary>
+        /// <value>The subscriptions.</value>
+        public IEnumerable<ISubscription<TSchema>> Subscriptions => _subscriptions;
     }
 }

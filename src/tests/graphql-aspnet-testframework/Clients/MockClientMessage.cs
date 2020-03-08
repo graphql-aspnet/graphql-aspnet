@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 {
     using System;
     using System.Text;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
 
     /// <summary>
     /// A fake message mimicing what would be generating when

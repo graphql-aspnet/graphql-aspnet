@@ -10,7 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System.Net.WebSockets;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
     using NUnit.Framework;
 
     [TestFixture]

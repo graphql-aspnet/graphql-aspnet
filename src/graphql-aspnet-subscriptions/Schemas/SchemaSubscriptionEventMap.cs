@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
 

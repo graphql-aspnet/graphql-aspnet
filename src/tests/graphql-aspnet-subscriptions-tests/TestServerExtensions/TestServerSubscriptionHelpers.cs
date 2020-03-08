@@ -18,6 +18,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
@@ -98,7 +99,9 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         public static MockClientConnection CreateClient<TSchema>(this TestServer<TSchema> server)
             where TSchema : class, ISchema
         {
-            return new MockClientConnection();
+            return new MockClientConnection(
+                server.ServiceProvider.CreateScope().ServiceProvider,
+                server.User);
         }
 
         /// <summary>

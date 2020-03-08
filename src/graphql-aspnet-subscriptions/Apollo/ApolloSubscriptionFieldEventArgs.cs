@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Apollo
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
 

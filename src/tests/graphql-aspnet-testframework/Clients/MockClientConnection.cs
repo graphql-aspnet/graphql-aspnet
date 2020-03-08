@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using Moq;
 
@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         // a queue of message sent by the server to the client
         private readonly Queue<MockClientMessage> _outgoingMessageQueue;
+        private readonly bool _autoCloseOnReadCloseMessage;
         private MockClientMessage _currentMessage;
 
         private bool _connectionClosed;
@@ -45,7 +46,12 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="user">The user.</param>
-        public MockClientConnection(IServiceProvider serviceProvider = null, ClaimsPrincipal user = null)
+        /// <param name="autoCloseOnReadCloseMessage">if set to <c>true</c> when the connection
+        /// reads a close message, it will shut it self down.</param>
+        public MockClientConnection(
+            IServiceProvider serviceProvider = null,
+            ClaimsPrincipal user = null,
+            bool autoCloseOnReadCloseMessage = true)
         {
             this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
             this.User = user;
@@ -53,6 +59,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
             _outgoingMessageQueue = new Queue<MockClientMessage>();
             this.State = ClientConnectionState.Open;
+
+            _autoCloseOnReadCloseMessage = autoCloseOnReadCloseMessage;
         }
 
         /// <summary>
@@ -180,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                 !hasRemainingBytes ? _currentMessage.CloseStatusDescription : null);
 
             _connectionClosed = !hasRemainingBytes && result.CloseStatus != null;
-            if (_connectionClosed)
+            if (_connectionClosed && _autoCloseOnReadCloseMessage)
             {
                 await this
                     .CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, cancelToken)
@@ -236,6 +244,13 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value>The response message count.</value>
         public int ResponseMessageCount => _outgoingMessageQueue.Count;
+
+        /// <summary>
+        /// Gets the number of simulated messages still on the connection
+        /// that have yet to be consumed.
+        /// </summary>
+        /// <value>The queued message count.</value>
+        public int QueuedMessageCount => _incomingMessageQueue.Count;
 
         /// <summary>
         /// Gets the configured service provider for the client connection.

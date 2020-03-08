@@ -7,17 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions.ApolloMessaging
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Apollo.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using NUnit.Framework;
 
     public class ApolloResponseMessageConverter : JsonConverter<ApolloResponseMessage>
     {

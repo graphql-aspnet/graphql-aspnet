@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>

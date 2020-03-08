@@ -23,7 +23,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Middleware.SubscriptionCreation;
+    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;

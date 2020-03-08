@@ -45,6 +45,7 @@ namespace GraphQL.Subscriptions.Tests
         {
             public ValidSubscriptionMiddlewareTester(
                 RequestDelegate next,
+                ISubscriptionServer<GraphSchema> server,
                 SubscriptionServerOptions<GraphSchema> options,
                 string route)
             {

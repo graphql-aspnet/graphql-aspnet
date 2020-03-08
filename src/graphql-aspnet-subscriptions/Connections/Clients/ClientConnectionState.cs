@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Execution.Subscriptions.ClientConnections
+namespace GraphQL.AspNet.Connections.Clients
 {
     /// <summary>
     /// A list of possible states of any given client connection.

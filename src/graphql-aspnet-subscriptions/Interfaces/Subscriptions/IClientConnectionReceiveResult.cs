@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
 
     /// <summary>
     /// An instance of this class represents the result of performing a single ReceiveAsync

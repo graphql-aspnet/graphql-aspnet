@@ -186,5 +186,11 @@ namespace GraphQL.AspNet.Apollo
         {
             return this.GetEnumerator();
         }
+
+        /// <summary>
+        /// Gets the total count of registered subscriptions.
+        /// </summary>
+        /// <value>The count.</value>
+        public int Count => _subsById.Count;
     }
 }

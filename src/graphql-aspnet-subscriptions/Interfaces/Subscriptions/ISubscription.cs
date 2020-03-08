@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;

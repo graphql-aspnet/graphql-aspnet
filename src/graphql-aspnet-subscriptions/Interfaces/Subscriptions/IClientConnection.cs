@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
 
     /// <summary>
     /// An decorator interface exposing the needed communication end points of some underlying

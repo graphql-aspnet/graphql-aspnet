@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Framework.Clients
 {
-    using GraphQL.AspNet.Execution.Subscriptions.ClientConnections;
+    using GraphQL.AspNet.Connections.Clients;
 
     /// <summary>
     /// A messag that indicates the remote client has/is closing hte connection.

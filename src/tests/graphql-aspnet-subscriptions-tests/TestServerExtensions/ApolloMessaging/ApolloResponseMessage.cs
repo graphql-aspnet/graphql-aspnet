@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions.ApolloMessaging
 {
     using GraphQL.AspNet.Apollo.Messages;
     using GraphQL.AspNet.Apollo.Messages.Common;
