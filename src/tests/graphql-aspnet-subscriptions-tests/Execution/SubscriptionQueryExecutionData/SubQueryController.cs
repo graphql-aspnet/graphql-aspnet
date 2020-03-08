@@ -21,5 +21,15 @@ namespace GraphQL.Subscriptions.Tests.Execution.SubscriptionQueryExecutionData
         {
             return source;
         }
+
+        [Query]
+        public TwoPropertyObject QueryRetrieveObject()
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = "value1",
+                Property2 = 5,
+            };
+        }
     }
 }

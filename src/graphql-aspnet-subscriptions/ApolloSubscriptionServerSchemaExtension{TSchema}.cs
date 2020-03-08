@@ -18,7 +18,6 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -75,7 +74,7 @@ namespace GraphQL.AspNet
 
             // wipe out the current execution pipeline and rebuild with subscription creation middleware injected
             _schemaBuilder.QueryExecutionPipeline.Clear();
-            var subscriptionQueryExecutionHelper = new ApolloQueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
+            var subscriptionQueryExecutionHelper = new SubscriptionExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
             subscriptionQueryExecutionHelper.AddDefaultMiddlewareComponents();
 
             // the primary subscription options for the schema

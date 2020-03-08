@@ -16,15 +16,20 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Apollo;
+    using GraphQL.AspNet.Apollo.Messages;
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Apollo.Messages.Converters;
+    using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
@@ -217,6 +222,118 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         }
 
         [Test]
+        public async Task StartSubscription_ButMessageIsAQuery_YieldsDataMessage()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+
+            // use start message to send a query, not a subscription request
+            // client should respond with expected data
+            // then a complete
+            var startMessage = new ApolloClientStartMessage()
+            {
+                Id = "abc",
+                Payload = new GraphQueryData()
+                {
+                    Query = "query {  fastQuery { property1 } }",
+                },
+            };
+
+            await apolloClient.DispatchMessage(startMessage);
+            socketClient.AssertApolloResponse(
+                  ApolloMessageType.DATA,
+                  "abc",
+                  @"{
+                    ""data"" : {
+                        ""fastQuery"" : {
+                            ""property1"" : ""bob""
+                        }
+                    }
+                }");
+
+            socketClient.AssertApolloResponse(ApolloMessageType.COMPLETE);
+        }
+
+        [Test]
+        public async Task ReceiveEvent_OnStartedSubscription_YieldsDataMessage()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+
+            var startMessage = new ApolloClientStartMessage()
+            {
+                Id = "abc",
+                Payload = new GraphQueryData()
+                {
+                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                },
+            };
+
+            await apolloClient.DispatchMessage(startMessage);
+
+            var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject");
+            await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
+            {
+                Property1 = "value1",
+                Property2 = 33,
+            });
+
+            socketClient.AssertApolloResponse(
+                ApolloMessageType.DATA,
+                "abc",
+                @"{
+                    ""data"" : {
+                        ""apolloSubscription"" : {
+                            ""watchForPropObject"" : {
+                                ""property1"" : ""value1"",
+                            }
+                        }
+                    }
+                }");
+        }
+
+        [Test]
+        public async Task ReceiveEvent_WhenNoSubscriptions_YieldsNothing()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+
+            var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject");
+            await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
+            {
+                Property1 = "value1",
+                Property2 = 33,
+            });
+
+            Assert.AreEqual(0, socketClient.ResponseMessageCount);
+        }
+
+        [Test]
+        public async Task ReceiveEvent_OnNonSubscribedEventNAme_YieldsNothing()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+
+            // start a real subscription so the client is tracking one
+            var startMessage = new ApolloClientStartMessage()
+            {
+                Id = "abc",
+                Payload = new GraphQueryData()
+                {
+                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                },
+            };
+
+            await apolloClient.DispatchMessage(startMessage);
+
+            // fire an event against a route not tracked, ensure the client skips it.
+            var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject_NotReal");
+            await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
+            {
+                Property1 = "value1",
+                Property2 = 33,
+            });
+
+            Assert.AreEqual(0, socketClient.ResponseMessageCount);
+        }
+
+        [Test]
         public async Task StopSubscription_RemovesSubscriptionCorrectly()
         {
             (var socketClient, var apolloClient) = await this.CreateConnection();
@@ -270,6 +387,27 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             Assert.AreEqual(1, routesAdded);
             Assert.AreEqual(1, routesRemoved);
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
+        }
+
+        [Test]
+        public async Task StopSubscription_AgainstNonExistantId_YieldsError()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+
+            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new ApolloClientStopMessage()
+            {
+                Id = "abc123",
+            });
+
+            socketClient.QueueConnectionCloseMessage();
+
+            // execute the connection sequence
+            await apolloClient.StartConnection();
+
+            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_ACK);
+            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertApolloResponse(ApolloMessageType.ERROR);
         }
 
         [Test]
@@ -355,6 +493,26 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         }
 
         [Test]
+        public async Task SendConnectionTerminate_ClosesConnectionFromServer()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+
+            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new ApolloClientConnectionTerminateMessage());
+
+            var eventCalled = false;
+            void ConnectionClosed(object sender, EventArgs e)
+            {
+                eventCalled = true;
+            }
+
+            apolloClient.ConnectionClosed += ConnectionClosed;
+
+            await apolloClient.StartConnection();
+            Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
+        }
+
+        [Test]
         public async Task InvalidMessageType_ResultsInError()
         {
             (var socketClient, var apolloClient) = await this.CreateConnection();
@@ -372,6 +530,64 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.CONNECTION_ACK);
             socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.CONNECTION_KEEP_ALIVE);
             socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.ERROR);
+        }
+
+        [Test]
+        public async Task SendMessage_AsInterface_MessageIsDeliveredToConnection()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+            socketClient.QueueConnectionCloseMessage();
+
+            // execute the connection sequence
+            var client = apolloClient as ISubscriptionClientProxy;
+            await client.SendMessage(new ApolloServerAckOperationMessage());
+
+            Assert.AreEqual(1, socketClient.ResponseMessageCount);
+        }
+
+        [Test]
+        public async Task SendMessage_AsInterface_WithNonApolloMessage_ThrowsException()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+            socketClient.QueueConnectionCloseMessage();
+
+            // execute the connection sequence
+            var client = apolloClient as ISubscriptionClientProxy;
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await client.SendMessage(new object());
+            });
+        }
+
+        [Test]
+        public async Task ExecuteQueryThroughStartMessage_YieldsQueryResult()
+        {
+            (var socketClient, var apolloClient) = await this.CreateConnection();
+            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            {
+                Id = "abc",
+                Payload = new GraphQueryData()
+                {
+                    Query = "query { fastQuery { property1 } }",
+                },
+            });
+
+            socketClient.QueueConnectionCloseMessage();
+            await apolloClient.StartConnection();
+
+            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_ACK);
+            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertApolloResponse(
+                ApolloMessageType.DATA,
+                "abc",
+                @"{
+                    ""data"" : {
+                        ""fastQuery"" : {
+                            ""property1"" : ""bob""
+                        }
+                    }
+                }");
         }
     }
 }

@@ -10,35 +10,19 @@
 namespace GraphQL.AspNet.Apollo
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Diagnostics.Tracing;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Apollo.Messages;
-    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Apollo.Messages.Converters;
-    using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
-    using GraphQL.AspNet.Parsing.NodeMakers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A baseline component acts to centralize the subscription server operations, regardless of if
@@ -92,24 +76,34 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="eventData">The event data.</param>
         /// <returns>Task.</returns>
-        public async Task ReceiveEvent(SubscriptionEvent eventData)
+        Task ISubscriptionEventReceiver.ReceiveEvent(SubscriptionEvent eventData)
+        {
+            return this.ReceiveEvent(eventData);
+        }
+
+        /// <summary>
+        /// Dispatches the event to all registered clients wishing to receive it.
+        /// </summary>
+        /// <param name="eventData">The event data.</param>
+        /// <returns>The total number of clients notified of the event.</returns>
+        public async Task<int> ReceiveEvent(SubscriptionEvent eventData)
         {
             if (eventData == null)
-                return;
+                return 0;
 
             // grab a reference to all clients that need the event
             var clientList = new List<ISubscriptionClientProxy>();
             lock (_syncLock)
             {
                 if (!_subCountByName.TryGetValue(eventData.ToSubscriptionEventName(), out var clients))
-                    return;
+                    return 0;
 
                 clientList.AddRange(clients);
             }
 
             var eventRoute = _schema.RetrieveSubscriptionFieldPath(eventData.ToSubscriptionEventName());
             if (eventRoute == null)
-                return;
+                return 0;
 
             var cancelSource = new CancellationTokenSource();
 
@@ -127,6 +121,8 @@ namespace GraphQL.AspNet.Apollo
             // re-await any faulted tasks so tehy can unbuble any exceptions
             foreach (var task in allTasks.Where(x => x.IsFaulted))
                 await task.ConfigureAwait(false);
+
+            return allTasks.Count;
         }
 
         private async Task ExecuteSubscriptionEvent(

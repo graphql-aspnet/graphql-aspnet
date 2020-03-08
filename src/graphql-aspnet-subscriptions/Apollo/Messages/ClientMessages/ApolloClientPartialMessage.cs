@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Apollo.Messages.ClientMessages
                     };
 
                 case ApolloMessageType.CONNECTION_TERMINATE:
-                    return new ApolloClientConnectionInitMessage()
+                    return new ApolloClientConnectionTerminateMessage()
                     {
                         Id = this.Id,
                         Payload = null, // terminate message has no expected

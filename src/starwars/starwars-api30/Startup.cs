@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.StarWarsAPI30
     using Microsoft.AspNetCore.WebSockets;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
 
     public class Startup
     {

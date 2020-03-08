@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
@@ -28,7 +29,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <param name="eventListener">The event listener.</param>
         public InProcessSubscriptionPublisher(ISubscriptionEventListener eventListener = null)
         {
-            _eventListener = eventListener;
+            _eventListener = Validation.ThrowIfNullOrReturn(eventListener, nameof(eventListener));
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <returns>Task.</returns>
         public Task PublishEvent(SubscriptionEvent eventData)
         {
-            return _eventListener?.RaiseEvent(eventData);
+            return _eventListener.RaiseEvent(eventData);
         }
     }
 }

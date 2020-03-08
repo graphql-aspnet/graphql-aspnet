@@ -14,13 +14,6 @@ namespace GraphQL.AspNet.Apollo
     public static class ApolloConstants
     {
         /// <summary>
-        /// Initializes static members of the <see cref="ApolloConstants"/> class.
-        /// </summary>
-        static ApolloConstants()
-        {
-        }
-
-        /// <summary>
         /// A set of constants relating to Apollo server's messaging specifics.
         /// </summary>
         public static class Messaging

@@ -20,28 +20,28 @@ namespace GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution
     /// A wrapper on <see cref="GraphQueryExecutionContext"/> to provide property access
     /// to the meta data items added to the <see cref="GraphQueryExecutionContext"/> during execution.
     /// </summary>
-    public class ApolloQueryExecutionContext : GraphQueryExecutionContext
+    public class SubcriptionExecutionContext : GraphQueryExecutionContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloQueryExecutionContext" /> class.
+        /// Initializes a new instance of the <see cref="SubcriptionExecutionContext" /> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="request">The request to be processed through the query pipeline.</param>
-        /// <param name="clientProvidedId">The client provided identifier.</param>
+        /// <param name="subscriptionId">The unique id to assign to the created subscription, when one is made.</param>
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="items">A key/value pair collection for random access data.</param>
-        public ApolloQueryExecutionContext(
+        public SubcriptionExecutionContext(
             ISubscriptionClientProxy client,
             IGraphOperationRequest request,
-            string clientProvidedId,
+            string subscriptionId,
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
             : base(request, client?.ServiceProvider, client?.User, metrics, logger, items)
         {
             this.Client = Validation.ThrowIfNullOrReturn(client, nameof(client));
-            this.ClientProvidedId = Validation.ThrowIfNullWhiteSpaceOrReturn(clientProvidedId, nameof(clientProvidedId));
+            this.SubscriptionId = Validation.ThrowIfNullWhiteSpaceOrReturn(subscriptionId, nameof(subscriptionId));
         }
 
         /// <summary>
@@ -105,19 +105,19 @@ namespace GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution
         /// context was created.
         /// </summary>
         /// <value>The subscription identifier.</value>
-        public string ClientProvidedId
+        public string SubscriptionId
         {
             get
             {
-                if (this.Items.ContainsKey(SubscriptionConstants.Execution.CLIENT_PROVIDED_ID))
-                    return this.Items[SubscriptionConstants.Execution.CLIENT_PROVIDED_ID]?.ToString();
+                if (this.Items.ContainsKey(SubscriptionConstants.Execution.SUBSCRIPTION_ID))
+                    return this.Items[SubscriptionConstants.Execution.SUBSCRIPTION_ID]?.ToString();
 
                 return null;
             }
 
             private set
             {
-                this.Items[SubscriptionConstants.Execution.CLIENT_PROVIDED_ID] = value;
+                this.Items[SubscriptionConstants.Execution.SUBSCRIPTION_ID] = value;
             }
         }
     }

@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Controllers
             if (dataObject == null)
                 return;
 
-            eventName = Validation.ThrowIfNullEmptyOrReturn(eventName, nameof(eventName));
+            eventName = Validation.ThrowIfNullWhiteSpaceOrReturn(eventName, nameof(eventName));
 
             var itemsCollection = controller.Request.Items;
 
@@ -47,7 +47,8 @@ namespace GraphQL.AspNet.Controllers
             if (eventList == null)
             {
                 throw new GraphExecutionException(
-                    $"Unable to cast the context item '{SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY}' into " +
+                    $"Unable to cast the context item '{SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY}' " +
+                    $"(type: {listObject?.GetType().FriendlyName() ?? "unknown"}), into " +
                     $"{typeof(IList<SubscriptionEvent>).FriendlyName()}. Event '{eventName}' could not be published.",
                     controller.Request.Origin);
             }

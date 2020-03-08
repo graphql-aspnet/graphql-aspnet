@@ -14,13 +14,11 @@ namespace GraphQL.AspNet.Defaults
     using System.Net;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A default implementation of the logic for handling a subscription request over a websocket.

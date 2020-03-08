@@ -20,5 +20,15 @@ namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
         {
             return obj;
         }
+
+        [QueryRoot]
+        public TwoPropertyObject FastQuery()
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = "bob",
+                Property2 = 3,
+            };
+        }
     }
 }

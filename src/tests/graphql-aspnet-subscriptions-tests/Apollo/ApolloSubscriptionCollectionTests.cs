@@ -162,13 +162,27 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
             var field = new GraphFieldPath("[subscription]/field1");
-            var field2 = new GraphFieldPath("[subscription]/field2");
+            var field2 = new GraphFieldPath("[wrong]/field2");
             fakeSub.Setup(x => x.Id).Returns("abc123");
             fakeSub.Setup(x => x.Route).Returns(field);
 
             collection.Add(fakeSub.Object);
             Assert.AreEqual(0, collection.CountByRoute(field2));
-            Assert.AreEqual(1, collection.Count);
+        }
+
+        [Test]
+        public void AddNewSub_NotReturnedOnNullRoute()
+        {
+            var collection = new ApolloSubscriptionCollection<GraphSchema>();
+
+            var fakeSub = new Mock<ISubscription<GraphSchema>>();
+
+            var field = new GraphFieldPath("[subscription]/field1");
+            fakeSub.Setup(x => x.Id).Returns("abc123");
+            fakeSub.Setup(x => x.Route).Returns(field);
+
+            collection.Add(fakeSub.Object);
+            Assert.AreEqual(0, collection.CountByRoute(null));
         }
     }
 }

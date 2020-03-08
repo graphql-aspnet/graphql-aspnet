@@ -59,16 +59,16 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="connection">The connection.</param>
         /// <param name="type">The expected type of the message.</param>
         /// <param name="id">The expected identifier of the subscription that rendered the data.</param>
-        /// <param name="expectedJson">The expected payload of the message, converted to a json string.</param>
+        /// <param name="expectedPayloadJson">The expected payload of the message, converted to a json string.</param>
         /// <param name="dequeue">if set to <c>true</c> if the message should be removed from the queue.</param>
         internal static void AssertApolloResponse(
             this MockClientConnection connection,
             ApolloMessageType type,
             string id,
-            string expectedJson,
+            string expectedPayloadJson,
             bool dequeue = true)
         {
-            AssertApolloResponse(connection, type, id, true, expectedJson, true, dequeue);
+            AssertApolloResponse(connection, type, id, true, expectedPayloadJson, true, dequeue);
         }
 
         private static void AssertApolloResponse(
@@ -76,7 +76,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             ApolloMessageType type,
             string id,
             bool compareId,
-            string expectedJson,
+            string expectedPayloadJson,
             bool compareJson,
             bool dequeue = true)
         {
@@ -98,10 +98,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             if (compareJson)
             {
-                if (expectedJson == null)
+                if (expectedPayloadJson == null)
                     Assert.IsNull(convertedMessage.Payload);
                 else
-                    CommonAssertions.AreEqualJsonStrings(expectedJson, convertedMessage.Payload);
+                    CommonAssertions.AreEqualJsonStrings(expectedPayloadJson, convertedMessage.Payload);
             }
 
             if (compareId)

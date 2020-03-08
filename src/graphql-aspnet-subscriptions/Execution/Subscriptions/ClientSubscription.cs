@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             // just in case it wasn't found...
             // this is theoretically not possible but just in case
             // the user swaps out some DI components incorrectly or by mistake...
-            if (Field == null)
+            if (this.Field == null)
             {
                 this.Messages.Add(
                   GraphMessageSeverity.Critical,

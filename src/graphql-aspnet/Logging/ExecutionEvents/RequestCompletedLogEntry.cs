@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Middleware.QueryExecution;
 

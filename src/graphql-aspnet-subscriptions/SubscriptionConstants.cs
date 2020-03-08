@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet
 {
-    using GraphQL.AspNet.Apollo.Messages.Common;
+    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
@@ -74,15 +74,14 @@ namespace GraphQL.AspNet
 
             /// <summary>
             /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="GraphQueryExecutionContext"/>of the client provided identifier on the request
-            /// to uniquely identify this invocation instance. This value becomes the subscription id if/when
-            /// a subscription is generated.
+            /// <see cref="SubcriptionExecutionContext"/>of the subscription id on the request
+            /// to uniquely identify the created subscription if/when it is created.
             /// </summary>
-            public const string CLIENT_PROVIDED_ID = "GRAPHQL_SUBSCRIPTIONS_CLIENT_PROVIDED_ID";
+            public const string SUBSCRIPTION_ID = "GRAPHQL_SUBSCRIPTIONS_ID";
 
             /// <summary>
             /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="GraphQueryExecutionContext"/> to a reference of the client that is making the request.
+            /// <see cref="SubcriptionExecutionContext"/> to a reference of the client that is making the request.
             /// </summary>
             public const string CLIENT = "GRAPHQL_SUBSCRIPTIONS_CLIENT_REFERENCE";
         }

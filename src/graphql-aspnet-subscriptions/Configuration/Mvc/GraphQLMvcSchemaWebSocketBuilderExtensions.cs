@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution.Components;
-    using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// A set of extensions to configure web socket support at startup.
@@ -83,6 +83,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             schemaBuilder.AsServiceCollection().AddSingleton<SubscriptionEventQueue>();
             schemaBuilder.AsServiceCollection().AddHostedService<SubscriptionPublicationService>();
+            schemaBuilder.AsServiceCollection().TryAddSingleton<ISubscriptionEventListener, InProcessSubscriptionEventListener>();
 
             return schemaBuilder;
         }

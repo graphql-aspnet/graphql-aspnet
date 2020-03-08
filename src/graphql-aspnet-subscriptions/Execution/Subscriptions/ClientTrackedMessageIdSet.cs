@@ -9,9 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
-    using System.Collections.Concurrent;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// A thread safe container for tracking which connected clients have message Ids

@@ -10,9 +10,7 @@
 namespace GraphQL.AspNet.Apollo
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Linq;
     using System.Security.Claims;
     using System.Text;
@@ -26,7 +24,6 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution;
@@ -179,18 +176,23 @@ namespace GraphQL.AspNet.Apollo
                     keepAliveTimer.Start();
                 }
 
-                (var result, var bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
-
                 // message dispatch loop
-                while (!result.CloseStatus.HasValue && _connection.State == ClientConnectionState.Open)
-                {
-                    if (result.MessageType == ClientMessageType.Text)
-                    {
-                        var message = this.DeserializeMessage(bytes);
-                        await this.DispatchMessage(message);
-                    }
+                IClientConnectionReceiveResult result = null;
+                IEnumerable<byte> bytes = null;
 
-                    (result, bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
+                if (_connection.State == ClientConnectionState.Open)
+                {
+                    do
+                    {
+                        (result, bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
+
+                        if (result.MessageType == ClientMessageType.Text)
+                        {
+                            var message = this.DeserializeMessage(bytes);
+                            await this.DispatchMessage(message);
+                        }
+                    }
+                    while (!result.CloseStatus.HasValue && _connection.State == ClientConnectionState.Open);
                 }
 
                 this.ConnectionClosing?.Invoke(this, new EventArgs());
@@ -323,7 +325,7 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns>TaskMethodBuilder.</returns>
-        private Task DispatchMessage(ApolloMessage message)
+        internal Task DispatchMessage(ApolloMessage message)
         {
             if (message == null)
                 return Task.CompletedTask;
@@ -434,7 +436,7 @@ namespace GraphQL.AspNet.Apollo
             var runtime = this.ServiceProvider.GetRequiredService(typeof(IGraphQLRuntime<TSchema>)) as IGraphQLRuntime<TSchema>;
             var request = runtime.CreateRequest(message.Payload);
             var metricsPackage = _enableMetrics ? runtime.CreateMetricsPackage() : null;
-            var context = new ApolloQueryExecutionContext(
+            var context = new SubcriptionExecutionContext(
                 this,
                 request,
                 message.Id,

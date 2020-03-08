@@ -40,6 +40,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         private MockClientMessage _currentMessage;
 
         private bool _connectionClosed;
+        private bool _connectionClosedByServer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MockClientConnection" /> class.
@@ -143,6 +144,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
             _connectionClosed = true;
+            _connectionClosedByServer = true;
             this.CloseStatusDescription = statusDescription;
             this.CloseStatus = closeStatus;
             this.State = ClientConnectionState.Closed;
@@ -263,5 +265,12 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value>The user.</value>
         public ClaimsPrincipal User { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this connection was closed by way
+        /// of the server proxy or itself.
+        /// </summary>
+        /// <value><c>true</c> if closed by the server; otherwise, <c>false</c>.</value>
+        public bool ConnectionClosedByServer => _connectionClosedByServer;
     }
 }

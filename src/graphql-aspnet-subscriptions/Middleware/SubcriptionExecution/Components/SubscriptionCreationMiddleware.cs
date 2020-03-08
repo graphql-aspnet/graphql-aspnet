@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution.Components
         /// <returns>Task.</returns>
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context is ApolloQueryExecutionContext subContext
+            if (context is SubcriptionExecutionContext subContext
                 && subContext.IsSubscriptionOperation
                 && subContext.QueryPlan != null
                 && subContext.QueryOperation != null)
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution.Components
                     subContext.Request.ToDataPackage(),
                     subContext.QueryPlan,
                     subContext.QueryOperation,
-                    subContext.ClientProvidedId);
+                    subContext.SubscriptionId);
 
                 return Task.CompletedTask;
             }

@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 }
 
                 // TODO: make delay deliverable
-                await Task.Delay(1000);
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }

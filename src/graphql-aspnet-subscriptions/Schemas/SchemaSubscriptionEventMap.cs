@@ -41,6 +41,14 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
+        /// Clears all locally cacehed subscription event names.
+        /// </summary>
+        internal static void ClearCache()
+        {
+            NAME_CATALOG.Clear();
+        }
+
+        /// <summary>
         /// Attempts to generate a dictionary of value relating field path to the possible event names.
         /// </summary>
         /// <param name="schema">The schema.</param>
