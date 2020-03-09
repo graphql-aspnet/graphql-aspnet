@@ -25,6 +25,12 @@ namespace GraphQL.AspNet.Logging
         public const string SUBSCRIPTION_CLIENT_ID = "clientId";
 
         /// <summary>
+        /// The unique id assigned to the subscription server when it was first created
+        /// by the runtime.
+        /// </summary>
+        public const string SUBSCRIPTION_SERVER_ID = "serverId";
+
+        /// <summary>
         /// The type name of the client that was instantiated by the subscription server.
         /// </summary>
         public const string SUBSCRIPTION_CLIENT_TYPE_NAME = "clientType";

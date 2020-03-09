@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Apollo
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Apollo.Logging;
     using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Apollo
         private readonly TSchema _schema;
         private readonly SubscriptionServerOptions<TSchema> _serverOptions;
         private readonly SemaphoreSlim _eventSendSemaphore;
-
+        private readonly ApolloServerEventLogger<TSchema> _logger;
         private readonly object _syncLock = new object();
         private readonly Dictionary<SubscriptionEventName, HashSet<ISubscriptionClientProxy>> _subCountByName;
 
@@ -50,10 +51,12 @@ namespace GraphQL.AspNet.Apollo
         /// <param name="options">The user configured options for this server.</param>
         /// <param name="listener">The listener watching for new events that need to be communicated
         /// to clients managed by this server.</param>
+        /// <param name="logger">The logger to record server events to, if any.</param>
         public ApolloSubscriptionServer(
             TSchema schema,
             SubscriptionServerOptions<TSchema> options,
-            ISubscriptionEventListener listener)
+            ISubscriptionEventListener listener,
+            IGraphEventLogger logger = null)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _serverOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
@@ -61,8 +64,11 @@ namespace GraphQL.AspNet.Apollo
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
             _eventSendSemaphore = new SemaphoreSlim(_serverOptions.MaxConcurrentClientNotifications);
 
+            _logger = logger != null ? new ApolloServerEventLogger<TSchema>(this, logger) : null;
             _subCountByName = new Dictionary<SubscriptionEventName, HashSet<ISubscriptionClientProxy>>(
                 SubscriptionEventNameEqualityComparer.Instance);
+
+            this.Id = Guid.NewGuid().ToString();
         }
 
         /// <summary>
@@ -192,6 +198,7 @@ namespace GraphQL.AspNet.Apollo
                             {
                                 _subCountByName.Remove(name);
                                 _listener.RemoveReceiver(name, this);
+                                _logger?.EventMonitorEnded(name);
                             }
                         }
                     }
@@ -217,6 +224,7 @@ namespace GraphQL.AspNet.Apollo
                     if (_subCountByName[name].Count == 1)
                     {
                         _listener.AddReceiver(name, this);
+                        _logger?.EventMonitorStarted(name);
                     }
                 }
             }
@@ -252,5 +260,11 @@ namespace GraphQL.AspNet.Apollo
             _clients.Remove(client);
             client.ConnectionClosed -= this.ApolloClient_ConnectionClosed;
         }
+
+        /// <summary>
+        /// Gets an Id that uniquely identifies this server instance.
+        /// </summary>
+        /// <value>The identifier.</value>
+        public string Id { get; }
     }
 }

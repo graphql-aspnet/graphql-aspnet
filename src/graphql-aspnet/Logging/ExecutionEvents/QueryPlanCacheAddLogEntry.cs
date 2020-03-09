@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     /// </summary>
     public class QueryPlanCacheAddLogEntry : GraphLogEntry
     {
-        private string _schemaTypeShortName;
+        private readonly string _schemaTypeShortName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryPlanCacheAddLogEntry" /> class.

@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution
+namespace GraphQL.AspNet.Middleware.SubcriptionExecution
 {
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
 
     /// <summary>
     /// A decorator for the query execution pipeline builder to configure default components.

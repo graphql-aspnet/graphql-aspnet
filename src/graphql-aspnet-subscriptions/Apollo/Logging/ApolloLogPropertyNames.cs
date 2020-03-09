@@ -32,5 +32,10 @@ namespace GraphQL.AspNet.Apollo.Logging
         /// The client supplied identifer assigned to the subscription.
         /// </summary>
         public const string SUBSCRIPTION_ID = "apolloSubscriptionId";
+
+        /// <summary>
+        /// The formal name of a given subscription event type.
+        /// </summary>
+        public const string SUBSCRIPTION_EVENT_NAME = "apolloSubscriptionEventName";
     }
 }

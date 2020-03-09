@@ -18,9 +18,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
-    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
+    using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;

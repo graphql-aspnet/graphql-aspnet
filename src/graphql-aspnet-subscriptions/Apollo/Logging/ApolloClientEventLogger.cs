@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Apollo.Logging
 {
-    using System;
     using GraphQL.AspNet.Apollo.Logging.ApolloEvents;
     using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Common;
@@ -27,7 +26,7 @@ namespace GraphQL.AspNet.Apollo.Logging
         where TSchema : class, ISchema
     {
         private readonly ApolloClientProxy<TSchema> _client;
-        private readonly IGraphLogger _logger;
+        private readonly IGraphEventLogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientEventLogger{TSchema}" /> class.
@@ -52,7 +51,7 @@ namespace GraphQL.AspNet.Apollo.Logging
                 () => new ApolloMessageReceivedLogEntry(_client, message));
         }
 
-         /// <summary>
+        /// <summary>
         /// Recorded when the configured client proxy sends a message downstream to the
         /// actual client.
         /// </summary>

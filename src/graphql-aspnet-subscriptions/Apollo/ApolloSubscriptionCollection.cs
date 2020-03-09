@@ -154,7 +154,7 @@ namespace GraphQL.AspNet.Apollo
         /// <returns>IEnumerable&lt;ISubscription&lt;TSchema&gt;&gt;.</returns>
         public IEnumerable<ISubscription<TSchema>> Clear()
         {
-            IEnumerable<ISubscription<TSchema>> subs = null;
+            IEnumerable<ISubscription<TSchema>> subs;
             lock (_syncLock)
             {
                 subs = new List<ISubscription<TSchema>>(_subsById.Values);

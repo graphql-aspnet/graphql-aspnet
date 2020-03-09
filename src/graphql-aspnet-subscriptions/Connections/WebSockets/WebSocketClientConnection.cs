@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
             }
             catch (WebSocketException webSocketException)
             {
-                return new WebSocketFailureResult(webSocketException) as IClientConnectionReceiveResult;
+                return new WebSocketFailureResult(webSocketException);
             }
             catch (AggregateException ae)
             {

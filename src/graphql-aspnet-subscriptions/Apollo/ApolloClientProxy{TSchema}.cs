@@ -34,8 +34,8 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -53,9 +53,9 @@ namespace GraphQL.AspNet.Apollo
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly ApolloMessageConverterFactory _messageConverter;
         private readonly ClientTrackedMessageIdSet _reservedMessageIds;
+        private readonly ApolloSubscriptionCollection<TSchema> _subscriptions;
         private IClientConnection _connection;
-        private ApolloSubscriptionCollection<TSchema> _subscriptions;
-        private bool _connectionClosedForever = false;
+        private bool _connectionClosedForever;
 
         /// <summary>
         /// Occurs just before the underlying websocket is opened. Once completed messages
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Apollo
 
             _subscriptions.Clear();
             _reservedMessageIds.Clear();
-            this.ConnectionClosed?.Invoke(this, new EventArgs());
+            this.ConnectionClosed?.Invoke(this, EventArgs.Empty);
             _connectionClosedForever = true;
         }
 
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Apollo
                     "been previously closed and cannot be reopened.");
             }
 
-            this.ConnectionOpening?.Invoke(this, new EventArgs());
+            this.ConnectionOpening?.Invoke(this, EventArgs.Empty);
 
             // register the socket with an "apollo level" keep alive monitor
             // that will send structured keep alive messages down the pipe
@@ -190,18 +190,21 @@ namespace GraphQL.AspNet.Apollo
                 {
                     do
                     {
-                        (result, bytes) = await _connection.ReceiveFullMessage(_options.MessageBufferSize);
+                        (result, bytes) = await _connection
+                                .ReceiveFullMessage(_options.MessageBufferSize)
+                                .ConfigureAwait(false);
 
                         if (result.MessageType == ClientMessageType.Text)
                         {
                             var message = this.DeserializeMessage(bytes);
-                            await this.DispatchMessage(message);
+                            await this.DispatchMessage(message)
+                                .ConfigureAwait(false);
                         }
                     }
                     while (!result.CloseStatus.HasValue && _connection.State == ClientConnectionState.Open);
                 }
 
-                this.ConnectionClosing?.Invoke(this, new EventArgs());
+                this.ConnectionClosing?.Invoke(this, EventArgs.Empty);
 
                 // shut down the socket and the apollo-protocol-specific keep alive
                 keepAliveTimer?.Stop();
@@ -212,7 +215,8 @@ namespace GraphQL.AspNet.Apollo
                     await this.CloseConnection(
                         result.CloseStatus.Value,
                         result.CloseStatusDescription,
-                        CancellationToken.None);
+                        CancellationToken.None)
+                        .ConfigureAwait(false);
                 }
                 else
                 {
@@ -304,7 +308,7 @@ namespace GraphQL.AspNet.Apollo
         {
             Validation.ThrowIfNull(message, nameof(message));
 
-            // create and register the proper message serializer for this message
+            // create and register the proper serializer for this message
             var options = new JsonSerializerOptions();
             (var converter, var asType) = _messageConverter.CreateConverter<TSchema>(this, message);
             options.Converters.Add(converter);
@@ -400,11 +404,11 @@ namespace GraphQL.AspNet.Apollo
                 if (totalRemaining == 0)
                     this.SubscriptionRouteRemoved?.Invoke(this, new ApolloSubscriptionFieldEventArgs(subFound.Field));
 
+                _logger?.SubscriptionStopped(subFound);
+
                 await this
                     .SendMessage(new ApolloServerCompleteMessage(subFound.Id))
                     .ConfigureAwait(false);
-
-                _logger?.SubscriptionStopped(subFound);
             }
             else
             {
@@ -458,7 +462,9 @@ namespace GraphQL.AspNet.Apollo
 
             if (context.IsSubscriptionOperation)
             {
-                retainMessageId = await this.RegisterSubscriptionOrRespond(context.Subscription as ISubscription<TSchema>);
+                retainMessageId = await this
+                    .RegisterSubscriptionOrRespond(context.Subscription as ISubscription<TSchema>)
+                    .ConfigureAwait(false);
             }
             else
             {

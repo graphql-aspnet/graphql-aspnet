@@ -9,8 +9,8 @@
 
 namespace GraphQL.AspNet
 {
-    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Middleware.SubcriptionExecution;
 
     /// <summary>
     /// A set of constants related to the configuration and processing of subscriptions

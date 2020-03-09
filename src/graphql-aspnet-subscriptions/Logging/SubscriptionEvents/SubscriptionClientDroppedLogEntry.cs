@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
     /// </summary>
     public class SubscriptionClientDroppedLogEntry : GraphLogEntry
     {
-        private string _clientTypeShortName;
+        private readonly string _clientTypeShortName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionClientDroppedLogEntry"/> class.

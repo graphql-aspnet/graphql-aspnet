@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 // when pointing at a subscription field we're done
                 if (!currentContext.Field.IsVirtual)
                 {
-                    this.Field = currentContext?.Field as ISubscriptionGraphField;
+                    this.Field = currentContext.Field as ISubscriptionGraphField;
                     break;
                 }
 

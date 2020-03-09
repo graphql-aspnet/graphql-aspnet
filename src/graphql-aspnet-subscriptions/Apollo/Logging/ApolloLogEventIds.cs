@@ -32,5 +32,17 @@ namespace GraphQL.AspNet.Apollo.Logging
         /// An apollo client stopped monitoring an existing subscription.
         /// </summary>
         public static EventId SubscriptionStopped = new EventId(BASE_APOLLO_EVENT_ID + 140, "Apollo Subscription Stopped");
+
+        /// <summary>
+        /// An apollo server component registered a request with the listener to start
+        /// receiving events for a given subscription event.
+        /// </summary>
+        public static EventId ServerSubscriptionEventMonitorStarted = new EventId(BASE_APOLLO_EVENT_ID + 200, "Apollo Server Subscription Event Started");
+
+        /// <summary>
+        /// An apollo server component unregistered a request with the listener and will stop
+        /// receiving events for a given subscription event.
+        /// </summary>
+        public static EventId ServerSubscriptionEventMonitorStopped = new EventId(BASE_APOLLO_EVENT_ID + 210, "Apollo Server Subscription Event Stopped");
     }
 }

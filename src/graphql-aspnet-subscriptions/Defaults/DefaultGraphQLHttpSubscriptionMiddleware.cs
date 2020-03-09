@@ -77,32 +77,39 @@ namespace GraphQL.AspNet.Defaults
                 try
                 {
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync(
-                        SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL);
+                        SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL)
+                        .ConfigureAwait(false);
 
                     var socketProxy = new WebSocketClientConnection(webSocket, context);
 
-                    var subscriptionClient = await _subscriptionServer.RegisterNewClient(socketProxy);
+                    var subscriptionClient = await _subscriptionServer
+                            .RegisterNewClient(socketProxy)
+                            .ConfigureAwait(false);
 
-                    logger?.SubscriptionClientRegistered<TSchema>(_subscriptionServer, subscriptionClient);
+                    logger?.SubscriptionClientRegistered(_subscriptionServer, subscriptionClient);
 
                     // hold the client connection until its released
-                    await subscriptionClient.StartConnection();
+                    await subscriptionClient.StartConnection().ConfigureAwait(false);
 
                     logger?.SubscriptionClientDropped(subscriptionClient);
                 }
                 catch (Exception ex)
                 {
                     logger?.UnhandledExceptionEvent(ex);
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    await context.Response.WriteAsync(
-                        "An unexpected error occured attempting to configure the web socket connection. " +
-                        "Check the server event logs for further details.");
+                    if (!context.Response.HasStarted)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        await context.Response.WriteAsync(
+                            "An unexpected error occured attempting to configure the web socket connection. " +
+                            "Check the server event logs for further details.")
+                            .ConfigureAwait(false);
+                    }
                 }
 
                 return;
             }
 
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
     }
 }

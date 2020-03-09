@@ -17,7 +17,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
+    using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Variables;
     using Moq;

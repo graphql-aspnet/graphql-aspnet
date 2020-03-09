@@ -28,5 +28,11 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="client">The abstracted client connection to host in this server instance.</param>
         /// <returns>Task.</returns>
         Task<ISubscriptionClientProxy> RegisterNewClient(IClientConnection client);
+
+        /// <summary>
+        /// Gets an Id that uniquely identifies this server instance.
+        /// </summary>
+        /// <value>The identifier.</value>
+        string Id { get; }
     }
 }

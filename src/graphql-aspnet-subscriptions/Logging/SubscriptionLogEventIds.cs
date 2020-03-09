@@ -32,5 +32,10 @@ namespace GraphQL.AspNet.Logging
         /// A client has been dropped and is no longer being monitored.
         /// </summary>
         public static EventId SubscriptionClientDropped = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 300, "GraphQL Subscription Client Dropped");
+
+        /// <summary>
+        /// A new server has been been created by the runtime.
+        /// </summary>
+        public static EventId SubscriptionServerCreated = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 400, "GraphQL Subscription Server Created");
     }
 }

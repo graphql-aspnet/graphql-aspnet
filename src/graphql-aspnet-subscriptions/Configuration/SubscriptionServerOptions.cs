@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// Configuration options relating to subscriptions for a given schema.

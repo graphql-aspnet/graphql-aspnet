@@ -14,7 +14,6 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
@@ -23,9 +22,8 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Middleware.ApolloSubscriptionQueryExecution;
+    using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -93,8 +91,25 @@ namespace GraphQL.AspNet
             this.OptionalServices.Add(
                 new ServiceDescriptor(
                     typeof(ISubscriptionServer<TSchema>),
-                    typeof(ApolloSubscriptionServer<TSchema>),
+                    this.CreateSubscriptionServer,
                     ServiceLifetime.Singleton));
+        }
+
+        /// <summary>
+        /// Creates the apollo subscription server and logs its creation.
+        /// </summary>
+        /// <param name="sp">The service provider to create the server from.</param>
+        /// <returns>ISubscriptionServer&lt;TSchema&gt;.</returns>
+        private ISubscriptionServer<TSchema> CreateSubscriptionServer(IServiceProvider sp)
+        {
+            using var scope = sp.CreateScope();
+            var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
+            var eventListener = scope.ServiceProvider.GetRequiredService<ISubscriptionEventListener>();
+            var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
+
+            var server = new ApolloSubscriptionServer<TSchema>(schema, this.SubscriptionOptions, eventListener, logger);
+            logger?.SubscriptionServerCreated(server);
+            return server;
         }
 
         /// <summary>

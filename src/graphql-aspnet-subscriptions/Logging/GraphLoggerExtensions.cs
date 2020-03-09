@@ -70,5 +70,22 @@ namespace GraphQL.AspNet.Logging
                 LogLevel.Debug,
                 () => new SubscriptionClientDroppedLogEntry(client));
         }
+
+        /// <summary>
+        /// Recorded when a subscription client is no longer connected or otherwise dropped
+        /// by ASP.NET. The server will process no more messages from the client.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of the schema the server was created for.</typeparam>
+        /// <param name="logger">The logger doing the logging.</param>
+        /// <param name="server">The server that was created.</param>
+        public static void SubscriptionServerCreated<TSchema>(
+            this IGraphEventLogger logger,
+            ISubscriptionServer<TSchema> server)
+            where TSchema : class, ISchema
+        {
+            logger.Log(
+                LogLevel.Debug,
+                () => new SubscriptionServerCreatedLogEntry<TSchema>(server));
+        }
     }
 }
