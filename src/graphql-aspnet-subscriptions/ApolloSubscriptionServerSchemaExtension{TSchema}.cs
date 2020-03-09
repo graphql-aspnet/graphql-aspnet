@@ -19,6 +19,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
@@ -94,9 +95,6 @@ namespace GraphQL.AspNet
                     typeof(ISubscriptionServer<TSchema>),
                     typeof(ApolloSubscriptionServer<TSchema>),
                     ServiceLifetime.Singleton));
-
-            if (this.SubscriptionOptions.HttpMiddlewareComponentType != null)
-                this.EnsureMiddlewareTypeOrThrow(this.SubscriptionOptions.HttpMiddlewareComponentType);
         }
 
         /// <summary>
@@ -113,48 +111,18 @@ namespace GraphQL.AspNet
             // pipeline for the subscription
             if (!this.SubscriptionOptions.DisableDefaultRoute && app != null)
             {
-                var routePath = this.SubscriptionOptions.Route.Replace(
-                SubscriptionConstants.Routing.SCHEMA_ROUTE_KEY,
-                _primaryOptions.QueryHandler.Route);
-
-                var server = serviceProvider.GetRequiredService<ISubscriptionServer<TSchema>>();
-
                 var middlewareType = this.SubscriptionOptions.HttpMiddlewareComponentType
                     ?? typeof(DefaultGraphQLHttpSubscriptionMiddleware<TSchema>);
 
-                this.EnsureMiddlewareTypeOrThrow(middlewareType);
+                this.SubscriptionOptions.Route = this.SubscriptionOptions.Route.Replace(
+                    SubscriptionConstants.Routing.SCHEMA_ROUTE_KEY,
+                    _primaryOptions.QueryHandler.Route);
 
                 // register the middleware component
-                app.UseMiddleware(middlewareType, server, this.SubscriptionOptions, routePath);
-                app.ApplicationServices.WriteLogEntry(
-                      (l) => l.SchemaSubscriptionRouteRegistered<TSchema>(
-                      routePath));
-            }
-        }
+                app.UseMiddleware(middlewareType);
 
-        /// <summary>
-        /// Ensures the middleware type contains a public constructor that accepts the
-        /// three parameters required of it by the runtime.
-        /// </summary>
-        /// <param name="middlewareType">Type of the middleware to inspect.</param>
-        private void EnsureMiddlewareTypeOrThrow(Type middlewareType)
-        {
-            var constructor = middlewareType.GetConstructor(
-                new[]
-                {
-                    typeof(RequestDelegate),
-                    typeof(ISubscriptionServer<TSchema>),
-                    typeof(SubscriptionServerOptions<TSchema>),
-                    typeof(string),
-                });
-
-            if (constructor == null)
-            {
-                throw new InvalidOperationException(
-                      $"Unable to initialize subscriptions for schema '{typeof(TSchema).FriendlyName()}'. " +
-                      $"An attempt was made to use the type '{middlewareType.FriendlyName()}' as the middleware " +
-                      "component to handle subscription operation requests. However, this type does not contain a public " +
-                      $"constructor that accepts parameters of {typeof(RequestDelegate).FriendlyName()}, {typeof(SubscriptionServerOptions<TSchema>)}, and {typeof(string)}.");
+                var logger = serviceProvider.CreateScope().ServiceProvider.GetService<IGraphEventLogger>();
+                logger?.SchemaSubscriptionRouteRegistered<TSchema>(this.SubscriptionOptions.Route);
             }
         }
 

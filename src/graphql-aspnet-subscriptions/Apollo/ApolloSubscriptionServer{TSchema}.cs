@@ -19,10 +19,12 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A baseline component acts to centralize the subscription server operations, regardless of if
@@ -153,10 +155,13 @@ namespace GraphQL.AspNet.Apollo
         {
             Validation.ThrowIfNull(connection, nameof(connection));
 
+            var logger = connection.ServiceProvider.GetService<IGraphEventLogger>();
+
             var apolloClient = new ApolloClientProxy<TSchema>(
                 connection,
                 _serverOptions,
                 new ApolloMessageConverterFactory(),
+                logger,
                 _schema.Configuration.ExecutionOptions.EnableMetrics);
 
             apolloClient.ConnectionOpening += this.ApolloClient_ConnectionOpening;

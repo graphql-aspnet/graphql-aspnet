@@ -19,7 +19,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.Subscriptions.Tests.Connections.SocketData;
+    using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;
@@ -56,15 +56,16 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var next = new RequestDelegate(CallNext);
 
+            var options = new SubscriptionServerOptions<GraphSchema>();
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
-                new SubscriptionServerOptions<GraphSchema>(),
-                "/graphql");
+                options);
 
             var context = new DefaultHttpContext();
-            context.Request.Path = "/graphql";
+            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.Request.Path = options.Route;
 
             // not a socket request aginst the route
             // should be skipped
@@ -84,14 +85,15 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var next = new RequestDelegate(CallNext);
 
+            var options = new SubscriptionServerOptions<GraphSchema>();
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
-                new SubscriptionServerOptions<GraphSchema>(),
-                "/graphql");
+                options);
 
             var context = new DefaultHttpContext();
+            context.RequestServices = new Mock<IServiceProvider>().Object;
             context.Request.Path = "/stuff/data";
 
             // not a socket request aginst the route
@@ -118,14 +120,15 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
             server.Setup(x => x.RegisterNewClient(It.IsAny<IClientConnection>())).ReturnsAsync(connection.Object);
 
+            var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
-                new SubscriptionServerOptions<GraphSchema>(),
-                "/graphql");
+                options);
 
             var context = new FakeWebSocketHttpContext();
-            context.Request.Path = "/graphql";
+            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.Request.Path = options.Route;
 
             // not a socket request aginst the route
             // next middleware component should not be invoked
@@ -147,14 +150,15 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
             server.Setup(x => x.RegisterNewClient(It.IsAny<IClientConnection>())).Throws(new InvalidOperationException("failed"));
 
+            var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
-                new SubscriptionServerOptions<GraphSchema>(),
-                "/graphql");
+                options);
 
             var context = new FakeWebSocketHttpContext();
-            context.Request.Path = "/graphql";
+            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.Request.Path = options.Route;
 
             // not a socket request aginst the route
             // next middleware component should not be invoked

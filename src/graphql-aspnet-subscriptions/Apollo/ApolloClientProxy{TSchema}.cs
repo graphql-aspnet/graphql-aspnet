@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Apollo
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Apollo.Logging;
     using GraphQL.AspNet.Apollo.Messages;
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Apollo.Messages.Common;
@@ -47,6 +48,7 @@ namespace GraphQL.AspNet.Apollo
         where TSchema : class, ISchema
     {
         private readonly bool _enableKeepAlive;
+        private readonly ApolloClientEventLogger<TSchema> _logger;
         private readonly bool _enableMetrics;
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly ApolloMessageConverterFactory _messageConverter;
@@ -90,12 +92,14 @@ namespace GraphQL.AspNet.Apollo
         /// <param name="options">The options used to configure the registration.</param>
         /// <param name="messageConverter">The message converter factory that will generate
         /// json converters for the various <see cref="ApolloMessage" /> the proxy shuttles to the client.</param>
+        /// <param name="logger">The logger to record client level events to, if any.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>
         public ApolloClientProxy(
             IClientConnection clientConnection,
             SubscriptionServerOptions<TSchema> options,
             ApolloMessageConverterFactory messageConverter,
+            IGraphEventLogger logger = null,
             bool enableMetrics = false)
         {
             _connection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
@@ -104,6 +108,8 @@ namespace GraphQL.AspNet.Apollo
             _reservedMessageIds = new ClientTrackedMessageIdSet();
             _subscriptions = new ApolloSubscriptionCollection<TSchema>();
             _enableKeepAlive = options.KeepAliveInterval != TimeSpan.Zero;
+
+            _logger = logger != null ? new ApolloClientEventLogger<TSchema>(this, logger) : null;
             _enableMetrics = enableMetrics;
         }
 
@@ -307,6 +313,7 @@ namespace GraphQL.AspNet.Apollo
             var bytes = JsonSerializer.SerializeToUtf8Bytes(message, asType, options);
             if (this.State == ClientConnectionState.Open)
             {
+                _logger?.MessageSent(message);
                 return _connection.SendAsync(
                     new ArraySegment<byte>(bytes, 0, bytes.Length),
                     ClientMessageType.Text,
@@ -330,6 +337,7 @@ namespace GraphQL.AspNet.Apollo
             if (message == null)
                 return Task.CompletedTask;
 
+            _logger?.MessageReceived(message);
             switch (message.Type)
             {
                 case ApolloMessageType.CONNECTION_INIT:
@@ -395,6 +403,8 @@ namespace GraphQL.AspNet.Apollo
                 await this
                     .SendMessage(new ApolloServerCompleteMessage(subFound.Id))
                     .ConfigureAwait(false);
+
+                _logger?.SubscriptionStopped(subFound);
             }
             else
             {
@@ -513,6 +523,7 @@ namespace GraphQL.AspNet.Apollo
                 if (totalTracked == 1)
                     this.SubscriptionRouteAdded?.Invoke(this, new ApolloSubscriptionFieldEventArgs(subscription.Field));
 
+                _logger?.SubscriptionCreated(subscription);
                 registrationComplete = true;
             }
 

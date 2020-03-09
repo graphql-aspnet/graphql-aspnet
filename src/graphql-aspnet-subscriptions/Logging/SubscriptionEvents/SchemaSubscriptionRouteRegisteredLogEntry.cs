@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-        /// Recorded when the startup services registers a publically available ASP.NET MVC route to which
-        /// end users can intiate a websocket request through which subscriptions can be established.
+    /// Recorded when the startup services registers a publically available ASP.NET MVC route to which
+    /// end users can intiate a websocket request through which subscriptions can be established.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema for which the route was registered.</typeparam>
     public class SchemaSubscriptionRouteRegisteredLogEntry<TSchema> : GraphLogEntry
@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         /// </summary>
         /// <param name="routePath">The route string (e.g. '/graphql').</param>
         public SchemaSubscriptionRouteRegisteredLogEntry(string routePath)
-            : base(LogEventIds.SchemaRouteRegistered)
+            : base(SubscriptionLogEventIds.SchemaRouteRegistered)
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);

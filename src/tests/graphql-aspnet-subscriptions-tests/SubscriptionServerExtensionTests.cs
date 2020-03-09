@@ -30,28 +30,6 @@ namespace GraphQL.Subscriptions.Tests
     [TestFixture]
     public class SubscriptionServerExtensionTests
     {
-        public class InvalidSubscriptionMiddlewareTester
-        {
-            public InvalidSubscriptionMiddlewareTester(
-                RequestDelegate next,
-                SubscriptionServerOptions<GraphSchema> options,
-                string route,
-                string other)
-            {
-            }
-        }
-
-        public class ValidSubscriptionMiddlewareTester
-        {
-            public ValidSubscriptionMiddlewareTester(
-                RequestDelegate next,
-                ISubscriptionServer<GraphSchema> server,
-                SubscriptionServerOptions<GraphSchema> options,
-                string route)
-            {
-            }
-        }
-
         private (Mock<ISchemaBuilder<GraphSchema>>, Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphQueryExecutionContext>, GraphQueryExecutionContext>>)
             CreateSchemaBuilderMock()
         {
@@ -112,48 +90,6 @@ namespace GraphQL.Subscriptions.Tests
                     It.IsAny<IGraphMiddlewareComponent<GraphQueryExecutionContext>>(),
                     It.IsAny<string>()),
                 Times.Exactly(1));
-        }
-
-        [Test]
-        public void CustomHttpMiddlewareComponent_WithoutProperConstructor_throwsException()
-        {
-            using var restorePoint = new GraphQLProviderRestorePoint();
-
-            GraphQLProviders.TemplateProvider = null;
-
-            (var builder, var queryPipeline) = CreateSchemaBuilderMock();
-
-            var primaryOptions = new SchemaOptions<GraphSchema>();
-            var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
-
-            // invalid constructor
-            subscriptionOptions.HttpMiddlewareComponentType = typeof(InvalidSubscriptionMiddlewareTester);
-
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                var extension = new ApolloSubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
-                extension.Configure(primaryOptions);
-            });
-        }
-
-        [Test]
-        public void CustomHttpMiddlewareComponent_WithProperConstructor_Succeeds()
-        {
-            using var restorePoint = new GraphQLProviderRestorePoint();
-
-            GraphQLProviders.TemplateProvider = null;
-
-            var primaryOptions = new SchemaOptions<GraphSchema>();
-            var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
-
-            (var builder, var queryPipeline) = CreateSchemaBuilderMock();
-
-            // invalid constructor
-            subscriptionOptions.HttpMiddlewareComponentType = typeof(ValidSubscriptionMiddlewareTester);
-
-            // no exception should be thrown
-            var extension = new ApolloSubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
-            extension.Configure(primaryOptions);
         }
     }
 }

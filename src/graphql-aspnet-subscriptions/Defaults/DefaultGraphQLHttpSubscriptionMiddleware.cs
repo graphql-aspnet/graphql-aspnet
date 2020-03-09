@@ -16,9 +16,13 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.WebSockets;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Logging;
+    using GraphQL.AspNet.Logging.Extensions;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A default implementation of the logic for handling a subscription request over a websocket.
@@ -40,17 +44,15 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="subscriptionServer">The subscription server configured for
         /// this web host.</param>
         /// <param name="options">The options.</param>
-        /// <param name="routePath">The route path where subscriptions should be pointed.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
             ISubscriptionServer<TSchema> subscriptionServer,
-            SubscriptionServerOptions<TSchema> options,
-            string routePath)
+            SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
-            _routePath = Validation.ThrowIfNullWhiteSpaceOrReturn(routePath, nameof(routePath));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _subscriptionServer = Validation.ThrowIfNullOrReturn(subscriptionServer, nameof(subscriptionServer));
+            _routePath = _options.Route;
         }
 
         /// <summary>
@@ -70,6 +72,8 @@ namespace GraphQL.AspNet.Defaults
 
             if (isListeningToPath && context.WebSockets.IsWebSocketRequest)
             {
+                var logger = context.RequestServices.GetService<IGraphEventLogger>();
+
                 try
                 {
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync(
@@ -79,12 +83,16 @@ namespace GraphQL.AspNet.Defaults
 
                     var subscriptionClient = await _subscriptionServer.RegisterNewClient(socketProxy);
 
+                    logger?.SubscriptionClientRegistered<TSchema>(_subscriptionServer, subscriptionClient);
+
                     // hold the client connection until its released
                     await subscriptionClient.StartConnection();
+
+                    logger?.SubscriptionClientDropped(subscriptionClient);
                 }
                 catch (Exception ex)
                 {
-                    // TODO: LOG Exception
+                    logger?.UnhandledExceptionEvent(ex);
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     await context.Response.WriteAsync(
                         "An unexpected error occured attempting to configure the web socket connection. " +

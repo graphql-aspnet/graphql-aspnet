@@ -46,11 +46,8 @@ namespace GraphQL.AspNet.Configuration
 
         /// <summary>
         /// <para>Gets or sets an optional .NET type to use as the middleware component
-        /// for Subscription requests. When set, this type should accept, as constructor arguments, accept
-        /// a <see cref="RequestDelegate"/>, the <see cref="SubscriptionServerOptions{TSchema}"/> for the
-        /// target schema and a <see cref="string"/> representing the configured route for the
-        /// subscription as constructor parameters. When set to null, Apollo's graphql-over-websocket.
-        ///
+        /// for Subscription requests.  When set to null, the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}"/>
+        /// middleware component is used.
         /// </para>
         /// <para>It can be advantagous to extend <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" />.  See the documentation for further details.</para>
         /// </summary>

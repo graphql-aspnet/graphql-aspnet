@@ -358,6 +358,22 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
+        /// When the provided log level is in scope and "loggable" the entry defined
+        /// by <paramref name="entryMaker"/> will be created and logged.
+        /// </summary>
+        /// <param name="logLevel">The log level to write.</param>
+        /// <param name="entryMaker">The function to generate the log entry, if needed.</param>
+        public virtual void Log(LogLevel logLevel, Func<IGraphLogEntry> entryMaker)
+        {
+            if (!this.IsEnabled(logLevel))
+                return;
+
+            var logEntry = entryMaker?.Invoke();
+            if (logEntry != null)
+                this.Log(logLevel, logEntry.EventId, logEntry, null, (state, _) => state.ToString());
+        }
+
+        /// <summary>
         /// Writes a log entry.
         /// </summary>
         /// <typeparam name="TState">The type of the t state.</typeparam>

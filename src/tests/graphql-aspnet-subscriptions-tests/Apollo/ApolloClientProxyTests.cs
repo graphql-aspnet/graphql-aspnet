@@ -119,6 +119,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 socketClient,
                 options,
                 new ApolloMessageConverterFactory(),
+                null,
                 false);
 
             var eventCalled = false;

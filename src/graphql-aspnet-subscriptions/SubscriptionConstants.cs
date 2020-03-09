@@ -38,7 +38,7 @@ namespace GraphQL.AspNet
             /// <summary>
             /// The default route fragment, appended to the end of a Graphl QL route.
             /// </summary>
-            public const string DEFAULT_SUBSCRIPTIONS_ROUTE = SCHEMA_ROUTE_KEY;
+            public const string DEFAULT_SUBSCRIPTIONS_ROUTE = Constants.Routing.DEFAULT_HTTP_ROUTE;
         }
 
         /// <summary>
