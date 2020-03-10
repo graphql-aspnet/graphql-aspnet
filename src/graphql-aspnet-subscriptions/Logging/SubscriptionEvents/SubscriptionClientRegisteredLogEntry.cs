@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded when a new client is registered through a subscription server.
+    /// Recorded when a new client is successfully created by a subscription server.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema for which the route was registered.</typeparam>
     public class SubscriptionClientRegisteredLogEntry<TSchema> : GraphLogEntry

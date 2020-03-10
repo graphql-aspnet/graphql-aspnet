@@ -19,6 +19,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     public class SubscriptionEvent
     {
         /// <summary>
+        /// Gets or sets the unique identifier assigned to this event when it was first raised.
+        /// </summary>
+        /// <value>The identifier.</value>
+        public string Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the data package that was supplied by the publisher when the event was raised.
         /// </summary>
         /// <value>The data.</value>

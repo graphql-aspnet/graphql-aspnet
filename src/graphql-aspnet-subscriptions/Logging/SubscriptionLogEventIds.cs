@@ -37,5 +37,15 @@ namespace GraphQL.AspNet.Logging
         /// A new server has been been created by the runtime.
         /// </summary>
         public static EventId SubscriptionServerCreated = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 400, "GraphQL Subscription Server Created");
+
+        /// <summary>
+        /// A new event was published by an ASP.NET server instance.
+        /// </summary>
+        public static EventId GlobalListenerEventPublished = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 500, "GraphQL Listener Event Published");
+
+        /// <summary>
+        /// A new event was received by an ASP.NET server instance.
+        /// </summary>
+        public static EventId GlobalListenerEventReceived = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 510, "GraphQL Listener Event Received");
     }
 }

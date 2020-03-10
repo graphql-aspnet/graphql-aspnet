@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Logging
 {
+    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -86,6 +87,38 @@ namespace GraphQL.AspNet.Logging
             logger.Log(
                 LogLevel.Debug,
                 () => new SubscriptionServerCreatedLogEntry<TSchema>(server));
+        }
+
+        /// <summary>
+        /// Recorded when a single ASP.NET server instance receives a new subscription event from
+        /// its connected source. In general, this is an in-memory queue (for single server configurations)
+        /// or a service bus of some sort (such as RabbitMQ or Azure Service Bus) for multi-server instances.
+        /// </summary>
+        /// <param name="logger">The logger doing the logging.</param>
+        /// <param name="eventData">The event data that was received from a data source.</param>
+        public static void GlobalSubscriptionEventReceived(
+            this IGraphEventLogger logger,
+            SubscriptionEvent eventData)
+        {
+            logger.Log(
+                LogLevel.Debug,
+                () => new GlobalSubscriptionEventReceived(eventData));
+        }
+
+        /// <summary>
+        /// Recorded when a single ASP.NET server instance sends a new subscription event to some connected source.
+        /// In general, this is an in-memory queue (for single server configurations)
+        /// or a service bus of some sort (such as RabbitMQ or Azure Service Bus) for multi-server instances.
+        /// </summary>
+        /// <param name="logger">The logger doing the logging.</param>
+        /// <param name="eventData">The event data that was sent by a data source.</param>
+        public static void GlobalSubscriptionEventPublished(
+            this IGraphEventLogger logger,
+            SubscriptionEvent eventData)
+        {
+            logger.Log(
+                LogLevel.Debug,
+                () => new GlobalSubscriptionEventPublished(eventData));
         }
     }
 }

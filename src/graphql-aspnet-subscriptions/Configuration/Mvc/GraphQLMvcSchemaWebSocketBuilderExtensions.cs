@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using System;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
@@ -83,7 +84,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             schemaBuilder.AsServiceCollection().AddSingleton<SubscriptionEventQueue>();
             schemaBuilder.AsServiceCollection().AddHostedService<SubscriptionPublicationService>();
-            schemaBuilder.AsServiceCollection().TryAddSingleton<ISubscriptionEventListener, InProcessSubscriptionEventListener>();
+            schemaBuilder.AsServiceCollection().TryAdd(CreateDefaultSubscriptionListenerServiceDescriptor());
 
             return schemaBuilder;
         }
@@ -130,12 +131,23 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             // register the custom listener type to the service collection before
             // the extension can register the default
-            extension.RequiredServices.Add(new ServiceDescriptor(
-                 typeof(ISubscriptionEventListener), typeof(TListener), ServiceLifetime.Singleton));
+            extension.RequiredServices.Add(CreateDefaultSubscriptionListenerServiceDescriptor());
 
             schemaBuilder.Options.RegisterExtension(extension);
 
             return schemaBuilder;
+        }
+
+        private static ServiceDescriptor CreateDefaultSubscriptionListenerServiceDescriptor()
+        {
+            return new ServiceDescriptor(
+                typeof(ISubscriptionEventListener),
+                (sp) =>
+                        {
+                            var logger = sp.CreateScope().ServiceProvider.GetService<IGraphEventLogger>();
+                            return new InProcessSubscriptionEventListener(logger);
+                        },
+                ServiceLifetime.Singleton);
         }
     }
 }

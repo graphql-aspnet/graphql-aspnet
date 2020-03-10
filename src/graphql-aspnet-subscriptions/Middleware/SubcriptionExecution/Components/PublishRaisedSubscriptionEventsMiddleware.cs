@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -17,9 +18,12 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Logging;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Standard middleware component that pulls any raised events off the field execution context
@@ -69,10 +73,12 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
                     }
                     else
                     {
+                        var logger = context.ServiceProvider.GetService<IGraphEventLogger>();
                         foreach (var proxy in collection)
                         {
                             var eventData = new SubscriptionEvent()
                             {
+                                Id = Guid.NewGuid().ToString(),
                                 SchemaTypeName = typeof(TSchema).FullName,
                                 Data = proxy.DataObject,
                                 DataTypeName = proxy.DataObject?.GetType().FullName,
@@ -80,6 +86,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
                             };
 
                             _eventQueue.Enqueue(eventData);
+                            logger?.GlobalSubscriptionEventPublished(eventData);
                         }
                     }
                 }

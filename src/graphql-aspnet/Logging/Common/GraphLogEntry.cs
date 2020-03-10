@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Logging.Common
     /// A structured graphql log entry that generates a common output format for handoff to a
     /// logging provider. This log entry is typically rendered to a JSON string.
     /// </summary>
-    [DebuggerDisplay("{EventId}")]
+    [DebuggerDisplay("{EventId} (Name: '{EventName}')")]
     public class GraphLogEntry : GraphLogPropertyCollection, IGraphLogEntry
     {
         /// <summary>

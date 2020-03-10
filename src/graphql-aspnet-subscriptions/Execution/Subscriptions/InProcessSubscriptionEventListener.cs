@@ -12,7 +12,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Logging;
 
     /// <summary>
     /// The default listener for raised subscription events. This object only listens to the locally attached
@@ -20,13 +22,16 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// </summary>
     public class InProcessSubscriptionEventListener : ISubscriptionEventListener
     {
-        private Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>> _receivers;
+        private readonly IGraphEventLogger _logger;
+        private readonly Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>> _receivers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InProcessSubscriptionEventListener"/> class.
+        /// Initializes a new instance of the <see cref="InProcessSubscriptionEventListener" /> class.
         /// </summary>
-        public InProcessSubscriptionEventListener()
+        /// <param name="logger">The logger.</param>
+        public InProcessSubscriptionEventListener(IGraphEventLogger logger = null)
         {
+            _logger = logger;
             _receivers = new Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>>(SubscriptionEventNameEqualityComparer.Instance);
         }
 
@@ -39,6 +44,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         {
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
+            _logger?.GlobalSubscriptionEventReceived(eventData);
             var tasks = new List<Task>();
             lock (_receivers)
             {
