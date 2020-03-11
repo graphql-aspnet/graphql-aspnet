@@ -37,5 +37,15 @@ namespace GraphQL.AspNet.Apollo.Logging
         /// The formal name of a given subscription event type.
         /// </summary>
         public const string SUBSCRIPTION_EVENT_NAME = "apolloSubscriptionEventName";
+
+        /// <summary>
+        /// The total number of clients being reported on.
+        /// </summary>
+        public const string CLIENT_COUNT = "clientCount";
+
+        /// <summary>
+        /// A collection of client ids being reported on.
+        /// </summary>
+        public const string CLIENT_IDS = "clientIds";
     }
 }

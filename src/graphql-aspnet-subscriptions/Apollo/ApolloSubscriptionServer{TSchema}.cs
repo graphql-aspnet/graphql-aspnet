@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Apollo
         private readonly SemaphoreSlim _eventSendSemaphore;
         private readonly ApolloServerEventLogger<TSchema> _logger;
         private readonly object _syncLock = new object();
-        private readonly Dictionary<SubscriptionEventName, HashSet<ISubscriptionClientProxy>> _subCountByName;
+        private readonly Dictionary<SubscriptionEventName, HashSet<ApolloClientProxy<TSchema>>> _subCountByName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloSubscriptionServer{TSchema}" /> class.
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Apollo
             _eventSendSemaphore = new SemaphoreSlim(_serverOptions.MaxConcurrentClientNotifications);
 
             _logger = logger != null ? new ApolloServerEventLogger<TSchema>(this, logger) : null;
-            _subCountByName = new Dictionary<SubscriptionEventName, HashSet<ISubscriptionClientProxy>>(
+            _subCountByName = new Dictionary<SubscriptionEventName, HashSet<ApolloClientProxy<TSchema>>>(
                 SubscriptionEventNameEqualityComparer.Instance);
 
             this.Id = Guid.NewGuid().ToString();
@@ -99,18 +99,22 @@ namespace GraphQL.AspNet.Apollo
             if (eventData == null)
                 return 0;
 
-            // grab a reference to all clients that need the event
-            var clientList = new List<ISubscriptionClientProxy>();
-            lock (_syncLock)
-            {
-                if (!_subCountByName.TryGetValue(eventData.ToSubscriptionEventName(), out var clients))
-                    return 0;
-
-                clientList.AddRange(clients);
-            }
-
             var eventRoute = _schema.RetrieveSubscriptionFieldPath(eventData.ToSubscriptionEventName());
             if (eventRoute == null)
+                return 0;
+
+            // grab a reference to all clients that need the event
+            var clientList = new List<ApolloClientProxy<TSchema>>();
+            lock (_syncLock)
+            {
+                if (_subCountByName.TryGetValue(eventData.ToSubscriptionEventName(), out var clients))
+                {
+                    clientList.AddRange(clients);
+                }
+            }
+
+            _logger?.EventReceived(eventData, clientList);
+            if (clientList.Count == 0)
                 return 0;
 
             var cancelSource = new CancellationTokenSource();
@@ -180,7 +184,7 @@ namespace GraphQL.AspNet.Apollo
 
         private void ApolloClient_SubscriptionRouteRemoved(object sender, ApolloSubscriptionFieldEventArgs e)
         {
-            var client = sender as ISubscriptionClientProxy<TSchema>;
+            var client = sender as ApolloClientProxy<TSchema>;
             if (client == null)
                 return;
 
@@ -208,7 +212,7 @@ namespace GraphQL.AspNet.Apollo
 
         private void ApolloClient_SubscriptionRouteAdded(object sender, ApolloSubscriptionFieldEventArgs e)
         {
-            var client = sender as ISubscriptionClientProxy<TSchema>;
+            var client = sender as ApolloClientProxy<TSchema>;
             if (client == null)
                 return;
 
@@ -218,7 +222,7 @@ namespace GraphQL.AspNet.Apollo
                 lock (_syncLock)
                 {
                     if (!_subCountByName.ContainsKey(name))
-                        _subCountByName.Add(name, new HashSet<ISubscriptionClientProxy>());
+                        _subCountByName.Add(name, new HashSet<ApolloClientProxy<TSchema>>());
 
                     _subCountByName[name].Add(client);
                     if (_subCountByName[name].Count == 1)

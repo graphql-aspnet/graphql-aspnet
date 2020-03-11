@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Apollo.Logging
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Apollo.Logging.ApolloEvents;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -62,6 +63,22 @@ namespace GraphQL.AspNet.Apollo.Logging
             _logger.Log(
                 LogLevel.Trace,
                 () => new ApolloServerEventMonitorEndedLogEntry<TSchema>(_server, eventName));
+        }
+
+        /// <summary>
+        /// Recorded when an Apollo Subscription Server instance receives an event
+        /// from the listener configured for this ASP.NET server instance.
+        /// </summary>
+        /// <param name="eventRecieved">The event that was recieved from the global listener.</param>
+        /// <param name="clientsToReceive">The filtered list of clients that will receive the event
+        /// from the server.</param>
+        public void EventReceived(
+              SubscriptionEvent eventRecieved,
+              IReadOnlyList<ApolloClientProxy<TSchema>> clientsToReceive)
+        {
+            _logger.Log(
+                LogLevel.Trace,
+                () => new ApolloServerSubscriptionEventReceived<TSchema>(_server, eventRecieved, clientsToReceive));
         }
     }
 }
