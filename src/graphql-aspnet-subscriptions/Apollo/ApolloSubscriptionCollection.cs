@@ -131,21 +131,21 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="route">The route.</param>
         /// <returns>IEnumerable&lt;ISubscription&lt;TSchema&gt;&gt;.</returns>
-        public IEnumerable<ISubscription<TSchema>> RetreiveByRoute(GraphFieldPath route)
+        public IReadOnlyList<ISubscription<TSchema>> RetreiveByRoute(GraphFieldPath route)
         {
-            IEnumerable<ISubscription<TSchema>> subs = null;
+            List<ISubscription<TSchema>> subs = new List<ISubscription<TSchema>>();
             if (route != null)
             {
                 lock (_syncLock)
                 {
                     if (_subsByRoute.ContainsKey(route))
                     {
-                        subs = new List<ISubscription<TSchema>>(_subsByRoute[route]);
+                        subs.AddRange(_subsByRoute[route]);
                     }
                 }
             }
 
-            return subs != null ? subs : Enumerable.Empty<ISubscription<TSchema>>();
+            return subs;
         }
 
         /// <summary>

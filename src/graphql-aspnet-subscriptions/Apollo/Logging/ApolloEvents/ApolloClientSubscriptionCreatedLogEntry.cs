@@ -14,17 +14,18 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded whenever an apollo client proxy drops a subscription registration.
+    /// Recorded whenever an apollo client proxy registers a new subscription
+    /// and can send data to the connected client when events are raised.
     /// </summary>
-    internal class ApolloSubscriptionStoppedLogEntry : GraphLogEntry
+    internal class ApolloClientSubscriptionCreatedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloSubscriptionStoppedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="ApolloClientSubscriptionCreatedLogEntry" /> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="subscription">The subscription that was created.</param>
-        public ApolloSubscriptionStoppedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
-            : base(ApolloLogEventIds.SubscriptionStarted)
+        public ApolloClientSubscriptionCreatedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
+            : base(ApolloLogEventIds.ClientSubscriptionStarted)
         {
             this.ClientId = client.Id;
             this.SubscriptionId = subscription.Id;
@@ -68,7 +69,7 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
-            return $"Subscription Stopped | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
+            return $"Subscription Started | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
         }
     }
 }

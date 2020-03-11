@@ -44,8 +44,18 @@ namespace GraphQL.AspNet.Apollo.Logging
         public const string CLIENT_COUNT = "clientCount";
 
         /// <summary>
+        /// The total number of subscriptions being reported on.
+        /// </summary>
+        public const string SUBSCRIPTION_COUNT = "subscriptionCount";
+
+        /// <summary>
         /// A collection of client ids being reported on.
         /// </summary>
         public const string CLIENT_IDS = "clientIds";
+
+        /// <summary>
+        /// A collection of subscription ids being reported on.
+        /// </summary>
+        public const string SUBSCRIPTION_IDS = "subscriptionIds";
     }
 }

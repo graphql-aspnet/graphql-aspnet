@@ -9,27 +9,28 @@
 
 namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
 {
+    using GraphQL.AspNet.Apollo.Messages;
+    using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded whenever an apollo client proxy registers a new subscription
-    /// and can send data to the connected client when events are raised.
+    /// Recorded when an apollo client proxy receives a new message from its connected client.
     /// </summary>
-    internal class ApolloSubscriptionCreatedLogEntry : GraphLogEntry
+    public class ApolloClientMessageReceivedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloSubscriptionCreatedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="ApolloClientMessageReceivedLogEntry"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        /// <param name="subscription">The subscription that was created.</param>
-        public ApolloSubscriptionCreatedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
-            : base(ApolloLogEventIds.SubscriptionStarted)
+        /// <param name="message">The message.</param>
+        public ApolloClientMessageReceivedLogEntry(ISubscriptionClientProxy client, ApolloMessage message)
+            : base(ApolloLogEventIds.ClientMessageReceived)
         {
             this.ClientId = client.Id;
-            this.SubscriptionId = subscription.Id;
-            this.Route = subscription.Route.Path;
+            this.MessageType = message.Type.ToString();
+            this.MessageId = message.Id;
         }
 
         /// <summary>
@@ -43,23 +44,23 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         }
 
         /// <summary>
-        /// Gets the client supplied id for the subscription.
+        /// Gets the <see cref="ApolloMessageType"/> of the message that was received.
         /// </summary>
-        /// <value>The subscription identifier.</value>
-        public string SubscriptionId
+        /// <value>The type of the message.</value>
+        public string MessageType
         {
-            get => this.GetProperty<string>(ApolloLogPropertyNames.SUBSCRIPTION_ID);
-            private set => this.SetProperty(ApolloLogPropertyNames.SUBSCRIPTION_ID, value);
+            get => this.GetProperty<string>(ApolloLogPropertyNames.MESSAGE_TYPE);
+            private set => this.SetProperty(ApolloLogPropertyNames.MESSAGE_TYPE, value);
         }
 
         /// <summary>
         /// Gets the id that was supplied by the client with the apollo message, if any.
         /// </summary>
         /// <value>The message identifier.</value>
-        public string Route
+        public string MessageId
         {
-            get => this.GetProperty<string>(ApolloLogPropertyNames.SUBSCRIPTION_ROUTE);
-            private set => this.SetProperty(ApolloLogPropertyNames.SUBSCRIPTION_ROUTE, value);
+            get => this.GetProperty<string>(ApolloLogPropertyNames.MESSAGE_ID);
+            private set => this.SetProperty(ApolloLogPropertyNames.MESSAGE_ID, value);
         }
 
         /// <summary>
@@ -69,7 +70,10 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
-            return $"Subscription Started | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
+            if (this.MessageId == null)
+                return $"Apollo Message Received | Client Id: {idTruncated} (Type: '{this.MessageType}')";
+            else
+                return $"Apollo Message Received | Client Id: {idTruncated}, Message Id: {this.MessageId} (Type: '{this.MessageType}')";
         }
     }
 }

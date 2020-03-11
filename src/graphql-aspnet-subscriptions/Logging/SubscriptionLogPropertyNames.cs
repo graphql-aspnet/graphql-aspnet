@@ -60,6 +60,11 @@ namespace GraphQL.AspNet.Logging
         public const string SUBSCRIPTION_EVENT_ID = "subscriptionEventId";
 
         /// <summary>
+        /// The unique route within a schema that a subscription event is being reported against.
+        /// </summary>
+        public const string SUBSCRIPTION_ROUTE = "subscriptionRoute";
+
+        /// <summary>
         /// The physical name of the ASP.NET server hosting subscriptions.
         /// </summary>
         public const string ASPNET_SERVER_INSTANCE_NAME = "machineName";

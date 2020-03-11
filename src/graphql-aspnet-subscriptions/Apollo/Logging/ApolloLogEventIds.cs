@@ -19,19 +19,30 @@ namespace GraphQL.AspNet.Apollo.Logging
         private const int BASE_APOLLO_EVENT_ID = 88000;
 
         /// <summary>
-        /// A new apollo message was received by an apollo client.
+        /// An apollo client proxy received a new apollo formatted message from its connected client.
         /// </summary>
-        public static EventId NewMessageReceived = new EventId(BASE_APOLLO_EVENT_ID + 120, "Apollo Message Received");
+        public static EventId ClientMessageReceived = new EventId(BASE_APOLLO_EVENT_ID + 110, "Apollo Client Message Received");
 
         /// <summary>
-        /// An apollo client began a monitoring a new subscription.
+        /// An apollo client proxy generated a apollo message and sent it to its connected client.
         /// </summary>
-        public static EventId SubscriptionStarted = new EventId(BASE_APOLLO_EVENT_ID + 130, "Apollo Subscription Started");
+        public static EventId ClientMessageSent = new EventId(BASE_APOLLO_EVENT_ID + 120, "Apollo Client Message Sent");
 
         /// <summary>
-        /// An apollo client stopped monitoring an existing subscription.
+        /// An apollo client proxy began a monitoring a new subscription.
         /// </summary>
-        public static EventId SubscriptionStopped = new EventId(BASE_APOLLO_EVENT_ID + 140, "Apollo Subscription Stopped");
+        public static EventId ClientSubscriptionStarted = new EventId(BASE_APOLLO_EVENT_ID + 130, "Apollo Client Subscription Started");
+
+        /// <summary>
+        /// An apollo client proxy stopped monitoring an existing subscription.
+        /// </summary>
+        public static EventId ClientSubscriptionStopped = new EventId(BASE_APOLLO_EVENT_ID + 140, "Apollo Client Subscription Stopped");
+
+        /// <summary>
+        /// An apollo client proxy has received an event from its server component and is executing it
+        /// against any monitored subscriptions for its connected client.
+        /// </summary>
+        public static EventId ClientSubscriptionEventRecieved = new EventId(BASE_APOLLO_EVENT_ID + 150, "Apollo Client Subscription Event Received");
 
         /// <summary>
         /// An apollo server component registered a request with the listener to start

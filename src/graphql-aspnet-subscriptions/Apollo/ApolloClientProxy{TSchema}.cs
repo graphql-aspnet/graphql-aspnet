@@ -562,8 +562,14 @@ namespace GraphQL.AspNet.Apollo
         public async Task ReceiveEvent(GraphFieldPath field, object sourceData, CancellationToken cancelToken = default)
         {
             await Task.Yield();
+
+            if (field == null)
+                return;
+
             var subscriptions = _subscriptions.RetreiveByRoute(field);
-            if (!subscriptions.Any())
+
+            _logger?.SubscriptionEventReceived(field, subscriptions);
+            if (subscriptions.Count == 0)
                 return;
 
             var runtime = this.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();

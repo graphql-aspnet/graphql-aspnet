@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         public override string ToString()
         {
             var idTruncated = this.SubscriptionEventId?.Length > 8 ? this.SubscriptionEventId.Substring(0, 8) : this.SubscriptionEventId;
-            return $"Subscription Event Recieved | Server: {this.MachineName}, EventName: '{this.SchemaEventName}' (Id: {idTruncated})";
+            return $"Global Event Received | Server: {this.MachineName}, EventName: '{this.SchemaEventName}' (Id: {idTruncated})";
         }
     }
 }

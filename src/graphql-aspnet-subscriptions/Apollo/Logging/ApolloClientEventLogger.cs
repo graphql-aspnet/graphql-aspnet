@@ -9,12 +9,14 @@
 
 namespace GraphQL.AspNet.Apollo.Logging
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Apollo.Logging.ApolloEvents;
     using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -48,7 +50,7 @@ namespace GraphQL.AspNet.Apollo.Logging
         {
             _logger.Log(
                 LogLevel.Trace,
-                () => new ApolloMessageReceivedLogEntry(_client, message));
+                () => new ApolloClientMessageReceivedLogEntry(_client, message));
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace GraphQL.AspNet.Apollo.Logging
         {
             _logger.Log(
                 LogLevel.Trace,
-                () => new ApolloMessageSentLogEntry(_client, message));
+                () => new ApolloClientMessageSentLogEntry(_client, message));
         }
 
         /// <summary>
@@ -72,7 +74,20 @@ namespace GraphQL.AspNet.Apollo.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new ApolloSubscriptionCreatedLogEntry(_client, subscription));
+                () => new ApolloClientSubscriptionCreatedLogEntry(_client, subscription));
+        }
+
+        /// <summary>
+        /// Recorded when the client drops a subscription
+        /// and will no longer send data to it when events ar eraised.
+        /// </summary>
+        /// <param name="fieldPath">The field path of the event that was received.</param>
+        /// <param name="subscriptionsToReceive">The subscriptions set to receive the event.</param>
+        public void SubscriptionEventReceived(GraphFieldPath fieldPath, IReadOnlyList<ISubscription> subscriptionsToReceive)
+        {
+            _logger.Log(
+                LogLevel.Debug,
+                () => new ApolloClientSubscriptionEventReceived<TSchema>(_client, fieldPath, subscriptionsToReceive));
         }
 
         /// <summary>
@@ -84,7 +99,7 @@ namespace GraphQL.AspNet.Apollo.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new ApolloSubscriptionStoppedLogEntry(_client, subscription));
+                () => new ApolloClientSubscriptionStoppedLogEntry(_client, subscription));
         }
     }
 }

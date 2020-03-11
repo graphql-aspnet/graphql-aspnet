@@ -16,17 +16,17 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded when an apollo client proxy receives a new message from its connected client.
+    /// Recorded when an apollo client proxy sends a message down to its connected client.
     /// </summary>
-    public class ApolloMessageReceivedLogEntry : GraphLogEntry
+    public class ApolloClientMessageSentLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApolloMessageReceivedLogEntry"/> class.
+        /// Initializes a new instance of the <see cref="ApolloClientMessageSentLogEntry"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="message">The message.</param>
-        public ApolloMessageReceivedLogEntry(ISubscriptionClientProxy client, ApolloMessage message)
-            : base(ApolloLogEventIds.NewMessageReceived)
+        public ApolloClientMessageSentLogEntry(ISubscriptionClientProxy client, ApolloMessage message)
+            : base(ApolloLogEventIds.ClientMessageSent)
         {
             this.ClientId = client.Id;
             this.MessageType = message.Type.ToString();
@@ -71,9 +71,9 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
             if (this.MessageId == null)
-                return $"Apollo Message Received | Client Id: {idTruncated} (Type: '{this.MessageType}')";
+                return $"Apollo Message Sent | Client Id: {idTruncated} (Type: '{this.MessageType}')";
             else
-                return $"Apollo Message Received | Client Id: {idTruncated}, Message Id: {this.MessageId} (Type: '{this.MessageType}')";
+                return $"Apollo Message Sent | Client Id: {idTruncated}, Message Id: {this.MessageId} (Type: '{this.MessageType}')";
         }
     }
 }
