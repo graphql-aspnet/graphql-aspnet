@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// names are case sensitive and should match the public name as its defined on the target schema.
         /// </summary>
         /// <param name="argumentName">Name of the argument to return.</param>
-        /// <returns>IGraphType.</returns>
+        /// <returns>IGraphFieldArgument.</returns>
         IGraphFieldArgument this[string argumentName] { get; }
 
         /// <summary>

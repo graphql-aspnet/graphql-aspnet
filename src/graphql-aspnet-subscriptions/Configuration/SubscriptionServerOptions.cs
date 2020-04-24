@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -73,11 +74,27 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// <para>
         /// Gets or sets the maximum number of connected clients the server will communicate with
-        /// at any given time.  If the collected sum total of subscriptions set to receive any given event (or events) exceeds
-        /// this value additional subscription communications are throttled (Default: 50 connections).
+        /// at any given time.  If the collected sum total of clients set to receive any given event (or events) exceeds
+        /// this value additional communications are throttled (Default: 50 connections).
         /// </para>
         /// </summary>
         /// <value>The maximum concurrent client notifications.</value>
         public int MaxConcurrentClientNotifications { get; set; } = 50;
+
+        /// <summary>
+        /// <para>
+        /// Gets or sets a value indicating whether connected clients must be authenticated in order
+        /// for their connection to be accepted. When true, unauthenticated clients are immediately rejected.
+        /// </para>
+        /// <para>In general, thsi means supplying a bearer token, cookie or other authentication measure
+        /// that is validated prior to the acceptance of a web socket.  Different server implementations will
+        /// expect different requirements.</para>
+        /// <para>This does not guarantee field level access for any queries or subscription registrations
+        /// made through the connection. Those will be evaluated individually
+        /// at the time of request or execution depending on the runtime configuration.</para>
+        /// </summary>
+        /// <value><c>true</c> if an authenticated request is required to complete
+        /// a subscription client connection; otherwise, <c>false</c>.</value>
+        public bool RequiredAuthenticatedConnection { get; set; } = false;
     }
 }

@@ -46,12 +46,27 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// <param name="cancellationToken">The token that can be used to propagate notification that operations should be
         /// canceled.</param>
         /// <returns>Task.</returns>
-        public Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
+        public async Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
-            return _webSocket.CloseAsync(
-                closeStatus.ToWebSocketCloseStatus(),
-                statusDescription,
-                cancellationToken);
+            try
+            {
+                await _webSocket.CloseAsync(
+                    closeStatus.ToWebSocketCloseStatus(),
+                    statusDescription,
+                    cancellationToken)
+                        .ConfigureAwait(false);
+            }
+            catch (WebSocketException wse)
+            {
+                if (wse.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+                {
+                    // ignore
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         /// <summary>

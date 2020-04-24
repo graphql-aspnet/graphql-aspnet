@@ -16,9 +16,11 @@ namespace GraphQL.AspNet.Apollo
     using System.Threading.Tasks;
     using GraphQL.AspNet.Apollo.Logging;
     using GraphQL.AspNet.Apollo.Messages.Converters;
+    using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -161,12 +163,11 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="connection">The connection representing the newly connected client.</param>
         /// <returns>A value indicating if the subscription was successfully added.</returns>
-        public Task<ISubscriptionClientProxy> RegisterNewClient(IClientConnection connection)
+        public async Task<ISubscriptionClientProxy> RegisterNewClient(IClientConnection connection)
         {
             Validation.ThrowIfNull(connection, nameof(connection));
 
             var logger = connection.ServiceProvider.GetService<IGraphEventLogger>();
-
             var apolloClient = new ApolloClientProxy<TSchema>(
                 connection,
                 _serverOptions,
@@ -174,12 +175,29 @@ namespace GraphQL.AspNet.Apollo
                 logger,
                 _schema.Configuration.ExecutionOptions.EnableMetrics);
 
+            var isAuthenticated = connection.User?.Identities.Any(x => x.IsAuthenticated) ?? false;
+            if (_serverOptions.RequiredAuthenticatedConnection && !isAuthenticated)
+            {
+                await apolloClient.SendMessage(
+                    new ApolloServerErrorMessage(
+                        "Unauthorized request.",
+                        Constants.ErrorCodes.ACCESS_DENIED,
+                        lastMessageId: null));
+
+                await apolloClient.CloseConnection(
+                    ClientConnectionCloseStatus.ProtocolError,
+                    "Unauthorized Request",
+                    default);
+
+                return null;
+            }
+
             apolloClient.ConnectionOpening += this.ApolloClient_ConnectionOpening;
             apolloClient.ConnectionClosed += this.ApolloClient_ConnectionClosed;
             apolloClient.SubscriptionRouteAdded += this.ApolloClient_SubscriptionRouteAdded;
             apolloClient.SubscriptionRouteRemoved += this.ApolloClient_SubscriptionRouteRemoved;
 
-            return apolloClient.AsCompletedTask<ISubscriptionClientProxy>();
+            return apolloClient;
         }
 
         private void ApolloClient_SubscriptionRouteRemoved(object sender, ApolloSubscriptionFieldEventArgs e)

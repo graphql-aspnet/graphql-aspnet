@@ -11,10 +11,12 @@ namespace GraphQL.AspNet.Defaults
 {
     using System;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -81,17 +83,19 @@ namespace GraphQL.AspNet.Defaults
                         .ConfigureAwait(false);
 
                     var socketProxy = new WebSocketClientConnection(webSocket, context);
-
                     var subscriptionClient = await _subscriptionServer
                             .RegisterNewClient(socketProxy)
                             .ConfigureAwait(false);
 
-                    logger?.SubscriptionClientRegistered(_subscriptionServer, subscriptionClient);
+                    if (subscriptionClient != null)
+                    {
+                        logger?.SubscriptionClientRegistered(_subscriptionServer, subscriptionClient);
 
-                    // hold the client connection until its released
-                    await subscriptionClient.StartConnection().ConfigureAwait(false);
+                        // hold the client connection until its released
+                        await subscriptionClient.StartConnection().ConfigureAwait(false);
 
-                    logger?.SubscriptionClientDropped(subscriptionClient);
+                        logger?.SubscriptionClientDropped(subscriptionClient);
+                    }
                 }
                 catch (Exception ex)
                 {

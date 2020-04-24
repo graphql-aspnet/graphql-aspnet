@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             if (SCHEMA_REGISTRATIONS.ContainsKey(typeof(TSchema)))
             {
                 throw new GraphTypeDeclarationException(
-                    $"A schema type {typeof(GraphSchema).FriendlyName()} has already been registered. " +
+                    $"A schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
                     "Eac schema type may only be registered once with GraphQL.");
             }
 

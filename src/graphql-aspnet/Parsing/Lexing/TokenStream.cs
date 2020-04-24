@@ -243,7 +243,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                     return this.ActiveToken.Text;
 
                 default:
-                    return this.ActiveToken.TokenType.Description();
+                    return tokenType.Description();
             }
         }
 
