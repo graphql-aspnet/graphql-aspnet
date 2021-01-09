@@ -6,8 +6,8 @@
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;IDE0019;IDE0017;RCS1146;RCS1194;</NoWarn>
     <RootNamespace>GraphQL.AspNet</RootNamespace>
     <AssemblyName>GraphQL.AspNet.Subscriptions</AssemblyName>
-    <Title>GraphQL ASP.NET Subscriptions</Title>
     <Company>GraphQL ASP.NET</Company>
+    <Title>GraphQL ASP.NET Subscriptions</Title>
     <Product>GraphQL ASP.NET</Product>
     <Authors>Kevin Carroll</Authors>
     <IncludeSymbols>true</IncludeSymbols>
@@ -56,9 +56,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\graphql-aspnet\graphql-aspnet.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Interfaces\Schema\TypeSystem\" />
   </ItemGroup>
 </Project>
