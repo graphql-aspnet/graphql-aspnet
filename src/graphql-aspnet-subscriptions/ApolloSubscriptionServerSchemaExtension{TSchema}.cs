@@ -12,6 +12,7 @@ namespace GraphQL.AspNet
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Apollo;
+    using GraphQL.AspNet.Apollo.Exceptions;
     using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
@@ -22,7 +23,9 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
+    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
+    using GraphQL.AspNet.Security;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -34,6 +37,11 @@ namespace GraphQL.AspNet
     public class ApolloSubscriptionServerSchemaExtension<TSchema> : ISchemaExtension
         where TSchema : class, ISchema
     {
+        /// <summary>
+        /// The required authentication method necessary for this extension to function.
+        /// </summary>
+        public const AuthorizationMethod REQUIRED_AUTH_METHOD = AuthorizationMethod.PerRequest;
+
         private readonly ISchemaBuilder<TSchema> _schemaBuilder;
         private SchemaOptions _primaryOptions;
 
@@ -63,6 +71,24 @@ namespace GraphQL.AspNet
             _primaryOptions = options;
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
 
+            // enforce a default auth method for the server instance
+            // if one was not set explicitly by the developer
+            if (!_primaryOptions.AuthorizationOptions.Method.HasValue)
+                _primaryOptions.AuthorizationOptions.Method = REQUIRED_AUTH_METHOD;
+
+            // Security requirement for this component
+            // --------------------------
+            // this component MUST use per request authorization
+            // a subscription query is then checked before its registered
+            // as opposed to when its executed
+            var authMethod = _primaryOptions.AuthorizationOptions.Method;
+            if (!authMethod.HasValue || authMethod != REQUIRED_AUTH_METHOD)
+            {
+                throw new ApolloSubscriptionServerException(
+                    $"Invalid Authorization Method. The default, apollo compliant, subscription server requires a \"{REQUIRED_AUTH_METHOD}\" " +
+                    $"authorization method. (Current authorization method is \"{_schemaBuilder.Options.AuthorizationOptions.Method}\")");
+            }
+
             // swap out the master providers for the ones that includes
             // support for the subscription action type
             if (!(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider))
@@ -71,10 +97,24 @@ namespace GraphQL.AspNet
             if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
                 GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
 
+            // Update the query execution pipeline
+            // ------------------------------------------
             // wipe out the current execution pipeline and rebuild with subscription creation middleware injected
             _schemaBuilder.QueryExecutionPipeline.Clear();
             var subscriptionQueryExecutionHelper = new SubscriptionExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
             subscriptionQueryExecutionHelper.AddDefaultMiddlewareComponents();
+
+            // Update field execution pipeline
+            // -----------------------------
+            // because the authorization method may have changed
+            // rebuild the field execution pipeline as well.
+            // This may happen when no method is declared for 'options.AuthorizationOptions.Method'
+            // allowing the defaults to propegate during pipeline creation.            //
+            // The default for the basic server is "per field"
+            // The required value for subscriptions is "per request"
+            _schemaBuilder.FieldExecutionPipeline.Clear();
+            var fieldExecutionHelper = new FieldExecutionPipelineHelper<TSchema>(_schemaBuilder.FieldExecutionPipeline);
+            fieldExecutionHelper.AddDefaultMiddlewareComponents();
 
             // the primary subscription options for the schema
             this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));

@@ -13,6 +13,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -48,9 +49,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             serverBuilder.AddSchemaBuilderAction(schemaBuilder =>
             {
-                schemaBuilder.AsServiceCollection().AddSingleton<ISubscriptionEventListener, InProcessSubscriptionEventListener>();
-                var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
-                schemaBuilder.Options.RegisterExtension(extension);
+                DefaultSubscriptionBuilderExtensions
+                .AddSubscriptionServer(schemaBuilder, options);
             });
 
             return serverBuilder;

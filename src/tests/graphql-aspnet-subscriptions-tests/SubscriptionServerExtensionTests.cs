@@ -9,7 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests
 {
-    using System;
     using System.Linq;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Apollo.Messages.Converters;
@@ -19,10 +18,10 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
@@ -34,8 +33,11 @@ namespace GraphQL.Subscriptions.Tests
             CreateSchemaBuilderMock()
         {
             var queryPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphQueryExecutionContext>, GraphQueryExecutionContext>>();
+            var fieldPipeline = new Mock<ISchemaPipelineBuilder<GraphSchema, IGraphMiddlewareComponent<GraphFieldExecutionContext>, GraphFieldExecutionContext>>();
+
             var builder = new Mock<ISchemaBuilder<GraphSchema>>();
             builder.Setup(x => x.QueryExecutionPipeline).Returns(queryPipeline.Object);
+            builder.Setup(x => x.FieldExecutionPipeline).Returns(fieldPipeline.Object);
 
             queryPipeline.Setup(x => x.Clear());
             queryPipeline.Setup(x => x.AddMiddleware<IGraphMiddlewareComponent<GraphQueryExecutionContext>>(

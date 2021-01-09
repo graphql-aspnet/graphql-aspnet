@@ -305,7 +305,7 @@ namespace GraphQL.AspNet.Defaults
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new ActionMethodInvocationCompletedLogEntry(action, request, request);
+            var entry = new ActionMethodInvocationCompletedLogEntry(action, request, result);
             this.LogEvent(LogLevel.Trace, entry);
         }
 

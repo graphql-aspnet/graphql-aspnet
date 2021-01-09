@@ -11,12 +11,15 @@ namespace GraphQL.Subscriptions.Tests.Configuration
 {
     using System;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Apollo.Exceptions;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
@@ -48,6 +51,78 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure both publishing and server stuff has been registered
             this.EnsureSubscriptionServerRegistrations(sp);
             this.EnsureSubscriptionPublishingRegistrations(sp);
+        }
+        [Test]
+        public void ExplicitDeclarationOfPerFieldAuthorizationFailsServerCreation()
+        {
+            // setup the server with a hard declaration of nothing
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            // ensure the runtime is in a default state (just in case the statics got messed up)
+            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
+            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
+            GraphQLMvcSchemaBuilderExtensions.Clear();
+
+            var serviceCollection = new ServiceCollection();
+            var schemaBuilder = serviceCollection.AddGraphQL(options =>
+            {
+                options.AddGraphType<FanController>();
+                options.AuthorizationOptions.Method = AuthorizationMethod.PerField;
+            });
+
+            // server should value to generate
+            Assert.Throws<ApolloSubscriptionServerException>(
+                () =>
+                {
+                    schemaBuilder.AddSubscriptionServer();
+                });
+        }
+
+        [Test]
+        public void ExplicitDeclarationOfPerRequestAuthorizationAddsServerSuccessfully()
+        {
+            // setup the server with a hard declaration of nothing
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            // ensure the runtime is in a default state (just in case the statics got messed up)
+            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
+            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
+            GraphQLMvcSchemaBuilderExtensions.Clear();
+
+            var serviceCollection = new ServiceCollection();
+            var returned = serviceCollection.AddGraphQL(options =>
+            {
+                options.AddGraphType<FanController>();
+                options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;
+            })
+            .AddSubscriptionServer();
+
+            this.EnsureSubscriptionServerRegistrations(serviceCollection.BuildServiceProvider());
+        }
+
+        [Test]
+        public void NonExplicitDeclarationResultsInPerRequestAndAddsServerSuccessfully()
+        {
+            // setup the server with a hard declaration of nothing
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            // ensure the runtime is in a default state (just in case the statics got messed up)
+            GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
+            GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
+            GraphQLMvcSchemaBuilderExtensions.Clear();
+
+            SchemaOptions<GraphSchema> optionsSaved = null;
+            var serviceCollection = new ServiceCollection();
+            var returned = serviceCollection.AddGraphQL(options =>
+            {
+                options.AddGraphType<FanController>();
+                options.AuthorizationOptions.Method = null;
+                optionsSaved = options;
+            })
+            .AddSubscriptionServer();
+
+            Assert.AreEqual(AuthorizationMethod.PerRequest, optionsSaved.AuthorizationOptions.Method);
+            this.EnsureSubscriptionServerRegistrations(serviceCollection.BuildServiceProvider());
         }
 
         [Test]

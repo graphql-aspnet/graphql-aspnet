@@ -130,7 +130,8 @@ namespace GraphQL.AspNet.Execution.InputModel
             var context = new ValidationContext(inputValue, _serviceProvider, null);
             var isValid = Validator.TryValidateObject(inputValue, context, results, true);
 
-            entry.ValidationState = isValid ? InputModelValidationState.Valid : InputModelValidationState.Invalid;
+            if (entry.ValidationState != InputModelValidationState.Invalid)
+                entry.ValidationState = isValid ? InputModelValidationState.Valid : InputModelValidationState.Invalid;
 
             // extract all the errors that may have occured as a result of the validation operation
             if (!isValid)

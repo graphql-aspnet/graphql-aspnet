@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Configuration
 {
     using System.Dynamic;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Schemas;
     using NUnit.Framework;

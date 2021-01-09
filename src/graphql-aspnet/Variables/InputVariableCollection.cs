@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Variables
         /// </summary>
         /// <param name="jsonDocument">The json document.</param>
         /// <returns>IInputVariableCollection.</returns>
-        public static IInputVariableCollection FromJsonDocument(string jsonDocument)
+        public static InputVariableCollection FromJsonDocument(string jsonDocument)
         {
             var options = new JsonSerializerOptions()
             {
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Variables
         /// Gets a singleton instance of an empty variable collection.
         /// </summary>
         /// <value>The empty.</value>
-        public static IInputVariableCollection Empty { get; }
+        public static InputVariableCollection Empty { get; }
 
         /// <summary>
         /// Initializes static members of the <see cref="InputVariableCollection"/> class.

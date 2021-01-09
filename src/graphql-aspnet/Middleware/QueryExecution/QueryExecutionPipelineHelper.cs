@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A decorator for the query execution pipeline builder to configure default components.
@@ -49,7 +50,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
                 .AddQueryPlanCreationMiddleware()
                 .AddQueryAssignOperationMiddleware();
 
-            if (options == null || options.AuthorizationOptions.Method == Security.AuthorizationMethod.PerRequest)
+            var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
+            if (authOption == Security.AuthorizationMethod.PerRequest)
             {
                 this.AddQueryOperationAuthorizationMiddleware();
             }

@@ -133,7 +133,6 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(extension, nameof(extension));
 
             extension.Configure(this);
-
             _extensions.Add(extension.GetType(), extension);
 
             if (extension.RequiredServices != null)

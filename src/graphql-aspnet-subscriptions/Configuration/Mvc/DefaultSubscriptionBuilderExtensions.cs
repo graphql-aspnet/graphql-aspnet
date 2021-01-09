@@ -10,19 +10,21 @@
 namespace GraphQL.AspNet.Configuration.Mvc
 {
     using System;
+    using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
+    using GraphQL.AspNet.Security;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// A set of extensions to configure web socket support at startup.
     /// </summary>
-    public static class GraphQLMvcSchemaWebSocketBuilderExtensions
+    public static class DefaultSubscriptionBuilderExtensions
     {
         /// <summary>
         /// Adds the ability for this graphql server to raise subscription events as well
@@ -131,7 +133,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             // register the custom listener type to the service collection before
             // the extension can register the default
-            extension.RequiredServices.Add(CreateDefaultSubscriptionListenerServiceDescriptor());
+            var defaultListenerDescriptor = CreateDefaultSubscriptionListenerServiceDescriptor();
+            extension.RequiredServices.Add(defaultListenerDescriptor);
 
             schemaBuilder.Options.RegisterExtension(extension);
 

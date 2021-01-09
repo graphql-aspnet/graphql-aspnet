@@ -9,12 +9,15 @@
 
 namespace GraphQL.AspNet.Middleware.SubcriptionExecution
 {
+    using System;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A decorator for the query execution pipeline builder to configure default components.
@@ -50,9 +53,16 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
                 .AddQueryPlanCreationMiddleware()
                 .AddQueryAssignOperationMiddleware();
 
-            if (options == null || options.AuthorizationOptions.Method == Security.AuthorizationMethod.PerRequest)
+            var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerRequest;
+            if (authOption == AuthorizationMethod.PerRequest)
             {
                 this.AddQueryOperationAuthorizationMiddleware();
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Invalid Authorization Method. The default subscription schema pipeline requires a \"{nameof(AuthorizationMethod.PerRequest)}\" " +
+                    $"authorization method. (Current authorization method is \"{options.AuthorizationOptions.Method}\")");
             }
 
             this.AddSubscriptionCreationMiddleware();
