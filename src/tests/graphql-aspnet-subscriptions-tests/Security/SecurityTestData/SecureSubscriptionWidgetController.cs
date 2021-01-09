@@ -1,9 +1,16 @@
-﻿namespace GraphQL.Subscriptions.Tests.Security.SecurityTestData
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.Subscriptions.Tests.Security.SecurityTestData
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Text;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
@@ -13,7 +20,6 @@
 
     public class SecureSubscriptionWidgetController : GraphController
     {
-
         [Mutation("updateSecureWidget", typeof(SubscriptionSecureWidget))]
         [Description("Retrieves a single starship by its given id.")]
         public Task<IGraphActionResult> UpdateStarship(SubscriptionSecureWidget widget)
@@ -48,7 +54,7 @@
         }
 
         [Authorize("SecureWidgetPolicy")]
-        [TypeExtension(typeof(SubscriptionSecureWidget),"secureDate",typeof(DateTime))]
+        [TypeExtension(typeof(SubscriptionSecureWidget), "secureDate", typeof(DateTime))]
         public IGraphActionResult SecureWidgetDate(SubscriptionSecureWidget widget)
         {
             return this.Ok(DateTime.UtcNow);
@@ -59,6 +65,5 @@
         {
             return this.Ok(DateTime.UtcNow);
         }
-
     }
 }

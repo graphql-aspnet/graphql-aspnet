@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.StarWarsAPI30
+namespace GraphQL.AspNet.StarWarsAPI3X
 {
     using System;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;

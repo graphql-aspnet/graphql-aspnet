@@ -22,9 +22,8 @@ namespace GraphQL.AspNet.Apollo.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public ApolloSubscriptionServerException(string message)
-            : base (message)
+            : base(message)
         {
-
         }
     }
 }

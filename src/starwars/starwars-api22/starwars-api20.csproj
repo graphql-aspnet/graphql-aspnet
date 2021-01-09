@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603</NoWarn>
     <RootNamespace>GraphQL.AspNet.StarWarsAPI</RootNamespace>
-    <AssemblyName>GraphQL.AspNet.StarWarsAPI22</AssemblyName>
+    <AssemblyName>GraphQL.AspNet.StarWarsAPI2X</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

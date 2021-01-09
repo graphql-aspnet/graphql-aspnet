@@ -101,8 +101,8 @@ namespace GraphQL.AspNet
             // ------------------------------------------
             // wipe out the current execution pipeline and rebuild with subscription creation middleware injected
             _schemaBuilder.QueryExecutionPipeline.Clear();
-            var subscriptionQueryExecutionHelper = new SubscriptionExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
-            subscriptionQueryExecutionHelper.AddDefaultMiddlewareComponents();
+            var subscriptionQueryExecutionHelper = new SubscriptionQueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
+            subscriptionQueryExecutionHelper.AddDefaultMiddlewareComponents(_primaryOptions);
 
             // Update field execution pipeline
             // -----------------------------
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet
             // The required value for subscriptions is "per request"
             _schemaBuilder.FieldExecutionPipeline.Clear();
             var fieldExecutionHelper = new FieldExecutionPipelineHelper<TSchema>(_schemaBuilder.FieldExecutionPipeline);
-            fieldExecutionHelper.AddDefaultMiddlewareComponents();
+            fieldExecutionHelper.AddDefaultMiddlewareComponents(_primaryOptions);
 
             // the primary subscription options for the schema
             this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));

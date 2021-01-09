@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-testframewor
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starwars", "starwars", "{22C7BC5B-EC8E-4A07-9968-961E86AB44E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starwars-api22", "starwars\starwars-api22\starwars-api22.csproj", "{3C0F7A90-1A9D-4EC3-AD67-E301DFD691AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starwars-api20", "starwars\starwars-api22\starwars-api20.csproj", "{3C0F7A90-1A9D-4EC3-AD67-E301DFD691AF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starwars-api30", "starwars\starwars-api30\starwars-api30.csproj", "{A72AD4F1-861B-4C04-BB3D-36DEDDD31E90}"
 EndProject
@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-tests", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-subscriptions", "graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj", "{B001470A-B600-4E91-83B7-371756AE60C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graphql-aspnet-subscriptions-tests", "tests\graphql-aspnet-subscriptions-tests\graphql-aspnet-subscriptions-tests.csproj", "{3D65B19B-8E92-4C3A-AC72-7D60CA7EC15A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-subscriptions-tests", "tests\graphql-aspnet-subscriptions-tests\graphql-aspnet-subscriptions-tests.csproj", "{3D65B19B-8E92-4C3A-AC72-7D60CA7EC15A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

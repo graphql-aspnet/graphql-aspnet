@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.StarWarsAPI
+namespace GraphQL.AspNet.StarWarsAPI2X
 {
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.StarWarsAPI
               });
 
             services.AddMvcCore()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddFormatterMappings()
                 .AddJsonFormatters()
                 .AddDataAnnotations();

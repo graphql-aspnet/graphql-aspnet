@@ -52,6 +52,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             this.EnsureSubscriptionServerRegistrations(sp);
             this.EnsureSubscriptionPublishingRegistrations(sp);
         }
+
         [Test]
         public void ExplicitDeclarationOfPerFieldAuthorizationFailsServerCreation()
         {

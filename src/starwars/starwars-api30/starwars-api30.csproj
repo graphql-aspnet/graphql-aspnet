@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603</NoWarn>
-    <RootNamespace>GraphQL.AspNet.StarWarsAPI30</RootNamespace>
-    <AssemblyName>GraphQL.AspNet.StarwarsAPI30</AssemblyName>
+    <RootNamespace>GraphQL.AspNet.StarWarsAPI3X</RootNamespace>
+    <AssemblyName>GraphQL.AspNet.StarwarsAPI3X</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
