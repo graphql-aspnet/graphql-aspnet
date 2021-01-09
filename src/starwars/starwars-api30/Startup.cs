@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.StarWarsAPI3X
     {
         private const string ALL_ORIGINS_POLICY = "_allOrigins";
 
-        private readonly static TimeSpan SOCKET_CONNECTION_KEEPALIVE = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan SOCKET_CONNECTION_KEEPALIVE = TimeSpan.FromSeconds(10);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
