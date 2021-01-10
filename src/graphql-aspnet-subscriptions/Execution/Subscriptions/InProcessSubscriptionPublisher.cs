@@ -15,32 +15,35 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
     /// <summary>
     /// A subscription server proxy that executes in process and will raise events directly to the
-    /// configured <see cref="ISubscriptionEventListener"/>. This object only raises events
+    /// configured <see cref="ISubscriptionEventRouter"/>. This object only raises events
     /// to the locally attached graphql subscription server and DOES NOT scale.
     /// See demo projects for scalable subscription configurations.
     /// </summary>
     public class InProcessSubscriptionPublisher : ISubscriptionEventPublisher
     {
-        private readonly ISubscriptionEventListener _eventListener;
+        private readonly ISubscriptionEventRouter _eventRouter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InProcessSubscriptionPublisher"/> class.
         /// </summary>
-        /// <param name="eventListener">The event listener.</param>
-        public InProcessSubscriptionPublisher(ISubscriptionEventListener eventListener = null)
+        /// <param name="eventRouter">The event router to push messages to.</param>
+        public InProcessSubscriptionPublisher(ISubscriptionEventRouter eventRouter = null)
         {
-            _eventListener = Validation.ThrowIfNullOrReturn(eventListener, nameof(eventListener));
+            _eventRouter = Validation.ThrowIfNullOrReturn(eventRouter, nameof(eventRouter));
         }
 
         /// <summary>
-        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventListener" /> could
+        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventRouter" /> could
         /// receive it for processing.
         /// </summary>
         /// <param name="eventData">The event to publish.</param>
         /// <returns>Task.</returns>
         public Task PublishEvent(SubscriptionEvent eventData)
         {
-            return _eventListener.RaiseEvent(eventData);
+            // this in process publisher pushes events raised
+            // by mutations and queries directly into the DI-configured router
+            // for immediate dispatch
+            return _eventRouter.RaiseEvent(eventData);
         }
     }
 }

@@ -21,11 +21,12 @@ namespace GraphQL.AspNet.Controllers
     public static class GraphQLControllerExtensions
     {
         /// <summary>
-        /// Publishes the subscription event. If the <paramref name="dataObject"/> is null the event
+        /// Publishes the supplied data to the well-known internal event name, informing
+        /// all listening subscriptions of the change. If the <paramref name="dataObject"/> is null the event
         /// is automatically canceled.
         /// </summary>
         /// <param name="controller">The controller from where the event is originating.</param>
-        /// <param name="eventName">Name of the event to be raised.</param>
+        /// <param name="eventName">Name of the well-known event to be raised.</param>
         /// <param name="dataObject">The data object to pass with the event.</param>
         public static void PublishSubscriptionEvent(this GraphController controller, string eventName, object dataObject)
         {

@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Apollo
     public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>, ISubscriptionEventReceiver
         where TSchema : class, ISchema
     {
-        private readonly ISubscriptionEventListener _listener;
+        private readonly ISubscriptionEventRouter _listener;
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
         private readonly TSchema _schema;
         private readonly SubscriptionServerOptions<TSchema> _serverOptions;
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Apollo
         public ApolloSubscriptionServer(
             TSchema schema,
             SubscriptionServerOptions<TSchema> options,
-            ISubscriptionEventListener listener,
+            ISubscriptionEventRouter listener,
             IGraphEventLogger logger = null)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Apollo
 
             await Task.WhenAll(allTasks).ConfigureAwait(false);
 
-            // re-await any faulted tasks so tehy can unbuble any exceptions
+            // re-await any faulted tasks so tehy can unbubble any exceptions
             foreach (var task in allTasks.Where(x => x.IsFaulted))
                 await task.ConfigureAwait(false);
 

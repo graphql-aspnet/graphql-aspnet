@@ -13,20 +13,25 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
-    /// An interface describing a mechanism for a listener to recieve new instructions
-    /// about the events it should be listening for.
+    /// An interface describing an object for a receiving events from a "source" and routing them to
+    /// the correct recievers that should handle the event. This object is typically used by
+    /// an external, platform dependent listener (such as a service bus client) and is
+    /// used to route deserialized events intothe graphql subscription server instance present for each
+    /// declared schema.
     /// </summary>
-    public interface ISubscriptionEventListener
+    public interface ISubscriptionEventRouter
     {
         /// <summary>
-        /// Forces this listener to raise the given event. May not be invocable by all listeners.
+        /// Instructs this router to raise the supplied event to each subscribed
+        /// receiver
         /// </summary>
         /// <param name="eventData">The event data.</param>
         /// <returns>Task.</returns>
         Task RaiseEvent(SubscriptionEvent eventData);
 
         /// <summary>
-        /// Registers a new receiver to receive any raised events of the given type.
+        /// Registers a new receiver to receive any raised events of the given type seen
+        /// by this listener.
         /// </summary>
         /// <param name="eventName">Name of the event.</param>
         /// <param name="receiver">The receiver to add.</param>
@@ -40,7 +45,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
 
          /// <summary>
-        /// Removes the receiver from the list of events to be delivered for any event type.
+        /// Removes the receiver from the list of events to be delivered for ALL event types.
         /// </summary>
         /// <param name="receiver">The receiver to remove.</param>
         void RemoveReceiver(ISubscriptionEventReceiver receiver);

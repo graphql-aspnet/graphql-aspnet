@@ -20,19 +20,19 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// The default listener for raised subscription events. This object only listens to the locally attached
     /// graphql server and DOES NOT scale. See demo projects for scalable subscription configurations.
     /// </summary>
-    public class InProcessSubscriptionEventListener : ISubscriptionEventListener
+    public class DefaultSubscriptionEventRouter : ISubscriptionEventRouter
     {
         private readonly IGraphEventLogger _logger;
-        private readonly Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>> _receivers;
+        private readonly SubscribedEventRecievers _receivers;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InProcessSubscriptionEventListener" /> class.
+        /// Initializes a new instance of the <see cref="DefaultSubscriptionEventRouter" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public InProcessSubscriptionEventListener(IGraphEventLogger logger = null)
+        public DefaultSubscriptionEventRouter(IGraphEventLogger logger = null)
         {
             _logger = logger;
-            _receivers = new Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>>(SubscriptionEventNameEqualityComparer.Instance);
+            _receivers = new SubscribedEventRecievers(SubscriptionEventNameEqualityComparer.Instance);
         }
 
         /// <summary>

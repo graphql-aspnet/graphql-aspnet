@@ -138,7 +138,6 @@ namespace GraphQL.AspNet.Common
 
         /// <summary>
         /// Throws an exception if the object reference is null.
-        /// The object is returned unchanged if it exists.
         /// </summary>
         /// <typeparam name="T">Any reference type to be null checked.</typeparam>
         /// <param name="obj">The object refrence to check.</param>

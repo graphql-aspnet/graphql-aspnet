@@ -144,7 +144,7 @@ namespace GraphQL.AspNet
         {
             using var scope = sp.CreateScope();
             var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
-            var eventListener = scope.ServiceProvider.GetRequiredService<ISubscriptionEventListener>();
+            var eventListener = scope.ServiceProvider.GetRequiredService<ISubscriptionEventRouter>();
             var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
 
             var server = new ApolloSubscriptionServer<TSchema>(schema, this.SubscriptionOptions, eventListener, logger);

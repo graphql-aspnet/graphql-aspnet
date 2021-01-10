@@ -19,24 +19,24 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using NUnit.Framework;
 
     [TestFixture]
-    public class InProcessEventListenerTests
+    public class DefaultEventRouterTests
     {
         [Test]
         public void NullEventResultsInException()
         {
-            var listener = new InProcessSubscriptionEventListener();
+            var router = new DefaultSubscriptionEventRouter();
 
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await listener.RaiseEvent(null);
+                await router.RaiseEvent(null);
             });
         }
 
         [Test]
         public void RemovingANullReceiverDoesNothing()
         {
-            var listener = new InProcessSubscriptionEventListener();
-            listener.RemoveReceiver(null);
+            var router = new DefaultSubscriptionEventRouter();
+            router.RemoveReceiver(null);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var receiver = new Mock<ISubscriptionEventReceiver>();
             receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
 
-            var listener = new InProcessSubscriptionEventListener();
+            var router = new DefaultSubscriptionEventRouter();
 
             var evt = new SubscriptionEvent()
             {
@@ -55,8 +55,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 Data = new TwoPropertyObject(),
             };
 
-            listener.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            await listener.RaiseEvent(evt);
+            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
+            await router.RaiseEvent(evt);
 
             receiver.Verify(x => x.ReceiveEvent(evt));
         }
@@ -67,7 +67,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var receiver = new Mock<ISubscriptionEventReceiver>();
             receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
 
-            var listener = new InProcessSubscriptionEventListener();
+            var router = new DefaultSubscriptionEventRouter();
 
             var evt = new SubscriptionEvent()
             {
@@ -87,10 +87,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             // add two events but remove the one being raised
             // to ensure its not processed
-            listener.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            listener.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
-            await listener.RaiseEvent(evt);
-            await listener.RaiseEvent(evt2);
+            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
+            router.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
+            await router.RaiseEvent(evt);
+            await router.RaiseEvent(evt2);
 
             receiver.Verify(x => x.ReceiveEvent(evt), Times.Once);
             receiver.Verify(x => x.ReceiveEvent(evt2), Times.Once);
@@ -102,7 +102,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var receiver = new Mock<ISubscriptionEventReceiver>();
             receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
 
-            var listener = new InProcessSubscriptionEventListener();
+            var router = new DefaultSubscriptionEventRouter();
 
             var evt = new SubscriptionEvent()
             {
@@ -122,11 +122,11 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             // add two events but remove the one being raised
             // to ensure its not processed
-            listener.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            listener.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
-            listener.RemoveReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            await listener.RaiseEvent(evt);
-            await listener.RaiseEvent(evt2);
+            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
+            router.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
+            router.RemoveReceiver(evt.ToSubscriptionEventName(), receiver.Object);
+            await router.RaiseEvent(evt);
+            await router.RaiseEvent(evt2);
 
             receiver.Verify(x => x.ReceiveEvent(evt), Times.Never);
             receiver.Verify(x => x.ReceiveEvent(evt2), Times.Once);
@@ -138,7 +138,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var receiver = new Mock<ISubscriptionEventReceiver>();
             receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
 
-            var listener = new InProcessSubscriptionEventListener();
+            var router = new DefaultSubscriptionEventRouter();
 
             var evt = new SubscriptionEvent()
             {
@@ -157,11 +157,11 @@ namespace GraphQL.Subscriptions.Tests.Execution
             };
 
             // add two events and ensure both are removed when not directly named
-            listener.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            listener.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
-            listener.RemoveReceiver(receiver.Object);
-            await listener.RaiseEvent(evt);
-            await listener.RaiseEvent(evt2);
+            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
+            router.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
+            router.RemoveReceiver(receiver.Object);
+            await router.RaiseEvent(evt);
+            await router.RaiseEvent(evt2);
 
             receiver.Verify(x => x.ReceiveEvent(evt), Times.Never);
             receiver.Verify(x => x.ReceiveEvent(evt2), Times.Never);
