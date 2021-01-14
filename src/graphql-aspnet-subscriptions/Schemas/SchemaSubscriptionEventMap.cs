@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Schemas
             Validation.ThrowIfNull(schema, nameof(schema));
             Validation.ThrowIfNull(eventName, nameof(eventName));
 
-            if (eventName.OwnerSchemaType != schema.GetType().FullName)
+            if (eventName.OwnerSchemaType != schema.FullyQualifiedSchemaTypeName())
                 return null;
 
             if (NAME_CATALOG.TryGetValue(eventName, out var routePath))

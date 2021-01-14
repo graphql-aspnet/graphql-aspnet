@@ -25,6 +25,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet;
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Apollo.Messages;
+    using GraphQL.AspNet.Common.Extensions;
 
     [TestFixture]
     public class ApolloServerTests
@@ -94,8 +95,8 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var evt = new SubscriptionEvent()
             {
                 Data = new TwoPropertyObject(),
-                DataTypeName = typeof(TwoPropertyObject).FullName,
-                SchemaTypeName = typeof(GraphSchema).FullName,
+                DataTypeName = SchemaExtensions.RetrieveFullyQualifiedDataObjectTypeName(typeof(TwoPropertyObject)),
+                SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedSchemaTypeName(typeof(GraphSchema)),
                 EventName = "[subscription]/ApolloSubscription/WatchForPropObject",
             };
 

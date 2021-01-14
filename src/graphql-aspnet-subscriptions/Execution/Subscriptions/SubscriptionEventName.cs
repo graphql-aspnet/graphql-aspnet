@@ -11,7 +11,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -19,6 +21,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// A qualified subscription name representing both the unique path in a schema
     /// and the optional short name of said subscription event.
     /// </summary>
+    [DebuggerDisplay("Event Name: {EventName}")]
     public class SubscriptionEventName
     {
         /// <summary>
@@ -32,7 +35,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(field, nameof(field));
-            return SubscriptionEventName.FromSchemaNameAndField(typeof(TSchema).FullName, field);
+            return SubscriptionEventName.FromSchemaTypeAndField(typeof(TSchema), field);
         }
 
         /// <summary>
@@ -46,22 +49,22 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             Validation.ThrowIfNull(field, nameof(field));
-            return SubscriptionEventName.FromSchemaNameAndField(schema.GetType().FullName, field);
+            return SubscriptionEventName.FromSchemaTypeAndField(schema.GetType(), field);
         }
 
         /// <summary>
         /// Creates a set of event names representing all the possible forms of the event as defined
-        /// by the grpah field.
+        /// by the graph field.
         /// </summary>
-        /// <param name="schemaTypeName">Name of the schema type.</param>
+        /// <param name="schemaType">The raw data type of the target schema.</param>
         /// <param name="field">The field to create names for.</param>
         /// <returns>IEnumerable&lt;SubscriptionEventName&gt;.</returns>
-        private static IEnumerable<SubscriptionEventName> FromSchemaNameAndField(string schemaTypeName, ISubscriptionGraphField field)
+        private static IEnumerable<SubscriptionEventName> FromSchemaTypeAndField(Type schemaType, ISubscriptionGraphField field)
         {
-            yield return new SubscriptionEventName(schemaTypeName, field.Route.Path);
+            yield return new SubscriptionEventName(schemaType, field.Route.Path);
 
             if (!string.IsNullOrWhiteSpace(field.EventName))
-                yield return new SubscriptionEventName(schemaTypeName, field.EventName);
+                yield return new SubscriptionEventName(schemaType, field.EventName);
         }
 
         /// <summary>
@@ -83,35 +86,42 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             return new SubscriptionEventName(left, right);
         }
 
-        private string _eventName;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionEventName" /> class.
         /// </summary>
         /// <param name="schemaType">Type of the schema which owns this name.</param>
         /// <param name="eventName">Name the event.</param>
         public SubscriptionEventName(Type schemaType, string eventName)
-            : this(schemaType?.FullName, eventName)
+            : this(SchemaExtensions.RetrieveFullyQualifiedSchemaTypeName(schemaType), eventName)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionEventName" /> class.
         /// </summary>
-        /// <param name="schemaType">A string representing the "FullName" of the schema type.</param>
+        /// <param name="fullyQualifiedSchemaTypeName">A string representing the "FullName" of the schema type.</param>
         /// <param name="eventName">Name the event.</param>
-        public SubscriptionEventName(string schemaType, string eventName)
+        public SubscriptionEventName(string fullyQualifiedSchemaTypeName, string eventName)
         {
-            if (!string.IsNullOrWhiteSpace(schemaType) && !string.IsNullOrWhiteSpace(eventName))
-            {
-                this.OwnerSchemaType = schemaType;
-                _eventName = $"{schemaType.Trim()}:{eventName.Trim()}";
-            }
-            else
-            {
-                this.OwnerSchemaType = null;
-                _eventName = null;
-            }
+            fullyQualifiedSchemaTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(
+                fullyQualifiedSchemaTypeName,
+                nameof(fullyQualifiedSchemaTypeName));
+
+            eventName = Validation.ThrowIfNullWhiteSpaceOrReturn(eventName, nameof(eventName));
+
+            this.OwnerSchemaType = fullyQualifiedSchemaTypeName;
+            this.EventName = eventName;
+            this.SchemaQualifiedEventName = $"{fullyQualifiedSchemaTypeName}:{eventName}";
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubscriptionEventName"/> class.
+        /// </summary>
+        public SubscriptionEventName()
+        {
+            this.OwnerSchemaType = null;
+            this.EventName = null;
+            this.SchemaQualifiedEventName = null;
         }
 
         /// <summary>
@@ -121,12 +131,24 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         public string OwnerSchemaType { get; }
 
         /// <summary>
+        /// Gets root event name of this event.
+        /// </summary>
+        /// <value>The name of the event.</value>
+        public string EventName { get; }
+
+        /// <summary>
+        /// Gets the fully qualified name of the event including its target schema.
+        /// </summary>
+        /// <value>The name of the schema qualified event.</value>
+        public string SchemaQualifiedEventName { get; }
+
+        /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return _eventName;
+            return this.SchemaQualifiedEventName;
         }
 
         /// <summary>
@@ -139,7 +161,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             if (ReferenceEquals(null, other))
                 return false;
 
-            return this.Equals(other._eventName);
+            return this.Equals(other.SchemaQualifiedEventName);
         }
 
         /// <summary>
@@ -152,7 +174,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             if (ReferenceEquals(null, other) || string.IsNullOrWhiteSpace(other))
                 return false;
 
-            return this._eventName != null && string.Equals(this._eventName, other, StringComparison.Ordinal);
+            return this.SchemaQualifiedEventName != null && string.Equals(this.SchemaQualifiedEventName, other, StringComparison.Ordinal);
         }
 
         /// <summary>

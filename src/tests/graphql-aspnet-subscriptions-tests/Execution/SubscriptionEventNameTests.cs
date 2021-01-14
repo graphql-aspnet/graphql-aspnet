@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using NUnit.Framework;
@@ -28,9 +29,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
         [Test]
         public void GeneralPropertyCheck_FromType()
         {
+            var schema = new GraphSchema();
             var id = new SubscriptionEventName(typeof(GraphSchema), "abc");
-            Assert.AreEqual($"{typeof(GraphSchema).FullName}:abc", id.ToString());
-            Assert.AreEqual($"{typeof(GraphSchema).FullName}:abc".GetHashCode(), id.GetHashCode());
+            Assert.AreEqual($"{schema.FullyQualifiedSchemaTypeName()}:abc", id.ToString());
+            Assert.AreEqual($"{schema.FullyQualifiedSchemaTypeName()}:abc".GetHashCode(), id.GetHashCode());
         }
 
         [TestCase("schema:abc", "schema", "abc")]
@@ -118,13 +120,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
         }
 
         [TestCase("schema", "123", "schema", "123", true)]
-        [TestCase(null, null, null, null, false)]
-        [TestCase("", "", "", "", false)]
-        [TestCase("schema", "123", null, null, false)]
-        [TestCase(null, null, "schema", "123", false)]
-        [TestCase("", "", null, null, false)]
-        [TestCase(null, null, "", "", false)]
         [TestCase("schema", "123", "schema", "345", false)]
+        [TestCase("schema", "123", "schema1", "123", false)]
         public void EqualsOperator(string schema1, string value1, string schema2, string value2, bool isSuccess)
         {
             var id1 = new SubscriptionEventName(schema1, value1);
@@ -132,6 +129,26 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             Assert.AreEqual(isSuccess, id1 == id2);
             Assert.AreEqual(isSuccess, id2 == id1);
+        }
+
+        [TestCase(null, null)]
+        [TestCase("", "")]
+        [TestCase("", "abc")]
+        [TestCase("schema1", "")]
+        [TestCase(null, "abc")]
+        [TestCase("schema1", null)]
+        public void ShouldThrow(string schema1, string value1)
+        {
+            try
+            {
+                var id = new SubscriptionEventName(schema1, value1);
+            }
+            catch
+            {
+                return;
+            }
+
+            Assert.Fail("expected constructor exception");
         }
 
         [Test]
@@ -157,13 +174,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
         }
 
         [TestCase("schema", "123", "schema", "123", false)]
-        [TestCase(null, null, null, null, true)]
-        [TestCase("", "", "", "", true)]
-        [TestCase("schema", "123", null, null, true)]
-        [TestCase(null, null, "schema", "123", true)]
-        [TestCase("", "", null, null, true)]
-        [TestCase(null, null, "", "", true)]
         [TestCase("schema", "123", "schema", "345", true)]
+        [TestCase("schema", "123", "schema1", "123", true)]
         public void NotEqualsOperator(string schema1, string value1, string schema2, string value2, bool isSuccess)
         {
             var id1 = new SubscriptionEventName(schema1, value1);

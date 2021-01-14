@@ -79,14 +79,13 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
                             var eventData = new SubscriptionEvent()
                             {
                                 Id = Guid.NewGuid().ToString(),
-                                SchemaTypeName = typeof(TSchema).AssemblyQualifiedName,
+                                SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedSchemaTypeName(typeof(TSchema)),
                                 Data = proxy.DataObject,
-                                DataTypeName = proxy.DataObject?.GetType().AssemblyQualifiedName,
+                                DataTypeName = SchemaExtensions.RetrieveFullyQualifiedDataObjectTypeName(proxy.DataObject?.GetType()),
                                 EventName = proxy.EventName?.Trim(),
                             };
 
                             _eventQueue.Enqueue(eventData);
-                            logger?.GlobalSubscriptionEventPublished(eventData);
                         }
                     }
                 }

@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         {
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
-            _logger?.GlobalSubscriptionEventReceived(eventData);
+            _logger?.SubscriptionEventReceived(eventData);
             var tasks = new List<Task>();
             lock (_receivers)
             {

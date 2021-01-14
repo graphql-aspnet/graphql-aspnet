@@ -13,7 +13,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Logging;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
@@ -51,10 +53,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 if (_eventsToRaise.Count > 0)
                 {
                     using var scope = _provider.CreateScope();
+                    var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
                     var publisher = scope.ServiceProvider.GetRequiredService<ISubscriptionEventPublisher>();
                     while (_eventsToRaise.TryDequeue(out var result))
                     {
                         await publisher.PublishEvent(result);
+                        logger?.SubscriptionEventPublished(result);
                     }
                 }
 

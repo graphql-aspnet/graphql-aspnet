@@ -164,11 +164,11 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="queryPlan">The generated query plan.</param>
         public virtual void QueryPlanGenerated(IGraphQueryPlan queryPlan)
         {
-            if (!this.IsEnabled(LogLevel.Debug))
+            if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
             var entry = new QueryPlanGeneratedLogEntry(queryPlan);
-            this.LogEvent(LogLevel.Debug, entry);
+            this.LogEvent(LogLevel.Trace, entry);
         }
 
         /// <summary>

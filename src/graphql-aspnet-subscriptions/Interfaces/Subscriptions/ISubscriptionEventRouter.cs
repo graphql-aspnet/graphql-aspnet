@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     {
         /// <summary>
         /// Instructs this router to raise the supplied event to each subscribed
-        /// receiver
+        /// receiver.
         /// </summary>
         /// <param name="eventData">The event data.</param>
         /// <returns>Task.</returns>
@@ -38,14 +38,14 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         void AddReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
 
         /// <summary>
-        /// Removes the receiver from the list of events to be delivered for the given event type.
+        /// Removes the receiver from being notified of the given event type.
         /// </summary>
         /// <param name="eventName">Name of the event.</param>
         /// <param name="receiver">The receiver to remove.</param>
         void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
 
          /// <summary>
-        /// Removes the receiver from the list of events to be delivered for ALL event types.
+        /// Removes the receiver from being notified of ALL event types.
         /// </summary>
         /// <param name="receiver">The receiver to remove.</param>
         void RemoveReceiver(ISubscriptionEventReceiver receiver);

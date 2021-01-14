@@ -11,22 +11,25 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
 {
     using System;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// An event was recieved by the global queue listener for this ASP.NET server instance.
-    /// Usually the listener is monitoring an in-memory queue (for single server configurations) or a
-    /// service bus (such as RabbitMQ) for multi-server configurations.
+    /// An event was recieved by the <see cref="ISubscriptionEventRouter"/> for this instance and will
+    /// be sent to any requesting receivers.
     /// </summary>
-    public class GlobalSubscriptionEventPublished : GraphLogEntry
+    public class SubscriptionEventReceived : GraphLogEntry
     {
+        private readonly string _eventName;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GlobalSubscriptionEventPublished" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionEventReceived" /> class.
         /// </summary>
         /// <param name="eventRecieved">The event that was recieved.</param>
-        public GlobalSubscriptionEventPublished(SubscriptionEvent eventRecieved)
-            : base(SubscriptionLogEventIds.GlobalListenerEventPublished)
+        public SubscriptionEventReceived(SubscriptionEvent eventRecieved)
+            : base(SubscriptionLogEventIds.GlobalListenerEventReceived)
         {
+            _eventName = eventRecieved.EventName;
             this.SchemaEventName = eventRecieved.ToSubscriptionEventName().ToString();
             this.DataType = eventRecieved.DataTypeName;
             this.SubscriptionEventId = eventRecieved.Id;
@@ -54,16 +57,6 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         }
 
         /// <summary>
-        /// Gets the name of the physical machine that generated this log entry.
-        /// </summary>
-        /// <value>The server name of the computer hosting the subscription service.</value>
-        public string MachineName
-        {
-            get => this.GetProperty<string>(SubscriptionLogPropertyNames.ASPNET_SERVER_INSTANCE_NAME);
-            private set => this.SetProperty(SubscriptionLogPropertyNames.ASPNET_SERVER_INSTANCE_NAME, value);
-        }
-
-        /// <summary>
         /// Gets the unique id of the event that was received.
         /// </summary>
         /// <value>The identifier.</value>
@@ -74,13 +67,23 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         }
 
         /// <summary>
+        /// Gets the name of the physical machine that generated this log entry.
+        /// </summary>
+        /// <value>The server name of the computer hosting the subscription service.</value>
+        public string MachineName
+        {
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.ASPNET_SERVER_INSTANCE_NAME);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.ASPNET_SERVER_INSTANCE_NAME, value);
+        }
+
+        /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
             var idTruncated = this.SubscriptionEventId?.Length > 8 ? this.SubscriptionEventId.Substring(0, 8) : this.SubscriptionEventId;
-            return $"Global Event Published | Server: {this.MachineName}, EventName: '{this.SchemaEventName}' (Id: {idTruncated})";
+            return $"Subscription Event Received | Server: {this.MachineName}, EventName: '{_eventName}' (Id: {idTruncated})";
         }
     }
 }

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System.Diagnostics;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
@@ -16,6 +17,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// An event, raised by a <see cref="GraphController" />, and handled by a <see cref="ISubscriptionServer{TSchema}" />
     /// to transfer the given data package to connected clients.
     /// </summary>
+    [DebuggerDisplay("Subscription Event: {EventName}")]
     public class SubscriptionEvent
     {
         /// <summary>

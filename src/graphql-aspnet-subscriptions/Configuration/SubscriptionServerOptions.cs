@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Configuration
 
         /// <summary>
         /// <para>Gets or sets the amount of time between GraphQL keep alive operation messages
-        /// to a connected client for those protocols that support it.</para>
+        /// sent to a connected client for those protocols that support it.</para>
         /// <para>This keep alive is seperate from the socket level keep alive timer. (Default: 2 minutes).</para>
         /// <para>Specify <see cref="TimeSpan.Zero"/> to disable.</para>
         /// </summary>

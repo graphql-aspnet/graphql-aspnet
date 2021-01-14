@@ -90,35 +90,34 @@ namespace GraphQL.AspNet.Logging
         }
 
         /// <summary>
-        /// Recorded when a single ASP.NET server instance receives a new subscription event from
-        /// its connected source. In general, this is an in-memory queue (for single server configurations)
-        /// or a service bus of some sort (such as RabbitMQ or Azure Service Bus) for multi-server instances.
+        /// Recorded by this instance's <see cref="ISubscriptionEventRouter"/> when it receives a new subscription event from
+        /// an externally connected source such as a message queue or service or bus. For single server configurations this event
+        /// is recorded when an event is passed from the internal publishing queue directly to the <see cref="ISubscriptionEventRouter"/>.
         /// </summary>
         /// <param name="logger">The logger doing the logging.</param>
         /// <param name="eventData">The event data that was received from a data source.</param>
-        public static void GlobalSubscriptionEventReceived(
+        public static void SubscriptionEventReceived(
             this IGraphEventLogger logger,
             SubscriptionEvent eventData)
         {
             logger.Log(
                 LogLevel.Debug,
-                () => new GlobalSubscriptionEventReceived(eventData));
+                () => new SubscriptionEventReceived(eventData));
         }
 
         /// <summary>
-        /// Recorded when a single ASP.NET server instance sends a new subscription event to some connected source.
-        /// In general, this is an in-memory queue (for single server configurations)
-        /// or a service bus of some sort (such as RabbitMQ or Azure Service Bus) for multi-server instances.
+        /// Recorded when this server successfully publishes a subscription event to the configured <see cref="ISubscriptionEventPublisher"/>
+        /// for this instance.
         /// </summary>
         /// <param name="logger">The logger doing the logging.</param>
-        /// <param name="eventData">The event data that was sent by a data source.</param>
-        public static void GlobalSubscriptionEventPublished(
+        /// <param name="eventData">The event data that was published.</param>
+        public static void SubscriptionEventPublished(
             this IGraphEventLogger logger,
             SubscriptionEvent eventData)
         {
             logger.Log(
                 LogLevel.Debug,
-                () => new GlobalSubscriptionEventPublished(eventData));
+                () => new SubscriptionEventPublished(eventData));
         }
     }
 }
