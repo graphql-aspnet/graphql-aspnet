@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>
-    /// A helper object for parsing and reasoning about a route path string.
+    /// A representation of a hierarchical path to a single field in within a graph schema.
     /// </summary>
     [DebuggerDisplay("{Path}")]
     public class GraphFieldPath : IEnumerable<string>
@@ -209,7 +209,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Returns an enumerator that iterates through the collection of path fragments.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<string> GetEnumerator()
@@ -225,9 +225,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Normalizes a given route path fragement.
+        /// Normalizes a given route path fragement removing duplicate seperators, ensuring starting and tail end seperators
+        /// are correct etc.
         /// </summary>
-        /// <param name="routefragment">The routefragment.</param>
+        /// <param name="routefragment">The fragment to normalize.</param>
         /// <returns>System.String.</returns>
         public static string NormalizeFragment(string routefragment)
         {
@@ -258,7 +259,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Creates a list of all the fully qualified parent paths this route is nested under.
+        /// Creates a list of all the fully qualified parent paths this path is nested under.
         /// </summary>
         /// <returns>List&lt;GraphRoutePath&gt;.</returns>
         public List<GraphFieldPath> GenerateParentPathSegments()
@@ -328,23 +329,23 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Implements the == operator.
         /// </summary>
-        /// <param name="obj1">The obj1.</param>
-        /// <param name="obj2">The obj2.</param>
+        /// <param name="left">The left side operand.</param>
+        /// <param name="right">The right side operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(GraphFieldPath obj1, GraphFieldPath obj2)
+        public static bool operator ==(GraphFieldPath left, GraphFieldPath right)
         {
-            return obj1?.Equals(obj2) ?? obj2?.Equals(obj1) ?? true;
+            return left?.Equals(right) ?? right?.Equals(left) ?? true;
         }
 
         /// <summary>
         /// Implements the != operator.
         /// </summary>
-        /// <param name="obj1">The obj1.</param>
-        /// <param name="obj2">The obj2.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator !=(GraphFieldPath obj1, GraphFieldPath obj2)
+        /// <param name="left">The left side operand.</param>
+        /// <param name="right">The right side operand.</param>
+        /// <returns>The result of the operation.</returns>
+        public static bool operator !=(GraphFieldPath left, GraphFieldPath right)
         {
-            return !(obj1 == obj2);
+            return !(left == right);
         }
     }
 }

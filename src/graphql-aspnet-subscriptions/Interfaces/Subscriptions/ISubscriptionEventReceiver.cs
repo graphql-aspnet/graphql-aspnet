@@ -13,9 +13,11 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
-    /// An object that can receive and asyncronously respond to an event being raised by a listener.
-    /// This object is generally used by a sever component to correctly translate externally
+    /// <para>
+    /// An object that subscribes to a <see cref="ISubscriptionEventRouter"/>and can receive and asyncronously respond
+    /// to an events. This object is generally used by a subscription sever component to correctly translate externally
     /// received events into a "server-specific" format.
+    /// </para>
     /// </summary>
     public interface ISubscriptionEventReceiver
     {

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.Introspection.Fields;
 
     /// <summary>
     /// A graph type used to expose an abstract item, not tied to a physical object, as an object type on the graph.
@@ -35,6 +36,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public VirtualObjectGraphType(string name)
          : base(name)
         {
+            // add the __typename as a field for this virtual object
+            this.GraphFieldCollection.AddField(new Introspection_TypeNameMetaField(name));
         }
 
         /// <summary>

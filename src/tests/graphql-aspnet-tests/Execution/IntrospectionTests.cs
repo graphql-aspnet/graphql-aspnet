@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -424,6 +425,22 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNull(spected.EnumValues);
             Assert.IsNull(spected.InputFields);
             Assert.IsNull(spected.OfType);
+        }
+
+        [Test]
+        public void IntrospectedVirtualType_HasATypeNameMetaField()
+        {
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<SodaCanBuildingController>();
+
+            var server = serverBuilder.Build();
+            var schema = new IntrospectedSchema(server.Schema);
+            schema.Rebuild();
+
+            var graphType = schema.FindGraphType("Query_buildings") as IObjectGraphType;
+
+            var typeNameField = graphType.Fields.FirstOrDefault(x => x.Name == Constants.ReservedNames.TYPENAME_FIELD);
+            Assert.IsNotNull(typeNameField);
         }
 
         [Test]

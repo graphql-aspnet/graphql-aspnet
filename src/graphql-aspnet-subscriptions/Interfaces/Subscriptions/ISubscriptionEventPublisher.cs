@@ -13,15 +13,13 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
-    /// An object capable of publishing <see cref="SubscriptionEvent"/> objects to some external
-    /// source (like a service bus or message queue) such that they can be received by a
-    /// <see cref="ISubscriptionEventRouter"/> and delivered to subscribers.
+    /// An object capable of publishing <see cref="SubscriptionEvent"/> objects such that they can be delivered
+    /// or received by remote servers.
     /// </summary>
     public interface ISubscriptionEventPublisher
     {
         /// <summary>
-        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventRouter" /> could
-        /// receive it for processing.
+        /// Raises a new subscription event to a message queue.
         /// </summary>
         /// <param name="eventData">The event to publish.</param>
         /// <returns>Task.</returns>

@@ -13,10 +13,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
-    /// An interface describing an object for a receiving events from a "source" and routing them to
-    /// the correct recievers that should handle the event. This object is typically used by
+    /// An interface describing an object for a receiving events from a source and routing them to
+    /// the correct recievers that should handle the event. This object is typically called by
     /// an external, platform dependent listener (such as a service bus client) and is
-    /// used to route deserialized events intothe graphql subscription server instance present for each
+    /// used to route deserialized events into the graphql subscription server instance present for each
     /// declared schema.
     /// </summary>
     public interface ISubscriptionEventRouter
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
 
          /// <summary>
-        /// Removes the receiver from being notified of ALL event types.
+        /// Removes the receiver from being notified of ALL event types that it may be registered to.
         /// </summary>
         /// <param name="receiver">The receiver to remove.</param>
         void RemoveReceiver(ISubscriptionEventReceiver receiver);

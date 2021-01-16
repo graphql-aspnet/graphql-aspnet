@@ -40,9 +40,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <returns>Task.</returns>
         public Task PublishEvent(SubscriptionEvent eventData)
         {
-            // this in process publisher pushes events raised
+            // this publisher pushes events raised
             // by mutations and queries directly into the DI-configured router
-            // for immediate dispatch
+            // for immediate dispatch within this instance
             return _eventRouter.RaiseEvent(eventData);
         }
     }
