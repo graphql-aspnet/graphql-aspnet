@@ -34,10 +34,10 @@ namespace GraphQL.AspNet.Apollo
     /// this server is in-process with the primary graphql runtime or out-of-process on a seperate instance.
     /// </summary>
     /// <typeparam name="TSchema">The schema type this server is registered to handle.</typeparam>
-    public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>, ISubscriptionEventReceiver
+    public class ApolloSubscriptionServer<TSchema> : ISubscriptionServer<TSchema>, ISubscriptionEventReceiver, IDisposable
         where TSchema : class, ISchema
     {
-        private readonly ISubscriptionEventRouter _listener;
+        private readonly ISubscriptionEventRouter _eventRouter;
         private readonly HashSet<ApolloClientProxy<TSchema>> _clients;
         private readonly TSchema _schema;
         private readonly SubscriptionServerOptions<TSchema> _serverOptions;
@@ -51,18 +51,18 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="schema">The schema instance this sever will use for various comparisons.</param>
         /// <param name="options">The user configured options for this server.</param>
-        /// <param name="listener">The listener watching for new events that need to be communicated
+        /// <param name="eventRouter">The listener watching for new events that need to be communicated
         /// to clients managed by this server.</param>
         /// <param name="logger">The logger to record server events to, if any.</param>
         public ApolloSubscriptionServer(
             TSchema schema,
             SubscriptionServerOptions<TSchema> options,
-            ISubscriptionEventRouter listener,
+            ISubscriptionEventRouter eventRouter,
             IGraphEventLogger logger = null)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _serverOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            _listener = Validation.ThrowIfNullOrReturn(listener, nameof(listener));
+            _eventRouter = Validation.ThrowIfNullOrReturn(eventRouter, nameof(eventRouter));
             _clients = new HashSet<ApolloClientProxy<TSchema>>();
             _eventSendSemaphore = new SemaphoreSlim(_serverOptions.MaxConcurrentClientNotifications);
 
@@ -74,11 +74,23 @@ namespace GraphQL.AspNet.Apollo
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="ApolloSubscriptionServer{TSchema}"/> class.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        ~ApolloSubscriptionServer()
+        public void Dispose()
         {
-            _listener?.RemoveReceiver(this);
+            this.Dispose(true);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _eventRouter?.RemoveReceiver(this);
+            }
         }
 
         /// <summary>
@@ -219,7 +231,7 @@ namespace GraphQL.AspNet.Apollo
                             if (clients.Count == 0)
                             {
                                 _subCountByName.Remove(name);
-                                _listener.RemoveReceiver(name, this);
+                                _eventRouter.RemoveReceiver(name, this);
                                 _logger?.EventMonitorEnded(name);
                             }
                         }
@@ -245,7 +257,7 @@ namespace GraphQL.AspNet.Apollo
                     _subCountByName[name].Add(client);
                     if (_subCountByName[name].Count == 1)
                     {
-                        _listener.AddReceiver(name, this);
+                        _eventRouter.AddReceiver(name, this);
                         _logger?.EventMonitorStarted(name);
                     }
                 }

@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Defaults
             _next = next;
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _subscriptionServer = Validation.ThrowIfNullOrReturn(subscriptionServer, nameof(subscriptionServer));
-            _routePath = _options.Route;
+            _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Defaults
                         SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL)
                         .ConfigureAwait(false);
 
-                    var socketProxy = new WebSocketClientConnection(webSocket, context);
+                    IClientConnection socketProxy = new WebSocketClientConnection(webSocket, context);
                     var subscriptionClient = await _subscriptionServer
                             .RegisterNewClient(socketProxy)
                             .ConfigureAwait(false);
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Defaults
                     {
                         logger?.SubscriptionClientRegistered(_subscriptionServer, subscriptionClient);
 
-                        // hold the client connection until its released
+                        // hold the client connection to keep the socket open
                         await subscriptionClient.StartConnection().ConfigureAwait(false);
 
                         logger?.SubscriptionClientDropped(subscriptionClient);

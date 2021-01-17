@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Apollo
     public static class ApolloConstants
     {
         /// <summary>
-        /// A set of constants relating to Apollo server's messaging specifics.
+        /// A set of constants relating to Apollo's messaging protocol.
         /// </summary>
         public static class Messaging
         {
