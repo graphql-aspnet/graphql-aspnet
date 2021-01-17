@@ -21,10 +21,10 @@
 # This script checks that the actual files (the .nupkg) in the build artifacts 
 # match the version typed by the team member doing the deployment. 
 
-$versionSuffix = $env:versionSuffix
-$versionNumber = $env:versionNumber
-$artifactDirectory = $env:artifactDirectory
-$packageId = $env:packageId
+$versionSuffix = $env:versionSuffix   # e.g. "beta"  or ""
+$versionNumber = $env:versionNumber  # e.g. "0.5.1"
+$packageId = $env:packageId          # e.g.  "GraphQL.AspNet|GraphQL.AspNet.Subscriptions"
+$artifactDirectory = $env:artifactDirectory  
 
 # ------------------------------
 # Validate the Version Number
@@ -46,30 +46,32 @@ if ( ($versionSuffix -ne "") -and ($null -ne $versionSuffix) ) {
 
 write-host  "$versionNumber (Done)." -ForegroundColor Green
 
-# ------------------------------
-# Validate the Package Id
-# -------------------------------
-# package Id must be supplied, and will be checked against the nupkg file name
-write-host "Validating Package Id: " -NoNewline
-if ( ($packageId -eq "") -or ($null -eq $packageId)) {
-    write-host "(ERROR!)"  -ForegroundColor Red
-    write-host "No Package Id was supplied to the release. Package Deployment Halted."  -ForegroundColor Red
-    exit 1
+$packagesToCheck = $packageId.Split("|", [System.StringSplitOptions]::None)
+foreach ($packageToCheck in $packagesToCheck) {
+    # ------------------------------
+    # Validate the Package Id
+    # -------------------------------
+    # package Id must be supplied, and will be checked against the nupkg file name(s)
+    write-host "Validating Package Id: " -NoNewline
+    if ( ($packageToCheck -eq "") -or ($null -eq $packageToCheck)) {
+        write-host "(ERROR!)"  -ForegroundColor Red
+        write-host "No Package Id was supplied to the release. Package Deployment Halted."  -ForegroundColor Red
+        exit 1
+    }
+    write-host "$packageToCheck (Done)" -ForegroundColor Green
+
+    # ------------------------------
+    # Check that a nuget file of the correct name exists
+    # -------------------------------
+    $fileName = "$packageToCheck.$versionNumber.nupkg"
+    write-host "Checking for expected artifact: " -NoNewline
+    write-host $fileName -ForegroundColor Green -NoNewline
+    $matchedFiles = get-childitem "$artifactDirectory" -Recurse -Include $fileName | Select-Object -Expand FullName
+    if ($null -eq $matchedFiles) {
+        write-host " (ERROR!)" -ForegroundColor Red
+        write-host "Expected File Not Found. Build Terminated." -ForegroundColor Red
+        exit 1
+    }
+    write-host " (Done)" -ForegroundColor Green
 }
 
-write-host "$packageId (Done)" -ForegroundColor Green
-
-# ------------------------------
-# Check that a nuget file of the correct name exists
-# -------------------------------
-$fileName = "$packageId.$versionNumber.nupkg"
-write-host "Checking for expected artifact: $fileName " -NoNewline
-$matchedFiles = get-childitem "$artifactDirectory" -Recurse -Include $fileName | Select-Object -Expand FullName
-if ($null -eq $matchedFiles) {
-    write-host " (ERROR!)" -ForegroundColor Red
-    write-host "Expected File Not Found. Build Terminated." -ForegroundColor Red
-    exit 1
-}
-
-write-host " (Done)" -ForegroundColor Green
-write-host "Pushing package to nuget.org" -ForegroundColor Green

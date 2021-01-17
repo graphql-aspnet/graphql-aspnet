@@ -10,6 +10,7 @@
     <Title>GraphQL ASP.NET</Title>
     <Product>GraphQL ASP.NET</Product>
     <Authors>Kevin Carroll</Authors>
+    <Deterministic>true</Deterministic>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -20,6 +21,7 @@
     <PackageTags>GraphQL ASPNET graphql ASP.NET mvc dotnet core</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/graphql-aspnet/graphql-aspnet</RepositoryUrl>
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
 <ItemGroup>
@@ -51,5 +53,7 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.6.0" />
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+
   </ItemGroup>
 </Project>

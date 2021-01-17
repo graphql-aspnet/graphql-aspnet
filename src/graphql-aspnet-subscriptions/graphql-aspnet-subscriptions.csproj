@@ -10,17 +10,18 @@
     <Title>GraphQL ASP.NET Subscriptions</Title>
     <Product>GraphQL ASP.NET</Product>
     <Authors>Kevin Carroll</Authors>
+    <Deterministic>true</Deterministic>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageDescription>A package to support subscriptions for GraphQL ASP.NET. Provides the required functionality
-    to setup a websocket connection and perform graphql subscriptions over web sockets.</PackageDescription>
+    <PackageDescription>A package to support subscriptions for GraphQL ASP.NET. Provides the required functionality to setup a websocket connection and perform graphql subscriptions over web sockets.</PackageDescription>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
     <PackageTags>GraphQL ASPNET graphql ASP.NET mvc dotnet core</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/graphql-aspnet/graphql-aspnet</RepositoryUrl>
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
 <ItemGroup>
@@ -52,6 +53,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.11.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
