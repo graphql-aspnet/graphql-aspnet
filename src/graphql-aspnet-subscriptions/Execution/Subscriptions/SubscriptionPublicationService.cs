@@ -24,8 +24,48 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// sending from a disconnected task so as not to imped the execution of the task/pipeline where
     /// the subscription events were initially raised.
     /// </summary>
-    public class SubscriptionPublicationService : BackgroundService
+    public sealed class SubscriptionPublicationService : BackgroundService
     {
+        private static int _waitInterval;
+        private static object _syncLock = new object();
+
+        /// <summary>
+        /// <para>
+        /// Gets or sets the amount of time the internal publication service will
+        /// wait when it reaches the end of the event queue before inspecting the queue again.
+        /// </para>
+        /// <para>
+        /// This value should be configured during startup. Once this publication service is started
+        /// the value becomes fixed.
+        /// </para>
+        /// <para>
+        /// Default Value: 100ms,  Minimum Value: 15ms.
+        /// </para>
+        /// </summary>
+        /// <value>The amount of time to wait, in milliseconds.</value>
+        public static int WaitIntervalInMilliseconds
+        {
+            get
+            {
+                lock (_syncLock)
+                    return _waitInterval;
+            }
+
+            set
+            {
+                lock (_syncLock)
+                    _waitInterval = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes static members of the <see cref="SubscriptionPublicationService"/> class.
+        /// </summary>
+        static SubscriptionPublicationService()
+        {
+            WaitIntervalInMilliseconds = 100;
+        }
+
         private readonly IServiceProvider _provider;
         private SubscriptionEventQueue _eventsToRaise;
 
@@ -48,6 +88,10 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> that represents the long running operations.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var waitInterval = SubscriptionPublicationService.WaitIntervalInMilliseconds;
+            if (waitInterval < 15)
+                waitInterval = 15;
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (_eventsToRaise.Count > 0)
@@ -57,13 +101,15 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                     var publisher = scope.ServiceProvider.GetRequiredService<ISubscriptionEventPublisher>();
                     while (_eventsToRaise.TryDequeue(out var result))
                     {
-                        await publisher.PublishEvent(result);
-                        logger?.SubscriptionEventPublished(result);
+                        if (result != null)
+                        {
+                            await publisher.PublishEvent(result);
+                            logger?.SubscriptionEventPublished(result);
+                        }
                     }
                 }
 
-                // TODO: make delay configurable
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(waitInterval, stoppingToken);
             }
         }
     }

@@ -56,11 +56,6 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
             GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
             CancellationToken cancelToken)
         {
-            // this middleware component attempts to use a list of proxied events
-            // that were created as each field was resolved (typically via PublishSubscriptionEvent).
-            // These proxied are events are converted to real events and forwarded to the event queue
-            // for publishing
-
             if (context?.Items != null && context.IsValid && !context.IsCancelled)
             {
                 // if a context item for the subscription event key was added by one of the extension methods

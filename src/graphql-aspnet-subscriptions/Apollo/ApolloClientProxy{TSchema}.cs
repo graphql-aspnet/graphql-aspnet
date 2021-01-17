@@ -37,6 +37,7 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Logging.Extensions;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -80,7 +81,7 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         public event EventHandler<ApolloSubscriptionFieldEventArgs> SubscriptionRouteAdded;
 
-      /// <summary>
+        /// <summary>
         /// Raised by a client when it is no longer monitoring a given subscription route.
         /// </summary>
         public event EventHandler<ApolloSubscriptionFieldEventArgs> SubscriptionRouteRemoved;
@@ -277,9 +278,10 @@ namespace GraphQL.AspNet.Apollo
                 var partialMessage = JsonSerializer.Deserialize<ApolloClientPartialMessage>(text, options);
                 recievedMessage = partialMessage.Convert();
             }
-            catch
+            catch (Exception ex)
             {
                 // TODO: Capture deserialization errors as a structured event
+                (_logger as IGraphLogger)?.UnhandledExceptionEvent(ex);
                 recievedMessage = new ApolloUnknownMessage(text);
             }
 

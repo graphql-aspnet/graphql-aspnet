@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Apollo.Logging
 {
+    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Apollo.Logging.ApolloEvents;
     using GraphQL.AspNet.Apollo.Messages.Common;
