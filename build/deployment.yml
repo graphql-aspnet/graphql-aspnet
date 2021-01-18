@@ -20,6 +20,13 @@ pool:
   vmImage: ubuntu-18.04
 
 steps:
+  ## Install .NET Core 3.1
+  - task: UseDotNet@2
+    inputs:
+      version: "3.1.x"
+      packageType: sdk
+    displayName: "Install .NET 3.1.x"
+
   ## Install .NET 5
   - task: UseDotNet@2
     inputs:
