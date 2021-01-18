@@ -98,7 +98,7 @@ steps:
       packagesToPack: "**/graphql-aspnet.csproj"
       includesymbols: true
       versioningScheme: "off"
-      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);"
+      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix)"
     displayName: Stage Nuget Package
 
   ## Create the nupkg file (Subscriptions)
@@ -109,7 +109,7 @@ steps:
       packagesToPack: "**/graphql-aspnet-subscriptions.csproj"
       includesymbols: true
       versioningScheme: "off"
-      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);"
+      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix)"
     displayName: Stage Nuget Package (Subscriptions)
 
   ## Copy release script to the artifact package
