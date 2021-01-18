@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
@@ -69,6 +70,7 @@ namespace GraphQL.AspNet.Configuration
 
             set
             {
+                Validation.ThrowIfNotCastable<IGraphQLHttpProcessor>(value, nameof(HttpProcessorType));
                 _httpProcessorType = value;
                 this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(value, ServiceLifetime.Scoped));
             }

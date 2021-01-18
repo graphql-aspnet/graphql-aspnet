@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Security.SecurtyGroupData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.AspNetCore.Authorization;
 
     public class PerRequestCounterController : GraphController

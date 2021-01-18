@@ -308,5 +308,11 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <value>The service provider.</value>
         public IServiceProvider ServiceProvider { get; }
+
+        /// <summary>
+        /// Gets the claims principal of the user generated with the test server.
+        /// </summary>
+        /// <value>The user.</value>
+        public ClaimsPrincipal User => _userAccount;
     }
 }

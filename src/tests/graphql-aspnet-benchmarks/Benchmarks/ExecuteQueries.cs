@@ -76,8 +76,14 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
 
             // parse the json doc, simulating a request recieved to the QueryController
             var inputVars = InputVariableCollection.FromJsonDocument(jsonText);
-            var request = new GraphOperationRequest(queryText, variableData: inputVars);
 
+            var query = new GraphQueryData()
+            {
+                Query = queryText,
+                Variables = inputVars ?? InputVariableCollection.Empty,
+            };
+
+            var request = new GraphOperationRequest(query);
             var context = new GraphQueryExecutionContext(request, _serviceProvider, null);
 
             // execute

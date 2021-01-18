@@ -9,11 +9,13 @@
 
 namespace GraphQL.AspNet.Interfaces.Configuration
 {
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldAuthorization;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A builder for performing advanced configuration of a schema's pipeline and processing settings.
@@ -22,6 +24,18 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     public interface ISchemaBuilder<TSchema>
         where TSchema : class, ISchema
     {
+        /// <summary>
+        /// Gets the completed options used to configure this schema.
+        /// </summary>
+        /// <value>The options.</value>
+        SchemaOptions Options { get; }
+
+        /// <summary>
+        /// Convienence method to convert this builder into a lower-level service collection.
+        /// </summary>
+        /// <returns>IServiceCollection.</returns>
+        IServiceCollection AsServiceCollection();
+
         /// <summary>
         /// Gets a builder to construct the field execution pipeline. This pipeline is invoked per field resolution request to generate a
         /// piece of data in the process of fulfilling the primary query.

@@ -26,11 +26,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         FieldDeclarationRequirements = TemplateDeclarationRequirements.RequireMethodAndProperties)]
     public sealed class VirtualResolvedObject
     {
-        // TODO: Remove the use of this bridge class in favor of emitting concrete
-        // return types at runtime for virtual fields when this library is upgraded
-        // to netstandard2.1 and Reflection.Emit formalized in .NET Core 3.0
-        // ...maybe?
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualResolvedObject"/> class.
         /// </summary>

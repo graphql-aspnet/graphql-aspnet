@@ -40,12 +40,12 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
         {
             var otn = (OperationTypeNode)context.ActiveNode;
 
-            var fieldColleciton = otn.Children.SingleOrDefault<FieldCollectionNode>();
-            if (fieldColleciton == null || fieldColleciton.Children.Count != 1)
+            var fieldCollection = otn.Children.SingleOrDefault<FieldCollectionNode>();
+            if (fieldCollection == null || fieldCollection.Children.Count != 1)
             {
                 this.ValidationError(
                     context,
-                    $"Invalid Subscription. Expected exactly 1 root child field, recieved {fieldColleciton?.Children.Count ?? 0} child fields.");
+                    $"Invalid Subscription. Expected exactly 1 root child field, recieved {fieldCollection?.Children.Count ?? 0} child fields.");
                 return false;
             }
 

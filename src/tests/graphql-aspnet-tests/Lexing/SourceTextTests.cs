@@ -439,7 +439,7 @@ namespace GraphQL.AspNet.Tests.Lexing
                 7,
             },
 
-            // no end delimiter consumes everything up to length
+            // no end delimiter consumes everything (cursor placed beyond end of text)
             new object[]
             {
                 "'12345qwer",

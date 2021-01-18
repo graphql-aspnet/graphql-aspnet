@@ -46,7 +46,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 template.DeclaredArgumentName,
                 template.InternalFullName,
                 template.ObjectType,
-                template.DefaultValue);
+                template.DefaultValue,
+                template.Description);
 
             var result = new GraphArgumentCreationResult();
             result.Argument = argument;

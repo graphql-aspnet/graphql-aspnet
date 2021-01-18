@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.CommonHelpers
 {
     using System.Text.Json;
-    using GraphQL.AspNet.Tests.CommonHelpers.JsonComparing;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing;
     using NUnit.Framework;
 
     /// <summary>

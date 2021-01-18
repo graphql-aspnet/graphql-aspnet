@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
 
                 if (field == null)
                 {
-                    // if the graph type doesnt contain fields (scalar or enum?) this its an error.
+                    // if the graph type doesnt contain fields (scalar or enum?) then its an error.
                     // this shouldnt happen because of schema building and validation but just in case...
                     this.ValidationError(
                         context,

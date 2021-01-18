@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A wrapper for a schema pipeline builder to easily add the default middleware componentry for
@@ -44,15 +45,17 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         {
             this.AddValidateContextMiddleware();
 
-            if (options?.AuthorizationOptions == null
-                || options.AuthorizationOptions.Method == Security.AuthorizationMethod.PerField)
+            var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
+            if (authOption == AuthorizationMethod.PerField)
             {
                 this.AddFieldAuthorizationMiddleware();
             }
 
-            return this.AddResolveDirectivesMiddleware()
-            .AddResolveFieldMiddleware()
-            .AddChildFieldProcessingMiddleware();
+            this.AddResolveDirectivesMiddleware();
+            this.AddResolveFieldMiddleware();
+            this.AddChildFieldProcessingMiddleware();
+
+            return this;
         }
 
         /// <summary>

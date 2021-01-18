@@ -200,5 +200,12 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <value>The dependent graph types.</value>
         public IEnumerable<IGraphType> AbstractGraphTypes => Enumerable.Empty<IGraphType>();
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
+        /// a user defined graph structure. When false, this field points to developer created code.
+        /// </summary>
+        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        public bool IsVirtual => true;
     }
 }

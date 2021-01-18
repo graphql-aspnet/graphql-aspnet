@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [GraphRoute("simple")]
     public class SimplePlanGenerationController : GraphController

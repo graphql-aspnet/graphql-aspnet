@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class IntrospectableObject
     {

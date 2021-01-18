@@ -43,8 +43,8 @@ namespace GraphQL.AspNet.Execution
                 validationRule.ErrorCode,
                 messageOrigin,
                 exception);
-            graphMessage.MetaData.Add("Rule", validationRule.RuleNumber);
-            graphMessage.MetaData.Add("RuleReference", validationRule.ReferenceUrl);
+            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_NUMBER, validationRule.RuleNumber);
+            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_URL, validationRule.ReferenceUrl);
             return graphMessage;
         }
 

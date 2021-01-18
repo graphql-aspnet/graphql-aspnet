@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ActionTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.EnumTestData;
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     {
         private GraphTypeCreationResult MakeGraphType(Type type, TypeKind kind, TemplateDeclarationRequirements? requirements = null)
         {
-            var builder = new TestServerBuilder(TestOptions.CodeDeclaredNames);
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             if (requirements.HasValue)
             {
                 builder.AddGraphQL(o =>
@@ -407,7 +408,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Interface_CreateGraphType_ParsesCorrectly()
         {
-            var server = new TestServerBuilder(TestOptions.CodeDeclaredNames).Build();
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames).Build();
             var template = TemplateHelper.CreateGraphTypeTemplate<TypeCreationItem>();
             var typeMaker = new DefaultGraphTypeMakerProvider();
 

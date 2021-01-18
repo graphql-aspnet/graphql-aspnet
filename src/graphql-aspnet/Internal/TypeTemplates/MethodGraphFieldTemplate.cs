@@ -48,13 +48,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             base.ParseTemplateDefinition();
 
-            // parse all input parameters into it
+            // parse all input parameters from the method signature
             foreach (var parameter in this.Method.GetParameters())
             {
-                var argTemplate = new GraphFieldArgumentTemplate(this, parameter);
+                var argTemplate = this.CreateGraphFieldArgument(parameter);
                 argTemplate.Parse();
                 _arguments.Add(argTemplate);
             }
+        }
+
+        /// <summary>
+        /// Creates graph field argument for this template given the parameter info supplied.
+        /// </summary>
+        /// <param name="paramInfo">The parameter information.</param>
+        /// <returns>IGraphFieldArgumentTemplate.</returns>
+        protected virtual GraphFieldArgumentTemplate CreateGraphFieldArgument(ParameterInfo paramInfo)
+        {
+            return new GraphFieldArgumentTemplate(this, paramInfo);
         }
 
         /// <summary>

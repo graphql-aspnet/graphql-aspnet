@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     /// <summary>
     /// contains an overloaded method without providing specific names for each in the

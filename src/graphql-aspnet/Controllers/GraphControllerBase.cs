@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Controllers
     using System.Reflection;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
@@ -42,6 +43,7 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="actionToInvoke">The action to invoke.</param>
         /// <param name="context">The context.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
+        [GraphSkip]
         public async Task<object> InvokeActionAsync(
             IGraphMethod actionToInvoke,
             BaseResolutionContext<TRequest> context)
@@ -174,13 +176,15 @@ namespace GraphQL.AspNet.Controllers
         /// Gets the state of the model being represented on this controller action invocation.
         /// </summary>
         /// <value>The state of the model.</value>
+        [GraphSkip]
         public InputModelStateDictionary ModelState { get; private set; }
 
         /// <summary>
         /// Gets the raw request for this operation provided by the action invoker.
         /// </summary>
         /// <value>The field context.</value>
-        protected TRequest Request { get; private set; }
+        [GraphSkip]
+        public TRequest Request { get; private set; }
 
         /// <summary>
         /// Gets the resolved <see cref="ClaimsPrincipal"/> that was passed recieved on the request.

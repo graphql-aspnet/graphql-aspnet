@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Internal.TypeTemplates;
 
     /// <summary>
-    /// A base collection of possible graph item dependencies.
+    /// A base collection of possible field item dependencies.
     /// </summary>
     public abstract class BaseItemDependencyCollection : IGraphItemDependencies
     {

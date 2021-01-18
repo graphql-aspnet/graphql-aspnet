@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
@@ -26,13 +27,14 @@ namespace GraphQL.AspNet.Tests.Framework
     /// </summary>
     /// <typeparam name="TSchema">The type of the t schema.</typeparam>
     public partial class TestServerBuilder<TSchema> : ServiceCollection
-        where TSchema : class, ISchema, new()
+        where TSchema : class, ISchema
     {
         private readonly List<IGraphTestFrameworkComponent> _testComponents;
         private readonly TestOptions _initialSetup;
 
         // colleciton of types added to this server external to the AddGraphQL call.
         private readonly HashSet<Type> _additionalTypes = new HashSet<Type>();
+        private readonly List<Action<ISchemaBuilder<TSchema>>> _schemaBuilderAdditions;
 
         private Action<SchemaOptions> _configureOptions;
 
@@ -42,8 +44,11 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="initialSetup">A set of flags for common preconfigured settings for the test server.</param>
         public TestServerBuilder(TestOptions initialSetup = TestOptions.None)
         {
+            this.ServiceCollection = new ServiceCollection();
             _testComponents = new List<IGraphTestFrameworkComponent>();
+            _schemaBuilderAdditions = new List<Action<ISchemaBuilder<TSchema>>>();
             _initialSetup = initialSetup;
+
             this.Authorization = new TestAuthorizationBuilder();
             this.User = new TestUserAccountBuilder();
             this.Logging = new TestLoggingBuilder();
@@ -63,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Framework
         {
             options.AutoRegisterLocalGraphEntities = false;
 
-            if (_initialSetup.HasFlag(TestOptions.CodeDeclaredNames))
+            if (_initialSetup.HasFlag(TestOptions.UseCodeDeclaredNames))
             {
                 options.DeclarationOptions.GraphNamingFormatter = new GraphNameFormatter(GraphNameFormatStrategy.NoChanges);
             }
@@ -136,12 +141,28 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
+        /// Adds an action to execute against the master schema builder when this server is built. Mimics a
+        /// call to <see cref="AddGraphQL(Action{SchemaOptions})"/> then taking further action against
+        /// the returned <see cref="ISchemaBuilder{TSchema}"/>.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <returns>GraphQL.AspNet.Tests.Framework.TestServerBuilder&lt;TSchema&gt;.</returns>
+        public TestServerBuilder<TSchema> AddSchemaBuilderAction(Action<ISchemaBuilder<TSchema>> action)
+        {
+            _schemaBuilderAdditions.Add(action);
+            return this;
+        }
+
+        /// <summary>
         /// Creates a new test server instance from the current settings in this builder.
         /// </summary>
         /// <returns>TestServer.</returns>
         public TestServer<TSchema> Build()
         {
             var serviceCollection = new ServiceCollection();
+
+            foreach (var descriptor in this.ServiceCollection)
+                serviceCollection.Insert(serviceCollection.Count, descriptor);
 
             // any additional, 1 off services added to the builder?
             foreach (var service in this)
@@ -164,6 +185,9 @@ namespace GraphQL.AspNet.Tests.Framework
             // inject staged graph types
             var injector = new GraphQLSchemaInjector<TSchema>(serviceCollection, _configureOptions);
             injector.ConfigureServices();
+
+            foreach (var action in _schemaBuilderAdditions)
+                action.Invoke(injector.SchemaBuilder);
 
             var userAccount = this.User.CreateUserAccount();
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -190,5 +214,11 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <value>The logging.</value>
         public TestLoggingBuilder Logging { get; }
+
+        /// <summary>
+        /// Gets the service collection that will create a DI provider when this instance is built.
+        /// </summary>
+        /// <value>The service collection.</value>
+        public IServiceCollection ServiceCollection { get; }
     }
 }

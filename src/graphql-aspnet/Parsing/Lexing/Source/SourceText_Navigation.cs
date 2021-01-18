@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
         {
             var length = 1;
             var isProcessing = true;
-            while (isProcessing && this.Cursor + length < _sourceText.Length)
+            while (isProcessing && this.Cursor + length <= _sourceText.Length)
             {
                 var result = predicate(this.Slice(this.Cursor, length));
                 switch (result)
@@ -132,7 +132,12 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
                 length += isProcessing ? 1 : 0;
             }
 
+            // if while loop was exited because the end of the text is
+            // reached, length will be one beyond where it should be
+            length += isProcessing ? -1 : 0;
+
             var slice = this.Slice(this.Cursor, length);
+
             this.Cursor += length;
             return slice;
         }

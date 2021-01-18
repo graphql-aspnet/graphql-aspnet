@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas.Structural
 {
     using System;
     using System.Diagnostics;
+    using System.Security.Cryptography;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -34,6 +35,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="internalname">The fully qualified internal name identifiying this argument.</param>
         /// <param name="objectType">The concrete type of the object representing this argument.</param>
         /// <param name="defaultValue">The default value.</param>
+        /// <param name="description">The description about this argument.</param>
         public GraphFieldArgument(
             string argumentName,
             GraphTypeExpression typeExpression,
@@ -41,7 +43,8 @@ namespace GraphQL.AspNet.Schemas.Structural
             string parameterName,
             string internalname,
             Type objectType,
-            object defaultValue = null)
+            object defaultValue = null,
+            string description = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(argumentName, nameof(argumentName));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalname, nameof(internalname));
@@ -50,6 +53,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.ArgumentModifiers = modifiers;
             this.DefaultValue = defaultValue;
+            this.Description = description?.Trim();
         }
 
         /// <summary>

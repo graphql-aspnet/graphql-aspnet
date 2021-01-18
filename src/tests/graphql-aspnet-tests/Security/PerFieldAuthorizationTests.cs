@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Security
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Security.SecurtyGroupData;
     using NUnit.Framework;
 

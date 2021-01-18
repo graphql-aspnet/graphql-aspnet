@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -112,7 +111,7 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="extension">The extension to add.</param>
         private void AddTypeExtension(IGraphTypeFieldTemplate extension)
         {
-            var fieldMaker = new GraphFieldMaker(this.Schema);
+            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(this.Schema);
             var fieldResult = fieldMaker.CreateField(extension);
 
             if (fieldResult != null)
@@ -129,20 +128,18 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="action">The action to add to the schema.</param>
         private void AddAction(IGraphTypeFieldTemplate action)
         {
-            switch (action.Route.RootCollection)
+            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
             {
-                case GraphCollection.Query:
-                case GraphCollection.Mutation:
-                    this.EnsureGraphOperationType(action.Route.RootCollection);
-                    var parentField = this.AddOrRetrieveRoutePath(action);
-                    this.AddActionAsField(parentField, action);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(
-                        nameof(action),
-                        $"The '{action.InternalFullName}' action's operation root ({action.Route.RootCollection}) is not " +
-                        $"supported.");
+                this.EnsureGraphOperationType(action.Route.RootCollection);
+                var parentField = this.AddOrRetrieveRoutePath(action);
+                this.AddActionAsField(parentField, action);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(action),
+                    $"The '{action.InternalFullName}' action's operation root ({action.Route.RootCollection}) is not " +
+                    $"allowed by the schema's current configuration (Schema: {this.Schema.Name}).");
             }
         }
 
@@ -282,7 +279,7 @@ namespace GraphQL.AspNet.Schemas
         private void AddActionAsField(IObjectGraphType parentField, IGraphTypeFieldTemplate action)
         {
             // apend the action as a field on the parent
-            var maker = new GraphFieldMaker(this.Schema);
+            var maker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(this.Schema);
             var fieldResult = maker.CreateField(action);
 
             if (fieldResult != null)

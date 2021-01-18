@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Common
         }
 
         /// <summary>
-        /// Throws an if the object reference is null.
+        /// Throws an exception if the object reference is null.
         /// </summary>
         /// <param name="obj">The object refrence to check.</param>
         /// <param name="parameterName">Name of the parameter being checked.</param>
@@ -138,7 +138,6 @@ namespace GraphQL.AspNet.Common
 
         /// <summary>
         /// Throws an exception if the object reference is null.
-        /// The object is returned unchanged if it exists.
         /// </summary>
         /// <typeparam name="T">Any reference type to be null checked.</typeparam>
         /// <param name="obj">The object refrence to check.</param>
@@ -195,7 +194,7 @@ namespace GraphQL.AspNet.Common
         /// Determines whether the given type is a <see cref="Nullable{T}"/> struct ref.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if [is nullable of t] [the specified type]; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the given <paramref name="type"/> is a <see cref="Nullable{T}"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullableOfT(Type type)
         {
@@ -226,10 +225,10 @@ namespace GraphQL.AspNet.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ThrowIfNullOrNotEnumOrReturn(Type enumType, string parameterName)
         {
-            Validation.ThrowIfNull(enumType, parameterName);
+            ThrowIfNull(enumType, parameterName);
 
             if (!IsEnumeration(enumType))
-                throw new ArgumentException($"The type '{enumType.Name}' is not an enumeration.", parameterName);
+                throw new ArgumentException($"The type '{enumType.FriendlyName()}' is not an enumeration.", parameterName);
 
             return enumType;
         }

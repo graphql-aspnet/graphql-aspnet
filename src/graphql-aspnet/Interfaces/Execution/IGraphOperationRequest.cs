@@ -17,6 +17,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IGraphOperationRequest : IGraphQLRequest
     {
         /// <summary>
+        /// Extracts a raw data package from this request.
+        /// </summary>
+        /// <returns>GraphQueryData.</returns>
+        GraphQueryData ToDataPackage();
+
+        /// <summary>
         /// Gets the name of the operation, from the supplied query document, to execute.
         /// </summary>
         /// <value>The name of the operation.</value>

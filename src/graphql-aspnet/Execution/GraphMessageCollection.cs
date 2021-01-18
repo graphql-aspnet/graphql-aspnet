@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="message">The message that was removed (null for this operation).</param>
         private void Messages_Cleared(object sender, IGraphMessage message)
         {
-            this.Severity = GraphMessageSeverity.Information;
+            this.Severity = GraphMessageSeverity.Trace;
         }
 
         /// <summary>

@@ -34,5 +34,13 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
         bool Publish { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
+        /// a user defined graph structure. When false, this graph types points to a concrete type
+        /// defined by a developer.
+        /// </summary>
+        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        bool IsVirtual { get; }
     }
 }

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -30,15 +31,19 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// <param name="parentContext">The parent context.</param>
         /// <param name="fieldRequest">The field request being executed against on this pipeline context.</param>
         /// <param name="variableData">The variable data.</param>
+        /// <param name="defaultFieldSources">A collection of objects to use
+        /// when attempting to resolve source objects for any down stream fields.</param>
         public GraphFieldExecutionContext(
             IGraphMiddlewareContext parentContext,
             IGraphFieldRequest fieldRequest,
-            IResolvedVariableCollection variableData)
+            IResolvedVariableCollection variableData,
+            DefaultFieldSourceCollection defaultFieldSources = null)
              : base(parentContext)
         {
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
             this.VariableData = variableData;
             this.ResolvedSourceItems = new List<GraphDataItem>();
+            this.DefaultFieldSources = defaultFieldSources ?? new DefaultFieldSourceCollection();
         }
 
         /// <summary>
@@ -77,5 +82,12 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// </summary>
         /// <value>The field.</value>
         public IGraphField Field => this.Request.InvocationContext?.Field;
+
+        /// <summary>
+        /// Gets a collection of source objects that can, if needed, be used as the source input values to a
+        /// field execution when no other sources exist.
+        /// </summary>
+        /// <value>The default field sources.</value>
+        public DefaultFieldSourceCollection DefaultFieldSources { get; }
     }
 }

@@ -47,6 +47,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         {
             this.Request = Validation.ThrowIfNullOrReturn(request, nameof(request));
             this.FieldResults = new List<GraphDataItem>();
+            this.PostProcessingActions = new List<Action>();
+            this.DefaultFieldSources = new DefaultFieldSourceCollection();
         }
 
         /// <summary>
@@ -86,5 +88,18 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// </summary>
         /// <value>The top level field results.</value>
         public IList<GraphDataItem> FieldResults { get; }
+
+        /// <summary>
+        /// Gets a list of registered actions to be executed after processing is complete.
+        /// </summary>
+        /// <value>The post processing actions.</value>
+        public IList<Action> PostProcessingActions { get; }
+
+        /// <summary>
+        /// Gets a collection of source objects that can, if needed, be used as the source input values to a
+        /// field execution when no other sources exist.
+        /// </summary>
+        /// <value>The default field sources.</value>
+        public DefaultFieldSourceCollection DefaultFieldSources { get; }
     }
 }

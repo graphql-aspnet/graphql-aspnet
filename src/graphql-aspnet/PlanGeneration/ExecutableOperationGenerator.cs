@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration
     using GraphQL.AspNet.PlanGeneration.InputArguments;
 
     /// <summary>
-    /// A generator capable of converting a single operation from a query document into an actional
+    /// A generator capable of converting a single operation from a query document into an actionable
     /// "execution context" containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
     /// request made from it.
     /// </summary>

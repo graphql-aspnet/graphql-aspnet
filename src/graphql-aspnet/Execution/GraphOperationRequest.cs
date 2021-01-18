@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution
 {
     using System;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.Variables;
@@ -22,20 +23,47 @@ namespace GraphQL.AspNet.Execution
     public class GraphOperationRequest : IGraphOperationRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphOperationRequest" /> class.
+        /// Creates a new operation result from a collection of generated messages and optional raw data
+        /// provided by a requestor.
         /// </summary>
-        /// <param name="queryText">The query text.</param>
-        /// <param name="operationName">Name of the operation.</param>
-        /// <param name="variableData">The variable data package received from the user.</param>
-        public GraphOperationRequest(
-            string queryText = null,
-            string operationName = null,
-            IInputVariableCollection variableData = null)
+        /// <param name="errorMessages">The collection of messages. Must be not null and contain at least one message.</param>
+        /// <param name="queryData">The original query data.</param>
+        /// <returns>GraphOperationResult.</returns>
+        public static GraphOperationResult FromMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
+        {
+            Validation.ThrowIfNull(errorMessages, nameof(errorMessages));
+            if (errorMessages.Count < 1)
+                errorMessages.Critical("An unknown error occured.");
+
+            return new GraphOperationResult(
+                new GraphOperationRequest(queryData),
+                errorMessages);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphOperationRequest"/> class.
+        /// </summary>
+        /// <param name="queryData">The query data.</param>
+        public GraphOperationRequest(GraphQueryData queryData)
         {
             this.Id = Guid.NewGuid().ToString("N");
-            this.QueryText = queryText;
-            this.OperationName = operationName?.Trim();
-            this.VariableData = variableData ?? new InputVariableCollection();
+            this.OperationName = queryData.OperationName?.Trim();
+            this.QueryText = queryData.Query;
+            this.VariableData = queryData.Variables ?? new InputVariableCollection();
+        }
+
+        /// <summary>
+        /// Extracts a raw data package from this request .
+        /// </summary>
+        /// <returns>GraphQueryData.</returns>
+        public GraphQueryData ToDataPackage()
+        {
+            return new GraphQueryData()
+            {
+                Query = this.QueryText,
+                Variables = new InputVariableCollection(this.VariableData),
+                OperationName = this.OperationName,
+            };
         }
 
         /// <summary>

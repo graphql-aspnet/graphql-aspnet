@@ -13,11 +13,12 @@
 # It ensures that the parameters defined in the build are acceptable such that 
 # the package being built "could be" deployed to nuget.
 
-$versionNumber = $env:VersionNumber
-$versionSuffix = $env:VersionSuffix
-$packageId = $env:PackageId
-$branch = $env:Branch 
+$versionNumber = $env:VersionNumber   # e.g. "beta"  or   ""
+$versionSuffix = $env:VersionSuffix  # e.g. "0.5.1"
+$packageId = $env:PackageId  # e.g.  "GraphQL.AspNet|GraphQL.AspNet.Subscriptions"
+$branch = $env:Branch       # e.g.  "ref/heads/master"
 $packageData = $null;
+
 
 write-host ""
 write-host "--------------"
@@ -81,41 +82,43 @@ if ( ($packageId -eq "") -or ($null -eq $packageId)) {
 # Validate Published Versions for Conflicts
 # ------------------------------
 # fetch the metadata for the library as it exists on nuget.org right now
-$normalizedPackageId = $packageId.ToLower()
-$url = "https://api.nuget.org/v3/registration3-gz-semver2/$normalizedPackageId/index.json"
-try {
-    $packageData = Invoke-RestMethod -Uri $url 
-}
-catch {
-    write-host "$packageId (ERROR!)" -ForegroundColor Red
-    write-host "Unable to retrieve package details from: $url" -ForegroundColor Red
-    write-host "Either a connection was not established or the package does not exist." -ForegroundColor Red
-    exit 1
-}
+$packagesToCheck = $packageId.Split("|", [System.StringSplitOptions]::None)
+foreach ($packageToCheck in $packagesToCheck) {
 
-write-host $packageId -NoNewline
-write-host  " (Done)." -ForegroundColor Green
-
-# ensure the version that is being built doesn't already exist on nuget.
-write-host "--------------"
-write-host "Analyzing published Nuget packages for version conflicts with this release..."
-write-host "Checking Existing Packages for: " -NoNewline
-write-host $packageId -ForegroundColor DarkCyan
-
-$packageData.items[0].items | ForEach-Object {            
-    $packageContent = Invoke-RestMethod -Uri $_.catalogEntry.'@id'
-    write-host "Inspecting: $($packageContent.version), Published: $($packageContent.created): " -NoNewline
-    if ( $packageContent.version -eq $versionNumber ) {
-        write-host "ERROR!"  -ForegroundColor Red
-        write-host "Package version '$versionNumber' already exists. Unable to redeploy the same version number." -ForegroundColor Red
+    # ensure the version that is being built doesn't already exist on nuget.
+    write-host "--------------"
+    write-host "Checking Existing Packages for: " -NoNewline
+    write-host $packageToCheck -ForegroundColor DarkCyan
+    
+    $normalizedPackageId = $packageToCheck.ToLower()
+    $url = "https://api.nuget.org/v3/registration5-semver1/$normalizedPackageId/index.json"
+    try {
+        $packageData = Invoke-RestMethod -Uri $url 
+    }
+    catch {
+        write-host "ERROR!" -ForegroundColor Red
+        write-host "Unable to retrieve package details from: $url" -ForegroundColor Red
+        write-host "Either a connection was not established or the package does not exist." -ForegroundColor Red
         exit 1
     }
-    else {
-        write-host  " (Done)." -ForegroundColor Green
+
+    $packageData.items[0].items | ForEach-Object {            
+        $packageContent = Invoke-RestMethod -Uri $_.catalogEntry.'@id'
+        write-host "Inspecting: $($packageContent.version), Published: $($packageContent.created): " -NoNewline
+        if ( $packageContent.version -eq $versionNumber ) {
+            write-host "ERROR!"  -ForegroundColor Red
+            write-host "Package version '$versionNumber' already exists. Unable to redeploy the same version number." -ForegroundColor Red
+            exit 1
+        }
+        else {
+            write-host  " (Done)." -ForegroundColor Green
+        }
     }
+
+    write-host "No Conflicts Found"
 }
 
-write-host "Validation Complete. No conflicts found. Continuing to deploy new version: $versionNumber" -ForegroundColor Green
+write-host "Validation Complete. Continuing to deploy new version: $versionNumber" -ForegroundColor Green
 write-host "--------------"
 
 ## write the "success" indicator into the build pipeline

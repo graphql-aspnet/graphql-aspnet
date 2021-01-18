@@ -137,7 +137,6 @@ namespace GraphQL.AspNet.Tests.Lexing
         [TestCase("\"\"\"", 0, 0, 1, 0)] // only an opening block delimiter
         [TestCase("\"\"\"\"", 0, 0, 1, 0)] // mismatched delimiters BLOCK and SINGLE
         [TestCase("\"", 0, 0, 1, 0)] // not long enough
-        [TestCase("\"\" ", 0, 0, 1, 0)] // terminated string with trailing character
         [TestCase("a\nab\"abc123423", 0, 0, 1, 0)] // no opening delimiter
         [TestCase("a\nab\"abc123423", 4,  4, 2, 2)] // unterminated from a line
         [TestCase("\"abc123423", 0, 0, 1, 0)] // unterminated

@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
 
@@ -74,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphCollection.Mutation));
 
             // field for the controller exists
-            var topFieldName = nameof(SimpleMethodController).Replace("Controller", string.Empty);
+            var topFieldName = nameof(SimpleMethodController).Replace(Constants.CommonSuffix.CONTROLLER_SUFFIX, string.Empty);
             Assert.IsTrue(schema.OperationTypes[GraphCollection.Query].Fields.ContainsKey(topFieldName));
 
             // ensure the field on the query is the right name (or throw)
@@ -105,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var topField = schema.OperationTypes[GraphCollection.Query][fieldName];
             var type = schema.KnownTypes.FindGraphType(topField) as IObjectGraphType;
             Assert.IsNotNull(type);
-            Assert.AreEqual(1, type.Fields.Count);
+            Assert.AreEqual(2, type.Fields.Count); // declared field + __typename
 
             // field contains 1 field for first path segment
             Assert.IsTrue(type.Fields.ContainsKey("path1"));
@@ -113,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var firstFieldType = schema.KnownTypes.FindGraphType(firstField) as IObjectGraphType;
 
             Assert.IsNotNull(firstFieldType);
-            Assert.AreEqual(1, firstFieldType.Fields.Count);
+            Assert.AreEqual(2, firstFieldType.Fields.Count); // declared field + __typename
             Assert.IsTrue(firstFieldType.Fields.ContainsKey("path2"));
 
             var actionField = firstFieldType.Fields["path2"];
@@ -263,7 +264,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             // created from the sub path on the controller route definition "path1"
             // that field should be registered as a virtual field
             var controllerQueryFieldType = schema.KnownTypes.FindGraphType(controllerQueryField) as IObjectGraphType;
-            Assert.AreEqual(1, controllerQueryFieldType.Fields.Count);
+            Assert.AreEqual(2, controllerQueryFieldType.Fields.Count); // declared field + __typename
             var queryPath1 = controllerQueryFieldType.Fields["path1"];
             Assert.IsTrue(queryPath1 is VirtualGraphField);
             Assert.AreEqual(string.Empty, queryPath1.Description);
@@ -272,7 +273,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             // and 1 virtual field ("path2") hung off it
             var queryPath1Type = schema.KnownTypes.FindGraphType(queryPath1) as IObjectGraphType;
             Assert.IsTrue(queryPath1Type is VirtualObjectGraphType);
-            Assert.AreEqual(2, queryPath1Type.Fields.Count);
+            Assert.AreEqual(3, queryPath1Type.Fields.Count); // declared fields + __typename
 
             Assert.IsTrue(queryPath1Type.Fields.Any(x => x.Name == "TestActionMethod"));
             Assert.IsTrue(queryPath1Type.Fields.Any(x => x.Name == "TestAction2"));
@@ -299,7 +300,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             // created from the sub path on the controller route definition "path1"
             // that field should be registered as a virtual field
             var controllerMutationFieldType = schema.KnownTypes.FindGraphType(controllerMutationField) as IObjectGraphType;
-            Assert.AreEqual(1, controllerMutationFieldType.Fields.Count);
+            Assert.AreEqual(2, controllerMutationFieldType.Fields.Count); // declared field + __typename
             var mutationPath1 = controllerMutationFieldType.Fields["path1"];
             Assert.IsTrue(mutationPath1 is VirtualGraphField);
             Assert.AreEqual(string.Empty, mutationPath1.Description);
@@ -395,14 +396,14 @@ namespace GraphQL.AspNet.Tests.Schemas
             // pathSix should have one "real" field, the method named 'deepNestedMethod'
             var pathSix = virtualTypes.FirstOrDefault(x => x.Name.Contains("pathSix")) as IObjectGraphType;
             Assert.IsNotNull(pathSix);
-            Assert.AreEqual(1, pathSix.Fields.Count);
+            Assert.AreEqual(2, pathSix.Fields.Count); // declared field + __typename
             Assert.IsNotNull(pathSix["deepNestedMethod"]);
 
             // query_path1 should have two "real" fields, the method named 'TestActionMethod' and 'TestAction2'
             var querPath1 = virtualTypes.FirstOrDefault(x => x.Name.Contains("Query_path0_path1")) as IObjectGraphType;
 
             Assert.IsNotNull(querPath1);
-            Assert.AreEqual(2, querPath1.Fields.Count);
+            Assert.AreEqual(3, querPath1.Fields.Count); // declared field + __typename
             Assert.IsNotNull(querPath1[nameof(KitchenSinkController.TestActionMethod)]);
             Assert.IsNotNull(querPath1["TestAction2"]);
         }

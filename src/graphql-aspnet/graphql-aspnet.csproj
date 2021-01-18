@@ -6,19 +6,23 @@
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;IDE0019;IDE0017;RCS1146;RCS1194;</NoWarn>
     <RootNamespace>GraphQL.AspNet</RootNamespace>
     <AssemblyName>GraphQL.AspNet</AssemblyName>
+    <Company>GraphQL ASP.NET</Company>
     <Title>GraphQL ASP.NET</Title>
     <Product>GraphQL ASP.NET</Product>
     <Authors>Kevin Carroll</Authors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>GraphQL.AspNet</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <PackageDescription>GraphQL ASP.NET is a fully functional GraphQL library that utilizes a controller/action programming model similar to ASP.NET.</PackageDescription>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
     <PackageTags>GraphQL ASPNET graphql ASP.NET mvc dotnet core</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/graphql-aspnet/graphql-aspnet</RepositoryUrl>
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
 <ItemGroup>
@@ -40,14 +44,17 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.6.0" />
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+
   </ItemGroup>
 </Project>

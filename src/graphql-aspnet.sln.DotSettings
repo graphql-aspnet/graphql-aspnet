@@ -310,6 +310,9 @@ License:  MIT&#xD;
 	<s:Boolean x:Key="/Default/Debugger/ReturnValuesEditorAdornmentsEnabled/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/Debugger/TrivialExpressionsEditorAdornmentsEnabled/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/Environment/Hierarchy/PsiConfigurationSettingsKey/CustomLocation/@EntryValue">C:\Users\kcarroll\AppData\Local\JetBrains\Transient\ReSharperPlatformVs15\v09_4efbea3c\SolutionCaches</s:String>
+	<s:String x:Key="/Default/Environment/InlayHints/CppParameterNameHintsOptions2/ShowParameterNameHints/@EntryValue">Never</s:String>
+	<s:String x:Key="/Default/Environment/InlayHints/CSharpParameterNameHintsOptions/ShowParameterNameHints/@EntryValue">Never</s:String>
+	<s:String x:Key="/Default/Environment/InlayHints/VBParameterNameHintsOptions/ShowParameterNameHints/@EntryValue">Never</s:String>
 	<s:Boolean x:Key="/Default/Environment/ParameterNameHintsOptions/ShowParameterNameHints/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/Environment/PerformanceGuide/SwitchBehaviour/=AutoRecoverer/@EntryIndexedValue">LIVE_MONITOR</s:String>
 	<s:String x:Key="/Default/Environment/PerformanceGuide/SwitchBehaviour/=Format/@EntryIndexedValue">DO_NOTHING</s:String>
@@ -334,6 +337,9 @@ License:  MIT&#xD;
 	<s:String x:Key="/Default/Environment/PerformanceGuide/SwitchConflictResolutionMode/=VsBulb/@EntryIndexedValue">NOTIFY</s:String>
 	<s:String x:Key="/Default/Environment/PerformanceGuide/SwitchConflictResolutionMode/=XAML_0020Designer/@EntryIndexedValue"></s:String>
 	<s:Boolean x:Key="/Default/Environment/PerformanceGuide/SwitchConflictResolutionMode/=XAML_0020Designer/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EFeature_002EServices_002ECpp_002EDaemon_002EInlayHints_002EParameterHints_002ECppParameterNameHintsOptionsOptionsMigration/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EFeature_002EServices_002ECSharp_002EParameterNameHints_002ECSharpParameterNameHintsOptionsMigration/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EFeature_002EServices_002EVB_002EParameterNameHints_002EVBParameterNameHintsOptionsMigration/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpAttributeForSingleLineMethodUpgrade/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpKeepExistingMigration/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpPlaceEmbeddedOnSameLineMigration/@EntryIndexedValue">True</s:Boolean>

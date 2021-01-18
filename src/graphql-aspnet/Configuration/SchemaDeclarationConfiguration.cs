@@ -9,9 +9,11 @@
 
 namespace GraphQL.AspNet.Configuration
 {
+    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -21,6 +23,16 @@ namespace GraphQL.AspNet.Configuration
     [DebuggerDisplay("Schema Declaration Configuration")]
     public class SchemaDeclarationConfiguration : ISchemaDeclarationConfiguration
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SchemaDeclarationConfiguration"/> class.
+        /// </summary>
+        public SchemaDeclarationConfiguration()
+        {
+            this.AllowedOperations = new HashSet<GraphCollection>();
+            this.AllowedOperations.Add(GraphCollection.Query);
+            this.AllowedOperations.Add(GraphCollection.Mutation);
+        }
+
         /// <summary>
         /// Merges the specified configuration setttings into this instance.
         /// </summary>
@@ -33,6 +45,12 @@ namespace GraphQL.AspNet.Configuration
             this.DisableIntrospection = config.DisableIntrospection;
             this.FieldDeclarationRequirements = config.FieldDeclarationRequirements;
             this.GraphNamingFormatter = config.GraphNamingFormatter;
+
+            if (config.AllowedOperations != null)
+            {
+                foreach (var op in config.AllowedOperations)
+                    this.AllowedOperations.Add(op);
+            }
         }
 
         /// <summary>
@@ -69,5 +87,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The graph naming formatter.</value>
         public GraphNameFormatter GraphNamingFormatter { get; set; } = new GraphNameFormatter();
+
+        /// <summary>
+        /// Gets the set of operations that can be registered to this schema.
+        /// </summary>
+        /// <value>The allowed operations.</value>
+        public HashSet<GraphCollection> AllowedOperations { get; }
     }
 }

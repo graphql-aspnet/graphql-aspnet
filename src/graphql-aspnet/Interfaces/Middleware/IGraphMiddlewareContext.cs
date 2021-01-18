@@ -21,6 +21,20 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     public interface IGraphMiddlewareContext
     {
         /// <summary>
+        /// Marks this context as being cancelled. This does not terminate a pipeline directly, rather it sets a
+        /// flag, <see cref="IsCancelled"/>, that each middleware component must choose to react to.
+        /// </summary>
+        void Cancel();
+
+        /// <summary>
+        /// Gets a value indicating whether this resolution context has been put in a canceled
+        /// state. Each pipeline component must choose to react to the cancelation state or not. The final data result
+        /// of the pipeline, however; will not be rendered to the requestor.
+        /// </summary>
+        /// <value><c>true</c> if cancel; otherwise, <c>false</c>.</value>
+        bool IsCancelled { get; }
+
+        /// <summary>
         /// Gets the service provider to use for any required object instantiations.
         /// </summary>
         /// <value>The services.</value>

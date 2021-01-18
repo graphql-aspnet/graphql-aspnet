@@ -70,14 +70,14 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <returns>GraphQLServiceCollectionBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<TSchema> AddGraphQL<TSchema>(
             this IServiceCollection serviceCollection,
-            Action<SchemaOptions> options = null)
+            Action<SchemaOptions<TSchema>> options = null)
             where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(serviceCollection, nameof(serviceCollection));
             if (SCHEMA_REGISTRATIONS.ContainsKey(typeof(TSchema)))
             {
                 throw new GraphTypeDeclarationException(
-                    $"A schema type {typeof(GraphSchema).FriendlyName()} has already been registered. " +
+                    $"A schema type {typeof(TSchema).FriendlyName()} has already been registered. " +
                     "Eac schema type may only be registered once with GraphQL.");
             }
 
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <returns>GraphQLServiceCollectionBuilder&lt;TSchema&gt;.</returns>
         public static ISchemaBuilder<GraphSchema> AddGraphQL(
             this IServiceCollection serviceCollection,
-            Action<SchemaOptions> options = null)
+            Action<SchemaOptions<GraphSchema>> options = null)
         {
             return AddGraphQL<GraphSchema>(serviceCollection, options);
         }

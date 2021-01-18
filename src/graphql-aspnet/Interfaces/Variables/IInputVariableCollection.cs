@@ -9,11 +9,13 @@
 
 namespace GraphQL.AspNet.Interfaces.Variables
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// A collection of variables supplied by user to be used when resolving
     /// a query operation.
     /// </summary>
-    public interface IInputVariableCollection
+    public interface IInputVariableCollection : IEnumerable<KeyValuePair<string, IInputVariable>>
     {
         /// <summary>
         /// Gets the value associated with the specified key.

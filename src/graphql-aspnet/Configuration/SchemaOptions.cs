@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public class SchemaOptions
     {
+        private readonly Dictionary<Type, ISchemaExtension> _extensions;
         private readonly HashSet<Type> _possibleTypes;
         private readonly Type _schemaType;
 
@@ -47,6 +48,7 @@ namespace GraphQL.AspNet.Configuration
             this.ExecutionOptions = new SchemaExecutionConfiguration();
             this.ResponseOptions = new SchemaResponseConfiguration();
             this.QueryHandler = new SchemaQueryHandlerConfiguration();
+            _extensions = new Dictionary<Type, ISchemaExtension>();
         }
 
         /// <summary>
@@ -121,6 +123,36 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
+        /// Registers a extension for this schema option.
+        /// </summary>
+        /// <typeparam name="TExtensionType">The type of the t extension type.</typeparam>
+        /// <param name="extension">The extension.</param>
+        public void RegisterExtension<TExtensionType>(TExtensionType extension)
+            where TExtensionType : class, ISchemaExtension
+        {
+            Validation.ThrowIfNull(extension, nameof(extension));
+
+            extension.Configure(this);
+            _extensions.Add(extension.GetType(), extension);
+
+            if (extension.RequiredServices != null)
+            {
+                foreach (var descriptor in extension.RequiredServices)
+                {
+                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(descriptor, true));
+                }
+            }
+
+            if (extension.OptionalServices != null)
+            {
+                foreach (var descriptor in extension.OptionalServices)
+                {
+                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(descriptor, false));
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the registered schema types.
         /// </summary>
         /// <value>The registered schema types.</value>
@@ -171,5 +203,11 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The query handler.</value>
         public SchemaQueryHandlerConfiguration QueryHandler { get; }
+
+        /// <summary>
+        /// Gets the set of options extensions added to this schema configuration.
+        /// </summary>
+        /// <value>The extensions.</value>
+        public IReadOnlyDictionary<Type, ISchemaExtension> Extensions => _extensions;
     }
 }

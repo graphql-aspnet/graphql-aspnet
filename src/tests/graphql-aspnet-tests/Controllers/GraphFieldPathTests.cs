@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase(GraphCollection.Query, "path1", "path2", "[query]/path1/path2")]
         [TestCase(GraphCollection.Types, "path1", "path2", "[type]/path1/path2")]
         [TestCase(GraphCollection.Mutation, "path1", "path2", "[mutation]/path1/path2")]
-        [TestCase(GraphCollection.Subscription, "path1", "path2", "[sub]/path1/path2")]
+        [TestCase(GraphCollection.Subscription, "path1", "path2", "[subscription]/path1/path2")]
         [TestCase(GraphCollection.Unknown, "path1", "path2", "[noop]/path1/path2")]
         public void Join_WithRoot_JoinsAsExpected(GraphCollection root, string leftSide, string rightSide, string expectedOutput)
         {

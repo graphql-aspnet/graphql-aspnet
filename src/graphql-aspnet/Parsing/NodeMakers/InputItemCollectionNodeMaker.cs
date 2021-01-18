@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             }
 
             // ensure the paren right is being pointed at in the stream
-            tokenStream.Match(TokenType.ParenRight, TokenType.CurlyBraceRight);
+            tokenStream.MatchOrThrow(TokenType.ParenRight, TokenType.CurlyBraceRight);
             tokenStream.Next();
 
             var collection = new InputItemCollectionNode(startLocation);

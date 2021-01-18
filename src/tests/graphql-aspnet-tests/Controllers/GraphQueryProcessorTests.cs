@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Controllers
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Controllers.GraphQueryControllerData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Net.Http.Headers;
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Controllers
     {
         private (IGraphQLHttpProcessor<GraphSchema> Processor, HttpContext Context) CreateQueryArtifacts(GraphQueryData data = null)
         {
-            var builder = new TestServerBuilder(TestOptions.CodeDeclaredNames);
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             builder.AddGraphType<CandyController>();
             var server = builder.Build();
 
@@ -93,8 +94,8 @@ namespace GraphQL.AspNet.Tests.Controllers
             await processor.Invoke(httpContext);
 
             // headers that should be set
-            Assert.IsTrue(response.Headers.ContainsKey(HeaderNames.ContentType));
-            Assert.IsTrue(response.Headers.ContainsKey(Constants.ServerInformation.SERVER_INFORMATION_HEADER));
+            Assert.IsTrue(response.Headers.ContainsKey(HeaderNames.ContentType), "No content type header");
+            Assert.IsTrue(response.Headers.ContainsKey(Constants.ServerInformation.SERVER_INFORMATION_HEADER), "No server info header");
 
             // check the response body that was written
             var expectedOutput = @"

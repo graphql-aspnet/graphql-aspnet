@@ -7,13 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.StarWarsAPI
+namespace GraphQL.AspNet.StarWarsAPI2X
 {
+    using System;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.WebSockets;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +26,8 @@ namespace GraphQL.AspNet.StarWarsAPI
     public class Startup
     {
         private const string CORS_POLICY_ALL_CLIENTS = "ALL_CLIENTS";
+
+        private static readonly TimeSpan SOCKET_CONNECTION_KEEPALIVE = TimeSpan.FromSeconds(10);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -82,10 +86,28 @@ namespace GraphQL.AspNet.StarWarsAPI
 
                   var assembly = typeof(StarWarsDataRepository).Assembly;
                   options.AddGraphAssembly(assembly);
-              });
+              })
+             .AddSubscriptions(options =>
+             {
+                 // this route path is set by default
+                 // it is listed here as a matter of example
+                 options.Route = SubscriptionConstants.Routing.DEFAULT_SUBSCRIPTIONS_ROUTE;
+
+                 // for some web based graphql tools such as graphiql and graphql-playground
+                 // the default keep-alive timeout of 2 minutes is too long.
+                 //
+                 // still others (like graphql-playground running in electron) do not respond/configure
+                 // for socket-level ping/pong frames to allow for socket-level keep alives
+                 //
+                 // here we set this demo project websocket keep-alive (at the apollo server level)
+                 // to be below all those thresholds to ensure a hassle free experience.
+                 // In practice, you should configure your server (both apollo keep alives and socket keep alives)
+                 // with an interval that is compatiable with your client side environment.
+                 options.KeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
+             });
 
             services.AddMvcCore()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddFormatterMappings()
                 .AddJsonFormatters()
                 .AddDataAnnotations();
@@ -101,6 +123,12 @@ namespace GraphQL.AspNet.StarWarsAPI
             application.AddStarWarsStartedMessageToConsole();
 
             application.UseCors("_allOrigins");
+
+            // add some common origins of various tools that may be
+            // used for running this demo
+            // do not add these in a production app
+            var options = new WebSocketOptions();
+            application.UseWebSockets(options);
 
             application.UseMvc();
 

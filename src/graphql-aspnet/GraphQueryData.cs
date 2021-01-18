@@ -17,6 +17,25 @@ namespace GraphQL.AspNet
     public class GraphQueryData
     {
         /// <summary>
+        /// Gets a singleton of an empty query data set.
+        /// </summary>
+        /// <value>The empty.</value>
+        public static GraphQueryData Empty { get; }
+
+        /// <summary>
+        /// Initializes static members of the <see cref="GraphQueryData"/> class.
+        /// </summary>
+        static GraphQueryData()
+        {
+            GraphQueryData.Empty = new GraphQueryData()
+            {
+                OperationName = null,
+                Query = null,
+                Variables = new InputVariableCollection(),
+            };
+        }
+
+        /// <summary>
         /// Gets or sets the name of the operation in the query document to execute. Must be included
         /// when the document defines more than one operation.
         /// </summary>

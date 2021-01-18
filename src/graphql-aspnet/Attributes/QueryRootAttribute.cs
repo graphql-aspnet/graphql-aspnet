@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A decorator attribute to identify a method as being attached to the query root operation,
+    /// A decorator attribute to identify a method as being attached directly to the query root operation,
     /// as apposed to being nested under its controller.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]

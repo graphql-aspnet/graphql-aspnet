@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Common.Generics
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    /// <seealso cref="IOrderedDictionary{TKey,TValue}" />
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(OrderedDictionaryDebugBrowser))]
     public class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>

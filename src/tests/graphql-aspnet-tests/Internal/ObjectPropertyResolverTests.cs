@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Extensions.DiExtensionTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.ValueResolversTestData;
     using Moq;
     using NUnit.Framework;

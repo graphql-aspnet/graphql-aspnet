@@ -13,9 +13,7 @@ namespace GraphQL.AspNet.Defaults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// An http processor that only allows authenticated requests through to the runtime.
@@ -28,17 +26,15 @@ namespace GraphQL.AspNet.Defaults
         /// Initializes a new instance of the <see cref="SecureGraphQLHttpProcessor{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        /// <param name="queryPipeline">The query pipeline.</param>
+        /// <param name="runtime">The runtime.</param>
         /// <param name="writer">The writer.</param>
-        /// <param name="metricsFactory">The metrics factory.</param>
         /// <param name="logger">The logger.</param>
         public SecureGraphQLHttpProcessor(
             TSchema schema,
-            ISchemaPipeline<TSchema, GraphQueryExecutionContext> queryPipeline,
+            IGraphQLRuntime<TSchema> runtime,
             IGraphResponseWriter<TSchema> writer,
-            IGraphQueryExecutionMetricsFactory<TSchema> metricsFactory,
             IGraphEventLogger logger = null)
-            : base(schema, queryPipeline, writer, metricsFactory, logger)
+            : base(schema, runtime, writer, logger)
         {
         }
 
@@ -55,7 +51,9 @@ namespace GraphQL.AspNet.Defaults
                 return;
             }
 
-            await base.SubmitGraphQLQuery(queryData);
+            await base
+                .SubmitGraphQLQuery(queryData)
+                .ConfigureAwait(false);
         }
     }
 }

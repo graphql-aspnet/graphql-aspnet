@@ -26,5 +26,12 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// most correct maker to use.</param>
         /// <returns>IGraphTypeMaker.</returns>
         IGraphTypeMaker CreateTypeMaker(ISchema schema, TypeKind kind);
+
+        /// <summary>
+        /// Creates "maker" that can generate graph fields.
+        /// </summary>
+        /// <param name="schema">The schema to which the created fields should belong.</param>
+        /// <returns>IGraphFieldMaker.</returns>
+        IGraphFieldMaker CreateFieldMaker(ISchema schema);
     }
 }
