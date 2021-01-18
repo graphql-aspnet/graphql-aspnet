@@ -55,9 +55,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             // remove the parent fragment this method should be nested under if this method is marked as a root entry
             var parentRouteFragment = (graphMethodAttrib?.IsRootFragment ?? false) ? string.Empty : this.Parent.Route.Path;
-            var route = new GraphFieldPath(GraphFieldPath.Join(fieldType, parentRouteFragment, routeFragment));
-
-            return route;
+            return new GraphFieldPath(GraphFieldPath.Join(fieldType, parentRouteFragment, routeFragment));
         }
 
         /// <summary>
@@ -71,16 +69,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             // as a matter of convention enforcement
             // for action methods on controllers
-            // force them to use [Query], [Mutation], [QueryRoot] or [MutationRoot]
+            // force them to use [Query], [Mutation] etc.
             // throw an exception if an attempt to use [GraphField] is made as its reserved for POCO classes
             var declaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.GetType();
             if (declaration != null && declaration == typeof(GraphFieldAttribute))
             {
                 throw new GraphTypeDeclarationException(
                     $"Invalid action declaration. The controller action method '{this.InternalFullName}' declares " +
-                    $"a '{nameof(GraphFieldAttribute)}'. This attribute is reserved for model classes. For a " +
-                    $"controller action use '{nameof(QueryAttribute)}', '{nameof(MutationAttribute)}', " +
-                    $"'{nameof(QueryRootAttribute)}' or '{nameof(MutationRootAttribute)}'.");
+                    $"a '{nameof(GraphFieldAttribute)}'. This attribute is reserved for model classes. Controller " +
+                    $"actions must declare an operation specific attribute such as '{nameof(QueryAttribute)}', '{nameof(MutationAttribute)}' etc.");
             }
         }
 

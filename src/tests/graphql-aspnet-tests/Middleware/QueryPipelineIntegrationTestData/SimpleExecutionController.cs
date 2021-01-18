@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [GraphRoute("simple")]
     public class SimpleExecutionController : GraphController

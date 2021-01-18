@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Common.Source
         }
 
         /// <summary>
-        /// Converts this instance into its equvilant origin item.
+        /// Creates an equvilant <see cref="SourceOrigin"/> out of this <see cref="SourceLocation"/>.
         /// </summary>
         /// <returns>SourceOrigin.</returns>
         public SourceOrigin AsOrigin()

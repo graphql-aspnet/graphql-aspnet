@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Common.Generics
     /// <summary>
     /// A keyed collection that generates keys from a delegate rather than being explicitly provided.
     /// </summary>
-    /// <typeparam name="TKey">The type of the t key.</typeparam>
-    /// <typeparam name="TItem">The type of the t item.</typeparam>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TItem">The type of the item.</typeparam>
     /// <seealso cref="System.Collections.ObjectModel.KeyedCollection{TKey, TItem}" />
     public class DelegateKeyedCollection<TKey, TItem> : KeyedCollection<TKey, TItem>
     {
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Common.Generics
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateKeyedCollection{TKey,TItem}" /> class.
         /// </summary>
-        /// <param name="keyDelegate">The get key for item delegate.</param>
+        /// <param name="keyDelegate">The delegate for extracting the key from an item.</param>
         public DelegateKeyedCollection(Func<TItem, TKey> keyDelegate)
         {
             _keyDelegate = Validation.ThrowIfNullOrReturn(keyDelegate, nameof(keyDelegate));
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Common.Generics
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateKeyedCollection{TKey,TItem}" /> class.
         /// </summary>
-        /// <param name="keyDelegate">The key delegate.</param>
+        /// <param name="keyDelegate">The delegate for extracting the key from an item.</param>
         /// <param name="comparer">The comparer.</param>
         public DelegateKeyedCollection(Func<TItem, TKey> keyDelegate, IEqualityComparer<TKey> comparer)
             : base(comparer)
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Common.Generics
         }
 
         /// <summary>
-        /// Sorts the by its keys using the comparer provided.
+        /// Sorts the items in the collection by its established keys using the comparer provided.
         /// </summary>
         /// <param name="keyComparer">The key comparer.</param>
         public void SortByKeys(IComparer<TKey> keyComparer)
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Common.Generics
         }
 
         /// <summary>
-        /// Sorts the by its keys using hte comparer provided.
+        /// Sorts the items in the collection by its established keys using the comparer provided.
         /// </summary>
         /// <param name="keyComparison">The key comparison.</param>
         public void SortByKeys(Comparison<TKey> keyComparison)

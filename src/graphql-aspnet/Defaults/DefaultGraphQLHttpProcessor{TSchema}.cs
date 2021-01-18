@@ -21,11 +21,9 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
 
@@ -41,7 +39,6 @@ namespace GraphQL.AspNet.Defaults
 #pragma warning disable SA1600 // Elements should be documented
         protected const string ERROR_NO_QUERY_PROVIDED = "No query received on the request";
         protected const string ERROR_USE_POST = "GraphQL queries should be executed as a POST request";
-        protected const string ERROR_NO_RESPONSE = "Document Executor returned no response.";
         protected const string ERROR_INTERNAL_SERVER_ISSUE = "Unknown internal server error.";
         protected const string ERROR_NO_REQUEST_CREATED = "GraphQL Operation Request is null. Unable to execute the query.";
         protected const string ERROR_UNAUTHORIZED = "Unauthorized";
@@ -50,29 +47,25 @@ namespace GraphQL.AspNet.Defaults
 
         private readonly IGraphEventLogger _logger;
         private readonly TSchema _schema;
-        private readonly ISchemaPipeline<TSchema, GraphQueryExecutionContext> _queryPipeline;
+        private readonly IGraphQLRuntime<TSchema> _runtime;
         private readonly IGraphResponseWriter<TSchema> _writer;
-        private readonly IGraphQueryExecutionMetricsFactory<TSchema> _metricsFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpProcessor{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        /// <param name="queryPipeline">The query pipeline.</param>
+        /// <param name="runtime">The primary runtime in which requests are processed.</param>
         /// <param name="writer">The writer.</param>
-        /// <param name="metricsFactory">The metrics factory.</param>
         /// <param name="logger">The logger.</param>
         public DefaultGraphQLHttpProcessor(
             TSchema schema,
-            ISchemaPipeline<TSchema, GraphQueryExecutionContext> queryPipeline,
+            IGraphQLRuntime<TSchema> runtime,
             IGraphResponseWriter<TSchema> writer,
-            IGraphQueryExecutionMetricsFactory<TSchema> metricsFactory,
             IGraphEventLogger logger = null)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _queryPipeline = Validation.ThrowIfNullOrReturn(queryPipeline, nameof(queryPipeline));
+            _runtime = Validation.ThrowIfNullOrReturn(runtime, nameof(runtime));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
-            _metricsFactory = Validation.ThrowIfNullOrReturn(metricsFactory, nameof(metricsFactory));
             _logger = logger;
         }
 
@@ -122,61 +115,61 @@ namespace GraphQL.AspNet.Defaults
                 return;
             }
 
-            using (var cancelSource = new CancellationTokenSource())
-            {
-                try
-                {
-                    // *******************************
-                    // Setup
-                    // *******************************
-                    this.GraphQLRequest = this.CreateRequest(queryData);
-                    if (this.GraphQLRequest == null)
-                    {
-                        await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
-                        return;
-                    }
+            await this.ExecuteGraphQLQuery(queryData).ConfigureAwait(false);
+        }
 
-                    // *******************************
-                    // Primary query execution
-                    // *******************************
-                    var metricPackage = this.EnableMetrics ? _metricsFactory.CreateMetricsPackage() : null;
-                    var context = new GraphQueryExecutionContext(
-                        this.GraphQLRequest,
+        /// <summary>
+        /// Executes the graph ql query.
+        /// </summary>
+        /// <param name="queryData">The query data.</param>
+        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        protected virtual async Task ExecuteGraphQLQuery(GraphQueryData queryData)
+        {
+            using var cancelSource = new CancellationTokenSource();
+
+            try
+            {
+                // *******************************
+                // Setup
+                // *******************************
+                this.GraphQLRequest = _runtime.CreateRequest(queryData);
+                if (this.GraphQLRequest == null)
+                {
+                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
+                    return;
+                }
+
+                // *******************************
+                // Primary query execution
+                // *******************************
+                var queryResponse = await _runtime
+                    .ExecuteRequest(
                         this.HttpContext.RequestServices,
                         this.HttpContext.User,
-                        metricPackage,
-                        _logger);
+                        this.GraphQLRequest,
+                        this.EnableMetrics)
+                    .ConfigureAwait(false);
 
-                    await _queryPipeline.InvokeAsync(context, cancelSource.Token).ConfigureAwait(false);
+                // if any metrics were populated in the execution, allow a child class to process them
+                if (queryResponse.Metrics != null)
+                    this.HandleQueryMetrics(queryResponse.Metrics);
 
-                    // *******************************
-                    // Response Generation
-                    // *******************************
-                    var queryResponse = context.Result;
-                    if (queryResponse == null)
-                        queryResponse = this.ErrorMessageAsGraphQLResponse(ERROR_NO_RESPONSE);
-
-                    // if any metrics were populated in the execution, allow a child class to process them
-                    if (context.Metrics != null)
-                        this.HandleQueryMetrics(context.Metrics);
-
-                    // all done, finalize and return
-                    queryResponse = this.FinalizeResult(queryResponse);
-                    await this.WriteResponse(queryResponse).ConfigureAwait(false);
-                }
-                catch (Exception ex)
+                // all done, finalize and return
+                queryResponse = this.FinalizeResult(queryResponse);
+                await this.WriteResponse(queryResponse).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                var exceptionResult = this.HandleQueryException(ex);
+                if (exceptionResult == null)
                 {
-                    var exceptionResult = this.HandleQueryException(ex);
-                    if (exceptionResult == null)
-                    {
-                        // no one was able to handle hte exception. Log it if able and just fail out to the caller
-                        _logger?.UnhandledExceptionEvent(ex);
-                        await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await this.WriteResponse(exceptionResult).ConfigureAwait(false);
-                    }
+                    // no one was able to handle hte exception. Log it if able and just fail out to the caller
+                    _logger?.UnhandledExceptionEvent(ex);
+                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE).ConfigureAwait(false);
+                }
+                else
+                {
+                    await this.WriteResponse(exceptionResult).ConfigureAwait(false);
                 }
             }
         }
@@ -211,24 +204,9 @@ namespace GraphQL.AspNet.Defaults
                 result,
                 _writer,
                 this.ExposeMetrics,
-                this.ExposeMetrics);
+                this.ExposeExceptions);
 
             await localWriter.WriteResultAsync(this.HttpContext).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Builds the primary request context used to execute the query and generate a response. When overridden in a child
-        /// controller, this method allows the controller to alter or change various attributes about the request before it is
-        /// invoked.
-        /// </summary>
-        /// <param name="queryData">The data package recieved via a POST request from a connected client.</param>
-        /// <returns>A fully qualified request context that can be executed.</returns>
-        protected virtual IGraphOperationRequest CreateRequest(GraphQueryData queryData)
-        {
-            return new GraphOperationRequest(
-                queryData.Query,
-                queryData.OperationName,
-                queryData.Variables);
         }
 
         /// <summary>

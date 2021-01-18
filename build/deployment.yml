@@ -53,12 +53,19 @@ steps:
       projects: "./src/graphql-aspnet.sln"
     displayName: "Build Solution"
 
-  ## Execute Unit Test
+  ## Execute Unit Tests (Primary)
   - task: DotNetCoreCLI@2
     inputs:
       command: "test"
       projects: "./src/tests/graphql-aspnet-tests/graphql-aspnet-tests.csproj"
     displayName: "Execute Unit Tests"
+
+  ## Execute Unit Tests (Subscriptions)
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "test"
+      projects: "./src/tests/graphql-aspnet-subscriptions-tests/graphql-aspnet-subscriptions-tests.csproj"
+    displayName: "Execute Unit Tests (Subscriptions)"
 
   ## Steps below this line are for publishing nupkg artifiacts staged for a release pipeline
   ## ------------------------------------------------------------------------------------------
@@ -84,8 +91,19 @@ steps:
       packagesToPack: "**/graphql-aspnet.csproj"
       includesymbols: true
       versioningScheme: "off"
-      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);PackageId=$(deployment.packageId)"
+      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);"
     displayName: Stage Nuget Package
+
+  ## Create the nupkg file (Subscriptions)
+  - task: DotNetCoreCLI@2
+    condition: and(succeeded(), eq(variables['deployment.buildArtifacts'], 'allowed'))
+    inputs:
+      command: "pack"
+      packagesToPack: "**/graphql-aspnet-subscriptions.csproj"
+      includesymbols: true
+      versioningScheme: "off"
+      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);"
+    displayName: Stage Nuget Package (Subscriptions)
 
   ## Copy release script to the artifact package
   - task: Bash@3

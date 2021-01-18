@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Configuration
     {
         /// <summary>
         /// Gets or sets the authorization mode for this schema. This mode effects when GraphQL will invoke
-        /// the authorization rules and how they will be applied to a request. (Default: PerField).
+        /// the authorization rules and how they will be applied to a request. (Default: Not Set).
         /// </summary>
         /// <value>The mode.</value>
-        public AuthorizationMethod Method { get; set; } = AuthorizationMethod.PerField;
+        public AuthorizationMethod? Method { get; set; }
     }
 }

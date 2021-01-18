@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             parentContext.Setup(x => x.User).Returns(_user);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
             parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
-            parentContext.Setup(x => x.Items).Returns(new MetaDataCollection());
+            parentContext.Setup(x => x.Items).Returns(this.FieldRequest.Items ?? new MetaDataCollection());
             parentContext.Setup(x => x.Messages).Returns(_messageCollection);
             parentContext.Setup(x => x.IsValid).Returns(_messageCollection.IsSucessful);
             return parentContext.Object;

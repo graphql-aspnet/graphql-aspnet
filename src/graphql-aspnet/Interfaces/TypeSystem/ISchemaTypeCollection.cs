@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         int QueuedExtensionFieldCount { get; }
 
         /// <summary>
-        /// Gets the total count of concrete types in this collection.
+        /// Gets a set of all the unique concrete types in this collection.
         /// </summary>
         /// <value>The type references.</value>
         IEnumerable<Type> TypeReferences { get; }

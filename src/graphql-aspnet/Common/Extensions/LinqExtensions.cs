@@ -24,10 +24,11 @@ namespace GraphQL.AspNet.Common.Extensions
         /// Appends a where clause to the source query if the condition is true and returns a new query, otherwise no change is made and
         /// the original query is returned.
         /// </summary>
-        /// <typeparam name="TSource">The type of the t source.</typeparam>
+        /// <typeparam name="TSource">The type of the source object being inspected.</typeparam>
         /// <param name="source">The source.</param>
-        /// <param name="condition">if set to <c>true</c> [condition].</param>
-        /// <param name="predicate">The predicate.</param>
+        /// <param name="condition">if set to <c>true</c> the predicate will be evaluated and included
+        /// in the expression tree.</param>
+        /// <param name="predicate">The predicate to evaluate.</param>
         /// <returns>IQueryable&lt;TSource&gt;.</returns>
         [DebuggerStepThrough]
         public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, bool condition, Expression<Func<TSource, bool>> predicate)

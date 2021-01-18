@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Moq;
     using NUnit.Framework;
     using GTW = GraphQL.AspNet.Schemas.TypeSystem.MetaGraphTypes;

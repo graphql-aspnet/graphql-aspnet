@@ -48,7 +48,7 @@ namespace GraphQL.AspNet
         /// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
         public bool Equals(GraphId other)
         {
-            return string.Equals(this.Value, other.Value);
+            return string.Equals(this.Value, other.Value, StringComparison.Ordinal);
         }
 
         /// <summary>

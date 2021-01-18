@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Integration
     using System.Threading.Tasks;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Integration.Model;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;

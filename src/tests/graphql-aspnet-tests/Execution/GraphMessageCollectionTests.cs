@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             collection.Clear();
             Assert.AreEqual(0, collection.Count);
-            Assert.AreEqual(GraphMessageSeverity.Information, collection.Severity);
+            Assert.AreEqual(GraphMessageSeverity.Trace, collection.Severity);
         }
 
         [Test]

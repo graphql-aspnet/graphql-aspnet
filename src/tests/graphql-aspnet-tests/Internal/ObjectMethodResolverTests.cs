@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.ValueResolversTestData;
     using NUnit.Framework;
 

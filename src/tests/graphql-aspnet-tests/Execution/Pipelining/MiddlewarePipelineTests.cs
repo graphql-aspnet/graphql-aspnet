@@ -31,14 +31,14 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         {
             return new EventHandler<TypeReferenceEventArgs>((o, e) =>
             {
-                serviceCollection.Add(new ServiceDescriptor(e.Type, e.Type, e.LifeTime));
+                serviceCollection.Add(e.Descriptor);
             });
         }
 
         [Test]
         public async Task SingularPipelineInvokesComponentsInOrder()
         {
-            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.CodeDeclaredNames)
+            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<MiddlewareController>();
 
             // setup a mock pipeline to verify that each middleware piece called into the service
@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         [Test]
         public void NoFoundMiddlewareComponent_ThrowsException()
         {
-            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.CodeDeclaredNames)
+            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<MiddlewareController>();
 
             // do not setup an event handler on the pipeline builder, meaning no injection of the middleware component
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         [Test]
         public async Task MiddlewareComponentThrowsExceptions_MiddlewareInvokerShouldUnwrapAndThrowTheException()
         {
-            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.CodeDeclaredNames)
+            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<MiddlewareController>();
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         [Test]
         public async Task SingletonMiddlewareComponent_IsNeverInstantiatedMoreThanOnce()
         {
-            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.CodeDeclaredNames)
+            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<MiddlewareController>();
 
             var idsCalled = new List<string>();
@@ -220,7 +220,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         [Test]
         public async Task SingletonMiddlewareWithUserProvidedInstance_NeverAttemptsToCreateAnInstance()
         {
-            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.CodeDeclaredNames)
+            var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<MiddlewareController>();
 
             var idsCalled = new List<string>();

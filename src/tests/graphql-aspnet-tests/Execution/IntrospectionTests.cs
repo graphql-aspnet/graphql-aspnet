@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -19,6 +20,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.IntrospectionTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -50,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void IntrospectedInputValueType_PropertyCheck()
         {
-            var serverBuilder = new TestServerBuilder(TestOptions.CodeDeclaredNames)
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<SodaCanBuildingController>();
 
             var server = serverBuilder.Build();
@@ -262,7 +264,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void IntrospectedEnum_PropertyCheck()
         {
-            var serverBuilder = new TestServerBuilder(TestOptions.CodeDeclaredNames);
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             var server = serverBuilder
                 .AddGraphType<IntrospectableEnum>()
                 .Build();
@@ -309,7 +311,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void IntrospectedObject_PropertyCheck()
         {
-            var serverBuilder = new TestServerBuilder(TestOptions.CodeDeclaredNames);
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             var server = serverBuilder
                 .AddGraphType<IntrospectableObject>()
                 .Build();
@@ -423,6 +425,22 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNull(spected.EnumValues);
             Assert.IsNull(spected.InputFields);
             Assert.IsNull(spected.OfType);
+        }
+
+        [Test]
+        public void IntrospectedVirtualType_HasATypeNameMetaField()
+        {
+            var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<SodaCanBuildingController>();
+
+            var server = serverBuilder.Build();
+            var schema = new IntrospectedSchema(server.Schema);
+            schema.Rebuild();
+
+            var graphType = schema.FindGraphType("Query_buildings") as IObjectGraphType;
+
+            var typeNameField = graphType.Fields.FirstOrDefault(x => x.Name == Constants.ReservedNames.TYPENAME_FIELD);
+            Assert.IsNotNull(typeNameField);
         }
 
         [Test]

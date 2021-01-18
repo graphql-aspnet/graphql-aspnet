@@ -10,13 +10,17 @@
 namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Variables;
     using Moq;
 
@@ -29,6 +33,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         private readonly IServiceProvider _serviceProvider;
         private readonly ClaimsPrincipal _user;
         private readonly Mock<IGraphOperationRequest> _mockRequest;
+
+        private readonly List<KeyValuePair<GraphFieldPath, object>> _sourceData;
 
         private IGraphQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
@@ -45,6 +51,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             _user = user;
             _mockRequest = new Mock<IGraphOperationRequest>();
+            _sourceData = new List<KeyValuePair<GraphFieldPath, object>>();
         }
 
         /// <summary>
@@ -104,10 +111,22 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
+        /// Adds a new default value that will be included in the built context.
+        /// </summary>
+        /// <param name="path">The field path representing the action to accept the parameter.</param>
+        /// <param name="sourceData">The source data.</param>
+        /// <returns>QueryContextBuilder.</returns>
+        public QueryContextBuilder AddDefaultValue(GraphFieldPath path, object sourceData)
+        {
+            _sourceData.Add(new KeyValuePair<GraphFieldPath, object>(path, sourceData));
+            return this;
+        }
+
+        /// <summary>
         /// Creates this query context instance that can be executed against the test server.
         /// </summary>
         /// <returns>GraphQueryContext.</returns>
-        public GraphQueryExecutionContext Build()
+        public virtual GraphQueryExecutionContext Build()
         {
             var metaData = new MetaDataCollection();
 
@@ -115,7 +134,17 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var request = new Mock<IGraphOperationRequest>();
 
             // updateable items about the request
-            return new GraphQueryExecutionContext(this.OperationRequest, _serviceProvider, _user, _metrics, _eventLogger, metaData);
+            var context = new GraphQueryExecutionContext(this.OperationRequest, _serviceProvider, _user, _metrics, _eventLogger, metaData);
+
+            foreach (var kvp in _sourceData)
+            {
+                var mockField = new Mock<IGraphField>();
+                mockField.Setup(x => x.FieldSource).Returns(Internal.TypeTemplates.GraphFieldTemplateSource.Action);
+                mockField.Setup(x => x.Route).Returns(kvp.Key);
+                context.DefaultFieldSources.AddSource(mockField.Object, kvp.Value);
+            }
+
+            return context;
         }
 
         /// <summary>

@@ -53,3 +53,10 @@ steps:
       command: "test"
       projects: "./src/tests/graphql-aspnet-tests/graphql-aspnet-tests.csproj"
     displayName: "Execute Unit Tests"
+
+  ## Execute Unit Tests (Subscriptions)
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: "test"
+      projects: "./src/tests/graphql-aspnet-subscriptions-tests/graphql-aspnet-subscriptions-tests.csproj"
+    displayName: "Execute Unit Tests (Subscriptions)"

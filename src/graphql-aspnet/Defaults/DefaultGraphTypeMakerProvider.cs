@@ -21,13 +21,23 @@ namespace GraphQL.AspNet.Defaults
     public class DefaultGraphTypeMakerProvider : IGraphTypeMakerProvider
     {
         /// <summary>
+        /// Creates "maker" that can generate graph fields.
+        /// </summary>
+        /// <param name="schema">The schema to which the created fields should belong.</param>
+        /// <returns>IGraphFieldMaker.</returns>
+        public virtual IGraphFieldMaker CreateFieldMaker(ISchema schema)
+        {
+            return new GraphFieldMaker(schema);
+        }
+
+        /// <summary>
         /// Creates an appropriate graph type maker for the given concrete type.
         /// </summary>
         /// <param name="schema">The schema for which the maker should generate graph types for.</param>
         /// <param name="kind">The kind of graph type to create. If null, the factory will attempt to deteremine the
         /// most correct maker to use.</param>
         /// <returns>IGraphTypeMaker.</returns>
-        public IGraphTypeMaker CreateTypeMaker(ISchema schema, TypeKind kind)
+        public virtual IGraphTypeMaker CreateTypeMaker(ISchema schema, TypeKind kind)
         {
             if (schema == null)
                 return null;

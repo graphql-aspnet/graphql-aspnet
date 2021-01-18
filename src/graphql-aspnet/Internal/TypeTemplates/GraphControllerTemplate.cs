@@ -162,6 +162,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             GraphCollection.Query,
             GraphCollection.Mutation,
+            GraphCollection.Subscription,
             GraphCollection.Types,
         };
 

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
 
     /// <summary>
-    /// This class will assist in making template instances not connected to the primary provider.
+    /// This class assists in making template instances not connected to the primary provider.
     /// </summary>
     public static class TemplateHelper
     {

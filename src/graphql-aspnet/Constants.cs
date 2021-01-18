@@ -47,6 +47,24 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// Constants related to messaging and message serialziation.
+        /// </summary>
+        public static class Messaging
+        {
+            /// <summary>
+            /// The key value used when writing a url containing a link to a violated specification rule
+            /// to a message's metadata collection.
+            /// </summary>
+            public const string REFERENCE_RULE_URL = "RuleReference";
+
+            /// <summary>
+            /// The key value used when writing a value containing the name or number of a violated specification
+            /// rule to a message's metadata collection.
+            /// </summary>
+            public const string REFERENCE_RULE_NUMBER = "Rule";
+        }
+
+        /// <summary>
         /// Gets a collection of types that, when scanning an assembly to load <see cref="IGraphType" /> items, the base types in this
         /// collection will be searched for. (e.g. <see cref="GraphController"/>, <see cref="GraphDirective"/> etc.)
         /// </summary>
@@ -355,7 +373,7 @@ namespace GraphQL.AspNet
             /// <summary>
             /// A phrase, used at the start of a route string, to indicate its part of the subscription root.
             /// </summary>
-            public const string SUBSCRIPTION_ROOT = DELIMITER_ROOT_START + "sub" + DELIMITER_ROOT_END;
+            public const string SUBSCRIPTION_ROOT = DELIMITER_ROOT_START + "subscription" + DELIMITER_ROOT_END;
 
             /// <summary>
             /// A phrase, used at the start of a route string, to indicate its part of the enum type tree.

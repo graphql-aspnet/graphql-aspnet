@@ -10,16 +10,13 @@
 namespace GraphQL.AspNet.Interfaces.Web
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 
-    /// <summary>
+        /// <summary>
     /// A processor that is created from a DI container by a runtime handler to handle the individual
     /// request.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this processor is built for.</typeparam>
-    public interface IGraphQLHttpProcessor<TSchema>
-        where TSchema : class, ISchema
+    public interface IGraphQLHttpProcessor
     {
         /// <summary>
         /// Accepts the post request and attempts to convert the body to a query data item.

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A decorator for the query execution pipeline builder to configure default components.
@@ -23,15 +24,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
     public class QueryExecutionPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> _pipelineBuilder;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryExecutionPipelineHelper{TSchema}" /> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
         public QueryExecutionPipelineHelper(ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> pipelineBuilder)
         {
-            _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
+            this.PipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// </summary>
         /// <param name="options">The configuration options to use when deriving the components to include.</param>
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
-        public QueryExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(SchemaOptions options = null)
+        public virtual QueryExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(SchemaOptions options = null)
         {
             this.AddValidateRequestMiddleware()
                 .AddRecordQueryMetricsMiddleware();
@@ -51,7 +50,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
                 .AddQueryPlanCreationMiddleware()
                 .AddQueryAssignOperationMiddleware();
 
-            if (options.AuthorizationOptions.Method == Security.AuthorizationMethod.PerRequest)
+            var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
+            if (authOption == Security.AuthorizationMethod.PerRequest)
             {
                 this.AddQueryOperationAuthorizationMiddleware();
             }
@@ -65,9 +65,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// Adds the middleware component to authorize the user on the request to every secured field prior
         /// to resolving any fields on the chosen operation.
         /// </summary>
-        private QueryExecutionPipelineHelper<TSchema> AddQueryOperationAuthorizationMiddleware()
+        /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        public QueryExecutionPipelineHelper<TSchema> AddQueryOperationAuthorizationMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<AuthorizeQueryOperationMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<AuthorizeQueryOperationMiddleware<TSchema>>();
             return this;
         }
 
@@ -79,7 +80,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         public QueryExecutionPipelineHelper<TSchema> AddValidateRequestMiddleware()
         {
             // add the validator component as an instance so as not to rely on DI
-            _pipelineBuilder.AddMiddleware(new ValidateQueryRequestMiddleware());
+            this.PipelineBuilder.AddMiddleware(new ValidateQueryRequestMiddleware());
             return this;
         }
 
@@ -88,9 +89,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// for the context.
         /// </summary>
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
-        private QueryExecutionPipelineHelper<TSchema> AddRecordQueryMetricsMiddleware()
+        public QueryExecutionPipelineHelper<TSchema> AddRecordQueryMetricsMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<RecordQueryMetricsMiddleware>();
+            this.PipelineBuilder.AddMiddleware<RecordQueryMetricsMiddleware>();
             return this;
         }
 
@@ -100,7 +101,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanCacheMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<QueryPlanCacheMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<QueryPlanCacheMiddleware<TSchema>>();
             return this;
         }
 
@@ -110,7 +111,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryDocumentParsingMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<ParseQueryPlanMiddleware>();
+            this.PipelineBuilder.AddMiddleware<ParseQueryPlanMiddleware>();
             return this;
         }
 
@@ -120,7 +121,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanCreationMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<GenerateQueryPlanMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<GenerateQueryPlanMiddleware<TSchema>>();
             return this;
         }
 
@@ -131,7 +132,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryAssignOperationMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<AssignQueryOperationMiddleware>();
+            this.PipelineBuilder.AddMiddleware<AssignQueryOperationMiddleware>();
             return this;
         }
 
@@ -141,7 +142,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanExecutionMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<ExecuteQueryOperationMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<ExecuteQueryOperationMiddleware<TSchema>>();
             return this;
         }
 
@@ -151,8 +152,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddResultCreationMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<PackageQueryResultMiddleware>();
+            this.PipelineBuilder.AddMiddleware<PackageQueryResultMiddleware>();
             return this;
         }
+
+        /// <summary>
+        /// Gets the pipeline builder being worked on in this helper.
+        /// </summary>
+        /// <value>The pipeline builder.</value>
+        protected ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> PipelineBuilder { get; }
     }
 }

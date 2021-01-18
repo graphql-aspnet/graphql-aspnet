@@ -117,7 +117,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 
             // 3. Ensure that subscriptions have exactly one root field
             steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
-            steps.Add(new Rule_DenySubscriptions());
 
             _stepCollection.Add(typeof(OperationTypeNode), steps);
         }

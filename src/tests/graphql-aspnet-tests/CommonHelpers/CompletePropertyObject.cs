@@ -10,6 +10,8 @@
 // ReSharper disable All
 namespace GraphQL.AspNet.Tests.CommonHelpers
 {
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+
     /// <summary>
     /// An object representing a complex data object with properties that are a mix of scalars and objects.
     /// </summary>

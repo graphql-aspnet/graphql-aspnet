@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Variables
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Text.Json;
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Variables
         /// </summary>
         /// <param name="jsonDocument">The json document.</param>
         /// <returns>IInputVariableCollection.</returns>
-        public static IInputVariableCollection FromJsonDocument(string jsonDocument)
+        public static InputVariableCollection FromJsonDocument(string jsonDocument)
         {
             var options = new JsonSerializerOptions()
             {
@@ -44,7 +45,7 @@ namespace GraphQL.AspNet.Variables
         /// Gets a singleton instance of an empty variable collection.
         /// </summary>
         /// <value>The empty.</value>
-        public static IInputVariableCollection Empty { get; }
+        public static InputVariableCollection Empty { get; }
 
         /// <summary>
         /// Initializes static members of the <see cref="InputVariableCollection"/> class.
@@ -54,7 +55,7 @@ namespace GraphQL.AspNet.Variables
             Empty = new InputVariableCollection();
         }
 
-        private Dictionary<string, IInputVariable> _variableSet;
+        private readonly Dictionary<string, IInputVariable> _variableSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputVariableCollection"/> class.
@@ -62,6 +63,21 @@ namespace GraphQL.AspNet.Variables
         public InputVariableCollection()
         {
             _variableSet = new Dictionary<string, IInputVariable>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputVariableCollection" /> class.
+        /// </summary>
+        /// <param name="sourceCollection">The source collection to initialize from.</param>
+        public InputVariableCollection(IInputVariableCollection sourceCollection)
+        {
+            _variableSet = new Dictionary<string, IInputVariable>();
+
+            if (sourceCollection != null)
+            {
+                foreach (var variable in sourceCollection)
+                    _variableSet.Add(variable.Key, variable.Value);
+            }
         }
 
         /// <summary>
@@ -84,6 +100,24 @@ namespace GraphQL.AspNet.Variables
         public bool TryGetVariable(string name, out IInputVariable variable)
         {
             return _variableSet.TryGetValue(name, out variable);
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<KeyValuePair<string, IInputVariable>> GetEnumerator()
+        {
+            return _variableSet.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         /// <summary>

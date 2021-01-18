@@ -99,7 +99,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var path = new SourcePath();
                     path.AddFieldName(invocationContext.Name);
 
-                    var dataSourceValue = this.GenerateRootSourceData(operation.OperationType);
+                    object dataSourceValue;
+
+                    // fetch the source data value to use for the field invocation
+                    // attempt to retrieve from the master context if it was supplied by the pipeline
+                    // invoker, otherwise generate a root source
+                    if (!context.DefaultFieldSources.TryRetrieveSource(invocationContext.Field, out dataSourceValue))
+                        dataSourceValue = this.GenerateRootSourceData(operation.OperationType);
+
                     var topLevelDataItem = new GraphDataItem(invocationContext, dataSourceValue, path);
 
                     var sourceData = new GraphFieldDataSource(dataSourceValue, path, topLevelDataItem);
@@ -107,12 +114,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var fieldRequest = new GraphFieldRequest(
                         invocationContext,
                         sourceData,
-                        new SourceOrigin(invocationContext.Origin.Location, path));
+                        new SourceOrigin(invocationContext.Origin.Location, path),
+                        context.Items);
 
                     var fieldContext = new GraphFieldExecutionContext(
                         context,
                         fieldRequest,
-                        variableData);
+                        variableData,
+                        context.DefaultFieldSources);
 
                     var fieldTask = _fieldExecutionPipeline.InvokeAsync(fieldContext, cancelSource.Token);
 

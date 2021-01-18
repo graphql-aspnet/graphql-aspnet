@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var result = new GraphTypeCreationResult();
 
             var fieldSet = new List<IGraphField>();
-            var fieldMaker = new GraphFieldMaker(_schema);
+            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
             foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
             {
                 var fieldResult = fieldMaker.CreateField(fieldTemplate);

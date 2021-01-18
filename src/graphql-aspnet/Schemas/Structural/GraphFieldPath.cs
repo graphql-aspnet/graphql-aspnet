@@ -12,14 +12,16 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>
-    /// A helper object for parsing and reasoning about a route path string.
+    /// A representation of a hierarchical path to a single field in within a graph schema.
     /// </summary>
+    [DebuggerDisplay("{Path}")]
     public class GraphFieldPath : IEnumerable<string>
     {
         /// <summary>
@@ -83,6 +85,9 @@ namespace GraphQL.AspNet.Schemas.Structural
                     break;
                 case RouteConstants.DIRECTIVE_ROOT:
                     this.RootCollection = GraphCollection.Directives;
+                    break;
+                case RouteConstants.SUBSCRIPTION_ROOT:
+                    this.RootCollection = GraphCollection.Subscription;
                     break;
             }
 
@@ -204,7 +209,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Returns an enumerator that iterates through the collection of path fragments.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<string> GetEnumerator()
@@ -220,9 +225,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Normalizes a given route path fragement.
+        /// Normalizes a given route path fragement removing duplicate seperators, ensuring starting and tail end seperators
+        /// are correct etc.
         /// </summary>
-        /// <param name="routefragment">The routefragment.</param>
+        /// <param name="routefragment">The fragment to normalize.</param>
         /// <returns>System.String.</returns>
         public static string NormalizeFragment(string routefragment)
         {
@@ -253,6 +259,52 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
+        /// Creates a list of all the fully qualified parent paths this path is nested under.
+        /// </summary>
+        /// <returns>List&lt;GraphRoutePath&gt;.</returns>
+        public List<GraphFieldPath> GenerateParentPathSegments()
+        {
+            if (this.IsTopLevelField || !this.IsValid)
+                return new List<GraphFieldPath>();
+
+            var list = this.Parent.GenerateParentPathSegments();
+            list.Add(this.Parent);
+
+            return list;
+        }
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>GraphFieldPath.</returns>
+        public GraphFieldPath Clone()
+        {
+            return new GraphFieldPath(this.Path);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            return this.Path?.GetHashCode() ?? 0;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is GraphFieldPath grp)
+                return grp.Path == this.Path;
+
+            return false;
+        }
+
+        /// <summary>
         /// Joins a parent and child route segments under the top level field type provided.
         /// </summary>
         /// <param name="routeSegments">The route segments to join.</param>
@@ -275,62 +327,25 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Creates a list of all the fully qualified parent paths this route is nested under.
-        /// </summary>
-        /// <returns>List&lt;GraphRoutePath&gt;.</returns>
-        public List<GraphFieldPath> GenerateParentPathSegments()
-        {
-            if (this.IsTopLevelField || !this.IsValid)
-                return new List<GraphFieldPath>();
-
-            var list = this.Parent.GenerateParentPathSegments();
-            list.Add(this.Parent);
-
-            return list;
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="object" /> is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is GraphFieldPath grp)
-                return grp.Path == this.Path;
-
-            return false;
-        }
-
-        /// <summary>
         /// Implements the == operator.
         /// </summary>
-        /// <param name="obj1">The obj1.</param>
-        /// <param name="obj2">The obj2.</param>
+        /// <param name="left">The left side operand.</param>
+        /// <param name="right">The right side operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(GraphFieldPath obj1, GraphFieldPath obj2)
+        public static bool operator ==(GraphFieldPath left, GraphFieldPath right)
         {
-            return obj1?.Equals(obj2) ?? obj2?.Equals(obj1) ?? true;
+            return left?.Equals(right) ?? right?.Equals(left) ?? true;
         }
 
         /// <summary>
         /// Implements the != operator.
         /// </summary>
-        /// <param name="obj1">The obj1.</param>
-        /// <param name="obj2">The obj2.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator !=(GraphFieldPath obj1, GraphFieldPath obj2)
+        /// <param name="left">The left side operand.</param>
+        /// <param name="right">The right side operand.</param>
+        /// <returns>The result of the operation.</returns>
+        public static bool operator !=(GraphFieldPath left, GraphFieldPath right)
         {
-            return !(obj1 == obj2);
-        }
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            return this.Path?.GetHashCode() ?? 0;
+            return !(left == right);
         }
     }
 }
