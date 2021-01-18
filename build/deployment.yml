@@ -20,12 +20,12 @@ pool:
   vmImage: ubuntu-18.04
 
 steps:
-  ## Install dotnetcore 3.1
+  ## Install .NET 5
   - task: UseDotNet@2
     inputs:
-      version: "3.1.x"
+      version: "5.x"
       packageType: sdk
-    displayName: "Install .NET Core 3.1.x"
+    displayName: "Install .NET 5.x"
 
   ## Performa package restore
   - task: DotNetCoreCLI@2
