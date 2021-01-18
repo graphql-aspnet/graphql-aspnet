@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Logging
         {
             logger.Log(
                 LogLevel.Debug,
-                () => new SubscriptionEventReceived(eventData));
+                () => new SubscriptionEventReceivedLogEntry(eventData));
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Logging
         {
             logger.Log(
                 LogLevel.Debug,
-                () => new SubscriptionEventPublished(eventData));
+                () => new SubscriptionEventPublishedLogEntry(eventData));
         }
     }
 }

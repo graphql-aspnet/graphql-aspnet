@@ -19,21 +19,22 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
     /// An subscription event was recieved and successfully published from the internal event queue
     /// to the configured <see cref="ISubscriptionEventPublisher"/>.
     /// </summary>
-    public class SubscriptionEventPublished : GraphLogEntry
+    public class SubscriptionEventPublishedLogEntry : GraphLogEntry
     {
         private readonly string _shortEventName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionEventPublished" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionEventPublishedLogEntry" /> class.
         /// </summary>
-        /// <param name="eventRecieved">The event that was recieved.</param>
-        public SubscriptionEventPublished(SubscriptionEvent eventRecieved)
-            : base(SubscriptionLogEventIds.GlobalListenerEventPublished)
+        /// <param name="eventPublished">The event that was recieved.</param>
+        public SubscriptionEventPublishedLogEntry(SubscriptionEvent eventPublished)
+            : base(SubscriptionLogEventIds.GlobalEventPublished)
         {
-            _shortEventName = eventRecieved.EventName;
-            this.SchemaEventName = eventRecieved.ToSubscriptionEventName().ToString();
-            this.DataType = eventRecieved.DataTypeName;
-            this.SubscriptionEventId = eventRecieved.Id;
+            _shortEventName = eventPublished.EventName;
+            this.SchemaType = eventPublished.SchemaTypeName;
+            this.DataType = eventPublished.DataTypeName;
+            this.SubscriptionEventId = eventPublished.Id;
+            this.SubscriptionEventName = eventPublished.EventName;
             this.MachineName = Environment.MachineName;
         }
 
@@ -41,7 +42,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         /// Gets the qualified name of the event that was recieved.
         /// </summary>
         /// <value>The name of the schema type.</value>
-        public string SchemaEventName
+        public string SchemaType
         {
             get => this.GetProperty<string>(LogPropertyNames.SCHEMA_TYPE_NAME);
             private set => this.SetProperty(LogPropertyNames.SCHEMA_TYPE_NAME, value);
@@ -55,6 +56,16 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         {
             get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_DATA_TYPE);
             private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_DATA_TYPE, value);
+        }
+
+        /// <summary>
+        /// Gets the qualfied name of the schema type the event targets.
+        /// </summary>
+        /// <value>The name of the schema type.</value>
+        public string SubscriptionEventName
+        {
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_NAME);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_NAME, value);
         }
 
         /// <summary>

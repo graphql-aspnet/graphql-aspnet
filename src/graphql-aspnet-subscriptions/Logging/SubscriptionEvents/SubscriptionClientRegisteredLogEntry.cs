@@ -41,6 +41,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
             this.ClientTypeName = client.GetType().FriendlyName(true);
             this.ServerTypeName = server.GetType().FriendlyName(true);
             this.ClientId = client.Id;
+            this.ServerId = server.Id;
         }
 
         /// <summary>
@@ -81,6 +82,16 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         {
             get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_ID);
             private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_ID, value);
+        }
+
+        /// <summary>
+        /// Gets the server id of the server object the client was registered with.
+        /// </summary>
+        /// <value>The server identifier.</value>
+        public string ServerId
+        {
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_ID);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_ID, value);
         }
 
         /// <summary>

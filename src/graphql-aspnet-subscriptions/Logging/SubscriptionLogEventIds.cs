@@ -41,11 +41,11 @@ namespace GraphQL.AspNet.Logging
         /// <summary>
         /// A new event was published by an ASP.NET server instance.
         /// </summary>
-        public static EventId GlobalListenerEventPublished = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 500, "GraphQL Listener Event Published");
+        public static EventId GlobalEventPublished = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 500, "GraphQL Event Published");
 
         /// <summary>
         /// A new event was received by an ASP.NET server instance.
         /// </summary>
-        public static EventId GlobalListenerEventReceived = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 510, "GraphQL Listener Event Received");
+        public static EventId GlobalEventReceived = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 510, "GraphQL Event Received");
     }
 }

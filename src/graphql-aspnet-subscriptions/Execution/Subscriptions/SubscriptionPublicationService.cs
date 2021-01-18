@@ -26,8 +26,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// </summary>
     public sealed class SubscriptionPublicationService : BackgroundService
     {
+        private static readonly object _syncLock = new object();
         private static int _waitInterval;
-        private static object _syncLock = new object();
 
         /// <summary>
         /// <para>
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         private readonly IServiceProvider _provider;
-        private SubscriptionEventQueue _eventsToRaise;
+        private readonly SubscriptionEventQueue _eventsToRaise;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionPublicationService" /> class.
@@ -81,11 +81,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <summary>
-        /// This method is called when the <see cref="T:Microsoft.Extensions.Hosting.IHostedService" /> starts. The implementation should return a task that represents
+        /// This method is called when the <see cref="IHostedService" /> starts. The implementation should return a task that represents
         /// the lifetime of the long running operation(s) being performed.
         /// </summary>
-        /// <param name="stoppingToken">Triggered when <see cref="M:Microsoft.Extensions.Hosting.IHostedService.StopAsync(System.Threading.CancellationToken)" /> is called.</param>
-        /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> that represents the long running operations.</returns>
+        /// <param name="stoppingToken">Triggered when <see cref="IHostedService.StopAsync(System.Threading.CancellationToken)" /> is called.</param>
+        /// <returns>A <see cref="Task" /> that represents the long running operations.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var waitInterval = SubscriptionPublicationService.WaitIntervalInMilliseconds;
@@ -94,22 +94,39 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_eventsToRaise.Count > 0)
+                await this.PollEventQueue();
+
+                try
                 {
-                    using var scope = _provider.CreateScope();
-                    var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
-                    var publisher = scope.ServiceProvider.GetRequiredService<ISubscriptionEventPublisher>();
-                    while (_eventsToRaise.TryDequeue(out var result))
+                    await Task.Delay(waitInterval, stoppingToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Forces this publication service to poll its internal queue for new events instead of waiting
+        /// for hte next publication cycle.
+        /// </summary>
+        /// <returns>Task.</returns>
+        internal async Task PollEventQueue()
+        {
+            if (_eventsToRaise.Count > 0)
+            {
+                using var scope = _provider.CreateScope();
+                var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
+                var publisher = scope.ServiceProvider.GetRequiredService<ISubscriptionEventPublisher>();
+                while (_eventsToRaise.TryDequeue(out var result))
+                {
+                    if (result != null)
                     {
-                        if (result != null)
-                        {
-                            await publisher.PublishEvent(result);
-                            logger?.SubscriptionEventPublished(result);
-                        }
+                        await publisher.PublishEvent(result);
+                        logger?.SubscriptionEventPublished(result);
                     }
                 }
-
-                await Task.Delay(waitInterval, stoppingToken);
             }
         }
     }

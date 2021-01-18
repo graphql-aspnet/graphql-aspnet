@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
 
     /// <summary>
     /// Recorded when an Apollo Subscription Server instance receives an event
-    /// from the listener configured for this ASP.NET server instance.
+    /// from the router configured for this ASP.NET server instance.
     /// </summary>
     /// <typeparam name="TSchema">The type of schema the event is being raised against.</typeparam>
     public class ApolloServerSubscriptionEventReceived<TSchema> : GraphLogEntry
@@ -37,7 +37,8 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
             IReadOnlyList<ApolloClientProxy<TSchema>> clientsToReceive)
             : base(ApolloLogEventIds.ServerSubcriptionEventReceived)
         {
-            this.SchemaEventName = eventRecieved.ToSubscriptionEventName().ToString();
+            this.SchemaTypeName = eventRecieved.SchemaTypeName;
+            this.SubscriptionEventName = eventRecieved.EventName;
             this.SubscriptionEventId = eventRecieved.Id;
             this.ClientCount = clientsToReceive.Count;
             this.ServerId = server.Id;
@@ -45,13 +46,23 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         }
 
         /// <summary>
-        /// Gets the qualified name of the event that was recieved.
+        /// Gets the qualified name of the schema this log entry is reported against.
         /// </summary>
         /// <value>The name of the schema type.</value>
-        public string SchemaEventName
+        public string SchemaTypeName
         {
             get => this.GetProperty<string>(LogPropertyNames.SCHEMA_TYPE_NAME);
             private set => this.SetProperty(LogPropertyNames.SCHEMA_TYPE_NAME, value);
+        }
+
+        /// <summary>
+        /// Gets the name of the event that was included in this log entry.
+        /// </summary>
+        /// <value>The name of the event.</value>
+        public string SubscriptionEventName
+        {
+            get => this.GetProperty<string>(ApolloLogPropertyNames.SUBSCRIPTION_EVENT_NAME);
+            private set => this.SetProperty(ApolloLogPropertyNames.SUBSCRIPTION_EVENT_NAME, value);
         }
 
         /// <summary>
@@ -104,7 +115,7 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         {
             var idTruncated = this.SubscriptionEventId?.Length > 8 ? this.SubscriptionEventId.Substring(0, 8) : this.SubscriptionEventId;
             var serverId = this.ServerId?.Length > 8 ? this.ServerId.Substring(0, 8) : this.ServerId;
-            return $"Apollo Server Event Received | Server: {serverId}, EventName: '{this.SchemaEventName}' (Id: {idTruncated}), Subscribed Clients: {this.ClientCount}";
+            return $"Apollo Server Event Received | Server: {serverId}, EventName: '{this.SubscriptionEventName}' (Id: {idTruncated}), Subscribed Clients: {this.ClientCount}";
         }
     }
 }
