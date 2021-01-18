@@ -20,12 +20,19 @@ pool:
   vmImage: ubuntu-18.04
 
 steps:
-  ## Install dotnetcore 3.1
+  ## Install .NET Core 3.1
   - task: UseDotNet@2
     inputs:
       version: "3.1.x"
       packageType: sdk
-    displayName: "Install .NET Core 3.1.x"
+    displayName: "Install .NET 3.1.x"
+
+  ## Install .NET 5
+  - task: UseDotNet@2
+    inputs:
+      version: "5.x"
+      packageType: sdk
+    displayName: "Install .NET 5.x"
 
   ## Performa package restore
   - task: DotNetCoreCLI@2
@@ -91,7 +98,7 @@ steps:
       packagesToPack: "**/graphql-aspnet.csproj"
       includesymbols: true
       versioningScheme: "off"
-      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);"
+      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix)"
     displayName: Stage Nuget Package
 
   ## Create the nupkg file (Subscriptions)
@@ -102,7 +109,7 @@ steps:
       packagesToPack: "**/graphql-aspnet-subscriptions.csproj"
       includesymbols: true
       versioningScheme: "off"
-      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix);"
+      buildProperties: "Configuration=Release;VersionPrefix=$(deployment.versionNumber);VersionSuffix=$(deployment.versionSuffix)"
     displayName: Stage Nuget Package (Subscriptions)
 
   ## Copy release script to the artifact package
