@@ -10,11 +10,12 @@
     <Title>GraphQL ASP.NET</Title>
     <Product>GraphQL ASP.NET</Product>
     <Authors>Kevin Carroll</Authors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Deterministic>true</Deterministic>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>GraphQL.AspNet</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <PackageDescription>GraphQL ASP.NET is a fully functional GraphQL library that utilizes a controller/action programming model similar to ASP.NET.</PackageDescription>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>

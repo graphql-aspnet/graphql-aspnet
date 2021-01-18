@@ -13,11 +13,12 @@
 # It ensures that the parameters defined in the build are acceptable such that 
 # the package being built "could be" deployed to nuget.
 
-$versionNumber = $env:VersionNumber
-$versionSuffix = $env:VersionSuffix
-$packageId = $env:PackageId
-$branch = $env:Branch 
+$versionNumber = $env:VersionNumber   # e.g. "beta"  or   ""
+$versionSuffix = $env:VersionSuffix  # e.g. "0.5.1"
+$packageId = $env:PackageId  # e.g.  "GraphQL.AspNet|GraphQL.AspNet.Subscriptions"
+$branch = $env:Branch       # e.g.  "ref/heads/master"
 $packageData = $null;
+
 
 write-host ""
 write-host "--------------"

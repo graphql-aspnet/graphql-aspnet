@@ -10,11 +10,12 @@
     <Title>GraphQL ASP.NET Subscriptions</Title>
     <Product>GraphQL ASP.NET</Product>
     <Authors>Kevin Carroll</Authors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Deterministic>true</Deterministic>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>GraphQL.AspNet.Subscriptions</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <PackageDescription>A package to support subscriptions for GraphQL ASP.NET. Provides the required functionality to setup a websocket connection and perform graphql subscriptions over web sockets.</PackageDescription>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
