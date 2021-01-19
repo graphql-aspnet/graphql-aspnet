@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
     /// <summary>
     /// A marker to a point in time that, when disposed, will reset the <see cref="GraphQLProviders"/> to the values
-    /// that were present just before this this object was created.
+    /// that were present just before this object was created.
     /// </summary>
     public class GraphQLProviderRestorePoint : IDisposable
     {
@@ -39,9 +39,21 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         public void Dispose()
         {
-            GraphQLProviders.TemplateProvider = _templateProvider;
-            GraphQLProviders.ScalarProvider = _scalarTypeProvider;
-            GraphQLProviders.GraphTypeMakerProvider = _makerProvider;
+            this.Dispose(true);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                GraphQLProviders.TemplateProvider = _templateProvider;
+                GraphQLProviders.ScalarProvider = _scalarTypeProvider;
+                GraphQLProviders.GraphTypeMakerProvider = _makerProvider;
+            }
         }
     }
 }

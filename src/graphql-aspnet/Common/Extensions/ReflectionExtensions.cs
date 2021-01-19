@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// Helper methods for working with types.
@@ -242,21 +243,40 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
-        /// Attempts to extract the result of a boxed <see cref="Task{TResult}"/>. Returns null if
-        /// the task does not declare a result.
+        /// Attempts to extract the result of a boxed <see cref="Task{TResult}" /> as a given <paramref name="expectedType"/>.
+        /// Returns null if the task does not declare a result or the retrieved result is not castable to the expected type.
         /// </summary>
         /// <param name="task">The task.</param>
+        /// <param name="expectedType">The expected type.</param>
         /// <returns>System.Object.</returns>
-        [DebuggerStepThrough]
-        public static object ResultOrDefault(this Task task)
+        public static object ResultOfTypeOrNull(this Task task, Type expectedType)
         {
+            Validation.ThrowIfNull(task, nameof(task));
+            Validation.ThrowIfNull(expectedType, nameof(expectedType));
+
             var type = task.GetType();
-            if (!type.IsGenericType)
+            if (!type.IsGenericType || expectedType == null)
             {
                 return null;
             }
 
-            return type.GetProperty("Result")?.GetValue(task);
+            var result = type.GetProperty("Result")?.GetValue(task);
+            if (result != null && Validation.IsCastable(result.GetType(), expectedType))
+                return result;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Attempts to extract the result of a boxed <see cref="Task{TResult}" /> as a <typeparamref name="T"/>.
+        /// Returns null if the task does not declare a result or the retrieved result is not castable to the expected type.
+        /// </summary>
+        /// <typeparam name="T">The expected type to extract from the task.</typeparam>
+        /// <param name="task">The task.</param>
+        /// <returns>System.Object.</returns>
+        public static object ResultOfTypeOrNull<T>(this Task task)
+        {
+            return ResultOfTypeOrNull(task, typeof(T));
         }
 
         /// <summary>

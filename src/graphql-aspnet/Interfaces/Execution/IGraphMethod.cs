@@ -35,6 +35,13 @@ namespace GraphQL.AspNet.Interfaces.Execution
         Type ObjectType { get; }
 
         /// <summary>
+        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
+        /// represents the implementation return type as opposed to the expected graph type.
+        /// </summary>
+        /// <value>The type of the return.</value>
+        Type ExpectedReturnType { get; }
+
+        /// <summary>
         /// Gets the action method to be called on the controller.
         /// </summary>
         /// <value>The action method.</value>

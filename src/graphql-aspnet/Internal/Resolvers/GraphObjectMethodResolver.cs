@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                     if (invokeReturn is Task task)
                     {
                         await task.ConfigureAwait(false);
-                        data = task.ResultOrDefault();
+                        data = task.ResultOfTypeOrNull(_graphMethod.ExpectedReturnType);
                     }
                 }
                 else
