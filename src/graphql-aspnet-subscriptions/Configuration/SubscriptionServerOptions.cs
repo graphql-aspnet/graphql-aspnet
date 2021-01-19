@@ -99,6 +99,6 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value><c>true</c> if an authenticated request is required to complete
         /// a subscription client connection; otherwise, <c>false</c>.</value>
-        public bool RequiredAuthenticatedConnection { get; set; } = false;
+        public bool AuthenticatedRequestsOnly { get; set; } = false;
     }
 }

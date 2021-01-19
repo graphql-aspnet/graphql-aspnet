@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Apollo
                 _schema.Configuration.ExecutionOptions.EnableMetrics);
 
             var isAuthenticated = connection.User?.Identities.Any(x => x.IsAuthenticated) ?? false;
-            if (_serverOptions.RequiredAuthenticatedConnection && !isAuthenticated)
+            if (_serverOptions.AuthenticatedRequestsOnly && !isAuthenticated)
             {
                 await apolloClient.SendMessage(
                     new ApolloServerErrorMessage(
