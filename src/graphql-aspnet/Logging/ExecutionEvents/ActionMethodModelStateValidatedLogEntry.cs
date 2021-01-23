@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
 
@@ -46,7 +47,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             this.ModelItems = null;
             if (modelState.Values != null && modelState.Values.Any())
             {
-                var entries = new List<ModelStateEntryLogItem>();
+                var entries = new List<IGraphLogPropertyCollection>();
                 foreach (var item in modelState.Values)
                 {
                     if (item.ValidationState == InputModelValidationState.Invalid)
@@ -115,9 +116,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets the collection of model items that were validated.
         /// </summary>
         /// <value>The model items.</value>
-        public IList<ModelStateEntryLogItem> ModelItems
+        public IList<IGraphLogPropertyCollection> ModelItems
         {
-            get => this.GetProperty<IList<ModelStateEntryLogItem>>(LogPropertyNames.MODEL_ITEMS_COLLECTION);
+            get => this.GetProperty<IList<IGraphLogPropertyCollection>>(LogPropertyNames.MODEL_ITEMS_COLLECTION);
             private set => this.SetProperty(LogPropertyNames.MODEL_ITEMS_COLLECTION, value);
         }
 

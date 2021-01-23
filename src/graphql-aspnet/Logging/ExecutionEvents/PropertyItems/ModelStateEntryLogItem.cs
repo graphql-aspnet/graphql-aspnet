@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.InputModel;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
 
             if (modelStateItem.Errors != null && modelStateItem.Errors.Count > 0)
             {
-                var errors = new List<ModelStateErrorLogItem>();
+                var errors = new List<IGraphLogPropertyCollection>();
 
                 foreach (var error in modelStateItem.Errors)
                 {
@@ -65,9 +66,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
         /// Gets a collection of errors generated during the validation of the model item.
         /// </summary>
         /// <value>The errors collection.</value>
-        public IList<ModelStateErrorLogItem> Errors
+        public IList<IGraphLogPropertyCollection> Errors
         {
-            get => this.GetProperty<IList<ModelStateErrorLogItem>>(LogPropertyNames.MODEL_ITEM_ERRORS);
+            get => this.GetProperty<IList<IGraphLogPropertyCollection>>(LogPropertyNames.MODEL_ITEM_ERRORS);
             private set => this.SetProperty(LogPropertyNames.MODEL_ITEM_ERRORS, value);
         }
     }
