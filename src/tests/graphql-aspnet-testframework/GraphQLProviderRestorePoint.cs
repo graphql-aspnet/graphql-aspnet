@@ -16,7 +16,8 @@ namespace GraphQL.AspNet.Tests.Framework
 
     /// <summary>
     /// A marker to a point in time that, when disposed, will reset the <see cref="GraphQLProviders"/> to the values
-    /// that were present just before this object was created.
+    /// that were present just before this object was created. Used in conjunction with NUnit to undo any changes to
+    /// the global static providers in between tests.
     /// </summary>
     public class GraphQLProviderRestorePoint : IDisposable
     {
