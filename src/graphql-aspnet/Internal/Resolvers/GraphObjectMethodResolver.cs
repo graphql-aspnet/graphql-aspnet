@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
     /// <summary>
     /// A field resolver that will invoke a schema pipeline for whatever schema is beng processed
-    /// resulting in the the configured <see cref="IGraphMethod"/> handling the request.
+    /// resulting in the configured <see cref="IGraphMethod"/> handling the request.
     /// </summary>
     public class GraphObjectMethodResolver : IGraphFieldResolver
     {

@@ -178,9 +178,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             for (var i = 0; i < _arguments.Count; i++)
             {
                 var parameter = _arguments[i];
-                builder.Append(parameter.ObjectType?.FriendlyName())
-                    .Append(' ')
-                    .Append(parameter.Name);
+                builder.Append($"{parameter.ObjectType?.FriendlyName()} {parameter.Name}");
 
                 if (i < _arguments.Count - 1)
                     builder.Append(", ");
