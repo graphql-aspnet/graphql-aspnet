@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                    $"The directive method '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
-                   $"return type must be assigned from the declared return type.");
+                   "return type must be assigned from the declared return type.");
             }
 
             foreach (var argument in _arguments)
@@ -178,7 +178,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             for (var i = 0; i < _arguments.Count; i++)
             {
                 var parameter = _arguments[i];
-                builder.Append($"{parameter.ObjectType?.FriendlyName()} {parameter.Name}");
+                builder.Append(parameter.ObjectType?.FriendlyName())
+                    .Append(' ')
+                    .Append(parameter.Name);
 
                 if (i < _arguments.Count - 1)
                     builder.Append(", ");

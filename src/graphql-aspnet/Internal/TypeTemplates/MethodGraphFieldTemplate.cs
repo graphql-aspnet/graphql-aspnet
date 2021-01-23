@@ -86,14 +86,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"Invalid graph method declaration. The method '{this.InternalFullName}' is static. Only " +
-                    $"instance members can be registered as field.");
+                    "instance members can be registered as field.");
             }
 
             if (this.ExpectedReturnType == null)
             {
                 throw new GraphTypeDeclarationException(
                    $"Invalid graph method declaration. The method '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
-                   $"return type must be assigned from the declared return type.");
+                   "return type must be assigned from the declared return type.");
             }
         }
 

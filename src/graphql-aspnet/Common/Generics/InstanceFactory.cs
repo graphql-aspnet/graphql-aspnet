@@ -98,13 +98,13 @@ namespace GraphQL.AspNet.Common.Generics
             if (methodInfo.IsStatic)
             {
                 throw new ArgumentException($"The method '{methodInfo.Name}' on type '{methodInfo.DeclaringType.FriendlyName()}' is static " +
-                                            $"and cannot be used to create an instance method reference.");
+                                            "and cannot be used to create an instance method reference.");
             }
 
             if (methodInfo.ReturnType == typeof(void))
             {
                 throw new ArgumentException($"The method '{methodInfo.Name}' on type '{methodInfo.DeclaringType.FriendlyName()}' does not return a value. " +
-                                            $"This instance creator only supports methods with a return value.");
+                                            "This instance creator only supports methods with a return value.");
             }
 
             invoker = CreateMethodInvoker(methodInfo);

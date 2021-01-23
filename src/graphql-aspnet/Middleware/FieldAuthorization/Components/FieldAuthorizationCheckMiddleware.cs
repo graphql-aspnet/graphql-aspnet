@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
                         if (_authService == null)
                         {
                             return FieldAuthorizationResult.Fail(
-                                $"The field defines authorization policies but " +
+                                "The field defines authorization policies but " +
                                 $"no '{nameof(IAuthorizationService)}' exists to process them.");
                         }
 

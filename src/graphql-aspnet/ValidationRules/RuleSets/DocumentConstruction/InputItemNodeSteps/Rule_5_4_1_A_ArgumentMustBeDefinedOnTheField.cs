@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
                 this.ValidationError(
                     context,
                     $"The field '{fieldSelection.Name}' does not define an input argument named '{node.InputName.ToString()}'. Input arguments " +
-                    $"must be defined on the field in the target schema.");
+                    "must be defined on the field in the target schema.");
                 return false;
             }
 

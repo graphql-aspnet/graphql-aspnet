@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"The graph property '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
-                    $"return type must be assigned from the declared return type.");
+                    "return type must be assigned from the declared return type.");
             }
         }
 

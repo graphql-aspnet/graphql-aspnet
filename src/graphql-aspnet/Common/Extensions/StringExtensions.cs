@@ -262,7 +262,7 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
-        /// Replaces all instance of the listed characters with the single replacement character (provided first).
+        /// Replaces all instances of the listed characters with the single replacement character (provided first).
         /// </summary>
         /// <param name="text">The text.</param>
         /// <param name="replaceWith">The character to replace all other characters (...and in the darkness bind them!).</param>

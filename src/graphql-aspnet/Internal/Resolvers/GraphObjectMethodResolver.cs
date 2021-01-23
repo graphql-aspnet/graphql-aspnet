@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 context.Messages.Critical(
                     $"An unknown error occured atttempting to resolve the field '{_graphMethod.Route.Path}'. " +
-                    $"See exception for details.",
+                    "See exception for details.",
                     Constants.ErrorCodes.UNHANDLED_EXCEPTION,
                     context.Request.Origin,
                     ex);

@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
                 this.ValidationError(
                     context,
                     $"The directive '{directive.Name}' already contains an input argument named '{node.InputName.ToString()}'. Input arguments " +
-                    $"must be unique per directive instance.");
+                    "must be unique per directive instance.");
                 return false;
             }
 

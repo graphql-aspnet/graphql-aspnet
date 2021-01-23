@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 
                 default:
                     this.Messages.Critical(
-                        $"Unrecognized document element or position. The document element at the current position " +
+                        "Unrecognized document element or position. The document element at the current position " +
                         "could not be processed and the query was terminated. Double check your document and try again.",
                         Constants.ErrorCodes.INVALID_DOCUMENT,
                         this.ActiveNode.Location.AsOrigin());

@@ -59,8 +59,8 @@ namespace GraphQL.AspNet.Common.Json
                 if (reader.TokenType != JsonTokenType.EndObject)
                 {
                     throw new InvalidOperationException(
-                        "Error in Input collection deserialization. Expected " +
-                        $"'{JsonTokenType.EndObject.ToString()}' but got '{reader.TokenType.ToString()}'");
+                        "Error in Input Collection deserialization. Expected " +
+                        $"'{JsonTokenType.EndObject}' but got '{reader.TokenType}'");
                 }
             }
 
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Common.Json
 
                     default:
                         throw new FormatException($"Unsupported JsonToken '{reader.TokenType.ToString()}', cannot " +
-                            $"deserialize variables collection.");
+                            "deserialize variables collection.");
                 }
             }
             finally

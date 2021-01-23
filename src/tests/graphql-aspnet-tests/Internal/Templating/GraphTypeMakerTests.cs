@@ -124,7 +124,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = TemplateHelper.CreateEnumTemplate<EnumWithGraphName>();
 
             var builder = new TestServerBuilder()
-                .AddGraphQL(o => {
+                .AddGraphQL(o =>
+                {
                     o.AddGraphType<EnumWithGraphName>();
                 });
 

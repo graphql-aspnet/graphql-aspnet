@@ -55,19 +55,19 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
         {
             if (this.SourceData == null)
             {
-                return new InternalServerErrorGraphActionResult($"The source data list, when attempting to finalize a " +
+                return new InternalServerErrorGraphActionResult("The source data list, when attempting to finalize a " +
                                                                 $"batch for field '{this.Field.Name}', was null.");
             }
 
             if (this.SourceKeySelector == null)
             {
-                return new InternalServerErrorGraphActionResult($"The source key locator, when attempting to finalize a " +
+                return new InternalServerErrorGraphActionResult("The source key locator, when attempting to finalize a " +
                                                                 $"batch for field '{this.Field.Name}', was null.");
             }
 
             if (this.ResultData != null && this.ResultKeySelector == null)
             {
-                return new InternalServerErrorGraphActionResult($"The result key locator, when attempting to finalize a " +
+                return new InternalServerErrorGraphActionResult("The result key locator, when attempting to finalize a " +
                                                                 $"batch for field '{this.Field.Name}', was null.");
             }
 
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
                             return new InternalServerErrorGraphActionResult(
                                 $"Invalid field resolution. When attempting to finalize a batch for field '{this.Field.Name}', " +
                                 $"a source item with key '{key}' had {lookupResults.Count} result(s) in the batch was expected to have " +
-                                $"a single item.");
+                                "a single item.");
                         }
 
                         sourceResults = lookupResults.FirstOrDefault();

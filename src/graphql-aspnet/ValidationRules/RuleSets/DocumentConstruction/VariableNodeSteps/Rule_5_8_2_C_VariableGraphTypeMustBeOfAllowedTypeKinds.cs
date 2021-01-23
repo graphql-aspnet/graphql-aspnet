@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
                         $"Invalid Variable Graph Type. The variable named '${variable.Name}' references the graph type " +
                         $"'{errorName}'{errorKind}.  Only " +
                         $"{TypeKind.SCALAR.ToString()}, {TypeKind.ENUM.ToString()} and '{TypeKind.INPUT_OBJECT.ToString()}' are allowed for " +
-                        $"variable declarations.");
+                        "variable declarations.");
 
                     return false;
             }

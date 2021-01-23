@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 {
                     result = new RouteNotFoundGraphActionResult(
                         $"The controller assigned to process the field '{context.Request.InvocationContext.Field.Route.Path}' " +
-                        $"was not found.");
+                        "was not found.");
                 }
                 else
                 {
