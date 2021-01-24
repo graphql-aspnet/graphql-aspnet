@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
                 this.ValidationError(
                     context,
                     $"The graph type for field '{context.FieldPath}' ({typeExpression?.TypeName}) does not exist on the target schema. The field" +
-                    $"cannot be properly evaluated.");
+                    "cannot be properly evaluated.");
 
                 context.DataItem.InvalidateResult();
             }

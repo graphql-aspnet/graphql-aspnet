@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// Helper methods for working with types.
@@ -239,37 +240,6 @@ namespace GraphQL.AspNet.Common.Extensions
                 return null;
 
             return paramSet[0];
-        }
-
-        /// <summary>
-        /// Attempts to extract the result of a boxed <see cref="Task{TResult}"/>. Returns null if
-        /// the task does not declare a result.
-        /// </summary>
-        /// <param name="task">The task.</param>
-        /// <returns>System.Object.</returns>
-        [DebuggerStepThrough]
-        public static object ResultOrDefault(this Task task)
-        {
-            var type = task.GetType();
-            if (!type.IsGenericType)
-            {
-                return null;
-            }
-
-            return type.GetProperty("Result")?.GetValue(task);
-        }
-
-        /// <summary>
-        /// Unwraps the first found, internal, thrown exception from a task removing the aggregate.
-        /// </summary>
-        /// <param name="completedTask">The completed task.</param>
-        /// <returns>Exception.</returns>
-        public static Exception UnwrapException(this Task completedTask)
-        {
-            if (!completedTask.IsFaulted)
-                return null;
-
-            return completedTask.Exception?.InnerExceptions.FirstOrDefault();
         }
 
         /// <summary>

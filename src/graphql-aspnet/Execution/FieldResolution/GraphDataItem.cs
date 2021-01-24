@@ -473,7 +473,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     {
                         throw new GraphExecutionException(
                             $"Duplicate field name. The field '{field.Name}'  at '{this.Origin.Path.DotString()}' was resolved " +
-                            $"more than once for a source object, unable to generate a valid output. " +
+                            "more than once for a source object, unable to generate a valid output. " +
                             $"Field collections require unique names. An attempt was made to add the field '{field.Name}', " +
                             $"for target type '{field.FieldContext.ExpectedSourceType?.FriendlyName() ?? "-all-"}' when the field " +
                             "name was already present in the output dictionary.",

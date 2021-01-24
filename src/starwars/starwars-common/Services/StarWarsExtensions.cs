@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.Services
                 WriteLineWithPadding("", 50, '-', "**");
                 WriteLineWithPadding("Point Your GraphQL tool of choice at", 50, ' ', "**");
                 WriteLineWithPadding($"http://{{hostname}}{Constants.Routing.DEFAULT_HTTP_ROUTE}", 50, ' ', "**");
+                WriteLineWithPadding($"Runtime: {System.Environment.Version}", 50, ' ', "**");
                 WriteLineWithPadding("", 50, '*', "**");
                 Console.WriteLine();
             }

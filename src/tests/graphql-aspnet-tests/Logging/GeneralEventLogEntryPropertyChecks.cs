@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.ExecutionEvents;
+    using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Response;
@@ -62,6 +63,7 @@ namespace GraphQL.AspNet.Tests.Logging
             foreach (var type in server.Schema.KnownTypes)
             {
                 var logGraphType = entry.GraphTypes
+                    .Cast<SchemaGraphTypeLogItem>()
                     .SingleOrDefault(x => x.GraphTypeName == type.Name);
 
                 Assert.IsNotNull(logGraphType);
@@ -375,7 +377,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(graphMethod.Name, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
-            var exceptionEntry = entry.Exception;
+            var exceptionEntry = entry.Exception as ExceptionLogItem;
             Assert.IsNotNull(exceptionEntry);
             Assert.AreEqual(exception.Message, exceptionEntry.ExceptionMessage);
             Assert.AreEqual(exception.StackTrace, exceptionEntry.StackTrace);
@@ -404,7 +406,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(graphMethod.Name, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
 
-            var exceptionEntry = entry.Exception;
+            var exceptionEntry = entry.Exception as ExceptionLogItem;
             Assert.IsNotNull(exceptionEntry);
             Assert.AreEqual(exception.Message, exceptionEntry.ExceptionMessage);
             Assert.AreEqual(exception.StackTrace, exceptionEntry.StackTrace);

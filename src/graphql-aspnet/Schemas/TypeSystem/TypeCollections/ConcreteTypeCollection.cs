@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 {
                     throw new GraphTypeDeclarationException(
                         $"The scalar '{graphType.Name}' attempted to associate itself to a concrete type of {concreteType.FriendlyName()}. " +
-                        $"Scalars cannot be associated with non scalar concrete types.");
+                        "Scalars cannot be associated with non scalar concrete types.");
                 }
             }
 

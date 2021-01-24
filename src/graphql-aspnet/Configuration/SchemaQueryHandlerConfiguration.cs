@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Configuration
         /// for each schema registered; otherwise, an exception will be thrown.
         /// </para>
         /// </summary>
-        /// <value>The path to listen for graphql requests.</value>
+        /// <value>The path to listen to for graphql requests.</value>
         public string Route { get; set; } = Constants.Routing.DEFAULT_HTTP_ROUTE;
 
         /// <summary>

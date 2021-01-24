@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
     using System;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
     using Microsoft.Extensions.Logging;
@@ -76,9 +77,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets the message of the exception that was thrown.
         /// </summary>
         /// <value>The exception message.</value>
-        public ExceptionLogItem Exception
+        public IGraphLogPropertyCollection Exception
         {
-            get => this.GetProperty<ExceptionLogItem>(LogPropertyNames.EXCEPTION);
+            get => this.GetProperty<IGraphLogPropertyCollection>(LogPropertyNames.EXCEPTION);
             private set => this.SetProperty(LogPropertyNames.EXCEPTION, value);
         }
 
@@ -88,7 +89,8 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return $"Action Exception | Type: '{this.Exception.ShortTypeName}', Message: '{this.Exception.ExceptionMessage}' ";
+            var ex = this.Exception as ExceptionLogItem;
+            return $"Action Exception | Type: '{ex?.ShortTypeName}', Message: '{ex?.ExceptionMessage}' ";
         }
     }
 }

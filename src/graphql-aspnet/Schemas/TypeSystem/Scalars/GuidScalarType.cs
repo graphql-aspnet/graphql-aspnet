@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         private GuidScalarType()
             : base(Constants.ScalarNames.GUID, typeof(Guid))
         {
-            this.Description = $"A standard guid (e.g. '6dd43342-ffe6-4964-bb6f-e31c8e50ec86').";
+            this.Description = "A standard guid (e.g. '6dd43342-ffe6-4964-bb6f-e31c8e50ec86').";
             this.OtherKnownTypes = TypeCollection.Empty;
         }
 

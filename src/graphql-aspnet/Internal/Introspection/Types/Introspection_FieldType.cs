@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                 new GraphTypeExpression(Constants.ReservedNames.INPUT_VALUE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "args"),
                 (field) => field.Arguments.AsCompletedTask(),
-                $"A collection of input values that can be passed to this field to alter its behavior when used in a query.");
+                "A collection of input values that can be passed to this field to alter its behavior when used in a query.");
 
             this.GraphFieldCollection.AddField<IntrospectedField, IntrospectedType>(
                 "type",

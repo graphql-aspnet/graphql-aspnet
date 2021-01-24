@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFrag
             this.ValidationError(
                 context,
                 $"The fragment declares a target type of '{fragment.TargetGraphTypeName}' but no graph type exists " +
-                $"on the target schema by that name.");
+                "on the target schema by that name.");
 
             return false;
         }

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.StarWarsAPI3X
+namespace GraphQL.AspNet.StarWarsAPI5X
 {
     using System;
     using GraphQL.AspNet;
@@ -71,13 +71,13 @@ namespace GraphQL.AspNet.StarWarsAPI3X
             // we have moved all the shared code to a common assembly (starwars-common) and are injecting it
             // as a single unit
             services.AddGraphQL(options =>
-             {
-                 options.ResponseOptions.ExposeExceptions = true;
-                 options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
+            {
+                options.ResponseOptions.ExposeExceptions = true;
+                options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
 
-                 var assembly = typeof(StarWarsDataRepository).Assembly;
-                 options.AddGraphAssembly(assembly);
-             })
+                var assembly = typeof(StarWarsDataRepository).Assembly;
+                options.AddGraphAssembly(assembly);
+            })
              .AddSubscriptions(options =>
              {
                  // this route path is set by default

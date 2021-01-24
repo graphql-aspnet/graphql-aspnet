@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
                 this.ValidationError(
                     context,
                     $"The directive '{queryDirective.Name}' does not define an input argument named '{node.InputName.ToString()}'. " +
-                    $"Input arguments must be defined on the directive in the target schema.");
+                    "Input arguments must be defined on the directive in the target schema.");
                 return false;
             }
 

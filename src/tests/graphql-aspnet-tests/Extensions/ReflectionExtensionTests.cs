@@ -193,22 +193,6 @@ namespace GraphQL.AspNet.Tests.Extensions
             Assert.AreEqual(expected, result);
         }
 
-        [Test]
-        public void Task_ResultOrDefault_WithNoReturnType_ReturnsNull()
-        {
-            var task = Task.CompletedTask;
-            var result = task.ResultOrDefault();
-            Assert.IsNull(result);
-        }
-
-        [Test]
-        public void Task_ResultOrDefault_WithReturnType_ReturnsObject()
-        {
-            var task = Task.FromResult(55);
-            var result = task.ResultOrDefault();
-            Assert.AreEqual(55, result);
-        }
-
         [TestCase(typeof(List<int>), 1)]
         [TestCase(typeof(List<IEnumerable<int>>), 1)]
         [TestCase(typeof(Dictionary<int, string>), 2)]

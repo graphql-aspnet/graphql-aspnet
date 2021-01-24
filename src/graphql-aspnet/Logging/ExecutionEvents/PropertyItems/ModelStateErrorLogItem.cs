@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
 {
     using GraphQL.AspNet.Execution.InputModel;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
@@ -43,9 +44,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
        /// are because of generated exceptions.
         /// </summary>
         /// <value>The exception.</value>
-        public ExceptionLogItem Exception
+        public IGraphLogPropertyCollection Exception
         {
-            get => this.GetProperty<ExceptionLogItem>(LogPropertyNames.EXCEPTION);
+            get => this.GetProperty<IGraphLogPropertyCollection>(LogPropertyNames.EXCEPTION);
             private set => this.SetProperty(LogPropertyNames.EXCEPTION, value);
         }
     }

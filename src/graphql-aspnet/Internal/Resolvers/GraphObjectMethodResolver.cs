@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
     /// <summary>
     /// A field resolver that will invoke a schema pipeline for whatever schema is beng processed
-    /// resulting in the the configured <see cref="IGraphMethod"/> handling the request.
+    /// resulting in the configured <see cref="IGraphMethod"/> handling the request.
     /// </summary>
     public class GraphObjectMethodResolver : IGraphFieldResolver
     {
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                     if (invokeReturn is Task task)
                     {
                         await task.ConfigureAwait(false);
-                        data = task.ResultOrDefault();
+                        data = task.ResultOfTypeOrNull(_graphMethod.ExpectedReturnType);
                     }
                 }
                 else
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
             {
                 context.Messages.Critical(
                     $"An unknown error occured atttempting to resolve the field '{_graphMethod.Route.Path}'. " +
-                    $"See exception for details.",
+                    "See exception for details.",
                     Constants.ErrorCodes.UNHANDLED_EXCEPTION,
                     context.Request.Origin,
                     ex);

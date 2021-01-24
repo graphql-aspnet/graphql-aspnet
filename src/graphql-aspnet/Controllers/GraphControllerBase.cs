@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Controllers
                         if (task.IsFaulted)
                             throw task.UnwrapException();
 
-                        invokeReturn = task.ResultOrDefault();
+                        invokeReturn = task.ResultOfTypeOrNull(_action.ExpectedReturnType);
                     }
                     else
                     {

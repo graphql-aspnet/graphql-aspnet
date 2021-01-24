@@ -218,7 +218,7 @@ namespace GraphQL.AspNet.Response
                     else
                     {
                         throw new ArgumentOutOfRangeException(
-                            $"Unknown type. Default writer is unable to write " +
+                            "Unknown type. Default writer is unable to write " +
                             $"type '{value.GetType().FriendlyName()}' to the output stream.");
                     }
 

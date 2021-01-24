@@ -74,6 +74,27 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"The graph property {this.InternalFullName} does not define a public getter.  It cannot be parsed or added " +
                     "to the object graph.");
             }
+
+            if (this.ExpectedReturnType == null)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The graph property '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
+                    "return type must be assigned from the declared return type.");
+            }
+        }
+
+        /// <summary>
+        /// When overridden in a child class this method builds out the template according to its own individual requirements.
+        /// </summary>
+        protected override void ParseTemplateDefinition()
+        {
+            base.ParseTemplateDefinition();
+
+            this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
+                this.DeclaredReturnType,
+                false,
+                true,
+                false);
         }
 
         /// <summary>
@@ -91,6 +112,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The type of the declared return.</value>
         public override Type DeclaredReturnType => this.Property.PropertyType;
+
+        /// <summary>
+        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
+        /// represents the implementation return type as opposed to the expected graph type.
+        /// </summary>
+        /// <value>The type of the return.</value>
+        public Type ExpectedReturnType { get; private set; }
 
         /// <summary>
         /// Gets the name this field is declared as in the C# code (method name or property name).

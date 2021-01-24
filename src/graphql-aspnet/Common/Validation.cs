@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Common
         {
             ThrowIfNullEmpty(text, parameterName);
             if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentException($"Parameter cannot be null, empty or whitespace.", parameterName);
+                throw new ArgumentException("Parameter cannot be null, empty or whitespace.", parameterName);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Common
         public static void ThrowIfNullEmpty(string text, string parameterName)
         {
             if (string.IsNullOrEmpty(text))
-                throw new ArgumentException($"Parameter cannot be null or empty.", parameterName);
+                throw new ArgumentException("Parameter cannot be null or empty.", parameterName);
         }
 
         /// <summary>
