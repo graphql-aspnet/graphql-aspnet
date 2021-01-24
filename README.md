@@ -3,6 +3,7 @@
 ### Documentation: [https://graphql-aspnet.github.io](https://graphql-aspnet.github.io)
 
 > Target Specification: **netstandard2.0**
+>
 > Supported Runtimes:  _.NET 4.7+_, _.NET Core_, _.NET 5_
 
 
