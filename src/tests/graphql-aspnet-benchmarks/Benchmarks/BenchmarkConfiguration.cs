@@ -10,11 +10,9 @@
 namespace GraphQL.AspNet.Benchmarks.Benchmarks
 {
     using BenchmarkDotNet.Configs;
-    using BenchmarkDotNet.ConsoleArguments;
-    using BenchmarkDotNet.Engines;
     using BenchmarkDotNet.Environments;
-    using BenchmarkDotNet.Horology;
     using BenchmarkDotNet.Jobs;
+    using Perfolizer.Horology;
 
     public class BenchmarkConfiguration : ManualConfig
     {
@@ -22,23 +20,12 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         {
             var launchCount = 5;
             var warmupCount = 2;
-
             var unrollFactor = 18;
             var invocationCount = 5 * unrollFactor;
 
-            Add(Job.InProcess
-                    .With(Platform.X64)
-                    .With(Runtime.Core)
-                    .WithUnrollFactor(unrollFactor)
-                    .WithLaunchCount(launchCount)
-                    .WithWarmupCount(warmupCount)
-                    .WithInvocationCount(invocationCount)
-                    .WithIterationTime(TimeInterval.Millisecond * 200)
-                    .WithId("x64 .NET Core Platform Execution"));
-
-            Add(Job.InProcess
-                    .With(Platform.X86)
-                    .With(Runtime.Clr)
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X86)
+                    .WithRuntime(ClrRuntime.Net472)
                     .WithUnrollFactor(unrollFactor)
                     .WithLaunchCount(launchCount)
                     .WithWarmupCount(warmupCount)
@@ -46,9 +33,9 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                     .WithIterationTime(TimeInterval.Millisecond * 200)
                     .WithId("x86 Full Framework Platform Execution"));
 
-            Add(Job.InProcess
-                    .With(Platform.X64)
-                    .With(Runtime.Clr)
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X64)
+                    .WithRuntime(ClrRuntime.Net472)
                     .WithUnrollFactor(unrollFactor)
                     .WithLaunchCount(launchCount)
                     .WithWarmupCount(warmupCount)
@@ -56,15 +43,35 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                     .WithIterationTime(TimeInterval.Millisecond * 200)
                     .WithId("x64 Full Framework Platform Execution"));
 
-            Add(Job.InProcess
-                    .With(Platform.X64)
-                    .With(Runtime.Mono)
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X64)
+                    .WithRuntime(MonoRuntime.Default)
                     .WithUnrollFactor(unrollFactor)
                     .WithLaunchCount(launchCount)
                     .WithWarmupCount(warmupCount)
                     .WithInvocationCount(invocationCount)
                     .WithIterationTime(TimeInterval.Millisecond * 200)
                     .WithId("x64 Mono Platform Execution"));
+
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X86)
+                    .WithRuntime(CoreRuntime.Core50)
+                    .WithUnrollFactor(unrollFactor)
+                    .WithLaunchCount(launchCount)
+                    .WithWarmupCount(warmupCount)
+                    .WithInvocationCount(invocationCount)
+                    .WithIterationTime(TimeInterval.Millisecond * 200)
+                    .WithId("x86 .NET 5 Platform Execution"));
+
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X64)
+                    .WithRuntime(CoreRuntime.Core50)
+                    .WithUnrollFactor(unrollFactor)
+                    .WithLaunchCount(launchCount)
+                    .WithWarmupCount(warmupCount)
+                    .WithInvocationCount(invocationCount)
+                    .WithIterationTime(TimeInterval.Millisecond * 200)
+                    .WithId("x64 .NET 5 Platform Execution"));
         }
     }
 }

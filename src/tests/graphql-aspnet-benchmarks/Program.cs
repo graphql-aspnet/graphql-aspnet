@@ -32,11 +32,11 @@ namespace GraphQL.AspNet.Benchmarks
             // ****************************************
 #if DEBUG
             var item = new ExecuteQueries();
-            await item.InitializeEnvironment();
-            await item.SingleObjectQuery();
-            await item.TypeExtensionQuery();
-            await item.MultiActionMethodQuery();
-            Console.WriteLine("All actions complete. Execute in release mode, without the debugger attached to run benchmarks.");
+            item.InitializeEnvironment();
+            item.SingleObjectQuery().Wait();
+            item.TypeExtensionQuery().Wait();
+            item.MultiActionMethodQuery().Wait();
+            Console.WriteLine("All benchmark tests completed. Execute in release mode, without the debugger attached to run benchmarks.");
             Console.Read();
             return 0;
 #endif
