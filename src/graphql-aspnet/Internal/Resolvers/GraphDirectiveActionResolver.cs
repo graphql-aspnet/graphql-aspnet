@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 {
                     result = new RouteNotFoundGraphActionResult(
                         $"The directive '{_directiveTemplate.InternalFullName}' " +
-                        $"was not found in the scoped service provider.");
+                        "was not found in the scoped service provider.");
                 }
                 else
                 {

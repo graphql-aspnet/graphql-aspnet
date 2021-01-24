@@ -99,6 +99,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             this.MethodSignature = this.GenerateMethodSignatureString();
+
+            this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
+                this.DeclaredType,
+                false,
+                true,
+                false);
         }
 
         /// <summary>
@@ -144,9 +150,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (!this.IsValidDirectiveMethod)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The method '{this.InternalFullName}' has an invalid signature and cannot be used as a directive " +
+                    $"The directive method '{this.InternalFullName}' has an invalid signature and cannot be used as a directive " +
                     $"method. All Directive methods must not contain generic parameters and must return a '{typeof(IGraphActionResult).FriendlyName()}' or " +
                     $"'{typeof(Task<IGraphActionResult>).FriendlyName()}' to be invoked properly.");
+            }
+
+            if (this.ExpectedReturnType == null)
+            {
+                throw new GraphTypeDeclarationException(
+                   $"The directive method '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
+                   "return type must be assigned from the declared return type.");
             }
 
             foreach (var argument in _arguments)
@@ -192,6 +205,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The type of the declared.</value>
         public Type DeclaredType { get; private set; }
+
+        /// <summary>
+        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
+        /// represents the implementation return type as opposed to the expected graph type.
+        /// </summary>
+        /// <value>The type of the return.</value>
+        public Type ExpectedReturnType { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is asynchronous method.

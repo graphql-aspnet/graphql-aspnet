@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Execution
                     // doing custom extensions or implementations
                     throw new GraphExecutionException(
                         $"The parameter '{argTemplate.Name}' for field '{graphMethod.Route.Path}' could not be resolved from the query document " +
-                        $"or variable collection and no default value was found.");
+                        "or variable collection and no default value was found.");
                 }
 
                 paramSet.Add(passedValue);

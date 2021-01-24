@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
             {
                 this.ValidationError(
                     context,
-                    $"Unknown Graph Type. Could not determine the graph type expression of the variable " +
+                    "Unknown Graph Type. Could not determine the graph type expression of the variable " +
                     $"named '{queryVariable.Name}'. Double check that your variable declaration is correct.");
 
                 return false;

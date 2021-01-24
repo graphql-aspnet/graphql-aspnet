@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Common.Generics
 
     /// <summary>
     /// A helper object that creates expression trees for dynamic object generation, greatly improving
-    /// performance of subsequent object creation calls over using <see cref="Activator"/>.
+    /// performance of subsequent object creation calls instead of using <see cref="Activator"/>.
     /// </summary>
     public static class InstanceFactory
     {
@@ -98,13 +98,13 @@ namespace GraphQL.AspNet.Common.Generics
             if (methodInfo.IsStatic)
             {
                 throw new ArgumentException($"The method '{methodInfo.Name}' on type '{methodInfo.DeclaringType.FriendlyName()}' is static " +
-                                            $"and cannot be used to create an instance method reference.");
+                                            "and cannot be used to create an instance method reference.");
             }
 
             if (methodInfo.ReturnType == typeof(void))
             {
                 throw new ArgumentException($"The method '{methodInfo.Name}' on type '{methodInfo.DeclaringType.FriendlyName()}' does not return a value. " +
-                                            $"This instance creator only supports methods with a return value.");
+                                            "This instance creator only supports methods with a return value.");
             }
 
             invoker = CreateMethodInvoker(methodInfo);

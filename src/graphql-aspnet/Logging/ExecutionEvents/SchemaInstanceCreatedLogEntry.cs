@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
@@ -51,7 +52,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
                 .ThenBy(x => x.Kind.ToString())
                 .ThenBy(x => x.Name);
 
-            var graphTypeItems = new List<SchemaGraphTypeLogItem>();
+            var graphTypeItems = new List<IGraphLogPropertyCollection>();
             foreach (var graphType in orderedList)
             {
                 var concreteType = schemaInstance.KnownTypes.FindConcreteType(graphType);
@@ -108,9 +109,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets the collection of graph types defined on the schema instance.
         /// </summary>
         /// <value>The graph types.</value>
-        public IList<SchemaGraphTypeLogItem> GraphTypes
+        public IList<IGraphLogPropertyCollection> GraphTypes
         {
-            get => this.GetProperty<IList<SchemaGraphTypeLogItem>>(LogPropertyNames.SCHEMA_GRAPH_TYPE_COLLECTION);
+            get => this.GetProperty<IList<IGraphLogPropertyCollection>>(LogPropertyNames.SCHEMA_GRAPH_TYPE_COLLECTION);
             private set => this.SetProperty(LogPropertyNames.SCHEMA_GRAPH_TYPE_COLLECTION, value);
         }
 

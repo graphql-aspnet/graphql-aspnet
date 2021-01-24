@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"The directive '{_parent.InternalFullName}' declared no actionable methods to invoke. Either mark this directive with '{nameof(GraphSkipAttribute)}' " +
-                    $"or declare at least one valid lifecycle method.");
+                    "or declare at least one valid lifecycle method.");
             }
 
             // ensure that all signatures match each other, the specification declares that a directive is exactly one "thing"

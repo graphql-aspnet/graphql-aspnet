@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
+    using GraphQL.AspNet.Logging.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
@@ -123,8 +124,15 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 {
                     if (result != null)
                     {
-                        await publisher.PublishEvent(result);
-                        logger?.SubscriptionEventPublished(result);
+                        try
+                        {
+                            await publisher.PublishEvent(result);
+                            logger?.SubscriptionEventPublished(result);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger?.UnhandledExceptionEvent(ex);
+                        }
                     }
                 }
             }

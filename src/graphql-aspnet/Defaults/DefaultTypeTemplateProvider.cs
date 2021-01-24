@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Defaults
             if (Validation.IsCastable<IGraphUnionProxy>(objectType))
             {
                 throw new GraphTypeDeclarationException($"The union proxy '{objectType.FriendlyName()}' cannot be directly parsed as a graph type. Double check " +
-                                                        $"your field attribute declarations'.");
+                                                        "your field attribute declarations'.");
             }
 
             GraphValidation.IsValidGraphType(objectType, true);

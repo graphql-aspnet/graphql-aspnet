@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
                 this.ValidationError(
                     context,
                     $"The field '{fieldSelection.Name}' already contains an input argument named '{node.InputName.ToString()}'. Input arguments " +
-                    $"must be unique per field instance.");
+                    "must be unique per field instance.");
                 return false;
             }
 

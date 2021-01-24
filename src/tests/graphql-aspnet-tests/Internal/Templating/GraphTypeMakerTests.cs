@@ -111,8 +111,28 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var graphType = server.CreateGraphType(typeof(EnumWithUndeclaredValues), TypeKind.ENUM).GraphType as IEnumGraphType;
             Assert.AreEqual(3, graphType.Values.Count);
             Assert.IsTrue(graphType.Values.ContainsKey("DECLAREDVALUE1"));
+
             Assert.IsTrue(graphType.Values.ContainsKey("VALUE_AWESOME"));
+            Assert.IsFalse(graphType.Values.ContainsKey("DECLAREDVALUE2"));
+
             Assert.IsTrue(graphType.Values.ContainsKey("UNDECLAREDVALUE1"));
+        }
+
+        [Test]
+        public void Parse_EnumWithCustomGraphTypeName_YieldsName_InGraphType()
+        {
+            var template = TemplateHelper.CreateEnumTemplate<EnumWithGraphName>();
+
+            var builder = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.AddGraphType<EnumWithGraphName>();
+                });
+
+            var server = builder.Build();
+            var graphType = server.CreateGraphType(template.ObjectType, TypeKind.ENUM).GraphType as IEnumGraphType;
+
+            Assert.AreEqual("ValidGraphName", graphType.Name);
         }
 
         [Test]

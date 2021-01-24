@@ -97,6 +97,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             this.GraphMethod = new Mock<IGraphMethod>();
             this.GraphMethod.Setup(x => x.Parent).Returns(graphMethod.Parent);
             this.GraphMethod.Setup(x => x.ObjectType).Returns(graphMethod.ObjectType);
+            this.GraphMethod.Setup(x => x.ExpectedReturnType).Returns(graphMethod.ExpectedReturnType);
             this.GraphMethod.Setup(x => x.Method).Returns(graphMethod.Method);
             this.GraphMethod.Setup(x => x.IsAsyncField).Returns(graphMethod.IsAsyncField);
             this.GraphMethod.Setup(x => x.Name).Returns(graphMethod.Name);

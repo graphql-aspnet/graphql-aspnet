@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputA
                 this.ValidationError(
                     context,
                     argument.Node,
-                    $"Invalid Variable Argument. The type expression for the variable used on the " +
+                    "Invalid Variable Argument. The type expression for the variable used on the " +
                     $"{argument.InputType} '{argument.Name}' could " +
                     $"not be successfully coerced to the required type. Expected '{argument.TypeExpression}' but got '{qvr.Variable.TypeExpression}'. Double check " +
                     $"the declared graph type of the variable and ensure it matches the required type of '{argument.Name}'.");

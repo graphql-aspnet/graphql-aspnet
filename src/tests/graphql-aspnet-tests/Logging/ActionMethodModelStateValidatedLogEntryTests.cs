@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using Moq;
     using NUnit.Framework;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
 
     [TestFixture]
     public class ActionMethodModelStateValidatedLogEntryTests
@@ -63,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
                 if (itemResult.ValidationState == InputModelValidationState.Invalid)
                 {
-                    var entryResult = logEntry.ModelItems.First(x => itemResult.Name == x.Name);
+                    var entryResult = logEntry.ModelItems.Cast<ModelStateEntryLogItem>().First(x => itemResult.Name == x.Name);
 
                     Assert.AreEqual(itemResult.Name, entryResult.Name);
                     Assert.AreEqual(itemResult.ValidationState.ToString(), entryResult.ValidationState);
@@ -84,12 +85,12 @@ namespace GraphQL.AspNet.Tests.Logging
                     for (var i = 0; i < itemErrors.Count; i++)
                     {
                         var itemError = itemErrors[i];
-                        var entryError = entryErrors[i];
+                        var entryError = entryErrors[i] as ModelStateErrorLogItem;
 
                         Assert.AreEqual(itemError.ErrorMessage, entryError.ErrorMessage);
 
                         var itemException = itemError.Exception;
-                        var entryException = entryError.Exception;
+                        var entryException = entryError.Exception as ExceptionLogItem;
 
                         Assert.AreEqual(itemException == null, entryException == null);
                         if (itemException != null)

@@ -201,7 +201,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 {
                     throw new GraphTypeDeclarationException(
                         $"The field '{this.InternalFullName}' declares union type of '{this.UnionProxy.Name}' " +
-                        $"but that type includes 0 possible types in the union. Unions require 1 or more possible types. Add additional types" +
+                        "but that type includes 0 possible types in the union. Unions require 1 or more possible types. Add additional types" +
                         "or remove the union.");
                 }
             }
@@ -231,14 +231,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     {
                         throw new GraphTypeDeclarationException(
                             $"The field '{this.InternalFullName}' declares union with a possible type of '{type.FriendlyName()}' " +
-                            $"but that type is a scalar. Scalars cannot be included in a field's possible type collection, only object types can.");
+                            "but that type is a scalar. Scalars cannot be included in a field's possible type collection, only object types can.");
                     }
 
                     if (type.IsInterface)
                     {
                         throw new GraphTypeDeclarationException(
                             $"The field '{this.InternalFullName}'  declares union with  a possible type of '{type.FriendlyName()}' " +
-                            $"but that type is an interface. Interfaces cannot be included in a field's possible type collection, only object types can.");
+                            "but that type is an interface. Interfaces cannot be included in a field's possible type collection, only object types can.");
                     }
 
                     if (type.IsEnum)

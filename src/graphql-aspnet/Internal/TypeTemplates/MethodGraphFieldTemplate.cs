@@ -55,6 +55,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 argTemplate.Parse();
                 _arguments.Add(argTemplate);
             }
+
+            this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
+                this.DeclaredReturnType,
+                false,
+                true,
+                false);
         }
 
         /// <summary>
@@ -80,7 +86,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"Invalid graph method declaration. The method '{this.InternalFullName}' is static. Only " +
-                    $"instance members can be registered as field.");
+                    "instance members can be registered as field.");
+            }
+
+            if (this.ExpectedReturnType == null)
+            {
+                throw new GraphTypeDeclarationException(
+                   $"Invalid graph method declaration. The method '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
+                   "return type must be assigned from the declared return type.");
             }
         }
 
@@ -123,6 +136,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The type naturally returned by this field.</value>
         public override Type DeclaredReturnType => this.Method.ReturnType;
+
+        /// <summary>
+        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
+        /// represents the implementation return type as opposed to the expected graph type.
+        /// </summary>
+        /// <value>The type of the return.</value>
+        public Type ExpectedReturnType { get; private set; }
 
         /// <summary>
         /// Gets the name this field is declared as in the C# code (method name or property name).

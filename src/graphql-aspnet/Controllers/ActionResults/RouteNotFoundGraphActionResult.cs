@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             else
             {
                 context.Messages.Critical(
-                    $"The item was not routable or otherwise not available.",
+                    "The item was not routable or otherwise not available.",
                     Constants.ErrorCodes.INVALID_ROUTE,
                     context.Request.Origin);
             }

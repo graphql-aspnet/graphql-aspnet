@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Internal
             if (overrideValue.HasValue && outKind != overrideValue.Value && !overrideValue.Value.CanBecome(outKind))
             {
                 throw new GraphTypeDeclarationException(
-                    $"The concrete type '{type.FriendlyName()}' was to be resolved as a graph type of kind '{overrideValue.Value.ToString()}' but " +
+                    $"The concrete type '{type.FriendlyName()}' was to be resolved as a graph type of kind '{overrideValue.Value}' but " +
                     $"can only be assigned as '{outKind.ToString()}'");
             }
 
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Internal
         }
 
         /// <summary>
-        /// Attempts to classify the the provided <see cref="Type"/> to determine its <see cref="TypeKind" />
+        /// Attempts to classify the provided <see cref="Type"/> to determine its <see cref="TypeKind" />
         /// (enum, scalar, object etc.). If provided, the override
         /// value will be used if allowed by the core <see cref="TypeKind"/> for the provided <see cref="Type"/>.
         /// For instance, an enum or a scalar will always be just those types but an object

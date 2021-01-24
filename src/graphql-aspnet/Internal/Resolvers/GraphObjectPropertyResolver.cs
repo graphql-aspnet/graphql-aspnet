@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
                         if (task.IsFaulted)
                             throw task.UnwrapException();
 
-                        invokeReturn = task.ResultOrDefault();
+                        invokeReturn = task.ResultOfTypeOrNull(_graphMethod.ExpectedReturnType);
                     }
                     else
                     {

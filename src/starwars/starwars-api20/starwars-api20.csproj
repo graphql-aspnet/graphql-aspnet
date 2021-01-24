@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603</NoWarn>
-    <RootNamespace>GraphQL.AspNet.StarWarsAPI</RootNamespace>
+    <RootNamespace>GraphQL.AspNet.StarWarsAPI2X</RootNamespace>
     <AssemblyName>GraphQL.AspNet.StarWarsAPI2X</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
