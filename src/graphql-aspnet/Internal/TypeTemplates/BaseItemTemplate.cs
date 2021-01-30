@@ -109,14 +109,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"The graph item {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
-                    "to the object graph.");
+                    "to the object graph.",
+                    this.ObjectType);
             }
 
             if (this.Route == null || !this.Route.IsValid)
             {
                 throw new GraphTypeDeclarationException(
                         $"The template item '{this.InternalFullName}' declares an invalid route of '{this.Route?.Path ?? "<null>"}'. " +
-                        $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )");
+                        $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
+                        this.ObjectType);
             }
         }
 

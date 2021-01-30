@@ -71,13 +71,17 @@ namespace GraphQL.AspNet.Defaults
 
             if (GraphQLProviders.ScalarProvider.IsScalar(objectType))
             {
-                throw new GraphTypeDeclarationException($"The type '{objectType.FriendlyName()}' is a known scalar type. Scalars must be explicitly defined and cannot be templated.");
+                throw new GraphTypeDeclarationException(
+                    $"The type '{objectType.FriendlyName()}' is a known scalar type. Scalars must be explicitly defined and cannot be templated.",
+                    objectType);
             }
 
             if (Validation.IsCastable<IGraphUnionProxy>(objectType))
             {
-                throw new GraphTypeDeclarationException($"The union proxy '{objectType.FriendlyName()}' cannot be directly parsed as a graph type. Double check " +
-                                                        "your field attribute declarations'.");
+                throw new GraphTypeDeclarationException(
+                    $"The union proxy '{objectType.FriendlyName()}' cannot be directly parsed as a graph type. Double check " +
+                    "your field attribute declarations'.",
+                    objectType);
             }
 
             GraphValidation.IsValidGraphType(objectType, true);

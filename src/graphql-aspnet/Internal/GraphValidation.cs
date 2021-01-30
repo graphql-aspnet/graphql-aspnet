@@ -58,7 +58,8 @@ namespace GraphQL.AspNet.Internal
             {
                 throw new GraphTypeDeclarationException(
                     $"The concrete type '{type.FriendlyName()}' was to be resolved as a graph type of kind '{overrideValue.Value}' but " +
-                    $"can only be assigned as '{outKind.ToString()}'");
+                    $"can only be assigned as '{outKind.ToString()}'",
+                    type);
             }
 
             return outKind;
@@ -257,7 +258,8 @@ namespace GraphQL.AspNet.Internal
                     throw new GraphTypeDeclarationException(
                         $"The type '{typeof(object).FriendlyName()}' cannot be used directly in an object graph. GraphQL requires a complete " +
                         "definition of a schema for validation and introspection.  Using a generic object prohibits this library from " +
-                        "scanning for fields, interfaces and inputs.");
+                        "scanning for fields, interfaces and inputs.",
+                        type);
                 }
 
                 return false;
@@ -276,7 +278,8 @@ namespace GraphQL.AspNet.Internal
                     throw new GraphTypeDeclarationException(
                         $"The type '{type.FriendlyName()}' appears to be a {typeof(IDictionary).FriendlyName()}. Objects " +
                         "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
-                        "available graph type.");
+                        "available graph type.",
+                        type);
                 }
 
                 return false;
@@ -291,7 +294,8 @@ namespace GraphQL.AspNet.Internal
                         throw new GraphTypeDeclarationException(
                             $"The type '{type.FriendlyName()}' appears to be a {typeof(IDictionary<,>).FriendlyName()}. Objects " +
                             "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
-                            "available graph type.");
+                            "available graph type.",
+                            type);
                     }
 
                     return false;
@@ -304,7 +308,8 @@ namespace GraphQL.AspNet.Internal
                         throw new GraphTypeDeclarationException(
                             $"The type '{type.FriendlyName()}' appears to be a {typeof(IReadOnlyDictionary<,>).FriendlyName()}. Objects " +
                             "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
-                            "available graph type.");
+                            "available graph type.",
+                            type);
                     }
 
                     return false;

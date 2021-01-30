@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             if (rejectionReason != null)
             {
-                throw new GraphTypeDeclarationException(rejectionReason);
+                throw new GraphTypeDeclarationException(rejectionReason, this.ObjectType);
             }
 
             this.ObjectType = objectType;
@@ -228,7 +228,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 throw new GraphTypeDeclarationException(
                     $"The type '{this.ObjectType.FriendlyName()}' defines multiple children with the same " +
                     $"global path key ({string.Join(",", _duplicateNames.Select(x => $"'{x}'"))}). All method and property paths must be unique in the " +
-                    "object graph.");
+                    "object graph.",
+                    this.ObjectType);
             }
 
             if (_invalidFields != null && _invalidFields.Count > 0)
@@ -238,8 +239,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"Invalid field declarations.  The type '{this.InternalFullName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
                     $"only declare the following graph collections: '{string.Join(", ", this.AllowedGraphCollectionTypes.Select(x => x.ToString()))}'. " +
                     $"If this field is declared on an object (not a controller) be sure to use '{nameof(GraphFieldAttribute)}' instead " +
-                    $"of '{nameof(QueryAttribute)}' or '{nameof(MutationAttribute)}'.\n---------\n" +
-                    fieldNames);
+                    $"of '{nameof(QueryAttribute)}' or '{nameof(MutationAttribute)}'.\n---------\n " + fieldNames,
+                    this.ObjectType);
             }
 
             foreach (var field in this.FieldTemplates.Values)
