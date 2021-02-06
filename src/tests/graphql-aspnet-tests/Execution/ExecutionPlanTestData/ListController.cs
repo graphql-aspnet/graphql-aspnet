@@ -29,5 +29,15 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
                 ListControllerTestEnum.TestValue2,
             };
         }
+
+        [QueryRoot]
+        public IEnumerable<ListControllerTestEnum> CreateEnumListWithInValidValue()
+        {
+            return new List<ListControllerTestEnum>()
+            {
+                ListControllerTestEnum.TestValue1,
+                (ListControllerTestEnum)(-3),
+            };
+        }
     }
 }

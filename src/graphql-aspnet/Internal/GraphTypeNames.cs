@@ -71,7 +71,8 @@ namespace GraphQL.AspNet.Internal
             {
                 throw new GraphTypeDeclarationException(
                     $"The type, '{type.FriendlyName()}', declares an invalid graph type name, '{graphTypeName}'. Graph type names " +
-                    "can only contain letters A-Z, numbers 0-9 and an underscore. They must also not start with a double underscore.");
+                    "can only contain letters A-Z, numbers 0-9 and an underscore. They must also not start with a double underscore.",
+                    type);
             }
 
             var typeNameDictionary = RetrieveTypeDictionary(type);
@@ -113,7 +114,8 @@ namespace GraphQL.AspNet.Internal
                         throw new GraphTypeDeclarationException(
                             $"Generic Types such as '{type.FriendlyName()}', cannot use the '{nameof(GraphTypeAttribute)}'. " +
                             "Doing so would result in a single common name across multiple different instances of the type. " +
-                            "Remove the attribute and try again, the runtime will generate an acceptable name automatically.");
+                            "Remove the attribute and try again, the runtime will generate an acceptable name automatically.",
+                            type);
                     }
 
                     typeName = inputNameAttrib.InputName;
@@ -134,7 +136,8 @@ namespace GraphQL.AspNet.Internal
                         throw new GraphTypeDeclarationException(
                             $"Generic Types such as '{type.FriendlyName()}', cannot use the '{nameof(GraphTypeAttribute)}'. " +
                             "Doing so would result in a single common name across multiple different instances of the type. " +
-                            "Remove the declared attribute and try again.");
+                            "Remove the declared attribute and try again.",
+                            type);
                     }
 
                     typeName = graphTypeNameAttrib.Name;
