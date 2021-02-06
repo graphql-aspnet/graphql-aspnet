@@ -25,5 +25,23 @@ namespace GraphQL.AspNet.Execution.Exceptions
             : base(message)
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphTypeDeclarationException" /> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="failedType">The .net type that failed conversion to a
+        /// graph type.</param>
+        public GraphTypeDeclarationException(string message, Type failedType)
+            : base(message)
+        {
+            this.FailedGraphType = failedType;
+        }
+
+        /// <summary>
+        /// Gets the type that was being evaluated for conversion to a Graph Type.
+        /// </summary>
+        /// <value>The type of the failed graph.</value>
+        public Type FailedGraphType { get; }
     }
 }

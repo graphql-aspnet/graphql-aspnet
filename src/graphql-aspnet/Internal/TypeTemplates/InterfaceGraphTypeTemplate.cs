@@ -34,7 +34,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (!interfaceType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The type '{interfaceType.FriendlyName()}' is not an interface and cannot be parsed as an interface graph type.");
+                    $"The type '{interfaceType.FriendlyName()}' is not an interface and cannot be parsed as an interface graph type.",
+                    interfaceType);
             }
         }
 

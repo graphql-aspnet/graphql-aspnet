@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Extensions
     using NUnit.Framework;
 
     [TestFixture]
-    public class EnumExtensionTestes
+    public class EnumExtensionTests
     {
         [Flags]
         public enum EnumExtensionTestObject
@@ -30,6 +30,46 @@ namespace GraphQL.AspNet.Tests.Extensions
         public enum SingleZeroValueEnumExtensionTestObject
         {
             None = 0,
+        }
+
+        public enum EnumSByte : sbyte
+        {
+            Value1 = (sbyte)1,
+        }
+
+        public enum EnumByte : byte
+        {
+            Value1 = (byte)1,
+        }
+
+        public enum EnumShort : short
+        {
+            Value1 = (short)1,
+        }
+
+        public enum EnumUShort : ushort
+        {
+            Value1 = (ushort)1,
+        }
+
+        public enum EnumInt : int
+        {
+            Value1 = 1,
+        }
+
+        public enum EnumUint : uint
+        {
+            Value1 = 1U,
+        }
+
+        public enum EnumLong : long
+        {
+            Value1 = 1L,
+        }
+
+        public enum EnumUlong : ulong
+        {
+            Value1 = 1UL,
         }
 
         [Test]
@@ -75,6 +115,37 @@ namespace GraphQL.AspNet.Tests.Extensions
             Assert.IsTrue(flags.Any(x => x == EnumExtensionTestObject.Value2));
             Assert.IsTrue(flags.Any(x => x == EnumExtensionTestObject.Value3));
             Assert.IsFalse(flags.Any(x => x == EnumExtensionTestObject.Value4));
+        }
+
+        [TestCase(typeof(EnumSByte), typeof(sbyte), false)]
+        [TestCase(typeof(EnumByte), typeof(byte), true)]
+        [TestCase(typeof(EnumShort), typeof(short), false)]
+        [TestCase(typeof(EnumUShort), typeof(ushort), true)]
+        [TestCase(typeof(EnumInt), typeof(int), false)]
+        [TestCase(typeof(EnumUint), typeof(uint), true)]
+        [TestCase(typeof(EnumLong), typeof(long), false)]
+        [TestCase(typeof(EnumUlong), typeof(ulong), true)]
+        public void Enum_IsEnumOfUnsignedNumericType_ReturnsCorrectFlag(
+            Type enumType,
+            Type expectedUnderlyingType,
+            bool expectedUnSigned)
+        {
+            // pre check to ensure no compiler funny business
+            // or type switching
+            var underlyingType = Enum.GetUnderlyingType(enumType);
+            Assert.AreEqual(expectedUnderlyingType, underlyingType);
+
+            var isUnSigned = enumType.IsEnumOfUnsignedNumericType();
+            Assert.AreEqual(expectedUnSigned, isUnSigned);
+        }
+
+        [Test]
+        public void Enum_IsEnumOfUnsignedNumericType_NonEnumThrowsException()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                typeof(EnumExtensionTests).IsEnumOfUnsignedNumericType();
+            });
         }
     }
 }

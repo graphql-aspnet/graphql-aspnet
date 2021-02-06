@@ -35,7 +35,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"The type '{objectType.FriendlyName()}' is not a class and " +
-                    $"cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type.");
+                    $"cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type.",
+                    objectType);
             }
         }
 

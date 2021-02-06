@@ -13,6 +13,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Text;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -31,6 +33,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     public class EnumGraphTypeTemplate : BaseGraphTypeTemplate, IEnumGraphTypeTemplate
     {
         private readonly List<GraphEnumOption> _values;
+        private Dictionary<string, IList<string>> _valuesTolabels;
         private string _name;
 
         /// <summary>
@@ -44,6 +47,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.ObjectType = enumType;
 
             _values = new List<GraphEnumOption>();
+            _valuesTolabels = new Dictionary<string, IList<string>>();
         }
 
         /// <summary>
@@ -59,9 +63,51 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Route = this.GenerateFieldPath();
 
             // parse the enum values for later injection
-            foreach (var value in Enum.GetValues(this.ObjectType))
+            var labels = Enum.GetNames(this.ObjectType);
+            var typeIsUnsigned = this.ObjectType.IsEnumOfUnsignedNumericType();
+            foreach (var label in labels)
             {
-                var fi = this.ObjectType.GetField(value.ToString());
+                var fi = this.ObjectType.GetField(label);
+
+                var value = fi.GetValue(null);
+
+                // we must have unique labels to values
+                // (no enums with duplicate values)
+                // to prevent potential ambiguity in down stream
+                // requests
+                //
+                // for instance, if an enum existed such that:
+                // enum SomeEnum
+                // {
+                //    Value1 = 1,
+                //    Value2 = 1,
+                // }
+                //
+                // then the operation
+                // var enumValue = (SomeEnum)1;
+                //
+                // is indeterminate as to which is the appropriate
+                // label to apply to the value for conversion
+                // into the coorisponding enum graph type
+                // and ultimately serialization
+                // to a requestor
+                string numericAsString;
+                if (typeIsUnsigned)
+                {
+                    numericAsString = Convert.ToUInt64(value).ToString();
+                }
+                else
+                {
+                    numericAsString = Convert.ToInt64(value).ToString();
+                }
+
+                if (!_valuesTolabels.ContainsKey(numericAsString))
+                    _valuesTolabels.Add(numericAsString, new List<string>());
+
+                _valuesTolabels[numericAsString].Add(label);
+                if (_valuesTolabels[numericAsString].Count != 1)
+                    continue;
+
                 if (fi.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
                     continue;
 
@@ -71,7 +117,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 var valueName = enumAttrib?.Name?.Trim() ?? Constants.Routing.ENUM_VALUE_META_NAME;
                 if (valueName.Length == 0)
                     valueName = Constants.Routing.ENUM_VALUE_META_NAME;
-                valueName = valueName.Replace(Constants.Routing.ENUM_VALUE_META_NAME, value.ToString());
+
+                valueName = valueName.Replace(Constants.Routing.ENUM_VALUE_META_NAME, label);
 
                 var deprecated = fi.SingleAttributeOrDefault<DeprecatedAttribute>();
                 _values.Add(new GraphEnumOption(this.ObjectType, valueName, description, enumAttrib != null, deprecated != null, deprecated?.Reason));
@@ -91,11 +138,33 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"Invalid Enumeration. The type '{this.ObjectType.FriendlyName()}' is not an enumeration and cannot " +
-                    "be coerced to be one.");
+                    "be coerced to be one.",
+                    this.ObjectType);
+            }
+
+            var duplicatedValues = _valuesTolabels.Where(x => x.Value.Count > 1).ToList();
+            if (duplicatedValues.Count > 0)
+            {
+                var builder = new StringBuilder();
+                for (var i = 0; i < duplicatedValues.Count; i++)
+                {
+                    var dupKVP = duplicatedValues[i];
+                    builder.Append($"{{{string.Join(", ", dupKVP.Value)}}} == {dupKVP.Key}");
+                    if (i < duplicatedValues.Count - 1)
+                        builder.Append(" || ");
+                }
+
+                var msg = $"Invalid Enumeration. The type '{this.ObjectType.FriendlyName()}' is indeterminate and cannot " +
+                    "be used as a graph type. Ensure all enum labels have unique values.  " +
+                    $"({builder})";
+
+                throw new GraphTypeDeclarationException(msg, this.ObjectType);
             }
 
             foreach (var option in this.Values)
                 option.ValidateOrThrow();
+
+            _valuesTolabels = null;
         }
 
         /// <summary>

@@ -435,5 +435,23 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task ListOfEnums_WithAnUnlabeledValue_Fails()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ListController>()
+                    .Build();
+
+            // controller returns a list of {Value1, -3}
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { createEnumListWithInValidValue }");
+
+            // ensure hte -3 wasnt accepted as valid for the enum being
+            // returned
+            var result = await server.ExecuteQuery(builder);
+            Assert.IsFalse(result.Messages.IsSucessful);
+            Assert.AreEqual(1, result.Messages.Count);
+        }
     }
 }
