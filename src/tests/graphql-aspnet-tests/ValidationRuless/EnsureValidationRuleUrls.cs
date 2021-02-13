@@ -81,7 +81,6 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
                     // for instance 5.2.3.1.1 can have the same
                     // url as 5.2.3.1 because not all sub rules are
                     // defined as their own sections
-
                     var list = kvp.Value
                         .OrderBy(x => x)
                         .ToList();
