@@ -46,9 +46,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
         public override string RuleNumber => "5.5.2.1";
 
         /// <summary>
-        /// Gets the reference URL.
+        /// Gets an anchor tag, pointing to a specific location on the webpage identified
+        /// as the specification supported by this library. If ReferenceUrl is overriden
+        /// this value is ignored.
         /// </summary>
-        /// <value>The reference URL.</value>
-        public override string ReferenceUrl => "https://graphql.github.io/graphql-spec/June2018/#sec-Fragment-spread-target-defined";
+        /// <value>The rule anchor tag.</value>
+        protected override string RuleAnchorTag => "#sec-Fragment-spread-target-defined";
     }
 }

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-validationrule-extractor", "graphql-aspnet-validationrule-extractor\graphql-aspnet-validationrule-extractor.csproj", "{F70683CE-4E69-4439-B42A-4256166AE103}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet", "..\..\graphql-aspnet\graphql-aspnet.csproj", "{C2C3E65E-140C-46A7-98D9-5D6E14B03A68}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-subscriptions", "..\..\graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj", "{015C1622-F249-4301-994E-F86FDECB978C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F70683CE-4E69-4439-B42A-4256166AE103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F70683CE-4E69-4439-B42A-4256166AE103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F70683CE-4E69-4439-B42A-4256166AE103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F70683CE-4E69-4439-B42A-4256166AE103}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2C3E65E-140C-46A7-98D9-5D6E14B03A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2C3E65E-140C-46A7-98D9-5D6E14B03A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2C3E65E-140C-46A7-98D9-5D6E14B03A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2C3E65E-140C-46A7-98D9-5D6E14B03A68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{015C1622-F249-4301-994E-F86FDECB978C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{015C1622-F249-4301-994E-F86FDECB978C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{015C1622-F249-4301-994E-F86FDECB978C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{015C1622-F249-4301-994E-F86FDECB978C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {386C89AC-0D57-4C40-A5C2-703076A147DC}
+	EndGlobalSection
+EndGlobal
