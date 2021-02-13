@@ -462,5 +462,12 @@ namespace GraphQL.AspNet
             /// </summary>
             public const string FIELD_AUTHORIZATION_PIPELINE = "Field Authorization Pipeline";
         }
+
+        /// <summary>
+        /// Gets a URL pointing to the page of the graphql specification this library
+        /// targets. This value is used as a base url for most validation rules to generate
+        /// a link pointing to a violated rule.
+        /// </summary>
+        public const string SPECIFICATION_URL = "http://spec.graphql.org/June2018/";
     }
 }

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common
 {
     using System;
+    using System.Text;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.ValidationRules.Interfaces;
@@ -53,9 +54,17 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common
         public abstract string RuleNumber { get; }
 
         /// <summary>
+        /// Gets an anchor tag, pointing to a specific location on the webpage identified
+        /// as the specification supported by this library. If <see cref="ReferenceUrl"/> is overriden
+        /// this value is ignored.
+        /// </summary>
+        /// <value>The rule anchor tag.</value>
+        protected abstract string RuleAnchorTag { get; }
+
+        /// <summary>
         /// Gets a url pointing to the rule definition in the graphql specification, if any.
         /// </summary>
         /// <value>The rule URL.</value>
-        public abstract string ReferenceUrl { get; }
+        public virtual string ReferenceUrl => ReferenceRule.Create(this.RuleAnchorTag);
     }
 }

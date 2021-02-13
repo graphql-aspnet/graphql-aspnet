@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>GraphQL.AspNet.Utility.ValidationRuleExtractor</RootNamespace>
+    <AssemblyName>GraphQL.AspNet.Utility.ValidationRuleExtractor</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj" />
+    <ProjectReference Include="..\..\..\graphql-aspnet\graphql-aspnet.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Configuration
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// Startup configuration settings to setup a schema.
+    /// A complete set of configuration options to setup a schema.
     /// </summary>
     public class SchemaOptions
     {
