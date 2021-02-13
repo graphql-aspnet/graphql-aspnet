@@ -35,11 +35,10 @@ namespace GraphQL.AspNet.Execution
 
         /// <summary>
         /// Initializes the schema:
-        /// * Add any controllers to the schema instance that were configured during startup.
-        /// * add all methods, virtual graph types, return types parameters and property configuration.
-        /// * Add any additional types added at startup.
-        /// * Register introspection meta-fields.
-        /// * Compile and instantiate the resolution pipeline.
+        /// <para>* Add any controllers to the schema instance that were configured during startup.</para>
+        /// <para>* Add all methods, virtual graph types, return types parameters and property configurations.</para>
+        /// <para>* Add any additional types added at startup.</para>
+        /// <para>* Register introspection meta-fields.</para>
         /// </summary>
         /// <param name="schema">The schema to initialize.</param>
         public virtual void Initialize(ISchema schema)
