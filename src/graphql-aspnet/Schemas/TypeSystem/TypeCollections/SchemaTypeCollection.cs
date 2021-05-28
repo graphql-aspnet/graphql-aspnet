@@ -207,6 +207,27 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         }
 
         /// <summary>
+        /// Finds the concrete types related to the supplied graph types. returns an empty list if no types are found.
+        /// </summary>
+        /// <param name="graphTypes">The graph types to search against.</param>
+        /// <returns>A collection of conrete types valid for the given graph types.</returns>
+        public IEnumerable<Type> FindConcreteTypes(params IGraphType[] graphTypes)
+        {
+            var list = new List<Type>();
+            foreach (var graphType in graphTypes)
+            {
+                foreach (var egt in this.ExpandAbstractType(graphType))
+                {
+                    var type = this.FindConcreteType(egt);
+                    if (type != null)
+                        list.Add(type);
+                }
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// Attempts to find a single directive within this schema by its name. Returns null
         /// if the directive is not found.
         /// </summary>

@@ -92,23 +92,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
             // type for the graphtype of the field being checked
 
             // first find all the allowed concrete types
-            IEnumerable<Type> allowedSourceTypes;
-            if (expectedGraphType is IUnionGraphType ugt)
-            {
-                allowedSourceTypes = ugt.PossibleConcreteTypes;
-            }
-            else if (expectedGraphType is IInterfaceGraphType igt)
-            {
-                allowedSourceTypes = context.Schema.KnownTypes
-                    .FindGraphTypesByInterface(igt)
-                    .Select(x => context.Schema.KnownTypes.FindConcreteType(x))
-                    .Where(x => x != null);
-            }
-            else
-            {
-                allowedSourceTypes = context.Schema.KnownTypes.FindConcreteType(expectedGraphType)?.AsEnumerable();
-            }
-
+            IEnumerable<Type> allowedSourceTypes = context.Schema.KnownTypes.FindConcreteTypes(expectedGraphType);
             allowedSourceTypes ??= Enumerable.Empty<Type>();
 
             // check the actual type of the reslt data against the allowed types

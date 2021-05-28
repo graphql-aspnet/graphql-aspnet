@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Fields;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A middleware component that, when a result exists on the context, invokes the next set
@@ -90,15 +91,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             if (allSourceItems.Count == 0)
                 return;
 
-
-            var pipelines = new List<Task>();
-
-
-            // extract a list of all possible .NET types that could (or should) have been returned from the parent field
-            // usually this is just one, but in the case of an INTERFACE or a UNION graph type there can be multiple
+            // find a reference to the graph type for the field
             var graphType = _schema.KnownTypes.FindGraphType(context.Field.TypeExpression.TypeName);
 
-            // theoretically can't not be found, but you never know
+            // theoretically it can't not be found, but you never know
             if (graphType == null)
             {
                 var msg = $"Internal Server Error. When processing the results of '{context.Field.Route.Path}' no graph type on the target schema " +
@@ -115,12 +111,16 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 return;
             }
 
-            // map each source item to a valid type for the field from which it was returned
-
+            var pipelines = new List<Task>();
 
             // create a lookup of source items by result type for easy seperation to the individual
             // downstream child contexts
-            var sourceItemLookup = allSourceItems.ToLookup(x => x.ResultData.GetType());
+            var mapResult = this.MapExpectedConcreteTypeFromSourceItem(allSourceItems, graphType);
+            if (mapResult.ShouldCancelContext)
+            {
+                context.Cancel();
+                return;
+            }
 
             foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
             {
@@ -138,10 +138,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     // this can happen quite often in the case of a union or an interface where multiple invocation contexts
                     // are added to a plan for the same child field in case a parent returns a member of the union or an
                     // implementer of the interface
-                    if (!sourceItemLookup.Contains(childInvocationContext.ExpectedSourceType))
+                    if (!mapResult.SourceItemlookup.ContainsKey(childInvocationContext.ExpectedSourceType))
                         continue;
 
-                    sourceItemsToInclude = sourceItemLookup[childInvocationContext.ExpectedSourceType];
+                    sourceItemsToInclude = mapResult.SourceItemlookup[childInvocationContext.ExpectedSourceType];
                 }
 
                 // Step 1B
@@ -195,6 +195,71 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     await task.ConfigureAwait(false);
                 }
             }
+        }
+
+        private (IDictionary<Type, List<GraphDataItem>> SourceItemlookup, bool ShouldCancelContext) MapExpectedConcreteTypeFromSourceItem(List<GraphDataItem> allSourceItems, IGraphType expectedGraphType)
+        {
+            var dic = new Dictionary<Type, List<GraphDataItem>>();
+
+            switch (expectedGraphType.Kind)
+            {
+                case TypeKind.NONE:
+                case TypeKind.SCALAR:
+                case TypeKind.ENUM:
+                case TypeKind.INPUT_OBJECT:
+                    foreach (var item in allSourceItems)
+                    {
+                        if (!dic.ContainsKey(item.GetType()))
+                            dic.Add(item.GetType(), new List<GraphDataItem>());
+
+                        dic[item.GetType()].Add(item);
+                    }
+
+                    return (dic, false);
+            }
+
+            bool shouldCancel = false;
+            var allowedConcreteTypes = new HashSet<Type>(_schema.KnownTypes.FindConcreteTypes(expectedGraphType));
+            for (var i = 0; i < allSourceItems.Count; i++)
+            {
+                var dataItem = allSourceItems[i];
+                var dataResult = dataItem.ResultData;
+                if (dataResult == null)
+                    continue;
+
+                var dataResultType = dataResult.GetType();
+                List<Type> potentialTypes = new List<Type>();
+                if (allowedConcreteTypes.Contains(dataResultType))
+                {
+                    potentialTypes.Add(dataResultType);
+                }
+                else
+                {
+                    foreach (var allowedType in allowedConcreteTypes)
+                    {
+                        if (Validation.IsCastable(dataResultType, allowedType))
+                            potentialTypes.Add(allowedType);
+                    }
+                }
+
+                if (potentialTypes.Count == 0)
+                {
+                    shouldCancel = true;
+                    continue;
+                }
+                else if (potentialTypes.Count > 1)
+                {
+                    shouldCancel = true;
+                    continue;
+                }
+
+                if (!dic.ContainsKey(potentialTypes[0]))
+                    dic.Add(potentialTypes[0], new List<GraphDataItem>());
+
+                dic[potentialTypes[0]].Add(dataItem);
+            }
+
+            return (dic, shouldCancel);
         }
 
         /// <summary>

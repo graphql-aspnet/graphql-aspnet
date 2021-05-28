@@ -78,11 +78,20 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IGraphType FindGraphType(object data);
 
         /// <summary>
-        /// Finds the concretes type related to the supplied graph type. returns null if no types are found.
+        /// Finds the concrete type related to the supplied graph type (OBJECT, INPUT_OBJECT, SCALAR). returns null if no type is found.
+        /// Returns null if the type represents an abstract graph type such as an INTERFACE or UNION. Use <see cref="FindConcreteTypes(IGraphType[])"/>
+        /// for multi-targeted graph types.
         /// </summary>
-        /// <param name="graphType">Type of the graph.</param>
+        /// <param name="graphType">The graph type to search against.</param>
         /// <returns>Type.</returns>
         Type FindConcreteType(IGraphType graphType);
+
+        /// <summary>
+        /// Finds the concrete types related to the supplied graph types. returns an empty list if no types are found.
+        /// </summary>
+        /// <param name="graphTypes">The graph types to search against.</param>
+        /// <returns>A collection of conrete types valid for the given graph types.</returns>
+        IEnumerable<Type> FindConcreteTypes(params IGraphType[] graphTypes);
 
         /// <summary>
         /// Attempts to find a single directive within this schema by its name. Returns null

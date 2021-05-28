@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
 
-    public class PersonData
+    public class PersonData : IPersonData
     {
         [GraphField]
         public string FirstName { get; set; }

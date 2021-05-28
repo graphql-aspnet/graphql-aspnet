@@ -32,6 +32,16 @@ namespace GraphQL.AspNet.Internal
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GraphUnionProxy"/> class.
+        /// </summary>
+        /// <param name="unionName">Name of the union.</param>
+        /// <param name="typesToInclude">The types to include.</param>
+        public GraphUnionProxy(string unionName, params Type[] typesToInclude)
+            : this(unionName, typesToInclude as IEnumerable<Type>)
+        {
+        }
+
+        /// <summary>
         /// Gets the name of the union. This name will be subjected to schema configuration rules
         /// and will be altered accordingly when assigned to a schema.
         /// </summary>
