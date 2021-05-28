@@ -9,11 +9,15 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletion
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Schemas;
@@ -24,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
     /// A rule that inspects a completed result to ensure it conforms to the field's type expression
     /// requirements for general existence.
     /// </summary>
-    internal class Rule_6_4_3_ValueCompletion : FieldResolutionRuleStep
+    internal class Rule_6_4_3_SchemaValueCompletion : FieldResolutionRuleStep
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the TContext
@@ -46,26 +50,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
         {
             var dataObject = context.ResultData;
 
-            // did they forget to await a task and accidentally returned Task<T> from their resolver?
-            // put in a special error message fro better feed back
-            if (dataObject is Task)
-            {
-                this.ValidationError(
-                    context,
-                    $"A field resolver for '{context.FieldPath}' yielded an invalid data object. See exception " +
-                    "for details. ",
-                    new GraphExecutionException(
-                        $"The field '{context.FieldPath}' yielded a {nameof(Task)} as its result but expected a value. " +
-                        "Did you forget to await an async method?"));
-
-                context.DataItem.InvalidateResult();
-                return true;
-            }
-
+            // 6.4.3 section 1c
+            // This is a quick short cut and customed error message for a common top-level null mismatch.
             var dataItemTypeExpression = context.DataItem.TypeExpression;
             if (dataItemTypeExpression.IsRequired && dataObject == null)
             {
-                // 6.4.3 section 1c
                 this.ValidationError(
                 context,
                 $"Field '{context.FieldPath}' expected a non-null result but received {{null}}.");
@@ -101,46 +90,22 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
                 return true;
             }
 
-            var rootSourceType = GraphValidation.EliminateWrappersFromCoreType(dataObject.GetType());
-            var sourceTypeMatches = true;
-
-            // virtual graph types aren't real, they have no real concrete type
-            // and can be safely skipped
-            if (!expectedGraphType.IsVirtual)
-            {
-                // Check that the actual .NET type of the result data IS (or can be cast to) the expected .NET
-                // type for the graphtype of the field being checked
-                var expectedSourceType = context.Schema.KnownTypes.FindConcreteType(expectedGraphType);
-                sourceTypeMatches = Validation.IsCastable(rootSourceType, expectedSourceType);
-                if (!sourceTypeMatches)
-                {
-                    this.ValidationError(
-                        context,
-                        $"A field resolver for '{context.Field.Route.Path}' generated a result " +
-                        "object type not known to the target schema. See exception for " +
-                        "details",
-                        new GraphExecutionException(
-                            $"The class '{rootSourceType.FriendlyName()}' does not inherit from '{expectedSourceType.FriendlyName()}' " +
-                            $"as expected by the target schema. It cannot be used to resolve the field '{context.Field.Route.Path}'."));
-
-                    context.DataItem.InvalidateResult();
-                }
-            }
-
             // Perform a deep check of the meta-type chain (list and nullability wrappers) against the result data.
             // For example, if the type expression is [[SomeType]] ensure the result object is List<List<T>> etc.)
             // however, use the type name of the actual data object, not the graph type itself
             // we only want to check the type expression wrappers in this step
+            var rootSourceType = GraphValidation.EliminateWrappersFromCoreType(dataObject.GetType());
             var mangledTypeExpression = dataItemTypeExpression.CloneTo(rootSourceType.Name);
+
             if (!mangledTypeExpression.Matches(dataObject))
             {
                 // generate a valid, properly cased type expression reference for the data that was provided
                 var actualExpression = GraphValidation.GenerateTypeExpression(context.ResultData.GetType());
 
-                // if the .NET Type check was considered valid, don't pass a wrong type name down
-                // on the error messages, use the correct type of the field. (i.e. use 'Donut' not 'DonutProxy')
-                if (sourceTypeMatches)
-                    actualExpression = actualExpression.CloneTo(expectedGraphType.Name);
+                // Fake the type expression against the real graph type
+                // this step only validates the meta graph types the actual type may be different (but castable to the concrete
+                // type of the graphType). Don't confuse the user in this step.
+                actualExpression = actualExpression.CloneTo(expectedGraphType.Name);
 
                 // 6.4.3  section 4 & 5
                 this.ValidationError(

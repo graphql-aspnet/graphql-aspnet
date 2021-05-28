@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
         public override bool ValidateObject(object item)
         {
-            return item == null || item.GetType() == this.ObjectType;
+            return item == null || Validation.IsCastable(item.GetType(), this.ObjectType);
         }
 
         /// <summary>

@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IGraphType FindGraphType(object data);
 
         /// <summary>
-        /// Finds the concrete type related to the supplied graph type. returns null if no types are found.
+        /// Finds the concretes type related to the supplied graph type. returns null if no types are found.
         /// </summary>
         /// <param name="graphType">Type of the graph.</param>
         /// <returns>Type.</returns>

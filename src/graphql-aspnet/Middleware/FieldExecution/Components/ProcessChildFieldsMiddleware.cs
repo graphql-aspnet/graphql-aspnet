@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.Introspection.Fields;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -34,6 +35,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
+        private readonly TSchema _schema;
         private readonly bool _awaitEachPipeline;
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <param name="fieldExecutionPipeline">The field execution pipeline.</param>
         public ProcessChildFieldsMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
-            Validation.ThrowIfNull(schema, nameof(schema));
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _awaitEachPipeline = schema.Configuration.ExecutionOptions.AwaitEachRequestedField;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
@@ -75,19 +77,46 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             if (context.InvocationContext.ChildContexts.Count == 0)
                 return;
 
-            var pipelines = new List<Task>();
-
             // items resolved on this active context become the source for any downstream fields
             //  ---
             // can never extract child fields from a null value (even if its valid for the item)
             // or one that isnt read for it
-            IEnumerable<GraphDataItem> allSourceItems = context
+            List<GraphDataItem> allSourceItems = context
                 .ResolvedSourceItems
                 .SelectMany(x => x.FlattenListItemTree())
-                .Where(x => x.ResultData != null && x.Status == FieldItemResolutionStatus.NeedsChildResolution);
+                .Where(x => x.ResultData != null && x.Status == FieldItemResolutionStatus.NeedsChildResolution)
+                .ToList();
 
-            if (!allSourceItems.Any())
+            if (allSourceItems.Count == 0)
                 return;
+
+
+            var pipelines = new List<Task>();
+
+
+            // extract a list of all possible .NET types that could (or should) have been returned from the parent field
+            // usually this is just one, but in the case of an INTERFACE or a UNION graph type there can be multiple
+            var graphType = _schema.KnownTypes.FindGraphType(context.Field.TypeExpression.TypeName);
+
+            // theoretically can't not be found, but you never know
+            if (graphType == null)
+            {
+                var msg = $"Internal Server Error. When processing the results of '{context.Field.Route.Path}' no graph type on the target schema " +
+                    $"could be found for the type name '{context.Field.TypeExpression.TypeName}'. " +
+                    $"Unable to process the {allSourceItems.Count} item(s) generated.";
+
+                context.Messages.Add(
+                    GraphMessageSeverity.Critical,
+                    Constants.ErrorCodes.EXECUTION_ERROR,
+                    msg,
+                    context.Request.Origin);
+
+                context.Cancel();
+                return;
+            }
+
+            // map each source item to a valid type for the field from which it was returned
+
 
             // create a lookup of source items by result type for easy seperation to the individual
             // downstream child contexts
