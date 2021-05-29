@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
     /// <summary>
     /// An managed collection of all the known types the schema can process.
@@ -78,9 +79,9 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IGraphType FindGraphType(object data);
 
         /// <summary>
-        /// Finds the concrete type related to the supplied graph type (OBJECT, INPUT_OBJECT, SCALAR). returns null if no type is found.
-        /// Returns null if the type represents an abstract graph type such as an INTERFACE or UNION. Use <see cref="FindConcreteTypes(IGraphType[])"/>
-        /// for multi-targeted graph types.
+        /// Finds the single, known concrete type related to the supplied graph type (OBJECT, INPUT_OBJECT, SCALAR). Returns null if no type is found.
+        /// Also, returns null if the type represents an abstract graph type such as an INTERFACE or UNION that may be mapped to more than one concrete type.
+        /// Use <see cref="FindConcreteTypes(IGraphType[])"/> for multi-targeted graph types.
         /// </summary>
         /// <param name="graphType">The graph type to search against.</param>
         /// <returns>Type.</returns>
@@ -92,6 +93,16 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <param name="graphTypes">The graph types to search against.</param>
         /// <returns>A collection of conrete types valid for the given graph types.</returns>
         IEnumerable<Type> FindConcreteTypes(params IGraphType[] graphTypes);
+
+        /// <summary>
+        /// Finds all known concrete <see cref="Type"/> for the given <paramref name="targetGraphType"/> that
+        /// that <paramref name="typeToCheck"/> could masquerade as for the <paramref name="targetGraphType"/>.
+        /// In most cases this will be one <see cref="Type"/> but could be more in the case of abstact types such as <see cref="TypeKind.UNION"/> or <see cref="TypeKind.INTERFACE"/>.
+        /// </summary>
+        /// <param name="targetGraphType">The graph type to which <paramref name="typeToCheck"/> was supplied for.</param>
+        /// <param name="typeToCheck">The type wishing to be used as the <paramref name="targetGraphType"/>.</param>
+        /// <returns>IEnumerable&lt;Type&gt;.</returns>
+        SchemaConcreteTypeMapResult MapConcreteType(IGraphType targetGraphType, Type typeToCheck);
 
         /// <summary>
         /// Attempts to find a single directive within this schema by its name. Returns null
