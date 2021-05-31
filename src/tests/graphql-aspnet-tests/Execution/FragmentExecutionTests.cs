@@ -147,6 +147,10 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphType<FragmentProcessingController>()
                     .AddGraphType<IFragmentDataItem>()
+                    .AddSchemaBuilderAction(o =>
+                    {
+                        o.Options.ResponseOptions.ExposeExceptions = true;
+                    })
                     .Build();
 
             var builder = server.CreateQueryContextBuilder();

@@ -95,11 +95,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
 
             if (!analysisResult.ExactMatchFound)
             {
-                string allowedTypeNames;
+                string foundTypeNames;
                 if (!analysisResult.FoundTypes.Any())
-                    allowedTypeNames = "~none~";
+                    foundTypeNames = "~none~";
                 else
-                    allowedTypeNames = string.Join(", ", analysisResult.FoundTypes.Select(x => x.FriendlyName()));
+                    foundTypeNames = string.Join(", ", analysisResult.FoundTypes.Select(x => x.FriendlyName()));
 
                 this.ValidationError(
                     context,
@@ -107,8 +107,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
                     "object type not known to the target schema. See exception for " +
                     "details",
                     new GraphExecutionException(
-                        $"The class '{rootSourceType.FriendlyName()}' does not inherit from one of '{allowedTypeNames}' " +
-                        $"as expected by the target graph type '{expectedGraphType.Name}' and cannot be used to resolve the field '{context.Field.Route.Path}'."));
+                        $"For target field of '{context.FieldPath}' (Graph Type: {expectedGraphType.Name}, Kind: {expectedGraphType.Kind}), a supplied object " +
+                        $"of class '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to determine which " +
+                        $"of the matched concrete types to use and cannot resolve the field. Matched Types: [{foundTypeNames}]"));
 
                 context.DataItem.InvalidateResult();
             }

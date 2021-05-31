@@ -59,11 +59,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             if (context.InvocationContext.ExpectedSourceType != null)
             {
                 var expectedType = context.InvocationContext.ExpectedSourceType;
-                if (expectedType != dataSource.Value.GetType())
+                var sourceType = GraphValidation.EliminateWrappersFromCoreType(dataSource.Value.GetType());
+                if (expectedType != sourceType)
                 {
-                    var strippedType = GraphValidation.EliminateWrappersFromCoreType(dataSource.Value.GetType());
-                    var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, strippedType);
 
+                    var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, sourceType);
                     if (!analysis.ExactMatchFound)
                     {
                         throw new GraphExecutionException(
