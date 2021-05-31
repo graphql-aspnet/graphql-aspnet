@@ -1008,10 +1008,6 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var serverBuilder = new TestServerBuilder();
             var server = serverBuilder.AddGraphType<IntrospectableEnum>()
-                .AddSchemaBuilderAction(o => {
-                    o.Options.ResponseOptions.ExposeExceptions = true;
-                    })
-
                 .Build();
             var builder = server.CreateQueryContextBuilder();
 

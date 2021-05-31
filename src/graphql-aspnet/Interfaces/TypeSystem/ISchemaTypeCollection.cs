@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Executes an analysis operation to attempt to find all known concrete <see cref="Type"/>
         /// for the given <paramref name="targetGraphType"/> that <paramref name="typeToCheck"/>
         /// could masquerade as for the <paramref name="targetGraphType"/>.
-        /// In most cases this will be one system <see cref="Type"/> but could be more in the case of abstact types 
+        /// In most cases this will be one system <see cref="Type"/> but could be more in the case of abstact types
         /// such as <see cref="TypeKind.UNION"/> or <see cref="TypeKind.INTERFACE"/>.
         /// </summary>
         /// <param name="targetGraphType">The graph type to which <paramref name="typeToCheck"/> was supplied for.</param>

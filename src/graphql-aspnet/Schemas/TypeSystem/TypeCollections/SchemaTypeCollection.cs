@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             return justAdded;
         }
 
-        //// <inheritdoc />
+        /// <inheritdoc />
         public IEnumerable<IObjectGraphType> ExpandAbstractType(IGraphType graphType)
         {
             switch (graphType)

@@ -62,7 +62,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 var sourceType = GraphValidation.EliminateWrappersFromCoreType(dataSource.Value.GetType());
                 if (expectedType != sourceType)
                 {
-
                     var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, sourceType);
                     if (!analysis.ExactMatchFound)
                     {

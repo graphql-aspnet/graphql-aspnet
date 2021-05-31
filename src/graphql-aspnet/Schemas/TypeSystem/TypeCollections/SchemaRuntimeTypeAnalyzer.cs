@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             var list = new List<Type>();
             foreach (var allowedType in allowedTypes)
             {
-                if(allowedType == typeToCheck)
+                if (allowedType == typeToCheck)
                 {
                     // a union may match explicitly to one of the allowed types
                     // if so infer it to be an exact match (always)

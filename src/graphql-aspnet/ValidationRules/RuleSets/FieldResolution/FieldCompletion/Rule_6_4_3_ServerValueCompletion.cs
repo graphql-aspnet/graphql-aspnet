@@ -90,7 +90,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
 
             // Check that the actual .NET type of the result data IS (or can be cast to) the expected .NET
             // type for the graphtype of the field being checked
-
             var analysisResult = context.Schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, rootSourceType);
 
             if (!analysisResult.ExactMatchFound)
