@@ -18,20 +18,20 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
 
     /// <summary>
-    /// Finds, tracks and maintains a set of known mappings between extended types and known concrete types for a
+    /// Performs an analysis of a runtime type to determine known and allowed concrete types for a
     /// <see cref="ISchemaTypeCollection"/>. Typically invoked when a developer attempts to return an object of a <see cref="Type"/>
     /// extended from the <see cref="Type"/> they declared on a controller or field.
     /// </summary>
-    internal class TypeMatchProcessor
+    internal class SchemaRuntimeTypeAnalyzer
     {
         private ISchemaTypeCollection _schema;
         private ConcurrentDictionary<(IGraphType, Type), Type[]> _foundTypeCache;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeMatchProcessor"/> class.
+        /// Initializes a new instance of the <see cref="SchemaRuntimeTypeAnalyzer"/> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        public TypeMatchProcessor(ISchemaTypeCollection schema)
+        public SchemaRuntimeTypeAnalyzer(ISchemaTypeCollection schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _foundTypeCache = new ConcurrentDictionary<(IGraphType, Type), Type[]>();
@@ -48,6 +48,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         {
             Validation.ThrowIfNull(graphType, nameof(graphType));
             Validation.ThrowIfNull(typeToCheck, nameof(typeToCheck));
+
+            if (!_schema.Contains(graphType))
+                return new Type[0];
 
             switch (graphType.Kind)
             {

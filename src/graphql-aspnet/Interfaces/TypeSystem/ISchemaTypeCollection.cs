@@ -95,14 +95,16 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IEnumerable<Type> FindConcreteTypes(params IGraphType[] graphTypes);
 
         /// <summary>
-        /// Finds all known concrete <see cref="Type"/> for the given <paramref name="targetGraphType"/> that
-        /// that <paramref name="typeToCheck"/> could masquerade as for the <paramref name="targetGraphType"/>.
-        /// In most cases this will be one <see cref="Type"/> but could be more in the case of abstact types such as <see cref="TypeKind.UNION"/> or <see cref="TypeKind.INTERFACE"/>.
+        /// Executes an analysis operation to attempt to find all known concrete <see cref="Type"/>
+        /// for the given <paramref name="targetGraphType"/> that <paramref name="typeToCheck"/>
+        /// could masquerade as for the <paramref name="targetGraphType"/>.
+        /// In most cases this will be one system <see cref="Type"/> but could be more in the case of abstact types 
+        /// such as <see cref="TypeKind.UNION"/> or <see cref="TypeKind.INTERFACE"/>.
         /// </summary>
         /// <param name="targetGraphType">The graph type to which <paramref name="typeToCheck"/> was supplied for.</param>
         /// <param name="typeToCheck">The type wishing to be used as the <paramref name="targetGraphType"/>.</param>
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
-        SchemaConcreteTypeMapResult MapConcreteType(IGraphType targetGraphType, Type typeToCheck);
+        SchemaConcreteTypeAnalysisResult AnalyzeRuntimeConcreteType(IGraphType targetGraphType, Type typeToCheck);
 
         /// <summary>
         /// Attempts to find a single directive within this schema by its name. Returns null

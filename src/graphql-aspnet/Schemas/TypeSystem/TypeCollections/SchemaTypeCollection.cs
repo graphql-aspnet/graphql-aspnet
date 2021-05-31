@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         private readonly ConcurrentDictionary<string, IGraphType> _graphTypesByName;
         private readonly ExtendedGraphTypeTracker _extendableGraphTypeTracker;
         private readonly GraphTypeExtensionQueue _typeQueue;
-        private readonly TypeMatchProcessor _typeMatchProcessor;
+        private readonly SchemaRuntimeTypeAnalyzer _typeMatchProcessor;
         private readonly ConcreteTypeCollection _concreteTypes;
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             _concreteTypes = new ConcreteTypeCollection();
             _extendableGraphTypeTracker = new ExtendedGraphTypeTracker();
             _typeQueue = new GraphTypeExtensionQueue();
-            _typeMatchProcessor = new TypeMatchProcessor(this);
+            _typeMatchProcessor = new SchemaRuntimeTypeAnalyzer(this);
         }
 
         /// <inheritdoc />
@@ -184,18 +184,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         }
 
         /// <inheritdoc />
-        public SchemaConcreteTypeMapResult MapConcreteType(IGraphType targetGraphType, Type typeToCheck)
+        public SchemaConcreteTypeAnalysisResult AnalyzeRuntimeConcreteType(IGraphType targetGraphType, Type typeToCheck)
         {
             Validation.ThrowIfNull(targetGraphType, nameof(targetGraphType));
             Validation.ThrowIfNull(typeToCheck, nameof(typeToCheck));
 
             if (!this.Contains(targetGraphType))
-                return new SchemaConcreteTypeMapResult(targetGraphType, typeToCheck, new Type[0]);
+                return new SchemaConcreteTypeAnalysisResult(targetGraphType, typeToCheck, new Type[0]);
 
             this.DenySearchForListAndKVP(typeToCheck);
 
             var result = _typeMatchProcessor.FindAllowedTypes(targetGraphType, typeToCheck);
-            return new SchemaConcreteTypeMapResult(targetGraphType, typeToCheck, result);
+            return new SchemaConcreteTypeAnalysisResult(targetGraphType, typeToCheck, result);
         }
 
         /// <inheritdoc />

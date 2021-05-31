@@ -9,21 +9,39 @@
 
 namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Internal.Introspection.Fields;
 
     /// <summary>
-    /// A middleware component that will validate a <see cref="GraphFieldExecutionContext"/> prior to the
+    /// A middleware component that will validate a <see cref="GraphFieldExecutionContext" /> prior to the
     /// pipeline being executed. This component should be the first component in a field execution pipeline if its
     /// included.
     /// </summary>
-    public class ValidateFieldExecutionMiddleware : IGraphFieldExecutionMiddleware
+    /// <typeparam name="TSchema">The type of the schema this field validator works against.</typeparam>
+    public class ValidateFieldExecutionMiddleware<TSchema> : IGraphFieldExecutionMiddleware
+        where TSchema : ISchema
     {
+        private ISchema _schema;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidateFieldExecutionMiddleware{TSchema}"/> class.
+        /// </summary>
+        /// <param name="schema">The schema.</param>
+        public ValidateFieldExecutionMiddleware(TSchema schema)
+        {
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+        }
+
         /// <summary>
         /// Invokes this middleware component allowing it to perform its work against the supplied context.
         /// </summary>
@@ -35,19 +53,31 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         {
             // ensure that the data items on teh request match the field they are being executed against
             var field = context.Field;
+            var expectedGraphType = _schema.KnownTypes.FindGraphType(field);
             var dataSource = context.Request.DataSource;
 
             if (context.InvocationContext.ExpectedSourceType != null)
             {
                 var expectedType = context.InvocationContext.ExpectedSourceType;
-                if (context.Field.Mode == FieldResolutionMode.Batch)
-                    expectedType = typeof(List<>).MakeGenericType(expectedType);
-
-                if (dataSource.Value.GetType() != expectedType)
+                if (expectedType != dataSource.Value.GetType())
                 {
-                    throw new GraphExecutionException(
-                        $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
-                        $"a source item of type '{dataSource.Value.GetType().FriendlyName()}' but expected '{context.InvocationContext.ExpectedSourceType}'.");
+                    var strippedType = GraphValidation.EliminateWrappersFromCoreType(dataSource.Value.GetType());
+                    var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, strippedType);
+
+                    if (!analysis.ExactMatchFound)
+                    {
+                        throw new GraphExecutionException(
+                            $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
+                            $"a source item of type '{dataSource.Value.GetType().FriendlyName()}' which could not be coerced " +
+                            $"to '{context.InvocationContext.ExpectedSourceType}' as requested by the target graph type '{expectedGraphType.Name}'.");
+                    }
+
+                    if (context.Field.Mode == FieldResolutionMode.Batch && !(dataSource.GetType() is IEnumerable))
+                    {
+                        throw new GraphExecutionException(
+                            $"Operation failed. The field execution context for '{field.Route.Path}' was executed in batch mode " +
+                            $"but was not passed an {nameof(IEnumerable)} for its source data.");
+                    }
                 }
             }
 

@@ -91,28 +91,15 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
             // Check that the actual .NET type of the result data IS (or can be cast to) the expected .NET
             // type for the graphtype of the field being checked
 
-            // first find all the allowed concrete types
-            IEnumerable<Type> allowedSourceTypes = context.Schema.KnownTypes.FindConcreteTypes(expectedGraphType);
-            allowedSourceTypes ??= Enumerable.Empty<Type>();
+            var analysisResult = context.Schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, rootSourceType);
 
-            // check the actual type of the reslt data against the allowed types
-            var sourceTypeMatches = false;
-            foreach (var allowedSourceType in allowedSourceTypes)
-            {
-                if (Validation.IsCastable(rootSourceType, allowedSourceType))
-                {
-                    sourceTypeMatches = true;
-                    break;
-                }
-            }
-
-            if (!sourceTypeMatches)
+            if (!analysisResult.ExactMatchFound)
             {
                 string allowedTypeNames;
-                if (!allowedSourceTypes.Any())
+                if (!analysisResult.FoundTypes.Any())
                     allowedTypeNames = "~none~";
                 else
-                    allowedTypeNames = string.Join(", ", allowedSourceTypes.Select(x => x.FriendlyName()));
+                    allowedTypeNames = string.Join(", ", analysisResult.FoundTypes.Select(x => x.FriendlyName()));
 
                 this.ValidationError(
                     context,

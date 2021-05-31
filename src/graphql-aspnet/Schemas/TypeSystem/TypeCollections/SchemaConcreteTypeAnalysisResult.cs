@@ -18,17 +18,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     /// A result generated from an operation involving an attempt to map one <see cref="Type"/> to another
     /// <see cref="Type"/> for a given <see cref="IGraphType"/>.
     /// </summary>
-    public class SchemaConcreteTypeMapResult
+    public class SchemaConcreteTypeAnalysisResult
     {
         private Type[] _foundTypes;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SchemaConcreteTypeMapResult"/> class.
+        /// Initializes a new instance of the <see cref="SchemaConcreteTypeAnalysisResult"/> class.
         /// </summary>
         /// <param name="targetGraphType">Type of the target graph.</param>
         /// <param name="checkedType">Type of the checked.</param>
         /// <param name="foundTypes">The found types.</param>
-        public SchemaConcreteTypeMapResult(IGraphType targetGraphType, Type checkedType, params Type[] foundTypes)
+        public SchemaConcreteTypeAnalysisResult(IGraphType targetGraphType, Type checkedType, params Type[] foundTypes)
         {
             this.GraphType = Validation.ThrowIfNullOrReturn(targetGraphType, nameof(targetGraphType));
             this.CheckedType = Validation.ThrowIfNullOrReturn(checkedType, nameof(checkedType));
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// <see cref="GraphType"/>.
         /// </summary>
         /// <value>The found types which the <see cref="CheckedType"/> could masquerade as.</value>
-        public IEnumerable<Type> FoundTypes => _foundTypes;
+        public Type[] FoundTypes => _foundTypes;
 
         /// <summary>
         /// Gets a value indicating whether a definitive, acceptable match was found for the <see cref="CheckedType"/>.

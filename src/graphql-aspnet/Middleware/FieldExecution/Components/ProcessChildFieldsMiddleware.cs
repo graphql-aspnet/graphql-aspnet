@@ -113,14 +113,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
             var pipelines = new List<Task>();
 
-            // create a lookup of source items by result type for easy seperation to the individual
+            // Step 0
+            // -----------------------------------------------------------------------
+            // create a lookup of source items by concrete type known to the schema, for easy seperation to the individual
             // downstream child contexts
-            var mapResult = this.MapExpectedConcreteTypeFromSourceItem(allSourceItems, graphType);
-            if (mapResult.ShouldCancelContext)
-            {
-                context.Cancel();
-                return;
-            }
+            var sourceItemLookup = this.MapExpectedConcreteTypeFromSourceItem(allSourceItems, graphType);
 
             foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
             {
@@ -138,10 +135,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     // this can happen quite often in the case of a union or an interface where multiple invocation contexts
                     // are added to a plan for the same child field in case a parent returns a member of the union or an
                     // implementer of the interface
-                    if (!mapResult.SourceItemlookup.ContainsKey(childInvocationContext.ExpectedSourceType))
+                    if (!sourceItemLookup.ContainsKey(childInvocationContext.ExpectedSourceType))
                         continue;
 
-                    sourceItemsToInclude = mapResult.SourceItemlookup[childInvocationContext.ExpectedSourceType];
+                    sourceItemsToInclude = sourceItemLookup[childInvocationContext.ExpectedSourceType];
                 }
 
                 // Step 1B
@@ -197,10 +194,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             }
         }
 
-        private (IDictionary<Type, List<GraphDataItem>> SourceItemlookup, bool ShouldCancelContext) MapExpectedConcreteTypeFromSourceItem(List<GraphDataItem> allSourceItems, IGraphType expectedGraphType)
+        private IDictionary<Type, List<GraphDataItem>> MapExpectedConcreteTypeFromSourceItem(
+                List<GraphDataItem> allSourceItems,
+                IGraphType expectedGraphType)
         {
             var dic = new Dictionary<Type, List<GraphDataItem>>();
 
+            // when the target graph type is not "mapable", generate a dictionary by exact type matching
             switch (expectedGraphType.Kind)
             {
                 case TypeKind.NONE:
@@ -215,11 +215,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         dic[item.GetType()].Add(item);
                     }
 
-                    return (dic, false);
+                    return dic;
             }
 
-            bool shouldCancel = false;
-            var allowedConcreteTypes = new HashSet<Type>(_schema.KnownTypes.FindConcreteTypes(expectedGraphType));
+            // find the applied concrete type, given the expected graph type, for each source item
+            // fail if no exact match can be found for any given source data item.
             for (var i = 0; i < allSourceItems.Count; i++)
             {
                 var dataItem = allSourceItems[i];
@@ -227,39 +227,22 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 if (dataResult == null)
                     continue;
 
-                var dataResultType = dataResult.GetType();
-                List<Type> potentialTypes = new List<Type>();
-                if (allowedConcreteTypes.Contains(dataResultType))
+                var sourceItemType = dataItem.ResultData.GetType();
+                var result = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, sourceItemType);
+                if (result.ExactMatchFound)
                 {
-                    potentialTypes.Add(dataResultType);
-                }
-                else
-                {
-                    foreach (var allowedType in allowedConcreteTypes)
-                    {
-                        if (Validation.IsCastable(dataResultType, allowedType))
-                            potentialTypes.Add(allowedType);
-                    }
+                    if (!dic.ContainsKey(result.FoundTypes[0]))
+                        dic.Add(result.FoundTypes[0], new List<GraphDataItem>());
+
+                    dic[result.FoundTypes[0]].Add(dataItem);
                 }
 
-                if (potentialTypes.Count == 0)
-                {
-                    shouldCancel = true;
-                    continue;
-                }
-                else if (potentialTypes.Count > 1)
-                {
-                    shouldCancel = true;
-                    continue;
-                }
-
-                if (!dic.ContainsKey(potentialTypes[0]))
-                    dic.Add(potentialTypes[0], new List<GraphDataItem>());
-
-                dic[potentialTypes[0]].Add(dataItem);
+                // validation rules 6.4.3 will always pick up (and kill)
+                // any un matchable or un process-able results. we don't need
+                // to check failures here
             }
 
-            return (dic, shouldCancel);
+            return dic;
         }
 
         /// <summary>

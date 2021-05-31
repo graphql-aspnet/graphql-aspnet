@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// <returns>FieldExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public FieldExecutionPipelineHelper<TSchema> AddValidateContextMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<ValidateFieldExecutionMiddleware>();
+            _pipelineBuilder.AddMiddleware<ValidateFieldExecutionMiddleware<TSchema>>();
             return this;
         }
 
