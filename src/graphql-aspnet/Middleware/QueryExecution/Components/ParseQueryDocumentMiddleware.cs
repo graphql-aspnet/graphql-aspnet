@@ -22,15 +22,15 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     /// Attempts to generate a valid syntax tree for the incoming query text when needed. Skipped if a query plan was pulled
     /// from the global cache.
     /// </summary>
-    public class ParseQueryPlanMiddleware : IQueryExecutionMiddleware
+    public class ParseQueryDocumentMiddleware : IQueryExecutionMiddleware
     {
         private readonly IGraphQLDocumentParser _parser;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParseQueryPlanMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="ParseQueryDocumentMiddleware"/> class.
         /// </summary>
         /// <param name="parser">The parser.</param>
-        public ParseQueryPlanMiddleware(IGraphQLDocumentParser parser)
+        public ParseQueryDocumentMiddleware(IGraphQLDocumentParser parser)
         {
             _parser = Validation.ThrowIfNullOrReturn(parser, nameof(parser));
         }

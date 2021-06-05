@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
@@ -112,6 +113,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
 
                 if (Validation.IsCastable(typeToCheck, allowedType))
                     list.Add(allowedType);
+            }
+
+            // if the graph type is a union and an exact match wasn't found
+            // allow intervention by the user's defined proxy
+            // to try a hail mary to determine the allowed type.
+            if (list.Count != 1 && graphType is IUnionGraphType ugt)
+            {
+                var mappedType = ugt.Proxy.ResolveType(typeToCheck);
+                if (mappedType != null && mappedType != typeToCheck && ugt.Proxy.Types.Contains(mappedType))
+                {
+                    list.Clear();
+                    list.Add(mappedType);
+                }
             }
 
             return list.ToArray();

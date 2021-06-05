@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     /// A result generated from an operation involving an attempt to map one <see cref="Type"/> to another
     /// <see cref="Type"/> for a given <see cref="IGraphType"/>.
     /// </summary>
+    [DebuggerDisplay("{GraphType.Name} (Type Count: {FoundTypes.Length})")]
     public class SchemaConcreteTypeAnalysisResult
     {
         private Type[] _foundTypes;

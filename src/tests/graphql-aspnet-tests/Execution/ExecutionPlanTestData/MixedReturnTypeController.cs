@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Interfaces.Controllers;
 
     public class MixedReturnTypeController : GraphIdController
     {
@@ -21,6 +22,19 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
                 Field1 = "FieldValue1",
                 Field2 = "FieldValue2",
             };
+        }
+
+        [QueryRoot("createIndeterminateReturn", typeof(MixedTypeUnion))]
+        public IGraphActionResult CreateIndeterminatateReturnObject()
+        {
+            var result = new MixedReturnTypeC()
+            {
+                Field1 = "FieldValue1",
+                Field2 = "FieldValue2",
+                Field3 = "FieldValue3",
+            };
+
+            return this.Ok(result);
         }
     }
 }

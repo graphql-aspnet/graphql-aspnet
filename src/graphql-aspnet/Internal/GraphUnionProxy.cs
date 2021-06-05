@@ -13,10 +13,7 @@ namespace GraphQL.AspNet.Internal
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
-    /// <summary>
-    /// An internal implementation of <see cref="IGraphUnionProxy"/> to use when
-    /// a union is declared via attribution.
-    /// </summary>
+    /// <inheritdoc cref="IGraphUnionProxy" />
     public class GraphUnionProxy : IGraphUnionProxy
     {
         /// <summary>
@@ -41,31 +38,22 @@ namespace GraphQL.AspNet.Internal
         {
         }
 
-        /// <summary>
-        /// Gets the name of the union. This name will be subjected to schema configuration rules
-        /// and will be altered accordingly when assigned to a schema.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
+        public virtual Type ResolveType(Type runtimeObjectType)
+        {
+            return runtimeObjectType;
+        }
+
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        /// Gets a human readable description of this union type.
-        /// </summary>
-        /// <value>The description.</value>
+        /// <inheritdoc />
         public string Description { get; }
 
-        /// <summary>
-        /// Gets the types that belong in this union. These types will be automatically added to the
-        /// schema. A minimum of 2 types are required.
-        /// </summary>
-        /// <value>The types.</value>
+        /// <inheritdoc />
         public HashSet<Type> Types { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether this any union types created from this proxy
-        /// are published in a schema introspection request.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool Publish => true;
     }
 }

@@ -28,5 +28,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The possible graph type names.</value>
         IEnumerable<string> PossibleGraphTypeNames { get; }
+
+        /// <summary>
+        /// Gets the proxy object that was defined at design type which created this union type.
+        /// </summary>
+        /// <value>The proxy.</value>
+        IGraphUnionProxy Proxy { get; }
     }
 }

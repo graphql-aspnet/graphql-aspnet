@@ -29,6 +29,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             public HashSet<Type> Types => throw new NotImplementedException();
 
             public bool Publish => throw new NotImplementedException();
+
+            public Type ResolveType(Type runtimeObjectType) => throw new NotImplementedException();
         }
 
         [Test]

@@ -40,6 +40,16 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             AddQuery("5.2.2.1", "{ peopleMovers { elevator(id: 5){id, name} } }" +
                                 "query Operation1{ peopleMovers { elevator(id: 8){id, name } } }");
 
+            // field "search" not declared on "query"
+            AddQuery("5.3.1", "{ search { " +
+                              "     id, name " +
+                              "}}");
+
+            // search returns a union. Unions cannot directly contain fields (other than typename)
+            AddQuery("5.3.1", "{ peopleMovers { search { " +
+                              "     id " +
+                              "}}}");
+
             // return names at same level must be identidical (different input values)
             AddQuery("5.3.2", "{ peopleMovers { " +
                               "     elevator(id: 5) { id, name }" +
@@ -170,6 +180,9 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
                 .AddGraphType<AllowDirective>()
                 .AddGraphType<RestrictDirective>()
                 .Build();
+
+            if (expectedRuleError != "5.3.1")
+                return;
 
             // parse the query
             var document = server.CreateDocument(queryText);

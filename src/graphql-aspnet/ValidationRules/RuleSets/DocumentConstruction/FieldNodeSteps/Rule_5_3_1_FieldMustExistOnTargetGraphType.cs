@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
@@ -55,10 +56,28 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (FieldNode)context.ActiveNode;
+
             var searchContainer = context.GraphType as IGraphFieldContainer;
 
             if (searchContainer == null)
+            {
+                if (context.GraphType.Kind == TypeKind.UNION)
+                {
+                    // special error message for union types
+                    this.ValidationError(
+                    context,
+                    $"The field '{node.FieldName.ToString()}' cannot be directly selected from type '{context.GraphType.Name}'. " +
+                    $"Fields cannot be directly selected from {nameof(TypeKind.UNION)} type selection sets.");
+                }
+                else
+                {
+                    this.ValidationError(
+                        context,
+                        InvalidFieldMessage(context.GraphType.Name, node.FieldName.ToString()));
+                }
+
                 return false;
+            }
 
             // if a fragment spread is in context that is performing a restriction on this field
             // use that graph type restriction to check for a valid field

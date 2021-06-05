@@ -22,5 +22,10 @@ namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
         public HashSet<Type> Types { get; } = new HashSet<Type> { typeof(SodaTypeA), typeof(SodaTypeB) };
 
         public bool Publish => true;
+
+        public Type ResolveType(Type runtimeObjectType)
+        {
+            return runtimeObjectType;
+        }
     }
 }

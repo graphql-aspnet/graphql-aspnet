@@ -45,5 +45,51 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task IndeterminateUnionType_ShouldCallIntoUnionProxyResolveMethod()
+        {
+            MixedTypeUnion.TotalCallCount = 0;
+            var server = new TestServerBuilder()
+                     .AddGraphType<MixedReturnTypeController>()
+                     .AddSchemaBuilderAction(a =>
+                     {
+                         a.Options.ResponseOptions.ExposeExceptions = true;
+                     })
+                     .Build();
+
+            // controller returns a MixedReturnTypeC, but is declared in the schema as MixedUnionType
+            // (of A and B)
+            // MixedC inherits from both A and B and could be either
+            // the library should call into MixedUnionType and ask it to resolve the relationship
+            //
+            // mixedUnion should return TypeA, thus rendering field 1
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                @"query  { 
+                    createIndeterminateReturn { 
+                        ... on MixedReturnTypeB {
+                                field2
+                        }
+                        ... on MixedReturnTypeA {
+                                field1
+                        }
+                }}");
+
+            // the returned object should be carried forward to produce a result
+            var result = await server.RenderResult(builder);
+
+            var expectedOutput =
+            @"{
+                ""data"": {
+                    ""createIndeterminateReturn"" : {
+                        ""field1"": ""FieldValue1""
+                    }
+                }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+            Assert.AreEqual(1, MixedTypeUnion.TotalCallCount);
+        }
     }
 }
