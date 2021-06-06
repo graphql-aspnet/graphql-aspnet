@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using System;
-    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class MixedTypeUnionInvalidReturn : GraphUnionProxy
     {

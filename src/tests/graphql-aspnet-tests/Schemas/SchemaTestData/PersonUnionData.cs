@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
 {
-    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class PersonUnionData : GraphUnionProxy
     {
