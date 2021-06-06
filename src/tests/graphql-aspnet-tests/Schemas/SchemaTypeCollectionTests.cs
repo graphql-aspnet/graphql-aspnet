@@ -294,5 +294,55 @@ namespace GraphQL.AspNet.Tests.Schemas
             CollectionAssert.Contains(types, typeof(PersonData));
             CollectionAssert.Contains(types, typeof(EmployeeData));
         }
+
+
+        [Test]
+        public void AnalyzeRuntimeConcreteType_UnionTypeResolve_ReturnsAllowedType_TypeIsReturned()
+        {
+            var server = new TestServerBuilder().Build();
+            var collection = new SchemaTypeCollection();
+
+            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
+            var unionType = unionTypeMaker.CreateGraphType(new ValidUnionForAnalysis(), TypeKind.OBJECT);
+            var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
+            var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
+
+            collection.EnsureGraphType(addressType, typeof(AddressData));
+            collection.EnsureGraphType(countryType, typeof(CountryData));
+            collection.EnsureGraphType(unionType);
+
+            // the union always returns address data
+            var result = collection.AnalyzeRuntimeConcreteType(unionType, typeof(EmployeeData));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(EmployeeData), result.CheckedType);
+            Assert.IsTrue(result.ExactMatchFound);
+            Assert.AreEqual(1, result.FoundTypes.Length);
+            Assert.AreEqual(typeof(AddressData), result.FoundTypes[0]);
+        }
+
+        [Test]
+        public void AnalyzeRuntimeConcreteType_UnionTypeResolve_ReturnsInvalidType_TypeIsNotReturned()
+        {
+            var server = new TestServerBuilder().Build();
+            var collection = new SchemaTypeCollection();
+
+            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
+            var unionType = unionTypeMaker.CreateGraphType(new InvalidUnionForAnalysis(), TypeKind.OBJECT);
+            var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
+            var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
+
+            collection.EnsureGraphType(addressType, typeof(AddressData));
+            collection.EnsureGraphType(countryType, typeof(CountryData));
+            collection.EnsureGraphType(unionType);
+
+            // the union always returns address data
+            var result = collection.AnalyzeRuntimeConcreteType(unionType, typeof(EmployeeData));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(EmployeeData), result.CheckedType);
+            Assert.False(result.ExactMatchFound);
+            Assert.AreEqual(0, result.FoundTypes.Length);
+        }
     }
 }

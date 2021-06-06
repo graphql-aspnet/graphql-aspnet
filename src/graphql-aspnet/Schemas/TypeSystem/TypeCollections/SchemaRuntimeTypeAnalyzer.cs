@@ -15,6 +15,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System.Data;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
 
@@ -121,10 +123,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             if (list.Count != 1 && graphType is IUnionGraphType ugt)
             {
                 var mappedType = ugt.Proxy.ResolveType(typeToCheck);
-                if (mappedType != null && mappedType != typeToCheck && ugt.Proxy.Types.Contains(mappedType))
+                if (mappedType != null && mappedType != typeToCheck)
                 {
                     list.Clear();
-                    list.Add(mappedType);
+
+                    if (ugt.Proxy.Types.Contains(mappedType))
+                        list.Add(mappedType);
                 }
             }
 

@@ -58,16 +58,16 @@ namespace GraphQL.AspNet.Tests.Execution
                      })
                      .Build();
 
-            // controller returns a MixedReturnTypeC, but is declared in the schema as MixedUnionType
-            // (of A and B)
+            // controller actually returns a MixedReturnTypeC, but is declared in the schema as
+            // MixedUnionType (of A and B)
             // MixedC inherits from both A and B and could be either
             // the library should call into MixedUnionType and ask it to resolve the relationship
             //
             // mixedUnion should return TypeA, thus rendering field 1
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
-                @"query  { 
-                    createIndeterminateReturn { 
+                @"query  {
+                    createIndeterminateReturn {
                         ... on MixedReturnTypeB {
                                 field2
                         }
@@ -90,6 +90,46 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
             Assert.AreEqual(1, MixedTypeUnion.TotalCallCount);
+        }
+
+        [Test]
+        public async Task IndeterminateUnionType_InvalidReturnType_Fails()
+        {
+            MixedTypeUnionInvalidReturn.TotalCallCount = 0;
+            var server = new TestServerBuilder()
+                     .AddGraphType<MixedReturnTypeController>()
+                     .AddSchemaBuilderAction(a =>
+                     {
+                         a.Options.ResponseOptions.ExposeExceptions = true;
+                     })
+                     .Build();
+
+            // controller actually returns a MixedReturnTypeC, but is declared in the schema as
+            // MixedTypeUnionInvalidReturn (of A and B)
+            // MixedC inherits from both A and B and could be either
+            // the library should call into MixedUnionType and ask it to resolve the relationship
+            // the union type (MixedTypeUnionInvalidReturn) will return an invalid type (not A and not B)
+            // and the query should fail
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                @"query  {
+                    createWrongIndeterminateReturn {
+                        ... on MixedReturnTypeB {
+                                field2
+                        }
+                        ... on MixedReturnTypeA {
+                                field1
+                        }
+                }}");
+
+            // the returned object should be carried forward to produce a result
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Messages.IsSucessful);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.EXECUTION_ERROR, result.Messages[0].Code);
+            Assert.AreEqual(1, MixedTypeUnionInvalidReturn.TotalCallCount);
         }
     }
 }

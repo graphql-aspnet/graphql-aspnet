@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// will be rejected.
         /// </summary>
         /// <param name="runtimeObjectType">The type of an object provided at runtime as the result
-        /// of a controller or method operation executed by graph ql.</param>
+        /// of a controller or method operation executed by graphql.</param>
         /// <returns>A type registered to this union that <paramref name="runtimeObjectType"/> inherits from.</returns>
         Type ResolveType(Type runtimeObjectType);
 

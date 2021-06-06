@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Internal
         /// <param name="typesToInclude">The types to include.</param>
         public GraphUnionProxy(string unionName, IEnumerable<Type> typesToInclude)
         {
-            this.Name = unionName;
+            this.Name = unionName?.Trim() ?? this.GetType().Name;
             this.Description = null;
             this.Types = new HashSet<Type>(typesToInclude);
         }
@@ -35,6 +35,15 @@ namespace GraphQL.AspNet.Internal
         /// <param name="typesToInclude">The types to include.</param>
         public GraphUnionProxy(string unionName, params Type[] typesToInclude)
             : this(unionName, typesToInclude as IEnumerable<Type>)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphUnionProxy"/> class.
+        /// </summary>
+        /// <param name="typesToInclude">The types to include.</param>
+        protected GraphUnionProxy(params Type[] typesToInclude)
+            : this(null, typesToInclude as IEnumerable<Type>)
         {
         }
 
