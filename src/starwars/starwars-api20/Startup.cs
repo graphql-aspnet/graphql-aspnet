@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.StarWarsAPI2X
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.WebSockets;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 

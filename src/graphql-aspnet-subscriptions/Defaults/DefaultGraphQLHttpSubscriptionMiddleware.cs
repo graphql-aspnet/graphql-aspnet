@@ -11,12 +11,10 @@ namespace GraphQL.AspNet.Defaults
 {
     using System;
     using System.Globalization;
-    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;

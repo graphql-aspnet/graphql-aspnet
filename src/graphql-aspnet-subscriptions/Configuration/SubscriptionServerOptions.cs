@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 

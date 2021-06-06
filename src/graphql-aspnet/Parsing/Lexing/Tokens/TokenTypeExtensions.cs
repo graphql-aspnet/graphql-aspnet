@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
     /// </summary>
     public static class TokenTypeExtensions
     {
-        private static Dictionary<TokenType, ReadOnlyMemory<char>> _descriptions = new Dictionary<TokenType, ReadOnlyMemory<char>>();
+        private static readonly Dictionary<TokenType, ReadOnlyMemory<char>> _descriptions = new Dictionary<TokenType, ReadOnlyMemory<char>>();
 
         /// <summary>
         /// Initializes static members of the <see cref="TokenTypeExtensions"/> class.

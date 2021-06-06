@@ -295,7 +295,6 @@ namespace GraphQL.AspNet.Tests.Schemas
             CollectionAssert.Contains(types, typeof(EmployeeData));
         }
 
-
         [Test]
         public void AnalyzeRuntimeConcreteType_UnionTypeResolve_ReturnsAllowedType_TypeIsReturned()
         {

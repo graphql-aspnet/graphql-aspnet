@@ -9,19 +9,9 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletion
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common;
 
     /// <summary>

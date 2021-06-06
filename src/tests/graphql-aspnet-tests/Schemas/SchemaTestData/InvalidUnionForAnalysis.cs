@@ -1,10 +1,15 @@
-﻿namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Internal;
 
     public class InvalidUnionForAnalysis : GraphUnionProxy

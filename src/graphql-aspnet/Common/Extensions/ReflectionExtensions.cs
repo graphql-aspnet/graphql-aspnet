@@ -10,14 +10,9 @@
 namespace GraphQL.AspNet.Common.Extensions
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
-    using System.Threading.Tasks;
-    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// Helper methods for working with types.

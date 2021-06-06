@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 {
     using System.Collections;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -20,7 +19,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Introspection.Fields;
 
     /// <summary>
     /// A middleware component that will validate a <see cref="GraphFieldExecutionContext" /> prior to the
@@ -31,7 +29,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     public class ValidateFieldExecutionMiddleware<TSchema> : IGraphFieldExecutionMiddleware
         where TSchema : ISchema
     {
-        private ISchema _schema;
+        private readonly ISchema _schema;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidateFieldExecutionMiddleware{TSchema}"/> class.

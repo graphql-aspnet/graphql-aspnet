@@ -24,8 +24,8 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     {
         private readonly string _message;
         private readonly string _code;
-        private Exception _exception;
-        private IGraphMessage _customMessage;
+        private readonly Exception _exception;
+        private readonly IGraphMessage _customMessage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldErrorActionResult"/> class.

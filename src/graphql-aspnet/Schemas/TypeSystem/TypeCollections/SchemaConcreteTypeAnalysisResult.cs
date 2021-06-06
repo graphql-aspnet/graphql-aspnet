@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -22,7 +21,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     [DebuggerDisplay("{GraphType.Name} (Type Count: {FoundTypes.Length})")]
     public class SchemaConcreteTypeAnalysisResult
     {
-        private Type[] _foundTypes;
+        private readonly Type[] _foundTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaConcreteTypeAnalysisResult"/> class.

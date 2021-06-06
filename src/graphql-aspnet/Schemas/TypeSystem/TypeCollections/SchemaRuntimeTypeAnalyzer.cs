@@ -12,13 +12,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Data;
-    using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
 
     /// <summary>
     /// Performs an analysis of a runtime type to determine known and allowed concrete types for a
@@ -27,8 +22,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     /// </summary>
     internal class SchemaRuntimeTypeAnalyzer
     {
-        private ISchemaTypeCollection _schema;
-        private ConcurrentDictionary<(IGraphType, Type), Type[]> _foundTypeCache;
+        private readonly ISchemaTypeCollection _schema;
+        private readonly ConcurrentDictionary<(IGraphType, Type), Type[]> _foundTypeCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaRuntimeTypeAnalyzer"/> class.

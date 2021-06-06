@@ -37,7 +37,6 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
             return this.Ok(result);
         }
 
-
         [QueryRoot("createWrongIndeterminateReturn", typeof(MixedTypeUnionInvalidReturn))]
         public IGraphActionResult CreateWrongIndeterminatateReturnObject()
         {

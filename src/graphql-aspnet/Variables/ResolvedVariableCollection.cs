@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Variables
             Empty = new ResolvedVariableCollection();
         }
 
-        private Dictionary<string, IResolvedVariable> _variables;
+        private readonly Dictionary<string, IResolvedVariable> _variables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResolvedVariableCollection"/> class.

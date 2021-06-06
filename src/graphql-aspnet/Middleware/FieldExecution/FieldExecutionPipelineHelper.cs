@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
     public class FieldExecutionPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private ISchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> _pipelineBuilder;
+        private readonly ISchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> _pipelineBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldExecutionPipelineHelper{TSchema}"/> class.

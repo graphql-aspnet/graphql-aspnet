@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;

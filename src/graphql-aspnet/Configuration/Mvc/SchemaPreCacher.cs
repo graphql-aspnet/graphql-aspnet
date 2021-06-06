@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     /// </summary>
     internal class SchemaPreCacher
     {
-        private HashSet<Type> _parsedTypes;
+        private readonly HashSet<Type> _parsedTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaPreCacher"/> class.

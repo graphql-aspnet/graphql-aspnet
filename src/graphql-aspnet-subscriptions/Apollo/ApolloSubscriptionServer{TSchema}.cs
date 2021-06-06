@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
