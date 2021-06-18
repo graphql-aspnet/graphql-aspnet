@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task IndeterminateUnionType_ShouldCallIntoUnionProxyResolveMethod()
+        public async Task IndeterminateUnionType_ShouldCallIntoUnionProxyResolveMethod_AndProduceResult()
         {
             MixedTypeUnion.TotalCallCount = 0;
             var server = new TestServerBuilder()
@@ -93,9 +93,9 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task IndeterminateUnionType_InvalidReturnType_Fails()
+        public async Task IndeterminateUnionType_NullReturnType_Fails()
         {
-            MixedTypeUnionInvalidReturn.TotalCallCount = 0;
+            MixedTypeUnionNullReturn.TotalCallCount = 0;
             var server = new TestServerBuilder()
                      .AddGraphType<MixedReturnTypeController>()
                      .AddSchemaBuilderAction(a =>
@@ -105,15 +105,15 @@ namespace GraphQL.AspNet.Tests.Execution
                      .Build();
 
             // controller actually returns a MixedReturnTypeC, but is declared in the schema as
-            // MixedTypeUnionInvalidReturn (of A and B)
+            // MixedTypeUnionNullReturn (of A and B)
             // MixedC inherits from both A and B and could be either
             // the library should call into MixedUnionType and ask it to resolve the relationship
-            // the union type (MixedTypeUnionInvalidReturn) will return an invalid type (not A and not B)
+            // the union type (MixedTypeUnionNullReturn) will return -null-
             // and the query should fail
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText(
                 @"query  {
-                    createWrongIndeterminateReturn {
+                    createNullIndeterminateReturn {
                         ... on MixedReturnTypeB {
                                 field2
                         }
@@ -129,7 +129,47 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsFalse(result.Messages.IsSucessful);
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.EXECUTION_ERROR, result.Messages[0].Code);
-            Assert.AreEqual(1, MixedTypeUnionInvalidReturn.TotalCallCount);
+            Assert.AreEqual(1, MixedTypeUnionNullReturn.TotalCallCount);
+        }
+
+        [Test]
+        public async Task IndeterminateUnionType_SourceReturnType_Fails()
+        {
+            MixedTypeUnionSourceReturn.TotalCallCount = 0;
+            var server = new TestServerBuilder()
+                     .AddGraphType<MixedReturnTypeController>()
+                     .AddSchemaBuilderAction(a =>
+                     {
+                         a.Options.ResponseOptions.ExposeExceptions = true;
+                     })
+                     .Build();
+
+            // controller actually returns a MixedReturnTypeC, but is declared in the schema as
+            // MixedTypeUnionSourceReturn (of A and B)
+            // MixedC inherits from both A and B and could be either
+            // the library should call into MixedUnionType and ask it to resolve the relationship
+            // the union type (MixedTypeUnionSourceReturn) will return the provided source object (MixedC)
+            // and the query should fail
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                @"query  {
+                    createSourceIndeterminateReturn {
+                        ... on MixedReturnTypeB {
+                                field2
+                        }
+                        ... on MixedReturnTypeA {
+                                field1
+                        }
+                }}");
+
+            // the returned object should be carried forward to produce a result
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.Messages.IsSucessful);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.EXECUTION_ERROR, result.Messages[0].Code);
+            Assert.AreEqual(1, MixedTypeUnionSourceReturn.TotalCallCount);
         }
     }
 }

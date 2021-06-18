@@ -49,5 +49,31 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 
             return this.Ok(result);
         }
+
+        [QueryRoot("createNullIndeterminateReturn", typeof(MixedTypeUnionNullReturn))]
+        public IGraphActionResult CreateNullIndeterminatateReturnObject()
+        {
+            var result = new MixedReturnTypeC()
+            {
+                Field1 = "FieldValue1",
+                Field2 = "FieldValue2",
+                Field3 = "FieldValue3",
+            };
+
+            return this.Ok(result);
+        }
+
+        [QueryRoot("createSourceIndeterminateReturn", typeof(MixedTypeUnionSourceReturn))]
+        public IGraphActionResult CreateSourceIndeterminatateReturnObject()
+        {
+            var result = new MixedReturnTypeC()
+            {
+                Field1 = "FieldValue1",
+                Field2 = "FieldValue2",
+                Field3 = "FieldValue3",
+            };
+
+            return this.Ok(result);
+        }
     }
 }

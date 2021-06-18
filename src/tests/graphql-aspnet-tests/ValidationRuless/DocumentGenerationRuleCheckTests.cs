@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
                               "     id, name " +
                               "}}");
 
-            // search returns a union. Unions cannot directly contain fields (other than typename)
+            // search returns a union. Unions cannot directly contain fields (other than __typename)
             AddQuery("5.3.1", "{ peopleMovers { search { " +
                               "     id " +
                               "}}}");
@@ -78,10 +78,10 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             AddQuery("5.5.1.2", "query Operation1{ peopleMover(id: 5) { ... on Bob  { id } } } ");
 
             // all declared target graph types must be Union, interface or object on named fragment
-            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1  } } } fragment frag1 on String { id }");
+            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1  } } } fragment frag1 on String {  }");
 
             // all declared target graph types must be Union, interface or object on inline fragment
-            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ... on String {id name  } } } } ");
+            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ... on String { } } } } ");
 
             // all declared named fragments must be spread at least once
             AddQuery("5.5.1.4", "query Operation1{ peopleMovers { elevator(id: 5){ id name } } } fragment frag1 on Elevator { id }");
@@ -180,9 +180,6 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
                 .AddGraphType<AllowDirective>()
                 .AddGraphType<RestrictDirective>()
                 .Build();
-
-            if (expectedRuleError != "5.3.1")
-                return;
 
             // parse the query
             var document = server.CreateDocument(queryText);
