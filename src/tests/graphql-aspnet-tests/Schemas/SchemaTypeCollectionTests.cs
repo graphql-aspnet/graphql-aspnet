@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
+    using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
     using NUnit.Framework;
 
     [TestFixture]
@@ -38,6 +39,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         private IGraphType MakeGraphType(Type type, TypeKind kind)
         {
             var testServer = new TestServerBuilder().Build();
+
             var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
             return maker.CreateGraphType(type).GraphType;
         }
@@ -245,6 +247,101 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(1, collection.Count);
             Assert.AreEqual(0, collection.QueuedExtensionFieldCount);
             Assert.AreEqual(fieldCount + 1, twoObjectGraphType.Fields.Count);
+        }
+
+        [Test]
+        public void FindConcreteTypes_InterfaceType_IsExpandedCorrectly()
+        {
+            var collection = new SchemaTypeCollection();
+
+            var personType = this.MakeGraphType(typeof(PersonData), TypeKind.OBJECT) as IObjectGraphType;
+            var employeeType = this.MakeGraphType(typeof(EmployeeData), TypeKind.OBJECT) as IObjectGraphType;
+            var personInterfaceType = this.MakeGraphType(typeof(IPersonData), TypeKind.INTERFACE);
+
+            collection.EnsureGraphType(personInterfaceType);
+            collection.EnsureGraphType(personType, typeof(PersonData));
+            collection.EnsureGraphType(employeeType, typeof(EmployeeData));
+
+            // extract all hte possible concrete types for the interface, should be person and employee
+            var types = collection.FindConcreteTypes(personInterfaceType);
+
+            Assert.IsNotNull(types);
+            Assert.AreEqual(2, types.Count());
+            CollectionAssert.Contains(types, typeof(PersonData));
+            CollectionAssert.Contains(types, typeof(EmployeeData));
+        }
+
+        [Test]
+        public void FindConcreteTypes_UnionType_IsExpandedCorrectly()
+        {
+            var server = new TestServerBuilder().Build();
+            var collection = new SchemaTypeCollection();
+
+            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
+            var unionType = unionTypeMaker.CreateGraphType(new PersonUnionData(), TypeKind.OBJECT);
+            var personType = this.MakeGraphType(typeof(PersonData), TypeKind.OBJECT) as IObjectGraphType;
+            var employeeType = this.MakeGraphType(typeof(EmployeeData), TypeKind.OBJECT) as IObjectGraphType;
+
+            collection.EnsureGraphType(personType, typeof(PersonData));
+            collection.EnsureGraphType(employeeType, typeof(EmployeeData));
+            collection.EnsureGraphType(unionType);
+
+            // extract all hte possible concrete types for the interface, should be person and employee
+            var types = collection.FindConcreteTypes(unionType);
+
+            Assert.IsNotNull(types);
+            Assert.AreEqual(2, types.Count());
+            CollectionAssert.Contains(types, typeof(PersonData));
+            CollectionAssert.Contains(types, typeof(EmployeeData));
+        }
+
+        [Test]
+        public void AnalyzeRuntimeConcreteType_UnionTypeResolve_ReturnsAllowedType_TypeIsReturned()
+        {
+            var server = new TestServerBuilder().Build();
+            var collection = new SchemaTypeCollection();
+
+            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
+            var unionType = unionTypeMaker.CreateGraphType(new ValidUnionForAnalysis(), TypeKind.OBJECT);
+            var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
+            var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
+
+            collection.EnsureGraphType(addressType, typeof(AddressData));
+            collection.EnsureGraphType(countryType, typeof(CountryData));
+            collection.EnsureGraphType(unionType);
+
+            // the union always returns address data
+            var result = collection.AnalyzeRuntimeConcreteType(unionType, typeof(EmployeeData));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(EmployeeData), result.CheckedType);
+            Assert.IsTrue(result.ExactMatchFound);
+            Assert.AreEqual(1, result.FoundTypes.Length);
+            Assert.AreEqual(typeof(AddressData), result.FoundTypes[0]);
+        }
+
+        [Test]
+        public void AnalyzeRuntimeConcreteType_UnionTypeResolve_ReturnsInvalidType_TypeIsNotReturned()
+        {
+            var server = new TestServerBuilder().Build();
+            var collection = new SchemaTypeCollection();
+
+            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
+            var unionType = unionTypeMaker.CreateGraphType(new InvalidUnionForAnalysis(), TypeKind.OBJECT);
+            var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
+            var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
+
+            collection.EnsureGraphType(addressType, typeof(AddressData));
+            collection.EnsureGraphType(countryType, typeof(CountryData));
+            collection.EnsureGraphType(unionType);
+
+            // the union always returns address data
+            var result = collection.AnalyzeRuntimeConcreteType(unionType, typeof(EmployeeData));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(EmployeeData), result.CheckedType);
+            Assert.False(result.ExactMatchFound);
+            Assert.AreEqual(0, result.FoundTypes.Length);
         }
     }
 }

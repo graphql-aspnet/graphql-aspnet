@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A middleware component that, when a result exists on the context, invokes the next set
@@ -34,6 +35,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
+        private readonly TSchema _schema;
         private readonly bool _awaitEachPipeline;
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <param name="fieldExecutionPipeline">The field execution pipeline.</param>
         public ProcessChildFieldsMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
-            Validation.ThrowIfNull(schema, nameof(schema));
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _awaitEachPipeline = schema.Configuration.ExecutionOptions.AwaitEachRequestedField;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
@@ -75,23 +77,46 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             if (context.InvocationContext.ChildContexts.Count == 0)
                 return;
 
-            var pipelines = new List<Task>();
-
             // items resolved on this active context become the source for any downstream fields
             //  ---
             // can never extract child fields from a null value (even if its valid for the item)
             // or one that isnt read for it
-            IEnumerable<GraphDataItem> allSourceItems = context
+            List<GraphDataItem> allSourceItems = context
                 .ResolvedSourceItems
                 .SelectMany(x => x.FlattenListItemTree())
-                .Where(x => x.ResultData != null && x.Status == FieldItemResolutionStatus.NeedsChildResolution);
+                .Where(x => x.ResultData != null && x.Status == FieldItemResolutionStatus.NeedsChildResolution)
+                .ToList();
 
-            if (!allSourceItems.Any())
+            if (allSourceItems.Count == 0)
                 return;
 
-            // create a lookup of source items by result type for easy seperation to the individual
+            // find a reference to the graph type for the field
+            var graphType = _schema.KnownTypes.FindGraphType(context.Field.TypeExpression.TypeName);
+
+            // theoretically it can't not be found, but you never know
+            if (graphType == null)
+            {
+                var msg = $"Internal Server Error. When processing the results of '{context.Field.Route.Path}' no graph type on the target schema " +
+                    $"could be found for the type name '{context.Field.TypeExpression.TypeName}'. " +
+                    $"Unable to process the {allSourceItems.Count} item(s) generated.";
+
+                context.Messages.Add(
+                    GraphMessageSeverity.Critical,
+                    Constants.ErrorCodes.EXECUTION_ERROR,
+                    msg,
+                    context.Request.Origin);
+
+                context.Cancel();
+                return;
+            }
+
+            var pipelines = new List<Task>();
+
+            // Step 0
+            // -----------------------------------------------------------------------
+            // create a lookup of source items by concrete type known to the schema, for easy seperation to the individual
             // downstream child contexts
-            var sourceItemLookup = allSourceItems.ToLookup(x => x.ResultData.GetType());
+            var sourceItemLookup = this.MapExpectedConcreteTypeFromSourceItem(allSourceItems, graphType);
 
             foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
             {
@@ -109,7 +134,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     // this can happen quite often in the case of a union or an interface where multiple invocation contexts
                     // are added to a plan for the same child field in case a parent returns a member of the union or an
                     // implementer of the interface
-                    if (!sourceItemLookup.Contains(childInvocationContext.ExpectedSourceType))
+                    if (!sourceItemLookup.ContainsKey(childInvocationContext.ExpectedSourceType))
                         continue;
 
                     sourceItemsToInclude = sourceItemLookup[childInvocationContext.ExpectedSourceType];
@@ -166,6 +191,57 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     await task.ConfigureAwait(false);
                 }
             }
+        }
+
+        private IDictionary<Type, List<GraphDataItem>> MapExpectedConcreteTypeFromSourceItem(
+                List<GraphDataItem> allSourceItems,
+                IGraphType expectedGraphType)
+        {
+            var dic = new Dictionary<Type, List<GraphDataItem>>();
+
+            // when the target graph type is not "mapable", generate a dictionary by exact type matching
+            switch (expectedGraphType.Kind)
+            {
+                case TypeKind.NONE:
+                case TypeKind.SCALAR:
+                case TypeKind.ENUM:
+                case TypeKind.INPUT_OBJECT:
+                    foreach (var item in allSourceItems)
+                    {
+                        if (!dic.ContainsKey(item.GetType()))
+                            dic.Add(item.GetType(), new List<GraphDataItem>());
+
+                        dic[item.GetType()].Add(item);
+                    }
+
+                    return dic;
+            }
+
+            // find the applied concrete type, given the expected graph type, for each source item
+            // fail if no exact match can be found for any given source data item.
+            for (var i = 0; i < allSourceItems.Count; i++)
+            {
+                var dataItem = allSourceItems[i];
+                var dataResult = dataItem.ResultData;
+                if (dataResult == null)
+                    continue;
+
+                var sourceItemType = dataItem.ResultData.GetType();
+                var result = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, sourceItemType);
+                if (result.ExactMatchFound)
+                {
+                    if (!dic.ContainsKey(result.FoundTypes[0]))
+                        dic.Add(result.FoundTypes[0], new List<GraphDataItem>());
+
+                    dic[result.FoundTypes[0]].Add(dataItem);
+                }
+
+                // validation rules 6.4.3 will always pick up (and kill)
+                // any un matchable or un process-able results. we don't need
+                // to check failures here
+            }
+
+            return dic;
         }
 
         /// <summary>

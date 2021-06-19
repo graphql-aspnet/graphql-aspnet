@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Logging.SubscriptionEvents
 {
     using System;
-    using System.Diagnostics.Tracing;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging.Common;

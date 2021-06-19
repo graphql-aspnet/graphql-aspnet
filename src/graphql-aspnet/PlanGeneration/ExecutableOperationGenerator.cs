@@ -73,7 +73,9 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <param name="sourceGraphType">The source type for which fields requests should be generated.</param>
         /// <param name="fieldsToReturn">The set of fields to return from the source type.</param>
         /// <returns>Task.</returns>
-        private async Task<IEnumerable<IGraphFieldInvocationContext>> CreateContextsForFieldSelectionSet(IObjectGraphType sourceGraphType, FieldSelectionSet fieldsToReturn)
+        private async Task<IEnumerable<IGraphFieldInvocationContext>> CreateContextsForFieldSelectionSet(
+            IObjectGraphType sourceGraphType,
+            FieldSelectionSet fieldsToReturn)
         {
             var tasks = new List<Task<IGraphFieldInvocationContext>>();
             if (sourceGraphType != null && fieldsToReturn != null && fieldsToReturn.Count > 0)

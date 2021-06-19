@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Response
     [DebuggerDisplay("Count = {Fields.Count}")]
     public class ResponseFieldSet : IResponseFieldSet
     {
-        private OrderedDictionary<string, IResponseItem> _dictionary;
+        private readonly OrderedDictionary<string, IResponseItem> _dictionary;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseFieldSet"/> class.

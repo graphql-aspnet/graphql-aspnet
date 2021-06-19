@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     /// </summary>
     public class ActionMethodInvocationStartedLogEntry : GraphLogEntry
     {
-        private string _shortControllerName;
+        private readonly string _shortControllerName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionMethodInvocationStartedLogEntry" /> class.

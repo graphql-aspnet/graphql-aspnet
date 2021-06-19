@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
-    using System;
     using System.Collections.Concurrent;
 
     /// <summary>

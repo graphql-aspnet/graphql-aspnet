@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 {
     using System;
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -50,8 +50,12 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         {
             // create a set of validation contexts for every incoming source graph item
             // to capture and validate every item regardless of it being successfully resolved or failed
-            var validationContexts = context.Request.DataSource.Items.Select(
-                x => new FieldValidationContext(_schema, x, context.Messages));
+            var validationContexts = new List<FieldValidationContext>(context.Request.DataSource.Items.Count);
+            foreach (var dataItem in context.Request.DataSource.Items)
+            {
+                var validationContext = new FieldValidationContext(_schema, dataItem, context.Messages);
+                validationContexts.Add(validationContext);
+            }
 
             // begin profiling of this single field of data
             context.Metrics?.BeginFieldResolution(context);

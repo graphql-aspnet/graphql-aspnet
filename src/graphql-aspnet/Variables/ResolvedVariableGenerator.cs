@@ -22,8 +22,8 @@ namespace GraphQL.AspNet.Variables
     /// </summary>
     public class ResolvedVariableGenerator
     {
-        private ISchema _schema;
-        private IGraphFieldExecutableOperation _operation;
+        private readonly ISchema _schema;
+        private readonly IGraphFieldExecutableOperation _operation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResolvedVariableGenerator" /> class.

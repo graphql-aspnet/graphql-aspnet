@@ -48,9 +48,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFrag
         public override string RuleNumber => "5.5.1.1";
 
         /// <summary>
-        /// Gets a url pointing to the rule definition in the graphql specification.
+        /// Gets an anchor tag, pointing to a specific location on the webpage identified
+        /// as the specification supported by this library. If ReferenceUrl is overriden
+        /// this value is ignored.
         /// </summary>
-        /// <value>The rule URL.</value>
-        public override string ReferenceUrl => "https://graphql.github.io/graphql-spec/June2018/#sec-Fragment-Name-Uniqueness";
+        /// <value>The rule anchor tag.</value>
+        protected override string RuleAnchorTag => "#sec-Fragment-Name-Uniqueness";
     }
 }

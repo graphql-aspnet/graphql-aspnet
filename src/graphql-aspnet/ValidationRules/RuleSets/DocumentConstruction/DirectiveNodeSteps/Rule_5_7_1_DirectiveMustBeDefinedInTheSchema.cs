@@ -46,9 +46,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
         public override string RuleNumber => "5.7.1";
 
         /// <summary>
-        /// Gets a url pointing to the rule definition in the graphql specification, if any.
+        /// Gets an anchor tag, pointing to a specific location on the webpage identified
+        /// as the specification supported by this library. If ReferenceUrl is overriden
+        /// this value is ignored.
         /// </summary>
-        /// <value>The rule URL.</value>
-        public override string ReferenceUrl => "https://graphql.github.io/graphql-spec/June2018/#sec-Directives-Are-Defined";
+        /// <value>The rule anchor tag.</value>
+        protected override string RuleAnchorTag => "#sec-Directives-Are-Defined";
     }
 }

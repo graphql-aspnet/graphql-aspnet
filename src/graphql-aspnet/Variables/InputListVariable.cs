@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Variables
     [DebuggerDisplay("InputList: {Name}, Count = {Items.Count}")]
     public class InputListVariable : InputVariable, IInputListVariable, IResolvableList
     {
-        private List<IInputVariable> _items;
+        private readonly List<IInputVariable> _items;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputListVariable"/> class.

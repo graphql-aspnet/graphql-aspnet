@@ -46,6 +46,7 @@ namespace GraphQL.AspNet.Tests.Execution
                            property1
                         }");
 
+            var r = await server.ExecuteQuery(builder);
             var result = await server.RenderResult(builder);
 
             // note the ordering on bData fragment
@@ -146,6 +147,10 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphType<FragmentProcessingController>()
                     .AddGraphType<IFragmentDataItem>()
+                    .AddSchemaBuilderAction(o =>
+                    {
+                        o.Options.ResponseOptions.ExposeExceptions = true;
+                    })
                     .Build();
 
             var builder = server.CreateQueryContextBuilder();

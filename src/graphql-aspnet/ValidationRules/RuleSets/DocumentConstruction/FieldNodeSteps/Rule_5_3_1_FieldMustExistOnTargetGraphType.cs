@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
@@ -55,10 +56,28 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (FieldNode)context.ActiveNode;
+
             var searchContainer = context.GraphType as IGraphFieldContainer;
 
             if (searchContainer == null)
+            {
+                if (context.GraphType.Kind == TypeKind.UNION)
+                {
+                    // special error message for union types
+                    this.ValidationError(
+                    context,
+                    $"The field '{node.FieldName.ToString()}' cannot be directly selected from type '{context.GraphType.Name}'. " +
+                    $"Fields cannot be directly selected from {nameof(TypeKind.UNION)} type selection sets.");
+                }
+                else
+                {
+                    this.ValidationError(
+                        context,
+                        InvalidFieldMessage(context.GraphType.Name, node.FieldName.ToString()));
+                }
+
                 return false;
+            }
 
             // if a fragment spread is in context that is performing a restriction on this field
             // use that graph type restriction to check for a valid field
@@ -82,9 +101,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         public override string RuleNumber => "5.3.1";
 
         /// <summary>
-        /// Gets a url pointing to the rule definition in the graphql specification, if any.
+        /// Gets an anchor tag, pointing to a specific location on the webpage identified
+        /// as the specification supported by this library. If ReferenceUrl is overriden
+        /// this value is ignored.
         /// </summary>
-        /// <value>The rule URL.</value>
-        public override string ReferenceUrl => "https://graphql.github.io/graphql-spec/June2018/#sec-Field-Selections-on-Objects-Interfaces-and-Unions-Types";
+        /// <value>The rule anchor tag.</value>
+        protected override string RuleAnchorTag => "#sec-Field-Selections-on-Objects-Interfaces-and-Unions-Types";
     }
 }

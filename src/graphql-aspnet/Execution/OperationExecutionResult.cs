@@ -9,12 +9,14 @@
 
 namespace GraphQL.AspNet.Execution
 {
+    using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Response;
 
     /// <summary>
     /// An instance of a result to executing an graphql operation.
     /// </summary>
+    [DebuggerDisplay("Messages = {Messages.Count}")]
     public class OperationExecutionResult : IOperationExecutionResult
     {
         /// <summary>

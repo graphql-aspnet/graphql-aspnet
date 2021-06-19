@@ -33,8 +33,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution
         private FieldCompletionRulePackage()
         {
             _ruleSet = new List<IRuleStep<FieldValidationContext>>();
-            _ruleSet.Add(new Rule_6_4_3_SchemaValueCompletion());
             _ruleSet.Add(new Rule_6_4_3_ServerValueCompletion());
+            _ruleSet.Add(new Rule_6_4_3_SchemaValueCompletion());
             _ruleSet.Add(new GraphDataItem_ResolveFieldStatus());
         }
 

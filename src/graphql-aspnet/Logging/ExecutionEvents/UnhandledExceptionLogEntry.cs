@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     /// </summary>
     public class UnhandledExceptionLogEntry : GraphLogEntry
     {
-        private string _shortTypeName;
+        private readonly string _shortTypeName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnhandledExceptionLogEntry" /> class.

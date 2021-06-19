@@ -26,5 +26,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
         };
 
         public bool Publish => true;
+
+        public Type ResolveType(Type runtimeObjectType)
+        {
+            return runtimeObjectType;
+        }
     }
 }

@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -89,6 +90,11 @@ namespace GraphQL.AspNet.Internal
                     return TypeKind.ENUM;
                 }
 
+                if (Validation.IsCastable<IGraphUnionProxy>(type))
+                {
+                    return TypeKind.UNION;
+                }
+
                 if (type.IsInterface)
                 {
                     return TypeKind.INTERFACE;
@@ -97,11 +103,6 @@ namespace GraphQL.AspNet.Internal
                 if (Validation.IsCastable<GraphDirective>(type))
                 {
                     return TypeKind.DIRECTIVE;
-                }
-
-                if (Validation.IsCastable<GraphUnionProxy>(type))
-                {
-                    return TypeKind.UNION;
                 }
             }
 

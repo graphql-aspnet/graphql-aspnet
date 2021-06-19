@@ -64,11 +64,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Mode = _fieldDeclaration?.ExecutionMode ?? FieldResolutionMode.PerSourceItem;
             this.Complexity = _fieldDeclaration?.Complexity;
             this.Description = this.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
-            var depreciated = this.SingleAttributeOfTypeOrDefault<DeprecatedAttribute>();
-            if (depreciated != null)
+            var deprecated = this.SingleAttributeOfTypeOrDefault<DeprecatedAttribute>();
+            if (deprecated != null)
             {
                 this.IsDeprecated = true;
-                this.DeprecationReason = depreciated.Reason?.Trim();
+                this.DeprecationReason = deprecated.Reason?.Trim();
             }
 
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                         this.PossibleTypes.Add(type);
                 }
 
-                // add any types decalred on the primary field declaration
+                // add any types declared on the primary field declaration
                 if (_fieldDeclaration != null)
                 {
                     foreach (var type in _fieldDeclaration.Types)
