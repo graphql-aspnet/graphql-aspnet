@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Execution.IntrospectionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -696,7 +697,12 @@ namespace GraphQL.AspNet.Tests.Execution
             var serverBuilder = new TestServerBuilder();
 
             // contains an enum CapacityType on SodaCanBuildingData
-            var server = serverBuilder.AddGraphType<SodaCanBuildingController>().Build();
+            var server = serverBuilder.AddGraphType<SodaCanBuildingController>()
+                .AddSchemaBuilderAction(o =>
+                {
+                    o.Options.ResponseOptions.ExposeExceptions = true;
+                })
+                .Build();
             var builder = server.CreateQueryContextBuilder();
 
             // need to resolve type field now
@@ -1001,7 +1007,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Schema_EnumValues_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<IntrospectableEnum>().Build();
+            var server = serverBuilder.AddGraphType<IntrospectableEnum>()
+                .Build();
             var builder = server.CreateQueryContextBuilder();
 
             builder.AddQueryText(@"

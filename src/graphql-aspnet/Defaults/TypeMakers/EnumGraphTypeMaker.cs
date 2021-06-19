@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     /// </summary>
     public class EnumGraphTypeMaker : IGraphTypeMaker
     {
-        private ISchema _schema;
+        private readonly ISchema _schema;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphTypeMaker"/> class.

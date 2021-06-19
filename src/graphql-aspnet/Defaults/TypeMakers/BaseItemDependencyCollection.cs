@@ -19,8 +19,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     /// </summary>
     public abstract class BaseItemDependencyCollection : IGraphItemDependencies
     {
-        private List<DependentType> _dependentTypes;
-        private List<IGraphType> _abstractTypes;
+        private readonly List<DependentType> _dependentTypes;
+        private readonly List<IGraphType> _abstractTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseItemDependencyCollection"/> class.

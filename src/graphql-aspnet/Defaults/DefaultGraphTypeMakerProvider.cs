@@ -61,6 +61,8 @@ namespace GraphQL.AspNet.Defaults
 
                 case TypeKind.INPUT_OBJECT:
                     return new InputObjectGraphTypeMaker(schema);
+
+                // note: unions cannot currently be made via the type maker stack
             }
 
             return null;

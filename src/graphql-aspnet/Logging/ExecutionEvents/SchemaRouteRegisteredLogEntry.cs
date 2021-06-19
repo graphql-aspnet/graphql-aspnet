@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     public class SchemaRouteRegisteredLogEntry<TSchema> : GraphLogEntry
         where TSchema : class, ISchema
     {
-        private string _schemaTypeShortName;
+        private readonly string _schemaTypeShortName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaRouteRegisteredLogEntry{TSchema}" /> class.

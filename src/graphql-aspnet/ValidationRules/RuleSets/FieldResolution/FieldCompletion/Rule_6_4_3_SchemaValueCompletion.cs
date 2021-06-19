@@ -38,10 +38,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(FieldValidationContext context)
         {
-            var typeExpression = context.TypeExpression;
-            if (typeExpression.IsRequired && context.ResultData == null)
+            var dataObject = context.ResultData;
+
+            // 6.4.3 section 1c
+            // This is a quick short cut and customed error message for a common top-level null mismatch.
+            var dataItemTypeExpression = context.DataItem.TypeExpression;
+            if (dataItemTypeExpression.IsRequired && dataObject == null)
             {
-                // 6.4.3 section 1c
                 this.ValidationError(
                 context,
                 $"Field '{context.FieldPath}' expected a non-null result but received {{null}}.");
@@ -50,11 +53,12 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
             }
 
             // 6.4.3 section 2
-            if (context.ResultData == null)
+            if (dataObject == null)
                 return true;
 
-            // 6.4.3 section 3, ensure an IEnumerable for a type expression that is a list
-            if (typeExpression.IsListOfItems && !GraphValidation.IsValidListType(context.ResultData.GetType()))
+            // 6.4.3 section 3, ensure list type in the result object for a type expression that is a list.
+            // This is a quick short cut and customed error message for a common top-level list mismatch.
+            if (dataItemTypeExpression.IsListOfItems && !GraphValidation.IsValidListType(dataObject.GetType()))
             {
                 this.ValidationError(
                     context,
@@ -64,30 +68,40 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
                 return true;
             }
 
-            var graphType = context.Schema?.KnownTypes.FindGraphType(typeExpression?.TypeName);
-            if (graphType == null)
+            var expectedGraphType = context.Schema?.KnownTypes.FindGraphType(context.Field);
+            if (expectedGraphType == null)
             {
                 this.ValidationError(
                     context,
-                    $"The graph type for field '{context.FieldPath}' ({typeExpression?.TypeName}) does not exist on the target schema. The field" +
+                    $"The graph type for field '{context.FieldPath}' ({dataItemTypeExpression?.TypeName}) does not exist on the target schema. The field" +
                     "cannot be properly evaluated.");
 
                 context.DataItem.InvalidateResult();
+                return true;
             }
-            else if (!typeExpression.Matches(context.ResultData, graphType.ValidateObject))
+
+            // Perform a deep check of the meta-type chain (list and nullability wrappers) against the result data.
+            // For example, if the type expression is [[SomeType]] ensure the result object is List<List<T>> etc.)
+            // however, use the type name of the actual data object, not the graph type itself
+            // we only want to check the type expression wrappers in this step
+            var rootSourceType = GraphValidation.EliminateWrappersFromCoreType(dataObject.GetType());
+            var mangledTypeExpression = dataItemTypeExpression.CloneTo(rootSourceType.Name);
+
+            if (!mangledTypeExpression.Matches(dataObject))
             {
                 // generate a valid, properly cased type expression reference for the data that was provided
                 var actualExpression = GraphValidation.GenerateTypeExpression(context.ResultData.GetType());
-                var coreType = GraphValidation.EliminateWrappersFromCoreType(context.ResultData.GetType());
-                var actualType = context.Schema.KnownTypes.FindGraphType(coreType);
-                if (actualType != null)
-                    actualExpression = actualExpression.CloneTo(actualType.Name);
+
+                // Fake the type expression against the real graph type
+                // this step only validates the meta graph types the actual type may be different (but castable to the concrete
+                // type of the graphType). Don't confuse the user in this step.
+                actualExpression = actualExpression.CloneTo(expectedGraphType.Name);
 
                 // 6.4.3  section 4 & 5
                 this.ValidationError(
                     context,
                     $"The resolved value for field '{context.FieldPath}' does not match the required type expression. " +
-                    $"Expected {typeExpression} but got {actualExpression}.");
+                    $"Expected {dataItemTypeExpression} but got {actualExpression}.");
 
                 context.DataItem.InvalidateResult();
             }

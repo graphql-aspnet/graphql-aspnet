@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "starwars_api": {
+    "StarWars: .NET Core 2.x": {
       "commandName": "Project",
       "launchUrl": "",
       "environmentVariables": {

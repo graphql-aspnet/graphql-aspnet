@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         private readonly IServiceCollection _serviceCollection;
         private readonly Action<SchemaOptions<TSchema>> _configureOptions;
         private readonly SchemaBuilder<TSchema> _schemaBuilder;
-        private SchemaOptions<TSchema> _options;
+        private readonly SchemaOptions<TSchema> _options;
         private GraphQueryHandler<TSchema> _handler;
 
         /// <summary>

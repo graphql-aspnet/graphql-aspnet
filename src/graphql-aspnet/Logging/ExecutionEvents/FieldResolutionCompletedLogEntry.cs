@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public override string ToString()
         {
             var idTruncated = this.PipelineRequestId?.Length > 8 ? this.PipelineRequestId.Substring(0, 8) : this.PipelineRequestId;
-            return $"Field Resolution Completed | Id: {idTruncated},  Path: {this.FieldPath}, Successful: {this.ResultIsValid.ToString().ToLower()}";
+            return $"Field Resolution Completed | Id: {idTruncated},  Path: {this.FieldPath}, Successful: {this.ResultIsValid.ToString()}";
         }
     }
 }

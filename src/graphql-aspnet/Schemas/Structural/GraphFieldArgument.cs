@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Schemas.Structural
 {
     using System;
     using System.Diagnostics;
-    using System.Security.Cryptography;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;

@@ -31,6 +31,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         private readonly ConcurrentDictionary<string, IGraphType> _graphTypesByName;
         private readonly ExtendedGraphTypeTracker _extendableGraphTypeTracker;
         private readonly GraphTypeExtensionQueue _typeQueue;
+        private readonly SchemaRuntimeTypeAnalyzer _typeMatchProcessor;
         private readonly ConcreteTypeCollection _concreteTypes;
 
         /// <summary>
@@ -42,15 +43,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             _concreteTypes = new ConcreteTypeCollection();
             _extendableGraphTypeTracker = new ExtendedGraphTypeTracker();
             _typeQueue = new GraphTypeExtensionQueue();
+            _typeMatchProcessor = new SchemaRuntimeTypeAnalyzer(this);
         }
 
-        /// <summary>
-        /// Registers the extension field to the <see cref="IObjectGraphType" /> corrisponding to the supplied
-        /// concrete type. If a matching graph type cannot be found for the concrete type supplied, the field
-        /// is queued for when it is registered.
-        /// </summary>
-        /// <param name="masterType">The master type that, once added to the schema, will trigger that addition of this field.</param>
-        /// <param name="field">The field that will be added to the graph type associated with the master type.</param>
+        /// <inheritdoc />
         public void EnsureGraphFieldExtension(Type masterType, IGraphField field)
         {
             Validation.ThrowIfNull(masterType, nameof(masterType));
@@ -73,14 +69,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             _typeQueue.EnQueueField(masterType, field);
         }
 
-        /// <summary>
-        /// Ensures the provided <see cref="IGraphType" /> exists in this collection (adding it if it is missing)
-        /// and that the given type reference is assigned to it. An exception will be thrown if the type reference is already assigned
-        /// to a different <see cref="IGraphType" />. No dependents or additional types will be added.
-        /// </summary>
-        /// <param name="graphType">Type of the graph.</param>
-        /// <param name="associatedType">The concrete type to associate to the graph type.</param>
-        /// <returns><c>true</c> if type had to be added, <c>false</c> if it already existed in the collection.</returns>
+        /// <inheritdoc />
         public bool EnsureGraphType(IGraphType graphType, Type associatedType = null)
         {
             Validation.ThrowIfNull(graphType, nameof(graphType));
@@ -111,13 +100,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             return justAdded;
         }
 
-        /// <summary>
-        /// Attempts to expand the given graph into the object graph
-        /// types it represents. If the given graph type is not one that can be expanded an empty list is returned. Object
-        /// graph types will be returned untouched as part of an enumeration.
-        /// </summary>
-        /// <param name="graphType">The graph type to expand.</param>
-        /// <returns>An enumeration of graph types.</returns>
+        /// <inheritdoc />
         public IEnumerable<IObjectGraphType> ExpandAbstractType(IGraphType graphType)
         {
             switch (graphType)
@@ -138,25 +121,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             }
         }
 
-        /// <summary>
-        /// Attempts to find an <see cref="IGraphType" /> currently associated with the given concrete type. Returns null
-        /// if no <see cref="IGraphType" /> is found.
-        /// </summary>
-        /// <param name="concreteType">The concrete type to search for.</param>
-        /// <param name="kind">The graph type to search for an association of.</param>
-        /// <returns>IGraphType.</returns>
+        /// <inheritdoc />
         public IGraphType FindGraphType(Type concreteType, TypeKind kind)
         {
             this.DenySearchForListAndKVP(concreteType);
             return _concreteTypes.FindGraphType(concreteType, kind);
         }
 
-        /// <summary>
-        /// Attempts to find an <see cref="IGraphType" /> with the given name. Returns null
-        /// if no <see cref="IGraphType" /> is found.
-        /// </summary>
-        /// <param name="graphTypeName">The name of the type in the object graph.</param>
-        /// <returns>IGraphType.</returns>
+        /// <inheritdoc />
         public IGraphType FindGraphType(string graphTypeName)
         {
             if (_graphTypesByName.TryGetValue(graphTypeName, out var graphType))
@@ -165,21 +137,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             return null;
         }
 
-        /// <summary>
-        /// Finds the graph type, if any, associated with the given field.
-        /// </summary>
-        /// <param name="field">The field.</param>
-        /// <returns>IGraphType.</returns>
+        /// <inheritdoc />
         public IGraphType FindGraphType(IGraphField field)
         {
             return this.FindGraphType(field?.TypeExpression?.TypeName);
         }
 
-        /// <summary>
-        /// Finds the graph type, if any, associated with the object instance.
-        /// </summary>
-        /// <param name="data">The data object to search with.</param>
-        /// <returns>IGraphType.</returns>
+        /// <inheritdoc />
         public IGraphType FindGraphType(object data)
         {
             if (data == null)
@@ -196,33 +160,51 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             return this.FindGraphType(data.GetType(), TypeKind.OBJECT);
         }
 
-        /// <summary>
-        /// Finds the concrete type related to the supplied graph type. returns null if no types are found.
-        /// </summary>
-        /// <param name="graphType">Type of the graph.</param>
-        /// <returns>Type.</returns>
+        /// <inheritdoc />
         public Type FindConcreteType(IGraphType graphType)
         {
             return _concreteTypes.FindType(graphType);
         }
 
-        /// <summary>
-        /// Attempts to find a single directive within this schema by its name. Returns null
-        /// if the directive is not found.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>IDirectiveGraphType.</returns>
+        /// <inheritdoc />
+        public IEnumerable<Type> FindConcreteTypes(params IGraphType[] graphTypes)
+        {
+            var list = new List<Type>();
+            foreach (var graphType in graphTypes)
+            {
+                foreach (var egt in this.ExpandAbstractType(graphType))
+                {
+                    var type = this.FindConcreteType(egt);
+                    if (type != null)
+                        list.Add(type);
+                }
+            }
+
+            return list;
+        }
+
+        /// <inheritdoc />
+        public SchemaConcreteTypeAnalysisResult AnalyzeRuntimeConcreteType(IGraphType targetGraphType, Type typeToCheck)
+        {
+            Validation.ThrowIfNull(targetGraphType, nameof(targetGraphType));
+            Validation.ThrowIfNull(typeToCheck, nameof(typeToCheck));
+
+            if (!this.Contains(targetGraphType))
+                return new SchemaConcreteTypeAnalysisResult(targetGraphType, typeToCheck, new Type[0]);
+
+            this.DenySearchForListAndKVP(typeToCheck);
+
+            var result = _typeMatchProcessor.FindAllowedTypes(targetGraphType, typeToCheck);
+            return new SchemaConcreteTypeAnalysisResult(targetGraphType, typeToCheck, result);
+        }
+
+        /// <inheritdoc />
         public IDirectiveGraphType FindDirective(string name)
         {
             return this.FindGraphType(name) as IDirectiveGraphType;
         }
 
-        /// <summary>
-        /// Retrieves the collection of graph types that implement the provided named interface,
-        /// if any.
-        /// </summary>
-        /// <param name="interfaceType">The interface type type to look for.</param>
-        /// <returns>IEnumerable&lt;IGraphType&gt;.</returns>
+        /// <inheritdoc />
         public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(IInterfaceGraphType interfaceType)
         {
             if (interfaceType == null)
@@ -231,12 +213,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 return this.FindGraphTypesByInterface(interfaceType.Name);
         }
 
-        /// <summary>
-        /// Retrieves the collection of graph types that implement the provided named interface
-        /// if any.
-        /// </summary>
-        /// <param name="interfaceName">Name of the interface.</param>
-        /// <returns>IEnumerable&lt;IGraphType&gt;.</returns>
+        /// <inheritdoc />
         public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(string interfaceName)
         {
             return _extendableGraphTypeTracker.FindGraphTypesByInterface(interfaceName);
@@ -263,34 +240,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             }
         }
 
-        /// <summary>
-        /// Determines whether the specified graph type name exists in this collection.
-        /// </summary>
-        /// <param name="graphTypeName">Name of the graph type.</param>
-        /// <returns><c>true</c> if the specified graph type name contains key; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool Contains(string graphTypeName)
         {
             return _graphTypesByName.ContainsKey(graphTypeName);
         }
 
-        /// <summary>
-        /// Determines whether this collection contains a <see cref="Type" /> refrence for the
-        /// provided concrete type as an object type reference (different from an input type).
-        /// </summary>
-        /// <param name="concreteType">Type of the concrete.</param>
-        /// <param name="kind">The kind of graph type to create from the supplied concrete type. If not supplied the concrete type will
-        /// attempt to auto assign a type of scalar, enum or object as necessary.</param>
-        /// <returns><c>true</c> if the type collection contains a reference to the concrete type for the given kind; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool Contains(Type concreteType, TypeKind? kind = null)
         {
             return _concreteTypes.Contains(concreteType, kind);
         }
 
-        /// <summary>
-        /// Determines whether this collection contains a <see cref="IGraphType" /> as an object type reference (different from an input type).
-        /// </summary>
-        /// <param name="graphType">the graph type to search for.</param>
-        /// <returns><c>true</c> if the graph type is found; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool Contains(IGraphType graphType)
         {
             if (_graphTypesByName.TryGetValue(graphType.Name, out var foundType))
@@ -299,37 +261,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             return false;
         }
 
-        /// <summary>
-        /// Gets the total number of <see cref="IGraphType"/> in this collection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _graphTypesByName.Count;
 
-        /// <summary>
-        /// Gets the count of queued <see cref="IGraphField"/>.
-        /// </summary>
-        /// <value>The un registered field count.</value>
+        /// <inheritdoc />
         public int QueuedExtensionFieldCount => _typeQueue.FieldCount;
 
-        /// <summary>
-        /// Gets the total count of concrete types in this collection.
-        /// </summary>
-        /// <value>The type references.</value>
+        /// <inheritdoc />
         public IEnumerable<Type> TypeReferences => _concreteTypes.Types;
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         public IEnumerator<IGraphType> GetEnumerator()
         {
             return _graphTypesByName.Values.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

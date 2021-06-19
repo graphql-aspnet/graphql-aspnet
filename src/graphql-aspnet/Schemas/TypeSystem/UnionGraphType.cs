@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -30,9 +31,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="UnionGraphType" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        public UnionGraphType(string name)
+        /// <param name="unionProxy">The proxy object which defined
+        /// the union type at design t.</param>
+        public UnionGraphType(string name, IGraphUnionProxy unionProxy)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+            this.Proxy = Validation.ThrowIfNullOrReturn(unionProxy, nameof(unionProxy));
             _types = new HashSet<Type>();
             _names = new List<string>();
             this.Publish = true;
@@ -45,7 +49,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
         public bool ValidateObject(object item)
         {
-            return item == null || _types.Contains(item.GetType());
+            if (item == null || _types.Contains(item.GetType()))
+                return true;
+
+            var type = item.GetType();
+            return _types.Any(x => Validation.IsCastable(type, x));
         }
 
         /// <summary>
@@ -79,6 +87,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <value>The publically referenced name of this field in the graph.</value>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets the proxy object that was defined at design type which created this union type.
+        /// </summary>
+        /// <value>The proxy.</value>
+        public IGraphUnionProxy Proxy { get; }
 
         /// <summary>
         /// Gets or sets the human-readable description distributed with this field

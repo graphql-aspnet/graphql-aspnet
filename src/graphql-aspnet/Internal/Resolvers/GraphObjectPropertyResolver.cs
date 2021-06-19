@@ -59,9 +59,10 @@ namespace GraphQL.AspNet.Internal.Resolvers
             }
 
             // valdidate the incoming source data to ensure its process-able by this property
-            // resolver. If the data is being resolved through an interface ensure the provided
+            // resolver. If the data is being resolved through an interface or object reference
+            // ensure the provided
             // source data can be converted otherwise ensure the types match exactly.
-            if (_graphMethod.Parent.ObjectType.IsInterface)
+            if (_graphMethod.Parent.ObjectType.IsInterface || _graphMethod.Parent.ObjectType.IsClass)
             {
                 if (!Validation.IsCastable(sourceData.GetType(), _graphMethod.Parent.ObjectType))
                 {

@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("ENUM {Name}")]
     public class EnumGraphType : IEnumGraphType
     {
-        private Dictionary<string, IEnumOption> _options;
+        private readonly Dictionary<string, IEnumOption> _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
