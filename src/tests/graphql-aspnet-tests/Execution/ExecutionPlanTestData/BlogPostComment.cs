@@ -9,20 +9,10 @@
 
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
-    using System.Collections.Generic;
-
-    public class BlogPost
+    public class BlogPostComment
     {
-        public int PostId { get; set; }
+        public int CommentId { get; set; }
 
-        public string Title { get; set; }
-
-        public string Content { get; set; }
-
-        public int BlogId { get; set; }
-
-        public virtual Blog Blog { get; set; }
-
-        public virtual IList<BlogPostComment> Comments { get; set; }
+        public string Comment { get; set; }
     }
 }
