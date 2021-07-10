@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 
     public class BlogController : GraphController
     {
-
         [QueryRoot("blogs", typeof(IEnumerable<Blog>))]
         public IGraphActionResult RetrieveBlogs()
         {

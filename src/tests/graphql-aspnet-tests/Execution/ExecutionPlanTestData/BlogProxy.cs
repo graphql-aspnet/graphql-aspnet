@@ -13,6 +13,5 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 
     public class BlogProxy : Blog
     {
-
     }
 }
