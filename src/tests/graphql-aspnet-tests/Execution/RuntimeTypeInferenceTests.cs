@@ -171,5 +171,85 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(Constants.ErrorCodes.EXECUTION_ERROR, result.Messages[0].Code);
             Assert.AreEqual(1, MixedTypeUnionSourceReturn.TotalCallCount);
         }
+
+        [Test]
+        public async Task WhenSourceObjectIsAValidProxy_ChildFieldResolutionValidatesSourceProxyAsValid()
+        {
+            // blog controller returns a BlogProxy and PostProxy
+            // for the root object and child object set
+            var server = new TestServerBuilder()
+                    .AddGraphType<BlogController>()
+                    .AddSchemaBuilderAction(a =>
+                    {
+                        a.Options.ResponseOptions.ExposeExceptions = true;
+                    })
+                    .Build();
+
+            // blogs returns a BlogProxyObject
+            // the [type]/Blog/posts field should
+            // validate the Type BlogProxy as being a valid Blog that it can
+            // use as a source
+            // same with BlogPost/BlogPostProxy and BlogPostComment/BlogPostCommentProxy
+            var builder = server.CreateQueryContextBuilder()
+            .AddQueryText(
+            @"query  {
+                        blogs {
+                            blogId,
+                            url,
+                            posts {
+                                postId,
+                                title,
+                                comments {
+                                    commentId,
+                                    comment
+                                }
+                            }
+                    }}");
+
+            var expectedResult = @"
+            {
+              ""data"": {
+                ""blogs"": [
+                  {
+                    ""blogId"": 1,
+                    ""url"": ""http://blog.com"",
+                    ""posts"": [
+                      {
+                        ""postId"": 1,
+                        ""title"": ""Title 1"",
+                        ""comments"": [
+                          {
+                            ""commentId"": 30,
+                            ""comment"": ""Comment 30""
+                          },
+                          {
+                            ""commentId"": 31,
+                            ""comment"": ""Comment 31""
+                          }
+                        ]
+                      },
+                      {
+                        ""postId"": 2,
+                        ""title"": ""Title 2"",
+                        ""comments"": [
+                          {
+                            ""commentId"": 32,
+                            ""comment"": ""Comment 32""
+                          },
+                          {
+                            ""commentId"": 33,
+                            ""comment"": ""Comment 33""
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+                }";
+
+            var outputJson = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedResult, outputJson);
+        }
     }
 }

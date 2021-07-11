@@ -10,12 +10,14 @@
 namespace GraphQL.AspNet.Execution.FieldResolution
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
 
     /// <summary>
     /// An item, that may contain a collection of data items or just one, that acts as an input source to a
     /// field execution pipeline.
     /// </summary>
+    [DebuggerDisplay("{Path} (Count: {Items.Count})")]
     public class GraphFieldDataSource
     {
         /// <summary>
