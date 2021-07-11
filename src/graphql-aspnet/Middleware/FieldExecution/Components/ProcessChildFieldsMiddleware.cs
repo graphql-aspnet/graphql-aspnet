@@ -16,9 +16,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -171,7 +173,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     var task = _fieldExecutionPipeline.InvokeAsync(childContext, cancelToken)
                         .ContinueWith(invokeTask =>
                         {
-                            context.Messages.AddRange(childContext.Messages);
+                            this.CaptureChildFieldExecutionResults(context, childContext, invokeTask);
                         });
 
                     pipelines.Add(task);
@@ -190,6 +192,40 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 {
                     await task.ConfigureAwait(false);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Inspects both the childcontext and the invoked task to determine
+        /// if any messages were found or any unhandled exceptions were thrown then
+        /// captures the results into the parent context for upstream processing or
+        /// reporting.
+        /// </summary>
+        /// <param name="parentContext">The parent context that invoked the child.</param>
+        /// <param name="childContext">The child context that was invoked.</param>
+        /// <param name="childExecutionTask">The actual task representing the child
+        /// pipeline.</param>
+        private void CaptureChildFieldExecutionResults(
+            GraphFieldExecutionContext parentContext,
+            GraphFieldExecutionContext childContext,
+            Task childExecutionTask)
+        {
+            // capture any messages that the child context may have internally reported
+            parentContext.Messages.AddRange(childContext.Messages);
+
+            // inspect the task for faulting and capture any exceptions as critical errors
+            if (childExecutionTask.IsFaulted)
+            {
+                var exception = childExecutionTask.UnwrapException();
+                exception = exception ?? new Exception(
+                    "Unknown Error. The child field execution pipeline indicated a fault but did not " +
+                    "provide a reason for the failure.");
+
+                parentContext.Messages.Critical(
+                    $"Processing field '{childContext.Field.Name}' of '{parentContext.Field.Route}' resulted in a critical failure. See exception for details.",
+                    Constants.ErrorCodes.EXECUTION_ERROR,
+                    childContext.InvocationContext.Origin,
+                    exception);
             }
         }
 

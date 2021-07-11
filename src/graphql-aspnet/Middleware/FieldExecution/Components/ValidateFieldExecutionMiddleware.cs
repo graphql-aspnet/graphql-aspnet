@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A middleware component that will validate a <see cref="GraphFieldExecutionContext" /> prior to the
@@ -51,22 +52,25 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         {
             // ensure that the data items on teh request match the field they are being executed against
             var field = context.Field;
-            var expectedGraphType = _schema.KnownTypes.FindGraphType(field);
+            var expectedFieldGraphType = _schema.KnownTypes.FindGraphType(field);
             var dataSource = context.Request.DataSource;
 
+            // ensure the source being supplied
+            // matches the expected source of the field being resolved
             if (context.InvocationContext.ExpectedSourceType != null)
             {
-                var expectedType = context.InvocationContext.ExpectedSourceType;
-                var sourceType = GraphValidation.EliminateWrappersFromCoreType(dataSource.Value.GetType());
-                if (expectedType != sourceType)
+                var expectedSourceType = context.InvocationContext.ExpectedSourceType;
+                var actualSourceType = GraphValidation.EliminateWrappersFromCoreType(dataSource.Value.GetType());
+                if (expectedSourceType != actualSourceType)
                 {
-                    var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedGraphType, sourceType);
+                    var expectedSourceGraphType = _schema.KnownTypes.FindGraphType(expectedSourceType, TypeKind.OBJECT);
+                    var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedSourceGraphType, actualSourceType);
                     if (!analysis.ExactMatchFound)
                     {
                         throw new GraphExecutionException(
                             $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
                             $"a source item of type '{dataSource.Value.GetType().FriendlyName()}' which could not be coerced " +
-                            $"to '{context.InvocationContext.ExpectedSourceType}' as requested by the target graph type '{expectedGraphType.Name}'.");
+                            $"to '{context.InvocationContext.ExpectedSourceType}' as requested by the target graph type '{expectedFieldGraphType.Name}'.");
                     }
 
                     if (context.Field.Mode == FieldResolutionMode.Batch && !(dataSource.GetType() is IEnumerable))
