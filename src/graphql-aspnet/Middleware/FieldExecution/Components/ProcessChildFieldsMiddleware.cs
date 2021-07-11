@@ -219,7 +219,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 var exception = childExecutionTask.UnwrapException();
                 exception = exception ?? new Exception(
                     "Unknown Error. The child field execution pipeline indicated a fault but did not " +
-                    "provide a reason. This exception represents an unknown cause for the child pipeline failure.");
+                    "provide a reason for the failure.");
 
                 parentContext.Messages.Critical(
                     $"Processing field '{childContext.Field.Name}' of '{parentContext.Field.Route}' resulted in a critical failure. See exception for details.",
