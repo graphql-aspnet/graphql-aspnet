@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Schemas
 
                         throw new GraphTypeDeclarationException(
                         $"The action '{action.Route}' attempted to nest itself under the {foundType.Kind} graph type '{foundType.Name}', which is returned by " +
-                        $" but the route '{field.Route}'.  Actions can only be added to virtual graph types created by their parent controller.");
+                        $"the route '{field.Route}'.  Actions can only be added to virtual graph types created by their parent controller.");
                     }
 
                     if (foundType != null)
