@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
@@ -22,6 +23,7 @@ namespace GraphQL.AspNet.Schemas
     /// that provides functionality for using <see cref="GraphController"/> as fields in an object graph.
     /// </summary>
     /// <seealso cref="ISchema" />
+    [DebuggerDisplay("Default Schema (Known Types = {KnownTypes.Count})")]
     public class GraphSchema : ISchema
     {
         /// <summary>

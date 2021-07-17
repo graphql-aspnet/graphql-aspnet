@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Schemas
             if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
             {
                 this.EnsureGraphOperationType(action.Route.RootCollection);
-                var parentField = this.AddOrRetrieveRoutePath(action);
+                var parentField = this.AddOrRetrieveControllerRoutePath(action);
                 this.AddActionAsField(parentField, action);
             }
             else
@@ -165,7 +165,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="action">The action.</param>
         /// <returns>IGraphField.</returns>
-        private IObjectGraphType AddOrRetrieveRoutePath(IGraphTypeFieldTemplate action)
+        private IObjectGraphType AddOrRetrieveControllerRoutePath(IGraphTypeFieldTemplate action)
         {
             var pathSegments = action.Route.GenerateParentPathSegments();
 
@@ -181,15 +181,33 @@ namespace GraphQL.AspNet.Schemas
                 {
                     var field = parentType[formattedName];
                     var foundType = Schema.KnownTypes.FindGraphType(field.TypeExpression.TypeName);
-                    if (foundType is IObjectGraphType ogt)
+
+                    var ogt = foundType as IObjectGraphType;
+                    if (ogt != null)
                     {
-                        parentType = ogt;
-                        continue;
+                        if (ogt.IsVirtual)
+                        {
+                            parentType = ogt;
+                            continue;
+                        }
+
+                        throw new GraphTypeDeclarationException(
+                        $"The action '{action.Route}' attempted to nest itself under the {foundType.Kind} graph type '{foundType.Name}', which is returned by " +
+                        $" but the route '{field.Route}'.  Actions can only be added to virtual graph types created by their parent controller.");
                     }
 
-                    throw new GraphTypeDeclarationException(
-                        $"The action '{action.Name}' attempted to nest itself under the grpah type '{foundType?.Name}' but the graph type " +
-                        "does not exist or does not accept fields.");
+                    if (foundType != null)
+                    {
+                        throw new GraphTypeDeclarationException(
+                        $"The action '{action.Route.Path}' attempted to nest itself under the graph type '{foundType.Name}'. {foundType.Kind} graph types cannot " +
+                        "accept fields.");
+                    }
+                    else
+                    {
+                        throw new GraphTypeDeclarationException(
+                        $"The action '{action.Route.Path}' attempted to nest itself under the field '{field.Route}' but no graph type was found " +
+                        "that matches its type.");
+                    }
                 }
 
                 var fieldType = this.CreateVirtualFieldOnParent(
@@ -274,9 +292,9 @@ namespace GraphQL.AspNet.Schemas
         /// all found types to the type system for this <see cref="ISchema" />. Generates
         /// a field reference on the provided parent with a resolver pointing to the provided graph action.
         /// </summary>
-        /// <param name="parentField">The parent which will own the generated action field.</param>
+        /// <param name="parentType">The parent which will own the generated action field.</param>
         /// <param name="action">The action.</param>
-        private void AddActionAsField(IObjectGraphType parentField, IGraphTypeFieldTemplate action)
+        private void AddActionAsField(IObjectGraphType parentType, IGraphTypeFieldTemplate action)
         {
             // apend the action as a field on the parent
             var maker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(this.Schema);
@@ -284,7 +302,14 @@ namespace GraphQL.AspNet.Schemas
 
             if (fieldResult != null)
             {
-                parentField.Extend(fieldResult.Field);
+                if (parentType.Fields.ContainsKey(fieldResult.Field.Name))
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The '{parentType.Kind}' graph type '{parentType.Name}' already contains a field named '{fieldResult.Field.Name}'. " +
+                        $"The action method '{action.InternalFullName}' cannot be added to the graph type with the same name.");
+                }
+
+                parentType.Extend(fieldResult.Field);
                 this.EnsureDependents(fieldResult);
             }
         }
