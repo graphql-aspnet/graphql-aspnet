@@ -192,30 +192,29 @@ namespace GraphQL.AspNet.Schemas
                         }
 
                         throw new GraphTypeDeclarationException(
-                        $"The action '{action.Route}' attempted to nest itself under the {foundType.Kind} graph type '{foundType.Name}', which is returned by " +
-                        $"the route '{field.Route}'.  Actions can only be added to virtual graph types created by their parent controller.");
+                            $"The action '{action.Route}' attempted to nest itself under the {foundType.Kind} graph type '{foundType.Name}', which is returned by " +
+                            $"the route '{field.Route}'.  Actions can only be added to virtual graph types created by their parent controller.");
                     }
 
                     if (foundType != null)
                     {
                         throw new GraphTypeDeclarationException(
-                        $"The action '{action.Route.Path}' attempted to nest itself under the graph type '{foundType.Name}'. {foundType.Kind} graph types cannot " +
-                        "accept fields.");
+                            $"The action '{action.Route.Path}' attempted to nest itself under the graph type '{foundType.Name}'. {foundType.Kind} graph types cannot " +
+                            "accept fields.");
                     }
                     else
                     {
                         throw new GraphTypeDeclarationException(
-                        $"The action '{action.Route.Path}' attempted to nest itself under the field '{field.Route}' but no graph type was found " +
-                        "that matches its type.");
+                            $"The action '{action.Route.Path}' attempted to nest itself under the field '{field.Route}' but no graph type was found " +
+                            "that matches its type.");
                     }
                 }
 
-                var fieldType = this.CreateVirtualFieldOnParent(
+                parentType = this.CreateVirtualFieldOnParent(
                     parentType,
                     formattedName,
                     segment,
                     i == 0 ? action.Parent : null);
-                parentType = fieldType;
             }
 
             return parentType;
@@ -372,7 +371,7 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Ensures the dependents.
+        /// Ensures the dependents in teh given collection are part of the target <see cref="Schema"/>.
         /// </summary>
         /// <param name="dependencySet">The dependency set.</param>
         private void EnsureDependents(IGraphItemDependencies dependencySet)
@@ -407,7 +406,7 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Gets the schema.
+        /// Gets the schema being managed and built by this instance.
         /// </summary>
         /// <value>The schema.</value>
         public ISchema Schema { get; }

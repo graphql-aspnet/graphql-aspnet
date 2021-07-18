@@ -25,8 +25,8 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldAuthorizationContext" /> class.
         /// </summary>
-        /// <param name="parentContext">The parent context which created this one.</param>
-        /// <param name="authRequest">The authentication request.</param>
+        /// <param name="parentContext">The parent context which created this instance.</param>
+        /// <param name="authRequest">The authorization request to be governed.</param>
         public GraphFieldAuthorizationContext(IGraphMiddlewareContext parentContext, IGraphFieldAuthorizationRequest authRequest)
              : base(parentContext)
         {
