@@ -27,9 +27,9 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// instance.
         /// </summary>
         /// <param name="queryData">The data package contaning the raw values
-        /// that need to be packaged.</param>
+        /// that need to be packaged. When null an empty request is generated.</param>
         /// <returns>A fully qualified request context that can be executed.</returns>
-        IGraphOperationRequest CreateRequest(GraphQueryData queryData);
+        IGraphOperationRequest CreateRequest(GraphQueryData queryData = null);
 
         /// <summary>
         /// Creates a new metrics package using the default means available to this runtime instance.
@@ -48,10 +48,10 @@ namespace GraphQL.AspNet.Interfaces.Engine
             CancellationToken cancelToken = default);
 
         /// <summary>
-        /// Accepts a qualified operation request and renders the result.
+        /// Accepts a qualified operation request and renders the result using the provided user details.
         /// </summary>
         /// <param name="serviceProvider">The service provider to use for resolving
-        /// graph objects.</param>
+        /// graph objects during execution.</param>
         /// <param name="user">The claims principal representing the user to authorize
         /// on the query.</param>
         /// <param name="request">The primary data request.</param>

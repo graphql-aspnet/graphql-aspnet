@@ -30,12 +30,12 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodGraphField" /> class.
         /// </summary>
-        /// <param name="fieldName">Name of the field in the type declaration..</param>
-        /// <param name="typeExpression">The meta data about how this type field is implemented.</param>
+        /// <param name="fieldName">Name of the field in the graph.</param>
+        /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
-        /// <param name="mode">The execution mode of this field.</param>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="securityPolicies">The security policies.</param>
+        /// <param name="mode">The mode in which the runtime will process this field.</param>
+        /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
+        /// <param name="securityPolicies">The security policies that apply to this field.</param>
         public MethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,

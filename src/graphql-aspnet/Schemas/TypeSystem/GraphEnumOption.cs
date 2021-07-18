@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Internal;
 
     /// <summary>
-    /// A qualified option on an enumeration.
+    /// A qualified option on a published ENUM graph type.
     /// </summary>
     [DebuggerDisplay("Value = {Name}")]
     public class GraphEnumOption : IEnumOption
