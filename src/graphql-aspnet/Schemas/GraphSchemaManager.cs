@@ -27,9 +27,10 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Manages the relationships between <see cref="GraphController"/>s and an <see cref="ISchema"/>.
-    /// Assists with the conversion, creation and reporting of <see cref="IGraphType"/> data
-    /// parsed from any <see cref="GraphController"/> or added manually.
+    /// Manages the relationships between <see cref="GraphController"/> and a <see cref="ISchema"/>.
+    /// Assists with the conversion, creation and assignment of <see cref="IGraphType"/> data
+    /// parsed from any <see cref="GraphController"/> or added manually <see cref="Type"/> to the <see cref="ISchema"/> this instance is
+    /// managing.
     /// </summary>
     public class GraphSchemaManager
     {
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Schemas
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaManager" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="schema">The schema instance to be managed.</param>
         public GraphSchemaManager(ISchema schema)
         {
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
@@ -81,7 +82,7 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Adds the built in directives supported by this server.
+        /// Adds the built in directives supported by the graphql runtime.
         /// </summary>
         public void AddBuiltInDirectives()
         {

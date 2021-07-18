@@ -17,7 +17,8 @@ namespace GraphQL.AspNet.Web
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// An ASP.NET action result to write the given graphql response to the http request response stream.
+    /// A helper class that will translate <see cref="IGraphOperationResult"/> into a properly structured <see cref="HttpResponse"/>
+    /// using the provided flags and DI retrieved <see cref="IGraphQueryResponseWriter"/>.
     /// </summary>
     public class GraphQLHttpResponseWriter
     {
@@ -58,7 +59,11 @@ namespace GraphQL.AspNet.Web
         /// <param name="documentWriter">The document writer to perform the serailization.</param>
         /// <param name="exposeMetrics">if set to <c>true</c> any metrics contained on the result will be exposed and sent to the requestor.</param>
         /// <param name="exposeExceptions">if set to <c>true</c> exceptions will be writen to the response stream; otherwise false.</param>
-        public GraphQLHttpResponseWriter(IGraphOperationResult result, IGraphQueryResponseWriter documentWriter, bool exposeMetrics, bool exposeExceptions)
+        public GraphQLHttpResponseWriter(
+            IGraphOperationResult result,
+            IGraphQueryResponseWriter documentWriter,
+            bool exposeMetrics,
+            bool exposeExceptions)
         {
             _result = result;
             _documentWriter = documentWriter;

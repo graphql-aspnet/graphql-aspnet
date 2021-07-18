@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
-    /// The default implementation of the core graphql runtime.
+    /// The default implementation of the core runtime.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this runtime exists for.</typeparam>
+    /// <typeparam name="TSchema">The type of the schema this runtime operates with.</typeparam>
     public class DefaultGraphQLRuntime<TSchema> : IGraphQLRuntime<TSchema>
         where TSchema : class, ISchema
     {
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Defaults
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLRuntime{TSchema}" /> class.
         /// </summary>
-        /// <param name="pipeline">The pipeline to execute any requests through.</param>
+        /// <param name="pipeline">The top level pipeline to execute any requests on.</param>
         /// <param name="metricsFactory">The factory to produce metrics packages if and when needed.</param>
         /// <param name="logger">The logger used to record events during an execution.</param>
         public DefaultGraphQLRuntime(
@@ -51,39 +51,19 @@ namespace GraphQL.AspNet.Defaults
             _metricsFactory = metricsFactory;
         }
 
-        /// <summary>
-        /// Creates a new metrics package using the default means available to this runtime instance.
-        /// </summary>
-        /// <returns>Task&lt;IGraphQueryExecutionMetrics&gt;.</returns>
+        /// <inheritdoc />
         public IGraphQueryExecutionMetrics CreateMetricsPackage()
         {
             return _metricsFactory?.CreateMetricsPackage();
         }
 
-        /// <summary>
-        /// Builds the primary request context used to execute the query and generate a response for this runtime
-        /// instance.
-        /// </summary>
-        /// <param name="queryData">The data package contaning the raw values
-        /// that need to be packaged.</param>
-        /// <returns>A fully qualified request context that can be executed.</returns>
-        public IGraphOperationRequest CreateRequest(GraphQueryData queryData)
+        /// <inheritdoc />
+        public IGraphOperationRequest CreateRequest(GraphQueryData queryData = null)
         {
             return new GraphOperationRequest(queryData ?? GraphQueryData.Empty);
         }
 
-        /// <summary>
-        /// Accepts a qualified operation request and renders the result.
-        /// </summary>
-        /// <param name="serviceProvider">The service provider to use for resolving
-        /// graph objects.</param>
-        /// <param name="user">The claims principal representing the user to authorize
-        /// on the query.</param>
-        /// <param name="request">The primary data request.</param>
-        /// <param name="enableMetrics">if set to <c>true</c> a metrics package will be created from
-        /// the configured factory and supplied to the request.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <inheritdoc />
         public Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
             ClaimsPrincipal user,
@@ -103,17 +83,7 @@ namespace GraphQL.AspNet.Defaults
                 cancelToken);
         }
 
-        /// <summary>
-        /// Accepts a qualified operation request and renders the result.
-        /// </summary>
-        /// <param name="serviceProvider">The service provider to use for resolving
-        /// graph objects.</param>
-        /// <param name="user">The claims principal representing the user to authorize
-        /// on the query.</param>
-        /// <param name="request">The primary data request.</param>
-        /// <param name="metricsPackage">The metrics package to populate during the run.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <inheritdoc />
         public Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
             ClaimsPrincipal user,
@@ -135,12 +105,7 @@ namespace GraphQL.AspNet.Defaults
             return this.ExecuteRequest(context, cancelToken);
         }
 
-        /// <summary>
-        /// Accepts a qualified operation request and renders the result.
-        /// </summary>
-        /// <param name="context">The execution context to process.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
+        /// <inheritdoc />
         public async Task<IGraphOperationResult> ExecuteRequest(
             GraphQueryExecutionContext context,
             CancellationToken cancelToken = default)
