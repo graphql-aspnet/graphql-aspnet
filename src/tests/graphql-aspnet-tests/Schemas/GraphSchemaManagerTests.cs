@@ -597,5 +597,42 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(uint)));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(decimal)));
         }
+
+        [Test]
+        public void EnsureGraphType_WhenRootControllerActionOfSameNameAsAType_IsAdded_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+            var manager = new GraphSchemaManager(schema);
+
+            // ThingController declares two routes
+            // [Query]/Thing  (A root operation)
+            // [Query]/Thing/moreData  (a nested operation under a "thing" controller)
+            // there is also a type [Type]/Thing in the schema
+            //
+            // this should create an impossible situation where
+            // [Query]/Thing returns the "Thing" graph type
+            // and the controller will try to nest "moreData" into this OBJECT type
+            // which should fail
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                manager.EnsureGraphType<ThingController>();
+            });
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenTwoControllersDecalreTheNameRootRouteName_AMeaningfulExceptionisThrown()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+            var manager = new GraphSchemaManager(schema);
+
+            manager.EnsureGraphType<ControllerWithRootName1>();
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                manager.EnsureGraphType<ControllerWithRootName2>();
+            });
+        }
     }
 }

@@ -23,6 +23,11 @@ namespace GraphQL.AspNet.Defaults
             where TSchema : class, ISchema
     {
         /// <summary>
+        /// An error message constant, in english, providing the text  to return to teh caller when a 401 occurs.
+        /// </summary>
+        protected const string ERROR_UNAUTHORIZED = "Unauthorized";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SecureGraphQLHttpProcessor{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>

@@ -23,8 +23,6 @@ namespace GraphQL.AspNet.Schemas
     /// </summary>
     public partial class GraphTypeExpression
     {
-        private const string SOME_GRAPH_TYPE = "UnknownType";
-
         /// <summary>
         /// Parses an expression in syntax definition language (e.g. '[SomeType!]!') into a usable <see cref="GraphTypeExpression" />.
         /// </summary>

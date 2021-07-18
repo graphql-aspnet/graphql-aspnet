@@ -25,14 +25,14 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphField" /> class.
         /// </summary>
-        /// <param name="fieldName">Name of the field.</param>
-        /// <param name="typeExpression">The type expression.</param>
-        /// <param name="route">The route.</param>
-        /// <param name="propertyType">Type of the property.</param>
-        /// <param name="propertyDeclaredName">Name of the property declared.</param>
-        /// <param name="mode">The mode.</param>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="securityPolicies">The security policies.</param>
+        /// <param name="fieldName">Name of the field in the public graph.</param>
+        /// <param name="typeExpression">The type expression declaring what type of data this field returns.</param>
+        /// <param name="route">The route to this field in the graph.</param>
+        /// <param name="propertyType">The property metadata.</param>
+        /// <param name="propertyDeclaredName">The name of the property as it was declared on the <see cref="Type"/> (its internal name).</param>
+        /// <param name="mode">The mode in which the runtime will process this field.</param>
+        /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
+        /// <param name="securityPolicies">The security policies that apply to this field.</param>
         public PropertyGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,

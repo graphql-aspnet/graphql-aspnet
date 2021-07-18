@@ -137,8 +137,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             else if (concreteType != currentType)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The graph type '{graphType.Name}' is already associated with type '{currentType.FriendlyName()}' it " +
-                    $"cannot be reassigned to '{concreteType.FriendlyName()}'");
+                    $"The graph type '{graphType.Name}' is already associated with type '{currentType.FriendlyName(true)}' it " +
+                    $"cannot be reassigned to '{concreteType.FriendlyName(true)}'");
             }
 
             return graphType;

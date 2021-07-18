@@ -35,15 +35,27 @@ namespace GraphQL.AspNet.Defaults
     public class DefaultGraphQLHttpProcessor<TSchema> : IGraphQLHttpProcessor<TSchema>
             where TSchema : class, ISchema
     {
-#pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable SA1600 // Elements should be documented
+        /// <summary>
+        /// An error message constant, in english, providing the text to return to the caller when no query data was present.
+        /// </summary>
         protected const string ERROR_NO_QUERY_PROVIDED = "No query received on the request";
+
+        /// <summary>
+        /// An error message constant, in english, providing the text  to return to the caller when they use any HTTP action verb
+        /// other than post.
+        /// </summary>
         protected const string ERROR_USE_POST = "GraphQL queries should be executed as a POST request";
+
+        /// <summary>
+        /// An error message constant, in english, providing the text to return to the caller when a 500 error is generated.
+        /// </summary>
         protected const string ERROR_INTERNAL_SERVER_ISSUE = "Unknown internal server error.";
+
+        /// <summary>
+        /// An error message constant, in english, providing the text  to return to the caller when no operation could be created
+        /// from the supplied data on the request.
+        /// </summary>
         protected const string ERROR_NO_REQUEST_CREATED = "GraphQL Operation Request is null. Unable to execute the query.";
-        protected const string ERROR_UNAUTHORIZED = "Unauthorized";
-#pragma warning restore SA1600 // Elements should be documented
-#pragma warning restore IDE1006 // Naming Styles
 
         private readonly IGraphEventLogger _logger;
         private readonly TSchema _schema;
@@ -53,10 +65,11 @@ namespace GraphQL.AspNet.Defaults
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpProcessor{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        /// <param name="runtime">The primary runtime in which requests are processed.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="logger">The logger.</param>
+        /// <param name="schema">The singleton instance of <typeparamref name="TSchema"/> representing this processor works against.</param>
+        /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema"/>.</param>
+        /// <param name="writer">The result writer capable of converting a <see cref="IGraphOperationResult"/> into a serialized payload
+        /// for the given <typeparamref name="TSchema"/>.</param>
+        /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public DefaultGraphQLHttpProcessor(
             TSchema schema,
             IGraphQLRuntime<TSchema> runtime,
@@ -89,8 +102,8 @@ namespace GraphQL.AspNet.Defaults
             // netcoreapp2.2 and older would auto parse to JObject (Newtonsoft)
             // netcoreapp3.0 and later will parse to JsonElement (System.Text.Json).
             // ------
-            // in lue of supporting a deserialization of from both generic json object types
-            // accept the raw data and parse the json document
+            // in lue of supporting deserialization from both generic json object types
+            // we accept the raw data and parse the json document
             // using System.Text.Json on all clients (netstandard2.0 compatiable)
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
@@ -102,9 +115,10 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// Submits the GraphQL query for processing.
+        /// Submits the request data to the GraphQL runtime for processing. When overloading in a child class, allows the class
+        /// to interject and alter the <paramref name="queryData"/> just prior to it being executed by the graphql runtime.
         /// </summary>
-        /// <param name="queryData">The query data.</param>
+        /// <param name="queryData">The query data parsed from an <see cref="HttpRequest"/>; may be null.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         public virtual async Task SubmitGraphQLQuery(GraphQueryData queryData)
         {
@@ -119,7 +133,8 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// Executes the graph ql query.
+        /// Executes the GraphQL query. When overriden in a child class allows the class to override the default behavior of
+        /// processing a query against the GraphQL runtime and writing the result to the <see cref="HttpResponse"/>.
         /// </summary>
         /// <param name="queryData">The query data.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
@@ -178,8 +193,8 @@ namespace GraphQL.AspNet.Defaults
         /// writes a response to the <see cref="Response"/> stream with the given status code
         /// and message.
         /// </summary>
-        /// <param name="statusCode">The status code.</param>
-        /// <param name="message">The message.</param>
+        /// <param name="statusCode">The status code to deliver on the response.</param>
+        /// <param name="message">The message to deliver with the given code.</param>
         /// <returns>Task.</returns>
         protected async Task WriteStatusCodeResponse(HttpStatusCode statusCode, string message)
         {
@@ -212,11 +227,10 @@ namespace GraphQL.AspNet.Defaults
         /// <summary>
         /// <para>When overridden in a child class, provides the option to intercept an unhandled exception thrown
         /// by the execution of the graph query. If an <see cref="IGraphOperationResult"/> is returned from this method the runtime will return
-        /// as the graphql response.  If null is returned, a status 500 result will be generated
-        /// with a generic error message.
+        /// it as the graphql response.  If null is returned, a status 500 result will be generated with a generic error message.
         /// </para>
         /// </summary>
-        /// <param name="exception">The exception that was thrown, if any.</param>
+        /// <param name="exception">The exception that was thrown by the runtime, if any.</param>
         /// <returns>The result, if any, of handling the exception. Return null to allow default processing to occur.</returns>
         protected virtual IGraphOperationResult HandleQueryException(Exception exception)
         {
@@ -228,7 +242,7 @@ namespace GraphQL.AspNet.Defaults
         /// This method is only called if a metrics package was generated for the request and will be called regardless of whether metrics are
         /// exposed to the requestor in a response package.
         /// </summary>
-        /// <param name="metrics">The metrics.</param>
+        /// <param name="metrics">The metrics containing information about the last run.</param>
         protected virtual void HandleQueryMetrics(IGraphQueryExecutionMetrics metrics)
         {
         }
