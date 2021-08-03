@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
@@ -16,9 +17,12 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Execution.BatchResolverTestData;
     using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -186,6 +190,34 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var instance = factory.CreateMetricsPackage();
             Assert.IsNotNull(instance);
+        }
+
+        [Test]
+        public async Task Tracing_ThroughBatchTypeExtension_YieldsCorrectResults()
+        {
+            var counter = new Dictionary<string, int>();
+
+            var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
+            serverBuilder.AddGraphType<BatchController>();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.ResponseOptions.ExposeMetrics = true;
+            });
+
+            var batchService = new Mock<IBatchCounterService>();
+            batchService.Setup(x => x.CallCount).Returns(counter);
+
+            serverBuilder.AddSingleton(batchService.Object);
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText("query { batch { fetchData { property1, property2, sybling { syblingId, name }}}}");
+
+            var metrics = new ApolloTracingMetricsV1(server.Schema);
+            builder.AddMetrics(metrics);
+
+            var response = await server.RenderResult(builder);
         }
     }
 }
