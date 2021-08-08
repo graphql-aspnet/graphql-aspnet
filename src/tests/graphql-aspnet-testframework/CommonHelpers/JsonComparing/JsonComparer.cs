@@ -18,14 +18,20 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
     public static class JsonComparer
     {
         /// <summary>
+        /// A value that, if set as the value of a json property for the expected json, that json property will pass field value matching
+        /// validation regardless of its value or null state.
+        /// </summary>
+        public const string ANY_FIELD_VALUE = "<anyValue>";
+
+        /// <summary>
         /// Deteremines if two <see cref="JsonElement"/> are identical or not.
         /// </summary>
-        /// <param name="expected">The expected.</param>
-        /// <param name="actual">The actual.</param>
-        /// <param name="message">The message.</param>
-        /// <param name="location">The location.</param>
-        /// <param name="assertOnFailure">if set to <c>true</c> [assert on failure].</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <param name="expected">The expected data to match against.</param>
+        /// <param name="actual">The actual data to check.</param>
+        /// <param name="message">The message to display when it fails.</param>
+        /// <param name="location">The location where the parser is currently checking.</param>
+        /// <param name="assertOnFailure">if set to <c>true</c> an Assert statement will be failed when a match fails, otherwise failure silently returns false.</param>
+        /// <returns><c>true</c> if the json data  is equal, <c>false</c> otherwise.</returns>
         public static bool AreEqualJson(JsonElement expected, JsonElement actual, string message = null, string location = "<top>", bool assertOnFailure = true)
         {
             if (expected.ValueKind == JsonValueKind.Object
@@ -38,6 +44,11 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
                 && actual.ValueKind == JsonValueKind.Array)
             {
                 return AreEqualJArray(expected, actual, location, assertOnFailure, message);
+            }
+
+            if (expected.GetRawText() == "\"" + ANY_FIELD_VALUE + "\"")
+            {
+                return true;
             }
 
             if (expected.ValueKind == actual.ValueKind)
@@ -53,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers.JsonComparing
 
         private static bool AreEqualJValue(JsonElement expectedValue, JsonElement actualValue, string location, bool assertOnFailure, string message = null)
         {
-            var isEqual = expectedValue.GetRawText() == actualValue.GetRawText() || expectedValue.GetRawText() == "\"<anyValue>\"";
+            var isEqual = expectedValue.GetRawText() == actualValue.GetRawText() || expectedValue.GetRawText() == "\"" + ANY_FIELD_VALUE + "\"";
             if (!isEqual)
             {
                 if (assertOnFailure)

@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Execution.Metrics
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Response;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A metrics package that tracks according to the apollo tracing standard.
@@ -188,7 +189,19 @@ namespace GraphQL.AspNet.Execution.Metrics
                     .ToArray()
                     .Select(x => new ResponseSingleValue(x))));
 
-                var parentType = _schema.KnownTypes.FindGraphType(timeEntry.Key.Request?.DataSource?.Value);
+                IGraphType parentType = null;
+
+                if (timeEntry.Key?.Request?.Field?.Mode == FieldResolutionMode.Batch)
+                {
+                    var parentName = timeEntry.Key?.Request?.Field?.Route?.Parent?.Name;
+                    if (!string.IsNullOrWhiteSpace(parentName))
+                        parentType = _schema.KnownTypes.FindGraphType(parentName);
+                }
+                else
+                {
+                    parentType = _schema.KnownTypes.FindGraphType(timeEntry.Key.Request?.DataSource?.Value);
+                }
+
                 if (parentType != null)
                 {
                     resolverEntry.AddSingleValue("parentType", parentType.Name);
