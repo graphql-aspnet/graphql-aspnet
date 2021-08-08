@@ -9,16 +9,19 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Execution.BatchResolverTestData;
     using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -186,6 +189,393 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var instance = factory.CreateMetricsPackage();
             Assert.IsNotNull(instance);
+        }
+
+        [Test]
+        public async Task Tracing_ThroughBatchTypeExtension_WithSingleObjectPerSourceResult_YieldsCorrectResults()
+        {
+            var counter = new Dictionary<string, int>();
+
+            var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
+            serverBuilder.AddGraphType<BatchController>();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.ResponseOptions.ExposeMetrics = true;
+            });
+
+            var batchService = new Mock<IBatchCounterService>();
+            batchService.Setup(x => x.CallCount).Returns(counter);
+
+            serverBuilder.AddSingleton(batchService.Object);
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText("query { batch { fetchData { property1, sybling { syblingId }}}}");
+
+            var metrics = new ApolloTracingMetricsV1(server.Schema);
+            builder.AddMetrics(metrics);
+
+            var result = await server.RenderResult(builder);
+
+            var expectedResult = @"
+	            {
+	              ""data"": {
+		            ""batch"": {
+					            ""fetchData"": [
+					              {
+						            ""property1"": ""object0"",
+						            ""sybling"": {""syblingId"": ""object0""}
+					              },
+					              {
+						            ""property1"": ""object1"",
+						            ""sybling"": {""syblingId"": ""object1""}
+					              },
+					              {
+						            ""property1"": ""object2"",
+						            ""sybling"": {""syblingId"": ""object2""}
+					              }
+					            ]
+		            }
+	              },
+	              ""extensions"": {
+		            ""tracing"": {
+		              ""version"": 1,
+		              ""startTime"": ""<anyValue>"",
+		              ""endTime"": ""<anyValue>"",
+		              ""duration"": ""<anyValue>"",
+		              ""parsing"": {
+                            ""startOffset"": ""<anyValue>"",
+                            ""duration"": ""<anyValue>""
+                      },
+                      ""validation"": {
+                            ""startOffset"":""<anyValue>"",
+                            ""duration"": ""<anyValue>""
+                      },
+		              ""execution"": {
+			            ""resolvers"": [
+			              {
+				            ""path"": [ ""batch""],
+				            ""parentType"": ""Query"",
+				            ""fieldName"": ""batch"",
+				            ""returnType"": ""Query_Batch"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData""],
+				            ""parentType"": ""Query_Batch"",
+				            ""fieldName"": ""fetchData"",
+				            ""returnType"": ""[TwoPropertyObject]"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData"",0,""property1""],
+				            ""parentType"": ""TwoPropertyObject"",
+				            ""fieldName"": ""property1"",
+				            ""returnType"": ""String"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData"",1,""property1""],
+				            ""parentType"": ""TwoPropertyObject"",
+				            ""fieldName"": ""property1"",
+				            ""returnType"": ""String"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData"",2,""property1""],
+				            ""parentType"": ""TwoPropertyObject"",
+				            ""fieldName"": ""property1"",
+				            ""returnType"": ""String"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData"",""sybling""],
+				            ""parentType"": ""TwoPropertyObject"",
+				            ""fieldName"": ""sybling"",
+				            ""returnType"": ""SyblingTestObject"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData"",0,""sybling"",""syblingId""],
+				            ""parentType"": ""SyblingTestObject"",
+				            ""fieldName"": ""syblingId"",
+				            ""returnType"": ""String"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData"",1,""sybling"",""syblingId""],
+				            ""parentType"": ""SyblingTestObject"",
+				            ""fieldName"": ""syblingId"",
+				            ""returnType"": ""String"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              },
+			              {
+				            ""path"": [""batch"",""fetchData"",2,""sybling"",""syblingId""],
+				            ""parentType"": ""SyblingTestObject"",
+				            ""fieldName"": ""syblingId"",
+				            ""returnType"": ""String"",
+				            ""startOffset"": ""<anyValue>"",
+				            ""duration"": ""<anyValue>""
+			              }
+			            ]
+		              }
+		            }
+	              }
+	            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, result);
+        }
+
+        [Test]
+        public async Task Tracing_ThroughBatchTypeExtension_WithMultiObjectPerSourceResult_YieldsCorrectResults()
+        {
+            var counter = new Dictionary<string, int>();
+
+            var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
+            serverBuilder.AddGraphType<BatchController>();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.ResponseOptions.ExposeMetrics = true;
+            });
+
+            var batchService = new Mock<IBatchCounterService>();
+            batchService.Setup(x => x.CallCount).Returns(counter);
+
+            serverBuilder.AddSingleton(batchService.Object);
+            var server = serverBuilder.Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText("query { batch { fetchData { property1, kids { parentId, name }}}}");
+
+            var metrics = new ApolloTracingMetricsV1(server.Schema);
+            builder.AddMetrics(metrics);
+
+            var result = await server.RenderResult(builder);
+
+            var expectedResult = @"
+	          {
+              ""data"": {
+                ""batch"": {
+                ""fetchData"": [
+                    {
+                        ""property1"": ""object0"",
+                        ""kids"": [
+                        {
+                            ""parentId"": ""object0"",
+                            ""name"": ""object0_child_0""
+                        },
+                        {
+                            ""parentId"": ""object0"",
+                            ""name"": ""object0_child_1""
+                        }
+                        ]
+                    },
+                    {
+                        ""property1"": ""object1"",
+                        ""kids"": [
+                        {
+                            ""parentId"": ""object1"",
+                            ""name"": ""object1_child_0""
+                        },
+                        {
+                            ""parentId"": ""object1"",
+                            ""name"": ""object1_child_1""
+                        }
+                        ]
+                    },
+                    {
+                        ""property1"": ""object2"",
+                        ""kids"": [
+                        {
+                            ""parentId"": ""object2"",
+                            ""name"": ""object2_child_0""
+                        },
+                        {
+                            ""parentId"": ""object2"",
+                            ""name"": ""object2_child_1""
+                        }
+                        ]
+                    }
+                    ]
+                }
+              },
+              ""extensions"": {
+                ""tracing"": {
+                  ""version"": 1,
+                  ""startTime"": ""<anyValue>"",
+                  ""endTime"": ""<anyValue>"",
+                  ""duration"": ""<anyValue>"",
+                  ""parsing"": {
+                    ""startOffset"": ""<anyValue>"",
+                    ""duration"": ""<anyValue>""
+                  },
+                  ""validation"": {
+                    ""startOffset"": ""<anyValue>"",
+                    ""duration"": ""<anyValue>""
+                  },
+                  ""execution"": {
+                    ""resolvers"": [
+                      {
+                        ""path"": [""batch""],
+                        ""parentType"": ""Query"",
+                        ""fieldName"": ""batch"",
+                        ""returnType"": ""Query_Batch"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData""],
+                        ""parentType"": ""Query_Batch"",
+                        ""fieldName"": ""fetchData"",
+                        ""returnType"": ""[TwoPropertyObject]"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 0, ""property1""],
+                        ""parentType"": ""TwoPropertyObject"",
+                        ""fieldName"": ""property1"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 1, ""property1""],
+                        ""parentType"": ""TwoPropertyObject"",
+                        ""fieldName"": ""property1"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 2, ""property1""],
+                        ""parentType"": ""TwoPropertyObject"",
+                        ""fieldName"": ""property1"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", ""kids""],
+                        ""parentType"": ""TwoPropertyObject"",
+                        ""fieldName"": ""kids"",
+                        ""returnType"": ""[ChildTestObject]"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 0, ""kids"", 0, ""parentId""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""parentId"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                      ""path"": [""batch"", ""fetchData"", 0, ""kids"", 1, ""parentId""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""parentId"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                      ""path"": [""batch"", ""fetchData"", 1, ""kids"", 0, ""parentId""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""parentId"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                      ""path"": [""batch"", ""fetchData"", 1, ""kids"", 1, ""parentId""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""parentId"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 2, ""kids"", 0, ""parentId""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""parentId"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 2, ""kids"", 1, ""parentId""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""parentId"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 0, ""kids"", 0, ""name""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""name"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                         ""path"": [""batch"", ""fetchData"", 0, ""kids"", 1, ""name""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""name"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 1, ""kids"", 0, ""name""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""name"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 1, ""kids"", 1, ""name""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""name"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 2, ""kids"", 0, ""name""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""name"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      },
+                      {
+                        ""path"": [""batch"", ""fetchData"", 2, ""kids"", 1, ""name""],
+                        ""parentType"": ""ChildTestObject"",
+                        ""fieldName"": ""name"",
+                        ""returnType"": ""String"",
+                        ""startOffset"": ""<anyValue>"",
+                        ""duration"": ""<anyValue>""
+                      }
+                    ]
+                  }
+                }
+              }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, result);
         }
     }
 }
