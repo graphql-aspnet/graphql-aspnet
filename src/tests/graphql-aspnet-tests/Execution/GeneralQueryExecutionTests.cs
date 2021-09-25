@@ -454,5 +454,27 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsFalse(result.Messages.IsSucessful);
             Assert.AreEqual(1, result.Messages.Count);
         }
+
+        [Test]
+        public async Task InputComplexObjects_WithNoRequiredFields_Succeeds()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // controller returns a list of {Value1, -3}
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { addObject ( objectA: {property1: \"prop1\", property2: \"prop2\" } )  }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""addObject"" : true
+                    }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }
