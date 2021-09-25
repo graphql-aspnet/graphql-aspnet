@@ -462,7 +462,7 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<ComplexInputObjectController>()
                     .Build();
 
-            // controller returns a list of {Value1, -3}
+            // controller accepts a complex input object with no required fields (just string values).
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { addObject ( objectA: {property1: \"prop1\", property2: \"prop2\" } )  }");
 
