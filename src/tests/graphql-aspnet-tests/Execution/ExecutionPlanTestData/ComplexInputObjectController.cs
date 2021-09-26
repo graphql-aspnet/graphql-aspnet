@@ -15,10 +15,22 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 
     public class ComplexInputObjectController : GraphController
     {
-        [MutationRoot(typeof(bool))]
+        [MutationRoot(typeof(ComplexInputObjectWithNoRequiredFields))]
         public IGraphActionResult AddObject(ComplexInputObjectWithNoRequiredFields objectA)
         {
-            return this.Ok(true);
+            return this.Ok(objectA);
+        }
+
+        [MutationRoot(typeof(ParentWithNullableChildObject))]
+        public IGraphActionResult ObjectWithNullChild(ParentWithNullableChildObject parentObj)
+        {
+            return this.Ok(parentObj);
+        }
+
+        [MutationRoot(typeof(ParentWithNonNullableChildObject))]
+        public IGraphActionResult ObjectWithNonNullChild(ParentWithNonNullableChildObject parentObj)
+        {
+            return this.Ok(parentObj);
         }
     }
 }
