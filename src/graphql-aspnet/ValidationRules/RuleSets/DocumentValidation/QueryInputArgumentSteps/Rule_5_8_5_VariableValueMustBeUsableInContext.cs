@@ -20,24 +20,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputA
     /// </summary>
     internal class Rule_5_8_5_VariableValueMustBeUsableInContext : DocumentPartValidationRuleStep
     {
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the input argument if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified input argument; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return context.ActivePart is QueryInputArgument arg && arg.Value is QueryVariableReferenceInputValue;
         }
 
-        /// <summary>
-        /// Validates the completed document context to ensure it is "correct" against the specification before generating
-        /// the final document.
-        /// </summary>
-        /// <param name="context">The context containing the parsed sections of a query document..</param>
-        /// <returns>
-        ///   <c>true</c> if the rule passes, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
             var argument = context.ActivePart as QueryInputArgument;
@@ -60,18 +49,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputA
             return true;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.8.5";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-All-Variable-Usages-are-Allowed";
     }
 }

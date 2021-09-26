@@ -454,5 +454,225 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsFalse(result.Messages.IsSucessful);
             Assert.AreEqual(1, result.Messages.Count);
         }
+
+        [Test]
+        public async Task InputComplexObjects_WithNoRequiredFields_Succeeds()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // controller accepts a complex input object with no required fields (just string values).
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "   addObject ( objectA: {property1: \"prop1\", property2: \"prop2\" } ) { " +
+                "     property1 " +
+                "     property2 " +
+                "   } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""addObject"" : {
+                            ""property1"" : ""prop1"",
+                            ""property2"" : ""prop2""
+                        }
+                    }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task InputWithNullableComplexChildObject_HasUndefinedForChildObject_YieldsNullChildObject()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is not passed on the query
+            // the controller should recieve a null child object (not an empty one)
+            // and thus return null
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithNullChild ( parentObj: {property1: \"prop1\" } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""objectWithNullChild"" : {
+                            ""property1"" : ""prop1"",
+                            ""child"" : null
+                       }
+                    }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task InputWithNullableComplexChildObject_HasNullPassedForChildObject_YieldsNullChildObject()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is not passed on the query
+            // the controller should recieve a null child object (not an empty one)
+            // and thus return null
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithNullChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""objectWithNullChild"" : {
+                            ""property1"" : ""prop1"",
+                            ""child"" : null
+                       }
+                    }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task InputWithNullableComplexChildObject_WhenChildObjectDefinedWithNoFieldsForChildObject_HasChildWithNullFields()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // child is passed as an empty object and has no required fields. All fields of child
+            // should be initialized to null and returnable (as null)
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithNullChild ( parentObj: {property1: \"prop1\", child :{} } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""objectWithNullChild"" : {
+                            ""property1"" : ""prop1"",
+                            ""child"" : {
+                                 ""property2"" : null
+                            }
+                       }
+                    }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task InputWithNonNullableComplexChildObject_HasUndefinedForChildObject_YieldsError()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is not passed on the query
+            // but is required the query should fail
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithNonNullChild ( parentObj: {property1: \"prop1\" } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsFalse(result.Messages.IsSucessful);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task InputWithNonNullableComplexChildObject_HasNullForChildObject_YieldsError()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as null on the query
+            // but is required the query should fail
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithNonNullChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsFalse(result.Messages.IsSucessful);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task InputWithNonNullableComplexChildObject_HasEmptyForChildObject_YieldsSuccess()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ComplexInputObjectController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithNonNullChild ( parentObj: {property1: \"prop1\", child : {} } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""objectWithNonNullChild"" : {
+                            ""property1"" : ""prop1"",
+                            ""child"" : {
+                                 ""property2"" : null
+                            }
+                       }
+                    }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }
