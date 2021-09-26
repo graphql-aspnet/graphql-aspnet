@@ -20,12 +20,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
     /// </summary>
     internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective : DocumentPartValidationRuleStep<QueryDirective>
     {
-        /// <summary>
-        /// Validates the completed document context to ensure it is "correct" against the specification before generating
-        /// the final document.
-        /// </summary>
-        /// <param name="context">The context containing the parsed sections of a query document..</param>
-        /// <returns><c>true</c> if the rule passes, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
             var queryDirective = (QueryDirective)context.ActivePart;
@@ -47,18 +42,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
             return directiveIsValid;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.4.2.1";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Required-Arguments";
     }
 }

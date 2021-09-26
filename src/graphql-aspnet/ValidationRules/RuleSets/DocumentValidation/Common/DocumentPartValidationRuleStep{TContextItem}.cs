@@ -18,12 +18,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
     internal abstract class DocumentPartValidationRuleStep<TContextItem> : DocumentPartValidationRuleStep
         where TContextItem : class
     {
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified document part; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return context.Contains<TContextItem>();
