@@ -215,15 +215,16 @@ namespace GraphQL.AspNet.Internal
             if (type == null || type == typeof(string))
                 return false;
 
-            // all lists must be declared as generics to allow for type declaration and parsing.
-            if (type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(type))
-            {
-                Type enumerableType = type.GetEnumerableUnderlyingType();
-                return !enumerableType.IsGenericType || !typeof(KeyValuePair<,>)
-                    .IsAssignableFrom(enumerableType.GetGenericTypeDefinition());
-            }
+            if (!typeof(IEnumerable).IsAssignableFrom(type))
+                return false;
 
-            return false;
+            var enumerableType = type.GetEnumerableUnderlyingType();
+            if (enumerableType == null)
+                return false;
+
+            return
+                !enumerableType.IsGenericType ||
+                !typeof(KeyValuePair<,>).IsAssignableFrom(enumerableType.GetGenericTypeDefinition());
         }
 
         /// <summary>

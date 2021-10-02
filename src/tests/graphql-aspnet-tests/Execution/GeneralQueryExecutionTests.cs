@@ -674,5 +674,229 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task ControllerReturnsAnarrayForAnEnumerableDeclarartion_YieldsCorrectResult()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayAsEnumerableController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           property1 " +
+                "           property2 " +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""property1"" : ""1A"",
+                                ""property2"" : 2
+                            },
+                            {
+                                ""property1"" : ""1B"",
+                                ""property2"" : 3
+                            }
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task ControllerReturnsAnArrayForAnArrayThroughGraphActionDeclarartion_YieldsCorrectResult()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayThroughGraphActionAsEnumerableController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           property1 " +
+                "           property2 " +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""property1"" : ""1A"",
+                                ""property2"" : 2
+                            },
+                            {
+                                ""property1"" : ""1B"",
+                                ""property2"" : 3
+                            }
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task ControllerReturnsAnArrayForAnArrayDeclaration_YieldsCorrectResult()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayThroughArrayDeclarationController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           property1 " +
+                "           property2 " +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""property1"" : ""1A"",
+                                ""property2"" : 2
+                            },
+                            {
+                                ""property1"" : ""1B"",
+                                ""property2"" : 3
+                            }
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task FlatArray_AsProperty_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayOnReturnObjectPropertyController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           propertyA " +
+                "           propertyB {" +
+                "               property1" +
+                "               property2" +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""propertyA"" : ""AA"",
+                                ""propertyB"" : [
+                                    {
+                                        ""property1"" : ""1A"",
+                                        ""property2"" : 2
+                                    },
+                                    {
+                                        ""property1"" : ""1B"",
+                                        ""property2"" : 3
+                                    }
+                                ]
+                            },
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task FlatArray_AsObjectMethod_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayOnReturnObjectMethodController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           propertyA " +
+                "           moreData() {" +
+                "               property1" +
+                "               property2" +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : {
+                            ""propertyA"" : ""AA"",
+                            ""moreData"" : [
+                                {
+                                    ""property1"" : ""1A"",
+                                    ""property2"" : 2
+                                },
+                                {
+                                    ""property1"" : ""1B"",
+                                    ""property2"" : 3
+                                }
+                            ]
+                         }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task FlatArray_OfScalard_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayScalarController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [1, 3, 5]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

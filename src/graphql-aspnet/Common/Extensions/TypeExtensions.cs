@@ -192,6 +192,7 @@ namespace GraphQL.AspNet.Common.Extensions
             }
 
             // if the type implements IEnumerable<> grab that interface then return its argument
+            // this will capture flat arrays and any custom object that implements IEnumerable<T>
             var enumerableInterface = type.GetInterface(typeof(IEnumerable<>).Name);
             if (enumerableInterface != null)
             {

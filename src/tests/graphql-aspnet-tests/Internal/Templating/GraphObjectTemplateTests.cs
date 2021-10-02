@@ -15,8 +15,12 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
+    using GraphQL.AspNet.Common.Extensions;
     using NUnit.Framework;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [TestFixture]
     public class GraphObjectTemplateTests
@@ -172,6 +176,28 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             // should have the declared method, the undeclared but valid method, the decalred property
             // the invalid undeclared method should be dropped silently
             Assert.AreEqual(3, template.FieldTemplates.Count);
+        }
+
+        [Test]
+        public void Parse_ArrayProperty_ExtractsListOfCoreType()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(TypeWithArrayProperty));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            // should have the declared method, the undeclared but valid method, the decalred property
+            // the invalid undeclared method should be dropped silently
+            Assert.AreEqual(1, template.FieldTemplates.Count);
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(TwoPropertyObject).FriendlyName(),
+                MetaGraphTypes.IsList);
+
+            Assert.AreEqual(1, template.FieldTemplates.Count());
+            var fieldTemplate = template.FieldTemplates.ElementAt(0).Value;
+            Assert.AreEqual(typeof(TwoPropertyObject[]), fieldTemplate.DeclaredReturnType);
+            Assert.AreEqual(typeof(TwoPropertyObject), fieldTemplate.ObjectType);
+            Assert.AreEqual(expectedTypeExpression, fieldTemplate.TypeExpression);
         }
     }
 }

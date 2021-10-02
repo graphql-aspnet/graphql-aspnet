@@ -12,11 +12,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.MethodTestData;
+    using GraphQL.AspNet.Common.Extensions;
     using Moq;
     using NUnit.Framework;
 
@@ -164,6 +166,25 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.TaskOfListOfObjectReturnType));
             Assert.AreEqual(typeof(TwoPropertyObject), template.ObjectType);
+        }
+
+
+        [Test]
+        public void Parse_ArrayFromMethod_YieldsTemplate()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(TwoPropertyObject).FriendlyName(),
+                MetaGraphTypes.IsList);
+
+            var parent = obj.Object;
+            var template = this.CreateMethodTemplate<ArrayMethodObject>(nameof(ArrayMethodObject.RetrieveData));
+
+            Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
+            Assert.AreEqual(typeof(TwoPropertyObject[]), template.DeclaredReturnType);
         }
     }
 }

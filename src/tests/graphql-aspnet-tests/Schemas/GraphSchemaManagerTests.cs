@@ -634,5 +634,102 @@ namespace GraphQL.AspNet.Tests.Schemas
                 manager.EnsureGraphType<ControllerWithRootName2>();
             });
         }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerReturnTypeIsGraphTypeIsAFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayReturnController>();
+
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerReturnTypeDeclarationIsGraphTypeIsAFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayReturnDeclarationController>();
+
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerInputTypeIsFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayObjectInputController>();
+
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT));
+
+            Assert.IsFalse(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.OBJECT));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerInputTypeIsFlatArrayAndReturnsFlatArray_ArrayIsAddedAsInputAndReturnType()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayInputAndReturnController>();
+
+            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenPropertyIsFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayPropertyObject>();
+
+            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(ArrayPropertyObject)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenMethodReturnIsFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayMethodObject>();
+
+            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(ArrayMethodObject)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
     }
 }
