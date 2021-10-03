@@ -13,8 +13,10 @@ namespace GraphQL.AspNet.Schemas
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using Microsoft.Extensions.Logging.Abstractions.Internal;
 
     /// <summary>
     /// A declaration of the usage of a single graph type (with appropriate wrappers).

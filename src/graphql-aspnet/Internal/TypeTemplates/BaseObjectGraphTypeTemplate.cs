@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
@@ -54,13 +55,24 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // customize the error message on the thrown exception for some helpful hints.
             string rejectionReason = null;
             if (objectType.IsEnum)
-                rejectionReason = $"The type '{objectType.FriendlyName()}' is an enumeration and cannot be parsed as an object graph type. Use an {typeof(IEnumGraphType).FriendlyName()} instead.";
+            {
+                rejectionReason = $"The type '{objectType.FriendlyName()}' is an enumeration and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Use an {typeof(IEnumGraphType).FriendlyName()} instead.";
+            }
             else if (objectType.IsValueType)
-                rejectionReason = $"The type '{objectType.FriendlyName()}' is a value type and cannot be parsed as a graph type. Try using a scalar instead.";
+            {
+                if (GraphQLProviders.ScalarProvider.IsScalar(objectType))
+                {
+                    rejectionReason = $"The type '{objectType.FriendlyName()}' is a registered {nameof(TypeKind.SCALAR)} and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Try using the scalar definition instead.";
+                }
+            }
             else if (objectType == typeof(string))
-                rejectionReason = $"The type '{typeof(string).FriendlyName()}' cannot be parsed as an object graph type. Use the built in scalar instead.";
+            {
+                rejectionReason = $"The type '{typeof(string).FriendlyName()}' cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Use the built in scalar instead.";
+            }
             else if (objectType.IsAbstract && objectType.IsClass)
-                rejectionReason = $"The type '{objectType.FriendlyName()}' is abstract and cannot be parsed as a graph type.";
+            {
+                rejectionReason = $"The type '{objectType.FriendlyName()}' is abstract and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type.";
+            }
 
             if (rejectionReason != null)
             {

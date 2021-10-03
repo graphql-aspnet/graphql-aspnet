@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Common.Extensions;
     using Moq;
     using NUnit.Framework;
+    using System.Collections.Generic;
 
     [TestFixture]
     public class GraphPropertyTemplateTests
@@ -185,6 +186,29 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
             Assert.AreEqual(typeof(TwoPropertyObject[]), template.DeclaredReturnType);
+        }
+
+        [Test]
+        public void Parse_BasicObject_PropertyReturnsArrayOfKeyValuePair_YieldsTemplate()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(KeyValuePair<string, string>).FriendlyName("_"),
+                MetaGraphTypes.IsList,
+                MetaGraphTypes.IsNotNull); // structs can't be null
+
+            var parent = obj.Object;
+            var propInfo = typeof(ArrayKeyValuePairObject).GetProperty(nameof(ArrayKeyValuePairObject.PropertyA));
+
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
+            Assert.AreEqual(typeof(KeyValuePair<string, string>[]), template.DeclaredReturnType);
         }
     }
 }

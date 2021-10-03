@@ -731,5 +731,22 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
         }
+
+        [Test]
+        public void EnsureGraphType_WhenTypeIsAGeneric_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<KeyValuePairObject>();
+
+            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(KeyValuePairObject)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(KeyValuePair<string, int>)));
+        }
     }
 }

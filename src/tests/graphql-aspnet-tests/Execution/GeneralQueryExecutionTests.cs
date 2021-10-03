@@ -898,5 +898,36 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task KeyValuePair_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<KeyValuePairController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as empty on the query
+            // should succeed, all child properties are optional
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () {" +
+                "           key         " +
+                "           value       " +
+                "      }" +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {""key"" : ""key1"", ""value"" : 1 },
+                            {""key"" : ""key2"", ""value"" : 2 }
+                       ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

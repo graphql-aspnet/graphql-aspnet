@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -50,9 +51,18 @@ namespace GraphQL.AspNet.Tests.Internal
         [TestCase(typeof(string[]), true)]
         [TestCase(typeof(DateTime[]), true)]
         [TestCase(typeof(ValidationTestEnum[]), true)]
-        [TestCase(typeof(KeyValuePair<string, string>[]), false)]
-        [TestCase(typeof(KeyValuePair<string, TwoPropertyObject>[]), false)]
-        [TestCase(typeof(KeyValuePair<string, int>[]), false)]
+        [TestCase(typeof(KeyValuePair<string, string>[]), true)]
+        [TestCase(typeof(KeyValuePair<string, TwoPropertyObject>[]), true)]
+        [TestCase(typeof(KeyValuePair<string, int>[]), true)]
+        [TestCase(typeof(IDictionary<string, string>), false)]
+        [TestCase(typeof(IDictionary<string, TwoPropertyObject>), false)]
+        [TestCase(typeof(IDictionary<string, int>), false)]
+        [TestCase(typeof(IReadOnlyDictionary<string, string>), false)]
+        [TestCase(typeof(IReadOnlyDictionary<string, TwoPropertyObject>), false)]
+        [TestCase(typeof(IReadOnlyDictionary<string, int>), false)]
+        [TestCase(typeof(Dictionary<string, string>), false)]
+        [TestCase(typeof(Dictionary<string, TwoPropertyObject>), false)]
+        [TestCase(typeof(Dictionary<string, int>), false)]
         public void IsValidListType(Type inputType, bool isValidListType)
         {
             var result = GraphValidation.IsValidListType(inputType);
@@ -73,6 +83,9 @@ namespace GraphQL.AspNet.Tests.Internal
         [TestCase(typeof(string), true)]
         [TestCase(typeof(int), true)]
         [TestCase(typeof(DateTime), true)]
+        [TestCase(typeof(KeyValuePair<string, int>), true)]
+        [TestCase(typeof(KeyValuePair<string, int>[]), true)]
+        [TestCase(typeof(List<KeyValuePair<string, int>>), true)]
         [TestCase(typeof(Dictionary<string, int>), false)]
         [TestCase(typeof(IDictionary<string, int>), false)]
         [TestCase(typeof(IReadOnlyDictionary<string, int>), false)]
@@ -99,6 +112,15 @@ namespace GraphQL.AspNet.Tests.Internal
         [TestCase(typeof(TwoPropertyObject[]), "[TwoPropertyObject]", false, null)]
         [TestCase(typeof(int[][]), "[[int!]]", false, null)]
         [TestCase(typeof(string[]), "[string]", false, null)]
+        [TestCase(typeof(KeyValuePair<string, int>), "KeyValuePair_string_int_!", false, null)]
+        [TestCase(typeof(KeyValuePair<string[], int[][]>), "KeyValuePair_string___int_____!", false, null)]
+        [TestCase(typeof(KeyValuePair<string, int[]>), "KeyValuePair_string_int___!", false, null)]
+        [TestCase(typeof(KeyValuePair<string, int[]>[]), "[KeyValuePair_string_int___!]", false, null)]
+        [TestCase(typeof(KeyValuePair<string[][], int[][][]>[]), "[KeyValuePair_string_____int_______!]", false, null)]
+        [TestCase(typeof(KeyValuePair<string[][], int[][][]>[][]), "[[KeyValuePair_string_____int_______!]]", false, null)]
+        [TestCase(typeof(KeyValuePair<string, int>[]), "[KeyValuePair_string_int_!]", false, null)]
+        [TestCase(typeof(List<KeyValuePair<string, int>>), "[KeyValuePair_string_int_!]", false, null)]
+        [TestCase(typeof(List<KeyValuePair<string, int>>), "[KeyValuePair_string_int_]", true, null)]
         [TestCase(typeof(IEnumerable<IEnumerable<int>>), "[[int!]]", false, null)]
         [TestCase(typeof(IEnumerable<IEnumerable<int>>), "int!", false, new GTW[] { GTW.IsNotNull })]
         public void GenerateTypeExpression(

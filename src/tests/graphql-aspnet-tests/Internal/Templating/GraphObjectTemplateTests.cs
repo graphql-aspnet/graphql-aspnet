@@ -10,17 +10,19 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
-    using GraphQL.AspNet.Common.Extensions;
     using NUnit.Framework;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [TestFixture]
     public class GraphObjectTemplateTests
@@ -198,6 +200,49 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(TwoPropertyObject[]), fieldTemplate.DeclaredReturnType);
             Assert.AreEqual(typeof(TwoPropertyObject), fieldTemplate.ObjectType);
             Assert.AreEqual(expectedTypeExpression, fieldTemplate.TypeExpression);
+        }
+
+        [Test]
+        public void Parse_KeyValuePair_GeneratesValidTemplate()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(KeyValuePair<string, int>));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            // Key, Value, ToString
+            // ToString is included because it is a declared method on the type
+            Assert.AreEqual(3, template.FieldTemplates.Count());
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
+            var fieldTemplate2 = template.FieldTemplates.ElementAt(2).Value;
+
+            Assert.AreEqual(typeof(string), fieldTemplate0.DeclaredReturnType);
+            Assert.AreEqual(typeof(string), fieldTemplate0.ObjectType);
+            Assert.AreEqual("ToString", fieldTemplate0.Name);
+            Assert.AreEqual(typeof(string), fieldTemplate1.DeclaredReturnType);
+            Assert.AreEqual(typeof(string), fieldTemplate1.ObjectType);
+            Assert.AreEqual("Key", fieldTemplate1.Name);
+            Assert.AreEqual(typeof(int), fieldTemplate2.ObjectType);
+            Assert.AreEqual(typeof(int), fieldTemplate2.DeclaredReturnType);
+            Assert.AreEqual("Value", fieldTemplate2.Name);
+        }
+
+        [Test]
+        public void Parse_InheritedProperties_AreValidFields()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(InheritedTwoPropertyObject));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            // Key, Value, ToString
+            Assert.AreEqual(3, template.FieldTemplates.Count());
+            var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
+            var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
+            var fieldTemplate2 = template.FieldTemplates.ElementAt(2).Value;
+
+            Assert.AreEqual("Property3", fieldTemplate0.Name);
+            Assert.AreEqual("Property1", fieldTemplate1.Name);
+            Assert.AreEqual("Property2", fieldTemplate2.Name);
         }
     }
 }

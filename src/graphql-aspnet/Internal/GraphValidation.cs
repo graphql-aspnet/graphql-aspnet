@@ -218,13 +218,24 @@ namespace GraphQL.AspNet.Internal
             if (!typeof(IEnumerable).IsAssignableFrom(type))
                 return false;
 
+            // the type must implement IEnumerable<T>
             var enumerableType = type.GetEnumerableUnderlyingType();
             if (enumerableType == null)
                 return false;
 
-            return
-                !enumerableType.IsGenericType ||
-                !typeof(KeyValuePair<,>).IsAssignableFrom(enumerableType.GetGenericTypeDefinition());
+            if (!type.IsGenericType)
+                return true;
+
+            // must not be Dictionary<T,K> (reserved for batch operations)
+            var genericTypeDef = type.GetGenericTypeDefinition();
+            if (typeof(Dictionary<,>).IsAssignableFrom(genericTypeDef))
+                return false;
+            if (typeof(IDictionary<,>).IsAssignableFrom(genericTypeDef))
+                return false;
+            if (typeof(IReadOnlyDictionary<,>).IsAssignableFrom(genericTypeDef))
+                return false;
+
+            return true;
         }
 
         /// <summary>
@@ -279,7 +290,7 @@ namespace GraphQL.AspNet.Internal
                 {
                     throw new GraphTypeDeclarationException(
                         $"The type '{type.FriendlyName()}' appears to be a {typeof(IDictionary).FriendlyName()}. Objects " +
-                        "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
+                        "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically " +
                         "available graph type.",
                         type);
                 }
@@ -295,7 +306,7 @@ namespace GraphQL.AspNet.Internal
                     {
                         throw new GraphTypeDeclarationException(
                             $"The type '{type.FriendlyName()}' appears to be a {typeof(IDictionary<,>).FriendlyName()}. Objects " +
-                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
+                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically " +
                             "available graph type.",
                             type);
                     }
@@ -309,7 +320,7 @@ namespace GraphQL.AspNet.Internal
                     {
                         throw new GraphTypeDeclarationException(
                             $"The type '{type.FriendlyName()}' appears to be a {typeof(IReadOnlyDictionary<,>).FriendlyName()}. Objects " +
-                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
+                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically " +
                             "available graph type.",
                             type);
                     }
@@ -339,7 +350,7 @@ namespace GraphQL.AspNet.Internal
                     eliminateTask: true,
                     eliminateNullableT: true);
 
-                return new GraphTypeExpression(typeToCheck.FriendlyName(), typeDefinition.TypeWrappers);
+                return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), typeDefinition.TypeWrappers);
             }
 
             // strip out Task{T} before doin any type inspections
@@ -387,7 +398,7 @@ namespace GraphQL.AspNet.Internal
                 eliminateTask: false,
                 eliminateNullableT: true);
 
-            return new GraphTypeExpression(typeToCheck.FriendlyName(), wrappers);
+            return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), wrappers);
         }
 
         /// <summary>

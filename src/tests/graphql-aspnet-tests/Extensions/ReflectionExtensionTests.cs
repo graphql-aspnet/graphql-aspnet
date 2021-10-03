@@ -77,14 +77,22 @@ namespace GraphQL.AspNet.Tests.Extensions
         [TestCase(typeof(IDictionary<int, string>), "IDictionary<int, string>")]
         [TestCase(typeof(IDictionary<int, string>), "IDictionary_int_string_", false, "_")]
         [TestCase(typeof(Task<IDictionary<int, string>>), "Task<IDictionary<int, string>>")]
+        [TestCase(typeof(Task<IDictionary<int, string>>), "Task_IDictionary_int_string__", false, "_")]
         [TestCase(typeof(Task<IDictionary<DateTimeExtensionTests, ReflectionExtensionTests>>), "Task<IDictionary<DateTimeExtensionTests, ReflectionExtensionTests>>")]
-        public void Type_FriendlyName(Type type, string expectedName, bool includeCarrots = true, string delimiter = "")
+        [TestCase(typeof(int[]), "int[]", true)]
+        [TestCase(typeof(int[][]), "int[][]", true)]
+        [TestCase(typeof(int[][]), "int____", false, "_")]
+        [TestCase(typeof(int[]), "int__", false, "_")]
+        public void Type_FriendlyName(Type type, string expectedName, bool useDefaultFriendlyName = true, string delimiter = "")
         {
             // non generic type just returns Type.Name
-            if (includeCarrots)
-                Assert.AreEqual(expectedName, type.FriendlyName());
+            string result;
+            if (useDefaultFriendlyName)
+                result = type.FriendlyName();
             else
-                Assert.AreEqual(expectedName, type.FriendlyName(delimiter));
+                result = type.FriendlyName(delimiter);
+
+            Assert.AreEqual(expectedName, result);
         }
 
         [TestCase(typeof(int), "System.Int32")]

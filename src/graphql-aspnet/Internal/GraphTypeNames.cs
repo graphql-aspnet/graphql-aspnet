@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Internal
                 }
             }
 
-            typeName = typeName ?? type.FriendlyName("_");
+            typeName = typeName ?? type.FriendlyGraphTypeName();
             typeName = typeName.Replace(Constants.Routing.CLASS_META_NAME, type.Name).Trim();
             if (kind == TypeKind.DIRECTIVE && typeName.EndsWith(Constants.CommonSuffix.DIRECTIVE_SUFFIX))
             {
@@ -153,6 +153,17 @@ namespace GraphQL.AspNet.Internal
 
             AssignName(type, kind, typeName);
             return typeName;
+        }
+
+        /// <summary>
+        /// Creates friendly name for a type that can be considered a valid name of a GraphQL graph type.
+        /// This method does not take into account any scheme specific naming or casing rules.
+        /// </summary>
+        /// <param name="type">The type to create a friendly Name for.</param>
+        /// <returns>System.String.</returns>
+        public static string FriendlyGraphTypeName(this Type type)
+        {
+            return type.FriendlyName("_");
         }
     }
 }
