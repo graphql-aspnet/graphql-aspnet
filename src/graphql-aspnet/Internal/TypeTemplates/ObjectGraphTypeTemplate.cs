@@ -11,8 +11,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;

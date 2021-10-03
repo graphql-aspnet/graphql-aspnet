@@ -9,8 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.Controllers.ControllerTestData
 {
-    using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;

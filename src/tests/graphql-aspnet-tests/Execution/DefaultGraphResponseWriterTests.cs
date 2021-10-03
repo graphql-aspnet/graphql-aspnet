@@ -21,7 +21,6 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;

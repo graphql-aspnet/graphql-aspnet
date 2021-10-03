@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class ArrayScalarController : GraphIdController
     {

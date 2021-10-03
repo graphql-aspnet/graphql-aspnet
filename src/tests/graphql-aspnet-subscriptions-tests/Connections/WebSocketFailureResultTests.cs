@@ -9,7 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.Connections
 {
-    using System.Net.Sockets;
     using System.Net.WebSockets;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;

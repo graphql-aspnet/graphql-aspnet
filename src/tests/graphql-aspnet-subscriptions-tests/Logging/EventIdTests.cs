@@ -9,7 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.Logging
 {
-    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using GraphQL.AspNet.Logging;

@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [GraphRoute("unionTest")]

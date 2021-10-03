@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class ArrayKeyValuePairObject
     {

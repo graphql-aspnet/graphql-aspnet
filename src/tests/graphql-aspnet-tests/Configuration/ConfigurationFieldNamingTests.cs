@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.Configuration
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Configuration.ConfigurationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;

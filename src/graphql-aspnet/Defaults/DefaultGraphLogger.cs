@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System;
-    using System.Security.Claims;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;

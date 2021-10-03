@@ -10,18 +10,13 @@
 namespace GraphQL.AspNet.Tests.Middleware
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
-    using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
-    using GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData;
     using Moq;
     using NUnit.Framework;
 

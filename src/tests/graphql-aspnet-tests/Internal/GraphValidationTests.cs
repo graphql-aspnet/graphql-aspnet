@@ -10,11 +10,9 @@
 namespace GraphQL.AspNet.Tests.Internal
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;

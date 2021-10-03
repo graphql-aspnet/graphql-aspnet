@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.MethodTestData;
     using GraphQL.AspNet.Common.Extensions;
@@ -167,7 +166,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.TaskOfListOfObjectReturnType));
             Assert.AreEqual(typeof(TwoPropertyObject), template.ObjectType);
         }
-
 
         [Test]
         public void Parse_ArrayFromMethod_YieldsTemplate()

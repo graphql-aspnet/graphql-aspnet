@@ -9,20 +9,20 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData;
-    using GraphQL.AspNet.Common.Extensions;
     using Moq;
     using NUnit.Framework;
-    using System.Collections.Generic;
 
     [TestFixture]
     public class GraphPropertyTemplateTests
@@ -196,7 +196,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
-                typeof(KeyValuePair<string, string>).FriendlyName("_"),
+                typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
                 MetaGraphTypes.IsList,
                 MetaGraphTypes.IsNotNull); // structs can't be null
 

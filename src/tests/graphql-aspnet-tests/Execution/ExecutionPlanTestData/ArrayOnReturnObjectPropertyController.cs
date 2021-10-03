@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using System.Collections.Generic;
-    using System.Security.Policy;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
