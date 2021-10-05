@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -733,7 +734,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [Test]
-        public void EnsureGraphType_WhenTypeIsAGeneric_IsAddedCorrectly()
+        public void EnsureGraphType_WhenContainsAGenericType_IsAddedCorrectly()
         {
             var schema = new GraphSchema() as ISchema;
             schema.SetNoAlterationConfiguration();
@@ -747,6 +748,65 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(KeyValuePair<string, int>)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenIsAGenericType_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<TwoPropertyGenericObject<string, int>>();
+            manager.EnsureGraphType<TwoPropertyGenericObject<double, DateTime>>();
+
+            Assert.AreEqual(7, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyGenericObject<string, int>)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyGenericObject<double, DateTime>)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(DateTime)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(double)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenIsAGenericType_WithListTypeParam_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<TwoPropertyGenericObject<string[], int[]>>();
+
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyGenericObject<string[], int[]>)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+
+            var type = schema.KnownTypes.FindGraphType(typeof(TwoPropertyGenericObject<string[], int[]>));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenIsAGenericType_ButDeclaresACustomName_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            try
+            {
+                manager.EnsureGraphType<GenericObjectTypeWithGraphTypeName<string, int>>();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                var name = typeof(GenericObjectTypeWithGraphTypeName<string, int>).GetGenericTypeDefinition().FriendlyName();
+                Assert.IsTrue(ex.Message.Contains(name));
+                return;
+            }
+
+            Assert.Fail("No exception was thrown when one was expected.");
         }
     }
 }
