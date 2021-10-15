@@ -667,40 +667,6 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [Test]
-        public void EnsureGraphType_WhenControllerInputTypeIsFlatArray_IsAddedCorrectly()
-        {
-            var schema = new GraphSchema() as ISchema;
-            schema.SetNoAlterationConfiguration();
-
-            var manager = new GraphSchemaManager(schema);
-            manager.EnsureGraphType<ArrayObjectInputController>();
-
-            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT));
-
-            Assert.IsFalse(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.OBJECT));
-        }
-
-        [Test]
-        public void EnsureGraphType_WhenControllerInputTypeIsFlatArrayAndReturnsFlatArray_ArrayIsAddedAsInputAndReturnType()
-        {
-            var schema = new GraphSchema() as ISchema;
-            schema.SetNoAlterationConfiguration();
-
-            var manager = new GraphSchemaManager(schema);
-            manager.EnsureGraphType<ArrayInputAndReturnController>();
-
-            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
-
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
-            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT));
-        }
-
-        [Test]
         public void EnsureGraphType_WhenPropertyIsFlatArray_IsAddedCorrectly()
         {
             var schema = new GraphSchema() as ISchema;

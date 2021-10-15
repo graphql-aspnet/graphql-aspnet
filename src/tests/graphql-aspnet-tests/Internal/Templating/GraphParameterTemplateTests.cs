@@ -178,5 +178,50 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsEmpty(template.TypeExpression.Wrappers);
             Assert.AreEqual(5, template.DefaultValue);
         }
+
+        [Test]
+        public void ArrayOfObjects_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("arrayOfObjects", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void ArrayOfEnumerableOfObject_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("arrayOfEnumerableOfObject", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void EnumerableArrayOfObjects_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("enumerableOfArrayOfObjects", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void EnumerableArrayOfArrryOfObjects_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("arrayOfEnumerableOfArrayOfObjects", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void StupidDeepArray_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("deepArray", out var paramInfo);
+            });
+        }
     }
 }

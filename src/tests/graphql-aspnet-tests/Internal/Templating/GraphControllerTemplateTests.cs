@@ -68,5 +68,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(string[]), action.DeclaredReturnType);
             Assert.AreEqual(expectedTypeExpression, action.TypeExpression);
         }
+
+        [Test]
+        public void Parse_ArrayOnInputParameter_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                GraphQLProviders.TemplateProvider.ParseType<ArrayInputParamController>();
+            });
+        }
     }
 }

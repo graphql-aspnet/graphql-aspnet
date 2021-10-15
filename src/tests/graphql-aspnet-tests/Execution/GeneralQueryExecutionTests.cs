@@ -873,7 +873,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task FlatArray_OfScalard_ResolvesDataCorrectly()
+        public async Task FlatArray_OfScalars_ResolvesDataCorrectly()
         {
             var server = new TestServerBuilder()
                     .AddGraphType<ArrayScalarController>()

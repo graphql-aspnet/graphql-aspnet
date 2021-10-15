@@ -244,5 +244,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveDataPossibleTypeIsAStruct));
             });
         }
+
+        [Test]
+        public void ActionTemplate_ArrayOnInputParameter_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var action = this.CreateActionTemplate<ArrayInputMethodController>(nameof(ArrayInputMethodController.AddData));
+            });
+        }
     }
 }

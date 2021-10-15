@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -150,6 +151,35 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public void ValidateOrThrow()
         {
             GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, this.Name);
+
+            this.EnsureNoArrayInTypeOrThrow();
+        }
+
+        /// <summary>
+        /// Checks the input parameter type to ensure no part of it is a flat array.
+        /// Valid:    IEnumerable{Person}
+        /// Invalid:  IEnumerable{Person[]}, Person[]
+        /// .
+        /// </summary>
+        private void EnsureNoArrayInTypeOrThrow()
+        {
+            if (!this.TypeExpression.IsListOfItems)
+                return;
+
+            var typeToCheck = this.DeclaredArgumentType;
+            typeToCheck = GraphValidation.EliminateWrappersFromCoreType(typeToCheck, false, true, true);
+
+            do
+            {
+                if (typeToCheck.IsArray)
+                {
+                    throw new GraphTypeDeclarationException($"Invalid input parameter declaration. The array type '{typeToCheck.FriendlyName()}' cannot be used " +
+                        $"as part of an input parameter for {this.Parent.InternalFullName}. Use IEnumerable<T> or IList<T> instead.");
+                }
+
+                typeToCheck = GraphValidation.EliminateNextWrapperFromCoreType(typeToCheck, true, true, true);
+            }
+            while (GraphValidation.IsValidListType(typeToCheck));
         }
 
         /// <summary>

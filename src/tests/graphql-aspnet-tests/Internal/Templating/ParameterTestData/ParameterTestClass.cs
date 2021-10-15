@@ -34,6 +34,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ParameterTestData
             [Description("This Graph Field is Amazing")][FromGraphQL("validArgNameOverride1", TypeExpressions.IsNotNullList)] IEnumerable<Person> __lotsOfAttributes,
             [FromGraphQL(TypeExpressions.IsNotNullList)] IEnumerable<int> enumerableWithNonNullableArg, // int cant be null
             [FromGraphQL(TypeExpressions.IsNotNull | TypeExpressions.IsNotNullList)] IEnumerable<int> enumerableIntArgWithAttribForbidsNullItems,
+            Person[] arrayOfObjects,
+            IEnumerable<Person>[] arrayOfEnumerableOfObject,
+            IEnumerable<Person[]> enumerableOfArrayOfObjects,
+            IEnumerable<Person[]>[] arrayOfEnumerableOfArrayOfObjects,
+            Person[][][][][][][][][][][][][][][][][][][] deepArray,
             Person defaultValueObjectArg = null,
             string defaultValueStringArg = null,
             string defaultValueStringArgWithValue = "abc",
