@@ -107,6 +107,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                         formatter.FormatFieldName(template.Name),
                         template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                         template.Route,
+                        template.ObjectType,
+                        template.DeclaredReturnType,
                         template.Mode,
                         template.CreateResolver(),
                         securityGroups);
@@ -116,8 +118,9 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                         formatter.FormatFieldName(template.Name),
                         template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                         template.Route,
-                        template.DeclaredReturnType,
                         template.DeclaredName,
+                        template.ObjectType,
+                        template.DeclaredReturnType,
                         template.Mode,
                         template.CreateResolver(),
                         securityGroups);

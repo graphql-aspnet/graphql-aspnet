@@ -774,5 +774,26 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Fail("No exception was thrown when one was expected.");
         }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerHasInputParameterAsInterface_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            try
+            {
+                manager.EnsureGraphType<ControllerWithInterfaceInput>();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                var name = typeof(IPersonData).FriendlyName();
+                Assert.IsTrue(ex.Message.Contains(name));
+                return;
+            }
+
+            Assert.Fail("No exception was thrown when one was expected.");
+        }
     }
 }

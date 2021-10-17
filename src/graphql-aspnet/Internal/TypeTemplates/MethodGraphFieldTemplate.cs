@@ -138,11 +138,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override Type DeclaredReturnType => this.Method.ReturnType;
 
         /// <summary>
-        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
+        /// Gets or sets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
         /// represents the implementation return type as opposed to the expected graph type.
         /// </summary>
         /// <value>The type of the return.</value>
-        public Type ExpectedReturnType { get; private set; }
+        public Type ExpectedReturnType { get; protected set; }
 
         /// <summary>
         /// Gets the name this field is declared as in the C# code (method name or property name).

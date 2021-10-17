@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Schemas.Structural
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -33,6 +34,8 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="fieldName">Name of the field in the graph.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
+        /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="mode">The mode in which the runtime will process this field.</param>
         /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
         /// <param name="securityPolicies">The security policies that apply to this field.</param>
@@ -40,6 +43,8 @@ namespace GraphQL.AspNet.Schemas.Structural
             string fieldName,
             GraphTypeExpression typeExpression,
             GraphFieldPath route,
+            Type objectType = null,
+            Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
             IEnumerable<FieldSecurityGroup> securityPolicies = null)
@@ -49,14 +54,10 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.Arguments = new GraphFieldArgumentCollection();
             this.SecurityGroups = securityPolicies ?? Enumerable.Empty<FieldSecurityGroup>();
+            this.ObjectType = objectType;
+            this.DeclaredReturnType = declaredReturnType;
             this.UpdateResolver(resolver, mode);
         }
-
-        /// <summary>
-        /// Gets the name of this field as defined by the type declaration.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name { get; }
 
         /// <summary>
         /// Updates the field resolver used by this graph field.
@@ -71,6 +72,18 @@ namespace GraphQL.AspNet.Schemas.Structural
             var unrwrappedType = GraphValidation.EliminateWrappersFromCoreType(this.Resolver?.ObjectType);
             this.IsLeaf = this.Resolver?.ObjectType != null && GraphQLProviders.ScalarProvider.IsLeaf(unrwrappedType);
         }
+
+        /// <summary>
+        /// Gets the name of this field as defined by the type declaration.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name { get; }
+
+        /// <inheritdoc />
+        public Type ObjectType { get; }
+
+        /// <inheritdoc />
+        public Type DeclaredReturnType { get; set; }
 
         /// <summary>
         /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'

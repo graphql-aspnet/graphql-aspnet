@@ -143,5 +143,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
         {
             return Task.FromResult(new TwoPropertyObject());
         }
+
+        [GraphField]
+        public Task<TwoPropertyObject> InterfaceAsInputParam(ITwoPropertyObject data)
+        {
+            return Task.FromResult(new TwoPropertyObject());
+        }
     }
 }

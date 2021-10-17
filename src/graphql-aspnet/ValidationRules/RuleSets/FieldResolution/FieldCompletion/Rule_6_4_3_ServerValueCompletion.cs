@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
@@ -20,8 +21,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
     using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common;
 
     /// <summary>
-    /// A rule that inspects only a root object (not a list of objects) to ensure that the actual .NET class type
-    /// of the item is allowed for the graph type of the field being resolved.
+    /// A rule that inspects the to ensure that the actual .NET class type
+    /// of the field result is allowed for the graph type of the field being resolved.
     /// </summary>
     internal class Rule_6_4_3_ServerValueCompletion : FieldResolutionRuleStep
     {

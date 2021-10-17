@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 this.PossibleTypes = new List<Type>();
 
-                // the possible types attribte is optional but expects taht the concrete types are added
+                // the possible types attribte is optional but expects that the concrete types are added
                 // to the schema else where lest a runtime exception occurs of a missing graph type.
                 var typesAttrib = this.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
                 if (typesAttrib != null)
@@ -285,9 +285,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 }
             }
 
+            // general validation of any declaraed parameter for this field
             foreach (var argument in this.Arguments)
-            {
                 argument.ValidateOrThrow();
+
+            // specific validation for those arguments destinated to be input arguments
+            // that exist on the object graph
+            foreach (var inputArgument in this.InputArguments)
+            {
+                if (inputArgument.ObjectType.IsInterface)
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The field '{this.InternalFullName}' declares an input argument '{inputArgument.Name}' of type  '{inputArgument.ObjectType.FriendlyName()}' " +
+                        $"which is an interface. Interfaces can never be used as input arguments to a field.");
+                }
             }
 
             if (this.Complexity.HasValue && this.Complexity < 0)
@@ -472,6 +483,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The parameters.</value>
         public abstract IReadOnlyList<IGraphFieldArgumentTemplate> Arguments { get; }
+
+        /// <summary>
+        /// Gets the subset of  <see cref="Arguments"/> defined to be "input parameters" to the field.
+        /// This list may be different than <see cref="Arguments"/> in some cases where one field argument
+        /// is used as a source data input value and is not designated to be part of a graph
+        /// structure.
+        /// </summary>
+        /// <value>The input arguments.</value>
+        public virtual IReadOnlyList<IGraphFieldArgumentTemplate> InputArguments => this.Arguments;
 
         /// <summary>
         /// Gets the security policies found via defined attributes on the item that need to be enforced.

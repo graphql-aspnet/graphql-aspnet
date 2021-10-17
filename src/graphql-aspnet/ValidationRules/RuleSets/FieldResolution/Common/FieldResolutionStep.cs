@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common
         public abstract bool Execute(FieldValidationContext context);
 
         /// <summary>
-        /// Determines where the context is in a state such that it should continue processing its children, if any exist.
+        /// Determines whether the context is in a state such that it should continue processing its children, if any exist.
         /// Returning false will cease processing child items under the active item of this context. This can be useful
         /// if/when a situation in a parent disqualifies all other items in a processing tree. This step is always executed
         /// even if the primary execution is skipped or fails.

@@ -680,8 +680,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<ArrayAsEnumerableController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as empty on the query
-            // should succeed, all child properties are optional
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("query  { " +
                 "      retrieveData () { " +
@@ -717,8 +715,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<ArrayThroughGraphActionAsEnumerableController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as empty on the query
-            // should succeed, all child properties are optional
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("query  { " +
                 "      retrieveData () { " +
@@ -754,8 +750,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<ArrayThroughArrayDeclarationController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as empty on the query
-            // should succeed, all child properties are optional
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("query  { " +
                 "      retrieveData () { " +
@@ -791,8 +785,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<ArrayOnReturnObjectPropertyController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as empty on the query
-            // should succeed, all child properties are optional
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("query  { " +
                 "      retrieveData () { " +
@@ -836,8 +828,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<ArrayOnReturnObjectMethodController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as empty on the query
-            // should succeed, all child properties are optional
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("query  { " +
                 "      retrieveData () { " +
@@ -879,8 +869,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<ArrayScalarController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as empty on the query
-            // should succeed, all child properties are optional
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("query  { " +
                 "      retrieveData () " +
@@ -904,8 +892,6 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddGraphType<KeyValuePairController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as empty on the query
-            // should succeed, all child properties are optional
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("query  { " +
                 "      retrieveData () {" +
@@ -920,6 +906,66 @@ namespace GraphQL.AspNet.Tests.Execution
                        ""retrieveData"" : [
                             {""key"" : ""key1"", ""value"" : 1 },
                             {""key"" : ""key2"", ""value"" : 2 }
+                       ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task TypeExtension_OnValueType_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+         .AddGraphType<TypeExtensionKeyValuePairController>()
+         .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () {" +
+                "           key         " +
+                "           value       " +
+                "           value2      " +
+                "      }" +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {""key"" : ""key1"", ""value"" : 1, ""value2"" : ""1ABC"" },
+                            {""key"" : ""key2"", ""value"" : 2, ""value2"" : ""2ABC"" }
+                       ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task TypeExtension_OnGeneralObject_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+         .AddGraphType<TypeExtensionOnTwoPropertyObjectController>()
+         .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () {" +
+                "           property1      " +
+                "           property2      " +
+                "           property3      " +
+                "      }" +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {""property1"" : ""Prop1"", ""property2"" : 1, ""property3"" : ""1ABC"" },
+                            {""property1"" : ""Prop2"", ""property2"" : 2, ""property3"" : ""2ABC"" }
                        ]
                      }
                   }";

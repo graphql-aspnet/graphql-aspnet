@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Security;
 
@@ -52,31 +53,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Creates and adds a new <see cref="IGraphField" /> to the growing collection.
         /// </summary>
-        /// <param name="fieldName">Name of the field.</param>
-        /// <param name="typeExpression">The item representing how this field returns a graph type.</param>
-        /// <param name="route">The formal route that identifies this field in the object graph.</param>
-        /// <param name="resolver">The resolver used to fulfil requests to this field.</param>
-        /// <param name="securityPolicies">The security policies enforced by this field, if any.</param>
-        /// <returns>IGraphTypeField.</returns>
-        public IGraphField AddField(
-            string fieldName,
-            GraphTypeExpression typeExpression,
-            GraphFieldPath route,
-            IGraphFieldResolver resolver = null,
-            IEnumerable<FieldSecurityGroup> securityPolicies = null)
-        {
-            return this.AddField(new MethodGraphField(
-                fieldName,
-                typeExpression,
-                route,
-                FieldResolutionMode.PerSourceItem,
-                resolver,
-                securityPolicies));
-        }
-
-        /// <summary>
-        /// Creates and adds a new <see cref="IGraphField" /> to the growing collection.
-        /// </summary>
         /// <typeparam name="TSource">The expected type of the source data supplied to the resolver.</typeparam>
         /// <typeparam name="TReturn">The expected type of data to be returned from this field.</typeparam>
         /// <param name="fieldName">Name of the field.</param>
@@ -97,6 +73,8 @@ namespace GraphQL.AspNet.Schemas.Structural
                 fieldName,
                 typeExpression,
                 route,
+                GraphValidation.EliminateNextWrapperFromCoreType(typeof(TReturn)),
+                typeof(TReturn),
                 FieldResolutionMode.PerSourceItem,
                 new GraphDataValueResolver<TSource, TReturn>(resolver));
             field.Description = description;

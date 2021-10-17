@@ -138,6 +138,15 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
+        public void Parse_InterfaceAsInputParameter_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.InterfaceAsInputParam));
+            });
+        }
+
+        [Test]
         public void Parse_AsyncMethodWithNoReturnType_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>

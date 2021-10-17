@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
+    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -72,7 +73,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         GraphFieldPath Route { get; }
 
         /// <summary>
-        /// Gets  an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
+        /// Gets an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
         /// See the documentation for an understanding of how query complexity is calculated.
         /// </summary>
         /// <value>The estimated complexity value for this field.</value>
@@ -97,5 +98,19 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
         bool IsVirtual { get; }
+
+        /// <summary>
+        /// Gets the core type of the object (or objects) returned by this field. If this field
+        /// is meant to return a list of items, this property represents the type of item in
+        /// that list.
+        /// </summary>
+        /// <value>The type of the object.</value>
+        public Type ObjectType { get; }
+
+        /// <summary>
+        /// Gets .NET type of the method or property that generated this field as it was declared in code.
+        /// </summary>
+        /// <value>The type of the declared return.</value>
+        public Type DeclaredReturnType { get;  }
     }
 }

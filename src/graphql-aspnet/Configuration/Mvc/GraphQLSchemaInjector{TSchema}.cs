@@ -209,7 +209,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <param name="appBuilder">The application builder.</param>
         public void UseSchema(IApplicationBuilder appBuilder)
         {
-            this.UseSchema(appBuilder?.ApplicationServices, false);
+            Validation.ThrowIfNullOrReturn(appBuilder, nameof(appBuilder));
+
+            this.UseSchema(appBuilder.ApplicationServices, false);
 
             if (_options.Extensions != null)
             {

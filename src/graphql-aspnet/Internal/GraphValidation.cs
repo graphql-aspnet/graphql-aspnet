@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Internal
 
         /// <summary>
         /// Attempts to drill into the supplied type and remove the next found wrapper (given the provided filters)
-        /// to distill it to its core type. (i.e. convert IEnumerable[T] to 'T').
+        /// to distill it to its core type. (i.e. convert Task{IEnumerable{T}} to 'IEnumerable{T}').
         /// </summary>
         /// <param name="type">The type to inspect.</param>
         /// <param name="eliminateEnumerables">if set to <c>true</c> this method will attempt to eliminate any wrapper type that declares <see cref="IEnumerable{T}" />.</param>
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Internal
 
         /// <summary>
         /// Attempts to drill into the supplied type and remove all found wrappers (given the provided filters)
-        /// to distill it to its core type. (i.e. convert IEnumerable[T] to 'T').
+        /// to distill it to its core type. (i.e. convert IEnumerable{T} to 'T').
         /// </summary>
         /// <param name="type">The type to inspect.</param>
         /// <param name="eliminateEnumerables">if set to <c>true</c> this method will attempt to eliminate any wrapper type that declares <see cref="IEnumerable{T}" />.</param>
