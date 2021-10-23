@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return $"Schema '{this.PipelineName} Pipeline' Created | Schema Type: '{_schemaTypeShortName}', Components: {this.MiddlewareCount}";
+            return $"Schema '{this.PipelineName}' Pipeline Created | Schema Type: '{_schemaTypeShortName}', Components: {this.MiddlewareCount}";
         }
     }
 }

@@ -297,7 +297,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 {
                     throw new GraphTypeDeclarationException(
                         $"The field '{this.InternalFullName}' declares an input argument '{inputArgument.Name}' of type  '{inputArgument.ObjectType.FriendlyName()}' " +
-                        $"which is an interface. Interfaces can never be used as input arguments to a field.");
+                        $"which is an interface. Interfaces cannot be used as input arguments to a field.");
                 }
             }
 
