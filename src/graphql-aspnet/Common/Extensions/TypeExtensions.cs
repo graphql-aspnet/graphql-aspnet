@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Extension methods for working with .NET <see cref="Type"/>
@@ -57,7 +58,10 @@ namespace GraphQL.AspNet.Common.Extensions
             { typeof(decimal?), "decimal?" },
             { typeof(bool?), "bool?" },
             { typeof(char?), "char?" },
+            { typeof(DateTime), "DateTime" },
+            { typeof(DateTimeOffset), "DateTimeOffset" },
             { typeof(DateTime?), "DateTime?" },
+            { typeof(DateTimeOffset?), "DateTimeOffset?" },
         };
 
         private static readonly ConcurrentDictionary<Tuple<Type, bool, int>, bool> VALIDATION_SCANS;
@@ -416,6 +420,20 @@ namespace GraphQL.AspNet.Common.Extensions
                 underlyingType == typeof(ushort) || // 16bit
                 underlyingType == typeof(uint) || // 32bit
                 underlyingType == typeof(ulong); // 64 bit
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is struct or not.
+        /// </summary>
+        /// <param name="type">The type to inspect.</param>
+        /// <returns><c>true</c> if the specified type is a struct; otherwise, <c>false</c>.</returns>
+        public static bool IsStruct(this Type type)
+        {
+            if (type == null)
+                return false;
+
+            return type.IsValueType && !type.IsPrimitive && !type.IsEnum && !type.IsArray && !type.IsInterface
+                && !type.IsAbstract;
         }
     }
 }

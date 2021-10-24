@@ -11,9 +11,10 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class ArrayOnReturnObjectPropertyController : GraphIdController
+    public class ArrayOnReturnObjectPropertyController : GraphController
     {
         [QueryRoot]
         public IEnumerable<ArrayObject> RetrieveData()

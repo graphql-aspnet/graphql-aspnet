@@ -82,7 +82,10 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
                 var paramSet = context.Arguments.PrepareArguments(_graphMethod);
                 var invoker = InstanceFactory.CreateInstanceMethodInvoker(_graphMethod.Method);
-                var invokeReturn = invoker(context.Arguments.SourceData, paramSet);
+
+                var invokableObject = context.Arguments.SourceData as object;
+                var invokeReturn = invoker(ref invokableObject, paramSet);
+
                 if (_graphMethod.IsAsyncField)
                 {
                     if (invokeReturn is Task task)

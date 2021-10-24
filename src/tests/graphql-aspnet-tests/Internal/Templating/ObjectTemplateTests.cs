@@ -19,12 +19,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphObjectTemplateTests
+    public class ObjectTemplateTests
     {
         [Test]
         public void UnparsedTemplate_ThrowsException()
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_GeneralPropertySettings_SetCorrectly()
+        public void Parse_Object_GeneralPropertySettings_SetCorrectly()
         {
             var template = new ObjectGraphTypeTemplate(typeof(SimpleObjectNoMethods));
             template.Parse();
@@ -53,7 +54,22 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_DescriptionAttribute_SetsCorrectly()
+        public void Parse_Struct_GeneralPropertySettings_SetCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(SimpleStructNoMethods));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.IsNotNull(template);
+            Assert.AreEqual("[type]/SimpleStructNoMethods", template.Route.Path);
+            Assert.AreEqual(null, template.Description);
+            Assert.AreEqual(typeof(SimpleStructNoMethods), template.ObjectType);
+            Assert.AreEqual(0, template.FieldTemplates.Count());
+            Assert.AreEqual("SimpleStructNoMethods", template.Name);
+        }
+
+        [Test]
+        public void Parse_Object_DescriptionAttribute_SetsCorrectly()
         {
             var template = new ObjectGraphTypeTemplate(typeof(DescriptionObject));
             template.Parse();
@@ -64,7 +80,18 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_MethodsAreCapturedAsExplictOrImplicitCorrectly()
+        public void Parse_Struct_DescriptionAttribute_SetsCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(DescriptionStruct));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.IsNotNull(template);
+            Assert.AreEqual("A valid description struct", template.Description);
+        }
+
+        [Test]
+        public void Parse_Object_MethodsAreCapturedAsExplictOrImplicitCorrectly()
         {
             var template = new ObjectGraphTypeTemplate(typeof(OneMarkedMethod));
             template.Parse();
@@ -79,7 +106,22 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_PropertiesAreCapturedAsExplictOrImplicitCorrectly()
+        public void Parse_Struct_MethodsAreCapturedAsExplictOrImplicitCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(StructOneMarkedMethod));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var totalMethods = typeof(StructOneMarkedMethod)
+                .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly).Count(x => !x.IsSpecialName);
+
+            Assert.IsTrue(totalMethods == template.FieldTemplates.Count);
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.Value.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.Value.IsExplicitDeclaration));
+        }
+
+        [Test]
+        public void Parse_Object_PropertiesAreCapturedAsExplictOrImplicitCorrectly()
         {
             var template = new ObjectGraphTypeTemplate(typeof(OneMarkedProperty));
             template.Parse();
@@ -92,8 +134,21 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.Value.IsExplicitDeclaration));
         }
 
+        public void Parse_Struct_PropertiesAreCapturedAsExplictOrImplicitCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(StructOneMarkedProperty));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var totalProps = typeof(StructOneMarkedProperty).GetProperties().Length;
+
+            Assert.IsTrue(totalProps == template.FieldTemplates.Count);
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => x.Value.IsExplicitDeclaration));
+            Assert.AreEqual(1, template.FieldTemplates.Count(x => !x.Value.IsExplicitDeclaration));
+        }
+
         [Test]
-        public void Parse_OverloadedMethodsWithNoNameClash_ParsesCorrectly()
+        public void Parse_Object_OverloadedMethodsWithNoNameClash_ParsesCorrectly()
         {
             var template = new ObjectGraphTypeTemplate(typeof(TwoMethodsWithSameNameWithAttributeDiff));
             template.Parse();
@@ -107,9 +162,35 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_OverloadedMethodsWithNameClash_ThrowsException()
+        public void Parse_Struct_OverloadedMethodsWithNoNameClash_ParsesCorrectly()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(StructTwoMethodsWithSameNameWithAttributeDiff));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.IsNotNull(template);
+
+            Assert.AreEqual(2, template.FieldTemplates.Count());
+            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/{nameof(TwoMethodsWithSameNameWithAttributeDiff.Method1)}"));
+            Assert.IsTrue(template.FieldTemplates.ContainsKey($"[type]/{nameof(StructTwoMethodsWithSameNameWithAttributeDiff)}/MethodA"));
+        }
+
+        [Test]
+        public void Parse_Object_OverloadedMethodsWithNameClash_ThrowsException()
         {
             var template = new ObjectGraphTypeTemplate(typeof(TwoMethodsWithSameName));
+            template.Parse();
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void Parse_Struct_OverloadedMethodsWithNameClash_ThrowsException()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(StructTwoMethodsWithSameName));
             template.Parse();
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -128,7 +209,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_FromValueType_ThrowsException()
+        public void Parse_FromKnownScalar_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -157,7 +238,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_WithClassLevelGraphSkipAttribute_ThrowsException()
+        public void Parse_Object_WithClassLevelGraphSkipAttribute_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -168,9 +249,32 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_InvalidMethods_ThatAreNotExplicitlyDeclared_AreSkipped()
+        public void Parse_Struct_WithClassLevelGraphSkipAttribute_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new ObjectGraphTypeTemplate(typeof(ForceSkippedStruct));
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void Parse_Object_InvalidMethods_ThatAreNotExplicitlyDeclared_AreSkipped()
         {
             var template = new ObjectGraphTypeTemplate(typeof(ObjectWithInvalidNonDeclaredMethods));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            // should have the declared method, the undeclared but valid method, the decalred property
+            // the invalid undeclared method should be dropped silently
+            Assert.AreEqual(3, template.FieldTemplates.Count);
+        }
+
+        [Test]
+        public void Parse_Struct_InvalidMethods_ThatAreNotExplicitlyDeclared_AreSkipped()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(StructWithInvalidNonDeclaredMethods));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -242,6 +346,38 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("Property3", fieldTemplate0.Name);
             Assert.AreEqual("Property1", fieldTemplate1.Name);
             Assert.AreEqual("Property2", fieldTemplate2.Name);
+        }
+
+        [Test]
+        public void Parse_WhenStructAKnownScalar_ThrowsException()
+        {
+            using var point = new GraphQLProviderRestorePoint();
+
+            var scalarType = new SimpleScalarStructGraphType();
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(scalarType);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new ObjectGraphTypeTemplate(scalarType.ObjectType);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void Parse_WhenObjectIsAKnownScalar_ThrowsException()
+        {
+            using var point = new GraphQLProviderRestorePoint();
+
+            var scalarType = new SimpleScalarObjectGraphType();
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(scalarType);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new ObjectGraphTypeTemplate(scalarType.ObjectType);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
         }
     }
 }

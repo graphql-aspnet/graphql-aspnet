@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the kind of graph type that should own fields created from this template.
         /// </summary>
         /// <value>The kind.</value>
-        TypeKind Kind { get; }
+        TypeKind OwnerTypeKind { get; }
 
         /// <summary>
         /// Gets  an estimated weight value of this field in terms of the overall impact it has on the execution of a query.

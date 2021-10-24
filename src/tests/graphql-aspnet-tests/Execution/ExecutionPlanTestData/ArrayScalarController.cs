@@ -11,9 +11,10 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
 
-    public class ArrayScalarController : GraphIdController
+    public class ArrayScalarController : GraphController
     {
         [QueryRoot(typeof(IEnumerable<int>))]
         public IGraphActionResult RetrieveData()

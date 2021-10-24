@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A method template containing the metadata for a controller method flaged as a special type extension
     /// and not a normal controller action.
     /// </summary>
-    public class GraphTypeExtensionFieldTemplate : MethodGraphFieldTemplate, IGraphTypeExpressionDeclaration
+    public class GraphTypeExtensionFieldTemplate : MethodGraphFieldTemplateBase, IGraphTypeExpressionDeclaration
     {
         private Type _sourceType;
         private TypeExtensionAttribute _typeAttrib;
@@ -134,11 +134,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the kind of graph type that should own fields created from this template.
         /// </summary>
         /// <value>The kind.</value>
-        public override TypeKind Kind => TypeKind.OBJECT;
+        public override TypeKind OwnerTypeKind => TypeKind.OBJECT;
 
         /// <summary>
         /// Gets the type of the object that owns this field; that is the type which supplies source data
-        /// to this field in the object graph. This is usually the <see cref="GraphTypeFieldTemplate.Parent"/>'s object type but not always; such
+        /// to this field in the object graph. This is usually the <see cref="GraphFieldTemplate.Parent"/>'s object type but not always; such
         /// is the case with type extensions.
         /// </summary>
         /// <value>The type of the source object.</value>

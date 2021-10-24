@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                     .WithVariables(this.VariableCollection)
                     .Resolve(argument.Value);
 
-                propSetter(instance, resolvedValue);
+                propSetter(ref instance, resolvedValue);
             }
 
             return instance;

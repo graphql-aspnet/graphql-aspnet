@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Extensions
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Tests.Extensions.ReflectionExtensionTestData;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ThirdPartyDll;
     using GraphQL.AspNet.Tests.ThirdPartyDll.Model;
     using NUnit.Framework;
@@ -195,6 +196,11 @@ namespace GraphQL.AspNet.Tests.Extensions
         [TestCase(typeof(IEnumerable<IEnumerable<IEnumerable<float?>>>), typeof(float?), true)]
         [TestCase(typeof(List<IEnumerable<float>>), typeof(float), true)]
         [TestCase(typeof(List<List<List<List<List<List<float>>>>>>), typeof(float), true)]
+        [TestCase(typeof(int[]), typeof(int), true)]
+        [TestCase(typeof(int[][]), typeof(int[]), false)]
+        [TestCase(typeof(List<int[]>), typeof(int), true)]
+        [TestCase(typeof(List<int[]>), typeof(int[]), false)]
+        [TestCase(typeof(List<List<List<List<List<float>[]>>>>), typeof(float), true)]
         public void Type_GetEnumerableUnderlyingType(Type typeToCheck, Type expected, bool resolveAll = false)
         {
             var result = typeToCheck.GetEnumerableUnderlyingType(resolveAll);
@@ -250,6 +256,15 @@ namespace GraphQL.AspNet.Tests.Extensions
             var exception = failedTask.UnwrapException();
 
             Assert.IsNull(exception);
+        }
+
+        [TestCase(typeof(int), false)]
+        [TestCase(typeof(string), false)]
+        [TestCase(typeof(TwoPropertyObject), false)]
+        [TestCase(typeof(StructForIsStructTest), true)]
+        public void Type_IsStruct(Type typeToCheck, bool isStruct)
+        {
+            Assert.AreEqual(isStruct, typeToCheck.IsStruct());
         }
     }
 }

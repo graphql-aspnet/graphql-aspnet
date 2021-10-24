@@ -246,12 +246,19 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void ActionTemplate_ArrayOnInputParameter_ThrowsException()
+        public void ActionTemplate_ArrayOnInputParameter_RendersFine()
         {
-            Assert.Throws<GraphTypeDeclarationException>(() =>
-            {
-                var action = this.CreateActionTemplate<ArrayInputMethodController>(nameof(ArrayInputMethodController.AddData));
-            });
+            var action = this.CreateActionTemplate<ArrayInputMethodController>(nameof(ArrayInputMethodController.AddData));
+
+            var types = action.RetrieveRequiredTypes();
+            Assert.IsNotNull(types);
+            Assert.AreEqual(1, types.Count());
+
+            Assert.IsTrue(types.Any(x => x.Type == typeof(string)));
+
+            Assert.AreEqual(1, action.Arguments.Count);
+            Assert.AreEqual(typeof(TwoPropertyObject[]), action.Arguments[0].DeclaredArgumentType);
+            Assert.AreEqual(typeof(TwoPropertyObject), action.Arguments[0].ObjectType);
         }
     }
 }

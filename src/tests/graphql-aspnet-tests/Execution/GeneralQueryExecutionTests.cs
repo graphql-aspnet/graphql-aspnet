@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using NUnit.Framework;
 
     [TestFixture]
-    public class GeneralQueryExecutionTests
+    public partial class GeneralQueryExecutionTests
     {
         [Test]
         public async Task SingleFieldResolution_ViaPipeline_YieldsCorrectResult()

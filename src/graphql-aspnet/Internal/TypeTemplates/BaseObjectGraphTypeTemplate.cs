@@ -57,12 +57,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 rejectionReason = $"The type '{objectType.FriendlyName()}' is an enumeration and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Use an {typeof(IEnumGraphType).FriendlyName()} instead.";
             }
-            else if (objectType.IsValueType)
+            else if (GraphQLProviders.ScalarProvider.IsScalar(objectType))
             {
-                if (GraphQLProviders.ScalarProvider.IsScalar(objectType))
-                {
-                    rejectionReason = $"The type '{objectType.FriendlyName()}' is a registered {nameof(TypeKind.SCALAR)} and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Try using the scalar definition instead.";
-                }
+                rejectionReason = $"The type '{objectType.FriendlyName()}' is a registered {nameof(TypeKind.SCALAR)} and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Try using the scalar definition instead.";
             }
             else if (objectType == typeof(string))
             {
@@ -259,7 +256,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplate" />
+        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplateBase" />
         /// to provide additional functionality or guarantee a certian type structure for all methods on this object template.
         /// </summary>
         /// <param name="methodInfo">The method information.</param>
@@ -269,7 +266,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (methodInfo == null)
                 return null;
 
-            return new GraphTypeMethodTemplate(this, methodInfo, this.Kind);
+            return new MethodGraphFieldTemplate(this, methodInfo, this.Kind);
         }
 
         /// <summary>

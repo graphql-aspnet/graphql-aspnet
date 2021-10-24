@@ -11,10 +11,11 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class ArrayThroughGraphActionAsEnumerableController : GraphIdController
+    public class ArrayThroughGraphActionAsEnumerableController : GraphController
     {
         [QueryRoot(typeof(IEnumerable<TwoPropertyObject>))]
         public IGraphActionResult RetrieveData()

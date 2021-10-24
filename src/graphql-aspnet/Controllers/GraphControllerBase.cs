@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
@@ -79,7 +80,8 @@ namespace GraphQL.AspNet.Controllers
                 var invoker = InstanceFactory.CreateInstanceMethodInvoker(_action.Method);
                 var invocationParameters = context.Arguments.PrepareArguments(_action);
 
-                var invokeReturn = invoker(this, invocationParameters);
+                var controllerRef = this as object;
+                var invokeReturn = invoker(ref controllerRef, invocationParameters);
                 if (_action.IsAsyncField)
                 {
                     if (invokeReturn is Task task)

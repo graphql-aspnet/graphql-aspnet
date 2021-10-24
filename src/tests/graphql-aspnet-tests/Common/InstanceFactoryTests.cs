@@ -95,6 +95,44 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
+        public void ObjectActivator_Struct_EmptyConstructor_CreatesObject()
+        {
+            InstanceFactory.Clear();
+
+            // all structs have an empty constructor, even if not declared
+            var instance = InstanceFactory.CreateInstance(typeof(NonParamerizedStruct));
+            Assert.IsNotNull(instance);
+
+            var castedItem = (NonParamerizedStruct)instance;
+            Assert.AreEqual(null, castedItem.Property1);
+        }
+
+        [Test]
+        public void ObjectActivator_Struct_ParameterizedConstructor_CreatesObject()
+        {
+            InstanceFactory.Clear();
+
+            var instance = InstanceFactory.CreateInstance(typeof(ParameterizedStruct), "aValueForProp1");
+            Assert.IsNotNull(instance);
+
+            var castedItem = (ParameterizedStruct)instance;
+            Assert.AreEqual("aValueForProp1", castedItem.Property1);
+        }
+
+        [Test]
+        public void ObjectActivator_Struct_NonParameterizedConstructorOfStructWithParameterizedConstructor_CreatesObject()
+        {
+            InstanceFactory.Clear();
+
+            // the internal empty ctor should still be callable
+            var instance = InstanceFactory.CreateInstance(typeof(ParameterizedStruct));
+            Assert.IsNotNull(instance);
+
+            var castedItem = (ParameterizedStruct)instance;
+            Assert.AreEqual(null, castedItem.Property1);
+        }
+
+        [Test]
         public void MethodInvoker_NullMethodInfo_returnsNull()
         {
             var invoker = InstanceFactory.CreateInstanceMethodInvoker(null);
@@ -134,8 +172,31 @@ namespace GraphQL.AspNet.Tests.Common
             var invoker = InstanceFactory.CreateInstanceMethodInvoker(methodInfo);
 
             var instance = new InstanceFactoryTests();
-            var result = invoker(instance, 5, 3);
+            var obj = instance as object;
+            var result = invoker(ref obj, 5, 3);
             Assert.AreEqual(8, result);
+
+            // ensure it was cached.
+            Assert.AreEqual(1, InstanceFactory.MethodInvokers.Count);
+            InstanceFactory.Clear();
+        }
+
+        [Test]
+        public void MethodInvoker_Struct_StandardInvoke_ReturnsValue_StructIsModified()
+        {
+            InstanceFactory.Clear();
+            var methodInfo = typeof(StructWithMethod).GetMethod(nameof(StructWithMethod.AddAndSet));
+
+            var invoker = InstanceFactory.CreateInstanceMethodInvoker(methodInfo);
+
+            var instance = default(StructWithMethod);
+            var obj = (object)instance;
+            var result = invoker(ref obj, "propValue1", 3);
+
+            var resultCast = (StructWithMethod)obj;
+
+            Assert.AreEqual(4, result);
+            Assert.AreEqual("propValue1", resultCast.Property1);
 
             // ensure it was cached.
             Assert.AreEqual(1, InstanceFactory.MethodInvokers.Count);
@@ -155,9 +216,36 @@ namespace GraphQL.AspNet.Tests.Common
             invokerSet.TryGetValue(nameof(SettableNumber), out var invoker);
 
             Assert.IsNotNull(invoker);
-            var instance = new InstanceFactoryTests();
-            invoker(instance, 13);
-            Assert.AreEqual(13, instance.SettableNumber);
+            var instance = (object)new InstanceFactoryTests();
+            invoker(ref instance, 13);
+
+            var recast = instance as InstanceFactoryTests;
+            Assert.AreEqual(13, recast.SettableNumber);
+
+            // ensure it was cached.
+            Assert.AreEqual(1, InstanceFactory.PropertyInvokers.Count);
+            InstanceFactory.Clear();
+        }
+
+        [Test]
+        public void PropertySetterInvoker_Struct_StandardInvoke_ReturnsValue()
+        {
+            InstanceFactory.Clear();
+
+            var invokerSet = InstanceFactory.CreatePropertySetterInvokerCollection(typeof(NonParamerizedStruct));
+
+            // ensure the "gettable" only property was skipped
+            Assert.AreEqual(1, invokerSet.Count);
+
+            invokerSet.TryGetValue(nameof(NonParamerizedStruct.Property1), out var invoker);
+
+            Assert.IsNotNull(invoker);
+            var instance = default(NonParamerizedStruct);
+            var obj = (object)instance;
+            invoker(ref obj, "prop1Value");
+
+            var recast = (NonParamerizedStruct)obj;
+            Assert.AreEqual("prop1Value", recast.Property1);
 
             // ensure it was cached.
             Assert.AreEqual(1, InstanceFactory.PropertyInvokers.Count);

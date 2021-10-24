@@ -11,8 +11,9 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
 
-    public class TypeExtensionKeyValuePairController : GraphIdController
+    public class TypeExtensionKeyValuePairController : GraphController
     {
         [QueryRoot]
         public IEnumerable<KeyValuePair<string, int>> RetrieveData()

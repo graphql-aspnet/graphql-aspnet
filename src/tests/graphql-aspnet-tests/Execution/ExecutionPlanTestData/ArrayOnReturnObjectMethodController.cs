@@ -10,9 +10,10 @@
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class ArrayOnReturnObjectMethodController : GraphIdController
+    public class ArrayOnReturnObjectMethodController : GraphController
     {
         [QueryRoot]
         public ArrayObject RetrieveData()

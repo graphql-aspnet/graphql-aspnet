@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     [TestFixture]
     public class GraphObjectMethodTemplateTests
     {
-        private GraphTypeMethodTemplate CreateMethodTemplate<TObject>(string methodName)
+        private MethodGraphFieldTemplate CreateMethodTemplate<TObject>(string methodName)
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var methodInfo = typeof(TObject).GetMethod(methodName);
-            var template = new GraphTypeMethodTemplate(parent, methodInfo, TypeKind.OBJECT);
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
             return template;
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var methodInfo = typeof(MethodClass).GetMethod(nameof(MethodClass.SimpleMethodNoAttributes));
-            var template = new GraphTypeMethodTemplate(parent, methodInfo, TypeKind.OBJECT);
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
