@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Internal
 
         /// <summary>
         /// Attempts to drill into the supplied type and remove the next found wrapper (given the provided filters)
-        /// to distill it to its core type. (i.e. convert IEnumerable[T] to 'T').
+        /// to distill it to its core type. (i.e. convert Task{IEnumerable{T}} to 'IEnumerable{T}').
         /// </summary>
         /// <param name="type">The type to inspect.</param>
         /// <param name="eliminateEnumerables">if set to <c>true</c> this method will attempt to eliminate any wrapper type that declares <see cref="IEnumerable{T}" />.</param>
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Internal
 
         /// <summary>
         /// Attempts to drill into the supplied type and remove all found wrappers (given the provided filters)
-        /// to distill it to its core type. (i.e. convert IEnumerable[T] to 'T').
+        /// to distill it to its core type. (i.e. convert IEnumerable{T} to 'T').
         /// </summary>
         /// <param name="type">The type to inspect.</param>
         /// <param name="eliminateEnumerables">if set to <c>true</c> this method will attempt to eliminate any wrapper type that declares <see cref="IEnumerable{T}" />.</param>
@@ -215,15 +215,27 @@ namespace GraphQL.AspNet.Internal
             if (type == null || type == typeof(string))
                 return false;
 
-            // all lists must be declared as generics to allow for type declaration and parsing.
-            if (type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(type))
-            {
-                Type enumerableType = type.GetEnumerableUnderlyingType();
-                return !enumerableType.IsGenericType || !typeof(KeyValuePair<,>)
-                    .IsAssignableFrom(enumerableType.GetGenericTypeDefinition());
-            }
+            if (!typeof(IEnumerable).IsAssignableFrom(type))
+                return false;
 
-            return false;
+            // the type must implement IEnumerable<T>
+            var enumerableType = type.GetEnumerableUnderlyingType();
+            if (enumerableType == null)
+                return false;
+
+            if (!type.IsGenericType)
+                return true;
+
+            // must not be Dictionary<T,K> (reserved for batch operations)
+            var genericTypeDef = type.GetGenericTypeDefinition();
+            if (typeof(Dictionary<,>).IsAssignableFrom(genericTypeDef))
+                return false;
+            if (typeof(IDictionary<,>).IsAssignableFrom(genericTypeDef))
+                return false;
+            if (typeof(IReadOnlyDictionary<,>).IsAssignableFrom(genericTypeDef))
+                return false;
+
+            return true;
         }
 
         /// <summary>
@@ -278,7 +290,7 @@ namespace GraphQL.AspNet.Internal
                 {
                     throw new GraphTypeDeclarationException(
                         $"The type '{type.FriendlyName()}' appears to be a {typeof(IDictionary).FriendlyName()}. Objects " +
-                        "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
+                        "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically " +
                         "available graph type.",
                         type);
                 }
@@ -294,7 +306,7 @@ namespace GraphQL.AspNet.Internal
                     {
                         throw new GraphTypeDeclarationException(
                             $"The type '{type.FriendlyName()}' appears to be a {typeof(IDictionary<,>).FriendlyName()}. Objects " +
-                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
+                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically " +
                             "available graph type.",
                             type);
                     }
@@ -308,7 +320,7 @@ namespace GraphQL.AspNet.Internal
                     {
                         throw new GraphTypeDeclarationException(
                             $"The type '{type.FriendlyName()}' appears to be a {typeof(IReadOnlyDictionary<,>).FriendlyName()}. Objects " +
-                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically" +
+                            "which allow for arbitrary key/value pairs of data are not allowed in graphQL. This type cannot be used as a publically " +
                             "available graph type.",
                             type);
                     }
@@ -338,7 +350,7 @@ namespace GraphQL.AspNet.Internal
                     eliminateTask: true,
                     eliminateNullableT: true);
 
-                return new GraphTypeExpression(typeToCheck.FriendlyName(), typeDefinition.TypeWrappers);
+                return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), typeDefinition.TypeWrappers);
             }
 
             // strip out Task{T} before doin any type inspections
@@ -386,7 +398,7 @@ namespace GraphQL.AspNet.Internal
                 eliminateTask: false,
                 eliminateNullableT: true);
 
-            return new GraphTypeExpression(typeToCheck.FriendlyName(), wrappers);
+            return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), wrappers);
         }
 
         /// <summary>

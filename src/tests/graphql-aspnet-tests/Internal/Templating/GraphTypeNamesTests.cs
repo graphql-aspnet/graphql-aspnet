@@ -132,5 +132,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             name = GraphTypeNames.ParseName<NoAttributeClassForNewName>(TypeKind.OBJECT);
             Assert.AreEqual("NewName123", name);
         }
+
+        // need tests for generic type names against graphtypename class
     }
 }

@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             if (template.UnionProxy != null)
             {
                 var unionMaker = new UnionGraphTypeMaker(_schema);
-                result.AddDependent(unionMaker.CreateGraphType(template.UnionProxy, template.Kind));
+                result.AddDependent(unionMaker.CreateGraphType(template.UnionProxy, template.OwnerTypeKind));
             }
 
             result.Field = field;
@@ -107,6 +107,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                         formatter.FormatFieldName(template.Name),
                         template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                         template.Route,
+                        template.ObjectType,
+                        template.DeclaredReturnType,
                         template.Mode,
                         template.CreateResolver(),
                         securityGroups);
@@ -116,8 +118,9 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                         formatter.FormatFieldName(template.Name),
                         template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                         template.Route,
-                        template.DeclaredReturnType,
                         template.DeclaredName,
+                        template.ObjectType,
+                        template.DeclaredReturnType,
                         template.Mode,
                         template.CreateResolver(),
                         securityGroups);

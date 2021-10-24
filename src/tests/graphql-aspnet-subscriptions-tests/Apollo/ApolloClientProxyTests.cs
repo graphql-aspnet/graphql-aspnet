@@ -11,19 +11,14 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 {
     using System;
     using System.Linq;
-    using System.Net.Sockets;
-    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Apollo.Messages;
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -33,9 +28,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
-    using Moq;
     using NUnit.Framework;
-    using NUnit.Framework.Internal.Execution;
 
     [TestFixture]
     public partial class ApolloClientProxyTests

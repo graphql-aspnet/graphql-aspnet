@@ -32,27 +32,25 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// <summary>
     /// A base definition for items required to generate a graph field.
     /// </summary>
-    public abstract class GraphTypeFieldTemplate : BaseItemTemplate, IGraphTypeFieldTemplate
+    public abstract class GraphFieldTemplate : BaseItemTemplate, IGraphTypeFieldTemplate
     {
         private FieldSecurityGroup _securityPolicies;
         private GraphFieldAttribute _fieldDeclaration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphTypeFieldTemplate" /> class.
+        /// Initializes a new instance of the <see cref="GraphFieldTemplate" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
         /// <param name="attributeProvider">The instance that will supply the various attributes used to generate this field template.
         /// This is usually <see cref="PropertyInfo"/> or <see cref="MethodInfo"/>.</param>
-        protected GraphTypeFieldTemplate(IGraphTypeTemplate parent, ICustomAttributeProvider attributeProvider)
+        protected GraphFieldTemplate(IGraphTypeTemplate parent, ICustomAttributeProvider attributeProvider)
             : base(attributeProvider)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             _securityPolicies = FieldSecurityGroup.Empty;
         }
 
-        /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
-        /// </summary>
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             _fieldDeclaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
@@ -87,7 +85,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 this.PossibleTypes = new List<Type>();
 
-                // the possible types attribte is optional but expects taht the concrete types are added
+                // the possible types attribte is optional but expects that the concrete types are added
                 // to the schema else where lest a runtime exception occurs of a missing graph type.
                 var typesAttrib = this.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
                 if (typesAttrib != null)
@@ -166,11 +164,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _securityPolicies = FieldSecurityGroup.FromAttributeCollection(this.AttributeProvider);
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
@@ -285,9 +279,21 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 }
             }
 
+            // general validation of any declaraed parameter for this field
             foreach (var argument in this.Arguments)
-            {
                 argument.ValidateOrThrow();
+
+            // specific validation for those arguments destinated to be input arguments
+            // that exist on the object graph
+            // (inputArguments does not contain any args defined as source data args)
+            foreach (var inputArgument in this.InputArguments)
+            {
+                if (inputArgument.ObjectType.IsInterface)
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The field '{this.InternalFullName}' declares an input argument '{inputArgument.Name}' of type  '{inputArgument.ObjectType.FriendlyName()}' " +
+                        $"which is an interface. Interfaces cannot be used as input arguments to a field.");
+                }
             }
 
             if (this.Complexity.HasValue && this.Complexity < 0)
@@ -357,21 +363,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// Creates a resolver capable of resolving this field.
-        /// </summary>
-        /// <returns>IGraphFieldResolver.</returns>
+        /// <inheritdoc />
         public abstract IGraphFieldResolver CreateResolver();
 
-        /// <summary>
-        /// Creates a <see cref="IGraphType" /> representing the union this field should masquerade as in the object graph.
-        /// Returns null if no union is declared for this field.
-        /// </summary>
-        /// <returns>IGraphType.</returns>
+        /// <inheritdoc />
         public virtual IEnumerable<DependentType> RetrieveRequiredTypes()
         {
             // a base field knows, at most, about the return object type it is dependent on
-            return this.PossibleTypes?.Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.Kind)))
+            return this.PossibleTypes?.Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)))
                                 ?? Enumerable.Empty<DependentType>();
         }
 
@@ -416,36 +415,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.UnionProxy = proxy;
         }
 
-        /// <summary>
-        /// Gets the return type of this field as its declared in the C# code base with no modifications or
-        /// coerions applied.
-        /// </summary>
-        /// <value>The type naturally returned by this field.</value>
+        /// <inheritdoc />
         public abstract Type DeclaredReturnType { get; }
 
-        /// <summary>
-        /// Gets the name this field is declared as in the C# code (method name or property name).
-        /// </summary>
-        /// <value>The name of the declared.</value>
+        /// <inheritdoc />
         public abstract string DeclaredName { get; }
 
-        /// <summary>
-        /// Gets the parent item that defines this field.
-        /// </summary>
-        /// <value>The parent.</value>
+        /// <inheritdoc />
         public IGraphTypeTemplate Parent { get; }
 
-        /// <summary>
-        /// Gets the source type this field was created from.
-        /// </summary>
-        /// <value>The field souce.</value>
+        /// <inheritdoc />
         public abstract GraphFieldTemplateSource FieldSource { get; }
 
-        /// <summary>
-        /// Gets the kind of graph type that should own fields created from this template.
-        /// </summary>
-        /// <value>The kind.</value>
-        public abstract TypeKind Kind { get; }
+        /// <inheritdoc />
+        public abstract TypeKind OwnerTypeKind { get; }
 
         /// <summary>
         /// Gets a value indicating whether returning a value from this field, as its declared in the C# code base, represents a <see cref="Task" /> that must be awaited.
@@ -453,55 +436,37 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value><c>true</c> if this instance is asynchronous method; otherwise, <c>false</c>.</value>
         public bool IsAsyncField { get; private set; }
 
-        /// <summary>
-        /// Gets the type of the object that owns this field. That is to say the type of source data
-        /// given to this field in the object graph. This is usually the <see cref="Parent"/>'s object type but not always; such
-        /// is the case with type extensions.
-        /// </summary>
-        /// <value>The type of the source object.</value>
+        /// <inheritdoc />
         public virtual Type SourceObjectType => this.Parent?.ObjectType;
 
-        /// <summary>
-        /// Gets or sets the mode in which this type extension will be processed by the runtime.
-        /// </summary>
-        /// <value>The mode.</value>
+        /// <inheritdoc />
         public FieldResolutionMode Mode { get; protected set; }
 
-        /// <summary>
-        /// Gets a list of parameters, in the order they are declared on this field.
-        /// </summary>
-        /// <value>The parameters.</value>
+        /// <inheritdoc />
         public abstract IReadOnlyList<IGraphFieldArgumentTemplate> Arguments { get; }
 
         /// <summary>
-        /// Gets the security policies found via defined attributes on the item that need to be enforced.
+        /// Gets the subset of  <see cref="Arguments"/> defined to be "input parameters" to the field.
+        /// This list may be different than <see cref="Arguments"/> in some cases where one field argument
+        /// is used as a source data input value and is not designated to be part of a graph
+        /// structure.
         /// </summary>
-        /// <value>The security policies.</value>
+        /// <value>The input arguments.</value>
+        public virtual IReadOnlyList<IGraphFieldArgumentTemplate> InputArguments => this.Arguments;
+
+        /// <inheritdoc />
         public virtual FieldSecurityGroup SecurityPolicies => _securityPolicies;
 
-        /// <summary>
-        /// Gets a value indicating whether this action method is depreciated. The <see cref="DeprecationReason"/> will be displayed
-        /// on any itnrospection requests.
-        /// </summary>
-        /// <value><c>true</c> if this instance is depreciated; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsDeprecated { get; private set; }
 
-        /// <summary>
-        /// Gets the provided reason for this action method being depreciated.
-        /// </summary>
-        /// <value>The depreciation reason.</value>
+        /// <inheritdoc />
         public string DeprecationReason { get; private set; }
 
-        /// <summary>
-        /// Gets or sets the type expression that represents how this field is represented in the object graph.
-        /// </summary>
-        /// <value>The type expression.</value>
+        /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets the union this field has declared as its return type, if any.
-        /// </summary>
-        /// <value>The declared union.</value>
+        /// <inheritdoc />
         public virtual IGraphUnionProxy UnionProxy { get; protected set; }
 
         /// <summary>
@@ -510,24 +475,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The possible types.</value>
         protected List<Type> PossibleTypes { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance has a defined default value.
-        /// </summary>
-        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         bool IGraphTypeExpressionDeclaration.HasDefaultValue => false;
 
-        /// <summary>
-        /// Gets the actual type wrappers used to generate a type expression for this field.
-        /// This list represents the type requirements  of the field.
-        /// </summary>
-        /// <value>The custom wrappers.</value>
+        /// <inheritdoc />
         MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => _fieldDeclaration?.TypeDefinition;
 
-        /// <summary>
-        /// Gets  an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
-        /// See the documentation for an understanding of how query complexity is calculated.
-        /// </summary>
-        /// <value>The estimated complexity value for this field.</value>
+        /// <inheritdoc />
         public float? Complexity { get; private set; }
     }
 }

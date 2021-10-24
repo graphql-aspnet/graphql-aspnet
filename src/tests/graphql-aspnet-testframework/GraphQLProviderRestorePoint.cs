@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A marker to a point in time that, when disposed, will reset the <see cref="GraphQLProviders"/> to the values

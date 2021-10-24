@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Schemas.Structural
 {
+    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
 
@@ -23,6 +24,8 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="fieldName">Name of the field in the type declaration..</param>
         /// <param name="typeExpression">The meta data about how this type field is implemented.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
+        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
+        /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="mode">The execution mode of this field.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="securityPolicies">The security policies.</param>
@@ -31,11 +34,13 @@ namespace GraphQL.AspNet.Schemas.Structural
             string fieldName,
             GraphTypeExpression typeExpression,
             GraphFieldPath route,
+            Type objectType = null,
+            Type declaredReturnType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
             Interfaces.Execution.IGraphFieldResolver resolver = null,
             IEnumerable<Security.FieldSecurityGroup> securityPolicies = null,
             string eventName = null)
-            : base(fieldName, typeExpression, route, mode, resolver, securityPolicies)
+            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies)
         {
             this.EventName = eventName;
         }

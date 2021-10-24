@@ -9,8 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.Security.SecurityTestData
 {
-    using Microsoft.AspNetCore.Authorization;
-
     public class SubscriptionSecureWidget
     {
         public string Id { get; set; }

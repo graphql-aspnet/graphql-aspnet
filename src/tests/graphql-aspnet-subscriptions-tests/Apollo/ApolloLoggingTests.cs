@@ -14,7 +14,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Apollo.Logging.ApolloEvents;
     using GraphQL.AspNet.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;

@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.TypeSystem;

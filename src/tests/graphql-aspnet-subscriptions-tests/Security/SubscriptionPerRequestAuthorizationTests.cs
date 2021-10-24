@@ -11,11 +11,9 @@ namespace GraphQL.Subscriptions.Tests.Security
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Apollo.Exceptions;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Security.SecurityTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
-    using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]

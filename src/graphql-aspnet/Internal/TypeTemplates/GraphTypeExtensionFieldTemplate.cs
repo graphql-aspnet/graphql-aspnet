@@ -10,7 +10,9 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
@@ -26,10 +28,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A method template containing the metadata for a controller method flaged as a special type extension
     /// and not a normal controller action.
     /// </summary>
-    public class GraphTypeExtensionFieldTemplate : MethodGraphFieldTemplate, IGraphTypeExpressionDeclaration
+    public class GraphTypeExtensionFieldTemplate : MethodGraphFieldTemplateBase, IGraphTypeExpressionDeclaration
     {
         private Type _sourceType;
         private TypeExtensionAttribute _typeAttrib;
+        private List<IGraphFieldArgumentTemplate> _inputArguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphTypeExtensionFieldTemplate"/> class.
@@ -39,6 +42,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphTypeExtensionFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo)
             : base(parent, methodInfo)
         {
+            _inputArguments = new List<IGraphFieldArgumentTemplate>();
         }
 
         /// <summary>
@@ -70,6 +74,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.PossibleTypes.Insert(0, this.ObjectType);
                 }
             }
+
+            // remove the first instance of the type extension declaration
+            // from the argument list, its not an input parameter
+            foreach (var arg in this.Arguments)
+            {
+                if (arg.ArgumentModifiers.IsInternalParameter() || arg.ArgumentModifiers.IsSourceParameter())
+                    continue;
+
+                _inputArguments.Add(arg);
+            }
         }
 
         /// <summary>
@@ -94,6 +108,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 throw new GraphTypeDeclarationException(
                     $"The type extension '{this.InternalFullName}' does not define a {typeof(TypeExtensionAttribute).FriendlyName()} or defines more than one instance. " +
                     "All methods wishing to be treated as type extensions must define one instance of this attribute to properly configure the runtime.");
+            }
+
+            if (GraphQLProviders.ScalarProvider.IsLeaf(this.SourceObjectType))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The type extension '{this.InternalFullName}' is attempting to extend '{this.SourceObjectType.FriendlyName()}' which is a leaf type ({nameof(TypeKind.SCALAR)}, {nameof(TypeKind.ENUM)}). " +
+                    "Leaf types cannot be extended.");
             }
 
             base.ValidateOrThrow();
@@ -121,11 +142,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the kind of graph type that should own fields created from this template.
         /// </summary>
         /// <value>The kind.</value>
-        public override TypeKind Kind => TypeKind.OBJECT;
+        public override TypeKind OwnerTypeKind => TypeKind.OBJECT;
 
         /// <summary>
         /// Gets the type of the object that owns this field; that is the type which supplies source data
-        /// to this field in the object graph. This is usually the <see cref="GraphTypeFieldTemplate.Parent"/>'s object type but not always; such
+        /// to this field in the object graph. This is usually the <see cref="GraphFieldTemplate.Parent"/>'s object type but not always; such
         /// is the case with type extensions.
         /// </summary>
         /// <value>The type of the source object.</value>
@@ -143,5 +164,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The custom wrappers.</value>
         MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => _typeAttrib?.TypeDefinition;
+
+        /// <inheritdoc />
+        public override IReadOnlyList<IGraphFieldArgumentTemplate> InputArguments => _inputArguments;
     }
 }

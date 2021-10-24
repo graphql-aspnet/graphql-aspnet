@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ActionTestData;
     using Moq;
@@ -244,6 +243,22 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             {
                 var action = this.CreateActionTemplate<InterfaceReturnTypeController>(nameof(InterfaceReturnTypeController.RetrieveDataPossibleTypeIsAStruct));
             });
+        }
+
+        [Test]
+        public void ActionTemplate_ArrayOnInputParameter_RendersFine()
+        {
+            var action = this.CreateActionTemplate<ArrayInputMethodController>(nameof(ArrayInputMethodController.AddData));
+
+            var types = action.RetrieveRequiredTypes();
+            Assert.IsNotNull(types);
+            Assert.AreEqual(1, types.Count());
+
+            Assert.IsTrue(types.Any(x => x.Type == typeof(string)));
+
+            Assert.AreEqual(1, action.Arguments.Count);
+            Assert.AreEqual(typeof(TwoPropertyObject[]), action.Arguments[0].DeclaredArgumentType);
+            Assert.AreEqual(typeof(TwoPropertyObject), action.Arguments[0].ObjectType);
         }
     }
 }

@@ -209,7 +209,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <param name="appBuilder">The application builder.</param>
         public void UseSchema(IApplicationBuilder appBuilder)
         {
-            this.UseSchema(appBuilder?.ApplicationServices, false);
+            Validation.ThrowIfNullOrReturn(appBuilder, nameof(appBuilder));
+
+            this.UseSchema(appBuilder.ApplicationServices, false);
 
             if (_options.Extensions != null)
             {
@@ -261,6 +263,17 @@ namespace GraphQL.AspNet.Configuration.Mvc
             {
                 foreach (var additionalOptions in _options.Extensions)
                     additionalOptions.Value.UseExtension(serviceProvider: serviceProvider);
+            }
+
+            // try and build the schema
+            // this will surface any runtime validation errors that may occur
+            // when assembling the schema instance and throw those at app start up
+            // rather than when a query is inbound
+            // (the schema is a singleton when added through the injector, but in case it was added
+            // elsehwere make a scoped provider instance to pull it through)
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
             }
         }
 

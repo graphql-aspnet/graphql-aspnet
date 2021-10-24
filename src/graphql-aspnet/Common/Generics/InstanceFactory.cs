@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Common.Generics
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
@@ -65,14 +66,52 @@ namespace GraphQL.AspNet.Common.Generics
                 if (propInfo.GetSetMethod() == null)
                     continue;
 
-                var objectToAssignTo = Expression.Parameter(typeof(object));
-                var valueToAssign = Expression.Parameter(typeof(object));
+                // incoming object and value to assign
+                var objectToAssignTo = Expression.Parameter(typeof(object).MakeByRefType(), "obj");
+                var valueToAssign = Expression.Parameter(typeof(object), "val");
 
-                var castObject = Expression.Convert(objectToAssignTo, type);
-                var castValue = Expression.Convert(valueToAssign, propInfo.PropertyType);
-                var setPropOnObject = Expression.Assign(Expression.Property(castObject, propInfo), castValue);
+                // cast the object to its actual type
+                // For value Types: var castObject  = (Type)objectToAssignTo;
+                // For ref Types:   var castObject= objectToAssignTo as Type;
+                Expression castObjectOperation;
+                if (type.IsValueType)
+                    castObjectOperation = Expression.Unbox(objectToAssignTo, type);
+                else
+                    castObjectOperation = Expression.Convert(objectToAssignTo, type);
 
-                var lambda = Expression.Lambda<PropertySetterInvoker>(setPropOnObject, objectToAssignTo, valueToAssign);
+                var castObjectVariable = Expression.Variable(type, "castedObject");
+                var assignedCastObject = Expression.Assign(castObjectVariable, castObjectOperation);
+
+                // castValue = val as Type;
+                var castValueVariable = Expression.Variable(propInfo.PropertyType, "castValue");
+
+                var castValueOperation = Expression.Convert(valueToAssign, propInfo.PropertyType);
+                var assignedCastValue = Expression.Assign(castValueVariable, castValueOperation);
+
+                // castObject.Property = castValue
+                var setPropOnObject = Expression.Assign(Expression.Property(castObjectVariable, propInfo), castValueVariable);
+
+                // recastedObject = (object)castObject
+                var recastedObjectVariable = Expression.Variable(typeof(object), "recastedObject");
+                var recastedObjectOperation = Expression.Convert(castObjectVariable, typeof(object));
+                var copyRecast = Expression.Assign(recastedObjectVariable, recastedObjectOperation);
+
+                // objectToAssignTo = reacastedObject
+                var copyBackToInput = Expression.Assign(objectToAssignTo, recastedObjectVariable);
+
+                var completeSetter = Expression.Block(
+                    new ParameterExpression[] { castObjectVariable, castValueVariable, recastedObjectVariable }, // local vars
+                    castObjectVariable,
+                    assignedCastObject,
+                    castValueVariable,
+                    assignedCastValue,
+                    setPropOnObject,
+                    copyRecast,
+                    copyBackToInput);
+
+                var complete = completeSetter.ToString();
+                var lambda = Expression.Lambda<PropertySetterInvoker>(completeSetter, objectToAssignTo, valueToAssign);
+
                 var invoker = lambda.Compile();
                 collection.Add(propInfo, invoker);
             }
@@ -127,41 +166,65 @@ namespace GraphQL.AspNet.Common.Generics
             // Function call parameters
             // -------------------------------------------
             // a reference to the object instance needed to call instance method (the "this").
-            var thisParameter = Expression.Parameter(typeof(object), "thisObject");
+            var objectToInvokeOn = Expression.Parameter(typeof(object).MakeByRefType(), "objectToInvokeOn");
 
             // create a single param of type object[] tha will hold the variable length of method arguments being passed in
-            ParameterExpression param = Expression.Parameter(typeof(object[]), "args");
+            ParameterExpression inputArguments = Expression.Parameter(typeof(object[]), "args");
 
             // -------------------------------------------
             // method body
             // -------------------------------------------
             // cast the input object to its required Type
-            var thisCasted = Expression.Convert(thisParameter, declaredType);
+            var castedObjectToInvokeOn = Expression.Variable(declaredType);
+            var castOperation = Expression.Assign(castedObjectToInvokeOn, Expression.Convert(objectToInvokeOn, declaredType));
 
             // invocation parameters to pass to the method
             ParameterInfo[] paramsInfo = methodInfo.GetParameters();
 
-            // an expression to hold all the arguments
-            Expression[] argsExp = new Expression[paramsInfo.Length];
+            // a set of expressions that represents
+            // a casting of each supplied object to its specific type for invocation
+            Expression[] argsAssignments = new Expression[paramsInfo.Length];
 
-            // pick each arg from the supplied method parameters and create a typed expression of them (properly typed)
+            // pick each arg from the supplied method parameters and create a expression
+            // that casts them into the required type for the parameter position on the method
             for (var i = 0; i < paramsInfo.Length; i++)
             {
                 Expression index = Expression.Constant(i);
                 Type paramType = paramsInfo[i].ParameterType;
-                Expression paramAccessorExp = Expression.ArrayIndex(param, index);
-                argsExp[i] = Expression.Convert(paramAccessorExp, paramType);
+                Expression paramAccessorExp = Expression.ArrayIndex(inputArguments, index);
+                if (paramType.IsValueType)
+                    argsAssignments[i] = Expression.Unbox(paramAccessorExp, paramType);
+                else
+                    argsAssignments[i] = Expression.Convert(paramAccessorExp, paramType);
             }
 
-            // a call to the method on the "this" object with the supplied parameters
-            MethodCallExpression methodCall = Expression.Call(thisCasted, methodInfo, argsExp);
+            // a direct call to the method on the invokable object with the supplied parameters
+            var methodCall = Expression.Call(castedObjectToInvokeOn, methodInfo, argsAssignments);
 
-            // convert the return of the method into an object
-            // boxing operations that may need to occur would throw an exception; e.g. int => object
-            Expression resultConvert = Expression.Convert(methodCall, typeof(object));
+            // Execute the method call and assign its output to returnedVariable
+            var returnedVariable = Expression.Variable(methodInfo.ReturnType);
+            var methodCallResultAssigned = Expression.Assign(returnedVariable, methodCall);
+
+            // box the method result into an object
+            var boxedResult = Expression.Variable(typeof(object));
+            var boxedResultAssignment = Expression.Assign(boxedResult, Expression.Convert(returnedVariable, typeof(object)));
+
+            // assign the castedObject back to the input
+            // if the passed in object was a struct then when hte method on the struct was called
+            // it was operating on a different struct instance than what the caller intended
+            // and we need to copy back the actual invoked instance to the reffed input object
+            var reassignReffedValue = Expression.Assign(objectToInvokeOn, Expression.Convert(castedObjectToInvokeOn, typeof(object)));
+
+            var methodBody = Expression.Block(
+                new ParameterExpression[] { castedObjectToInvokeOn, returnedVariable, boxedResult },
+                castOperation,
+                methodCallResultAssigned,
+                boxedResultAssignment,
+                reassignReffedValue,
+                boxedResult);
 
             // Create lambda expression that accepts the "this" parameter and the args from the user.
-            var lambda = Expression.Lambda<MethodInvoker>(resultConvert, new ParameterExpression[] { thisParameter, param });
+            var lambda = Expression.Lambda<MethodInvoker>(methodBody, new ParameterExpression[] { objectToInvokeOn, inputArguments });
             return lambda.Compile();
         }
 
@@ -171,7 +234,7 @@ namespace GraphQL.AspNet.Common.Generics
         /// for speedier access. When able, limit your constructor parameters to 3 or less for maximum performance.
         /// </summary>
         /// <typeparam name="TType">The type of which to create an instance.</typeparam>
-        /// <param name="args">The arguments.</param>
+        /// <param name="args">The arguments to supply to a constructor declared on the object types.</param>
         /// <returns>System.Object.</returns>
         public static object CreateInstance<TType>(params object[] args)
             where TType : class
@@ -184,8 +247,8 @@ namespace GraphQL.AspNet.Common.Generics
         /// that should be invoked. Invocation calls of 3 arguments or less are compiled via an lambda expression and cached
         /// for speedier access. When able, limit your constructor parameters to 3 or less for maximum performance.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="args">The arguments.</param>
+        /// <param name="type">The type to create.</param>
+        /// <param name="args">The arguments to supply to a constructor declared the object types.</param>
         /// <returns>System.Object.</returns>
         public static object CreateInstance(Type type, params object[] args)
         {
@@ -235,6 +298,16 @@ namespace GraphQL.AspNet.Common.Generics
         {
             var constructorArgumentList = CreateConstructorTypeList(constructorArguments);
             var constructor = objectType.GetConstructor(constructorArgumentList.ToArray());
+
+            if (constructor == null &&
+                objectType.IsStruct() &&
+                constructorArgumentList.Count == 0)
+            {
+                var structActivator = CreateDefaultStructActivator(objectType);
+                if (structActivator != null)
+                    return structActivator;
+            }
+
             if (constructor == null)
             {
                 var message = $"The type '{objectType.FriendlyName()}' does not contain a constructor that takes {constructorArgumentList.Count} parameter(s)";
@@ -264,14 +337,52 @@ namespace GraphQL.AspNet.Common.Generics
             }
 
             // make a NewExpression that calls the ctor with the args we just created
-            NewExpression newExp = Expression.New(constructor, argsExp);
+            Expression newExp = Expression.New(constructor, argsExp);
+
+            // explicit cast the created struct to object before returning
+            // this will account for any structs with parameterized constructors
+            // being created by the instance factory
+            Expression asObjectExp = Expression.Convert(newExp, typeof(object));
 
             // create a lambda with the New Expression as body and our param object[] as arg
-            LambdaExpression lambda = Expression.Lambda(typeof(ObjectActivator), newExp, param);
+            LambdaExpression lambda = Expression.Lambda(typeof(ObjectActivator), asObjectExp, param);
 
             // compile it
             ObjectActivator compiled = (ObjectActivator)lambda.Compile();
             return compiled;
+        }
+
+        /// <summary>
+        /// Attempts to evaluate the type as a struct and try to render an expression
+        /// that would call.
+        /// </summary>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>ObjectActivator.</returns>
+        private static ObjectActivator CreateDefaultStructActivator(Type objectType)
+        {
+            try
+            {
+                // make a NewExpression that calls the empty ctor
+                ParameterExpression param = Expression.Parameter(typeof(object[]), "args");
+                NewExpression newExp = Expression.New(objectType);
+
+                // explicit cast the created struct to object
+                var asObjectExp = Expression.Convert(newExp, typeof(object));
+
+                // create a lambda with the New Expression as body and our param object[] as arg
+                LambdaExpression lambda = Expression.Lambda(typeof(ObjectActivator), asObjectExp, param);
+
+                // compile it
+                return (ObjectActivator)lambda.Compile();
+            }
+            catch
+            {
+                // this could fail for a multitude of reasons (namely if our extension method
+                // Type.IsStruct() is wrong Let the instance factory
+                // indicate that its not a valid object (with default constructor)
+                // still up in the air if this is a good idea
+                return null;
+            }
         }
 
         /// <summary>

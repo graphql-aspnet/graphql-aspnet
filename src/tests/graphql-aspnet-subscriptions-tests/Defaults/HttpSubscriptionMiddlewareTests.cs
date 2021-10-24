@@ -13,7 +13,6 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using System.Collections.Generic;
     using System.Net;
     using System.Net.WebSockets;
-    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;

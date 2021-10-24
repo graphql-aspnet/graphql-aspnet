@@ -15,7 +15,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using Microsoft.Extensions.FileProviders;
     using Moq;
     using NUnit.Framework;
 

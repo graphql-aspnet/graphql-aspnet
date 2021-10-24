@@ -9,68 +9,47 @@
 
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Reflection;
-    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base class representing common items between all <see cref="IGraphType"/> capable
-    /// methods.
+    /// A parsed description of the meta data of any "general method" that should be represented
+    /// as a field on a type in an <see cref="ISchema"/>.
     /// </summary>
-    [DebuggerDisplay("Route: {Route.Path}")]
-    public abstract class MethodGraphFieldTemplate : GraphTypeFieldTemplate, IGraphMethod
+    public class MethodGraphFieldTemplate : MethodGraphFieldTemplateBase
     {
-        private readonly List<GraphFieldArgumentTemplate> _arguments;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodGraphFieldTemplate" /> class.
         /// </summary>
         /// <param name="parent">The parent object template that owns this method.</param>
         /// <param name="methodInfo">The method information.</param>
-        protected MethodGraphFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo)
+        /// <param name="ownerTypeKind">The kind of object that will own this field.</param>
+        public MethodGraphFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo, TypeKind ownerTypeKind)
             : base(parent, methodInfo)
         {
-            this.Method = Validation.ThrowIfNullOrReturn(methodInfo, nameof(methodInfo));
-            _arguments = new List<GraphFieldArgumentTemplate>();
+            this.OwnerTypeKind = ownerTypeKind;
         }
 
         /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
+        /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
+        /// using the implementation rules of the concrete type.
         /// </summary>
-        protected override void ParseTemplateDefinition()
+        /// <returns>GraphRoutePath.</returns>
+        protected override GraphFieldPath GenerateFieldPath()
         {
-            base.ParseTemplateDefinition();
+            // an object method cannot contain any route pathing or nesting like controller methods can
+            // before creating hte route, ensure that the declared name, by itself, is valid for graphql
+            var graphName = this.Method.SingleAttributeOrDefault<GraphFieldAttribute>()?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
+            graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
-            // parse all input parameters from the method signature
-            foreach (var parameter in this.Method.GetParameters())
-            {
-                var argTemplate = this.CreateGraphFieldArgument(parameter);
-                argTemplate.Parse();
-                _arguments.Add(argTemplate);
-            }
-
-            this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
-                this.DeclaredReturnType,
-                false,
-                true,
-                false);
-        }
-
-        /// <summary>
-        /// Creates graph field argument for this template given the parameter info supplied.
-        /// </summary>
-        /// <param name="paramInfo">The parameter information.</param>
-        /// <returns>IGraphFieldArgumentTemplate.</returns>
-        protected virtual GraphFieldArgumentTemplate CreateGraphFieldArgument(ParameterInfo paramInfo)
-        {
-            return new GraphFieldArgumentTemplate(this, paramInfo);
+            GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, graphName);
+            return new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, graphName));
         }
 
         /// <summary>
@@ -82,78 +61,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             base.ValidateOrThrow();
 
-            if (this.Method.IsStatic)
+            // as a matter of convention enforcement
+            // for methods delcared as fields on POCOs (not controller actions)
+            // force them to use [GraphField] or throw an exception
+            // do not allow [Query] [Mutation] etc. and keep those reserved for controllers
+            var declaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.GetType();
+            if (declaration != null && declaration != typeof(GraphFieldAttribute))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Invalid graph method declaration. The method '{this.InternalFullName}' is static. Only " +
-                    "instance members can be registered as field.");
-            }
-
-            if (this.ExpectedReturnType == null)
-            {
-                throw new GraphTypeDeclarationException(
-                   $"Invalid graph method declaration. The method '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
-                   "return type must be assigned from the declared return type.");
+                    $"Invalid graph method declaration. The method '{this.InternalFullName}' declares a '{declaration.FriendlyName()}'. This " +
+                    $"attribute is reserved for controller actions. For a general object type use '{nameof(GraphFieldAttribute)}' instead.");
             }
         }
 
         /// <summary>
-        /// Creates a resolver capable of resolving this field.
+        /// Gets the kind of graph type that should own fields created from this template.
         /// </summary>
-        /// <returns>IGraphFieldResolver.</returns>
-        public override IGraphFieldResolver CreateResolver()
-        {
-            return new GraphObjectMethodResolver(this);
-        }
-
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
-        public override string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Method.Name}";
-
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
-        public override string InternalName => this.Method.Name;
-
-        /// <summary>
-        /// Gets a list of parameters, in the order they are declared on this field.
-        /// </summary>
-        /// <value>The parameters.</value>
-        public override IReadOnlyList<IGraphFieldArgumentTemplate> Arguments => _arguments;
-
-        /// <summary>
-        /// Gets method meta data this method template applies to.
-        /// </summary>
-        /// <value>The controller method.</value>
-        public MethodInfo Method { get; }
-
-        /// <summary>
-        /// Gets the return type of this field as its declared in the C# code base with no modifications or
-        /// coerions applied.
-        /// </summary>
-        /// <value>The type naturally returned by this field.</value>
-        public override Type DeclaredReturnType => this.Method.ReturnType;
-
-        /// <summary>
-        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
-        /// represents the implementation return type as opposed to the expected graph type.
-        /// </summary>
-        /// <value>The type of the return.</value>
-        public Type ExpectedReturnType { get; private set; }
-
-        /// <summary>
-        /// Gets the name this field is declared as in the C# code (method name or property name).
-        /// </summary>
-        /// <value>The name of the declared.</value>
-        public override string DeclaredName => this.Method.Name;
-
-        /// <summary>
-        /// Gets the source type this field was created from.
-        /// </summary>
-        /// <value>The field souce.</value>
-        public override GraphFieldTemplateSource FieldSource => GraphFieldTemplateSource.Method;
+        /// <value>The kind.</value>
+        public override TypeKind OwnerTypeKind { get; }
     }
 }

@@ -12,15 +12,15 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Common.Source;
 
     /// <summary>
     /// A data processor that handles internal batch operations for items being processed through a graph query.
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessageCollection Messages { get; }
 
         /// <summary>
-        /// Determines whether the the provided type to check is IDictionary{ExpectedKey, AnyValue} ensuring that it can be
+        /// Determines whether the provided type to check is IDictionary{ExpectedKey, AnyValue} ensuring that it can be
         /// used as an input to a batch processor that supplies data to multiple waiting items.
         /// </summary>
         /// <param name="typeToCheck">The type being checked.</param>
@@ -110,22 +110,36 @@ namespace GraphQL.AspNet.Execution
             if (typeToCheck == null || expectedKeyType == null || batchedItemType == null)
                 return false;
 
-            var enumeratedType = typeToCheck.GetEnumerableUnderlyingType();
-            if (enumeratedType == null || !enumeratedType.IsGenericType || typeof(KeyValuePair<,>) != enumeratedType.GetGenericTypeDefinition())
-                return false;
+            bool CheckArgs(Type[] argSet)
+            {
+                if (argSet.Length != 2 || argSet[0] != expectedKeyType)
+                    return false;
 
-            var paramSet = enumeratedType.GetGenericArguments();
-            if (paramSet.Length != 2)
-                return false;
+                // the declared dictionary might have a value of a List<BatchedItemType>
+                // strip the list decorators and test the actual type
+                var actualBatchedItemType = GraphValidation.EliminateWrappersFromCoreType(argSet[1]);
+                return batchedItemType == actualBatchedItemType;
+            }
 
-            if (paramSet[0] != expectedKeyType)
-                return false;
+            // special case when the typeToCheck IS IDictionary
+            if (typeToCheck.IsGenericType && typeToCheck.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+            {
+                return CheckArgs(typeToCheck.GetGenericArguments());
+            }
+            else
+            {
+                var idictionaries = typeToCheck.GetInterfaces().Where(x =>
+                      x.IsGenericType &&
+                      x.GetGenericTypeDefinition() == typeof(IDictionary<,>));
 
-            var unwrapped = GraphValidation.EliminateWrappersFromCoreType(paramSet[1]);
-            if (unwrapped != batchedItemType)
-                return false;
+                foreach (var dic in idictionaries)
+                {
+                    if (CheckArgs(dic.GetGenericArguments()))
+                        return true;
+                }
+            }
 
-            return true;
+            return false;
         }
     }
 }

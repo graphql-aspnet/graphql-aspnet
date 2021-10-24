@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Execution.Metrics
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Response;
-    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A metrics package that tracks according to the apollo tracing standard.

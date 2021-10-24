@@ -27,19 +27,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// as a field on a type in an <see cref="ISchema" />.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class PropertyGraphFieldTemplate : GraphTypeFieldTemplate, IGraphMethod
+    public class PropertyGraphFieldTemplate : GraphFieldTemplate, IGraphMethod
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphFieldTemplate" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
         /// <param name="propInfo">The property information.</param>
-        /// <param name="kind">The kind of graph type that will own this field.</param>
-        public PropertyGraphFieldTemplate(IGraphTypeTemplate parent, PropertyInfo propInfo, TypeKind kind)
+        /// <param name="ownerKind">The kind of graph type that will own this field.</param>
+        public PropertyGraphFieldTemplate(IGraphTypeTemplate parent, PropertyInfo propInfo, TypeKind ownerKind)
             : base(parent, propInfo)
         {
             this.Property = Validation.ThrowIfNullOrReturn(propInfo, nameof(propInfo));
-            this.Kind = kind;
+            this.OwnerTypeKind = ownerKind;
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the kind of graph type that should own fields created from this template.
         /// </summary>
         /// <value>The kind.</value>
-        public override TypeKind Kind { get; }
+        public override TypeKind OwnerTypeKind { get; }
 
         /// <summary>
         /// Gets the core property information about this template.

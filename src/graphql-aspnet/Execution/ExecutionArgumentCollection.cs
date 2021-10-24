@@ -99,10 +99,12 @@ namespace GraphQL.AspNet.Execution
         /// <returns>System.Object[].</returns>
         public object[] PrepareArguments(IGraphMethod graphMethod)
         {
-            var paramSet = new List<object>();
+            var preparedParams = new List<object>();
+            var paramInfos = graphMethod.Method.GetParameters();
 
-            foreach (var argTemplate in graphMethod.Arguments)
+            for (var i = 0; i < graphMethod.Arguments.Count; i++)
             {
+                var argTemplate = graphMethod.Arguments[i];
                 object passedValue = this.ResolveParameterFromArgumentTemplate(argTemplate);
                 if (passedValue == null && !argTemplate.TypeExpression.IsNullable)
                 {
@@ -114,10 +116,20 @@ namespace GraphQL.AspNet.Execution
                         "or variable collection and no default value was found.");
                 }
 
-                paramSet.Add(passedValue);
+                // ensure compatible list types between the internally
+                // tracked data and the target type of the method being invoked
+                // i.e. convert List<T> =>  T[]  when needed
+                if (argTemplate.TypeExpression.IsListOfItems)
+                {
+                    var listMangler = new ListMangler(paramInfos[i].ParameterType);
+                    var result = listMangler.Convert(passedValue);
+                    passedValue = result.Data;
+                }
+
+                preparedParams.Add(passedValue);
             }
 
-            return paramSet.ToArray();
+            return preparedParams.ToArray();
         }
 
         /// <summary>

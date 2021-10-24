@@ -14,6 +14,10 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData
 
     public class Elevator : IPeopleMover, IVerticalMover
     {
+        public Elevator()
+        {
+        }
+
         public Elevator(int id, string name)
         {
             this.Id = id;

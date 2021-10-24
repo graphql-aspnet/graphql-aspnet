@@ -14,7 +14,6 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Apollo.Messages;
-    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
     using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Execution;

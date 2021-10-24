@@ -9,12 +9,10 @@
 
 namespace GraphQL.Subscriptions.Tests
 {
-    using System.Linq;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;

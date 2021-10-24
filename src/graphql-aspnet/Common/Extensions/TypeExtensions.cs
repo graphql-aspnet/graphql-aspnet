@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Extension methods for working with .NET <see cref="Type"/>
@@ -57,7 +58,10 @@ namespace GraphQL.AspNet.Common.Extensions
             { typeof(decimal?), "decimal?" },
             { typeof(bool?), "bool?" },
             { typeof(char?), "char?" },
+            { typeof(DateTime), "DateTime" },
+            { typeof(DateTimeOffset), "DateTimeOffset" },
             { typeof(DateTime?), "DateTime?" },
+            { typeof(DateTimeOffset?), "DateTimeOffset?" },
         };
 
         private static readonly ConcurrentDictionary<Tuple<Type, bool, int>, bool> VALIDATION_SCANS;
@@ -192,6 +196,7 @@ namespace GraphQL.AspNet.Common.Extensions
             }
 
             // if the type implements IEnumerable<> grab that interface then return its argument
+            // this will capture flat arrays and any custom object that implements IEnumerable<T>
             var enumerableInterface = type.GetInterface(typeof(IEnumerable<>).Name);
             if (enumerableInterface != null)
             {
@@ -251,7 +256,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <returns>System.String.</returns>
         public static string FriendlyName(this Type type, bool fullName = false)
         {
-            return FriendlyName(type, "<", ">", ", ", fullName);
+            return FriendlyName(type, "<", ">", "[]", ", ", fullName);
         }
 
         /// <summary>
@@ -266,7 +271,8 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <returns>System.String.</returns>
         public static string FriendlyName(this Type type, string delimiter, bool fullName = false)
         {
-            return FriendlyName(type, delimiter, delimiter, delimiter, fullName);
+            var arrayDelimiter = delimiter + delimiter;
+            return FriendlyName(type, delimiter, delimiter, arrayDelimiter, delimiter, fullName);
         }
 
         /// <summary>
@@ -274,17 +280,25 @@ namespace GraphQL.AspNet.Common.Extensions
         /// using the provided left and rigth delimiters.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <param name="leftDelimiter">The left generic delimiter to use in the output.</param>
-        /// <param name="rightDelimiter">The right generic delimiter to use in the output.</param>
+        /// <param name="leftDelimiter">The left generic type delimiter to use in the output.</param>
+        /// <param name="rightDelimiter">The right generic type delimiter to use in the output.</param>
+        /// <param name="arrayDelimiter">The delimiter value used to replace array syntext (i.e. the '[]').</param>
         /// <param name="typeJoiner">The phrase to use to join arguments on multi generic types..</param>
         /// <param name="fullName">if set to <c>true</c> The full name (including namespace) of the type
         /// will be returned; otherwise, just the type name will be returned. Type aliases will not be
         /// used when the fully qualified typename is returned.</param>
         /// <returns>System.String.</returns>
-        public static string FriendlyName(this Type type, string leftDelimiter, string rightDelimiter, string typeJoiner, bool fullName = false)
+        public static string FriendlyName(this Type type, string leftDelimiter, string rightDelimiter, string arrayDelimiter, string typeJoiner, bool fullName = false)
         {
             if (type == null)
                 return string.Empty;
+
+            int arrayCount = 0;
+            while (type.IsArray)
+            {
+                arrayCount++;
+                type = type.GetEnumerableUnderlyingType();
+            }
 
             string typeName = null;
             if (!fullName && TYPE_ALIAS_NAMES.ContainsKey(type))
@@ -301,7 +315,7 @@ namespace GraphQL.AspNet.Common.Extensions
                 {
                     var genericParamNames = type
                         .GetGenericArguments()
-                        .Select(x => x.FriendlyName(leftDelimiter, rightDelimiter, typeJoiner, fullName)).ToArray();
+                        .Select(x => x.FriendlyName(leftDelimiter, rightDelimiter, arrayDelimiter, typeJoiner, fullName)).ToArray();
                     typeName = type.Name.Replace(
                         $"`{genericParamNames.Length}",
                         string.Format(
@@ -311,6 +325,9 @@ namespace GraphQL.AspNet.Common.Extensions
                             rightDelimiter));
                 }
             }
+
+            for (var i = 0; i < arrayCount; i++)
+                typeName += arrayDelimiter;
 
             return fullName ? $"{type.Namespace}.{typeName}" : typeName;
         }
@@ -403,6 +420,20 @@ namespace GraphQL.AspNet.Common.Extensions
                 underlyingType == typeof(ushort) || // 16bit
                 underlyingType == typeof(uint) || // 32bit
                 underlyingType == typeof(ulong); // 64 bit
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is struct or not.
+        /// </summary>
+        /// <param name="type">The type to inspect.</param>
+        /// <returns><c>true</c> if the specified type is a struct; otherwise, <c>false</c>.</returns>
+        public static bool IsStruct(this Type type)
+        {
+            if (type == null)
+                return false;
+
+            return type.IsValueType && !type.IsPrimitive && !type.IsEnum && !type.IsArray && !type.IsInterface
+                && !type.IsAbstract;
         }
     }
 }

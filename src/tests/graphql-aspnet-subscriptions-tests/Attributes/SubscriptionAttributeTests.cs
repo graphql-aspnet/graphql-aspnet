@@ -12,7 +12,6 @@ namespace GraphQL.Subscriptions.Tests.Attributes
     using GraphQL.AspNet;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using NUnit.Framework;
 

@@ -28,8 +28,9 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="fieldName">Name of the field in the public graph.</param>
         /// <param name="typeExpression">The type expression declaring what type of data this field returns.</param>
         /// <param name="route">The route to this field in the graph.</param>
-        /// <param name="propertyType">The property metadata.</param>
-        /// <param name="propertyDeclaredName">The name of the property as it was declared on the <see cref="Type"/> (its internal name).</param>
+        /// <param name="declaredPropertyName">The name of the property as it was declared on the <see cref="Type" /> (its internal name).</param>
+        /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
+        /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
         /// <param name="mode">The mode in which the runtime will process this field.</param>
         /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
         /// <param name="securityPolicies">The security policies that apply to this field.</param>
@@ -37,22 +38,16 @@ namespace GraphQL.AspNet.Schemas.Structural
             string fieldName,
             GraphTypeExpression typeExpression,
             GraphFieldPath route,
-            Type propertyType,
-            string propertyDeclaredName,
+            string declaredPropertyName,
+            Type objectType = null,
+            Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
             IEnumerable<FieldSecurityGroup> securityPolicies = null)
-            : base(fieldName, typeExpression, route, mode, resolver, securityPolicies)
+            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies)
         {
-            this.ObjectType = propertyType;
-            this.InternalName = propertyDeclaredName;
+            this.InternalName = declaredPropertyName;
         }
-
-        /// <summary>
-        /// Gets the type of the object this graph type was made from.
-        /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; }
 
         /// <summary>
         /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name

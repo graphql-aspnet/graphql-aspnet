@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child, allows the class to create custom template that inherit from <see cref="MethodGraphFieldTemplate" />
+        /// When overridden in a child, allows the class to create custom template that inherit from <see cref="MethodGraphFieldTemplateBase" />
         /// to provide additional functionality or garuntee a certian type structure for all methods on this object template.
         /// </summary>
         /// <param name="methodInfo">The method information.</param>

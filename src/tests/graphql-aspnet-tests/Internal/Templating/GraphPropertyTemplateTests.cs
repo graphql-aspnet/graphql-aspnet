@@ -9,12 +9,17 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData;
     using Moq;
     using NUnit.Framework;
@@ -159,6 +164,51 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             {
                 template.ValidateOrThrow();
             });
+        }
+
+        [Test]
+        public void Parse_BasicObject_PropertyReturnsArray_YieldsTemplate()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(TwoPropertyObject).FriendlyName(),
+                MetaGraphTypes.IsList);
+
+            var parent = obj.Object;
+            var propInfo = typeof(ArrayPropertyObject).GetProperty(nameof(ArrayPropertyObject.PropertyA));
+
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
+            Assert.AreEqual(typeof(TwoPropertyObject[]), template.DeclaredReturnType);
+        }
+
+        [Test]
+        public void Parse_BasicObject_PropertyReturnsArrayOfKeyValuePair_YieldsTemplate()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
+                MetaGraphTypes.IsList,
+                MetaGraphTypes.IsNotNull); // structs can't be null
+
+            var parent = obj.Object;
+            var propInfo = typeof(ArrayKeyValuePairObject).GetProperty(nameof(ArrayKeyValuePairObject.PropertyA));
+
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
+            Assert.AreEqual(typeof(KeyValuePair<string, string>[]), template.DeclaredReturnType);
         }
     }
 }

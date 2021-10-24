@@ -11,14 +11,11 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 {
     using System;
     using System.Collections.Generic;
-    using System.Net.Mail;
     using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.PlanGeneration.ArgumentGeneratorTestData;

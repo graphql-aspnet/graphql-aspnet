@@ -14,5 +14,5 @@ namespace GraphQL.AspNet.Common.Generics
     /// </summary>
     /// <param name="inputObject">The input object.</param>
     /// <param name="valueToSet">The value to set.</param>
-    public delegate void PropertySetterInvoker(object inputObject, object valueToSet);
+    public delegate void PropertySetterInvoker(ref object inputObject, object valueToSet);
 }

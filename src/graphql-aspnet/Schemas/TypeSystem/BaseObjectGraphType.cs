@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         protected BaseObjectGraphType(string name, IEnumerable<IGraphField> graphFields = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
-            _graphFields = new GraphFieldCollection();
+            _graphFields = new GraphFieldCollection(this);
             this.InterfaceNames = new HashSet<string>();
             this.Publish = true;
             if (graphFields != null)

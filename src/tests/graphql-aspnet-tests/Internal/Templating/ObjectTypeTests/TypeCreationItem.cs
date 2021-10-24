@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class TypeCreationItem

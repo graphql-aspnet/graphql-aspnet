@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         [Description("Retrieves all the droids in the data respository that match the search text (not case sensitive).")]
         public async Task<IGraphActionResult> Droids(string searchText = "*")
         {
-            var starships = await _starWarsData.SearchHumans(searchText).ConfigureAwait(false);
+            var starships = await _starWarsData.SearchDroids(searchText).ConfigureAwait(false);
             return this.Ok(starships);
         }
 
