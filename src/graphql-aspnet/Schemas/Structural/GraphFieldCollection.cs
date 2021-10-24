@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
@@ -28,13 +29,16 @@ namespace GraphQL.AspNet.Schemas.Structural
     [DebuggerDisplay("Count = {Count}")]
     public class GraphFieldCollection : IReadOnlyGraphFieldCollection
     {
+        private readonly IGraphType _owner;
         private readonly Dictionary<string, IGraphField> _fields;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldCollection"/> class.
+        /// Initializes a new instance of the <see cref="GraphFieldCollection" /> class.
         /// </summary>
-        public GraphFieldCollection()
+        /// <param name="owner">The graphtype that owns this field collection.</param>
+        public GraphFieldCollection(IGraphType owner)
         {
+            _owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _fields = new Dictionary<string, IGraphField>(StringComparer.Ordinal);
         }
 
@@ -46,6 +50,17 @@ namespace GraphQL.AspNet.Schemas.Structural
         public IGraphField AddField(IGraphField field)
         {
             Validation.ThrowIfNull(field, nameof(field));
+
+            if (_fields.ContainsKey(field.Name))
+            {
+                var existingField = _fields[field.Name];
+                throw new GraphTypeDeclarationException(
+                    $"Duplciate field name detected. The graph type '{_owner.Name}' already declares a field named '{existingField.Name}'. " +
+                    "This may occur if a type extension is added with the same name as an existing field or " +
+                    "when an attempt is made to extend an OBJECT type through a direct extension and an indirect " +
+                    "INTERFACE extension with the same field name.");
+            }
+
             _fields.Add(field.Name, field);
             return field;
         }

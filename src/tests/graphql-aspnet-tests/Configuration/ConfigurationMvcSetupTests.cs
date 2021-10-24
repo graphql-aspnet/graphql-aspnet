@@ -119,8 +119,9 @@ namespace GraphQL.AspNet.Tests.Configuration
             var provider = serviceCollection.BuildServiceProvider();
             provider.UseGraphQL();
 
-            // candleController, candle, waxType, customerController, customer, skipDirective, includeDirective
-            Assert.AreEqual(7, GraphQLProviders.TemplateProvider.Count);
+            // virtualResolvedObject, candleController, candle, waxType,
+            // customerController, customer, skipDirective, includeDirective
+            Assert.AreEqual(8, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             sp.UseGraphQL();
@@ -151,8 +152,9 @@ namespace GraphQL.AspNet.Tests.Configuration
             var provider = serviceCollection.BuildServiceProvider();
             provider.UseGraphQL();
 
-            // candleController, candle, waxType, customerController, customer, skipDirective, includeDirective
-            Assert.AreEqual(7, GraphQLProviders.TemplateProvider.Count);
+            // virtualResolvedObject, candleController, candle, waxType,
+            // customerController, customer, skipDirective, includeDirective
+            Assert.AreEqual(8, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             var schema = sp.GetService(typeof(CandleSchema)) as ISchema;
@@ -181,8 +183,8 @@ namespace GraphQL.AspNet.Tests.Configuration
             var provider = serviceCollection.BuildServiceProvider();
             provider.UseGraphQL();
 
-            // candleController, candle, waxType, skipDirective, includeDirective
-            Assert.AreEqual(5, GraphQLProviders.TemplateProvider.Count);
+            // virtualResolvedObject, candleController, candle, waxType, skipDirective, includeDirective
+            Assert.AreEqual(6, GraphQLProviders.TemplateProvider.Count);
 
             var sp = serviceCollection.BuildServiceProvider();
             var schema = sp.GetService(typeof(GraphSchema)) as ISchema;

@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Execution
             // blog controller returns a BlogProxy and PostProxy
             // for the root object and child object set
             var server = new TestServerBuilder()
-                    .AddGraphType<BlogController>()
+                    .AddGraphType<BlogProxyController>()
                     .AddSchemaBuilderAction(a =>
                     {
                         a.Options.ResponseOptions.ExposeExceptions = true;

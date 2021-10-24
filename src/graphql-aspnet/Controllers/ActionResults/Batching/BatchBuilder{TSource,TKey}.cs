@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
     /// <typeparam name="TSource">The type of the source item that were used to build this batch.</typeparam>
     /// <typeparam name="TKey">The key value from source item that will identify it in the batch.</typeparam>
     public class BatchBuilder<TSource, TKey> : BatchBuilder<TSource, object, TKey>
-        where TSource : class
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchBuilder{TSource, TKey}" /> class.

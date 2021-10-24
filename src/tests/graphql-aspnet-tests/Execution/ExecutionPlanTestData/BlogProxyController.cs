@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
 
-    public class BlogController : GraphController
+    public class BlogProxyController : GraphController
     {
         [QueryRoot("blogs", typeof(IEnumerable<Blog>))]
         public IGraphActionResult RetrieveBlogs()

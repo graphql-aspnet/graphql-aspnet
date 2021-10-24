@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
@@ -107,6 +108,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 throw new GraphTypeDeclarationException(
                     $"The type extension '{this.InternalFullName}' does not define a {typeof(TypeExtensionAttribute).FriendlyName()} or defines more than one instance. " +
                     "All methods wishing to be treated as type extensions must define one instance of this attribute to properly configure the runtime.");
+            }
+
+            if (GraphQLProviders.ScalarProvider.IsLeaf(this.SourceObjectType))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The type extension '{this.InternalFullName}' is attempting to extend '{this.SourceObjectType.FriendlyName()}' which is a leaf type ({nameof(TypeKind.SCALAR)}, {nameof(TypeKind.ENUM)}). " +
+                    "Leaf types cannot be extended.");
             }
 
             base.ValidateOrThrow();

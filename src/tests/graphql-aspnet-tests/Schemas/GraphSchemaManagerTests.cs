@@ -795,5 +795,27 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Fail("No exception was thrown when one was expected.");
         }
+
+        [Test]
+        public void AttemptingToExtendATypeDirectly_AndThroughInterface_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+
+            try
+            {
+                manager.EnsureGraphType<ControllerWithDirectAndIndirectTypeExtension>();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                var name = typeof(TwoPropertyObject).FriendlyName();
+                Assert.IsTrue(ex.Message.Contains(name));
+                return;
+            }
+
+            Assert.Fail("No exception was thrown when one was expected.");
+        }
     }
 }

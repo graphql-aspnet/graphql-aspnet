@@ -285,6 +285,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             // specific validation for those arguments destinated to be input arguments
             // that exist on the object graph
+            // (inputArguments does not contain any args defined as source data args)
             foreach (var inputArgument in this.InputArguments)
             {
                 if (inputArgument.ObjectType.IsInterface)
