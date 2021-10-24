@@ -54,13 +54,21 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // customize the error message on the thrown exception for some helpful hints.
             string rejectionReason = null;
             if (objectType.IsEnum)
-                rejectionReason = $"The type '{objectType.FriendlyName()}' is an enumeration and cannot be parsed as an object graph type. Use an {typeof(IEnumGraphType).FriendlyName()} instead.";
-            else if (objectType.IsValueType)
-                rejectionReason = $"The type '{objectType.FriendlyName()}' is a value type and cannot be parsed as a graph type. Try using a scalar instead.";
+            {
+                rejectionReason = $"The type '{objectType.FriendlyName()}' is an enumeration and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Use an {typeof(IEnumGraphType).FriendlyName()} instead.";
+            }
+            else if (GraphQLProviders.ScalarProvider.IsScalar(objectType))
+            {
+                rejectionReason = $"The type '{objectType.FriendlyName()}' is a registered {nameof(TypeKind.SCALAR)} and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Try using the scalar definition instead.";
+            }
             else if (objectType == typeof(string))
-                rejectionReason = $"The type '{typeof(string).FriendlyName()}' cannot be parsed as an object graph type. Use the built in scalar instead.";
+            {
+                rejectionReason = $"The type '{typeof(string).FriendlyName()}' cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type. Use the built in scalar instead.";
+            }
             else if (objectType.IsAbstract && objectType.IsClass)
-                rejectionReason = $"The type '{objectType.FriendlyName()}' is abstract and cannot be parsed as a graph type.";
+            {
+                rejectionReason = $"The type '{objectType.FriendlyName()}' is abstract and cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type.";
+            }
 
             if (rejectionReason != null)
             {
@@ -248,7 +256,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplate" />
+        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplateBase" />
         /// to provide additional functionality or guarantee a certian type structure for all methods on this object template.
         /// </summary>
         /// <param name="methodInfo">The method information.</param>
@@ -258,7 +266,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (methodInfo == null)
                 return null;
 
-            return new GraphTypeMethodTemplate(this, methodInfo, this.Kind);
+            return new MethodGraphFieldTemplate(this, methodInfo, this.Kind);
         }
 
         /// <summary>

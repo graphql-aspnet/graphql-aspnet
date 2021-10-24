@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         TypeCollection OtherKnownTypes { get; }
 
         /// <summary>
-        /// Gets the type of the value as it should be supplied on an input argument. Scalar values, from a stand point of "raw data" can be submitted as
+        /// Gets the type of the value as it should be supplied on an input argument. Scalar values, from a standpoint of "raw data" can be submitted as
         /// strings, numbers or a boolean value. A source value resolver would then convert this raw value into its formal scalar representation.
         /// </summary>
         /// <value>The type of the value.</value>

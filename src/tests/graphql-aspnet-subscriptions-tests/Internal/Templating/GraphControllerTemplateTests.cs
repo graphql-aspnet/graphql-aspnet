@@ -10,11 +10,9 @@
 namespace GraphQL.Subscriptions.Tests.Internal.Templating
 {
     using System.Linq;
-    using GraphQL.AspNet;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.Subscriptions.Tests.Internal.Templating.ControllerTestData;
     using NUnit.Framework;
 

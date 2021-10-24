@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// as a graphql field.
     /// </summary>
     [DebuggerDisplay("Route: {Route.Path}")]
-    public class ControllerActionGraphFieldTemplate : MethodGraphFieldTemplate
+    public class ControllerActionGraphFieldTemplate : MethodGraphFieldTemplateBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ControllerActionGraphFieldTemplate" /> class.
@@ -94,7 +95,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the kind of graph type that should own fields created from this template.
         /// </summary>
         /// <value>The kind.</value>
-        public override TypeKind Kind => TypeKind.OBJECT;
+        public override TypeKind OwnerTypeKind => TypeKind.OBJECT;
 
         /// <summary>
         /// Gets a value indicating whether this instance was explictly declared as a graph item via acceptable attribution or

@@ -13,15 +13,13 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]
-    public class GeneralQueryExecutionTests
+    public partial class GeneralQueryExecutionTests
     {
         [Test]
         public async Task SingleFieldResolution_ViaPipeline_YieldsCorrectResult()
@@ -669,6 +667,307 @@ namespace GraphQL.AspNet.Tests.Execution
                             }
                        }
                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task ControllerReturnsAnarrayForAnEnumerableDeclarartion_YieldsCorrectResult()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayAsEnumerableController>()
+                    .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           property1 " +
+                "           property2 " +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""property1"" : ""1A"",
+                                ""property2"" : 2
+                            },
+                            {
+                                ""property1"" : ""1B"",
+                                ""property2"" : 3
+                            }
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task ControllerReturnsAnArrayForAnArrayThroughGraphActionDeclarartion_YieldsCorrectResult()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayThroughGraphActionAsEnumerableController>()
+                    .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           property1 " +
+                "           property2 " +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""property1"" : ""1A"",
+                                ""property2"" : 2
+                            },
+                            {
+                                ""property1"" : ""1B"",
+                                ""property2"" : 3
+                            }
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task ControllerReturnsAnArrayForAnArrayDeclaration_YieldsCorrectResult()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayThroughArrayDeclarationController>()
+                    .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           property1 " +
+                "           property2 " +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""property1"" : ""1A"",
+                                ""property2"" : 2
+                            },
+                            {
+                                ""property1"" : ""1B"",
+                                ""property2"" : 3
+                            }
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task FlatArray_AsProperty_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayOnReturnObjectPropertyController>()
+                    .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           propertyA " +
+                "           propertyB {" +
+                "               property1" +
+                "               property2" +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {
+                                ""propertyA"" : ""AA"",
+                                ""propertyB"" : [
+                                    {
+                                        ""property1"" : ""1A"",
+                                        ""property2"" : 2
+                                    },
+                                    {
+                                        ""property1"" : ""1B"",
+                                        ""property2"" : 3
+                                    }
+                                ]
+                            },
+                        ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task FlatArray_AsObjectMethod_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayOnReturnObjectMethodController>()
+                    .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () { " +
+                "           propertyA " +
+                "           moreData() {" +
+                "               property1" +
+                "               property2" +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : {
+                            ""propertyA"" : ""AA"",
+                            ""moreData"" : [
+                                {
+                                    ""property1"" : ""1A"",
+                                    ""property2"" : 2
+                                },
+                                {
+                                    ""property1"" : ""1B"",
+                                    ""property2"" : 3
+                                }
+                            ]
+                         }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task FlatArray_OfScalars_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<ArrayScalarController>()
+                    .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [1, 3, 5]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task KeyValuePair_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+                    .AddGraphType<KeyValuePairController>()
+                    .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () {" +
+                "           key         " +
+                "           value       " +
+                "      }" +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {""key"" : ""key1"", ""value"" : 1 },
+                            {""key"" : ""key2"", ""value"" : 2 }
+                       ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task TypeExtension_OnValueType_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+         .AddGraphType<TypeExtensionKeyValuePairController>()
+         .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () {" +
+                "           key         " +
+                "           value       " +
+                "           value2      " +
+                "      }" +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {""key"" : ""key1"", ""value"" : 1, ""value2"" : ""1ABC"" },
+                            {""key"" : ""key2"", ""value"" : 2, ""value2"" : ""2ABC"" }
+                       ]
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task TypeExtension_OnGeneralObject_ResolvesDataCorrectly()
+        {
+            var server = new TestServerBuilder()
+         .AddGraphType<TypeExtensionOnTwoPropertyObjectController>()
+         .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("query  { " +
+                "      retrieveData () {" +
+                "           property1      " +
+                "           property2      " +
+                "           property3      " +
+                "      }" +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveData"" : [
+                            {""property1"" : ""Prop1"", ""property2"" : 1, ""property3"" : ""1ABC"" },
+                            {""property1"" : ""Prop2"", ""property2"" : 2, ""property3"" : ""2ABC"" }
+                       ]
+                     }
                   }";
 
             var result = await server.RenderResult(builder);

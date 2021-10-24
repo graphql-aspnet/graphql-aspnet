@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Security.Claims;
     using System.Text.Encodings.Web;
     using System.Text.Json;
-    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Defaults;

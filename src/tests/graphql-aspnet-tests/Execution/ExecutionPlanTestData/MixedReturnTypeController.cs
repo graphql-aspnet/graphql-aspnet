@@ -10,9 +10,10 @@
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
 
-    public class MixedReturnTypeController : GraphIdController
+    public class MixedReturnTypeController : GraphController
     {
         [QueryRoot]
         public MixedReturnTypeA CreateReturnObject()

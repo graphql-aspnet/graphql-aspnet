@@ -197,7 +197,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var counter = new Dictionary<string, int>();
 
             var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
-            serverBuilder.AddGraphType<BatchController>();
+            serverBuilder.AddGraphType<BatchObjectController>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -341,7 +341,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var counter = new Dictionary<string, int>();
 
             var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
-            serverBuilder.AddGraphType<BatchController>();
+            serverBuilder.AddGraphType<BatchObjectController>();
 
             serverBuilder.AddGraphQL(o =>
             {

@@ -18,12 +18,10 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
-    using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
     using NUnit.Framework;
 
     [TestFixture]
@@ -342,6 +340,51 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(typeof(EmployeeData), result.CheckedType);
             Assert.False(result.ExactMatchFound);
             Assert.AreEqual(0, result.FoundTypes.Length);
+        }
+
+        [Test]
+        public void AnalyzeRuntimeConcreteType_InterfaceTypeResolve_ButConcreteTypeIsntDeclared_ReturnsNothing()
+        {
+            var server = new TestServerBuilder().Build();
+            var collection = new SchemaTypeCollection();
+
+            var interfaceType = this.MakeGraphType(typeof(ITwoPropertyObject), TypeKind.INTERFACE);
+
+            collection.EnsureGraphType(interfaceType, typeof(ITwoPropertyObject));
+
+            // TwoPropertyObject implements ITwoPropertyObject
+            // but is not part of the schema
+            var result = collection.AnalyzeRuntimeConcreteType(interfaceType, typeof(TwoPropertyObject));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(TwoPropertyObject), result.CheckedType);
+            Assert.IsFalse(result.ExactMatchFound);
+            Assert.AreEqual(0, result.FoundTypes.Length);
+        }
+
+        [Test]
+        public void AnalyzeRuntimeConcreteType_InterfaceTypeResolve_WithConcreteTypeAlsoDeclared_ReturnsValidType_TypeIsReturned()
+        {
+            var server = new TestServerBuilder().Build();
+            var collection = new SchemaTypeCollection();
+
+            var interfaceType = this.MakeGraphType(typeof(ITwoPropertyObject), TypeKind.INTERFACE);
+            var objectType = this.MakeGraphType(typeof(TwoPropertyObject), TypeKind.OBJECT);
+
+            collection.EnsureGraphType(interfaceType, typeof(ITwoPropertyObject));
+            collection.EnsureGraphType(objectType, typeof(TwoPropertyObject));
+
+            // TwoPropertyObject implements ITwoPropertyObject
+            // so it can masqurade as that type in the schema
+            // but two property object is also explicitly declared
+            // the found type should be the exact match, not the interface
+            var result = collection.AnalyzeRuntimeConcreteType(interfaceType, typeof(TwoPropertyObject));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(TwoPropertyObject), result.CheckedType);
+            Assert.IsTrue(result.ExactMatchFound);
+            Assert.AreEqual(1, result.FoundTypes.Length);
+            Assert.AreEqual(typeof(TwoPropertyObject), result.FoundTypes[0]);
         }
     }
 }

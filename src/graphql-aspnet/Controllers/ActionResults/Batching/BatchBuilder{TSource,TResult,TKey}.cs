@@ -22,8 +22,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
     /// <typeparam name="TResult">The type of object being returned from this field.</typeparam>
     /// <typeparam name="TKey">The key value from source item that will identify it in the batch.</typeparam>
     public class BatchBuilder<TSource, TResult, TKey> : IBatchBuilder
-        where TSource : class
-        where TResult : class
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchBuilder{TSource, TResult, TKey}"/> class.

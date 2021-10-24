@@ -12,8 +12,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.Introspection.Fields;
 
     /// <summary>
     /// Performs an analysis of a runtime type to determine known and allowed concrete types for a
@@ -95,13 +98,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
 
         private Type[] FindAcceptableTypes(IGraphType graphType, Type typeToCheck)
         {
-            var allowedTypes = _schema.FindConcreteTypes(graphType);
+            var allowedTypes = _schema.FindConcreteTypes(graphType).ToList();
+
             var list = new List<Type>();
             foreach (var allowedType in allowedTypes)
             {
                 if (allowedType == typeToCheck)
                 {
-                    // a union may match explicitly to one of the allowed types
+                    // a union or interface may match explicitly to one of the allowed types
                     // if so infer it to be an exact match (always)
                     list.Clear();
                     list.Add(allowedType);

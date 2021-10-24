@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -633,6 +634,188 @@ namespace GraphQL.AspNet.Tests.Schemas
             {
                 manager.EnsureGraphType<ControllerWithRootName2>();
             });
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerReturnTypeIsGraphTypeIsAFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayReturnController>();
+
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerReturnTypeDeclarationIsGraphTypeIsAFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayReturnDeclarationController>();
+
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenPropertyIsFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayPropertyObject>();
+
+            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(ArrayPropertyObject)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenMethodReturnIsFlatArray_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<ArrayMethodObject>();
+
+            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(ArrayMethodObject)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyObject)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenContainsAGenericType_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<KeyValuePairObject>();
+
+            Assert.AreEqual(5, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(KeyValuePairObject)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(KeyValuePair<string, int>)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenIsAGenericType_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<TwoPropertyGenericObject<string, int>>();
+            manager.EnsureGraphType<TwoPropertyGenericObject<double, DateTime>>();
+
+            Assert.AreEqual(7, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyGenericObject<string, int>)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyGenericObject<double, DateTime>)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(DateTime)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(double)));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenIsAGenericType_WithListTypeParam_IsAddedCorrectly()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            manager.EnsureGraphType<TwoPropertyGenericObject<string[], int[]>>();
+
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query
+
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(TwoPropertyGenericObject<string[], int[]>)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
+
+            var type = schema.KnownTypes.FindGraphType(typeof(TwoPropertyGenericObject<string[], int[]>));
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenIsAGenericType_ButDeclaresACustomName_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            try
+            {
+                manager.EnsureGraphType<GenericObjectTypeWithGraphTypeName<string, int>>();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                var name = typeof(GenericObjectTypeWithGraphTypeName<string, int>).GetGenericTypeDefinition().FriendlyName();
+                Assert.IsTrue(ex.Message.Contains(name));
+                return;
+            }
+
+            Assert.Fail("No exception was thrown when one was expected.");
+        }
+
+        [Test]
+        public void EnsureGraphType_WhenControllerHasInputParameterAsInterface_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+            try
+            {
+                manager.EnsureGraphType<ControllerWithInterfaceInput>();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                var name = typeof(IPersonData).FriendlyName();
+                Assert.IsTrue(ex.Message.Contains(name));
+                return;
+            }
+
+            Assert.Fail("No exception was thrown when one was expected.");
+        }
+
+        [Test]
+        public void AttemptingToExtendATypeDirectly_AndThroughInterface_ThrowsException()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+
+            try
+            {
+                manager.EnsureGraphType<ControllerWithDirectAndIndirectTypeExtension>();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                var name = typeof(TwoPropertyObject).FriendlyName();
+                Assert.IsTrue(ex.Message.Contains(name));
+                return;
+            }
+
+            Assert.Fail("No exception was thrown when one was expected.");
         }
     }
 }

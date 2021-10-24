@@ -22,7 +22,6 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Logging.ExecutionEvents;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Security;

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelect
     using System;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
@@ -29,6 +30,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelect
             var allArgsValid = true;
             foreach (var argument in fieldSelection.Field.Arguments)
             {
+                // any argument flaged as being a source input (such as for type extensions)
+                // or internal (such as subscription event sources)
+                // and can be skipped when validating query document
+                if (argument.ArgumentModifiers.IsSourceParameter())
+                    continue;
+                if (argument.ArgumentModifiers.IsInternalParameter())
+                    continue;
+
                 // when the argument is required but the schema defines no value
                 // and it was not on the user query document this rule fails
                 if (argument.TypeExpression.IsRequired &&

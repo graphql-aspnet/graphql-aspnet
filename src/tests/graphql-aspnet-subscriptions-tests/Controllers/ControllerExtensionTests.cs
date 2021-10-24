@@ -20,7 +20,6 @@ namespace GraphQL.Subscriptions.Tests.Controllers
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.Subscriptions.Tests.Controllers.ControllerTestData;
     using NUnit.Framework;
-    using NUnit.Framework.Internal.Execution;
 
     [TestFixture]
     public class ControllerExtensionTests

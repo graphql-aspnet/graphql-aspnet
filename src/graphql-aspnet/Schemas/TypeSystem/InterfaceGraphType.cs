@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public InterfaceGraphType(string name, Type concreteType, IEnumerable<IGraphField> fields)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
-            _fieldSet = new GraphFieldCollection();
+            _fieldSet = new GraphFieldCollection(this);
             _interfaceType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.Publish = true;
             if (fields != null)

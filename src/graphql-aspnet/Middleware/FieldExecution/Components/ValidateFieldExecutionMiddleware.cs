@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 {
+    using System;
     using System.Collections;
     using System.Threading;
     using System.Threading.Tasks;
@@ -55,30 +56,18 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             var expectedFieldGraphType = _schema.KnownTypes.FindGraphType(field);
             var dataSource = context.Request.DataSource;
 
-            // ensure the source being supplied
+            // ensure the source item(s) being supplied
             // matches the expected source of the field being resolved
             if (context.InvocationContext.ExpectedSourceType != null)
             {
                 var expectedSourceType = context.InvocationContext.ExpectedSourceType;
-                var actualSourceType = GraphValidation.EliminateWrappersFromCoreType(dataSource.Value.GetType());
-                if (expectedSourceType != actualSourceType)
+                foreach (var sourceItem in dataSource.Items)
                 {
-                    var expectedSourceGraphType = _schema.KnownTypes.FindGraphType(expectedSourceType, TypeKind.OBJECT);
-                    var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedSourceGraphType, actualSourceType);
-                    if (!analysis.ExactMatchFound)
-                    {
-                        throw new GraphExecutionException(
-                            $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
-                            $"a source item of type '{dataSource.Value.GetType().FriendlyName()}' which could not be coerced " +
-                            $"to '{context.InvocationContext.ExpectedSourceType}' as requested by the target graph type '{expectedFieldGraphType.Name}'.");
-                    }
-
-                    if (context.Field.Mode == FieldResolutionMode.Batch && !(dataSource.GetType() is IEnumerable))
-                    {
-                        throw new GraphExecutionException(
-                            $"Operation failed. The field execution context for '{field.Route.Path}' was executed in batch mode " +
-                            $"but was not passed an {nameof(IEnumerable)} for its source data.");
-                    }
+                    this.ValidateDataSourceItemAgainstExpectedType(
+                        field,
+                        expectedFieldGraphType,
+                        expectedSourceType,
+                        sourceItem.SourceData);
                 }
             }
 
@@ -101,6 +90,34 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             }
 
             return next(context, cancelToken);
+        }
+
+        private void ValidateDataSourceItemAgainstExpectedType(
+            IGraphField field,
+            IGraphType fieldType,
+            Type expectedSourceType,
+            object value)
+        {
+            var actualSourceType = GraphValidation.EliminateWrappersFromCoreType(value.GetType());
+            if (expectedSourceType != actualSourceType)
+            {
+                var expectedSourceGraphType = _schema.KnownTypes.FindGraphType(expectedSourceType, TypeKind.OBJECT);
+                var analysis = _schema.KnownTypes.AnalyzeRuntimeConcreteType(expectedSourceGraphType, actualSourceType);
+                if (!analysis.ExactMatchFound)
+                {
+                    throw new GraphExecutionException(
+                        $"Operation failed. The field execution context for '{field.Route.Path}' was passed " +
+                        $"a source item of type '{value.GetType().FriendlyName()}' which could not be coerced " +
+                        $"to '{expectedSourceType}' as requested by the target graph type '{fieldType.Name}'.");
+                }
+
+                if (field.Mode == FieldResolutionMode.Batch && !(value.GetType() is IEnumerable))
+                {
+                    throw new GraphExecutionException(
+                        $"Operation failed. The field execution context for '{field.Route.Path}' was executed in batch mode " +
+                        $"but was not passed an {nameof(IEnumerable)} for its source data.");
+                }
+            }
         }
     }
 }

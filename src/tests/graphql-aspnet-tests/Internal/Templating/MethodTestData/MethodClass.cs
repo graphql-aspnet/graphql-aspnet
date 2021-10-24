@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class MethodClass
@@ -125,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
         [GraphField]
         public Task<List<TwoPropertyObject>> TaskOfListOfObjectReturnType()
         {
-            return null;
+            return Task.FromResult(null as List<TwoPropertyObject>);
         }
 
         [GraphField]
@@ -141,6 +140,12 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
 
         [GraphField("path3")]
         public Task<TwoPropertyObject> EnsureMethodSignatureTestMethod(int arg1, string arg2)
+        {
+            return Task.FromResult(new TwoPropertyObject());
+        }
+
+        [GraphField]
+        public Task<TwoPropertyObject> InterfaceAsInputParam(ITwoPropertyObject data)
         {
             return Task.FromResult(new TwoPropertyObject());
         }

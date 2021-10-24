@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Extensions
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Tests.Extensions.ReflectionExtensionTestData;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ThirdPartyDll;
     using GraphQL.AspNet.Tests.ThirdPartyDll.Model;
     using NUnit.Framework;
@@ -77,14 +78,22 @@ namespace GraphQL.AspNet.Tests.Extensions
         [TestCase(typeof(IDictionary<int, string>), "IDictionary<int, string>")]
         [TestCase(typeof(IDictionary<int, string>), "IDictionary_int_string_", false, "_")]
         [TestCase(typeof(Task<IDictionary<int, string>>), "Task<IDictionary<int, string>>")]
+        [TestCase(typeof(Task<IDictionary<int, string>>), "Task_IDictionary_int_string__", false, "_")]
         [TestCase(typeof(Task<IDictionary<DateTimeExtensionTests, ReflectionExtensionTests>>), "Task<IDictionary<DateTimeExtensionTests, ReflectionExtensionTests>>")]
-        public void Type_FriendlyName(Type type, string expectedName, bool includeCarrots = true, string delimiter = "")
+        [TestCase(typeof(int[]), "int[]", true)]
+        [TestCase(typeof(int[][]), "int[][]", true)]
+        [TestCase(typeof(int[][]), "int____", false, "_")]
+        [TestCase(typeof(int[]), "int__", false, "_")]
+        public void Type_FriendlyName(Type type, string expectedName, bool useDefaultFriendlyName = true, string delimiter = "")
         {
             // non generic type just returns Type.Name
-            if (includeCarrots)
-                Assert.AreEqual(expectedName, type.FriendlyName());
+            string result;
+            if (useDefaultFriendlyName)
+                result = type.FriendlyName();
             else
-                Assert.AreEqual(expectedName, type.FriendlyName(delimiter));
+                result = type.FriendlyName(delimiter);
+
+            Assert.AreEqual(expectedName, result);
         }
 
         [TestCase(typeof(int), "System.Int32")]
@@ -187,6 +196,11 @@ namespace GraphQL.AspNet.Tests.Extensions
         [TestCase(typeof(IEnumerable<IEnumerable<IEnumerable<float?>>>), typeof(float?), true)]
         [TestCase(typeof(List<IEnumerable<float>>), typeof(float), true)]
         [TestCase(typeof(List<List<List<List<List<List<float>>>>>>), typeof(float), true)]
+        [TestCase(typeof(int[]), typeof(int), true)]
+        [TestCase(typeof(int[][]), typeof(int[]), false)]
+        [TestCase(typeof(List<int[]>), typeof(int), true)]
+        [TestCase(typeof(List<int[]>), typeof(int[]), false)]
+        [TestCase(typeof(List<List<List<List<List<float>[]>>>>), typeof(float), true)]
         public void Type_GetEnumerableUnderlyingType(Type typeToCheck, Type expected, bool resolveAll = false)
         {
             var result = typeToCheck.GetEnumerableUnderlyingType(resolveAll);
@@ -242,6 +256,15 @@ namespace GraphQL.AspNet.Tests.Extensions
             var exception = failedTask.UnwrapException();
 
             Assert.IsNull(exception);
+        }
+
+        [TestCase(typeof(int), false)]
+        [TestCase(typeof(string), false)]
+        [TestCase(typeof(TwoPropertyObject), false)]
+        [TestCase(typeof(StructForIsStructTest), true)]
+        public void Type_IsStruct(Type typeToCheck, bool isStruct)
+        {
+            Assert.AreEqual(isStruct, typeToCheck.IsStruct());
         }
     }
 }

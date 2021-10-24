@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults.ActuionResultTestData
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class ActionableController : GraphController

@@ -38,7 +38,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
         /// same key.</param>
         /// <returns>A batch builder with a given set of source data.</returns>
         public BatchBuilder<TSource, TKey> FromSource<TSource, TKey>(IEnumerable<TSource> sourceData, Func<TSource, TKey> sourceKeySelector)
-            where TSource : class
         {
             return new BatchBuilder<TSource, TKey>(this.Field, sourceData, sourceKeySelector);
         }

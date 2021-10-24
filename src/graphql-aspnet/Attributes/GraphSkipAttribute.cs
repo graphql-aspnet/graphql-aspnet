@@ -20,7 +20,8 @@ namespace GraphQL.AspNet.Attributes
         | AttributeTargets.Property
         | AttributeTargets.Field
         | AttributeTargets.Enum
-        | AttributeTargets.Class)]
+        | AttributeTargets.Class
+        | AttributeTargets.Struct)]
     public class GraphSkipAttribute : Attribute
     {
     }

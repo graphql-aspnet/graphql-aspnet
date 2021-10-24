@@ -12,18 +12,19 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.MethodTestData;
+    using GraphQL.AspNet.Common.Extensions;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class GraphObjectMethodTemplateTests
     {
-        private GraphTypeMethodTemplate CreateMethodTemplate<TObject>(string methodName)
+        private MethodGraphFieldTemplate CreateMethodTemplate<TObject>(string methodName)
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
@@ -31,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var methodInfo = typeof(TObject).GetMethod(methodName);
-            var template = new GraphTypeMethodTemplate(parent, methodInfo, TypeKind.OBJECT);
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
             return template;
@@ -46,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var methodInfo = typeof(MethodClass).GetMethod(nameof(MethodClass.SimpleMethodNoAttributes));
-            var template = new GraphTypeMethodTemplate(parent, methodInfo, TypeKind.OBJECT);
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -137,6 +138,15 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
+        public void Parse_InterfaceAsInputParameter_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.InterfaceAsInputParam));
+            });
+        }
+
+        [Test]
         public void Parse_AsyncMethodWithNoReturnType_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -164,6 +174,24 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.TaskOfListOfObjectReturnType));
             Assert.AreEqual(typeof(TwoPropertyObject), template.ObjectType);
+        }
+
+        [Test]
+        public void Parse_ArrayFromMethod_YieldsTemplate()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(TwoPropertyObject).FriendlyName(),
+                MetaGraphTypes.IsList);
+
+            var parent = obj.Object;
+            var template = this.CreateMethodTemplate<ArrayMethodObject>(nameof(ArrayMethodObject.RetrieveData));
+
+            Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
+            Assert.AreEqual(typeof(TwoPropertyObject[]), template.DeclaredReturnType);
         }
     }
 }

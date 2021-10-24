@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
-    using System.Collections.Generic;
-
     public class BlogProxy : Blog
     {
     }

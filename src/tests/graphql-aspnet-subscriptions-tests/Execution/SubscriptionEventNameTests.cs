@@ -9,7 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.Execution
 {
-    using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Schemas;

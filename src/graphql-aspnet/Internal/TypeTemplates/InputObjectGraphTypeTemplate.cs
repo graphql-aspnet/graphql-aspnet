@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
@@ -21,7 +22,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
     /// <summary>
     /// A representation of the meta data of any given class that could be represented
-    /// as an input object graph type type in an <see cref="ISchema"/>.
+    /// as an input object graph type in an <see cref="ISchema"/>.
     /// </summary>
     public class InputObjectGraphTypeTemplate : BaseObjectGraphTypeTemplate, IInputObjectGraphTypeTemplate
     {
@@ -32,19 +33,33 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public InputObjectGraphTypeTemplate(Type objectType)
             : base(objectType)
         {
-            if (!objectType.IsClass)
+            if (objectType.IsClass)
             {
-                throw new GraphTypeDeclarationException(
-                    $"The type '{objectType.FriendlyName()}' is not a class " +
-                    $"and cannot be parsed as an {nameof(TypeKind.INPUT_OBJECT)} graph type.");
+                // class objects MUST declare a default constructor
+                // so it can be used in a 'new T()' operation when generating
+                // input params
+                var constructor = objectType.GetConstructor(new Type[0]);
+                if (constructor == null || !constructor.IsPublic)
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The type '{objectType.FriendlyName()}' does not declare a public, parameterless constructor " +
+                        $"and cannot be used as an {nameof(TypeKind.INPUT_OBJECT)} graph type.");
+                }
             }
 
-            var constructor = objectType.GetConstructor(new Type[0]);
-            if (constructor == null || !constructor.IsPublic)
+            if (objectType.IsInterface)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The type '{objectType.FriendlyName()}' does not declare a public, parameterless constructor " +
-                    $"and cannot be used as an {nameof(TypeKind.INPUT_OBJECT)} graph type.");
+                    $"The type '{objectType.FriendlyName()}' is an interface and cannot be used as an {nameof(TypeKind.INPUT_OBJECT)} graph type.");
+            }
+
+            // since KeyValuePair<,> is pretty common
+            // and a specific error message for the type
+            if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The type '{objectType.FriendlyName()}' cannot be used as an {nameof(TypeKind.INPUT_OBJECT)} graph type. '{typeof(KeyValuePair<,>).FriendlyName()}' does not " +
+                    $"declare public setters for its Key and Value properties.");
             }
         }
 
@@ -85,7 +100,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplate" />
+        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplateBase" />
         /// to provide additional functionality or guarantee a certian type structure for all methods on this object template.
         /// </summary>
         /// <param name="methodInfo">The method information.</param>

@@ -15,15 +15,14 @@ namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [GraphRoute("batch")]
-    public class BatchController : GraphController
+    public class BatchStructController : GraphController
     {
         private readonly IBatchCounterService _counterService;
 
-        public BatchController(IBatchCounterService counterService)
+        public BatchStructController(IBatchCounterService counterService)
         {
             _counterService = Validation.ThrowIfNullOrReturn(counterService, nameof(counterService));
         }
@@ -36,23 +35,23 @@ namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
             _counterService.CallCount[name] += 1;
         }
 
-        [Query("fetchData", typeof(TwoPropertyObject), TypeExpression = TypeExpressions.IsList)]
+        [Query("fetchData", typeof(TwoPropertyStruct), TypeExpression = TypeExpressions.IsList)]
         public IGraphActionResult PrimaryDataFetch()
         {
             AddCounter(nameof(this.PrimaryDataFetch));
 
-            var list = new List<TwoPropertyObject>();
-            list.Add(new TwoPropertyObject()
+            var list = new List<TwoPropertyStruct>();
+            list.Add(new TwoPropertyStruct()
             {
                 Property1 = "object0",
                 Property2 = 0,
             });
-            list.Add(new TwoPropertyObject()
+            list.Add(new TwoPropertyStruct()
             {
                 Property1 = "object1",
                 Property2 = 1,
             });
-            list.Add(new TwoPropertyObject()
+            list.Add(new TwoPropertyStruct()
             {
                 Property1 = "object2",
                 Property2 = 2,
@@ -61,8 +60,8 @@ namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
             return this.Ok(list);
         }
 
-        [BatchTypeExtension(typeof(TwoPropertyObject), "kids", typeof(IEnumerable<ChildTestObject>))]
-        public IGraphActionResult FetchChildren(IEnumerable<TwoPropertyObject> sourceData)
+        [BatchTypeExtension(typeof(TwoPropertyStruct), "kids", typeof(IEnumerable<ChildTestObject>))]
+        public IGraphActionResult FetchChildren(IEnumerable<TwoPropertyStruct> sourceData)
         {
             AddCounter(nameof(this.FetchChildren));
 
@@ -88,8 +87,8 @@ namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
                 .Complete();
         }
 
-        [BatchTypeExtension(typeof(TwoPropertyObject), "sybling", typeof(SyblingTestObject))]
-        public IGraphActionResult FetchSibling(IEnumerable<TwoPropertyObject> sourceData)
+        [BatchTypeExtension(typeof(TwoPropertyStruct), "sybling", typeof(SyblingTestObject))]
+        public IGraphActionResult FetchSibling(IEnumerable<TwoPropertyStruct> sourceData)
         {
             AddCounter(nameof(this.FetchSibling));
 

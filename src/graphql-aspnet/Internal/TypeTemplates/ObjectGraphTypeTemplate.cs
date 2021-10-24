@@ -11,8 +11,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -31,13 +29,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public ObjectGraphTypeTemplate(Type objectType)
             : base(objectType)
         {
-            if (!objectType.IsClass)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The type '{objectType.FriendlyName()}' is not a class and " +
-                    $"cannot be parsed as an {nameof(TypeKind.OBJECT)} graph type.",
-                    objectType);
-            }
         }
 
         /// <summary>

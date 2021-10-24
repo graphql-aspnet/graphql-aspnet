@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Execution;
@@ -111,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void ReferenceParam_NotNull_ParsesCorrectly()
         {
             var template = this.ExtractParameterTemplate("objectArgNotNull", out var paramInfo);
-            CollectionAssert.AreEqual(GraphTypeExpression.RequiredSingleItem,  template.TypeExpression.Wrappers);
+            CollectionAssert.AreEqual(GraphTypeExpression.RequiredSingleItem, template.TypeExpression.Wrappers);
         }
 
         [Test]
@@ -149,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.ExtractParameterTemplate("defaultValueObjectArg", out var paramInfo);
             Assert.AreEqual(typeof(Person), template.Parameter.ParameterType);
-            CollectionAssert.AreEqual(GraphTypeExpression.SingleItem,  template.TypeExpression.Wrappers);
+            CollectionAssert.AreEqual(GraphTypeExpression.SingleItem, template.TypeExpression.Wrappers);
             Assert.IsNull(template.DefaultValue);
         }
 
@@ -177,6 +178,51 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = this.ExtractParameterTemplate("defaultValueNullableIntArg", out var paramInfo);
             Assert.IsEmpty(template.TypeExpression.Wrappers);
             Assert.AreEqual(5, template.DefaultValue);
+        }
+
+        [Test]
+        public void ArrayOfObjects_ThrowsException()
+        {
+            var template = this.ExtractParameterTemplate("arrayOfObjects", out var paramInfo);
+            Assert.AreEqual(typeof(Person[]), template.Parameter.ParameterType);
+            Assert.AreEqual("[Input_Person]", template.TypeExpression.ToString());
+            Assert.AreEqual(null, template.DefaultValue);
+        }
+
+        [Test]
+        public void ArrayOfEnumerableOfObject_ThrowsException()
+        {
+            var template = this.ExtractParameterTemplate("arrayOfEnumerableOfObject", out var paramInfo);
+            Assert.AreEqual(typeof(IEnumerable<Person>[]), template.Parameter.ParameterType);
+            Assert.AreEqual("[[Input_Person]]", template.TypeExpression.ToString());
+            Assert.AreEqual(null, template.DefaultValue);
+        }
+
+        [Test]
+        public void EnumerableArrayOfObjects_ThrowsException()
+        {
+            var template = this.ExtractParameterTemplate("enumerableOfArrayOfObjects", out var paramInfo);
+            Assert.AreEqual(typeof(IEnumerable<Person[]>), template.Parameter.ParameterType);
+            Assert.AreEqual("[[Input_Person]]", template.TypeExpression.ToString());
+            Assert.AreEqual(null, template.DefaultValue);
+        }
+
+        [Test]
+        public void EnumerableArrayOfArrryOfObjects_ThrowsException()
+        {
+            var template = this.ExtractParameterTemplate("arrayOfEnumerableOfArrayOfObjects", out var paramInfo);
+            Assert.AreEqual(typeof(IEnumerable<Person[]>[]), template.Parameter.ParameterType);
+            Assert.AreEqual("[[[Input_Person]]]", template.TypeExpression.ToString());
+            Assert.AreEqual(null, template.DefaultValue);
+        }
+
+        [Test]
+        public void StupidDeepArray_ThrowsException()
+        {
+            var template = this.ExtractParameterTemplate("deepArray", out var paramInfo);
+            Assert.AreEqual(typeof(Person[][][][][][][][][][][][][][][][][][][]), template.Parameter.ParameterType);
+            Assert.AreEqual("[[[[[[[[[[[[[[[[[[[Input_Person]]]]]]]]]]]]]]]]]]]", template.TypeExpression.ToString());
+            Assert.AreEqual(null, template.DefaultValue);
         }
     }
 }

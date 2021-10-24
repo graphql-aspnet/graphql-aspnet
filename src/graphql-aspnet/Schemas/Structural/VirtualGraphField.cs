@@ -207,5 +207,11 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
         public bool IsVirtual => true;
+
+        /// <inheritdoc />
+        public Type ObjectType => null;
+
+        /// <inheritdoc />
+        public Type DeclaredReturnType => null;
     }
 }

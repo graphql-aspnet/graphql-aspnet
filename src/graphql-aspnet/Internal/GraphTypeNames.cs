@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Internal
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -109,15 +110,7 @@ namespace GraphQL.AspNet.Internal
                 var inputNameAttrib = type.SingleAttributeOrDefault<GraphTypeAttribute>();
                 if (inputNameAttrib != null && !string.IsNullOrWhiteSpace(inputNameAttrib.InputName))
                 {
-                    if (type.IsGenericType)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"Generic Types such as '{type.FriendlyName()}', cannot use the '{nameof(GraphTypeAttribute)}'. " +
-                            "Doing so would result in a single common name across multiple different instances of the type. " +
-                            "Remove the attribute and try again, the runtime will generate an acceptable name automatically.",
-                            type);
-                    }
-
+                    ThrowIfNamedGenericType(type, inputNameAttrib);
                     typeName = inputNameAttrib.InputName;
                 }
                 else
@@ -129,22 +122,14 @@ namespace GraphQL.AspNet.Internal
             else
             {
                 var graphTypeNameAttrib = type.SingleAttributeOrDefault<GraphTypeAttribute>();
-                if (graphTypeNameAttrib != null && !string.IsNullOrWhiteSpace(graphTypeNameAttrib.Name))
+                if (graphTypeNameAttrib != null)
                 {
-                    if (type.IsGenericType)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"Generic Types such as '{type.FriendlyName()}', cannot use the '{nameof(GraphTypeAttribute)}'. " +
-                            "Doing so would result in a single common name across multiple different instances of the type. " +
-                            "Remove the declared attribute and try again.",
-                            type);
-                    }
-
+                    ThrowIfNamedGenericType(type, graphTypeNameAttrib);
                     typeName = graphTypeNameAttrib.Name;
                 }
             }
 
-            typeName = typeName ?? type.FriendlyName("_");
+            typeName = typeName ?? type.FriendlyGraphTypeName();
             typeName = typeName.Replace(Constants.Routing.CLASS_META_NAME, type.Name).Trim();
             if (kind == TypeKind.DIRECTIVE && typeName.EndsWith(Constants.CommonSuffix.DIRECTIVE_SUFFIX))
             {
@@ -153,6 +138,43 @@ namespace GraphQL.AspNet.Internal
 
             AssignName(type, kind, typeName);
             return typeName;
+        }
+
+        private static void ThrowIfNamedGenericType(Type type, GraphTypeAttribute attrib)
+        {
+            if (type.IsGenericType)
+            {
+                var name = attrib.Name;
+                var inputName = attrib.InputName;
+                if (!string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(inputName))
+                {
+                    string combinedName;
+                    if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(inputName))
+                        combinedName = $"'{name}' or '{inputName}'";
+                    else if (!string.IsNullOrWhiteSpace(name))
+                        combinedName = $"'{name}'";
+                    else
+                        combinedName = $"'{inputName}'";
+
+                    var genericDef = type.GetGenericTypeDefinition();
+                    throw new GraphTypeDeclarationException(
+                        $"Generic Types such as '{genericDef.FriendlyName()}', cannot use the '{nameof(GraphTypeAttribute)}' " +
+                        $"to declare a graph type name (e.g. {combinedName}).  Doing so could result in a single common name across multiple distinct types at runtime. " +
+                        "Remove the declared name and try again.",
+                        type);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates friendly name for a type that can be considered a valid name of a GraphQL graph type.
+        /// This method does not take into account any scheme specific naming or casing rules.
+        /// </summary>
+        /// <param name="type">The type to create a friendly Name for.</param>
+        /// <returns>System.String.</returns>
+        public static string FriendlyGraphTypeName(this Type type)
+        {
+            return type.FriendlyName("_");
         }
     }
 }

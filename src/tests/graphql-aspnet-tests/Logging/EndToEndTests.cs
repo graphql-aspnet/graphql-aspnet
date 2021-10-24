@@ -9,10 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.Logging
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.Caching;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Schemas;
