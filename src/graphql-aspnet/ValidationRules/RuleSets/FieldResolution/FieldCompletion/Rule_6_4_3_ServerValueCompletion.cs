@@ -90,21 +90,31 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
 
             if (!analysisResult.ExactMatchFound)
             {
-                string foundTypeNames;
+                string exceptionText;
                 if (!analysisResult.FoundTypes.Any())
-                    foundTypeNames = "~none~";
+                {
+                    var allowedGraphTypes = context.Schema.KnownTypes.FindConcreteTypes(expectedGraphType)?
+                        .Select(x => $"'{x.Name}'");
+
+                    exceptionText = $"For target field of '{context.FieldPath}' (Graph Type: {expectedGraphType.Name}, Kind: {expectedGraphType.Kind}), a supplied object " +
+                        $"of type '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to coerce the result " +
+                        $"into any allowed type. Allowed Types [{string.Join(", ", allowedGraphTypes)}].";
+                }
                 else
-                    foundTypeNames = string.Join(", ", analysisResult.FoundTypes.Select(x => x.FriendlyName()));
+                {
+                    var foundTypeNames = string.Join(", ", analysisResult.FoundTypes.Select(x => $"'{x.FriendlyName()}'"));
+
+                    exceptionText = $"For target field of '{context.FieldPath}' (Graph Type: {expectedGraphType.Name}, Kind: {expectedGraphType.Kind}), a supplied object " +
+                        $"of type '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to coerce the result " +
+                        $"into a single allowed .NET type. Matched .NET Types [{string.Join(", ", foundTypeNames)}].";
+                }
+
 
                 this.ValidationError(
                     context,
                     $"A field resolver for '{context.Field.Route.Path}' generated a result " +
-                    "object type not known to the target schema. See exception for " +
-                    "details",
-                    new GraphExecutionException(
-                        $"For target field of '{context.FieldPath}' (Graph Type: {expectedGraphType.Name}, Kind: {expectedGraphType.Kind}), a supplied object " +
-                        $"of class '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to determine which " +
-                        $"of the matched concrete types to use and cannot resolve the field. Matched Types: [{foundTypeNames}]"));
+                    "not compatible with the field's allowed graph types. See exception for details.",
+                    new GraphExecutionException(exceptionText));
 
                 context.DataItem.InvalidateResult();
             }
