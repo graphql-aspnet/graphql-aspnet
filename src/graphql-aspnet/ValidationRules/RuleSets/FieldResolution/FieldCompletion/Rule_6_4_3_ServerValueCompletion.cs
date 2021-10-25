@@ -109,7 +109,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
                         $"into a single allowed .NET type. Matched .NET Types [{string.Join(", ", foundTypeNames)}].";
                 }
 
-
                 this.ValidationError(
                     context,
                     $"A field resolver for '{context.Field.Route.Path}' generated a result " +
