@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
-    /// A request to a controller containing a list of arguments destined for an action method.
+    /// A request to a invoke some action to perform some meaningful work that produces a result.
     /// </summary>
-    public interface IControllerActionInvocationRequest : IDataRequest
+    public interface IInvocationRequest : IDataRequest
     {
         /// <summary>
         /// Gets the source data item feeding this request.

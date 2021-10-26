@@ -28,18 +28,22 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldRequest" /> class.
         /// </summary>
+        /// <param name="parentOperationRequest">The original operation request from which ths field
+        /// request was generated.</param>
         /// <param name="invocationContext">The invocation context that defines how hte field
         /// should be processed according to the query plan.</param>
-        /// <param name="dataSource">The data source containing the the source input data to the field as well as
+        /// <param name="dataSource">The data source containing the source input data to the field as well as
         /// the graph items referenced by said input data.</param>
         /// <param name="origin">The location in the source query where this field request was generated.</param>
         /// <param name="items">A collection of meta data items to carry with this request.</param>
         public GraphFieldRequest(
+            IGraphOperationRequest parentOperationRequest,
             IGraphFieldInvocationContext invocationContext,
             GraphFieldDataSource dataSource,
             SourceOrigin origin,
             MetaDataCollection items = null)
         {
+            this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
             this.Id = Guid.NewGuid().ToString("N");
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
             this.Origin = Validation.ThrowIfNullOrReturn(origin, nameof(origin));
@@ -47,41 +51,25 @@ namespace GraphQL.AspNet.Execution
             this.DataSource = dataSource;
         }
 
-        /// <summary>
-        /// Gets the globally unique Id assigned to this individual field request.
-        /// </summary>
-        /// <value>The identifier.</value>
+        /// <inheritdoc />
+        public IGraphOperationRequest OperationRequest { get; }
+
+        /// <inheritdoc />
         public string Id { get; }
 
-        /// <summary>
-        /// Gets any additional metadata or items assigned to this request.
-        /// </summary>
-        /// <value>The metadata.</value>
+        /// <inheritdoc />
         public MetaDataCollection Items { get; }
 
-        /// <summary>
-        /// Gets the origin point in the source text where this request was generated.
-        /// </summary>
-        /// <value>The origin.</value>
+        /// <inheritdoc />
         public SourceOrigin Origin { get; }
 
-        /// <summary>
-        /// Gets the source data item feeding this request.
-        /// </summary>
-        /// <value>The source data.</value>
+        /// <inheritdoc />
         public GraphFieldDataSource DataSource { get; }
 
-        /// <summary>
-        /// Gets the field referenced by the invocation context of this request.
-        /// </summary>
-        /// <value>The field.</value>
+        /// <inheritdoc />
         public IGraphField Field => this.InvocationContext.Field;
 
-        /// <summary>
-        /// Gets the data related to what field needs to be processed and how it should be
-        /// processed according to its definition in the query document from which it was parsed.
-        /// </summary>
-        /// <value>The invocation data.</value>
+        /// <inheritdoc />
         public IGraphFieldInvocationContext InvocationContext { get; }
     }
 }

@@ -299,7 +299,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     var child = sourceItem.AddChildField(childInvocationContext);
 
                     var dataSource = new GraphFieldDataSource(sourceItem.ResultData, child.Origin.Path, child);
-                    var request = new GraphFieldRequest(childInvocationContext, dataSource, child.Origin, context.Request.Items);
+                    var request = new GraphFieldRequest(
+                        context.Request.OperationRequest,
+                        childInvocationContext,
+                        dataSource,
+                        child.Origin,
+                        context.Request.Items);
+
                     yield return new GraphFieldExecutionContext(
                         context,
                         request,
@@ -344,7 +350,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     fieldPath,
                     sourceItemList);
 
-                var request = new GraphFieldRequest(childInvocationContext, dataSource, batchOrigin, context.Request.Items);
+                var request = new GraphFieldRequest(
+                    context.Request.OperationRequest,
+                    childInvocationContext,
+                    dataSource,
+                    batchOrigin,
+                    context.Request.Items);
+
                 yield return new GraphFieldExecutionContext(
                     context,
                     request,

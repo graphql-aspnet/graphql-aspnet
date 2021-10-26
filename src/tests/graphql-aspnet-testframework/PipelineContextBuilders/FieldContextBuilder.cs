@@ -162,7 +162,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 
         private IGraphMiddlewareContext CreateFakeParentMiddlewareContext()
         {
+            var operationRequest = new Mock<IGraphOperationRequest>();
             var parentContext = new Mock<IGraphMiddlewareContext>();
+
+            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.User).Returns(_user);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);

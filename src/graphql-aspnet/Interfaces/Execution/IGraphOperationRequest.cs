@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>

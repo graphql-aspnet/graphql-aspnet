@@ -23,8 +23,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// Initializes a new instance of the <see cref="DirectiveResolutionContext"/> class.
         /// </summary>
         /// <param name="parentContext">The parent context.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="arguments">The arguments.</param>
+        /// <param name="request">The direct request to execute.</param>
+        /// <param name="arguments">The set of arguments to be passed to the directive
+        /// resolver.</param>
         public DirectiveResolutionContext(
             IGraphMiddlewareContext parentContext,
             IGraphDirectiveRequest request,

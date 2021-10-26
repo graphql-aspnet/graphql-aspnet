@@ -70,7 +70,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     .WithSourceData(context.Request.DataSource.Value);
 
                 // resolve the field
-                var resolutionContext = new FieldResolutionContext(context, context.Request, executionArguments);
+                var resolutionContext = new FieldResolutionContext(
+                    context,
+                    context.Request,
+                    executionArguments);
 
                 context.Logger?.FieldResolutionStarted(resolutionContext);
 

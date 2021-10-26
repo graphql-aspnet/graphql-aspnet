@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
-            : base(serviceProvider, user, metrics, logger, items)
+            : base(request, serviceProvider, user, metrics, logger, items)
         {
             this.Request = Validation.ThrowIfNullOrReturn(request, nameof(request));
             this.FieldResults = new List<GraphDataItem>();

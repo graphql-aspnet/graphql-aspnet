@@ -35,6 +35,12 @@ namespace GraphQL.AspNet.Interfaces.Middleware
         bool IsCancelled { get; }
 
         /// <summary>
+        /// Gets the original operation request that caused the pipeline to be invoked.
+        /// </summary>
+        /// <value>The operation request.</value>
+        IGraphOperationRequest OperationRequest { get; }
+
+        /// <summary>
         /// Gets the service provider to use for any required object instantiations.
         /// </summary>
         /// <value>The services.</value>

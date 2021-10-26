@@ -20,16 +20,17 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
     public class FieldResolutionContext : BaseResolutionContext<IGraphFieldRequest>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldResolutionContext"/> class.
+        /// Initializes a new instance of the <see cref="FieldResolutionContext" /> class.
         /// </summary>
-        /// <param name="parentContext">The parent context.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="arguments">The arguments.</param>
+        /// <param name="parentContext">The parent context from which this field resolution context is created.</param>
+        /// <param name="fieldRequest">The request to resolve a specific field.</param>
+        /// <param name="arguments">The execution arguments that need to be passed to the field
+        /// resolver.</param>
         public FieldResolutionContext(
             IGraphMiddlewareContext parentContext,
-            IGraphFieldRequest request,
+            IGraphFieldRequest fieldRequest,
             IExecutionArgumentCollection arguments)
-            : base(parentContext, request, arguments)
+            : base(parentContext, fieldRequest, arguments)
         {
         }
 

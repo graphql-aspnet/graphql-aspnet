@@ -52,7 +52,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         DirectiveLifeCycle.BeforeResolution,
                         context.Request.DataSource);
 
-                    var directiveContext = new DirectiveResolutionContext(context, beforeResolutionRequest, directiveArguments);
+                    var directiveContext = new DirectiveResolutionContext(
+                        context,
+                        beforeResolutionRequest,
+                        directiveArguments);
 
                     await this.ExecuteDirective(directiveContext, cancelToken).ConfigureAwait(false);
                     context.Messages.AddRange(directiveContext.Messages);
@@ -89,7 +92,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         DirectiveLifeCycle.AfterResolution,
                         context.Request.DataSource);
 
-                    var directiveContext = new DirectiveResolutionContext(context, afterResolutionRequest, directiveArguments);
+                    var directiveContext = new DirectiveResolutionContext(
+                        context,
+                        afterResolutionRequest,
+                        directiveArguments);
 
                     await this.ExecuteDirective(directiveContext, cancelToken).ConfigureAwait(false);
 
