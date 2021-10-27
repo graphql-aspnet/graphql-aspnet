@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;

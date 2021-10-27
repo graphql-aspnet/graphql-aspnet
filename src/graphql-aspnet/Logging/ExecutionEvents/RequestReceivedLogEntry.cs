@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Middleware.QueryExecution;
 
@@ -25,10 +26,10 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public RequestReceivedLogEntry(GraphQueryExecutionContext context)
             : base(LogEventIds.RequestReceived)
         {
-            this.OperationRequestId = context.Request?.Id;
+            this.OperationRequestId = context.OperationRequest?.Id;
             this.Username = context.User?.Identity?.Name;
-            this.QueryOperationName = context.Request?.OperationName;
-            this.QueryText = context.Request?.QueryText;
+            this.QueryOperationName = context.OperationRequest?.OperationName;
+            this.QueryText = context.OperationRequest?.QueryText;
         }
 
         /// <summary>

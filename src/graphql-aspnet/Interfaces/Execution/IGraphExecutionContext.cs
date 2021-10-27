@@ -7,18 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Middleware
+namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using System.Security.Claims;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
 
     /// <summary>
-    /// A base middleware context defining a set of items supported by all middleware pipelines.
+    /// A base context defining a set of items supported by all middleware pipelines.
     /// </summary>
-    public interface IGraphMiddlewareContext
+    public interface IGraphExecutionContext
     {
         /// <summary>
         /// Marks this context as being cancelled. This does not terminate a pipeline directly, rather it sets a

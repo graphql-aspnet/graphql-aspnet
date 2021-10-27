@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
             {
                 subContext.Subscription = new ClientSubscription<TSchema>(
                     subContext.Client,
-                    subContext.Request.ToDataPackage(),
+                    subContext.OperationRequest.ToDataPackage(),
                     subContext.QueryPlan,
                     subContext.QueryOperation,
                     subContext.SubscriptionId);

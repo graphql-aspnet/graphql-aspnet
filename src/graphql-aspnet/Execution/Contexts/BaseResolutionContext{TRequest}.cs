@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldExecution
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Middleware;
 
     /// <summary>
     /// A base set of options used by all resolution-scoped contexts in the library.
@@ -26,7 +25,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// <param name="request">The request.</param>
         /// <param name="arguments">The arguments.</param>
         protected BaseResolutionContext(
-            IGraphMiddlewareContext parentContext,
+            IGraphExecutionContext parentContext,
             TRequest request,
             IExecutionArgumentCollection arguments)
             : base(parentContext, request, arguments)

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Defaults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -124,7 +125,7 @@ namespace GraphQL.AspNet.Defaults
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new GraphOperationResult(context.Request);
+                queryResponse = new GraphOperationResult(context.OperationRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
             }
 

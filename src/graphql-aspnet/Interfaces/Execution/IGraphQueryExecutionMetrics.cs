@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Middleware.FieldExecution;
 

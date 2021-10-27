@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Response;
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 fieldSet = this.CreateFinalDictionary(context);
             }
 
-            context.Result = new GraphOperationResult(context.Request, context.Messages, fieldSet, context.Metrics);
+            context.Result = new GraphOperationResult(context.OperationRequest, context.Messages, fieldSet, context.Metrics);
             context.Logger?.RequestCompleted(context);
             return next(context, cancelToken);
         }

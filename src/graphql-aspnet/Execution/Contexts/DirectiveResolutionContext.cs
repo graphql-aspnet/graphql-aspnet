@@ -7,11 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldExecution
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Middleware;
 
     /// <summary>
     /// A context passed to a directive resolver to complete its resolution task for the field its attached to.
@@ -27,7 +26,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// <param name="arguments">The set of arguments to be passed to the directive
         /// resolver.</param>
         public DirectiveResolutionContext(
-            IGraphMiddlewareContext parentContext,
+            IGraphExecutionContext parentContext,
             IGraphDirectiveRequest request,
             IExecutionArgumentCollection arguments)
             : base(parentContext, request, arguments)

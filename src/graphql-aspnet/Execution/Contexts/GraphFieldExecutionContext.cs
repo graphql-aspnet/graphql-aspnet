@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldExecution
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -15,15 +15,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Middleware;
 
     /// <summary>
     /// A middleware context targeting the field execution pipeline.
     /// </summary>
     [DebuggerDisplay("Field: {Field.Route.Path} (Mode = {Field.Mode})")]
-    public class GraphFieldExecutionContext : BaseGraphMiddlewareContext
+    public class GraphFieldExecutionContext : BaseGraphExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldExecutionContext" /> class.
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// <param name="defaultFieldSources">A collection of objects to use
         /// when attempting to resolve source objects for any down stream fields.</param>
         public GraphFieldExecutionContext(
-            IGraphMiddlewareContext parentContext,
+            IGraphExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IResolvedVariableCollection variableData,
             DefaultFieldSourceCollection defaultFieldSources = null)

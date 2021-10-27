@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Middleware
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -22,7 +23,7 @@ namespace GraphQL.AspNet.Middleware
     /// <typeparam name="TContext">The type of the context.</typeparam>
     [DebuggerDisplay("Middleware '{Name}'")]
     public class GraphMiddlewareDefinition<TContext>
-        where TContext : class, IGraphMiddlewareContext
+        where TContext : class, IGraphExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphMiddlewareDefinition{TMiddlewareComponent}" /> class.

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;

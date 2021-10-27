@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
 {
     using System;
     using System.Security.Claims;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;

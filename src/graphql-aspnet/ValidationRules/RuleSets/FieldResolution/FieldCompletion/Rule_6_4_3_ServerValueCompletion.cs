@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Internal;

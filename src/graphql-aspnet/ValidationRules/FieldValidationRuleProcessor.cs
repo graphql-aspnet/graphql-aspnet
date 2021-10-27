@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules
 {
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution;
 

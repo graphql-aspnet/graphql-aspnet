@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet
 {
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
 

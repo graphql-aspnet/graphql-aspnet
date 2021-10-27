@@ -11,6 +11,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
