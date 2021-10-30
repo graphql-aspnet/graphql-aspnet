@@ -99,8 +99,9 @@ namespace GraphQL.AspNet.StarWarsAPI5X
                  options.KeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
              });
 
+            // if you have no rest controllers this item can be safely skipped however,
+            // graphql and rest can live side by side in the same project without issue
             services.AddControllers();
-
 
             // ASP.NET websockets implementation must also be added to the runtime
             services.AddWebSockets((options) =>

@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Configuration
             if (newAdd)
             {
                 if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
-                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(type, ServiceLifetime.Scoped));
+                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(type, this.DeclarationOptions.ControllerServiceLifeTime));
             }
 
             return this;
