@@ -28,41 +28,18 @@ namespace GraphQL.AspNet.Configuration
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Occurs when a type reference is set to this configuration section that requires injection into the service collection.
-        /// </summary>
-        internal event EventHandler<TypeReferenceEventArgs> TypeReferenceAdded;
-
-        private readonly IServiceCollection _serviceCollection;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SchemaBuilder{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The primary options for configuring the schema.</param>
-        /// <param name="serviceCollection">The service collection this builder will decorate.</param>
-        public SchemaBuilder(SchemaOptions options, IServiceCollection serviceCollection)
+        public SchemaBuilder(SchemaOptions options)
         {
             Validation.ThrowIfNull(options, nameof(options));
 
-            this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
-            this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext>(Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
-            this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(Constants.Pipelines.QUERY_PIPELINE);
-
-            this.FieldExecutionPipeline.TypeReferenceAdded += this.Pipeline_TypeReferenceAdded;
-            this.FieldAuthorizationPipeline.TypeReferenceAdded += this.Pipeline_TypeReferenceAdded;
-            this.QueryExecutionPipeline.TypeReferenceAdded += this.Pipeline_TypeReferenceAdded;
+            this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(options, Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
+            this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
+            this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
 
             this.Options = options;
-            _serviceCollection = serviceCollection;
-        }
-
-        /// <summary>
-        /// Handles the TypeReferenceAdded event of the Pipeline control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="TypeReferenceEventArgs"/> instance containing the event data.</param>
-        private void Pipeline_TypeReferenceAdded(object sender, TypeReferenceEventArgs e)
-        {
-            this.TypeReferenceAdded?.Invoke(sender, e);
         }
 
         /// <summary>

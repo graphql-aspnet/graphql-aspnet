@@ -22,10 +22,12 @@ namespace GraphQL.AspNet.Configuration
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SchemaOptions{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="SchemaOptions{TSchema}" /> class.
         /// </summary>
-        public SchemaOptions()
-            : base(typeof(TSchema))
+        /// <param name="serviceCollection">The service collection to which all
+        /// found types or services should be registered.</param>
+        public SchemaOptions(IServiceCollection serviceCollection)
+            : base(typeof(TSchema), serviceCollection)
         {
         }
 
@@ -43,7 +45,8 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Gets the runtime descriptor.
+        /// Gets the Di service descriptor that contains the registration
+        /// fro the primary <see cref="IGraphQLRuntime"/> instance for this <typeparamref name="TSchema"/>.
         /// </summary>
         /// <value>The runtime descriptor.</value>
         internal ServiceDescriptor RuntimeDescriptor { get; private set; }

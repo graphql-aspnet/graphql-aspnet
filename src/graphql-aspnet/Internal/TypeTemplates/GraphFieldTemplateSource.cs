@@ -21,5 +21,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         Action = 1,
         Method = 2,
         Property = 4,
+        Virtual = 8,
     }
 }

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>System.Int32.</returns>
         public int IndexOf(ServiceDescriptor item)
         {
-            return _serviceCollection.IndexOf(item);
+            return this.Options.ServiceCollection.IndexOf(item);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="item">The item.</param>
         public void Insert(int index, ServiceDescriptor item)
         {
-            _serviceCollection.Insert(index, item);
+            this.Options.ServiceCollection.Insert(index, item);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="index">The index.</param>
         public void RemoveAt(int index)
         {
-            _serviceCollection.RemoveAt(index);
+            this.Options.ServiceCollection.RemoveAt(index);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="item">The item.</param>
         public void Add(ServiceDescriptor item)
         {
-            _serviceCollection.Add(item);
+            this.Options.ServiceCollection.Add(item);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         public void Clear()
         {
-            _serviceCollection.Clear();
+            this.Options.ServiceCollection.Clear();
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns><c>true</c> if the service collection contains the descriptor; otherwise, <c>false</c>.</returns>
         public bool Contains(ServiceDescriptor item)
         {
-            return _serviceCollection.Contains(item);
+            return this.Options.ServiceCollection.Contains(item);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(ServiceDescriptor[] array, int arrayIndex)
         {
-            _serviceCollection.CopyTo(array, arrayIndex);
+            this.Options.ServiceCollection.CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns><c>true</c> if removed, <c>false</c> otherwise.</returns>
         public bool Remove(ServiceDescriptor item)
         {
-            return _serviceCollection.Remove(item);
+            return this.Options.ServiceCollection.Remove(item);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IEnumerator&lt;ServiceDescriptor&gt;.</returns>
         public IEnumerator<ServiceDescriptor> GetEnumerator()
         {
-            return _serviceCollection.GetEnumerator();
+            return this.Options.ServiceCollection.GetEnumerator();
         }
 
         /// <summary>
@@ -113,20 +113,20 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>IEnumerator.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _serviceCollection.GetEnumerator();
+            return this.Options.ServiceCollection.GetEnumerator();
         }
 
         /// <summary>
         /// Gets the number of descriptors in the collection.
         /// </summary>
         /// <value>The count.</value>
-        public int Count => _serviceCollection.Count;
+        public int Count => this.Options.ServiceCollection.Count;
 
         /// <summary>
         /// Gets a value indicating whether this service collection is read only.
         /// </summary>
         /// <value><c>true</c> if this instance is read only; otherwise, <c>false</c>.</value>
-        public bool IsReadOnly => _serviceCollection.IsReadOnly;
+        public bool IsReadOnly => this.Options.ServiceCollection.IsReadOnly;
 
         /// <summary>
         /// Gets or sets the <see cref="ServiceDescriptor"/> at the specified index.
@@ -137,12 +137,12 @@ namespace GraphQL.AspNet.Configuration
         {
             get
             {
-                return _serviceCollection[index];
+                return this.Options.ServiceCollection[index];
             }
 
             set
             {
-                _serviceCollection[index] = value;
+                this.Options.ServiceCollection[index] = value;
             }
         }
     }

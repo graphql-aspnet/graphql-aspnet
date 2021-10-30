@@ -64,8 +64,5 @@ namespace GraphQL.AspNet.Configuration
 
         /// <inheritdoc />
         public HashSet<GraphCollection> AllowedOperations { get; }
-
-        /// <inheritdoc />
-        public ServiceLifetime ControllerServiceLifeTime { get; } = ServiceLifetime.Transient;
     }
 }

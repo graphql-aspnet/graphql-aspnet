@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -39,5 +40,12 @@ namespace GraphQL.AspNet
         /// </summary>
         /// <value>The graph type maker provider.</value>
         public static IGraphTypeMakerProvider GraphTypeMakerProvider { get; set; } = new DefaultGraphTypeMakerProvider();
+
+        /// <summary>
+        /// Gets or sets the global configuration options that effect all <see cref="ISchema"/> instances
+        /// registered to this server instance.
+        /// </summary>
+        /// <value>The global configuration settings.</value>
+        public static IGraphQLGlobalConfiguration GlobalConfiguration { get; set; } = new DefaultGraphQLGLobalConfiguration();
     }
 }

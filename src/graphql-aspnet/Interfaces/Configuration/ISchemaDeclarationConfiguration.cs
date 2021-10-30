@@ -13,11 +13,8 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// An interface defining the various configuration options available for setting up your <see cref="ISchema"/>.
@@ -64,12 +61,5 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </summary>
         /// <value>The allowed operations.</value>
         HashSet<GraphCollection> AllowedOperations { get; }
-
-        /// <summary>
-        /// Gets the <see cref="ServiceLifetime" /> under which all <see cref="GraphController"/> and
-        /// <see cref="GraphDirective"/> will be registered. (Default: Transient).
-        /// </summary>
-        /// <value>The controller service life time.</value>
-        ServiceLifetime ControllerServiceLifeTime { get; }
     }
 }

@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
@@ -44,7 +45,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
         private readonly TSchema _schema;
-        private readonly bool _awaitEachTask;
+        private readonly ResolverIsolationOptions _resolversToIsolate;
+        private readonly bool _debugMode;
         private readonly TimeSpan _timeoutMs;
 
         /// <summary>
@@ -55,7 +57,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public ExecuteQueryOperationMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _awaitEachTask = _schema.Configuration.ExecutionOptions.AwaitEachRequestedField;
+            _resolversToIsolate = _schema.Configuration.ExecutionOptions.ResolverIsolation;
+            _debugMode = _schema.Configuration.ExecutionOptions.DebugMode;
             _timeoutMs = _schema.Configuration.ExecutionOptions.QueryTimeout;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
@@ -138,8 +141,21 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                     // top level mutation operatons must be executed in sequential order
                     // https://graphql.github.io/graphql-spec/June2018/#sec-Mutation
-                    if (_awaitEachTask || operation.OperationType == GraphCollection.Mutation)
+                    var shouldIsolate = operation.OperationType == GraphCollection.Mutation
+                        || _resolversToIsolate.ShouldIsolateFieldSource(fieldContext.Field.FieldSource);
+
+                    if (_debugMode)
+                    {
                         await fieldTask.ConfigureAwait(false);
+                    }
+                    else if (shouldIsolate)
+                    {
+                        // await the isolated task to prevent any potential paralellization
+                        // by the task system but not in such a way that a faulted task would
+                        // throw an execution. Allow the reslts (exceptions included) to be
+                        // captured by the rest of the middleware operation
+                        await Task.WhenAll(fieldTask);
+                    }
                 }
 
                 // await all the outstanding tasks or a configured timeout
@@ -154,13 +170,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 if (!isTimedOut)
                 {
                     // Field resolutions completed within the timeout period.
-                    // Consider that the task may have faulted or been canceled causing them to complete incorrectly.
+                    // Consider that the task(s) may have faulted or been canceled causing them to complete incorrectly.
                     // "re-await" so that any exceptions/cancellation are rethrown correctly.
                     // and not aggregated under the `WhenAll/WhenAny` task from above
                     // https://stackoverflow.com/questions/4238345/asynchronously-wait-for-taskt-to-complete-with-timeout
                     foreach (var invocation in fieldInvocations)
                     {
-                        await invocation.Task.ConfigureAwait(false);
+                        if (invocation.Task.IsFaulted)
+                            await invocation.Task.ConfigureAwait(false);
 
                         // load the reslts of each field (in order) to the context
                         // for further processing

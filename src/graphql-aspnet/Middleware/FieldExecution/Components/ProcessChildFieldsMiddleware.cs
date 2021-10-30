@@ -19,8 +19,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -38,7 +40,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     {
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
         private readonly TSchema _schema;
-        private readonly bool _awaitEachPipeline;
+        private readonly ResolverIsolationOptions _resolversToIsolate;
+        private readonly bool _debugMode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessChildFieldsMiddleware{TSchema}"/> class.
@@ -48,7 +51,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         public ProcessChildFieldsMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _awaitEachPipeline = schema.Configuration.ExecutionOptions.AwaitEachRequestedField;
+            _resolversToIsolate = schema.Configuration.ExecutionOptions.ResolverIsolation;
+            _debugMode = schema.Configuration.ExecutionOptions.DebugMode;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
 
@@ -112,7 +116,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 return;
             }
 
-            var pipelines = new List<Task>();
+            var allChildPipelines = new List<Task>();
 
             // Step 0
             // -----------------------------------------------------------------------
@@ -168,31 +172,40 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // Step 3
                 // --------------------
                 // Fire off the contexts through the pipeline
-                foreach (var childContext in childContexts)
+                //
+                // find those contexts that must be executed in isolation and execute them first
+                IEnumerable<(GraphFieldExecutionContext Context, bool ExecuteInIsolation)> orderedContexts =
+                    childContexts.Select(childContext => (
+                        childContext,
+                        _resolversToIsolate.ShouldIsolateFieldSource(childContext.Field.FieldSource)))
+                    .OrderByDescending(x => x.Item2);
+
+                foreach (var childToExecute in orderedContexts)
                 {
-                    var task = _fieldExecutionPipeline.InvokeAsync(childContext, cancelToken)
+                    var task = _fieldExecutionPipeline.InvokeAsync(childToExecute.Context, cancelToken)
                         .ContinueWith(invokeTask =>
                         {
-                            this.CaptureChildFieldExecutionResults(context, childContext, invokeTask);
+                            this.CaptureChildFieldExecutionResults(context, childToExecute.Context, invokeTask);
                         });
 
-                    pipelines.Add(task);
-                    if (_awaitEachPipeline)
+                    allChildPipelines.Add(task);
+
+                    if (_debugMode)
+                    {
                         await task.ConfigureAwait(false);
+                    }
+                    else if (childToExecute.ExecuteInIsolation)
+                    {
+                        // await the isolated task to prevent any potential paralellization
+                        // by the task system but not in such a way that a faulted task would
+                        // throw an execution. Allow the reslts (exceptions included) to be
+                        // captured by CaputreChildResults
+                        await Task.WhenAll(task);
+                    }
                 }
             }
 
-            // wait for every pipeline to finish
-            await Task.WhenAll(pipelines).ConfigureAwait(false);
-
-            // reawait to allow for unwrapping and throwing of internal exceptions
-            if (!_awaitEachPipeline)
-            {
-                foreach (var task in pipelines.Where(x => x.IsFaulted))
-                {
-                    await task.ConfigureAwait(false);
-                }
-            }
+            await Task.WhenAll(allChildPipelines).ConfigureAwait(false);
         }
 
         /// <summary>
