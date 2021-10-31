@@ -30,25 +30,5 @@ namespace GraphQL.AspNet.Configuration
             : base(typeof(TSchema), serviceCollection)
         {
         }
-
-        /// <summary>
-        /// Registers a runtime component that this schema will forward all requests to for
-        /// query resolution.
-        /// </summary>
-        /// <typeparam name="TRuntime">The type of the runtime object to use.</typeparam>
-        /// <param name="lifetimeScope">In a DI context, what is the scope of the runtime when it
-        /// is created.</param>
-        public void RegisterRuntime<TRuntime>(ServiceLifetime lifetimeScope)
-            where TRuntime : IGraphQLRuntime<TSchema>
-        {
-            this.RuntimeDescriptor = new ServiceDescriptor(typeof(IGraphQLRuntime<TSchema>), typeof(TRuntime), lifetimeScope);
-        }
-
-        /// <summary>
-        /// Gets the Di service descriptor that contains the registration
-        /// fro the primary <see cref="IGraphQLRuntime"/> instance for this <typeparamref name="TSchema"/>.
-        /// </summary>
-        /// <value>The runtime descriptor.</value>
-        internal ServiceDescriptor RuntimeDescriptor { get; private set; }
     }
 }

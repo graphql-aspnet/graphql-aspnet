@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             }
 
             // ensure a runtime is set
-            var runtimeDescriptor = _options.RuntimeDescriptor ?? new ServiceDescriptor(
+            var runtimeDescriptor = new ServiceDescriptor(
                 typeof(IGraphQLRuntime<TSchema>),
                 typeof(DefaultGraphQLRuntime<TSchema>),
                 ServiceLifetime.Scoped);

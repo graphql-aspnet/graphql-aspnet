@@ -181,7 +181,19 @@ namespace GraphQL.AspNet.Defaults
                 {
                     // no one was able to handle the exception?
                     // Log it if able and just fail out to the caller
-                    _logger?.UnhandledExceptionEvent(ex);
+                    if (_logger != null)
+                    {
+                        if (ex is AggregateException ae)
+                        {
+                            foreach (var internalException in ae.InnerExceptions)
+                                _logger.UnhandledExceptionEvent(internalException);
+                        }
+                        else
+                        {
+                            _logger.UnhandledExceptionEvent(ex);
+                        }
+                    }
+
                     await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE).ConfigureAwait(false);
                 }
                 else

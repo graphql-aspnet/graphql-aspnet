@@ -124,6 +124,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // downstream child contexts
             var sourceItemLookup = this.MapExpectedConcreteTypeFromSourceItem(allSourceItems, graphType);
 
+            // all the child contexts that need to execute
+            var executableChildContexts = new SortedFieldExecutionContextList();
+
             foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
             {
                 // Step 1
@@ -164,48 +167,67 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // ----------------------------
                 // when the invocation is as a batch, create one execution context for all children
                 // when its "per source" create a context for each child individually
-                IEnumerable<GraphFieldExecutionContext> childContexts = this.CreateChildExecutionContexts(
+                var orderedContexts = this.CreateChildExecutionContexts(
                     context,
                     childInvocationContext,
                     sourceItemsToInclude);
 
                 // Step 3
                 // --------------------
-                // Fire off the contexts through the pipeline
-                //
-                // find those contexts that must be executed in isolation and execute them first
-                IEnumerable<(GraphFieldExecutionContext Context, bool ExecuteInIsolation)> orderedContexts =
-                    childContexts.Select(childContext => (
-                        childContext,
-                        _resolversToIsolate.ShouldIsolateFieldSource(childContext.Field.FieldSource)))
-                    .OrderByDescending(x => x.Item2);
-
+                // Stage the contexts to be executed
                 foreach (var childToExecute in orderedContexts)
                 {
-                    var task = _fieldExecutionPipeline.InvokeAsync(childToExecute.Context, cancelToken)
-                        .ContinueWith(invokeTask =>
-                        {
-                            this.CaptureChildFieldExecutionResults(context, childToExecute.Context, invokeTask);
-                        });
-
-                    allChildPipelines.Add(task);
-
-                    if (_debugMode)
-                    {
-                        await task.ConfigureAwait(false);
-                    }
-                    else if (childToExecute.ExecuteInIsolation)
-                    {
-                        // await the isolated task to prevent any potential paralellization
-                        // by the task system but not in such a way that a faulted task would
-                        // throw an execution. Allow the reslts (exceptions included) to be
-                        // captured by CaputreChildResults
-                        await Task.WhenAll(task);
-                    }
+                    executableChildContexts.Add(
+                        childToExecute,
+                        _resolversToIsolate.ShouldIsolateFieldSource(childToExecute.Field.FieldSource));
                 }
             }
 
+            // Step 4
+            // ---------------------------------
+            // Execute all the child contexts. Isolating those that need to be
+            // and executing them first through to completion
+            foreach (var isolatedChildContext in executableChildContexts.IsolatedContexts)
+            {
+                var task = this.ExecuteChildContext(context, isolatedChildContext, cancelToken);
+                allChildPipelines.Add(task);
+
+                if (_debugMode)
+                {
+                    await task.ConfigureAwait(false);
+                }
+                else
+                {
+                    // await the isolated task to prevent any potential paralellization
+                    // by the task system but not in such a way that a faulted task would
+                    // throw an execution. Allow the reslts (exceptions included) to be
+                    // captured by CaputreChildResults
+                    await Task.WhenAll(task);
+                }
+            }
+
+            foreach (var paralellChildContext in executableChildContexts.ParalellContexts)
+            {
+                var task = this.ExecuteChildContext(context, paralellChildContext, cancelToken);
+                allChildPipelines.Add(task);
+
+                if (_debugMode)
+                    await task.ConfigureAwait(false);
+            }
+
             await Task.WhenAll(allChildPipelines).ConfigureAwait(false);
+        }
+
+        private Task ExecuteChildContext(
+            GraphFieldExecutionContext parentContext,
+            GraphFieldExecutionContext childContext,
+            CancellationToken cancelToken = default)
+        {
+            return _fieldExecutionPipeline.InvokeAsync(childContext, cancelToken)
+              .ContinueWith(invokeTask =>
+              {
+                  this.CaptureChildFieldExecutionResults(parentContext, childContext, invokeTask);
+              });
         }
 
         /// <summary>
@@ -297,12 +319,12 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// Using the child context being invoked, this method creates the execution contexts in a manner
         /// that is expected by the invocation context be that 1 per each item, or 1 for a collective set of items being batched.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="parentContext">The context.</param>
         /// <param name="childInvocationContext">The child invocation context.</param>
         /// <param name="sourceItemsToInclude">The source items to include.</param>
         /// <returns>IEnumerable&lt;GraphFieldExecutionContext&gt;.</returns>
         private IEnumerable<GraphFieldExecutionContext> CreateChildExecutionContexts(
-            GraphFieldExecutionContext context,
+            GraphFieldExecutionContext parentContext,
             IGraphFieldInvocationContext childInvocationContext,
             IEnumerable<GraphDataItem> sourceItemsToInclude)
         {
@@ -314,17 +336,17 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
                     var dataSource = new GraphFieldDataSource(sourceItem.ResultData, child.Origin.Path, child);
                     var request = new GraphFieldRequest(
-                        context.Request.OperationRequest,
+                        parentContext.Request.OperationRequest,
                         childInvocationContext,
                         dataSource,
                         child.Origin,
-                        context.Request.Items);
+                        parentContext.Request.Items);
 
                     yield return new GraphFieldExecutionContext(
-                        context,
+                        parentContext,
                         request,
-                        context.VariableData,
-                        context.DefaultFieldSources);
+                        parentContext.VariableData,
+                        parentContext.DefaultFieldSources);
                 }
             }
             else if (childInvocationContext.Field.Mode == FieldResolutionMode.Batch)
@@ -340,7 +362,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     fieldPath = fieldPath.MakeParent();
 
                 fieldPath.AddFieldName(childInvocationContext.Field.Name);
-                var batchOrigin = new SourceOrigin(context.Request.Origin.Location, fieldPath);
+                var batchOrigin = new SourceOrigin(parentContext.Request.Origin.Location, fieldPath);
 
                 // create a list to house the raw source data being passed for the batch
                 // this is the IEnumerable<T> required as an input to any batch resolver
@@ -365,17 +387,17 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     sourceItemList);
 
                 var request = new GraphFieldRequest(
-                    context.Request.OperationRequest,
+                    parentContext.Request.OperationRequest,
                     childInvocationContext,
                     dataSource,
                     batchOrigin,
-                    context.Request.Items);
+                    parentContext.Request.Items);
 
                 yield return new GraphFieldExecutionContext(
-                    context,
+                    parentContext,
                     request,
-                    context.VariableData,
-                    context.DefaultFieldSources);
+                    parentContext.VariableData,
+                    parentContext.DefaultFieldSources);
             }
             else
             {

@@ -9,22 +9,17 @@
 
 namespace GraphQL.AspNet.Configuration
 {
-    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
-    using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A builder for constructing hte individual pipelines the schema will use when executing a query.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this builder exists for.</typeparam>
-    public partial class SchemaBuilder<TSchema> : ISchemaBuilder<TSchema>, IServiceCollection
+    public partial class SchemaBuilder<TSchema> : ISchemaBuilder<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -40,15 +35,6 @@ namespace GraphQL.AspNet.Configuration
             this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
 
             this.Options = options;
-        }
-
-        /// <summary>
-        /// Convienence method to convert this builder into a lower-level service collection.
-        /// </summary>
-        /// <returns>IServiceCollection.</returns>
-        public IServiceCollection AsServiceCollection()
-        {
-            return this;
         }
 
         /// <summary>
