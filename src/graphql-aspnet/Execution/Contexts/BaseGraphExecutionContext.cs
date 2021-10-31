@@ -27,12 +27,12 @@ namespace GraphQL.AspNet.Middleware
         /// <param name="otherContext">The other context.</param>
         protected BaseGraphExecutionContext(IGraphExecutionContext otherContext)
             : this(
-                    otherContext.OperationRequest,
-                    otherContext.ServiceProvider,
-                    otherContext.User,
-                    otherContext.Metrics,
-                    otherContext.Logger,
-                    otherContext.Items)
+                    otherContext?.OperationRequest,
+                    otherContext?.ServiceProvider,
+                    otherContext?.User,
+                    otherContext?.Metrics,
+                    otherContext?.Logger,
+                    otherContext?.Items)
         {
         }
 

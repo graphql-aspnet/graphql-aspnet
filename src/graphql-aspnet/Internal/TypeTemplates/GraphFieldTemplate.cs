@@ -425,7 +425,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public IGraphTypeTemplate Parent { get; }
 
         /// <inheritdoc />
-        public abstract GraphFieldTemplateSource FieldSource { get; }
+        public abstract GraphFieldSource FieldSource { get; }
 
         /// <inheritdoc />
         public abstract TypeKind OwnerTypeKind { get; }

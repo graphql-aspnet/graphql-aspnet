@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
+    using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -26,8 +27,9 @@ namespace GraphQL.Subscriptions.Tests
             using var restorePoint = new GraphQLProviderRestorePoint();
 
             GraphQLProviders.TemplateProvider = null;
+            var collection = new ServiceCollection();
 
-            var primaryOptions = new SchemaOptions<GraphSchema>();
+            var primaryOptions = new SchemaOptions<GraphSchema>(collection);
             var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
 
             var extension = new SubscriptionPublisherSchemaExtension<GraphSchema>();

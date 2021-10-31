@@ -29,7 +29,8 @@ namespace GraphQL.AspNet.Tests.Execution
                 .Build();
 
             var builder = server.CreateFieldContextBuilder<SimpleExecutionController>(
-                nameof(SimpleExecutionController.SimpleQueryMethod));
+                nameof(SimpleExecutionController.SimpleQueryMethod),
+                new object());
             builder.AddInputArgument("arg1", "my value");
             builder.AddInputArgument("arg2", 15L);
 

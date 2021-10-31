@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         {
             var subTemplate = template as ControllerSubscriptionActionGraphFieldTemplate;
             if (subTemplate != null
-                && subTemplate.FieldSource == GraphFieldTemplateSource.Action
+                && subTemplate.FieldSource == GraphFieldSource.Action
                 && subTemplate.Route.RootCollection == GraphCollection.Subscription)
             {
                 return new SubscriptionMethodGraphField(

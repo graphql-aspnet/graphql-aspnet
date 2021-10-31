@@ -28,7 +28,8 @@ namespace GraphQL.AspNet.Tests.Internal
                 .Build();
 
             var builder = server.CreateFieldContextBuilder<ResolverObject>(
-                nameof(ResolverObject.MethodRetrieveData));
+                nameof(ResolverObject.MethodRetrieveData),
+                null);
 
             var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
 
@@ -48,7 +49,8 @@ namespace GraphQL.AspNet.Tests.Internal
                 .Build();
 
             var builder = server.CreateFieldContextBuilder<ResolverObject>(
-                nameof(ResolverObject.MethodRetrieveData));
+                nameof(ResolverObject.MethodRetrieveData),
+                new object());
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new TwoPropertyObject());
@@ -69,7 +71,8 @@ namespace GraphQL.AspNet.Tests.Internal
                 .Build();
 
             var builder = server.CreateFieldContextBuilder<ResolverObject>(
-                nameof(ResolverObject.MethodThrowException));
+                nameof(ResolverObject.MethodThrowException),
+                new object());
 
             // source data is not of the type the resolver is for
             builder.AddSourceData(new ResolverObject());
@@ -92,7 +95,102 @@ namespace GraphQL.AspNet.Tests.Internal
                 .Build();
 
             var builder = server.CreateFieldContextBuilder<ResolverObject>(
-                nameof(ResolverObject.MethodWithArgument));
+                nameof(ResolverObject.MethodWithArgument),
+                new object());
+
+            // the method declares one input argument which is not provided on this request
+            // resulting in a GraphExecutionException which
+            // is absorbed into a message (with no attached exception)
+
+            // source data is not of the type the resolver is for
+            builder.AddSourceData(new ResolverObject());
+            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+
+            var context = builder.CreateResolutionContext();
+            await resolver.Resolve(context);
+            Assert.AreEqual(null, context.Result);
+            Assert.IsFalse(context.Messages.IsSucessful);
+            Assert.AreEqual(null, context.Messages[0].Exception);
+            Assert.AreEqual(Constants.ErrorCodes.EXECUTION_ERROR, context.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task AsyncMethod_NullSourceData_FailsRequest()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphType<ResolverObject>()
+                .Build();
+
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.MethodRetrieveDataAsync),
+                null);
+
+            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+
+            var context = builder.CreateResolutionContext();
+            await resolver.Resolve(context);
+
+            Assert.AreEqual(null, context.Result);
+            Assert.IsFalse(context.Messages.IsSucessful);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_OBJECT, context.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task AsyncMethod_SourceDataIsNotOfTheTemplate_FailsRequest()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphType<ResolverObject>()
+                .Build();
+
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.MethodRetrieveDataAsync),
+                new object());
+
+            // source data is not of the type the resolver is for
+            builder.AddSourceData(new TwoPropertyObject());
+            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+
+            var context = builder.CreateResolutionContext();
+            await resolver.Resolve(context);
+            Assert.AreEqual(null, context.Result);
+            Assert.IsFalse(context.Messages.IsSucessful);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_OBJECT, context.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task AsyncMethod_MethodThrowsException_FailsRequest()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphType<ResolverObject>()
+                .Build();
+
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.MethodThrowExceptionAsync),
+                new object());
+
+            // source data is not of the type the resolver is for
+            builder.AddSourceData(new ResolverObject());
+            var resolver = new GraphObjectMethodResolver(builder.GraphMethod.Object);
+
+            var context = builder.CreateResolutionContext();
+            await resolver.Resolve(context);
+            Assert.AreEqual(null, context.Result);
+            Assert.IsFalse(context.Messages.IsSucessful);
+            Assert.IsTrue(context.Messages[0].Exception is InvalidOperationException);
+            Assert.AreEqual("resolver.method.throwException", context.Messages[0].Exception.Message);
+            Assert.AreEqual(Constants.ErrorCodes.UNHANDLED_EXCEPTION, context.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task AsyncMethod_KnownExecutionError_FailsRequest()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphType<ResolverObject>()
+                .Build();
+
+            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.MethodWithArgumentAsync),
+                new object());
 
             // the method declares one input argument which is not provided on this request
             // resulting in a GraphExecutionException which

@@ -24,7 +24,7 @@ namespace GraphQL.AspNet
     /// query and mutation operations.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class SubscriptionPublisherSchemaExtension<TSchema> : ISchemaExtension
+    public class SubscriptionPublisherSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         private SchemaOptions _primaryOptions;
@@ -34,8 +34,6 @@ namespace GraphQL.AspNet
         /// </summary>
         public SubscriptionPublisherSchemaExtension()
         {
-            this.RequiredServices = new List<ServiceDescriptor>();
-            this.OptionalServices = new List<ServiceDescriptor>();
         }
 
         /// <summary>
@@ -68,19 +66,5 @@ namespace GraphQL.AspNet
         public void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null)
         {
         }
-
-        /// <summary>
-        /// Gets a collection of services this extension has registered that should be included in
-        /// a DI container.
-        /// </summary>
-        /// <value>The additional types as formal descriptors.</value>
-        public List<ServiceDescriptor> RequiredServices { get; }
-
-        /// <summary>
-        /// Gets a collection of services this extension has registered that may be included in
-        /// a DI container. If they cannot be added, because a reference already exists, they will be skipped.
-        /// </summary>
-        /// <value>The additional types as formal descriptors.</value>
-        public List<ServiceDescriptor> OptionalServices { get; }
     }
 }
