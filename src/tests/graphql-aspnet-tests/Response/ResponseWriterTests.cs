@@ -345,7 +345,7 @@ namespace GraphQL.AspNet.Tests.Response
             var stream = new MemoryStream();
 
             var data = new Dictionary<string, IResponseItem>();
-            data.Add("item1", new ResponseSingleValue(DateTime.Parse("2021-10-31")));
+            data.Add("item1", new ResponseSingleValue(new DateTime(2021, 10, 31, 5, 3, 1, DateTimeKind.Utc)));
 
             var fieldSet = new Mock<IResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
@@ -361,7 +361,7 @@ namespace GraphQL.AspNet.Tests.Response
             var actual = Encoding.UTF8.GetString(stream.ToArray());
             var expected = @"{
                 ""data"": {
-                    ""item1"": ""2021-10-31T00:00:00.000-07:00""
+                    ""item1"": ""2021-10-31T05:03:01.000+00:00""
                 }
             }";
 
@@ -376,7 +376,7 @@ namespace GraphQL.AspNet.Tests.Response
             var stream = new MemoryStream();
 
             var data = new Dictionary<string, IResponseItem>();
-            data.Add("item1", new ResponseSingleValue(DateTimeOffset.Parse("2021-10-31")));
+            data.Add("item1", new ResponseSingleValue(new DateTimeOffset(2021, 10, 31, 5, 3, 1, 0, TimeSpan.Zero)));
 
             var fieldSet = new Mock<IResponseFieldSet>();
             fieldSet.Setup(x => x.Fields).Returns(data);
@@ -392,7 +392,7 @@ namespace GraphQL.AspNet.Tests.Response
             var actual = Encoding.UTF8.GetString(stream.ToArray());
             var expected = @"{
                 ""data"": {
-                    ""item1"": ""2021-10-31T00:00:00.000-07:00""
+                    ""item1"": ""2021-10-31T05:03:01.000+00:00""
                 }
             }";
 
