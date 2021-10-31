@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -51,7 +52,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         public static Func<IServiceProvider, ISchemaPipeline<TSchema, TContext>>
             CreatePipelineFactory<TMiddleware, TContext>(ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> pipelineBuilder)
                 where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-                where TContext : class, IGraphMiddlewareContext
+                where TContext : class, IGraphExecutionContext
         {
             return (sp) =>
             {

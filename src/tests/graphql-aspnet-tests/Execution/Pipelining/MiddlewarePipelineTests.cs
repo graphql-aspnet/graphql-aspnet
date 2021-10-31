@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware.Exceptions;
     using GraphQL.AspNet.Middleware.FieldExecution;

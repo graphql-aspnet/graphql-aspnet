@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Controllers
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.FieldExecution;
 

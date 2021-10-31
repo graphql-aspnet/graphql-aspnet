@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -70,7 +71,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     .WithSourceData(context.Request.DataSource.Value);
 
                 // resolve the field
-                var resolutionContext = new FieldResolutionContext(context, context.Request, executionArguments);
+                var resolutionContext = new FieldResolutionContext(
+                    context,
+                    context.Request,
+                    executionArguments);
 
                 context.Logger?.FieldResolutionStarted(resolutionContext);
 

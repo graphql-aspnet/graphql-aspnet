@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Middleware.FieldExecution;
 

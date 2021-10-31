@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -89,7 +90,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // Convert the supplied variable values to usable objects of the type expression
             // of the chosen operation
             var variableResolver = new ResolvedVariableGenerator(_schema, operation);
-            var variableData = variableResolver.Resolve(context.Request.VariableData);
+            var variableData = variableResolver.Resolve(context.OperationRequest.VariableData);
             var cancelSource = new CancellationTokenSource();
             try
             {
@@ -112,6 +113,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var sourceData = new GraphFieldDataSource(dataSourceValue, path, topLevelDataItem);
 
                     var fieldRequest = new GraphFieldRequest(
+                        context.OperationRequest,
                         invocationContext,
                         sourceData,
                         new SourceOrigin(invocationContext.Origin.Location, path),

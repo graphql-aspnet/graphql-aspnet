@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -50,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                 try
                 {
-                    context.SyntaxTree = _parser.ParseQueryDocument(context.Request.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
+                    context.SyntaxTree = _parser.ParseQueryDocument(context.OperationRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
                 }
                 catch (GraphQLSyntaxException syntaxException)
                 {

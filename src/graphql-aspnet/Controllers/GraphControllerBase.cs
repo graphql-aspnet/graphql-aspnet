@@ -19,24 +19,25 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Middleware.FieldExecution;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// A base object providing common method used by invocable method containers authored by developers.
     /// </summary>
     /// <typeparam name="TRequest">The type of the request this controller item is expected to process.</typeparam>
     public abstract class GraphControllerBase<TRequest>
-        where TRequest : class, IControllerActionInvocationRequest
+        where TRequest : class, IInvocationRequest
     {
         private IGraphMethod _action;
         private IGraphEventLogger _logger;
 
-        private BaseResolutionContext<TRequest> _context;
+        private BaseResolutionContext<TRequest> _resolutionContext;
 
         /// <summary>
         /// Invoke the specified action method as an asynchronous operation.
@@ -54,9 +55,12 @@ namespace GraphQL.AspNet.Controllers
 
             var fieldRequest = context.Request;
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
-            _context = context;
+            _resolutionContext = context;
             _logger = context?.Logger;
             _logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
+
+            if (_resolutionContext.OperationRequest is IGraphOperationWebRequest webRequest)
+                this.HttpContext = webRequest.HttpContext;
 
             if (_action?.Method == null)
             {
@@ -122,6 +126,7 @@ namespace GraphQL.AspNet.Controllers
                         return new RouteNotFoundGraphActionResult(_action, ex);
 
                     default:
+
                         // total failure by the user's action code.
                         // record and bubble
                         _logger?.ActionMethodUnhandledException(_action, this.Request, ex);
@@ -192,12 +197,19 @@ namespace GraphQL.AspNet.Controllers
         /// Gets the resolved <see cref="ClaimsPrincipal"/> that was passed recieved on the request.
         /// </summary>
         /// <value>The user.</value>
-        protected ClaimsPrincipal User => _context.User;
+        protected ClaimsPrincipal User => _resolutionContext.User;
 
         /// <summary>
         /// Gets the scoped <see cref="IServiceProvider"/> supplied to the original controller action that is being invoked.
         /// </summary>
         /// <value>The request services.</value>
-        protected IServiceProvider RequestServices => _context.ServiceProvider;
+        protected IServiceProvider RequestServices => _resolutionContext.ServiceProvider;
+
+        /// <summary>
+        /// Gets the <see cref="HttpContext"/> for which this controller was invoked. May be <c>null</c>
+        /// if this controller was not invoked from an ASP.NET pipeline.
+        /// </summary>
+        /// <value>The HTTP context.</value>
+        public HttpContext HttpContext { get; private set; }
     }
 }

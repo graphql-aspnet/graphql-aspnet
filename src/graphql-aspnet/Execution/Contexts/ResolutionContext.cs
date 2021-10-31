@@ -7,18 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldExecution
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
 
     /// <summary>
     /// A base context used by all field and directive resolvers in order to successfully invoke
     /// a controller method or object property and retrieve a data value for a field.
     /// </summary>
-    public abstract class ResolutionContext : BaseGraphMiddlewareContext
+    public abstract class ResolutionContext : BaseGraphExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResolutionContext" /> class.
@@ -28,7 +27,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// <param name="request">The resolution request to carry with the context.</param>
         /// <param name="arguments">The arguments to be passed to the resolver when its executed.</param>
         protected ResolutionContext(
-            IGraphMiddlewareContext parentContext,
+            IGraphExecutionContext parentContext,
             IDataRequest request,
             IExecutionArgumentCollection arguments)
             : base(parentContext)

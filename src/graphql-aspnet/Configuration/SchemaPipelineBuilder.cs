@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Configuration
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware;
@@ -30,7 +31,7 @@ namespace GraphQL.AspNet.Configuration
     public class SchemaPipelineBuilder<TSchema, TMiddleware, TContext> : ISchemaPipelineBuilder<TSchema, TMiddleware, TContext>
         where TSchema : class, ISchema
         where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-        where TContext : class, IGraphMiddlewareContext
+        where TContext : class, IGraphExecutionContext
     {
         /// <summary>
         /// Occurs when a middleware type reference is added to the pipeline.

@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Middleware
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware.Exceptions;
     using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,7 @@ namespace GraphQL.AspNet.Middleware
     /// <typeparam name="TContext">The type of the context the middleware component will accept on its invoke method.</typeparam>
     [DebuggerDisplay("Middleware Invoker '{ComponentDefinition.Name}'")]
     public class GraphMiddlewareInvoker<TContext>
-        where TContext : class, IGraphMiddlewareContext
+        where TContext : class, IGraphExecutionContext
     {
         private readonly object _locker = new object();
         private IGraphMiddlewareComponent<TContext> _singletonInstance;

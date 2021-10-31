@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Middleware
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -21,7 +22,7 @@ namespace GraphQL.AspNet.Middleware
     /// <typeparam name="TContext">The type of the middleware context processed by this pipeline.</typeparam>
     public class GraphSchemaPipeline<TSchema, TContext> : ISchemaPipeline<TSchema, TContext>
         where TSchema : class, ISchema
-        where TContext : class, IGraphMiddlewareContext
+        where TContext : class, IGraphExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaPipeline{TSchema, TContext}" /> class.

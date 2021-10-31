@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// A request, resolved by a <see cref="IDirectiveGraphType"/> to perform some augmented
     /// or conditional processing on a segment of a query document.
     /// </summary>
-    public interface IGraphDirectiveRequest : IControllerActionInvocationRequest
+    public interface IGraphDirectiveRequest : IInvocationRequest
     {
         /// <summary>
         /// Clones this request for the given lifecycle location.

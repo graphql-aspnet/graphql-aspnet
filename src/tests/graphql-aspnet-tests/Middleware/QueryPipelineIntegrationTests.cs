@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     using System.Threading.Tasks;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Middleware.QueryExecution;

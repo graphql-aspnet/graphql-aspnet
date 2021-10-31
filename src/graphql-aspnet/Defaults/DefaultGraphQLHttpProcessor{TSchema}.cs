@@ -82,11 +82,7 @@ namespace GraphQL.AspNet.Defaults
             _logger = logger;
         }
 
-        /// <summary>
-        /// Accepts the post request and attempts to convert the body to a query data item.
-        /// </summary>
-        /// <param name="context">The http context to be processed by this instance.</param>
-        /// <returns>Task&lt;System.Object&gt;.</returns>
+        /// <inheritdoc />
         public virtual async Task Invoke(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
@@ -147,12 +143,17 @@ namespace GraphQL.AspNet.Defaults
                 // *******************************
                 // Setup
                 // *******************************
-                this.GraphQLRequest = _runtime.CreateRequest(queryData);
-                if (this.GraphQLRequest == null)
+                var request = _runtime.CreateRequest(queryData);
+                if (request == null)
                 {
                     await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
                     return;
                 }
+
+                // repackage the runtime request to carry the
+                // HttpContext along. It's not used or needed by the runtime
+                // but its useful within controller action method invocations
+                this.GraphQLRequest = new GraphOperationWebRequest(request, this.HttpContext);
 
                 // *******************************
                 // Primary query execution
@@ -178,7 +179,8 @@ namespace GraphQL.AspNet.Defaults
                 var exceptionResult = this.HandleQueryException(ex);
                 if (exceptionResult == null)
                 {
-                    // no one was able to handle hte exception. Log it if able and just fail out to the caller
+                    // no one was able to handle the exception?
+                    // Log it if able and just fail out to the caller
                     _logger?.UnhandledExceptionEvent(ex);
                     await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE).ConfigureAwait(false);
                 }

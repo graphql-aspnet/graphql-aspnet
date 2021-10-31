@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Security;
