@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets the source type this field was created from.
         /// </summary>
         /// <value>The field souce.</value>
-        GraphFieldTemplateSource FieldSource { get; }
+        GraphFieldSource FieldSource { get; }
 
         /// <summary>
         /// Gets the security groups, a collection of policy requirements, of which each must be met,

@@ -102,10 +102,10 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
                 switch (x.FieldSource)
                 {
-                    case GraphFieldTemplateSource.Method:
+                    case GraphFieldSource.Method:
                         return requiredDeclarations.AllowImplicitMethods();
 
-                    case GraphFieldTemplateSource.Property:
+                    case GraphFieldSource.Property:
                         return requiredDeclarations.AllowImplicitProperties();
                 }
 

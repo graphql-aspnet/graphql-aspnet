@@ -124,12 +124,12 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // downstream child contexts
             var sourceItemLookup = this.MapExpectedConcreteTypeFromSourceItem(allSourceItems, graphType);
 
-            // all the child contexts that need to execute
+            // all the child field contexts that need to execute
             var executableChildContexts = new SortedFieldExecutionContextList();
 
             foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
             {
-                // Step 1
+                // Step 1A
                 // ----------------------------
                 // figure out which child items need to be processed through it
                 IEnumerable<GraphDataItem> sourceItemsToInclude;
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 }
                 else
                 {
-                    // if no children match the required type of the children present, then skip it
+                    // if no children match the required type of the invocation context, then skip it
                     // this can happen quite often in the case of a union or an interface where multiple invocation contexts
                     // are added to a plan for the same child field in case a parent returns a member of the union or an
                     // implementer of the interface
@@ -165,6 +165,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
                 // Step 2
                 // ----------------------------
+                // prepare the child field execution contexts
                 // when the invocation is as a batch, create one execution context for all children
                 // when its "per source" create a context for each child individually
                 var orderedContexts = this.CreateChildExecutionContexts(
@@ -200,8 +201,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 {
                     // await the isolated task to prevent any potential paralellization
                     // by the task system but not in such a way that a faulted task would
-                    // throw an execution. Allow the reslts (exceptions included) to be
-                    // captured by CaputreChildResults
+                    // throw an execution. Allow the results (exceptions included) to be
+                    // captured by CaptureChildFieldExecutionResults
                     await Task.WhenAll(task);
                 }
             }

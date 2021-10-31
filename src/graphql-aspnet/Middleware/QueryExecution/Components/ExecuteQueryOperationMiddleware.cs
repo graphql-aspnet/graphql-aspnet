@@ -105,21 +105,22 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 // Step 0
                 // --------------------------
                 // Sort the top level queries of this operation such that
-                // those contexts that can (or should) be isolated execute first and all others
+                // those contexts that should be isolated execute first and all others
                 // run in paralell
                 IEnumerable<(IGraphFieldInvocationContext Context, bool ExecuteIsolated)> orderedContextList;
                 if (operation.OperationType == GraphCollection.Mutation)
                 {
-                    // top level mutation operatons must be executed in serial order
-                    // do to potential side effects on the data
+                    // top level mutation operatons must be executed in sequential order
+                    // due to potential side effects on the data
                     // https://graphql.github.io/graphql-spec/June2018/#sec-Mutation
                     orderedContextList = operation.FieldContexts
                         .Select(x => (x, true));
                 }
                 else
                 {
-                    // with non-mutation queries, order the contexts such that the isolated ones are on top
-                    // all contexts are ran in isolation when in debug mode
+                    // with non-mutation queries, order the contexts such that the isolated ones (as determined by
+                    // the configuration for this schema) are on top. All contexts are ran in isolation
+                    // when in debug mode (always).
                     orderedContextList = operation
                        .FieldContexts
                        .Select(x => (x, _debugMode || _resolversToIsolate.ShouldIsolateFieldSource(x.Field.FieldSource)))

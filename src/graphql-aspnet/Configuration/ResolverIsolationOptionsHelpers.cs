@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.Configuration
         /// <param name="options">The options collection to inspect.</param>
         /// <param name="fieldSource">The field source to test.</param>
         /// <returns><c>true</c> if the field source should be isolated, <c>false</c> otherwise.</returns>
-        public static bool ShouldIsolateFieldSource(this ResolverIsolationOptions options, GraphFieldTemplateSource fieldSource)
+        public static bool ShouldIsolateFieldSource(this ResolverIsolationOptions options, GraphFieldSource fieldSource)
         {
-            if (fieldSource == GraphFieldTemplateSource.Virtual)
+            if (fieldSource == GraphFieldSource.Virtual)
                 return false;
 
             return options.HasFlag((ResolverIsolationOptions)fieldSource);

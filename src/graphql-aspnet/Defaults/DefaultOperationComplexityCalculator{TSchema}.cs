@@ -91,15 +91,15 @@ namespace GraphQL.AspNet.Defaults
             // what of how the field data is sourced
             switch (field.Field.FieldSource)
             {
-                case GraphFieldTemplateSource.Action:
+                case GraphFieldSource.Action:
                     fieldWeight *= CONTROLLER_ACTION_WEIGHT;
                     break;
 
-                case GraphFieldTemplateSource.Method:
+                case GraphFieldSource.Method:
                     fieldWeight *= OBJECT_METHOD_FIELD_WEIGHT;
                     break;
 
-                case GraphFieldTemplateSource.Property:
+                case GraphFieldSource.Property:
                     fieldWeight *= OBJECT_PROPERTY_FIELD_WEIGHT;
                     break;
             }

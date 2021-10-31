@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Gets the source type this field was created from.
         /// </summary>
         /// <value>The field souce.</value>
-        public GraphFieldTemplateSource FieldSource { get; internal set; }
+        public GraphFieldSource FieldSource { get; internal set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate

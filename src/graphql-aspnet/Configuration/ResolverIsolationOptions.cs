@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Configuration
 
     /// <summary>
     /// A set of options indicating the various resolver types that may be
-    /// executed in isolation. Coorisponds to the identifed <see cref="GraphFieldTemplateSource" />
+    /// executed in isolation. Coorisponds to the identifed <see cref="GraphFieldSource" />
     /// of a field resolver.
     /// </summary>
     [Flags]
@@ -23,26 +23,26 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Indicates no Isolation Options
         /// </summary>
-        None = GraphFieldTemplateSource.None,
+        None = GraphFieldSource.None,
 
         /// <summary>
         /// When a controller action is encountered it will be executed
         /// in isolation, no other reslolvers will be allowed to execute while
         /// the resolver action is processing. This includes Type and Batch Extensions.
         /// </summary>
-        ControllerActions = GraphFieldTemplateSource.Action,
+        ControllerActions = GraphFieldSource.Action,
 
         /// <summary>
         /// When an object method resolver is encountered it will be executed in isolation,
         /// no other reslolvers will be allowed to execute while the method resolver is processing.
         /// </summary>
-        Methods = GraphFieldTemplateSource.Method,
+        Methods = GraphFieldSource.Method,
 
         /// <summary>
         /// When an object property resolver is encountered it will be executed in isolation,
         /// no other reslolvers will be allowed to execute while the property resolver is processing.
         /// </summary>
-        Properties = GraphFieldTemplateSource.Property,
+        Properties = GraphFieldSource.Property,
 
         /// <summary>
         /// Indicates that all field resolvers are executed in isolation.

@@ -62,7 +62,9 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
 
             // fake a graph ql request context
             var server = serverBuilder.Build();
-            var fieldBuilder = server.CreateFieldContextBuilder<MiddlewareController>(nameof(MiddlewareController.FieldOfData));
+            var fieldBuilder = server.CreateFieldContextBuilder<MiddlewareController>(
+                nameof(MiddlewareController.FieldOfData),
+                new object());
             var executionContext = fieldBuilder.CreateExecutionContext();
 
             // execute the pipeline
@@ -112,7 +114,9 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
 
             // fake a graph ql request context
             var server = serverBuilder.Build();
-            var fieldBuilder = server.CreateFieldContextBuilder<MiddlewareController>(nameof(MiddlewareController.FieldOfData));
+            var fieldBuilder = server.CreateFieldContextBuilder<MiddlewareController>(
+                nameof(MiddlewareController.FieldOfData),
+                new object());
             var executionContext = fieldBuilder.CreateExecutionContext();
 
             // execute the pipeline, exception should be thrown
@@ -142,7 +146,9 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
             // fake a graph ql request context
             var server = serverBuilder.Build();
 
-            var builder = server.CreateFieldContextBuilder<MiddlewareController>(nameof(MiddlewareController.FieldOfData));
+            var builder = server.CreateFieldContextBuilder<MiddlewareController>(
+                nameof(MiddlewareController.FieldOfData),
+                new object());
             var context = builder.CreateExecutionContext();
 
             // execute the pipeline, exception should be thrown by the middleware Component
@@ -186,7 +192,9 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
             // fake a graph ql request context
             var server = serverBuilder.Build();
 
-            var builder = server.CreateFieldContextBuilder<MiddlewareController>(nameof(MiddlewareController.FieldOfData));
+            var builder = server.CreateFieldContextBuilder<MiddlewareController>(
+                nameof(MiddlewareController.FieldOfData),
+                new object());
 
             // execute the pipeline multiple times
             await pipeline.InvokeAsync(builder.CreateExecutionContext(), CancellationToken.None);
@@ -235,7 +243,9 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
             Assert.IsNotNull(pipeline);
 
             var server = serverBuilder.Build();
-            var builder = server.CreateFieldContextBuilder<MiddlewareController>(nameof(MiddlewareController.FieldOfData));
+            var builder = server.CreateFieldContextBuilder<MiddlewareController>(
+                nameof(MiddlewareController.FieldOfData),
+                new object());
 
             // make an empty service collection (preventing creation if the middleware isnt found)
             var sc = new ServiceCollection();

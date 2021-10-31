@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Configuration
         public TimeSpan QueryTimeout { get; set; } = TimeSpan.FromMinutes(1);
 
         /// <inheritdoc />
-        [Obsolete("This configuration setting will be removed in a future release. Use 'ResolverIsolation' instead.")]
+        [Obsolete("The 'AwaitEachRequestedField' configuration setting will be removed in a future release. Use 'ResolverIsolation' instead.")]
         public bool AwaitEachRequestedField { get; set; }
 
         /// <inheritdoc />
