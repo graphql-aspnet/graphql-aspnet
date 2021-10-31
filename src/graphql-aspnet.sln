@@ -31,9 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-subscription
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-subscriptions-tests", "tests\graphql-aspnet-subscriptions-tests\graphql-aspnet-subscriptions-tests.csproj", "{3D65B19B-8E92-4C3A-AC72-7D60CA7EC15A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starwars-api50", "starwars\starwars-api50\starwars-api50.csproj", "{6BE8EE9E-7694-4E63-8D81-F3FF7FCEFEE0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starwars-api20", "starwars\starwars-api20\starwars-api20.csproj", "{8578BEE1-B13F-48E2-9DB6-1D65E82D076B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starwars-api50", "starwars\starwars-api50\starwars-api50.csproj", "{6BE8EE9E-7694-4E63-8D81-F3FF7FCEFEE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +75,6 @@ Global
 		{6BE8EE9E-7694-4E63-8D81-F3FF7FCEFEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BE8EE9E-7694-4E63-8D81-F3FF7FCEFEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BE8EE9E-7694-4E63-8D81-F3FF7FCEFEE0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8578BEE1-B13F-48E2-9DB6-1D65E82D076B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8578BEE1-B13F-48E2-9DB6-1D65E82D076B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8578BEE1-B13F-48E2-9DB6-1D65E82D076B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8578BEE1-B13F-48E2-9DB6-1D65E82D076B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,7 +87,6 @@ Global
 		{5DE081AA-494A-4377-B2CA-6952715D513D} = {350D3594-5D97-4D9B-A01D-D3A5C036318C}
 		{3D65B19B-8E92-4C3A-AC72-7D60CA7EC15A} = {350D3594-5D97-4D9B-A01D-D3A5C036318C}
 		{6BE8EE9E-7694-4E63-8D81-F3FF7FCEFEE0} = {22C7BC5B-EC8E-4A07-9968-961E86AB44E2}
-		{8578BEE1-B13F-48E2-9DB6-1D65E82D076B} = {22C7BC5B-EC8E-4A07-9968-961E86AB44E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD2C38B8-B029-4DE1-877E-B1A661AC412F}

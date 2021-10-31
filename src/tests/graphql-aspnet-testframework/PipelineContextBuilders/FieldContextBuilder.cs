@@ -17,10 +17,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldAuthorization;
     using GraphQL.AspNet.Middleware.FieldExecution;
@@ -160,9 +160,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             return this;
         }
 
-        private IGraphMiddlewareContext CreateFakeParentMiddlewareContext()
+        private IGraphExecutionContext CreateFakeParentMiddlewareContext()
         {
-            var parentContext = new Mock<IGraphMiddlewareContext>();
+            var operationRequest = new Mock<IGraphOperationRequest>();
+            var parentContext = new Mock<IGraphExecutionContext>();
+
+            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.User).Returns(_user);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);

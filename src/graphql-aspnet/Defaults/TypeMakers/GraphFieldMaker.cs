@@ -101,8 +101,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         {
             switch (template.FieldSource)
             {
-                case GraphFieldTemplateSource.Method:
-                case GraphFieldTemplateSource.Action:
+                case GraphFieldSource.Method:
+                case GraphFieldSource.Action:
                     return new MethodGraphField(
                         formatter.FormatFieldName(template.Name),
                         template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                         template.CreateResolver(),
                         securityGroups);
 
-                case GraphFieldTemplateSource.Property:
+                case GraphFieldSource.Property:
                     return new PropertyGraphField(
                         formatter.FormatFieldName(template.Name),
                         template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),

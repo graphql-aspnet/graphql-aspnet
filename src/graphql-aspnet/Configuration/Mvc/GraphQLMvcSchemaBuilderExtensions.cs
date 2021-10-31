@@ -81,7 +81,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
                     "Eac schema type may only be registered once with GraphQL.");
             }
 
-            var injector = new GraphQLSchemaInjector<TSchema>(serviceCollection, options);
+            var schemaOptions = new SchemaOptions<TSchema>(serviceCollection);
+            var injector = new GraphQLSchemaInjector<TSchema>(schemaOptions, options);
             SCHEMA_REGISTRATIONS.Add(typeof(TSchema), injector);
 
             injector.ConfigureServices();

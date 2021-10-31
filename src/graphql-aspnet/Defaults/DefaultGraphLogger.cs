@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Defaults
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;

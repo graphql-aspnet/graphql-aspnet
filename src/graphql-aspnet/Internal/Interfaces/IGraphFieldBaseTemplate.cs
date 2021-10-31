@@ -43,6 +43,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the source type this field was created from.
         /// </summary>
         /// <value>The field souce.</value>
-        GraphFieldTemplateSource FieldSource { get; }
+        GraphFieldSource FieldSource { get; }
     }
 }

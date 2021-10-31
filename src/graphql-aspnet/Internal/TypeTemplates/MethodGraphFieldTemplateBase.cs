@@ -154,6 +154,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the source type this field was created from.
         /// </summary>
         /// <value>The field souce.</value>
-        public override GraphFieldTemplateSource FieldSource => GraphFieldTemplateSource.Method;
+        public override GraphFieldSource FieldSource => GraphFieldSource.Method;
     }
 }

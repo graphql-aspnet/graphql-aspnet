@@ -122,12 +122,14 @@
     <Rule Id="SA1411" Action="Error" />
     <Rule Id="SA1412" Action="Error" />
     <Rule Id="SA1503" Action="None" />
+	<Rule Id="SA1507" Action="Error" />
     <Rule Id="SA1512" Action="Error" />
     <Rule Id="SA1505" Action="Error" />
     <Rule Id="SA1600" Action="Error" />
     <Rule Id="SA1602" Action="None" />
     <Rule Id="SA1603" Action="Error" />
     <Rule Id="SA1609" Action="Error" />
+	<Rule Id="SA1619" Action="None" />
     <Rule Id="SA1633" Action="Error" />
     <Rule Id="SA1636" Action="None" />
     <Rule Id="SA1642" Action="Error" />

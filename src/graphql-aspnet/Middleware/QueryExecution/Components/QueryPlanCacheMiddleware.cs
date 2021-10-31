@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -64,9 +65,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             bool planFound = false;
             string key = null;
-            if (_keyManager != null && _cacheProvider != null && context.Request?.QueryText != null)
+            if (_keyManager != null && _cacheProvider != null && context.OperationRequest?.QueryText != null)
             {
-                key = _keyManager.CreateKey<TSchema>(context.Request.QueryText);
+                key = _keyManager.CreateKey<TSchema>(context.OperationRequest.QueryText);
                 planFound = await _cacheProvider.TryGetPlanAsync(key, out var queryPlan).ConfigureAwait(false);
                 if (planFound)
                 {

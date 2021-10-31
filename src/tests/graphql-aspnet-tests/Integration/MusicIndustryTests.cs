@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Integration
             builder.AddGraphType<MusicController>();
             builder.AddGraphQL(o =>
             {
-                o.ExecutionOptions.AwaitEachRequestedField = true;
+                o.ExecutionOptions.DebugMode = true;
             });
 
             var server = builder.Build();

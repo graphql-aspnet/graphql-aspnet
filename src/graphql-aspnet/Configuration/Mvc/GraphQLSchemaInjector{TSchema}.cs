@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -51,7 +52,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         public static Func<IServiceProvider, ISchemaPipeline<TSchema, TContext>>
             CreatePipelineFactory<TMiddleware, TContext>(ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> pipelineBuilder)
                 where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-                where TContext : class, IGraphMiddlewareContext
+                where TContext : class, IGraphExecutionContext
         {
             return (sp) =>
             {
@@ -61,7 +62,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
             };
         }
 
-        private readonly IServiceCollection _serviceCollection;
         private readonly Action<SchemaOptions<TSchema>> _configureOptions;
         private readonly SchemaBuilder<TSchema> _schemaBuilder;
         private readonly SchemaOptions<TSchema> _options;
@@ -70,16 +70,16 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLSchemaInjector{TSchema}" /> class.
         /// </summary>
-        /// <param name="serviceCollection">The service collection.</param>
+        /// <param name="options">The options.</param>
         /// <param name="configureOptions">The use supplied action method to configure the
         /// primary options used to govern schema runtime operations.</param>
-        public GraphQLSchemaInjector(IServiceCollection serviceCollection, Action<SchemaOptions<TSchema>> configureOptions)
+        public GraphQLSchemaInjector(SchemaOptions<TSchema> options, Action<SchemaOptions<TSchema>> configureOptions = null)
         {
-            _serviceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _configureOptions = configureOptions;
+            _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _schemaBuilder = new SchemaBuilder<TSchema>(_options);
 
-            _options = new SchemaOptions<TSchema>();
-            _schemaBuilder = new SchemaBuilder<TSchema>(_options, serviceCollection);
+            Validation.ThrowIfNull(options.ServiceCollection, $"{nameof(SchemaOptions)}.{nameof(SchemaOptions.ServiceCollection)}");
         }
 
         /// <summary>
@@ -88,8 +88,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
         public void ConfigureServices()
         {
             // create the builder to guide the rest of the setup operations
-            _schemaBuilder.TypeReferenceAdded += this.TypeReferenced_EventHandler;
-            _options.TypeReferenceAdded += this.TypeReferenced_EventHandler;
             _configureOptions?.Invoke(_options);
 
             // register global directives to the schema
@@ -115,14 +113,14 @@ namespace GraphQL.AspNet.Configuration.Mvc
             }
 
             // ensure a runtime is set
-            var runtimeDescriptor = _options.RuntimeDescriptor ?? new ServiceDescriptor(
+            var runtimeDescriptor = new ServiceDescriptor(
                 typeof(IGraphQLRuntime<TSchema>),
                 typeof(DefaultGraphQLRuntime<TSchema>),
                 ServiceLifetime.Scoped);
-            _serviceCollection.TryAdd(runtimeDescriptor);
+            _options.ServiceCollection.TryAdd(runtimeDescriptor);
 
             // register the schema
-            _serviceCollection.TryAddSingleton(this.BuildNewSchemaInstance);
+            _options.ServiceCollection.TryAddSingleton(this.BuildNewSchemaInstance);
 
             // setup default middleware for each required pipeline
             var queryPipelineHelper = new QueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
@@ -135,11 +133,13 @@ namespace GraphQL.AspNet.Configuration.Mvc
             authPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
             // register the DI entries for each pipeline
-            _serviceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldExecutionPipeline));
-            _serviceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldAuthorizationPipeline));
-            _serviceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
+            _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldExecutionPipeline));
+            _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldAuthorizationPipeline));
+            _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
 
             this.RegisterEngineComponents();
+
+            _options.FinalizeServiceRegistration();
         }
 
         /// <summary>
@@ -149,19 +149,19 @@ namespace GraphQL.AspNet.Configuration.Mvc
         private void RegisterEngineComponents()
         {
             // "per schema" engine components
-            _serviceCollection.TryAddSingleton<IQueryOperationComplexityCalculator<TSchema>, DefaultOperationComplexityCalculator<TSchema>>();
-            _serviceCollection.TryAddSingleton<IGraphResponseWriter<TSchema>, DefaultResponseWriter<TSchema>>();
-            _serviceCollection.TryAddSingleton<IGraphQueryDocumentGenerator<TSchema>, DefaultGraphQueryDocumentGenerator<TSchema>>();
-            _serviceCollection.TryAddSingleton<IGraphQueryPlanGenerator<TSchema>, DefaultGraphQueryPlanGenerator<TSchema>>();
-            _serviceCollection.TryAddSingleton<IGraphQueryExecutionMetricsFactory<TSchema>, DefaultGraphQueryExecutionMetricsFactory<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryOperationComplexityCalculator<TSchema>, DefaultOperationComplexityCalculator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IGraphResponseWriter<TSchema>, DefaultResponseWriter<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IGraphQueryDocumentGenerator<TSchema>, DefaultGraphQueryDocumentGenerator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IGraphQueryPlanGenerator<TSchema>, DefaultGraphQueryPlanGenerator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IGraphQueryExecutionMetricsFactory<TSchema>, DefaultGraphQueryExecutionMetricsFactory<TSchema>>();
 
             // "per request per schema" components
-            _serviceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
+            _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
 
             // "per application server" instance
-            _serviceCollection.TryAddSingleton<IGraphQLDocumentParser, GraphQLParser>();
-            _serviceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
-            _serviceCollection.TryAddScoped<IGraphEventLogger>((sp) =>
+            _options.ServiceCollection.TryAddSingleton<IGraphQLDocumentParser, GraphQLParser>();
+            _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
+            _options.ServiceCollection.TryAddScoped<IGraphEventLogger>((sp) =>
             {
                 var factory = sp?.GetService<ILoggerFactory>();
                 if (factory == null)
@@ -169,21 +169,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
                 return new DefaultGraphLogger(factory);
             });
-        }
-
-        /// <summary>
-        /// Responds to an event raised by a child configuration component by adding the raised type to the DI container
-        /// controlled by this injector.
-        /// </summary>
-        private void TypeReferenced_EventHandler(object sender, TypeReferenceEventArgs e)
-        {
-            if (e?.Descriptor != null)
-            {
-                if (e.Required)
-                    _serviceCollection.Add(e.Descriptor);
-                else
-                    _serviceCollection.TryAdd(e.Descriptor);
-            }
         }
 
         /// <summary>

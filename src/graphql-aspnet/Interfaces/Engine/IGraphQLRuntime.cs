@@ -13,8 +13,10 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// An interface representing an object acting as the runtime for the core graphql

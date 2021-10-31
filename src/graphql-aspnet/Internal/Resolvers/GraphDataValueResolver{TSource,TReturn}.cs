@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.FieldExecution;
 

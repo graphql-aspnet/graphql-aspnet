@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Variables
     using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>
-    /// A variable defined as a set of child key/value pair.
+    /// A variable defined as a set of child key/value pairs (such as those destined to populate an INPUT_OBJECT).
     /// </summary>
     [DebuggerDisplay("InputFieldSet: {Name} (Count = {Fields.Count})")]
     public class InputFieldSetVariable : InputVariable, IInputFieldSetVariable, IResolvableFieldSet

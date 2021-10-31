@@ -30,18 +30,10 @@ namespace GraphQL.AspNet.Configuration
             this.SlidingExpiration = config.SlidingExpiration;
         }
 
-        /// <summary>
-        /// Gets or sets the total number of milliseconds from the point a query is cached until it is removed from the cache. This value takes precidence over
-        /// <see cref="SlidingExpiration" /> if set. (Default: Not Set).
-        /// </summary>
-        /// <value>The time to live in minutes.</value>
+        /// <inheritdoc />
         public ulong? TimeToLiveInMilliseconds { get; set; }
 
-        /// <summary>
-        /// Gets or sets a sliding expiration such that if the query has not been requested from the cache in this amount of time it will be
-        /// removed from the cache. (Default: 30 minutes).
-        /// </summary>
-        /// <value>The sliding expiration.</value>
+        /// <inheritdoc />
         public TimeSpan? SlidingExpiration { get; set; } = TimeSpan.FromMinutes(30);
 
         /// <summary>

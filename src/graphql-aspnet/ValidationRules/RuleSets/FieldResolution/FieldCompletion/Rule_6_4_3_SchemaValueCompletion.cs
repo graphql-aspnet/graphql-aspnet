@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletion
 {
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Middleware.FieldExecution;

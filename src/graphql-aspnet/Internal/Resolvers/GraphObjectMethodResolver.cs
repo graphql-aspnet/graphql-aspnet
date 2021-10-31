@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.FieldExecution;
@@ -85,7 +86,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
                 var invokableObject = context.Arguments.SourceData as object;
                 var invokeReturn = invoker(ref invokableObject, paramSet);
-
                 if (_graphMethod.IsAsyncField)
                 {
                     if (invokeReturn is Task task)

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Middleware
 {
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware;
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     /// </summary>
     /// <typeparam name="TContext">The type of the context the pipeline can process.</typeparam>
     public interface ISchemaPipeline<TContext> : ISchemaPipeline
-        where TContext : class, IGraphMiddlewareContext
+        where TContext : class, IGraphExecutionContext
     {
         /// <summary>
         /// Gets the delegate function representing the start of the pipeline.

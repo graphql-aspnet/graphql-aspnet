@@ -269,7 +269,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the source type this field was created from.
         /// </summary>
         /// <value>The field souce.</value>
-        public GraphFieldTemplateSource FieldSource => GraphFieldTemplateSource.Method;
+        public GraphFieldSource FieldSource => GraphFieldSource.Method;
 
         /// <summary>
         /// Gets the method information this instance describes.

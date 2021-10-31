@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Configuration.Mvc
 {
     using System;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -57,18 +59,20 @@ namespace GraphQL.AspNet.Configuration.Mvc
                     this ISchemaBuilder<TSchema> schemaBuilder)
                     where TSchema : class, ISchema
         {
+            Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
+
             var extension = new SubscriptionPublisherSchemaExtension<TSchema>();
 
             // register the in-process publisher to the service collection before
             // if one is not already registered
             var defaultPublisher = CreateDefaultSubscriptionPublisherDescriptor();
-            extension.OptionalServices.Add(defaultPublisher);
+            schemaBuilder.Options.ServiceCollection.TryAdd(defaultPublisher);
 
             // register the internal queueing mechanism that will asyncrounously transfer
             // raised events from controller methods to the registered subscription publisher
-            schemaBuilder.AsServiceCollection().AddSingleton<SubscriptionEventQueue>();
-            schemaBuilder.AsServiceCollection().AddHostedService<SubscriptionPublicationService>();
-            schemaBuilder.AsServiceCollection().TryAdd(CreateDefaultSubscriptionRouterDescriptor());
+            schemaBuilder.Options.ServiceCollection.AddSingleton<SubscriptionEventQueue>();
+            schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionPublicationService>();
+            schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
 
             schemaBuilder.Options.RegisterExtension(extension);
             schemaBuilder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>(
@@ -95,12 +99,11 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var subscriptionsOptions = new SubscriptionServerOptions<TSchema>();
             options?.Invoke(subscriptionsOptions);
 
-            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
-
-            // register the default router type to the service collection
+            // try register the default router type to the service collection
             var defaultRouter = CreateDefaultSubscriptionRouterDescriptor();
-            extension.OptionalServices.Add(defaultRouter);
+            schemaBuilder.Options.ServiceCollection.TryAdd(defaultRouter);
 
+            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
             schemaBuilder.Options.RegisterExtension(extension);
 
             return schemaBuilder;

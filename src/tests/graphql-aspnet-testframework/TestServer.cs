@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -171,7 +172,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="sourceData">The source data to use as the input to the field. This can be changed, but must be supplied. A
         /// generic <see cref="object"/> will be used if not supplied.</param>
         /// <returns>IMockFieldRequest.</returns>
-        public FieldContextBuilder CreateFieldContextBuilder<TType>(string fieldName, object sourceData = null)
+        public FieldContextBuilder CreateFieldContextBuilder<TType>(string fieldName, object sourceData)
         {
             var template = TemplateHelper.CreateFieldTemplate<TType>(fieldName);
             var fieldMaker = new GraphFieldMaker(this.Schema);
@@ -184,10 +185,7 @@ namespace GraphQL.AspNet.Tests.Framework
                 this.Schema,
                 template as IGraphMethod);
 
-            if (sourceData == null)
-                builder.AddSourceData(new object());
-            else
-                builder.AddSourceData(sourceData);
+            builder.AddSourceData(sourceData);
 
             return builder;
         }

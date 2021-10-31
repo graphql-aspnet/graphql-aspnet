@@ -10,15 +10,13 @@
 namespace GraphQL.AspNet.Interfaces.Configuration
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// An interface that can be used to configure extensions to a schema.
     /// </summary>
-    public interface ISchemaExtension
+    public interface IGraphQLServerExtension
     {
         /// <summary>
         /// This method is called by the parent options just before it is added to the extensions
@@ -36,19 +34,5 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// <param name="app">The application builder, no middleware will be registered if not supplied.</param>
         /// <param name="serviceProvider">The service provider to use. </param>
         void UseExtension(IApplicationBuilder app = null, IServiceProvider serviceProvider = null);
-
-        /// <summary>
-        /// Gets a collection of services this extension has registered that should be included in
-        /// a DI container.
-        /// </summary>
-        /// <value>The additional types as formal descriptors.</value>
-        List<ServiceDescriptor> RequiredServices { get; }
-
-        /// <summary>
-        /// Gets a collection of services this extension has registered that may be included in
-        /// a DI container. If they cannot be added, because a reference already exists, they will be skipped.
-        /// </summary>
-        /// <value>The additional types as formal descriptors.</value>
-        List<ServiceDescriptor> OptionalServices { get; }
     }
 }

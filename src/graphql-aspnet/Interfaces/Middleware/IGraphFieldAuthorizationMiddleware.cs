@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Middleware
 {
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.FieldAuthorization;
 
     /// <summary>

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.FieldExecution;
@@ -60,8 +61,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
             // valdidate the incoming source data to ensure its process-able by this property
             // resolver. If the data is being resolved through an interface or object reference
-            // ensure the provided
-            // source data can be converted otherwise ensure the types match exactly.
+            // ensure the provided source data can be converted otherwise ensure the types match exactly.
             if (_graphMethod.Parent.ObjectType.IsInterface || _graphMethod.Parent.ObjectType.IsClass)
             {
                 if (!Validation.IsCastable(sourceData.GetType(), _graphMethod.Parent.ObjectType))
@@ -123,6 +123,13 @@ namespace GraphQL.AspNet.Internal.Resolvers
                 }
 
                 context.Result = invokeReturn;
+            }
+            catch (GraphExecutionException gee)
+            {
+                context.Messages.Critical(
+                    gee.Message,
+                    Constants.ErrorCodes.EXECUTION_ERROR,
+                    context.Request.Origin);
             }
             catch (Exception ex)
             {

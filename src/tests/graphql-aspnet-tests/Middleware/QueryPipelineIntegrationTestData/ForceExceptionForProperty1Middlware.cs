@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;

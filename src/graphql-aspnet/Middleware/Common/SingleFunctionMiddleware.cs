@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Middleware.Common
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
 
     /// <summary>
@@ -21,7 +22,7 @@ namespace GraphQL.AspNet.Middleware.Common
     /// </summary>
     /// <typeparam name="TContext">The type of context this pipeline handles.</typeparam>
     internal class SingleFunctionMiddleware<TContext> : IGraphMiddlewareComponent<TContext>
-        where TContext : class, IGraphMiddlewareContext
+        where TContext : class, IGraphExecutionContext
     {
         private readonly Func<TContext, GraphMiddlewareInvocationDelegate<TContext>, CancellationToken, Task> _invocationFunc;
 

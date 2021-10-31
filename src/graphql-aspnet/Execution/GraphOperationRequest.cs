@@ -53,6 +53,19 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GraphOperationRequest"/> class.
+        /// </summary>
+        /// <param name="request">The request to injest into this request.</param>
+        protected GraphOperationRequest(IGraphOperationRequest request)
+        {
+            Validation.ThrowIfNull(request, nameof(request));
+            this.Id = request.Id;
+            this.OperationName = request.OperationName;
+            this.QueryText = request.QueryText;
+            this.VariableData = request.VariableData;
+        }
+
+        /// <summary>
         /// Extracts a raw data package from this request .
         /// </summary>
         /// <returns>GraphQueryData.</returns>
@@ -94,6 +107,6 @@ namespace GraphQL.AspNet.Execution
         /// Gets the length of the <see cref="QueryText"/>.
         /// </summary>
         /// <value>The length of the query.</value>
-        protected int QueryLength => QueryText.Length;
+        protected int QueryLength => QueryText?.Length ?? 0;
     }
 }

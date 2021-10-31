@@ -16,8 +16,14 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// A request passed to a field resolver to complete a custom operation in an effort to generate
     /// a piece of data requested by a user.
     /// </summary>
-    public interface IGraphFieldRequest : IControllerActionInvocationRequest
+    public interface IGraphFieldRequest : IInvocationRequest
     {
+        /// <summary>
+        /// Gets the parent operation request governing this field request.
+        /// </summary>
+        /// <value>The operation request.</value>
+        public IGraphOperationRequest OperationRequest { get; }
+
         /// <summary>
         /// Gets the invocation context.
         /// </summary>

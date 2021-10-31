@@ -9,10 +9,12 @@
 
 namespace GraphQL.AspNet.Tests.Configuration
 {
+    using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -293,6 +295,35 @@ namespace GraphQL.AspNet.Tests.Configuration
             // resolution of fields "queryType_candles", "candle" and "name"
             // means the middleware should be called 3x
             Assert.AreEqual(3, CandleMiddleware.Counter);
+        }
+
+        [Test]
+        public void ChangingGlobalConfig_ChangesHowControllersAreRegistered()
+        {
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            GraphQLProviders.GlobalConfiguration = new DefaultGraphQLGLobalConfiguration();
+
+            var originalSetting = GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime;
+
+            // make sure the original setting is not what we hope to change it to
+            // otherwise the test is inconclusive
+            if (originalSetting == ServiceLifetime.Singleton)
+            {
+                Assert.Inconclusive("Unable to determine if the service lifetime was changed. Original and new settings are the same.");
+            }
+
+            GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime = ServiceLifetime.Singleton;
+
+            var serverBuilder = new TestServerBuilder<CandleSchema>();
+            var schemaBuilder = serverBuilder.AddGraphQL<CandleSchema>(options =>
+            {
+                options.AddGraphType<CandleController>();
+            });
+
+            var descriptor = serverBuilder.SchemaOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(CandleController));
+
+            Assert.AreEqual(ServiceLifetime.Singleton, descriptor.Lifetime);
         }
     }
 }

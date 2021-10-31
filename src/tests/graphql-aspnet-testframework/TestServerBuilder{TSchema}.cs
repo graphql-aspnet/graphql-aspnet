@@ -9,6 +9,7 @@
 namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Security.Claims;
     using GraphQL.AspNet.Common.Extensions;
@@ -25,8 +26,8 @@ namespace GraphQL.AspNet.Tests.Framework
     /// <summary>
     /// A builder class to configure a scenario and generate a test server to execute unit tests against.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the t schema.</typeparam>
-    public partial class TestServerBuilder<TSchema> : ServiceCollection
+    /// <typeparam name="TSchema">The type of the schema being built by this instance.</typeparam>
+    public partial class TestServerBuilder<TSchema> : IServiceCollection
         where TSchema : class, ISchema
     {
         private readonly List<IGraphTestFrameworkComponent> _testComponents;
@@ -44,7 +45,6 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="initialSetup">A set of flags for common preconfigured settings for the test server.</param>
         public TestServerBuilder(TestOptions initialSetup = TestOptions.None)
         {
-            this.ServiceCollection = new ServiceCollection();
             _testComponents = new List<IGraphTestFrameworkComponent>();
             _schemaBuilderAdditions = new List<Action<ISchemaBuilder<TSchema>>>();
             _initialSetup = initialSetup;
@@ -56,6 +56,9 @@ namespace GraphQL.AspNet.Tests.Framework
             this.AddTestComponent(this.Authorization);
             this.AddTestComponent(this.User);
             this.AddTestComponent(this.Logging);
+
+            var serviceCollection = new ServiceCollection();
+            this.SchemaOptions = new SchemaOptions<TSchema>(serviceCollection);
         }
 
         /// <summary>
@@ -159,18 +162,9 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>TestServer.</returns>
         public TestServer<TSchema> Build()
         {
-            var serviceCollection = new ServiceCollection();
-
-            foreach (var descriptor in this.ServiceCollection)
-                serviceCollection.Insert(serviceCollection.Count, descriptor);
-
-            // any additional, 1 off services added to the builder?
-            foreach (var service in this)
-                serviceCollection.AddOrUpdate(service);
-
             // register all test components
             foreach (var component in _testComponents)
-                component.Inject(serviceCollection);
+                component.Inject(this.SchemaOptions.ServiceCollection);
 
             var userProvidedConfigOptions = _configureOptions;
             _configureOptions = (options) =>
@@ -183,19 +177,25 @@ namespace GraphQL.AspNet.Tests.Framework
             };
 
             // inject staged graph types
-            var injector = new GraphQLSchemaInjector<TSchema>(serviceCollection, _configureOptions);
+            var injector = new GraphQLSchemaInjector<TSchema>(this.SchemaOptions, _configureOptions);
             injector.ConfigureServices();
 
             foreach (var action in _schemaBuilderAdditions)
                 action.Invoke(injector.SchemaBuilder);
 
             var userAccount = this.User.CreateUserAccount();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = this.SchemaOptions.ServiceCollection.BuildServiceProvider();
 
             injector.UseSchema(serviceProvider);
-
             return new TestServer<TSchema>(serviceProvider, userAccount);
         }
+
+        /// <summary>
+        /// Gets the schema options containing all the configuration data for the schema this test
+        /// server will execute for.
+        /// </summary>
+        /// <value>The schema options.</value>
+        public SchemaOptions<TSchema> SchemaOptions { get; }
 
         /// <summary>
         /// Gets the authorization builder used to configure the roles and policys known the test server.
@@ -214,11 +214,5 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <value>The logging.</value>
         public TestLoggingBuilder Logging { get; }
-
-        /// <summary>
-        /// Gets the service collection that will create a DI provider when this instance is built.
-        /// </summary>
-        /// <value>The service collection.</value>
-        public IServiceCollection ServiceCollection { get; }
     }
 }

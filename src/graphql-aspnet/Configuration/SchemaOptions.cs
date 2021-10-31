@@ -19,36 +19,39 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// A complete set of configuration options to setup a schema.
     /// </summary>
     public class SchemaOptions
     {
-        private readonly Dictionary<Type, ISchemaExtension> _extensions;
+        private readonly Dictionary<Type, IGraphQLServerExtension> _extensions;
         private readonly HashSet<Type> _possibleTypes;
-        private readonly Type _schemaType;
 
-        /// <summary>
-        /// Occurs when a type reference is set to this configuration section that requires injection into the service collection.
-        /// </summary>
-        internal event EventHandler<TypeReferenceEventArgs> TypeReferenceAdded;
+        private readonly Type _schemaType;
+        private readonly List<TypeToRegister> _registeredServices;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaOptions" /> class.
         /// </summary>
         /// <param name="schemaType">Type of the schema being built.</param>
-        public SchemaOptions(Type schemaType)
+        /// <param name="serviceCollection">The service collection to which all
+        /// found types or services should be registered.</param>
+        public SchemaOptions(Type schemaType, IServiceCollection serviceCollection)
         {
+            this.ServiceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _schemaType = Validation.ThrowIfNullOrReturn(schemaType, nameof(schemaType));
             _possibleTypes = new HashSet<Type>();
+            _extensions = new Dictionary<Type, IGraphQLServerExtension>();
+            _registeredServices = new List<TypeToRegister>();
+
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
             this.CacheOptions = new SchemaQueryPlanCacheConfiguration();
             this.AuthorizationOptions = new SchemaAuthorizationConfiguration();
             this.ExecutionOptions = new SchemaExecutionConfiguration();
             this.ResponseOptions = new SchemaResponseConfiguration();
             this.QueryHandler = new SchemaQueryHandlerConfiguration();
-            _extensions = new Dictionary<Type, ISchemaExtension>();
         }
 
         /// <summary>
@@ -116,7 +119,15 @@ namespace GraphQL.AspNet.Configuration
             if (newAdd)
             {
                 if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
-                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(type, ServiceLifetime.Scoped));
+                {
+                    var typeToRegister = new TypeToRegister(
+                        type,
+                        type,
+                        GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime,
+                        false);
+
+                    _registeredServices.Add(typeToRegister);
+                }
             }
 
             return this;
@@ -128,27 +139,27 @@ namespace GraphQL.AspNet.Configuration
         /// <typeparam name="TExtensionType">The type of the t extension type.</typeparam>
         /// <param name="extension">The extension.</param>
         public void RegisterExtension<TExtensionType>(TExtensionType extension)
-            where TExtensionType : class, ISchemaExtension
+            where TExtensionType : class, IGraphQLServerExtension
         {
             Validation.ThrowIfNull(extension, nameof(extension));
 
             extension.Configure(this);
             _extensions.Add(extension.GetType(), extension);
+        }
 
-            if (extension.RequiredServices != null)
+        /// <summary>
+        /// Instructs this options collection to gather all its found services
+        /// and register them to the <see cref="IServiceCollection"/> for this instance.
+        /// </summary>
+        internal void FinalizeServiceRegistration()
+        {
+            foreach (var service in _registeredServices)
             {
-                foreach (var descriptor in extension.RequiredServices)
-                {
-                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(descriptor, true));
-                }
-            }
-
-            if (extension.OptionalServices != null)
-            {
-                foreach (var descriptor in extension.OptionalServices)
-                {
-                    this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(descriptor, false));
-                }
+                var descriptor = service.CreateServiceDescriptor();
+                if (service.Required)
+                    this.ServiceCollection.Add(descriptor);
+                else
+                    this.ServiceCollection.TryAdd(descriptor);
             }
         }
 
@@ -208,6 +219,13 @@ namespace GraphQL.AspNet.Configuration
         /// Gets the set of options extensions added to this schema configuration.
         /// </summary>
         /// <value>The extensions.</value>
-        public IReadOnlyDictionary<Type, ISchemaExtension> Extensions => _extensions;
+        public IReadOnlyDictionary<Type, IGraphQLServerExtension> Extensions => _extensions;
+
+        /// <summary>
+        /// Gets the service collection which contains all the required entries for
+        /// the schema this instance represents.
+        /// </summary>
+        /// <value>The service collection.</value>
+        public IServiceCollection ServiceCollection { get; }
     }
 }

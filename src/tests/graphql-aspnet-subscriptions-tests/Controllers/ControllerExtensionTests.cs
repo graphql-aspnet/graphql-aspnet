@@ -32,7 +32,8 @@ namespace GraphQL.Subscriptions.Tests.Controllers
                 .Build();
 
             var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEvent));
+                nameof(InvokableController.MutationRaisesSubEvent),
+                new object());
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -70,7 +71,8 @@ namespace GraphQL.Subscriptions.Tests.Controllers
                 .Build();
 
             var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEventNoData));
+                nameof(InvokableController.MutationRaisesSubEventNoData),
+                new object());
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -99,7 +101,8 @@ namespace GraphQL.Subscriptions.Tests.Controllers
                 .Build();
 
             var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEvent));
+                nameof(InvokableController.MutationRaisesSubEvent),
+                new object());
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -126,7 +129,8 @@ namespace GraphQL.Subscriptions.Tests.Controllers
                 .Build();
 
             var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEvent));
+                nameof(InvokableController.MutationRaisesSubEvent),
+                new object());
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -154,7 +158,8 @@ namespace GraphQL.Subscriptions.Tests.Controllers
                 .Build();
 
             var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaiseSubEventWithNoEventName));
+                nameof(InvokableController.MutationRaiseSubEventWithNoEventName),
+                new object());
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);

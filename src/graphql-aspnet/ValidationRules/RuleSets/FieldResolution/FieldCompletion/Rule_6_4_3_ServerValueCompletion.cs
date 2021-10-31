@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Internal;
@@ -108,7 +109,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
                         $"of type '{rootSourceType.FriendlyName()}' attempted to fill the request but graphql was not able to coerce the result " +
                         $"into a single allowed .NET type. Matched .NET Types [{string.Join(", ", foundTypeNames)}].";
                 }
-
 
                 this.ValidationError(
                     context,

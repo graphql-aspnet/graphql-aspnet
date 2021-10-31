@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Execution.Metrics
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Interfaces.TypeSystem;

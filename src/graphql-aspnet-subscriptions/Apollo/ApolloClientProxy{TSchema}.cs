@@ -28,6 +28,7 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;

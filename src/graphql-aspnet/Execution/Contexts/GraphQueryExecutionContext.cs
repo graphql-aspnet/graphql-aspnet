@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.QueryExecution
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
     using System.Collections.Generic;
@@ -19,13 +19,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Middleware;
 
     /// <summary>
     /// A top level context for the execution of a query through the runtime. Functions similarly to how HttpContext works for
     /// an HttpRequest.
     /// </summary>
     [DebuggerDisplay("IsValid = {IsValid} (Messages = {Messages.Count})")]
-    public class GraphQueryExecutionContext : BaseGraphMiddlewareContext
+    public class GraphQueryExecutionContext : BaseGraphExecutionContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQueryExecutionContext" /> class.
@@ -43,19 +44,12 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
-            : base(serviceProvider, user, metrics, logger, items)
+            : base(request, serviceProvider, user, metrics, logger, items)
         {
-            this.Request = Validation.ThrowIfNullOrReturn(request, nameof(request));
             this.FieldResults = new List<GraphDataItem>();
             this.PostProcessingActions = new List<Action>();
             this.DefaultFieldSources = new DefaultFieldSourceCollection();
         }
-
-        /// <summary>
-        /// Gets the query text defining the query document to be executed.
-        /// </summary>
-        /// <value>The query text.</value>
-        public IGraphOperationRequest Request { get; }
 
         /// <summary>
         /// Gets or sets the operation result created during the query pipeline execution.

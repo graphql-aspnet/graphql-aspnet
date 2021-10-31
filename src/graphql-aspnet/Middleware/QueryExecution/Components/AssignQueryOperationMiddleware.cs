@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
 
     /// <summary>
@@ -29,11 +30,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             if (context.IsValid && context.QueryPlan != null && context.QueryPlan.IsValid)
             {
-                context.QueryOperation = context.QueryPlan.RetrieveOperation(context.Request.OperationName);
+                context.QueryOperation = context.QueryPlan.RetrieveOperation(context.OperationRequest.OperationName);
                 if (context.QueryOperation == null)
                 {
                     context.Messages.Critical(
-                        $"No operation found with the name '{context.Request.OperationName}'.",
+                        $"No operation found with the name '{context.OperationRequest.OperationName}'.",
                         Constants.ErrorCodes.BAD_REQUEST);
                 }
             }

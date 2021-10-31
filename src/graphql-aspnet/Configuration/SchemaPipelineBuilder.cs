@@ -13,8 +13,10 @@ namespace GraphQL.AspNet.Configuration
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware;
@@ -30,22 +32,20 @@ namespace GraphQL.AspNet.Configuration
     public class SchemaPipelineBuilder<TSchema, TMiddleware, TContext> : ISchemaPipelineBuilder<TSchema, TMiddleware, TContext>
         where TSchema : class, ISchema
         where TMiddleware : class, IGraphMiddlewareComponent<TContext>
-        where TContext : class, IGraphMiddlewareContext
+        where TContext : class, IGraphExecutionContext
     {
-        /// <summary>
-        /// Occurs when a middleware type reference is added to the pipeline.
-        /// </summary>
-        public event EventHandler<TypeReferenceEventArgs> TypeReferenceAdded;
-
+        private readonly SchemaOptions _options;
         private readonly LinkedList<GraphMiddlewareDefinition<TContext>> _middleware;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaPipelineBuilder{TSchema,TMiddleware,TContext}" /> class.
         /// </summary>
+        /// <param name="options">The schema options representing the schema being built.</param>
         /// <param name="name">The human friendly name to assign to this pipeline.</param>
-        public SchemaPipelineBuilder(string name = null)
+        public SchemaPipelineBuilder(SchemaOptions options, string name = null)
         {
             this.PipelineName = name?.Trim() ?? "-unknown-";
+            _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _middleware = new LinkedList<GraphMiddlewareDefinition<TContext>>();
         }
 
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Configuration
         {
             var definition = new GraphMiddlewareDefinition<TContext>(typeof(TComponent), lifetime, name);
             _middleware.AddLast(definition);
-            this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(typeof(TComponent), lifetime));
+            _options.ServiceCollection.Add(new ServiceDescriptor(typeof(TComponent), typeof(TComponent), lifetime));
 
             return this;
         }

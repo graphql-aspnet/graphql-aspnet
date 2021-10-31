@@ -16,9 +16,12 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Execution.Metrics;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldExecution;
@@ -43,7 +46,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
         private readonly TSchema _schema;
-        private readonly bool _awaitEachTask;
+        private readonly ResolverIsolationOptions _resolversToIsolate;
+        private readonly bool _debugMode;
         private readonly TimeSpan _timeoutMs;
 
         /// <summary>
@@ -54,7 +58,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public ExecuteQueryOperationMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _awaitEachTask = _schema.Configuration.ExecutionOptions.AwaitEachRequestedField;
+            _resolversToIsolate = _schema.Configuration.ExecutionOptions.ResolverIsolation;
+            _debugMode = _schema.Configuration.ExecutionOptions.DebugMode;
             _timeoutMs = _schema.Configuration.ExecutionOptions.QueryTimeout;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
@@ -85,36 +90,68 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // vs just "it was canceled" which allows for tighter error messages in the response.
             var operation = context.QueryOperation;
             var fieldInvocations = new List<FieldPipelineInvocation>();
+            var fieldInvocationTasks = new List<Task>();
 
             // Convert the supplied variable values to usable objects of the type expression
             // of the chosen operation
             var variableResolver = new ResolvedVariableGenerator(_schema, operation);
-            var variableData = variableResolver.Resolve(context.Request.VariableData);
+            var variableData = variableResolver.Resolve(context.OperationRequest.VariableData);
             var cancelSource = new CancellationTokenSource();
+
             try
             {
-                // begin a field execution pipeline for each top level field
-                foreach (var invocationContext in operation.FieldContexts)
+                var timeOutTask = Task.Delay(_timeoutMs, cancelSource.Token);
+
+                // Step 0
+                // --------------------------
+                // Sort the top level queries of this operation such that
+                // those contexts that should be isolated execute first and all others
+                // run in paralell
+                IEnumerable<(IGraphFieldInvocationContext Context, bool ExecuteIsolated)> orderedContextList;
+                if (operation.OperationType == GraphCollection.Mutation)
+                {
+                    // top level mutation operatons must be executed in sequential order
+                    // due to potential side effects on the data
+                    // https://graphql.github.io/graphql-spec/June2018/#sec-Mutation
+                    orderedContextList = operation.FieldContexts
+                        .Select(x => (x, true));
+                }
+                else
+                {
+                    // with non-mutation queries, order the contexts such that the isolated ones (as determined by
+                    // the configuration for this schema) are on top. All contexts are ran in isolation
+                    // when in debug mode (always).
+                    orderedContextList = operation
+                       .FieldContexts
+                       .Select(x => (x, _debugMode || _resolversToIsolate.ShouldIsolateFieldSource(x.Field.FieldSource)))
+                       .OrderByDescending(x => x.Item2);
+                }
+
+                // Step 1
+                // --------------------------
+                // Begin a field execution pipeline for each top level field
+                foreach (var sortedContext in orderedContextList)
                 {
                     var path = new SourcePath();
-                    path.AddFieldName(invocationContext.Name);
+                    path.AddFieldName(sortedContext.Context.Name);
 
                     object dataSourceValue;
 
                     // fetch the source data value to use for the field invocation
                     // attempt to retrieve from the master context if it was supplied by the pipeline
                     // invoker, otherwise generate a root source
-                    if (!context.DefaultFieldSources.TryRetrieveSource(invocationContext.Field, out dataSourceValue))
+                    if (!context.DefaultFieldSources.TryRetrieveSource(sortedContext.Context.Field, out dataSourceValue))
                         dataSourceValue = this.GenerateRootSourceData(operation.OperationType);
 
-                    var topLevelDataItem = new GraphDataItem(invocationContext, dataSourceValue, path);
+                    var topLevelDataItem = new GraphDataItem(sortedContext.Context, dataSourceValue, path);
 
                     var sourceData = new GraphFieldDataSource(dataSourceValue, path, topLevelDataItem);
 
                     var fieldRequest = new GraphFieldRequest(
-                        invocationContext,
+                        context.OperationRequest,
+                        sortedContext.Context,
                         sourceData,
-                        new SourceOrigin(invocationContext.Origin.Location, path),
+                        new SourceOrigin(sortedContext.Context.Origin.Location, path),
                         context.Items);
 
                     var fieldContext = new GraphFieldExecutionContext(
@@ -133,37 +170,76 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     };
 
                     fieldInvocations.Add(pipelineInvocation);
+                    fieldInvocationTasks.Add(fieldTask);
 
-                    // top level mutation operatons must be executed in sequential order
-                    // https://graphql.github.io/graphql-spec/June2018/#sec-Mutation
-                    if (_awaitEachTask || operation.OperationType == GraphCollection.Mutation)
+                    if (_debugMode)
+                    {
                         await fieldTask.ConfigureAwait(false);
+                    }
+                    else if (sortedContext.ExecuteIsolated)
+                    {
+                        // await the isolated task to prevent any potential paralellization
+                        // by the task system but not in such a way that a faulted task would
+                        // throw an exception. Allow the reslts (exceptions included) to be
+                        // captured on the task and handled by the rest of the middleware operation
+                        //
+                        // while awaiting an isolated task the query timeout may expire
+                        // exit and stop if so
+                        await Task.WhenAny(fieldTask, timeOutTask).ConfigureAwait(false);
+                    }
+
+                    if (timeOutTask.IsCompleted)
+                        break;
                 }
 
-                // await all the outstanding tasks or a configured timeout
-                var fieldPipelineTasksWrapper = Task.WhenAll(fieldInvocations.Select(x => x.Task));
-                var timeOutTask = Task.Delay(_timeoutMs, cancelSource.Token);
+                // Step 2
+                // -----------------------------------------
+                bool isTimedOut;
 
-                var completedTask = await Task.WhenAny(fieldPipelineTasksWrapper, timeOutTask).ConfigureAwait(false);
+                if (timeOutTask.IsCompleted)
+                {
+                    // timeout could have occured during the completion of any isolated task
+                    // if it did dont try to wait for an paralell tasks to finish
+                    isTimedOut = true;
+                }
+                else
+                {
+                    // await all outstanding task and hope they finish before the timer
+                    var fieldPipelineTasksWrapper = Task.WhenAll(fieldInvocationTasks);
+                    var completedTask = await Task.WhenAny(fieldPipelineTasksWrapper, timeOutTask).ConfigureAwait(false);
 
-                var isTimedOut = completedTask == timeOutTask;
+                    isTimedOut = completedTask == timeOutTask;
+                }
+
                 var cancelationWasRequested = cancelSource.IsCancellationRequested;
-
                 if (!isTimedOut)
                 {
-                    // Field resolutions completed within the timeout period.
-                    // Consider that the task may have faulted or been canceled causing them to complete incorrectly.
-                    // "re-await" so that any exceptions/cancellation are rethrown correctly.
-                    // and not aggregated under the `WhenAll/WhenAny` task from above
-                    // https://stackoverflow.com/questions/4238345/asynchronously-wait-for-taskt-to-complete-with-timeout
+                    var toThrow = new List<FieldPipelineInvocation>();
+
+                    // All field resolutions completed within the timeout period.
+                    // capture the reslts
                     foreach (var invocation in fieldInvocations)
                     {
-                        await invocation.Task.ConfigureAwait(false);
+                        if (invocation.Task.IsFaulted)
+                            toThrow.Add(invocation);
 
                         // load the reslts of each field (in order) to the context
                         // for further processing
                         context.FieldResults.Add(invocation.DataItem);
                         context.Messages.AddRange(invocation.FieldContext.Messages);
+                    }
+
+                    // Consider that the task(s) may have faulted or been canceled causing them to complete incorrectly.
+                    // "re-await" a single failure or aggregate many failues so that any exceptions/cancellation are rethrown correctly.
+                    // https://stackoverflow.com/questions/4238345/asynchronously-wait-for-taskt-to-complete-with-timeout
+                    if (toThrow.Count == 1)
+                    {
+                        await toThrow[0].Task.ConfigureAwait(false);
+                    }
+                    else if (toThrow.Count > 1)
+                    {
+                        var aggException = new AggregateException(toThrow.SelectMany(x => x.Task.Exception.InnerExceptions).ToArray());
+                        throw aggException;
                     }
                 }
                 else

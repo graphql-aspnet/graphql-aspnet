@@ -72,6 +72,31 @@ namespace GraphQL.AspNet.Tests.Variables
         }
 
         [Test]
+        public async Task Enumerator_WalksVariableCollection()
+        {
+            var result = await this.CreateResolvedVariableCollection(
+                @"query ($var1: Input_VariableTestObject){
+                            singleObjectTest(arg1: $var1)
+                } ",
+                @"{
+                    ""var1"" : {
+                        ""stringProperty"" : ""stringValue1"",
+                        ""floatProperty"": 12.345,
+                        ""boolProperty"":  true,
+                        ""enumProperty"": ""value2""
+                    }
+                }");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+
+            foreach (var item in result as ResolvedVariableCollection)
+            {
+                Assert.AreEqual("var1", item.Key);
+            }
+        }
+
+        [Test]
         public async Task NestedInputObject()
         {
             var result = await this.CreateResolvedVariableCollection(
