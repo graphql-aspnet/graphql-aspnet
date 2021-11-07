@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// An argument/input value that can be applied to a field.
     /// </summary>
-    public interface IGraphFieldArgument : ITypedItem, INamedItem
+    public interface IGraphFieldArgument : ITypedSchemaItem, ISchemaItem
     {
         /// <summary>
         /// Gets a default value to use for any instances of this argument when one is not explicitly provided.

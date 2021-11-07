@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// Represents a scalar supported by a schema.
     /// </summary>
-    /// <seealso cref="INamedItem" />
-    public interface IScalarGraphType : IGraphType, ITypedItem
+    /// <seealso cref="ISchemaItem" />
+    public interface IScalarGraphType : IGraphType, ITypedSchemaItem
     {
         /// <summary>
         /// Gets a collection of other types that this scalar may be declared as. Scalars maybe
@@ -36,17 +36,17 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         ScalarValueType ValueType { get; }
 
         /// <summary>
-        /// Gets an object that will perform a conversion of raw data into the type
+        /// Gets or sets an object that will perform a conversion of raw data into the type
         /// defined on this instance.
         /// </summary>
         /// <value>The resolver assigned to this instance.</value>
-        IScalarValueResolver SourceResolver { get; }
+        ILeafValueResolver SourceResolver { get; set; }
 
         /// <summary>
-        /// Gets an object that will perform the conversion of internal data value to a span of characters
+        /// Gets or sets an object that will perform the conversion of internal data value to a span of characters
         /// that can be written to a response stream.
         /// </summary>
         /// <value>The serializer.</value>
-        IScalarValueSerializer Serializer { get; }
+        IScalarValueSerializer Serializer { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A representation of a object field as it would be defined in the graph type system. Contains
     /// special logic for handling graph fields generating from object properties.
     /// </summary>
-    public class PropertyGraphField : MethodGraphField, ITypedItem
+    public class PropertyGraphField : MethodGraphField, ITypedSchemaItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphField" /> class.

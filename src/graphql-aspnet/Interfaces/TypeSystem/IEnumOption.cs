@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// An interface describing data to fully populate an enumeration item into the object graph.
     /// </summary>
-    public interface IEnumOption : INamedItem, IDeprecatable
+    public interface IEnumOption : ISchemaItem, IDeprecatable
     {
         /// <summary>
         /// When overridden in a child class, allows the option to perform some final validation checks

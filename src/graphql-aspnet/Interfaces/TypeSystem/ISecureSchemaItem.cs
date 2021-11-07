@@ -11,9 +11,9 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// An interace describing an item as being secure and requiring authorization to access the graph types declared through it.
+    /// An schema item that is secure and requiring authorization to access.
     /// </summary>
-    public interface ISecureItem
+    public interface ISecureSchemaItem
     {
         /// <summary>
         /// Gets the security policies found via defined attributes on the item that need to be enforced.

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A representation of data about a graph type being exposed as an input to another field.
     /// </summary>
     [DebuggerDisplay("Introspected Input Value: {Name}")]
-    public class IntrospectedInputValueType : IntrospectedItem, INamedItem
+    public class IntrospectedInputValueType : IntrospectedItem, ISchemaItem
     {
         private readonly object _rawDefaultValue;
 

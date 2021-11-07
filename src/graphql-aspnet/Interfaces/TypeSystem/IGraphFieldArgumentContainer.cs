@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// An interface that identifies that the entity defines and contains a
     /// collection of input items.
     /// </summary>
-    public interface IGraphFieldArgumentContainer : INamedItem
+    public interface IGraphFieldArgumentContainer : ISchemaItem
     {
         /// <summary>
         /// Gets a collection of arguments this instance can accept on a query.

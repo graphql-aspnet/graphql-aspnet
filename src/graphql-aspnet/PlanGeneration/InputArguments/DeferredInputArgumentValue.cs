@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// <returns>System.Object.</returns>
         public object Resolve(IResolvedVariableCollection variableData)
         {
-            return _resolver.WithVariables(variableData).Resolve(_coreValue);
+            return _resolver.Resolve(_coreValue, variableData);
         }
     }
 }

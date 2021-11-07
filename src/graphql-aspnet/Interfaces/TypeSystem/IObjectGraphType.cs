@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     /// <summary>
-    /// A representation of a complex object type known toa schema.
+    /// A representation of a complex object type known to an <see cref="ISchema"/>.
     /// </summary>
-    public interface IObjectGraphType : IGraphType, IGraphFieldContainer, IExtendableGraphType, IGraphInterfaceContainer
+    public interface IObjectGraphType : IGraphFieldContainer, IExtendableGraphType, IGraphInterfaceContainer
     {
     }
 }

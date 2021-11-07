@@ -10,18 +10,18 @@
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     /// <summary>
-    /// An interface to denote that the object has a clearly defined name.
+    /// An item that is part of a <see cref="ISchema"/>.
     /// </summary>
-    public interface INamedItem
+    public interface ISchemaItem
     {
         /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
+        /// Gets the formal name of this item as it exists in the schema.
         /// </summary>
         /// <value>The publically referenced name of this field in the graph.</value>
         string Name { get; }
 
         /// <summary>
-        /// Gets the human-readable description distributed with this field
+        /// Gets the human-readable description distributed with this item
         /// when requested. The description should accurately describe the contents of this field
         /// to consumers.
         /// </summary>

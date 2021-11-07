@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.PlanGeneration
 
             // if the field declares itself as being specifically for a single concrete type
             // enforce that restriction (all user created POCO data types will, most virtual controller based types will not)
-            if (sourceGraphType is ITypedItem typedType)
+            if (sourceGraphType is ITypedSchemaItem typedType)
                 fieldContext.Restrict(typedType.ObjectType);
 
             if (fieldSelection.FieldSelectionSet != null && fieldSelection.FieldSelectionSet.Count > 0)

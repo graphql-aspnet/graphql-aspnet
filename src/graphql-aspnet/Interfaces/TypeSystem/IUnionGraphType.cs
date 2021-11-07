@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IEnumerable<string> PossibleGraphTypeNames { get; }
 
         /// <summary>
-        /// Gets the proxy object that was defined at design type which created this union type.
+        /// Gets the proxy object that was defined at design time which created this union type.
         /// </summary>
         /// <value>The proxy.</value>
         IGraphUnionProxy Proxy { get; }

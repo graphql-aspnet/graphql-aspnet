@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A base class for all scalar types. This base class serves as the scalar type itself, the value resolver and the serializer
     /// with abstract methods that must be implemented for the later two.
     /// </summary>
-    public abstract class BaseScalarType : IScalarGraphType, IScalarValueResolver, IScalarValueSerializer
+    public abstract class BaseScalarType : IScalarGraphType, ILeafValueResolver, IScalarValueSerializer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScalarType"/> class.
@@ -31,6 +31,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
             this.ObjectType = Validation.ThrowIfNullOrReturn(primaryType, nameof(primaryType));
             this.InternalName = this.ObjectType.FriendlyName();
+            this.Publish = true;
+            this.SourceResolver = this;
+            this.Serializer = this;
         }
 
         /// <inheritdoc />
@@ -65,16 +68,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public TypeKind Kind => TypeKind.SCALAR;
 
         /// <inheritdoc />
-        public bool Publish => true;
+        public bool Publish { get; set; }
 
         /// <inheritdoc />
         public abstract ScalarValueType ValueType { get; }
 
         /// <inheritdoc />
-        public virtual IScalarValueResolver SourceResolver => this;
+        public virtual ILeafValueResolver SourceResolver { get; set; }
 
         /// <inheritdoc />
-        public virtual IScalarValueSerializer Serializer => this;
+        public virtual IScalarValueSerializer Serializer { get; set; }
 
         /// <inheritdoc />
         public abstract TypeCollection OtherKnownTypes { get; }

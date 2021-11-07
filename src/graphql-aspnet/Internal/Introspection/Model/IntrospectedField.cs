@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A model object containing data for the __Field type of one field in a graph type.
     /// </summary>
     [DebuggerDisplay("field: {Name}")]
-    public class IntrospectedField : IntrospectedItem, INamedItem, IDeprecatable
+    public class IntrospectedField : IntrospectedItem, ISchemaItem, IDeprecatable
     {
         private readonly IGraphField _field;
 

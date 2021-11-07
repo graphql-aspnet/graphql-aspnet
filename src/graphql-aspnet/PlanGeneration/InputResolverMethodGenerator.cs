@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// Creates the resolver.
         /// </summary>
         /// <param name="graphType">The graph type to generate a resolver for.</param>
-        /// <param name="expression">The expression represneting how the type should be wrapped.</param>
+        /// <param name="expression">The expression representing how the type should be wrapped.</param>
         /// <returns>IQueryInputValueResolver.</returns>
         private IInputValueResolver CreateResolver(IGraphType graphType, GraphTypeExpression expression)
         {
@@ -64,12 +64,12 @@ namespace GraphQL.AspNet.PlanGeneration
             if (graphType is IScalarGraphType scalar)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(scalar);
-                coreResolver = new ScalarInputResolver(scalar.SourceResolver);
+                coreResolver = new ScalarValueInputResolver(scalar.SourceResolver);
             }
             else if (graphType is IEnumGraphType enumGraphType)
             {
                 coreType = _schema.KnownTypes.FindConcreteType(enumGraphType);
-                coreResolver = new EnumValueResolver(coreType);
+                coreResolver = new EnumValueInputResolver(enumGraphType.SourceResolver);
             }
             else if (graphType is IInputObjectGraphType inputType)
             {

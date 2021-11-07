@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// An interface defining a graph type as containing a collection of fields.
     /// </summary>
-    public interface IGraphFieldContainer : INamedItem
+    public interface IGraphFieldContainer : ISchemaItem
     {
         /// <summary>
         /// Gets a collection of fields made available by this interface.

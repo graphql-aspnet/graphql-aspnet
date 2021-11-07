@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A representation of a graphql schema that can have a query document executed against it and have a result generated.
     /// </summary>
-    public interface ISchema
+    public interface ISchema : ISchemaItem
     {
         /// <summary>
         /// Gets the named operation types supported by this schema.
@@ -45,11 +45,5 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value><c>true</c> if this instance is initialized; otherwise, <c>false</c>.</value>
         bool IsInitialized { get; set; }
-
-        /// <summary>
-        /// Gets the a common, friendly name for the schema. This name may appear in error messages.
-        /// </summary>
-        /// <value>The name.</value>
-        string Name { get; }
     }
 }

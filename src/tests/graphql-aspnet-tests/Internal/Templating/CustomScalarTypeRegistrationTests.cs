@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void NoErrors_RegistersPropertly()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("MyCustomType");
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void InUseName_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns(Constants.ScalarNames.INT);
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void NoName_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns(null as string);
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void InvalidName_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("__Bob");
@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void TypeAlreadyRegistered_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("MyScalar");
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void NoTypeSupplied_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("MyScalar");
@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void NoOtherTypeList_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("MyScalar");
@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void OtherTypeInUse_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("MyScalar");
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void NullListForOtherTypes_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("MyScalar");
@@ -224,7 +224,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void NameAlreadyRegisteredScalar_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("Int");
@@ -245,7 +245,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void ObjectTypeAlreadyRegisteredScalar_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("NewInt");
@@ -266,7 +266,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void OtherObjectTypeAlreadyRegisteredScalar_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("NewInt");
@@ -287,7 +287,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void TypeKindNotAScalar_ThrowsException()
         {
             var provider = new DefaultScalarTypeProvider();
-            var mockResolver = new Mock<IScalarValueResolver>();
+            var mockResolver = new Mock<ILeafValueResolver>();
 
             var mock = new Mock<IScalarGraphType>();
             mock.Setup(x => x.Name).Returns("MyScalar");
@@ -316,7 +316,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.ObjectType).Returns(typeof(CustomScalarTypeRegistrationTests));
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
-            mock.Setup(x => x.SourceResolver).Returns(null as IScalarValueResolver);
+            mock.Setup(x => x.SourceResolver).Returns(null as ILeafValueResolver);
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {

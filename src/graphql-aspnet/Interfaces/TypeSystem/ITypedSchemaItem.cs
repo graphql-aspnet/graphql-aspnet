@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A graph type constructed from a specific concrete <see cref="Type"/>.
     /// </summary>
-    public interface ITypedItem
+    public interface ITypedSchemaItem
     {
         /// <summary>
         /// Gets the concrete type of an object that represents a graph type at runtime.

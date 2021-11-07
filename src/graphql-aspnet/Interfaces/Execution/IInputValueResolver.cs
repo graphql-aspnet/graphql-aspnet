@@ -14,25 +14,18 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
 
     /// <summary>
-    /// A resolver capable of taking in a document part derived from <see cref="QueryInputValue" />
-    /// and generate a .NET object of an appropriate type.
+    /// An internal input argument data resolver that converts parted document parts, derived from
+    /// <see cref="QueryInputValue" />, into valid .NET objects of an appropriate type.
     /// </summary>
     public interface IInputValueResolver
     {
         /// <summary>
-        /// Creates a copy of this value resolver injecting it with a specific collection
-        /// of variables that can be used during resoltuion. Any previously wrapped variable sets
-        /// should be discarded.
-        /// </summary>
-        /// <param name="variableData">The variable data.</param>
-        /// <returns>IInputValueResolver.</returns>
-        IInputValueResolver WithVariables(IResolvedVariableCollection variableData);
-
-        /// <summary>
         /// Resolves the specified query input value to the .NET object rendered by this resolver.
         /// </summary>
         /// <param name="resolvableItem">The resolvable item.</param>
+        /// <param name="variableData">An optiona collection of supplied variable data that
+        /// can be used to resolve variable references contained within the <paramref name="resolvableItem"/>.</param>
         /// <returns>System.Object.</returns>
-        object Resolve(IResolvableItem resolvableItem);
+        object Resolve(IResolvableItem resolvableItem, IResolvedVariableCollection variableData = null);
     }
 }

@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A model object containing data for the __schema meta field.
     /// </summary>
     [DebuggerDisplay("Introspected Schema: {Name}")]
-    public class IntrospectedSchema
+    public class IntrospectedSchema : ISchemaItem
     {
         private readonly ISchema _schema;
         private OrderedDictionary<string, IntrospectedType> _typeList;
@@ -204,10 +204,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <value>The directives.</value>
         public IEnumerable<IntrospectedDirective> Directives => _directiveList;
 
-        /// <summary>
-        /// Gets the name of the schema this introspection object is hosting.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public string Name => _schema?.Name;
 
         /// <summary>
@@ -215,5 +212,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <value>The schema.</value>
         public ISchema Schema => _schema;
+
+        /// <inheritdoc />
+        public string Description => _schema.Description;
     }
 }

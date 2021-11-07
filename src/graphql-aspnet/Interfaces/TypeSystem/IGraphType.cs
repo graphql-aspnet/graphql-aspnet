@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A base interface that defines common properties of all type declarations in the system.
+    /// A read only, general declaration of a graph type on a given <see cref="ISchema"/>.
     /// </summary>
-    public interface IGraphType : INamedItem
+    public interface IGraphType : ISchemaItem
     {
         /// <summary>
         /// Determines whether the provided item is of a concrete type represented by this graph type.
@@ -30,15 +30,17 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         TypeKind Kind { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="IGraphType"/> is published on an introspection request.
+        /// Gets or sets a value indicating whether this <see cref="IGraphType"/> is
+        /// published on an introspection request. Not publishing a valid graph type will cause most
+        /// development tools to fail.
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
-        bool Publish { get; }
+        bool Publish { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
         /// a user defined graph structure. When false, this graph types points to a concrete type
-        /// defined by a developer.
+        /// added to the schema.
         /// </summary>
         /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
         bool IsVirtual { get; }

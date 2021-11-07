@@ -39,13 +39,14 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         public string Name => this.Argument.Name;
 
         /// <summary>
-        /// Gets the value.
+        /// Gets the assigned value of the input argument.
         /// </summary>
         /// <value>The value.</value>
         public IInputArgumentValue Value { get; }
 
         /// <summary>
-        /// Gets or sets the argument.
+        /// Gets or sets the underlying field that represents
+        /// this argument on the target schema.
         /// </summary>
         /// <value>The argument.</value>
         public IGraphFieldArgument Argument { get; set; }

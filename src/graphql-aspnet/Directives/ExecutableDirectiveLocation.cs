@@ -16,20 +16,20 @@ namespace GraphQL.AspNet.Directives
 
     /// <summary>
     /// A subset of <see cref="DirectiveLocation"/> identifying those locations
-    /// which indicate a document location that can be acted on.
+    /// which indicate an inbound query document location that can be acted on.
     /// </summary>
     [Flags]
     public enum ExecutableDirectiveLocation
     {
         [GraphSkip]
-        NONE = 0,
-        QUERY = 1,
-        MUTATION = 2,
-        SUBSCRIPTION = 4,
-        FIELD = 8,
-        FRAGMENT_DEFINITION = 16,
-        FRAGMENT_SPREAD = 32,
-        INLINE_FRAGMENT = 64,
+        NONE = DirectiveLocation.NONE,
+        QUERY = DirectiveLocation.QUERY,
+        MUTATION = DirectiveLocation.MUTATION,
+        SUBSCRIPTION = DirectiveLocation.SUBSCRIPTION,
+        FIELD = DirectiveLocation.FIELD,
+        FRAGMENT_DEFINITION = DirectiveLocation.FRAGMENT_DEFINITION,
+        FRAGMENT_SPREAD = DirectiveLocation.FRAGMENT_SPREAD,
+        INLINE_FRAGMENT = DirectiveLocation.INLINE_FRAGMENT,
         AllFieldSelections = FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT,
     }
 }
