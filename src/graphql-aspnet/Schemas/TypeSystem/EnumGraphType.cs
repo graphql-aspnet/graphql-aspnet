@@ -88,13 +88,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, IEnumOption> Values => _options;
+        public virtual IReadOnlyDictionary<string, IEnumOption> Values => _options;
 
         /// <inheritdoc />
-        public string Name { get; }
+        public virtual string Name { get; }
 
         /// <inheritdoc />
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
 
         /// <inheritdoc />
         public TypeKind Kind => TypeKind.ENUM;
@@ -103,15 +103,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual bool Publish { get; set; }
 
         /// <inheritdoc />
-        public Type ObjectType { get; }
+        public virtual Type ObjectType { get; }
 
         /// <inheritdoc />
-        public string InternalName { get; }
+        public virtual string InternalName { get; }
 
         /// <inheritdoc />
         public virtual bool IsVirtual => false;
 
         /// <inheritdoc />
-        public ILeafValueResolver SourceResolver { get; set; }
+        public virtual ILeafValueResolver SourceResolver { get; set; }
     }
 }

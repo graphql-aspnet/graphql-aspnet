@@ -28,48 +28,33 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="ObjectGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
-        /// <param name="concreteType">The concrete type that this graph type is made from.</param>
+        /// <param name="objectType">The concrete type that this graphtype is made from.</param>
         /// <param name="graphFields">The initial set of graph fields to add to this instance.</param>
-        public ObjectGraphType(string name, Type concreteType, IEnumerable<IGraphField> graphFields = null)
+        public ObjectGraphType(string name, Type objectType, IEnumerable<IGraphField> graphFields = null)
             : base(name, graphFields)
         {
-            this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
+            this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = this.ObjectType.FriendlyName();
 
             this.GraphFieldCollection.AddField(new Introspection_TypeNameMetaField(name));
         }
 
-        /// <summary>
-        /// Extends this graph type by adding a new field to its collection. An exception may be thrown if
-        /// a field with the same name already exists.
-        /// </summary>
-        /// <param name="newField">The new field.</param>
+        /// <inheritdoc />
         public void Extend(IGraphField newField)
         {
             this.GraphFieldCollection.AddField(newField);
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public override bool ValidateObject(object item)
         {
             return item == null || Validation.IsCastable(item.GetType(), this.ObjectType);
         }
 
-        /// <summary>
-        /// Gets the type of the object this graph type was made from.
-        /// </summary>
-        /// <value>The type of the object.</value>
+        /// <inheritdoc />
         public Type ObjectType { get; }
 
-        /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
-        /// is used in many exceptions and internal error messages.
-        /// </summary>
-        /// <value>The name of the internal.</value>
+        /// <inheritdoc />
         public string InternalName { get; }
     }
 }
