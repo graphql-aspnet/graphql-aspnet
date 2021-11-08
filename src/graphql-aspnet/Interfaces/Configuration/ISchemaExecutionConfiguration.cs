@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
 {
     using System;
     using System.Threading;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -37,7 +38,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         TimeSpan QueryTimeout { get; }
 
         /// <summary>
-        /// <para>Gets a value indicating whether each field, when its resolved, is individually awaited.</para>
+        /// <para>Gets a value indicating whether ALL field, when they are resolved, is individually executed.</para>
         ///
         /// <para>If this option is set to <c>true</c> each field is executed and awaited individually in depth first order and can make
         /// debugging easier. (Default: false).</para>
@@ -45,8 +46,40 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// <para>WARNING: Setting this option to <c>true</c> applies a significant performance hit and should only be used during
         /// development.</para>
         /// </summary>
-        /// <value><c>true</c> if each field should be individually awaited; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if each field should be individually executed; otherwise, <c>false</c>.</value>
+        [Obsolete("This configuration option will be removed in a future release. Use 'ResolverIsolationOptions' instead.")]
         bool AwaitEachRequestedField { get; }
+
+        /// <summary>
+        /// <para>
+        /// Gets a set of options indicating which resolver types will be executed in isolation. Resolvers
+        /// executed in isolation will be executed in a manner such that no other resolvers of any kind will be
+        /// executing when they are executed.
+        /// </para>
+        /// <para>
+        /// Executing resolvers in isolation can help to alleviate some race conditions encountered
+        /// by various injected services that must be scoped but not thread safe.</para>
+        /// <para>
+        /// If <see cref="AwaitEachRequestedField"/> or <see cref="DebugMode"/> is enabled all resolvers
+        /// will be executed in isolation regardless of this setting.</para>
+        /// </summary>
+        /// <value>The resolver isolation options.</value>
+        ResolverIsolationOptions ResolverIsolation { get; }
+
+        /// <summary>
+        /// <para>
+        /// Gets a value indicating whether debug mode is enabled. When enabled,
+        /// if a field resolution results in an exception that exception is immediately thrown and
+        /// query execution is terminated. This can be useful to surface errors to the console window or
+        /// output stream while developing.
+        /// </para>
+        /// <para>
+        /// Debug mode should not be enabled in production, doing so can result in
+        /// inconsistant results being delivered to a requestor.
+        /// </para>
+        /// </summary>
+        /// <value><c>true</c> if debug mode is enabled; otherwise, <c>false</c>.</value>
+        bool DebugMode { get; }
 
         /// <summary>
         /// Gets a value indicating the maximum depth a single query can be and still be processed. Query depth refers to the number

@@ -29,13 +29,14 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Security;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// A schema extension encapsulating a subscription server that can accept clients and respond to
     /// subscription events for connected clients.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class ApolloSubscriptionServerSchemaExtension<TSchema> : ISchemaExtension
+    public class ApolloSubscriptionServerSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -56,8 +57,6 @@ namespace GraphQL.AspNet
         {
             _schemaBuilder = Validation.ThrowIfNullOrReturn(schemaBuilder, nameof(schemaBuilder));
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            this.RequiredServices = new List<ServiceDescriptor>();
-            this.OptionalServices = new List<ServiceDescriptor>();
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace GraphQL.AspNet
         /// <param name="options">The parent options which owns this extension.</param>
         public virtual void Configure(SchemaOptions options)
         {
-            _primaryOptions = options;
+            _primaryOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
 
             // enforce a default auth method for the server instance
@@ -118,9 +117,9 @@ namespace GraphQL.AspNet
             fieldExecutionHelper.AddDefaultMiddlewareComponents(_primaryOptions);
 
             // the primary subscription options for the schema
-            this.RequiredServices.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
+            _schemaBuilder.Options.ServiceCollection.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
 
-            this.RequiredServices.Add(
+            _schemaBuilder.Options.ServiceCollection.Add(
                 new ServiceDescriptor(
                     typeof(ApolloMessageConverterFactory),
                     typeof(ApolloMessageConverterFactory),
@@ -129,7 +128,7 @@ namespace GraphQL.AspNet
             // add the needed apollo's classes as optional services
             // if the user has already added support for their own handlers
             // they will be safely ignored
-            this.OptionalServices.Add(
+            _schemaBuilder.Options.ServiceCollection.TryAdd(
                 new ServiceDescriptor(
                     typeof(ISubscriptionServer<TSchema>),
                     this.CreateSubscriptionServer,
@@ -187,19 +186,5 @@ namespace GraphQL.AspNet
         /// </summary>
         /// <value>The options.</value>
         public SubscriptionServerOptions<TSchema> SubscriptionOptions { get; }
-
-        /// <summary>
-        /// Gets a collection of services this extension has registered that should be included in
-        /// a DI container.
-        /// </summary>
-        /// <value>The additional types as formal descriptors.</value>
-        public List<ServiceDescriptor> RequiredServices { get; }
-
-        /// <summary>
-        /// Gets a collection of services this extension has registered that may be included in
-        /// a DI container. If they cannot be added, because a reference already exists, they will be skipped.
-        /// </summary>
-        /// <value>The additional types as formal descriptors.</value>
-        public List<ServiceDescriptor> OptionalServices { get; }
     }
 }

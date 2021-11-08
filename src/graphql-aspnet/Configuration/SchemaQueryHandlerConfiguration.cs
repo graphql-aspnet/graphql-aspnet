@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Occurs when a type reference is set to this configuration section that requires injection into the service collection.
         /// </summary>
-        internal event EventHandler<TypeReferenceEventArgs> TypeReferenceAdded;
+        internal event EventHandler<TypeToRegister> TypeReferenceAdded;
 
         /// <summary>
         /// Gets or sets a value indicating whether the default query processing controller
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Configuration
             {
                 Validation.ThrowIfNotCastable<IGraphQLHttpProcessor>(value, nameof(HttpProcessorType));
                 _httpProcessorType = value;
-                this.TypeReferenceAdded?.Invoke(this, new TypeReferenceEventArgs(value, ServiceLifetime.Scoped));
+                this.TypeReferenceAdded?.Invoke(this, new TypeToRegister(value, ServiceLifetime.Scoped));
             }
         }
 

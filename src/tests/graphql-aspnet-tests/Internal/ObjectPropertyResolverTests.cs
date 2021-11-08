@@ -31,7 +31,8 @@ namespace GraphQL.AspNet.Tests.Internal
                 .Build();
 
             var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
-                nameof(ResolverObject.Address1));
+                nameof(ResolverObject.Address1),
+                null);
 
             fieldContextBuilder.AddSourceData(null);
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
@@ -52,7 +53,9 @@ namespace GraphQL.AspNet.Tests.Internal
                 .AddGraphType<IResolverInterface>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(nameof(ResolverObject.Address1));
+            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.Address1),
+                null);
 
             var item = new ResolverObject();
             item.Address1 = "15th Street";
@@ -80,7 +83,9 @@ namespace GraphQL.AspNet.Tests.Internal
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(nameof(ResolverObject.Address1));
+            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.Address1),
+                null);
 
             fieldContextBuilder.AddSourceData(new TwoPropertyObject());
 
@@ -107,11 +112,12 @@ namespace GraphQL.AspNet.Tests.Internal
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
-                nameof(ResolverObject.Address1));
+            // resolving structA, but supplying structB as source
+            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverStructA>(
+                nameof(ResolverStructA.Prop1),
+                new ResolverStructB("struct"));
 
             // source data is not of the type the resolver is for
-            fieldContextBuilder.AddSourceData(new TwoPropertyObject());
             var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
@@ -129,7 +135,53 @@ namespace GraphQL.AspNet.Tests.Internal
                 .Build();
 
             var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
-                nameof(ResolverObject.PropertyThrowException));
+                nameof(ResolverObject.PropertyThrowException),
+                new ResolverObject());
+
+            // source data is not of the type the resolver is for
+            fieldContextBuilder.AddSourceData(new ResolverObject());
+            var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
+
+            var resolutionContext = fieldContextBuilder.CreateResolutionContext();
+            await resolver.Resolve(resolutionContext);
+            Assert.AreEqual(null, resolutionContext.Result);
+            Assert.IsFalse(resolutionContext.Messages.IsSucessful);
+            Assert.IsTrue(resolutionContext.Messages[0].Exception is InvalidOperationException);
+            Assert.AreEqual("resolver.property.throwException", resolutionContext.Messages[0].Exception.Message);
+            Assert.AreEqual(Constants.ErrorCodes.UNHANDLED_EXCEPTION, resolutionContext.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task AsyncProperty_ValidSourceData_ReturnsData()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphType<ResolverObject>()
+                .Build();
+
+            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.Address1Async),
+                new ResolverObject());
+
+            var resolutionContext = fieldContextBuilder.CreateResolutionContext();
+
+            var resolver = new GraphObjectPropertyResolver(fieldContextBuilder.GraphMethod.Object);
+            await resolver.Resolve(resolutionContext);
+
+            Assert.IsNotNull(resolutionContext.Result);
+            Assert.True(resolutionContext.Messages.IsSucessful);
+            Assert.AreEqual("AddressAsync", resolutionContext.Result?.ToString());
+        }
+
+        [Test]
+        public async Task AsyncProperty_ThrowsException_FailsRequest()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphType<ResolverObject>()
+                .Build();
+
+            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+                nameof(ResolverObject.AsyncPropException),
+                new ResolverObject());
 
             // source data is not of the type the resolver is for
             fieldContextBuilder.AddSourceData(new ResolverObject());

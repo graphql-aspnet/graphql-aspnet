@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
 
     /// <summary>
@@ -23,6 +24,7 @@ namespace GraphQL.AspNet.Tests.Framework
         private readonly IGraphTypeTemplateProvider _templateProvider;
         private readonly IScalarTypeProvider _scalarTypeProvider;
         private readonly IGraphTypeMakerProvider _makerProvider;
+        private readonly IGraphQLGlobalConfiguration _globalConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLProviderRestorePoint"/> class.
@@ -32,6 +34,7 @@ namespace GraphQL.AspNet.Tests.Framework
             _templateProvider = GraphQLProviders.TemplateProvider;
             _scalarTypeProvider = GraphQLProviders.ScalarProvider;
             _makerProvider = GraphQLProviders.GraphTypeMakerProvider;
+            _globalConfig = GraphQLProviders.GlobalConfiguration;
         }
 
         /// <summary>
@@ -53,6 +56,7 @@ namespace GraphQL.AspNet.Tests.Framework
                 GraphQLProviders.TemplateProvider = _templateProvider;
                 GraphQLProviders.ScalarProvider = _scalarTypeProvider;
                 GraphQLProviders.GraphTypeMakerProvider = _makerProvider;
+                GraphQLProviders.GlobalConfiguration = _globalConfig;
             }
         }
     }

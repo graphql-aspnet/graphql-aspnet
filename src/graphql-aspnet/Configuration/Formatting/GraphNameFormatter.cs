@@ -25,6 +25,17 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNameFormatter"/> class.
         /// </summary>
+        protected GraphNameFormatter()
+            : this(
+                typeNameStrategy: GraphNameFormatStrategy.ProperCase,
+                fieldNameStrategy: GraphNameFormatStrategy.CamelCase,
+                enumValueStrategy: GraphNameFormatStrategy.UpperCase)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphNameFormatter"/> class.
+        /// </summary>
         /// <param name="singleStrategy">The single strategy to use for all naming options.</param>
         public GraphNameFormatter(GraphNameFormatStrategy singleStrategy)
         {
@@ -89,7 +100,7 @@ namespace GraphQL.AspNet.Configuration.Formatting
         /// <param name="name">The name.</param>
         /// <param name="strategy">The strategy to invoke.</param>
         /// <returns>System.String.</returns>
-        private string FormatName(string name, GraphNameFormatStrategy strategy)
+        protected virtual string FormatName(string name, GraphNameFormatStrategy strategy)
         {
             if (name == null)
                 return null;

@@ -25,10 +25,10 @@ namespace GraphQL.AspNet.Tests.Execution
             var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Action);
+            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
             var o = new object();
-            var collection = new DefaultFieldSourceCollection(GraphFieldTemplateSource.Action);
+            var collection = new DefaultFieldSourceCollection(GraphFieldSource.Action);
             collection.AddSource(mock.Object, o);
 
             var found = collection.TryRetrieveSource(mock.Object, out var result);
@@ -47,12 +47,12 @@ namespace GraphQL.AspNet.Tests.Execution
             var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Action);
+            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
             var o = new object();
             var o1 = new object();
 
-            var collection = new DefaultFieldSourceCollection(GraphFieldTemplateSource.Action);
+            var collection = new DefaultFieldSourceCollection(GraphFieldSource.Action);
 
             // add then update the source
             collection.AddSource(mock.Object, o);
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Method);
+            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Method);
 
             var o = new object();
             var collection = new DefaultFieldSourceCollection();
@@ -97,12 +97,12 @@ namespace GraphQL.AspNet.Tests.Execution
             var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Action);
+            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
             var path1 = new GraphFieldPath(GraphCollection.Subscription, "path1/path3");
             var mock1 = new Mock<IGraphField>();
             mock1.Setup(x => x.Route).Returns(path1);
-            mock1.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Action);
+            mock1.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
             var o = new object();
             var collection = new DefaultFieldSourceCollection();
@@ -122,16 +122,16 @@ namespace GraphQL.AspNet.Tests.Execution
             var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
-            mock.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Method);
+            mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Method);
 
             var path1 = new GraphFieldPath(GraphCollection.Subscription, "path1/path3");
             var mock1 = new Mock<IGraphField>();
             mock1.Setup(x => x.Route).Returns(path1);
-            mock1.Setup(x => x.FieldSource).Returns(GraphFieldTemplateSource.Action);
+            mock1.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
             var o = new object();
             var o1 = new object();
-            var collection = new DefaultFieldSourceCollection(GraphFieldTemplateSource.Action | GraphFieldTemplateSource.Method);
+            var collection = new DefaultFieldSourceCollection(GraphFieldSource.Action | GraphFieldSource.Method);
             collection.AddSource(mock.Object, o);
             collection.AddSource(mock1.Object, o1);
 

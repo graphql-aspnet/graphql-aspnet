@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("arg2", template.Arguments[1].Name);
             Assert.AreEqual(typeof(string), template.Arguments[1].ObjectType);
             Assert.IsTrue(template.IsExplicitDeclaration);
-            Assert.AreEqual(GraphFieldTemplateSource.Method, template.FieldSource);
+            Assert.AreEqual(GraphFieldSource.Method, template.FieldSource);
 
             var declarationExpression = template as IGraphTypeExpressionDeclaration;
             Assert.AreEqual(false, declarationExpression.HasDefaultValue);

@@ -185,7 +185,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Gets the source type this field was created from.
         /// </summary>
         /// <value>The field souce.</value>
-        public GraphFieldTemplateSource FieldSource => GraphFieldTemplateSource.None;
+        public GraphFieldSource FieldSource => GraphFieldSource.Virtual;
 
         /// <summary>
         /// Gets a collection of concrete types (and their associated type kinds) that this graph type is dependent on if/when a resolution against a field

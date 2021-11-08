@@ -23,14 +23,14 @@ namespace GraphQL.AspNet.Execution
     public class DefaultFieldSourceCollection : IEnumerable<KeyValuePair<GraphFieldPath, object>>
     {
         private readonly Dictionary<GraphFieldPath, object> _actionSources;
-        private readonly GraphFieldTemplateSource _sourceTemplateTypes;
+        private readonly GraphFieldSource _sourceTemplateTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultFieldSourceCollection"/> class.
         /// </summary>
         /// <param name="sourcableTemplateTypes">The set of flags indicating which types of <see cref="IGraphField"/>
         /// are allowed to define objects in this collection.</param>
-        public DefaultFieldSourceCollection(GraphFieldTemplateSource sourcableTemplateTypes = GraphFieldTemplateSource.Action)
+        public DefaultFieldSourceCollection(GraphFieldSource sourcableTemplateTypes = GraphFieldSource.Action)
         {
             _actionSources = new Dictionary<GraphFieldPath, object>();
             _sourceTemplateTypes = sourcableTemplateTypes;
