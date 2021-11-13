@@ -4,8 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603</NoWarn>
-    <RootNamespace>GraphQL.AspNet.StarWarsAPI5X</RootNamespace>
-    <AssemblyName>GraphQL.AspNet.StarwarsAPI5X</AssemblyName>
+    <RootNamespace>GraphQL.AspNet.StarWarsAPI6X</RootNamespace>
+    <AssemblyName>GraphQL.AspNet.StarwarsAPI6X</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
