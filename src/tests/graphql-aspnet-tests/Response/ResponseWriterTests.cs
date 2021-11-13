@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Response
     using NUnit.Framework;
 
     [TestFixture]
-    public class ResponseWriterTests
+    public partial class ResponseWriterTests
     {
         [Test]
         public async Task WriteDouble_DataIsRendered()

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// <typeparam name="TValue">The type of the value.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(OrderedDictionaryDebugBrowser))]
-    public class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    public sealed class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         private DelegateKeyedCollection<TKey, KeyValuePair<TKey, TValue>> _keyedCollection;
 

@@ -111,8 +111,21 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         public void Dispose()
         {
-            if (_cachedPlans != MemoryCache.Default)
-                _cachedPlans.Dispose();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="isDisposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (isDisposing)
+            {
+                if (_cachedPlans != MemoryCache.Default)
+                    _cachedPlans.Dispose();
+            }
         }
 
         /// <summary>

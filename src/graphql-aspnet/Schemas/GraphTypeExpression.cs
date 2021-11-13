@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Schemas
     /// This is an object represention of the field and variable declaration
     /// schema syntax (e.g. '[SomeType]!').
     /// </summary>
+    [Serializable]
     public partial class GraphTypeExpression
     {
         /// <summary>

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// </summary>
     /// <typeparam name="TKey">The type of the t key.</typeparam>
     /// <typeparam name="TValue">The type of the t value.</typeparam>
-    public class DictionaryEnumerator<TKey, TValue> : IDictionaryEnumerator, IDisposable
+    public sealed class DictionaryEnumerator<TKey, TValue> : IDictionaryEnumerator, IDisposable
     {
         private readonly IEnumerator<KeyValuePair<TKey, TValue>> _impl;
 
@@ -76,6 +76,9 @@ namespace GraphQL.AspNet.Common.Generics
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose() => _impl.Dispose();
+        public void Dispose()
+        {
+            _impl?.Dispose();
+        }
     }
 }

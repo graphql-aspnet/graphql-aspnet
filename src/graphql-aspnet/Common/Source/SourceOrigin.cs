@@ -9,9 +9,12 @@
 
 namespace GraphQL.AspNet.Common.Source
 {
+    using System;
+
     /// <summary>
     /// A complete origin represention of a location within the source text.
     /// </summary>
+    [Serializable]
     public class SourceOrigin
     {
         /// <summary>

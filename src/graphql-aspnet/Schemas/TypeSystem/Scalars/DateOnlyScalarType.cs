@@ -7,46 +7,53 @@
 // License:  MIT
 // *************************************************************
 
+#if NET6_0_OR_GREATER
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
-    /// A graph type reprsenting a 64-bit integer.
+    /// A graph type reprsenting a calendar date that does include a time component.
     /// </summary>
-    public sealed class LongScalarType : BaseScalarType
+    public sealed class DateOnlyScalarType : BaseScalarType
     {
         /// <summary>
         /// Gets the single instance of this scalar to use across all schemas.
         /// </summary>
         /// <value>The instance.</value>
-        public static LongScalarType Instance { get; } = new LongScalarType();
+        public static DateOnlyScalarType Instance { get; } = new DateOnlyScalarType();
 
         /// <summary>
-        /// Initializes static members of the <see cref="LongScalarType"/> class.
+        /// Initializes static members of the <see cref="DateOnlyScalarType"/> class.
         /// </summary>
-        static LongScalarType()
+        static DateOnlyScalarType()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LongScalarType"/> class.
+        /// Initializes a new instance of the <see cref="DateOnlyScalarType"/> class.
         /// </summary>
-        private LongScalarType()
-            : base(Constants.ScalarNames.LONG, typeof(long))
+        private DateOnlyScalarType()
+            : base(Constants.ScalarNames.DATEONLY, typeof(DateOnly))
         {
-            this.Description = $"A 64-bit integer. (Min: {long.MinValue}, Max: {long.MaxValue})";
-            this.OtherKnownTypes = new TypeCollection(typeof(long?));
+            this.Description = "A calendar date that does not include a time component.";
+            this.OtherKnownTypes = new TypeCollection(typeof(DateOnly?));
         }
 
         /// <inheritdoc />
         public override object Resolve(ReadOnlySpan<char> data)
         {
-            if (long.TryParse(data.ToString(), out var l))
-                return l;
+            if (DateTimeExtensions.TryParseMultiFormat(
+                GraphQLStrings.UnescapeAndTrimDelimiters(data, false),
+                out DateOnly? dt)
+                && dt.HasValue)
+            {
+                return dt.Value;
+            }
 
             throw new UnresolvedValueException(data);
         }
@@ -64,6 +71,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />
-        public override ScalarValueType ValueType => ScalarValueType.Number;
+        public override ScalarValueType ValueType => ScalarValueType.StringOrNumber;
     }
 }
+#endif

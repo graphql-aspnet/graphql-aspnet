@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Common.Generics
     /// concurrently from multiple threads.
     /// </remarks>
     [DebuggerDisplay("Count = {Count}")]
-    public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
+    public sealed class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private const int DEFAULT_CAPACITY = 31;
         private const int MAX_LOCK_NUMBER = 1024;

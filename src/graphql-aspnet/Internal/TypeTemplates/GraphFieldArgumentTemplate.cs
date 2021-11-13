@@ -47,9 +47,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Parameter = parameter;
         }
 
-        /// <summary>
-        /// Parses the template contents according to the rules of the template.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void Parse()
         {
             this.DeclaredArgumentType = this.Parameter.ParameterType;
@@ -143,20 +141,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public void ValidateOrThrow()
         {
             GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, this.Name);
         }
 
-        /// <summary>
-        /// Gets the name of the argument as it exists in the object graph.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public string Name => this.Route.Name;
 
         /// <summary>
@@ -165,95 +156,47 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The parameter.</value>
         public ParameterInfo Parameter { get; }
 
-        /// <summary>
-        /// Gets the return type of this argument as its declared in the C# code base with no modifications or
-        /// coerions applied.
-        /// </summary>
-        /// <value>The type naturally returned by this argument.</value>
+        /// <inheritdoc />
         public Type DeclaredArgumentType { get; private set; }
 
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Parameter.Name}";
 
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public string InternalName => this.Parameter.Name;
 
-        /// <summary>
-        /// Gets a value indicating whether this instance was explictly declared as a graph tiem via acceptable attribution or
-        /// if it was parsed as a matter of completeness.
-        /// </summary>
-        /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsExplicitDeclaration => true;
 
-        /// <summary>
-        /// Gets the parent method template this parameter belongs to.
-        /// </summary>
-        /// <value>The parent.</value>
+        /// <inheritdoc />
         public IGraphFieldBaseTemplate Parent { get; }
 
-        /// <summary>
-        /// Gets the description of this field in the object graph.
-        /// </summary>
-        /// <value>The description.</value>
+        /// <inheritdoc />
         public string Description { get; private set; }
 
-        /// <summary>
-        /// Gets a the canonical path on the graph where this item sits.
-        /// </summary>
-        /// <value>The route.</value>
+        /// <inheritdoc />
         public GraphFieldPath Route { get; private set; }
 
-        /// <summary>
-        /// Gets the default value assigned to this parameter as part of its declaration, if any.
-        /// </summary>
-        /// <value>The default value.</value>
+        /// <inheritdoc />
         public object DefaultValue { get; private set; }
 
-        /// <summary>
-        /// Gets the type expression that represents how this field is represented in the object graph.
-        /// </summary>
-        /// <value>The type expression.</value>
+        /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; private set; }
 
-        /// <summary>
-        /// Gets the concrete type this field will return. If this field should return a list of items
-        /// this property represents a single item of that list.
-        /// </summary>
-        /// <value>The type of the return.</value>
+        /// <inheritdoc />
         public Type ObjectType { get; private set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this argument represents the resolved data item created
-        /// by the resolution of the parent field to this field. If true, this argument will not be available
-        /// on the object graph.
-        /// </summary>
-        /// <value><c>true</c> if this instance is source data field; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public GraphArgumentModifiers ArgumentModifiers { get; protected set; }
 
-        /// <summary>
-        /// Gets the name of the argument as its declared in the server side code.
-        /// </summary>
-        /// <value>The name of the declared argument.</value>
+        /// <inheritdoc />
         public string DeclaredArgumentName => this.Parameter.Name;
 
-        /// <summary>
-        /// Gets a value indicating whether this instance has a defined default value.
-        /// </summary>
-        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
-        bool IGraphTypeExpressionDeclaration.HasDefaultValue => this.DefaultValue != null;
+        /// <inheritdoc />
+        public bool HasDefaultValue => this.DefaultValue != null;
 
-        /// <summary>
-        /// Gets the actual type wrappers used to generate a type expression for this field.
-        /// This list represents the type requirements  of the field.
-        /// </summary>
-        /// <value>The custom wrappers.</value>
-        MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => _fieldDeclaration?.TypeDefinition;
+        /// <inheritdoc />
+        public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
 
 #if DEBUG
         /// <summary>

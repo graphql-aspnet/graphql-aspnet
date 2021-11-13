@@ -72,6 +72,26 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                     .WithInvocationCount(invocationCount)
                     .WithIterationTime(TimeInterval.Millisecond * 200)
                     .WithId("x64 .NET 5 Platform Execution"));
+
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X86)
+                    .WithRuntime(CoreRuntime.Core60)
+                    .WithUnrollFactor(unrollFactor)
+                    .WithLaunchCount(launchCount)
+                    .WithWarmupCount(warmupCount)
+                    .WithInvocationCount(invocationCount)
+                    .WithIterationTime(TimeInterval.Millisecond * 200)
+                    .WithId("x86 .NET 6 Platform Execution"));
+
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X64)
+                    .WithRuntime(CoreRuntime.Core60)
+                    .WithUnrollFactor(unrollFactor)
+                    .WithLaunchCount(launchCount)
+                    .WithWarmupCount(warmupCount)
+                    .WithInvocationCount(invocationCount)
+                    .WithIterationTime(TimeInterval.Millisecond * 200)
+                    .WithId("x64 .NET 6 Platform Execution"));
         }
     }
 }
