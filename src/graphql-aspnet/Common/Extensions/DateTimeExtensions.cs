@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.Globalization;
 
     /// <summary>
-    /// A collection of common <see cref="DateTime" /> extensions.
+    /// A collection of common Date and Time extensions.
     /// </summary>
-    public static class DateTimeExtensions
+    public static partial class DateTimeExtensions
     {
         /// <summary>
         /// A date format string that conforms to the the RFC3339 specification.

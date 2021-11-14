@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Variables
         /// <param name="fieldName">Name of the field.</param>
         /// <param name="field">The field that was found, if any.</param>
         /// <returns><c>true</c> if the field was found and successfully returned, <c>false</c> otherwise.</returns>
-        bool IResolvableFieldSet.TryGetField(string fieldName, out IResolvableItem field)
+        public bool TryGetField(string fieldName, out IResolvableItem field)
         {
             field = null;
             var found = _fields.TryGetValue(fieldName, out var item);

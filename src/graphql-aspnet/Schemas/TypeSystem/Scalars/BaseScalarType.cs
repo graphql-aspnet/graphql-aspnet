@@ -24,8 +24,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScalarType"/> class.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="primaryType">Type of the primary.</param>
+        /// <param name="name">The name of the scalar as it appears in a schema.</param>
+        /// <param name="primaryType">The primary datatype that represents this scalar.</param>
         protected BaseScalarType(string name, Type primaryType)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));

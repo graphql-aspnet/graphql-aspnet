@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <returns>System.String.</returns>
         protected override string GeneratePathString(IReadOnlyList<string> pathFragments)
         {
-            // arguments should always be at least 2 to be valid an owner and hte arg itself
+            // arguments should always be at least 2 to be valid an owner and the arg itself
             // and will usually be 4:  [query]/someObject/someMethod[argName]
             if (pathFragments.Count < 2)
                 return base.GeneratePathString(pathFragments);

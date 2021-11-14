@@ -62,6 +62,13 @@ namespace GraphQL.AspNet.Common.Extensions
             { typeof(DateTimeOffset), "DateTimeOffset" },
             { typeof(DateTime?), "DateTime?" },
             { typeof(DateTimeOffset?), "DateTimeOffset?" },
+
+#if NET6_0_OR_GREATER
+            { typeof(DateOnly), "DateOnly" },
+            { typeof(TimeOnly), "TimeOnly" },
+            { typeof(DateOnly?), "DateOnly?" },
+            { typeof(TimeOnly?), "TimeOnly?" },
+#endif
         };
 
         private static readonly ConcurrentDictionary<Tuple<Type, bool, int>, bool> VALIDATION_SCANS;

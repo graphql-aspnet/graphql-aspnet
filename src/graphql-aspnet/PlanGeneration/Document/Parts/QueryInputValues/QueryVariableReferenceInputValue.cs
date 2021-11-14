@@ -51,16 +51,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// <value>The variable.</value>
         public QueryVariable Variable { get; private set; }
 
-        /// <summary>
-        /// Gets the name of the item pointed to by this instance.
-        /// </summary>
-        /// <value>The points to.</value>
-        string IResolvablePointer.PointsTo => this.Variable.Name;
+        /// <inheritdoc />
+        public string PointsTo => this.Variable.Name;
 
-        /// <summary>
-        /// Gets the fallback resolvable item should the item this pointer points to not exist.
-        /// </summary>
-        /// <value>The default item.</value>
-        IResolvableItem IResolvablePointer.DefaultItem => this.Variable.Value;
+        /// <inheritdoc />
+        public IResolvableItem DefaultItem => this.Variable.Value;
     }
 }

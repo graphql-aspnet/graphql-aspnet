@@ -19,8 +19,8 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IScalarValueResolver
     {
         /// <summary>
-        /// Processes the given request against this instance
-        /// performing the source data conversion operation as defined by this entity and generating a response.
+        /// Processes the given sequence of characters against this scalar resolver
+        /// attempting to convert the characters into a valid data item representing the scalar.
         /// </summary>
         /// <param name="data">The actual data read from the query document.</param>
         /// <returns>The final native value of the converted data.</returns>

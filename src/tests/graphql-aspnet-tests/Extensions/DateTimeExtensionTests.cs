@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Extensions
         };
 
         [TestCaseSource(nameof(DATE_MILLISECONDSTODATE_TESTS))]
-        public void DateTime_ToDateTime(long? num, DateTime? expectedOutputUTC)
+        public void MillisecondsFromEpochToDateTime(long? num, DateTime? expectedOutputUTC)
         {
             var dt = DateTimeExtensions.MillisecondsFromEpochToDateTime(num);
             Assert.AreEqual(expectedOutputUTC.HasValue, dt.HasValue);
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Extensions
 
             // out of bounds
             new object[] { "9223372036854775807", false, null }, // max long
-            new object[] { "9223372036854775808", false, null }, // min long
+            new object[] { "9223372036854775808", false, null }, // max long + 1
 
             // text dates
             new object[] { "2019-05-05", true, new DateTime(2019, 5, 5, 0, 0, 0, DateTimeKind.Unspecified), },
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Tests.Extensions
         [TestCaseSource(nameof(DATE_TRYPARSE_TESTS))]
         public void DateTime_TryParseMultiFormat(string text, bool shouldParse, DateTime? expectedOutputUTC)
         {
-            var success = DateTimeExtensions.TryParseMultiFormat(text, out var dt);
+            var success = DateTimeExtensions.TryParseMultiFormat(text, out DateTime? dt);
             Assert.AreEqual(shouldParse, success);
 
             Assert.AreEqual(expectedOutputUTC.HasValue, dt.HasValue);
@@ -160,6 +160,7 @@ namespace GraphQL.AspNet.Tests.Extensions
         {
             // ensure the format doesnt change in the source file
             var dt = DateTimeOffset.Now;
+            var f = dt.ToRfc3339String();
             Assert.AreEqual(dt.ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz", DateTimeFormatInfo.InvariantInfo), dt.ToRfc3339String());
         }
     }

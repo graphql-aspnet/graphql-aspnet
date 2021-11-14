@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
     /// <summary>
     /// A base class providing common functionality for any "provided value" for an argument in a query document.
     /// </summary>
+    [Serializable]
     public abstract class QueryInputValue : IDocumentPart, IResolvableItem
     {
         /// <summary>

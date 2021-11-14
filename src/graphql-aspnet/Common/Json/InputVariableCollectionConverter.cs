@@ -22,24 +22,13 @@ namespace GraphQL.AspNet.Common.Json
     /// </summary>
     public class InputVariableCollectionConverter : JsonConverter<InputVariableCollection>
     {
-        /// <summary>
-        /// Writes a specified value as JSON.
-        /// </summary>
-        /// <param name="writer">The writer to write to.</param>
-        /// <param name="value">The value to convert to JSON.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
+        /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, InputVariableCollection value, JsonSerializerOptions options)
         {
             throw new NotSupportedException($"{nameof(InputVariableCollection)} cannot be serialized");
         }
 
-        /// <summary>
-        /// Reads and converts the JSON to type <see cref="InputVariableCollection" />.
-        /// </summary>
-        /// <param name="reader">The reader containing a stream of json tokens.</param>
-        /// <param name="typeToConvert">The type to convert.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
-        /// <returns>The converted value.</returns>
+        /// <inheritdoc />
         public override InputVariableCollection Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var result = new InputVariableCollection();

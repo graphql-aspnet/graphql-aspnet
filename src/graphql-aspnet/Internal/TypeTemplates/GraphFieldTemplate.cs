@@ -476,10 +476,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         protected List<Type> PossibleTypes { get; private set; }
 
         /// <inheritdoc />
-        bool IGraphTypeExpressionDeclaration.HasDefaultValue => false;
+        public bool HasDefaultValue => false;
 
         /// <inheritdoc />
-        MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => _fieldDeclaration?.TypeDefinition;
+        public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
 
         /// <inheritdoc />
         public float? Complexity { get; private set; }

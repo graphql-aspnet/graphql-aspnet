@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Common.Source
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Common.Source
     /// A logical represention of a path through a set of graph fields, using field names and array index numbers
     /// to assist a developer in locating the source of their error in their query.
     /// </summary>
+    [Serializable]
     public class SourcePath : IReadOnlyList<object>
     {
         /// <summary>
