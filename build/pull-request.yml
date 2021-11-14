@@ -28,6 +28,13 @@ steps:
       packageType: sdk
     displayName: "Install .NET 5.x"
 
+  ## Install .NET 6
+  - task: UseDotNet@2
+    inputs:
+      version: "6.x"
+      packageType: sdk
+    displayName: "Install .NET 6.x"
+
   ## Nuget Package Restore
   - task: DotNetCoreCLI@2
     inputs:

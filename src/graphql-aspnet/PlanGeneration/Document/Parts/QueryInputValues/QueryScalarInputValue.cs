@@ -62,6 +62,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// Gets the value to be used to resolve to some .NET type.
         /// </summary>
         /// <value>The resolvable value.</value>
-        ReadOnlySpan<char> IResolvableValue.ResolvableValue => this.Value.Span;
+        public ReadOnlySpan<char> ResolvableValue => this.Value.Span;
     }
 }

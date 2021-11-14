@@ -325,13 +325,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets a value indicating whether this instance has a defined default value.
         /// </summary>
         /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
-        bool IGraphTypeExpressionDeclaration.HasDefaultValue => false;
+        public bool HasDefaultValue => false;
 
         /// <summary>
         /// Gets the actual type wrappers used to generate a type expression for this field.
         /// This list represents the type requirements  of the field.
         /// </summary>
         /// <value>The custom wrappers.</value>
-        MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => null;
+        public MetaGraphTypes[] TypeWrappers => null;
     }
 }

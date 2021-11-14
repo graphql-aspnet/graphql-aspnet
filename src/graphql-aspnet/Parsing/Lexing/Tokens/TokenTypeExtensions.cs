@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
                 if (attributes.Length > 0)
                     _descriptions.Add(tokenValue, attributes[0].Description.AsMemory());
                 else
-                    throw new InvalidOperationException($"Enum item {tokenType.Name}.{tokenValue.ToString()} does not declare a description.");
+                    _descriptions.Add(tokenValue, string.Empty.AsMemory());
             }
         }
 

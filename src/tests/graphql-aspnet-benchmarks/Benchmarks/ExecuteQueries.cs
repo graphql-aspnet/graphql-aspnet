@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware.QueryExecution;
@@ -55,7 +56,8 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                 options.AddGraphType<MusicController>();
             };
 
-            var injector = new GraphQLSchemaInjector<GraphSchema>(serviceCollection, configureOptions);
+            var schemaOptions = new SchemaOptions<GraphSchema>(serviceCollection);
+            var injector = new GraphQLSchemaInjector<GraphSchema>(schemaOptions, configureOptions);
             injector.ConfigureServices();
 
             _serviceProvider = serviceCollection.BuildServiceProvider();

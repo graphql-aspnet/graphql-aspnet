@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Common.Source
     /// <summary>
     /// A snapshot representation of a location of a read block within a source text.
     /// </summary>
+    [Serializable]
     [DebuggerDisplay("Index: {AbsoluteIndex}, Line: ({LineNumber}:{LineIndex})")]
     public class SourceLocation
     {

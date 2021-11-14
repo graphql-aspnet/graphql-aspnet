@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
@@ -22,7 +21,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A representation of a hierarchical path to a single field in within a graph schema.
     /// </summary>
     [DebuggerDisplay("{Path}")]
-    public class GraphFieldPath : IEnumerable<string>
+    public partial class GraphFieldPath : IEnumerable<string>
     {
         /// <summary>
         /// Gets a special route path used to identify a "root level" fragment that has no path
@@ -37,8 +36,18 @@ namespace GraphQL.AspNet.Schemas.Structural
         static GraphFieldPath()
         {
             Empty = new GraphFieldPath(string.Empty);
-            Empty.IsValid = true;
+            Empty._isValid = true;
+            Empty._pathInitialized = true;
         }
+
+        private object _lock = new object();
+        private bool _pathInitialized;
+        private GraphCollection _rootCollection;
+        private string _path;
+        private GraphFieldPath _parentField;
+        private string _name;
+        private bool _isTopLevelField;
+        private bool _isValid;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldPath" /> class.
@@ -59,52 +68,73 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.Raw = fullPath;
 
             // set an initial unknown state of this object
-            this.IsValid = false;
-            this.Path = string.Empty;
-            this.Name = string.Empty;
-            this.RootCollection = GraphCollection.Unknown;
+            _pathInitialized = false;
+            _parentField = null;
+            _isTopLevelField = false;
+            _path = string.Empty;
+            _name = string.Empty;
+            _isValid = false;
+            _rootCollection = GraphCollection.Unknown;
+        }
 
-            var workingPath = GraphFieldPath.NormalizeFragment(this.Raw);
+        private void EnsurePathInitialized()
+        {
+            if (_pathInitialized)
+                return;
 
-            // split the path into its fragments
-            List<string> pathFragments = workingPath.Split(new[] { RouteConstants.PATH_SEPERATOR }, StringSplitOptions.None).ToList();
-
-            switch (pathFragments[0])
+            lock (_lock)
             {
-                case RouteConstants.QUERY_ROOT:
-                    this.RootCollection = GraphCollection.Query;
-                    break;
-                case RouteConstants.MUTATION_ROOT:
-                    this.RootCollection = GraphCollection.Mutation;
-                    break;
-                case RouteConstants.TYPE_ROOT:
-                    this.RootCollection = GraphCollection.Types;
-                    break;
-                case RouteConstants.ENUM_ROOT:
-                    this.RootCollection = GraphCollection.Enums;
-                    break;
-                case RouteConstants.DIRECTIVE_ROOT:
-                    this.RootCollection = GraphCollection.Directives;
-                    break;
-                case RouteConstants.SUBSCRIPTION_ROOT:
-                    this.RootCollection = GraphCollection.Subscription;
-                    break;
-            }
-
-            // ensure each fragment matches the naming specification
-            foreach (var fragment in pathFragments.Skip(this.RootCollection == GraphCollection.Unknown ? 0 : 1))
-            {
-                if (!this.ValidateFragment(fragment))
+                if (_pathInitialized)
                     return;
+
+                _pathInitialized = true;
+                var workingPath = GraphFieldPath.NormalizeFragment(this.Raw);
+
+                // split the path into its fragments
+                List<string> pathFragments = workingPath.Split(new[] { RouteConstants.PATH_SEPERATOR }, StringSplitOptions.None).ToList();
+
+                switch (pathFragments[0])
+                {
+                    case RouteConstants.QUERY_ROOT:
+                        _rootCollection = GraphCollection.Query;
+                        break;
+
+                    case RouteConstants.MUTATION_ROOT:
+                        _rootCollection = GraphCollection.Mutation;
+                        break;
+
+                    case RouteConstants.TYPE_ROOT:
+                        _rootCollection = GraphCollection.Types;
+                        break;
+
+                    case RouteConstants.ENUM_ROOT:
+                        _rootCollection = GraphCollection.Enums;
+                        break;
+
+                    case RouteConstants.DIRECTIVE_ROOT:
+                        _rootCollection = GraphCollection.Directives;
+                        break;
+
+                    case RouteConstants.SUBSCRIPTION_ROOT:
+                        _rootCollection = GraphCollection.Subscription;
+                        break;
+                }
+
+                // ensure each fragment matches the naming specification
+                foreach (var fragment in pathFragments.Skip(this.RootCollection == GraphCollection.Unknown ? 0 : 1))
+                {
+                    if (!this.ValidateFragment(fragment))
+                        return;
+                }
+
+                _name = pathFragments[pathFragments.Count - 1];
+                if (pathFragments.Count > 1)
+                    _parentField = new GraphFieldPath(string.Join(RouteConstants.PATH_SEPERATOR, pathFragments.Take(pathFragments.Count - 1)));
+
+                _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && this.RootCollection > GraphCollection.Unknown); // e.g. "[query]/name"
+                _isValid = this.Name.Length > 0;
+                _path = this.GeneratePathString(pathFragments);
             }
-
-            this.Name = pathFragments[pathFragments.Count - 1];
-            if (pathFragments.Count > 1)
-                this.Parent = new GraphFieldPath(string.Join(RouteConstants.PATH_SEPERATOR, pathFragments.Take(pathFragments.Count - 1)));
-
-            this.IsTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && this.RootCollection > GraphCollection.Unknown); // e.g. "[query]/name"
-            this.IsValid = this.Name.Length > 0;
-            this.Path = this.GeneratePathString(pathFragments);
         }
 
         /// <summary>
@@ -157,38 +187,80 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Gets the path representing this instance.
         /// </summary>
         /// <value>The path.</value>
-        public string Path { get; }
+        public string Path
+        {
+            get
+            {
+                this.EnsurePathInitialized();
+                return _path;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this path segment is formatting correctly.
         /// </summary>
         /// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
-        public bool IsValid { get; private set; }
+        public bool IsValid
+        {
+            get
+            {
+                this.EnsurePathInitialized();
+                return _isValid;
+            }
+        }
 
         /// <summary>
         /// Gets the root collection represented by this route represents (e.g. query, mutation, type system etc.).
         /// </summary>
         /// <value>The type of the field.</value>
-        public GraphCollection RootCollection { get; }
+        public GraphCollection RootCollection
+        {
+            get
+            {
+                this.EnsurePathInitialized();
+                return _rootCollection;
+            }
+        }
 
         /// <summary>
         /// Gets this item's parent path, if any.
         /// </summary>
         /// <value>The parent.</value>
-        public GraphFieldPath Parent { get; }
+        public GraphFieldPath Parent
+        {
+            get
+            {
+                this.EnsurePathInitialized();
+                return _parentField;
+            }
+        }
 
         /// <summary>
         /// Gets the name of this item on the graph.
         /// </summary>
         /// <value>The name.</value>
-        public string Name { get; }
+        public string Name
+        {
+            get
+            {
+                this.EnsurePathInitialized();
+                return _name;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this path represents a first-level field in one of the
         /// graph collection roots. (e.g. [query]/myField  vs. [query]/topField/myField).
         /// </summary>
         /// <value><c>true</c> if this instance is a top level field; otherwise, <c>false</c>.</value>
-        public bool IsTopLevelField { get; }
+        public bool IsTopLevelField
+        {
+            get
+            {
+                this.EnsurePathInitialized();
+                return _isTopLevelField;
+            }
+        }
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
@@ -302,50 +374,6 @@ namespace GraphQL.AspNet.Schemas.Structural
                 return grp.Path == this.Path;
 
             return false;
-        }
-
-        /// <summary>
-        /// Joins a parent and child route segments under the top level field type provided.
-        /// </summary>
-        /// <param name="routeSegments">The route segments to join.</param>
-        /// <returns>System.String.</returns>
-        public static string Join(params string[] routeSegments)
-        {
-            var fragment = string.Join(RouteConstants.PATH_SEPERATOR, routeSegments);
-            return GraphFieldPath.NormalizeFragment(fragment);
-        }
-
-        /// <summary>
-        /// Joins a parent and child route segments under the top level field type provided.
-        /// </summary>
-        /// <param name="fieldType">Type of the field to prepend a root key to the path.</param>
-        /// <param name="routeSegments">The route segments to join.</param>
-        /// <returns>System.String.</returns>
-        public static string Join(GraphCollection fieldType, params string[] routeSegments)
-        {
-            return GraphFieldPath.Join(fieldType.ToRouteRoot().AsEnumerable().Concat(routeSegments).ToArray());
-        }
-
-        /// <summary>
-        /// Implements the == operator.
-        /// </summary>
-        /// <param name="left">The left side operand.</param>
-        /// <param name="right">The right side operand.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator ==(GraphFieldPath left, GraphFieldPath right)
-        {
-            return left?.Equals(right) ?? right?.Equals(left) ?? true;
-        }
-
-        /// <summary>
-        /// Implements the != operator.
-        /// </summary>
-        /// <param name="left">The left side operand.</param>
-        /// <param name="right">The right side operand.</param>
-        /// <returns>The result of the operation.</returns>
-        public static bool operator !=(GraphFieldPath left, GraphFieldPath right)
-        {
-            return !(left == right);
         }
     }
 }

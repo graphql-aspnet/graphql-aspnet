@@ -41,6 +41,6 @@ namespace GraphQL.AspNet.Variables
         /// Gets the value to be used to resolve to some .NET type.
         /// </summary>
         /// <value>The resolvable value.</value>
-        ReadOnlySpan<char> IResolvableValue.ResolvableValue => this.Value.AsSpan();
+        public ReadOnlySpan<char> ResolvableValue => this.Value.AsSpan();
     }
 }

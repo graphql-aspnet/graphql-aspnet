@@ -43,5 +43,21 @@ namespace GraphQL.AspNet.Tests.Lexing
             var result = span.ToTokenType();
             Assert.AreEqual(expectedType, result);
         }
+
+        [Test]
+        public void AllTokenTypesHaveADescription()
+        {
+            foreach (TokenType token in Enum.GetValues(typeof(TokenType)))
+            {
+                if (token == TokenType.None)
+                    continue;
+
+                var description = token.Description().ToString();
+                if (string.IsNullOrWhiteSpace(description))
+                {
+                    Assert.Fail($"Tokentype '{token.ToString()}' has no defined description");
+                }
+            }
+        }
     }
 }

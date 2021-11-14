@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;net5.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;RCS1021;IDE0060;IDE0052;IDE0044;IDE0059;IDE0052;IDE0017;IDE0039;TCS1089;RCS1090;RCS1118;SA1601;RCS1163</NoWarn>
     <RootNamespace>GraphQL.Subscriptions.Tests</RootNamespace>
@@ -20,13 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="4.11.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="nunit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="nunit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
   </ItemGroup>
 
   <ItemGroup>
