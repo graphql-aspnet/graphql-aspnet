@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -32,9 +33,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="UnionGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the union as it appears in the target schema (case sensitive).</param>
-        public UnionGraphType(string name)
+        /// <param name="typeResolver">The type resolver used to match field resolve values with
+        /// expected graph types in this union.</param>
+        public UnionGraphType(string name, IUnionValueTypeResolver typeResolver)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+
+            this.TypeResolver = Validation.ThrowIfNullOrReturn(typeResolver, nameof(TypeResolver));
             _types = ImmutableHashSet.Create<Type>();
             _names = ImmutableHashSet.Create<string>();
             this.Publish = true;
@@ -84,5 +89,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public bool IsVirtual => false;
+
+        /// <inheritdoc />
+        public IUnionValueTypeResolver TypeResolver { get; set; }
     }
 }

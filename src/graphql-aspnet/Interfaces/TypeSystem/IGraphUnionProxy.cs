@@ -11,25 +11,15 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An interface describing a proxy class which contains the metadata for a
     /// <see cref="UnionGraphType"/>.
     /// </summary>
-    public interface IGraphUnionProxy
+    public interface IGraphUnionProxy : IUnionValueTypeResolver
     {
-        /// <summary>
-        /// When overriden in a child class, attempts to resolve the provided <paramref name="runtimeObjectType"/> into
-        /// one of the acceptable types of this union. This method should return a member of the
-        /// <see cref="Types"/> collection. A returned type not in the <see cref="Types"/> collection
-        /// will be rejected.
-        /// </summary>
-        /// <param name="runtimeObjectType">The type of an object provided at runtime as the result
-        /// of a controller or method operation executed by graphql.</param>
-        /// <returns>A type registered to this union that <paramref name="runtimeObjectType"/> inherits from.</returns>
-        Type ResolveType(Type runtimeObjectType);
-
         /// <summary>
         /// Gets the name of the union. This name will be subjected to schema configuration rules
         /// and will be altered accordingly when assigned to a schema.

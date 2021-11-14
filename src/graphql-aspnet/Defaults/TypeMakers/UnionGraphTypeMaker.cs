@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var name = formatter.FormatGraphTypeName(proxy.Name);
-            var union = new UnionGraphType(name)
+            var union = new UnionGraphType(name, proxy)
             {
                 Description = proxy.Description,
                 Publish = proxy.Publish,
