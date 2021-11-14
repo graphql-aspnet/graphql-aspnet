@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// <param name="fieldName">Name of the field.</param>
         /// <param name="field">The field that was found, if any.</param>
         /// <returns><c>true</c> if the field was found and successfully returned, <c>false</c> otherwise.</returns>
-        bool IResolvableFieldSet.TryGetField(string fieldName, out IResolvableItem field)
+        public bool TryGetField(string fieldName, out IResolvableItem field)
         {
             field = null;
             var found = this.Arguments.TryGetValue(fieldName, out var item);
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// Gets the collection of fields defined on this instance.
         /// </summary>
         /// <value>The fields.</value>
-        IEnumerable<KeyValuePair<string, IResolvableItem>> IResolvableFieldSet.Fields
+        public IEnumerable<KeyValuePair<string, IResolvableItem>> Fields
         {
             get
             {

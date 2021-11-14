@@ -4,8 +4,7 @@
 
 > Target Specification: **netstandard2.0**
 >
-> Supported Runtimes:  _.NET Core_, _.NET 5_
-
+> Supported Runtimes: _.NET 4.7.2+_, _.NET Core 3.1+_, _.NET 5_, _.NET 6_
 
 GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/action programming model familiar to ASP.NET MVC developers. Instead of focusing on schemas and mapping resolvers, the focus on controllers and models. GraphQL ASP.NET will automatically generate the schema to match your code.
 
@@ -73,11 +72,13 @@ query SearchGroceryStore($pastryName: String!) {
 }
 ```
 
-#### Add the Package from Nuget*:
+#### Add the Package from Nuget\*:
+
 ```
 > Install-Package GraphQL.AspNet -AllowPrereleaseVersions
 ```
-_*This library is still in beta_
+
+_\*This library is still in beta_
 
 #### Register GraphQL with your Application:
 
@@ -86,7 +87,7 @@ _*This library is still in beta_
 public void ConfigureServices(IServiceCollection services)
 {
     // other code and configuration options
-    // omitted for brevity    
+    // omitted for brevity
     services.AddGraphQL();
 }
 
@@ -98,4 +99,5 @@ public void Configure(IApplicationBuilder appBuilder)
 ```
 
 #### Subscriptions
+
 GraphQL ASP.NET supports web-socket based [subscriptions](https://graphql-aspnet.github.io/docs/advanced/subscriptions) using the Apollo client messaging protocol out of the box. Subscription support can be easily [extended](https://graphql-aspnet.github.io/docs/advanced/subscriptions#scaling-subscription-servers) to multi-server environments and even other messaging protocols.

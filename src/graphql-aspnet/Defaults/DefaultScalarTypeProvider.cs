@@ -56,6 +56,11 @@ namespace GraphQL.AspNet.Defaults
             this.AddScalar(GuidScalarType.Instance);
             this.AddScalar(UriScalarType.Instance);
             this.AddScalar(GraphIdScalarType.Instance);
+
+#if NET6_0_OR_GREATER
+            this.AddScalar(DateOnlyScalarType.Instance);
+            this.AddScalar(TimeOnlyScalarType.Instance);
+#endif
         }
 
         /// <summary>

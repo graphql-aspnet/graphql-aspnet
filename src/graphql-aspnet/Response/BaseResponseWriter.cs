@@ -209,6 +209,16 @@ namespace GraphQL.AspNet.Response
                     this.WritePreEncodedStringValue(writer, dto.ToRfc3339String());
                     break;
 
+#if NET6_0_OR_GREATER
+                case DateOnly dateOnly:
+                    this.WritePreEncodedStringValue(writer, dateOnly.ToRfc3339String());
+                    break;
+
+                case TimeOnly timeOnly:
+                    this.WritePreEncodedStringValue(writer, timeOnly.ToRfc3339String());
+                    break;
+#endif
+
                 default:
                     if (convertUnsupportedToString)
                     {

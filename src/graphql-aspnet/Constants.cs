@@ -159,6 +159,11 @@ namespace GraphQL.AspNet
             public const string GUID = "Guid";
             public const string URI = "Uri";
             public const string ID = "ID";
+
+#if NET6_0_OR_GREATER
+            public const string DATEONLY = "DateOnly";
+            public const string TIMEONLY = "TimeOnly";
+#endif
         }
 
         /// <summary>

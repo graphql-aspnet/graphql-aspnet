@@ -25,7 +25,6 @@ namespace GraphQL.AspNet.Execution
     [DebuggerDisplay("Count = {Count}, Severity = {Severity}")]
     [DebuggerTypeProxy(typeof(GraphMessageCollectionDebugProxy))]
     [DebuggerStepThrough]
-    [Serializable]
     public class GraphMessageCollection : IGraphMessageCollection
     {
         private readonly ConcurrentList<IGraphMessage> _messages;

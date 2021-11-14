@@ -20,11 +20,12 @@ namespace GraphQL.AspNet.Apollo
     /// Sends a periodic keep-alive message that conforms to the expectations of the apollo graphql-over-websockets
     /// spec.
     /// </summary>
-    internal class ApolloClientConnectionKeepAliveMonitor
+    internal class ApolloClientConnectionKeepAliveMonitor : IDisposable
     {
         private readonly ISubscriptionClientProxy _connection;
         private readonly TimeSpan _interval;
         private Timer _timer;
+        private bool disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloClientConnectionKeepAliveMonitor"/> class.
@@ -35,14 +36,6 @@ namespace GraphQL.AspNet.Apollo
         {
             _connection = Validation.ThrowIfNullOrReturn(connection, nameof(connection));
             _interval = interval;
-        }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="ApolloClientConnectionKeepAliveMonitor"/> class.
-        /// </summary>
-        ~ApolloClientConnectionKeepAliveMonitor()
-        {
-            _timer?.Dispose();
         }
 
         private void TimeForKeepAlive(object state)
@@ -74,6 +67,32 @@ namespace GraphQL.AspNet.Apollo
             _timer?.Change(Timeout.Infinite, Timeout.Infinite);
             _timer?.Dispose();
             _timer = null;
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _timer?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

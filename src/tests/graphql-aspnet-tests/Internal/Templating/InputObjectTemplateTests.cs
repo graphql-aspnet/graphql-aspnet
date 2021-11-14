@@ -279,5 +279,16 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 template.ValidateOrThrow();
             });
         }
+
+        [Test]
+        public void Interface_InputTemplate_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new InputObjectGraphTypeTemplate(typeof(IInputObject));
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
     }
 }

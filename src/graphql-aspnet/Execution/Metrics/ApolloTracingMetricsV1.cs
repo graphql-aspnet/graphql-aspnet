@@ -224,13 +224,25 @@ namespace GraphQL.AspNet.Execution.Metrics
         /// </summary>
         public void Dispose()
         {
-            _resolverEntries.Clear();
-            _phaseEntries.Clear();
+            this.Dispose(true);
+        }
 
-            _resolverEntries = null;
-            _phaseEntries = null;
-            _schema = null;
-            _watch = null;
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _resolverEntries.Clear();
+                _phaseEntries.Clear();
+
+                _resolverEntries = null;
+                _phaseEntries = null;
+                _schema = null;
+                _watch = null;
+            }
         }
 
         /// <summary>
