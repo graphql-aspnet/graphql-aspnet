@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public virtual Type ResolveType(Type runtimeObjectType)
+        public virtual Type MapType(Type runtimeObjectType)
         {
             return runtimeObjectType;
         }

@@ -31,9 +31,10 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IImmutableSet<string> PossibleGraphTypeNames { get; }
 
         /// <summary>
-        /// Gets or sets the resolver that can determine resolve the type of a given value to one contained in this union.
+        /// Gets or sets the mapper that can determine which unioned type a value from a resolved field
+        /// should be interpreted as.
         /// </summary>
-        /// <value>The type resolver.</value>
-        IUnionValueTypeResolver TypeResolver { get; set; }
+        /// <value>The type mapper.</value>
+        IUnionTypeMapper TypeMapper { get; set; }
     }
 }

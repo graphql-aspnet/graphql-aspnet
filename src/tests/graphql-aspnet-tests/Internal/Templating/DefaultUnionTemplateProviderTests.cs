@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             public bool Publish => throw new NotImplementedException();
 
-            public Type ResolveType(Type runtimeObjectType) => throw new NotImplementedException();
+            public Type MapType(Type runtimeObjectType) => throw new NotImplementedException();
         }
 
         [Test]

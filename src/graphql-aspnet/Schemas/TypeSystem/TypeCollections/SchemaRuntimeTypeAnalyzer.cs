@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             // to try a hail mary to determine the allowed type.
             if (list.Count != 1 && graphType is IUnionGraphType ugt)
             {
-                var mappedType = ugt.TypeResolver?.ResolveType(typeToCheck);
+                var mappedType = ugt.TypeMapper?.MapType(typeToCheck);
                 if (mappedType != null && mappedType != typeToCheck)
                 {
                     list.Clear();

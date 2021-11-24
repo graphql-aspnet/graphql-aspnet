@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -42,7 +43,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var name = formatter.FormatGraphTypeName(proxy.Name);
-            var union = new UnionGraphType(name, proxy)
+            var union = new UnionGraphType(name, (IUnionTypeMapper)proxy)
             {
                 Description = proxy.Description,
                 Publish = proxy.Publish,

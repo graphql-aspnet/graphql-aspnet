@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
 
         public bool Publish => true;
 
-        public Type ResolveType(Type runtimeObjectType)
+        public Type MapType(Type runtimeObjectType)
         {
             return runtimeObjectType;
         }

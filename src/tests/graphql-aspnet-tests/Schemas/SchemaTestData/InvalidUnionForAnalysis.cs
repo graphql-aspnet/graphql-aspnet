@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
         {
         }
 
-        public override Type ResolveType(Type runtimeObjectType)
+        public override Type MapType(Type runtimeObjectType)
         {
             // returns a type not in the list
             return typeof(JobData);

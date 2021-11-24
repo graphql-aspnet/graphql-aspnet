@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Schemas.SchemaTestData
         {
         }
 
-        public override Type ResolveType(Type runtimeObjectType)
+        public override Type MapType(Type runtimeObjectType)
         {
             return typeof(AddressData);
         }

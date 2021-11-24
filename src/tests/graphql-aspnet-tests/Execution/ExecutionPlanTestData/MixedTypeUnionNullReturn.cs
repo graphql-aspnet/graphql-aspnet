@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
         {
         }
 
-        public override Type ResolveType(Type runtimeObjectType)
+        public override Type MapType(Type runtimeObjectType)
         {
             TotalCallCount += 1;
             return null;

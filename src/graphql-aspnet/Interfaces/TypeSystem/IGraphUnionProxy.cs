@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// An interface describing a proxy class which contains the metadata for a
     /// <see cref="UnionGraphType"/>.
     /// </summary>
-    public interface IGraphUnionProxy : IUnionValueTypeResolver
+    public interface IGraphUnionProxy : IUnionTypeMapper
     {
         /// <summary>
         /// Gets the name of the union. This name will be subjected to schema configuration rules
