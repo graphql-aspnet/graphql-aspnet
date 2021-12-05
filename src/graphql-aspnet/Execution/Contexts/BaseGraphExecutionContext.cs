@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Middleware
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
     /// A base middleware context containing the core items required of all contexts.
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Middleware
             : this(
                     otherContext?.OperationRequest,
                     otherContext?.ServiceProvider,
-                    otherContext?.User,
+                    otherContext?.SecurityContext,
                     otherContext?.Metrics,
                     otherContext?.Logger,
                     otherContext?.Items)
@@ -41,21 +42,22 @@ namespace GraphQL.AspNet.Middleware
         /// </summary>
         /// <param name="operationRequest">The original operation request.</param>
         /// <param name="serviceProvider">The service provider passed on the HttpContext.</param>
-        /// <param name="user">The user authenticated by the Asp.net runtime.</param>
+        /// <param name="securityContext">The security context used to authenticate
+        /// and authorize fields on this execution context.</param>
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="items">A key/value pair collection for random access data.</param>
         protected BaseGraphExecutionContext(
             IGraphOperationRequest operationRequest,
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user = null,
+            IUserSecurityContext securityContext,
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
         {
             this.OperationRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
             this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
-            this.User = user;
+            this.SecurityContext = securityContext;
             this.Metrics = metrics;
             this.Items = items ?? new MetaDataCollection();
             this.Messages = new GraphMessageCollection();
@@ -75,7 +77,7 @@ namespace GraphQL.AspNet.Middleware
         public IServiceProvider ServiceProvider { get; }
 
         /// <inheritdoc />
-        public ClaimsPrincipal User { get; }
+        public IUserSecurityContext SecurityContext { get; }
 
         /// <inheritdoc />
         public IGraphQueryExecutionMetrics Metrics { get; }

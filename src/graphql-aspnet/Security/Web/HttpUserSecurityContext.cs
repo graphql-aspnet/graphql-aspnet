@@ -1,0 +1,115 @@
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Security.Web
+{
+    using System;
+    using System.Collections.Concurrent;
+    using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Security;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
+
+    /// <summary>
+    /// A security context that uses an underlying <see cref="HttpContext"/> to authenticate
+    /// and authorize a user.
+    /// </summary>
+    public class HttpUserSecurityContext : IUserSecurityContext, IDisposable
+    {
+        private const string DEFAULT_SCHEME = "-DefaultSchemeKey-";
+        private SemaphoreSlim _slim = new SemaphoreSlim(1);
+        private HttpContext _httpContext;
+        private ConcurrentDictionary<string, IAuthenticationResult> _authResults;
+        private bool disposedValue;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpUserSecurityContext"/> class.
+        /// </summary>
+        /// <param name="httpContext">The HTTP context that governs this user context.</param>
+        public HttpUserSecurityContext(HttpContext httpContext)
+        {
+            _httpContext = Validation.ThrowIfNullOrReturn(httpContext, nameof(httpContext));
+            _authResults = new ConcurrentDictionary<string, IAuthenticationResult>();
+        }
+
+        /// <inheritdoc />
+        public Task<IAuthenticationResult> Authenticate(CancellationToken token = default)
+        {
+            return this.Authenticate(null, token);
+        }
+
+        /// <inheritdoc />
+        public async Task<IAuthenticationResult> Authenticate(string scheme, CancellationToken token = default)
+        {
+            var schemeKey = scheme;
+            if (schemeKey == null)
+                schemeKey = DEFAULT_SCHEME;
+
+            if (_authResults.TryGetValue(schemeKey, out var authResult))
+                return authResult;
+
+            await _slim.WaitAsync();
+
+            try
+            {
+                if (_authResults.TryGetValue(schemeKey, out authResult))
+                    return authResult;
+
+                // this can throw a "scheme not registered" exception
+                // allow it to bubble out and fail don't trap it as an "unauthenticated"
+                var result = await _httpContext.AuthenticateAsync(scheme);
+                authResult = new HttpContextAuthenticationResult(result.Succeeded, scheme, result.Ticket);
+            }
+            finally
+            {
+                _authResults.TryAdd(schemeKey, authResult);
+                _slim.Release();
+            }
+
+            return authResult;
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                    _slim.Dispose();
+
+                disposedValue = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <para>
+        /// Gets the claims principal representing the user as supplied by default.
+        /// </para>
+        /// <para>
+        /// For the <see cref="HttpContext"/> based security context this value is equivilant to
+        /// <c>HttpContext.User</c>.
+        /// </para>
+        /// </summary>
+        /// <value>The user.</value>
+        public ClaimsPrincipal DefaultUser => _httpContext?.User;
+    }
+}

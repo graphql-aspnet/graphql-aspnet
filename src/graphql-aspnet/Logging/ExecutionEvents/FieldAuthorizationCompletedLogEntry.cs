@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
 
     /// <summary>
     /// Recorded when the security middleware invokes a security challenge
@@ -25,12 +24,12 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Initializes a new instance of the <see cref="FieldAuthorizationCompletedLogEntry" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public FieldAuthorizationCompletedLogEntry(GraphFieldAuthorizationContext context)
+        public FieldAuthorizationCompletedLogEntry(GraphFieldSecurityContext context)
             : base(LogEventIds.FieldAuthorizationCompleted)
         {
             this.PipelineRequestId = context.Request.Id;
             this.FieldPath = context.Request.Field.Route.Path;
-            this.Username = context.User?.RetrieveUsername();
+            this.Username = context.SecurityContext?.DefaultUser?.RetrieveUsername();
             this.AuthorizationStatus = context.Result.Status.ToString();
             this.LogMessage = context.Result.LogMessage;
         }

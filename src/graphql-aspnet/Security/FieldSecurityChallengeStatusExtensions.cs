@@ -9,9 +9,9 @@
 namespace GraphQL.AspNet.Security
 {
     /// <summary>
-    /// Extension methods for <see cref="FieldAuthorizationStatus"/>.
+    /// Extension methods for <see cref="FieldSecurityChallengeStatus"/>.
     /// </summary>
-    public static class FieldAuthorizationStatusExtensions
+    public static class FieldSecurityChallengeStatusExtensions
     {
         /// <summary>
         /// Determines whether the specified status is considered a binary "authorized" vs. "unauthorized" state without
@@ -19,12 +19,12 @@ namespace GraphQL.AspNet.Security
         /// </summary>
         /// <param name="status">The status.</param>
         /// <returns><c>true</c> if the specified status is authorized; otherwise, <c>false</c>.</returns>
-        public static bool IsAuthorized(this FieldAuthorizationStatus status)
+        public static bool IsAuthorized(this FieldSecurityChallengeStatus status)
         {
             switch (status)
             {
-                case FieldAuthorizationStatus.Authorized:
-                case FieldAuthorizationStatus.Skipped:
+                case FieldSecurityChallengeStatus.Authorized:
+                case FieldSecurityChallengeStatus.Skipped:
                     return true;
 
                 default:

@@ -40,6 +40,7 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Logging.Extensions;
     using Microsoft.Extensions.DependencyInjection;
+    using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide
@@ -115,15 +116,7 @@ namespace GraphQL.AspNet.Apollo
             _enableMetrics = enableMetrics;
         }
 
-        /// <summary>
-        /// Instructs the client proxy to close its connection from the server side, no additional messages will be sent to it.
-        /// </summary>
-        /// <param name="reason">The status reason why the connection is being closed. This may be
-        /// sent to the client depending on implementation.</param>
-        /// <param name="message">A human readonable description as to why the connection was closed by
-        /// the server.</param>
-        /// <param name="cancelToken">A cancellation token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task CloseConnection(
             ClientConnectionCloseStatus reason,
             string message = null,
@@ -155,12 +148,7 @@ namespace GraphQL.AspNet.Apollo
             _connectionClosedForever = true;
         }
 
-        /// <summary>
-        /// Performs acknowledges the setup of the subscription through the websocket and brokers messages
-        /// between the client and the graphql runtime for its lifetime. When this method completes the socket is
-        /// closed.
-        /// </summary>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task StartConnection()
         {
             if (_connection == null || _connectionClosedForever)
@@ -289,11 +277,7 @@ namespace GraphQL.AspNet.Apollo
             return recievedMessage;
         }
 
-        /// <summary>
-        /// Serializes, encodes and sends the given message down to the client.
-        /// </summary>
-        /// <param name="message">The message to send.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         Task ISubscriptionClientProxy.SendMessage(object message)
         {
             Validation.ThrowIfNull(message, nameof(message));
@@ -302,11 +286,7 @@ namespace GraphQL.AspNet.Apollo
             return this.SendMessage(message as ApolloMessage);
         }
 
-        /// <summary>
-        /// Serializes, encodes and sends the given message down to the client.
-        /// </summary>
-        /// <param name="message">The message to send.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc cref="ISubscriptionClientProxy.SendMessage" />
         public Task SendMessage(ApolloMessage message)
         {
             Validation.ThrowIfNull(message, nameof(message));
@@ -552,16 +532,7 @@ namespace GraphQL.AspNet.Apollo
                 await this.SendMessage(new ApolloKeepAliveOperationMessage()).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Instructs the client to process the new event. If this is an event the client subscribes
-        /// to it should process the data appropriately and send down any data to its underlying connection
-        /// as necessary.
-        /// </summary>
-        /// <param name="field">The unique field corrisponding to the event that was raised
-        /// by the publisher.</param>
-        /// <param name="sourceData">The source data sent from the publisher when the event was raised.</param>
-        /// <param name="cancelToken">A cancellation token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task ReceiveEvent(GraphFieldPath field, object sourceData, CancellationToken cancelToken = default)
         {
             await Task.Yield();
@@ -593,7 +564,7 @@ namespace GraphQL.AspNet.Apollo
                 var context = new GraphQueryExecutionContext(
                     runtime.CreateRequest(subscription.QueryData),
                     this.ServiceProvider,
-                    this.User,
+                    this.SecurityContext,
                     metricsPackage,
                     logger);
 
@@ -619,28 +590,16 @@ namespace GraphQL.AspNet.Apollo
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Gets the state of the underlying connection.
-        /// </summary>
-        /// <value>The state.</value>
+        /// <inheritdoc />
         public ClientConnectionState State => _connection.State;
 
-        /// <summary>
-        /// Gets the service provider instance assigned to this client for resolving object requests.
-        /// </summary>
-        /// <value>The service provider.</value>
+        /// <inheritdoc />
         public IServiceProvider ServiceProvider => _connection.ServiceProvider;
 
-        /// <summary>
-        /// Gets the <see cref="ClaimsPrincipal" /> representing the user of the client.
-        /// </summary>
-        /// <value>The user.</value>
-        public ClaimsPrincipal User => _connection.User;
+        /// <inheritdoc />
+        public IUserSecurityContext SecurityContext => _connection.SecurityContext;
 
-        /// <summary>
-        /// Gets the unique id assigned to this client instance.
-        /// </summary>
-        /// <value>The identifier.</value>
+        /// <inheritdoc />
         public string Id { get; } = Guid.NewGuid().ToString();
 
         /// <summary>

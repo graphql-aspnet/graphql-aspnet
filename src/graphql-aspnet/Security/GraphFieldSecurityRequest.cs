@@ -20,13 +20,13 @@ namespace GraphQL.AspNet.Security
     /// <summary>
     /// A request to authorize a graph field to a given user.
     /// </summary>
-    public class GraphFieldAuthorizationRequest : IGraphFieldAuthorizationRequest
+    public class GraphFieldSecurityRequest : IGraphFieldSecurityRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldAuthorizationRequest" /> class.
+        /// Initializes a new instance of the <see cref="GraphFieldSecurityRequest" /> class.
         /// </summary>
         /// <param name="parentRequest">The parent field execution request that invoked this authorization check.</param>
-        public GraphFieldAuthorizationRequest(IGraphFieldRequest parentRequest)
+        public GraphFieldSecurityRequest(IGraphFieldRequest parentRequest)
         {
             Validation.ThrowIfNull(parentRequest, nameof(parentRequest));
             this.Id = parentRequest.Id;
@@ -36,11 +36,11 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldAuthorizationRequest"/> class.
+        /// Initializes a new instance of the <see cref="GraphFieldSecurityRequest"/> class.
         /// </summary>
         /// <param name="invocationContext">The invocation context through which this authorization request
         /// is occuring.</param>
-        public GraphFieldAuthorizationRequest(IGraphFieldInvocationContext invocationContext)
+        public GraphFieldSecurityRequest(IGraphFieldInvocationContext invocationContext)
         {
             Validation.ThrowIfNull(invocationContext, nameof(invocationContext));
             this.Id = Guid.NewGuid().ToString("N");

@@ -17,9 +17,6 @@ namespace GraphQL.AspNet.Interfaces.Logging
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
-    using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// A logging interface describing specific logged events in the completion of a graphql request.
@@ -72,14 +69,14 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// against a <see cref="ClaimsPrincipal" />.
         /// </summary>
         /// <param name="context">The authorization context that contains the request to be authorized.</param>
-        void FieldResolutionSecurityChallenge(GraphFieldAuthorizationContext context);
+        void FieldResolutionSecurityChallenge(GraphFieldSecurityContext context);
 
         /// <summary>
         /// Recorded when the security middleware completes a security challenge and renders a
         /// result.
         /// </summary>
         /// <param name="context">The authorization context that completed authorization.</param>
-        void FieldResolutionSecurityChallengeResult(GraphFieldAuthorizationContext context);
+        void FieldResolutionSecurityChallengeResult(GraphFieldSecurityContext context);
 
         /// <summary>
         /// Recorded when an executor attempts, and succeeds, to retrieve a query plan from its local cache.

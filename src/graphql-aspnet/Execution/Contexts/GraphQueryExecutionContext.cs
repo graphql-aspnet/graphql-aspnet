@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Middleware;
 
@@ -33,18 +34,19 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <param name="request">The request to be processed through the query pipeline.</param>
         /// <param name="serviceProvider">The service provider passed on the HttpContext.</param>
-        /// <param name="user">The user authenticated by the Asp.net runtime.</param>
+        /// <param name="securityContext">The security context used to authenticate and
+        /// authorize fields on this execution.</param>
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="items">A key/value pair collection for random access data.</param>
         public GraphQueryExecutionContext(
             IGraphOperationRequest request,
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user = null,
+            IUserSecurityContext securityContext = null,
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
-            : base(request, serviceProvider, user, metrics, logger, items)
+            : base(request, serviceProvider, securityContext, metrics, logger, items)
         {
             this.FieldResults = new List<GraphDataItem>();
             this.PostProcessingActions = new List<Action>();

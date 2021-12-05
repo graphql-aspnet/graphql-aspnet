@@ -10,12 +10,11 @@
 namespace GraphQL.AspNet.Interfaces.Middleware
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
 
     /// <summary>
     /// A middleware component in the field authorization pipeline.
     /// </summary>
-    public interface IGraphFieldAuthorizationMiddleware : IGraphMiddlewareComponent<GraphFieldAuthorizationContext>
+    public interface IGraphFieldSecurityMiddleware : IGraphMiddlewareComponent<GraphFieldSecurityContext>
     {
     }
 }

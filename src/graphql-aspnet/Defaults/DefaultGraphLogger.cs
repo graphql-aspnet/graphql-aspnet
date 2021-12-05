@@ -21,9 +21,6 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
     using GraphQL.AspNet.Logging.ExecutionEvents;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
-    using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Security;
     using Microsoft.Extensions.Logging;
 
@@ -153,7 +150,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void FieldResolutionSecurityChallenge(GraphFieldAuthorizationContext context)
+        public virtual void FieldResolutionSecurityChallenge(GraphFieldSecurityContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -163,9 +160,9 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void FieldResolutionSecurityChallengeResult(GraphFieldAuthorizationContext context)
+        public virtual void FieldResolutionSecurityChallengeResult(GraphFieldSecurityContext context)
         {
-            var logLevel = context.Result.Status == FieldAuthorizationStatus.Unauthorized
+            var logLevel = context.Result.Status == FieldSecurityChallengeStatus.Unauthorized
                 ? LogLevel.Warning
                 : LogLevel.Trace;
 

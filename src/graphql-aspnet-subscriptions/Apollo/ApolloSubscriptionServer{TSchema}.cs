@@ -169,12 +169,7 @@ namespace GraphQL.AspNet.Apollo
             }
         }
 
-        /// <summary>
-        /// Attempts to add the subscription to the server tracked collection. THis method
-        /// does not validate in flight message ids.
-        /// </summary>
-        /// <param name="connection">The connection representing the newly connected client.</param>
-        /// <returns>A value indicating if the subscription was successfully added.</returns>
+        /// <inheritdoc />
         public async Task<ISubscriptionClientProxy> RegisterNewClient(IClientConnection connection)
         {
             Validation.ThrowIfNull(connection, nameof(connection));
@@ -187,7 +182,12 @@ namespace GraphQL.AspNet.Apollo
                 logger,
                 _schema.Configuration.ExecutionOptions.EnableMetrics);
 
-            var isAuthenticated = connection.User?.Identities.Any(x => x.IsAuthenticated) ?? false;
+            var isAuthenticated = connection.SecurityContext.DefaultUser != null
+                                && connection.SecurityContext
+                                             .DefaultUser
+                                             .Identities
+                                             .Any(x => x.IsAuthenticated);
+
             if (_serverOptions.AuthenticatedRequestsOnly && !isAuthenticated)
             {
                 await apolloClient.SendMessage(

@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var serverBuilder = new TestServerBuilder()
                             .AddGraphType<LogTestController>();
-            serverBuilder.User.SetUsername("fakeUserName");
+            serverBuilder.SecurityContext.SetUsername("fakeUserName");
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -271,20 +271,20 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder()
                                          .AddGraphType<LogTestController>();
 
-            builder.User.SetUsername("bobSmith");
+            builder.SecurityContext.SetUsername("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2),
                 new object());
             var fieldRequest = package.FieldRequest;
-            var authContext = package.CreateAuthorizationContext();
+            var authContext = package.CreateSecurityContext();
             var entry = new FieldAuthorizationStartedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.FieldAuthorizationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
-            Assert.AreEqual(authContext.User?.RetrieveUsername(), entry.Username);
+            Assert.AreEqual(authContext.SecurityContext.DefaultUser?.RetrieveUsername(), entry.Username);
             Assert.IsNotNull(entry.ToString());
         }
 
@@ -294,22 +294,22 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder()
                                          .AddGraphType<LogTestController>();
 
-            builder.User.SetUsername("bobSmith");
+            builder.SecurityContext.SetUsername("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
                 nameof(LogTestController.ExecuteField2),
                 new object());
             var fieldRequest = package.FieldRequest;
-            var authContext = package.CreateAuthorizationContext();
+            var authContext = package.CreateSecurityContext();
 
-            authContext.Result = FieldAuthorizationResult.Fail("test message 1");
+            authContext.Result = FieldSecurityChallengeResult.Fail("test message 1");
             var entry = new FieldAuthorizationCompletedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.FieldAuthorizationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
-            Assert.AreEqual(authContext.User?.RetrieveUsername(), entry.Username);
+            Assert.AreEqual(authContext.SecurityContext?.DefaultUser?.RetrieveUsername(), entry.Username);
             Assert.AreEqual(authContext.Result.Status.ToString(), entry.AuthorizationStatus);
             Assert.IsNotNull(entry.ToString());
             Assert.AreEqual(authContext.Result.LogMessage, entry.LogMessage);

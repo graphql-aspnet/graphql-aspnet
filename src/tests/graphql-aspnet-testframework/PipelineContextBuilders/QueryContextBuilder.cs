@@ -11,15 +11,14 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Text.Json;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Variables;
     using Moq;
@@ -31,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     public class QueryContextBuilder
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ClaimsPrincipal _user;
+        private readonly IUserSecurityContext _userSecurityContext;
         private readonly Mock<IGraphOperationRequest> _mockRequest;
 
         private readonly List<KeyValuePair<GraphFieldPath, object>> _sourceData;
@@ -40,16 +39,16 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         private IGraphEventLogger _eventLogger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryContextBuilder"/> class.
+        /// Initializes a new instance of the <see cref="QueryContextBuilder" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="user">The user.</param>
+        /// <param name="userSecurityContext">The user security context.</param>
         public QueryContextBuilder(
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user)
+            IUserSecurityContext userSecurityContext)
         {
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
-            _user = user;
+            _userSecurityContext = userSecurityContext;
             _mockRequest = new Mock<IGraphOperationRequest>();
             _sourceData = new List<KeyValuePair<GraphFieldPath, object>>();
         }
@@ -134,7 +133,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var request = new Mock<IGraphOperationRequest>();
 
             // updateable items about the request
-            var context = new GraphQueryExecutionContext(this.OperationRequest, _serviceProvider, _user, _metrics, _eventLogger, metaData);
+            var context = new GraphQueryExecutionContext(this.OperationRequest, _serviceProvider, _userSecurityContext, _metrics, _eventLogger, metaData);
 
             foreach (var kvp in _sourceData)
             {

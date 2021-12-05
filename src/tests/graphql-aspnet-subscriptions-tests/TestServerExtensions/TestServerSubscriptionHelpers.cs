@@ -95,7 +95,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         {
             return new MockClientConnection(
                 server.ServiceProvider.CreateScope().ServiceProvider,
-                server.User);
+                server.SecurityContext);
         }
 
         /// <summary>
@@ -109,11 +109,6 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         {
             var subServer = server.ServiceProvider.GetService<ISubscriptionServer<TSchema>>();
             var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
-
-            var context = new DefaultHttpContext();
-            var scope = server.ServiceProvider.CreateScope();
-            context.RequestServices = scope.ServiceProvider;
-            context.User = server.User;
 
             var connection = server.CreateClient();
             var subClient = await subServer.RegisterNewClient(connection) as ISubscriptionClientProxy<TSchema>;
