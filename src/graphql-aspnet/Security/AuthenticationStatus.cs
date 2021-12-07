@@ -19,11 +19,6 @@ namespace GraphQL.AspNet.Security
         None = 0,
 
         /// <summary>
-        /// Authentication was skipped or otherwise intentionally not performed.
-        /// </summary>
-        Skipped = 1,
-
-        /// <summary>
         /// Authentication failed, no user credentials were created.
         /// </summary>
         Failed = 2,

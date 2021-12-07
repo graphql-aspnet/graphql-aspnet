@@ -26,10 +26,10 @@ namespace GraphQL.AspNet.Security.Web
     public class HttpUserSecurityContext : IUserSecurityContext, IDisposable
     {
         private const string DEFAULT_SCHEME = "-DefaultSchemeKey-";
-        private SemaphoreSlim _slim = new SemaphoreSlim(1);
-        private HttpContext _httpContext;
-        private ConcurrentDictionary<string, IAuthenticationResult> _authResults;
-        private bool disposedValue;
+        private readonly SemaphoreSlim _slim = new SemaphoreSlim(1);
+        private readonly HttpContext _httpContext;
+        private readonly ConcurrentDictionary<string, IAuthenticationResult> _authResults;
+        private bool _disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpUserSecurityContext"/> class.
@@ -50,14 +50,12 @@ namespace GraphQL.AspNet.Security.Web
         /// <inheritdoc />
         public async Task<IAuthenticationResult> Authenticate(string scheme, CancellationToken token = default)
         {
-            var schemeKey = scheme;
-            if (schemeKey == null)
-                schemeKey = DEFAULT_SCHEME;
+            var schemeKey = scheme ?? DEFAULT_SCHEME;
 
             if (_authResults.TryGetValue(schemeKey, out var authResult))
                 return authResult;
 
-            await _slim.WaitAsync();
+            await _slim.WaitAsync(token).ConfigureAwait(false);
 
             try
             {
@@ -67,7 +65,7 @@ namespace GraphQL.AspNet.Security.Web
                 // this can throw a "scheme not registered" exception
                 // allow it to bubble out and fail don't trap it as an "unauthenticated"
                 var result = await _httpContext.AuthenticateAsync(scheme);
-                authResult = new HttpContextAuthenticationResult(result.Succeeded, scheme, result.Ticket);
+                authResult = new HttpContextAuthenticationResult(scheme, result);
             }
             finally
             {
@@ -84,12 +82,12 @@ namespace GraphQL.AspNet.Security.Web
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                     _slim.Dispose();
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

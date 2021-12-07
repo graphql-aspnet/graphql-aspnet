@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
@@ -198,13 +199,13 @@ namespace GraphQL.AspNet.Tests.Framework
         public SchemaOptions<TSchema> SchemaOptions { get; }
 
         /// <summary>
-        /// Gets the authorization builder used to configure the roles and policys known the test server.
+        /// Gets the authorization builder used to configure the roles and policys known the to test server.
         /// </summary>
         /// <value>The authorization.</value>
         public TestAuthorizationBuilder Authorization { get; }
 
         /// <summary>
-        /// Gets the builder to configure the creation of a mocked <see cref="ClaimsPrincipal"/>.
+        /// Gets the builder to configure the creation of a mocked <see cref="IUserSecurityContext"/>.
         /// </summary>
         /// <value>The user.</value>
         public TestSecurityContextBuilder SecurityContext { get; }

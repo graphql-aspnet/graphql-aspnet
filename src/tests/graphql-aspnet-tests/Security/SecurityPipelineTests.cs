@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Security
     using NUnit.Framework;
 
     [TestFixture]
-    public class AuthorizationPipelineTests
+    public class SecurityPipelineTests
     {
         private void AssertAuthorizationFails(FieldSecurityChallengeResult result)
         {

@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             {
                 // try the default scheme first
                 authTicket = await context.SecurityContext.Authenticate(cancelToken);
-                if (authTicket != null && authTicket.Status != AuthenticationStatus.Success)
+                if (authTicket != null && !authTicket.Suceeded)
                     authTicket = null;
             }
 
@@ -123,14 +123,14 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 foreach (var scheme in allowedSchemes)
                 {
                     authTicket = await context.SecurityContext.Authenticate(scheme, cancelToken);
-                    if (authTicket != null && authTicket.Status == AuthenticationStatus.Success)
+                    if (authTicket?.Suceeded ?? false)
                         break;
 
                     authTicket = null;
                 }
             }
 
-            if (authTicket == null || authTicket.Status != AuthenticationStatus.Success)
+            if (authTicket == null || !authTicket.Suceeded)
             {
                 var failure = FieldSecurityChallengeResult.Fail(
                            $"No user could be authenticated using the approved authentication schemes.");

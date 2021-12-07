@@ -86,12 +86,10 @@ namespace GraphQL.AspNet.Tests.Framework
             if (_userByScheme.ContainsKey(schemeKey))
                 user = _userByScheme[schemeKey];
 
-            var authStatus = user != null ? AuthenticationStatus.Success : AuthenticationStatus.Failed;
-
             var mock = new Mock<IAuthenticationResult>();
             mock.Setup(x => x.AuthenticationScheme).Returns(scheme);
             mock.Setup(x => x.User).Returns(user);
-            mock.Setup(x => x.Status).Returns(authStatus);
+            mock.Setup(x => x.Suceeded).Returns(user != null);
 
             return Task.FromResult(mock.Object);
         }

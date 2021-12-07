@@ -34,7 +34,7 @@ namespace GraphQL.Subscriptions.Tests.Security
 
             var queryBuilder = server.CreateQueryContextBuilder();
             queryBuilder.AddQueryText(
-                @"subscription { 
+                @"subscription {
                     secureWidgetChanged(nameLike: ""j""){
                         id
                         name

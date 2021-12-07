@@ -18,10 +18,10 @@ namespace GraphQL.AspNet.Interfaces.Security
     public interface IAuthenticationResult
     {
         /// <summary>
-        /// Gets the status of completed authentication operation.
+        /// Gets a value indicating whether authentication succeeded.
         /// </summary>
-        /// <value>The status.</value>
-        AuthenticationStatus Status { get; }
+        /// <value><c>true</c> if authentication suceeded; otherwise, <c>false</c>.</value>
+        bool Suceeded { get; }
 
         /// <summary>
         /// Gets a string indicating which authentication scheme was used
@@ -31,8 +31,8 @@ namespace GraphQL.AspNet.Interfaces.Security
         string AuthenticationScheme { get; }
 
         /// <summary>
-        /// Gets the user that was authenticated. Only populated if <see cref="Status"/>
-        /// is <see cref="AuthenticationStatus.Success"/>.
+        /// Gets the user that was authenticated. Only populated if <see cref="Suceeded"/>
+        /// is <c>true</c>.
         /// </summary>
         /// <value>The user.</value>
         ClaimsPrincipal User { get; }
