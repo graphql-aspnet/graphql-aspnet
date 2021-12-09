@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     public class FieldAuthenticationMiddleware : IGraphFieldSecurityMiddleware
     {
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken = default)
         {
             // only attempt an authentication
             // if no result is already deteremined and if no user has already been authenticated
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
             if (authTicket == null || !authTicket.Suceeded)
             {
-                var failure = FieldSecurityChallengeResult.Fail(
+                var failure = FieldSecurityChallengeResult.UnAuthenticated(
                            $"No user could be authenticated using the approved authentication schemes.");
 
                 return (null, failure);

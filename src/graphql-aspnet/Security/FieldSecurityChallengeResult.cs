@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Security
 {
+    using System;
     using System.Diagnostics;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Security;
@@ -68,6 +69,20 @@ namespace GraphQL.AspNet.Security
         {
             return new FieldSecurityChallengeResult(
                 FieldSecurityChallengeStatus.Unauthorized,
+                message: internalMessage);
+        }
+
+        /// <summary>
+        /// Creates an authorization result indicating that authorization completed but the user
+        /// was unauthenticated based on a required authentication scheme.
+        /// message.
+        /// </summary>
+        /// <param name="internalMessage">The internal message.</param>
+        /// <returns>FieldAuthorizationResult.</returns>
+        public static FieldSecurityChallengeResult UnAuthenticated(string internalMessage)
+        {
+            return new FieldSecurityChallengeResult(
+                FieldSecurityChallengeStatus.Unauthenticated,
                 message: internalMessage);
         }
 

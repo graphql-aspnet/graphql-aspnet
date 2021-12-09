@@ -27,6 +27,11 @@ namespace GraphQL.AspNet.Security
         Failed,
 
         /// <summary>
+        /// Indicates that the challenge completed and the user was not authenticated with an expected or required scheme.
+        /// </summary>
+        Unauthenticated,
+
+        /// <summary>
         /// Indicates that the challenge completed and the user was deemed unauthorized.
         /// </summary>
         Unauthorized,

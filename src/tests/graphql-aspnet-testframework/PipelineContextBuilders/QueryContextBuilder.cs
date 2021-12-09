@@ -30,11 +30,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     public class QueryContextBuilder
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IUserSecurityContext _userSecurityContext;
         private readonly Mock<IGraphOperationRequest> _mockRequest;
-
         private readonly List<KeyValuePair<GraphFieldPath, object>> _sourceData;
 
+        private IUserSecurityContext _userSecurityContext;
         private IGraphQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
 
@@ -106,6 +105,18 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public QueryContextBuilder AddLogger(IGraphEventLogger eventLogger)
         {
             _eventLogger = eventLogger;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds or updates the security context for this builder to be the supplied value, even
+        /// if null.
+        /// </summary>
+        /// <param name="securityContext">The security context.</param>
+        /// <returns>QueryContextBuilder.</returns>
+        public QueryContextBuilder AddSecurityContext(IUserSecurityContext securityContext)
+        {
+            _userSecurityContext = securityContext;
             return this;
         }
 
