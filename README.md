@@ -2,9 +2,7 @@
 
 ### Documentation: [https://graphql-aspnet.github.io](https://graphql-aspnet.github.io)
 
-> Target Specification: **netstandard2.0**
->
-> Supported Runtimes: _.NET 4.7.2+_, _.NET Core 3.1+_, _.NET 5_, _.NET 6_
+> Targets: **netstandard2.0, net6.0**
 
 GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/action programming model familiar to ASP.NET MVC developers. Instead of focusing on schemas and mapping resolvers, the focus on controllers and models. GraphQL ASP.NET will automatically generate the schema to match your code.
 

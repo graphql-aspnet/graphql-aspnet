@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
@@ -19,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     /// <summary>
     /// A builder for generating a <see cref="ClaimsPrincipal"/> from a set of claims and roles.
     /// </summary>
-    public class TestSecurityContextBuilder : IGraphTestFrameworkComponent
+    public class TestUserSecurityContextBuilder : IGraphTestFrameworkComponent
     {
         private const string DEFAULT_SCHEME = "graphql.testing.defaultscheme";
 
@@ -29,9 +28,9 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         private readonly Dictionary<string, bool> _userIsAuthenticated;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestSecurityContextBuilder"/> class.
+        /// Initializes a new instance of the <see cref="TestUserSecurityContextBuilder"/> class.
         /// </summary>
-        public TestSecurityContextBuilder()
+        public TestUserSecurityContextBuilder()
         {
             _knownSchemes = new HashSet<string>();
             _userRoles = new Dictionary<string, List<string>>();
@@ -53,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// </summary>
         /// <param name="authScheme">The authentication scheme under which the user should be authenticated.</param>
         /// <returns>TestUserAccountBuilder.</returns>
-        public TestSecurityContextBuilder Authenticate(string authScheme = null)
+        public TestUserSecurityContextBuilder Authenticate(string authScheme = null)
         {
             return this.SetUsername(
                 "john-doe",
@@ -69,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// <param name="claimType">The name of the claim to use when identifying usernames.</param>
         /// <param name="authScheme">The authentication scheme to apply this username to.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
-        public TestSecurityContextBuilder SetUsername(string username, string claimType = null, string authScheme = null)
+        public TestUserSecurityContextBuilder SetUsername(string username, string claimType = null, string authScheme = null)
         {
             claimType = claimType ?? TestAuthorizationBuilder.USERNAME_CLAIM_TYPE;
             return this.AddUserClaim(claimType, username, authScheme);
@@ -83,7 +82,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// <param name="claimValue">The claim value.</param>
         /// <param name="authScheme">The authentication scheme, under which this claim will be applied.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
-        public TestSecurityContextBuilder AddUserClaim(string claimType, string claimValue, string authScheme = null)
+        public TestUserSecurityContextBuilder AddUserClaim(string claimType, string claimValue, string authScheme = null)
         {
             authScheme = authScheme ?? DEFAULT_SCHEME;
 
@@ -106,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// <param name="roleName">Name of the role.</param>
         /// <param name="authScheme">The authentication scheme under which this role will be applied.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
-        public TestSecurityContextBuilder AddUserRole(string roleName, string authScheme = null)
+        public TestUserSecurityContextBuilder AddUserRole(string roleName, string authScheme = null)
         {
             authScheme = authScheme ?? DEFAULT_SCHEME;
 

@@ -100,7 +100,7 @@ csharp_prefer_simple_using_statement = true:suggestion
 csharp_prefer_simple_default_expression = true:suggestion
 csharp_style_pattern_local_over_anonymous_function = true:suggestion
 csharp_style_prefer_index_operator = true:suggestion
-csharp_style_prefer_range_operator = true:suggestion
+csharp_style_prefer_range_operator =true:silent
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 
@@ -198,3 +198,6 @@ dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
 
 
+
+[*.{cs,vb}]
+dotnet_style_prefer_compound_assignment=true:suggestion

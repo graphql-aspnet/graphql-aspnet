@@ -51,11 +51,11 @@ namespace GraphQL.AspNet.Tests.Framework
             _initialSetup = initialSetup;
 
             this.Authorization = new TestAuthorizationBuilder();
-            this.SecurityContext = new TestSecurityContextBuilder();
+            this.UserContext = new TestUserSecurityContextBuilder();
             this.Logging = new TestLoggingBuilder();
 
             this.AddTestComponent(this.Authorization);
-            this.AddTestComponent(this.SecurityContext);
+            this.AddTestComponent(this.UserContext);
             this.AddTestComponent(this.Logging);
 
             var serviceCollection = new ServiceCollection();
@@ -184,7 +184,7 @@ namespace GraphQL.AspNet.Tests.Framework
             foreach (var action in _schemaBuilderAdditions)
                 action.Invoke(injector.SchemaBuilder);
 
-            var userSecurityContext = this.SecurityContext.CreateSecurityContext();
+            var userSecurityContext = this.UserContext.CreateSecurityContext();
             var serviceProvider = this.SchemaOptions.ServiceCollection.BuildServiceProvider();
 
             injector.UseSchema(serviceProvider);
@@ -208,7 +208,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Gets the builder to configure the creation of a mocked <see cref="IUserSecurityContext"/>.
         /// </summary>
         /// <value>The user.</value>
-        public TestSecurityContextBuilder SecurityContext { get; }
+        public TestUserSecurityContextBuilder UserContext { get; }
 
         /// <summary>
         /// Gets the builder to configure the setup of the logging framework.

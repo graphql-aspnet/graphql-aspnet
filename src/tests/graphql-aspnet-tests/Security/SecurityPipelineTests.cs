@@ -18,28 +18,28 @@ namespace GraphQL.AspNet.Tests.Security
     [TestFixture]
     public class SecurityPipelineTests
     {
-        private void AssertAuthorizationFails(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationFails(FieldSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
             Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Status);
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private void AssertAuthorizationIsUnAuthorized(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationIsUnAuthorized(FieldSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
             Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Status);
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private void AssertAuthorizationSuccess(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationSuccess(FieldSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
             Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Status);
             Assert.IsTrue(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private void AssertAuthorizationSkipped(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationSkipped(FieldSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
             Assert.AreEqual(FieldSecurityChallengeStatus.Skipped, result.Status);
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
-            builder.SecurityContext.AddUserRole("role4");
+            builder.UserContext.AddUserRole("role4");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
-            builder.SecurityContext.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
@@ -94,8 +94,8 @@ namespace GraphQL.AspNet.Tests.Security
 
             builder.Authorization.AddRolePolicy("RequireRole6", "role6");
             builder.Authorization.AddClaimPolicy("RequireClaim7", "testClaim7", "testClaim7Value");
-            builder.SecurityContext.AddUserRole("role6");
-            builder.SecurityContext.AddUserClaim("testClaim7", "testClaim7Value");
+            builder.UserContext.AddUserRole("role6");
+            builder.UserContext.AddUserClaim("testClaim7", "testClaim7Value");
 
             var server = builder.Build();
 
@@ -119,10 +119,10 @@ namespace GraphQL.AspNet.Tests.Security
             builder.Authorization.AddClaimPolicy("RequireClaim7", "testClaim7", "testClaim7Value");
 
             // user has role requirements
-            builder.SecurityContext.AddUserRole("role6");
+            builder.UserContext.AddUserRole("role6");
 
             // user does not have claims requirements
-            builder.SecurityContext.AddUserClaim("testClaim8", "testClaim8Value");
+            builder.UserContext.AddUserClaim("testClaim8", "testClaim8Value");
 
             var server = builder.Build();
 
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             var builder = new TestServerBuilder()
                 .AddGraphType<Controller_NoPolicies>();
-            builder.SecurityContext.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             var builder = new TestServerBuilder()
                 .AddGraphType<Controller_NoPolicies>();
-            builder.SecurityContext.AddUserRole("role5");
+            builder.UserContext.AddUserRole("role5");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -181,7 +181,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
-            builder.SecurityContext.AddUserClaim("testClaim5", "testClaim5Value");
+            builder.UserContext.AddUserClaim("testClaim5", "testClaim5Value");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
@@ -201,7 +201,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
-            builder.SecurityContext.AddUserClaim("testClaim6", "testClaim6Value");
+            builder.UserContext.AddUserClaim("testClaim6", "testClaim6Value");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
@@ -221,7 +221,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
-            builder.SecurityContext.AddUserClaim("testClaim6", "differentValueThanRequired");
+            builder.UserContext.AddUserClaim("testClaim6", "differentValueThanRequired");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
@@ -263,7 +263,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
             builder.Authorization.DisableAuthorization();
             builder.Authorization.AddRolePolicy("TestPolicy", "role1");
-            builder.SecurityContext.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -287,7 +287,7 @@ namespace GraphQL.AspNet.Tests.Security
 
             // user not in any declared role
             builder.Authorization.AddRolePolicy("TestPolicy", "role1");
-            builder.SecurityContext.AddUserRole("role5");
+            builder.UserContext.AddUserRole("role5");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -330,7 +330,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim7", "testClaim7", "testClaim7Value");
-            builder.SecurityContext.AddUserClaim("testClaim6", "testClaim6Value");
+            builder.UserContext.AddUserClaim("testClaim6", "testClaim6Value");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
@@ -356,10 +356,10 @@ namespace GraphQL.AspNet.Tests.Security
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
 
             // user meets controller policy
-            builder.SecurityContext.AddUserClaim("testClaim5", "testClaim5Value");
+            builder.UserContext.AddUserClaim("testClaim5", "testClaim5Value");
 
             // user does not meet method policy
-            builder.SecurityContext.AddUserRole("role5");
+            builder.UserContext.AddUserRole("role5");
 
             var server = builder.Build();
 
@@ -386,10 +386,10 @@ namespace GraphQL.AspNet.Tests.Security
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
 
             // user meets controller policy
-            builder.SecurityContext.AddUserClaim("testClaim5", "testClaim5Value");
+            builder.UserContext.AddUserClaim("testClaim5", "testClaim5Value");
 
             // user meet method policy
-            builder.SecurityContext.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
 
             var server = builder.Build();
 

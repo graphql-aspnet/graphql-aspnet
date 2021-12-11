@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Extensions
         public async Task RetrieveUserName()
         {
             var builder = new TestServerBuilder();
-            var context = builder.SecurityContext
+            var context = builder.UserContext
                 .SetUsername("bobSmith")
                 .CreateSecurityContext();
 
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Extensions
         public async Task RetrieveUserName_CustomClaimOverload()
         {
             var builder = new TestServerBuilder();
-            var context = builder.SecurityContext
+            var context = builder.UserContext
                 .SetUsername("bobSmith")
                 .AddUserClaim("fakeClaim2", "janeDoe")
                 .CreateSecurityContext();

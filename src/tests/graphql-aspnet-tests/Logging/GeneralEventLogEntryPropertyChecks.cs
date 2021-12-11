@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var serverBuilder = new TestServerBuilder()
                             .AddGraphType<LogTestController>();
-            serverBuilder.SecurityContext.SetUsername("fakeUserName");
+            serverBuilder.UserContext.SetUsername("fakeUserName");
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -275,7 +275,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder()
                             .AddGraphType<LogTestController>();
 
-            builder.SecurityContext.SetUsername("bobSmith");
+            builder.UserContext.SetUsername("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
@@ -301,7 +301,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder()
                                          .AddGraphType<LogTestController>();
 
-            builder.SecurityContext.SetUsername("bobSmith");
+            builder.UserContext.SetUsername("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
@@ -329,7 +329,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder()
                             .AddGraphType<LogTestController>();
 
-            builder.SecurityContext.SetUsername("bobSmith");
+            builder.UserContext.SetUsername("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateFieldContextBuilder<LogTestController>(
@@ -353,7 +353,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var builder = new TestServerBuilder()
                                          .AddGraphType<LogTestController>();
-            builder.SecurityContext.SetUsername("bob-smith");
+            builder.UserContext.SetUsername("bob-smith");
             var server = builder.Build();
 
             var ident = new Mock<IIdentity>();
