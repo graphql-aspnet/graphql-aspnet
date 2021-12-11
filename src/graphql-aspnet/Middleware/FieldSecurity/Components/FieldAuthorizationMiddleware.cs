@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <returns>Task.</returns>
         public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken)
         {
-            context.Logger?.FieldResolutionSecurityChallenge(context);
+            context.Logger?.FieldAuthorizationChallenge(context);
 
             // a result may have been set by other middleware
             // in this auth pipeline, if a result is already determined just skip this step
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 context.Result = result ?? FieldSecurityChallengeResult.Default();
             }
 
-            context.Logger?.FieldResolutionSecurityChallengeResult(context);
+            context.Logger?.FieldAuthorizationChallengeResult(context);
 
             await next(context, cancelToken).ConfigureAwait(false);
         }

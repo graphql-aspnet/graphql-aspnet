@@ -27,23 +27,31 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <inheritdoc />
         public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken = default)
         {
+            context.Logger?.FieldAuthenticationChallenge(context);
+
             // only attempt an authentication
             // if no result is already deteremined and if no user has already been authenticated
+            IAuthenticationResult authenticationResult = null;
             if (context.Result == null && context.AuthenticatedUser == null)
             {
-                (var user, var challengeResult) = await this.AuthenticateUser(context, cancelToken);
+                ClaimsPrincipal user;
+                FieldSecurityChallengeResult challengeResult;
+
+                (user, authenticationResult, challengeResult) = await this.AuthenticateUser(context, cancelToken);
                 context.AuthenticatedUser = user;
                 context.Result = challengeResult;
             }
 
+            context.Logger?.FieldAuthenticationChallengeResult(context, authenticationResult);
+
             await next.Invoke(context, cancelToken).ConfigureAwait(false);
         }
 
-        private async Task<(ClaimsPrincipal, FieldSecurityChallengeResult)> AuthenticateUser(GraphFieldSecurityContext context, CancellationToken cancelToken)
+        private async Task<(ClaimsPrincipal, IAuthenticationResult, FieldSecurityChallengeResult)> AuthenticateUser(GraphFieldSecurityContext context, CancellationToken cancelToken)
         {
             // Step 0: No authorization needed? just use the default user on the security context
             if (context.Field.SecurityGroups == null || !context.Field.SecurityGroups.Any())
-                return (context.SecurityContext?.DefaultUser, null);
+                return (context.SecurityContext?.DefaultUser, null, null);
 
             // Step 1: For all the stacked security group in the checked field is there a path
             //         through the chain for any given authentication scheme
@@ -87,7 +95,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                                 $"The field '{context.Field.Route}' has mismatched required authentication schemes in its security groups. It contains " +
                                 $"no scenarios where an authentication scheme can be used to authenticate a user to all possible security groups.");
 
-                            return (null, failure);
+                            return (null, null, failure);
                         }
                         else
                         {
@@ -104,7 +112,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 var failure = FieldSecurityChallengeResult.Fail(
                            $"No user could be authenticated because no security context was available on the request.");
 
-                return (null, failure);
+                return (null, null, failure);
             }
 
             // Step 2: Attempt to authenticate the user against hte acceptable schemes
@@ -135,10 +143,10 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 var failure = FieldSecurityChallengeResult.UnAuthenticated(
                            $"No user could be authenticated using the approved authentication schemes.");
 
-                return (null, failure);
+                return (null, authTicket, failure);
             }
 
-            return (authTicket.User, null);
+            return (authTicket.User, authTicket, null);
         }
     }
 }

@@ -12,12 +12,15 @@ namespace GraphQL.AspNet.Tests.Logging
     using System;
     using System.Linq;
     using System.Reflection;
+    using System.Security.Claims;
+    using System.Security.Principal;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.ExecutionEvents;
@@ -27,6 +30,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.ServerBuilders;
     using GraphQL.AspNet.Tests.Logging.LoggerTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
@@ -266,10 +270,10 @@ namespace GraphQL.AspNet.Tests.Logging
         }
 
         [Test]
-        public void FieldSecurityChallengeStartedLogEntry()
+        public void FieldAuthorizationStartedLogEntry()
         {
             var builder = new TestServerBuilder()
-                                         .AddGraphType<LogTestController>();
+                            .AddGraphType<LogTestController>();
 
             builder.SecurityContext.SetUsername("bobSmith");
             var server = builder.Build();
@@ -278,18 +282,21 @@ namespace GraphQL.AspNet.Tests.Logging
                 nameof(LogTestController.ExecuteField2),
                 new object());
             var fieldRequest = package.FieldRequest;
+
             var authContext = package.CreateSecurityContext();
+            authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
+
             var entry = new FieldAuthorizationStartedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.FieldAuthorizationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
-            Assert.AreEqual(authContext.SecurityContext.DefaultUser?.RetrieveUsername(), entry.Username);
+            Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
             Assert.IsNotNull(entry.ToString());
         }
 
         [Test]
-        public void FieldSecurityChallengeCompletedLogEntry()
+        public void FieldAuthorizationCompletedLogEntry()
         {
             var builder = new TestServerBuilder()
                                          .AddGraphType<LogTestController>();
@@ -302,6 +309,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 new object());
             var fieldRequest = package.FieldRequest;
             var authContext = package.CreateSecurityContext();
+            authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
 
             authContext.Result = FieldSecurityChallengeResult.Fail("test message 1");
             var entry = new FieldAuthorizationCompletedLogEntry(authContext);
@@ -309,9 +317,74 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(LogEventIds.FieldAuthorizationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
-            Assert.AreEqual(authContext.SecurityContext?.DefaultUser?.RetrieveUsername(), entry.Username);
+            Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
             Assert.AreEqual(authContext.Result.Status.ToString(), entry.AuthorizationStatus);
             Assert.IsNotNull(entry.ToString());
+            Assert.AreEqual(authContext.Result.LogMessage, entry.LogMessage);
+        }
+
+        [Test]
+        public void FieldAuthenticationStartedLogEntry()
+        {
+            var builder = new TestServerBuilder()
+                            .AddGraphType<LogTestController>();
+
+            builder.SecurityContext.SetUsername("bobSmith");
+            var server = builder.Build();
+
+            var package = server.CreateFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2),
+                new object());
+            var fieldRequest = package.FieldRequest;
+
+            var authContext = package.CreateSecurityContext();
+            authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
+
+            var entry = new FieldAuthenticationStartedLogEntry(authContext);
+
+            Assert.AreEqual(LogEventIds.FieldAuthenticationStarted.Id, entry.EventId);
+            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
+            Assert.IsNotNull(entry.ToString());
+        }
+
+        [Test]
+        public void FieldAuthenticationCompletedLogEntry()
+        {
+            var builder = new TestServerBuilder()
+                                         .AddGraphType<LogTestController>();
+            builder.SecurityContext.SetUsername("bob-smith");
+            var server = builder.Build();
+
+            var ident = new Mock<IIdentity>();
+            ident.Setup(x => x.Name).Returns("someOtherUser");
+            var testUser = new ClaimsPrincipal();
+            testUser.AddIdentity(new ClaimsIdentity(ident.Object));
+
+            var authResult = new Mock<IAuthenticationResult>();
+            authResult.Setup(x => x.User).Returns(testUser);
+            authResult.Setup(x => x.AuthenticationScheme).Returns("testScheme");
+            authResult.Setup(x => x.Suceeded).Returns(true);
+
+            var package = server.CreateFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2),
+                new object());
+
+            var fieldRequest = package.FieldRequest;
+            var authContext = package.CreateSecurityContext();
+            authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
+            authContext.Result = FieldSecurityChallengeResult.Fail("test message 1");
+
+            var entry = new FieldAuthenticationCompletedLogEntry(authContext, authResult.Object);
+
+            Assert.AreEqual(LogEventIds.FieldAuthenticationCompleted.Id, entry.EventId);
+            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
+            Assert.AreEqual("someOtherUser", entry.Username); // ensure its the user from the authResult
+            Assert.AreEqual("testScheme", entry.AuthenticationScheme);
+            Assert.IsTrue(entry.AuthethenticationSuccess);
+            Assert.IsNotNull(entry.ToString());
+            Assert.IsNotNull(entry.LogMessage.ToString());
             Assert.AreEqual(authContext.Result.LogMessage, entry.LogMessage);
         }
 

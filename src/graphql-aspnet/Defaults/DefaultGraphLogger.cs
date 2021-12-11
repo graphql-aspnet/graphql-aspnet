@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Logging;
@@ -150,7 +151,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void FieldResolutionSecurityChallenge(GraphFieldSecurityContext context)
+        public virtual void FieldAuthorizationChallenge(GraphFieldSecurityContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -160,9 +161,9 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void FieldResolutionSecurityChallengeResult(GraphFieldSecurityContext context)
+        public virtual void FieldAuthorizationChallengeResult(GraphFieldSecurityContext context)
         {
-            var logLevel = context.Result.Status == FieldSecurityChallengeStatus.Unauthorized
+            var logLevel = context?.Result == null || context.Result.Status == FieldSecurityChallengeStatus.Unauthorized
                 ? LogLevel.Warning
                 : LogLevel.Trace;
 
@@ -170,6 +171,42 @@ namespace GraphQL.AspNet.Defaults
                 return;
 
             var entry = new FieldAuthorizationCompletedLogEntry(context);
+            this.LogEvent(logLevel, entry);
+        }
+
+        /// <inheritdoc />
+        public void FieldAuthenticationChallenge(GraphFieldSecurityContext context)
+        {
+            if (!this.IsEnabled(LogLevel.Trace))
+                return;
+
+            var entry = new FieldAuthenticationStartedLogEntry(context);
+            this.LogEvent(LogLevel.Trace, entry);
+        }
+
+        /// <inheritdoc />
+        public void FieldAuthenticationChallengeResult(GraphFieldSecurityContext context, IAuthenticationResult authResult)
+        {
+            LogLevel logLevel;
+            if (context.AuthenticatedUser != null)
+            {
+                logLevel = LogLevel.Trace;
+            }
+            else if (context.Result != null)
+            {
+                logLevel = context.Result.Status == FieldSecurityChallengeStatus.Failed
+                ? LogLevel.Warning
+                : LogLevel.Trace;
+            }
+            else
+            {
+                logLevel = authResult.Suceeded ? LogLevel.Trace : LogLevel.Warning;
+            }
+
+            if (!this.IsEnabled(logLevel))
+                return;
+
+            var entry = new FieldAuthenticationCompletedLogEntry(context, authResult);
             this.LogEvent(logLevel, entry);
         }
 

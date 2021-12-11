@@ -9,37 +9,25 @@
 
 namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
-    using System.Security.Claims;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded when the security middleware invokes a security challenge
-    /// against a <see cref="ClaimsPrincipal"/>.
+    /// Recorded when the security middleware invokes an authentication challenge
+    /// against a <see cref="IUserSecurityContext"/> for a given field.
     /// </summary>
-    public class FieldAuthorizationStartedLogEntry : GraphLogEntry
+    public class FieldAuthenticationStartedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldAuthorizationStartedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="FieldAuthenticationStartedLogEntry" /> class.
         /// </summary>
         /// <param name="context">The auth context that is being resolved.</param>
-        public FieldAuthorizationStartedLogEntry(GraphFieldSecurityContext context)
-            : base(LogEventIds.FieldAuthorizationStarted)
+        public FieldAuthenticationStartedLogEntry(GraphFieldSecurityContext context)
+            : base(LogEventIds.FieldAuthenticationStarted)
         {
-            this.PipelineRequestId = context.Request.Id;
-            this.FieldPath = context.Field.Route.Path;
-            this.Username = context.AuthenticatedUser?.RetrieveUsername();
-        }
-
-        /// <summary>
-        /// Gets the username of the user on the request, if any.
-        /// </summary>
-        /// <value>The username.</value>
-        public string Username
-        {
-            get => this.GetProperty<string>(LogPropertyNames.USERNAME);
-            private set => this.SetProperty(LogPropertyNames.USERNAME, value);
+            this.PipelineRequestId = context?.Request.Id;
+            this.FieldPath = context?.Field.Route.Path;
         }
 
         /// <summary>
@@ -71,7 +59,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public override string ToString()
         {
             var idTruncated = this.PipelineRequestId?.Length > 8 ? this.PipelineRequestId.Substring(0, 8) : this.PipelineRequestId;
-            return $"Field Authorization Started | Id: {idTruncated},  Path: '{this.FieldPath}' ";
+            return $"Field Authentication Started | Id: {idTruncated},  Path: '{this.FieldPath}' ";
         }
     }
 }
