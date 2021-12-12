@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(options, nameof(options));
 
             this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(options, Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
-            this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
+            this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
             this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
 
             this.Options = options;
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Configuration
         /// the user to the field allowing or denying them access to it.
         /// </summary>
         /// <value>The field authorization pipeline.</value>
-        public SchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext> FieldAuthorizationPipeline { get; }
+        public SchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> FieldAuthorizationPipeline { get; }
 
         /// <summary>
         /// Gets a builder to construct the primary query pipeline. This pipeline oversees the processing of a query and is invoked
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Configuration
         /// the user to the field allowing or denying them access to it.
         /// </summary>
         /// <value>The field authorization pipeline.</value>
-        ISchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext> ISchemaBuilder<TSchema>.FieldAuthorizationPipeline => this.FieldAuthorizationPipeline;
+        ISchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> ISchemaBuilder<TSchema>.FieldAuthorizationPipeline => this.FieldAuthorizationPipeline;
 
         /// <summary>
         /// Gets a builder to construct the primary query pipeline. This pipeline oversees the processing of a query and is invoked

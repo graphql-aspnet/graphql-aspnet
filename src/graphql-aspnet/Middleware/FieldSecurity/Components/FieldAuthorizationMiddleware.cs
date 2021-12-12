@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
+namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 {
     using System.Linq;
     using System.Security.Claims;
@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Security;
     using Microsoft.AspNetCore.Authorization;
 
@@ -24,15 +25,15 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authorize a single user
     /// to a single field of data.
     /// </summary>
-    internal class FieldAuthorizationCheckMiddleware : IGraphFieldAuthorizationMiddleware
+    internal class FieldAuthorizationMiddleware : IGraphFieldSecurityMiddleware
     {
         private readonly IAuthorizationService _authService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldAuthorizationCheckMiddleware" /> class.
+        /// Initializes a new instance of the <see cref="FieldAuthorizationMiddleware" /> class.
         /// </summary>
         /// <param name="authService">The authentication service.</param>
-        public FieldAuthorizationCheckMiddleware(IAuthorizationService authService = null)
+        public FieldAuthorizationMiddleware(IAuthorizationService authService = null)
         {
             _authService = authService;
         }
@@ -44,14 +45,19 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
         /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        public async Task InvokeAsync(GraphFieldAuthorizationContext context, GraphMiddlewareInvocationDelegate<GraphFieldAuthorizationContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken)
         {
-            context.Logger?.FieldResolutionSecurityChallenge(context);
+            context.Logger?.FieldAuthorizationChallenge(context);
 
-            var result = await this.AuthorizeRequest(context.Request, context.User).ConfigureAwait(false);
-            context.Result = result ?? FieldAuthorizationResult.Default();
+            // a result may have been set by other middleware
+            // in this auth pipeline, if a result is already determined just skip this step
+            if (context.Result == null)
+            {
+                var result = await this.AuthorizeRequest(context.Request, context.AuthenticatedUser).ConfigureAwait(false);
+                context.Result = result ?? FieldSecurityChallengeResult.Default();
+            }
 
-            context.Logger?.FieldResolutionSecurityChallengeResult(context);
+            context.Logger?.FieldAuthorizationChallengeResult(context);
 
             await next(context, cancelToken).ConfigureAwait(false);
         }
@@ -60,20 +66,18 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
         /// Attempts to authorize the request using the field based <see cref="IAuthorizeData" /> attributes.
         /// </summary>
         /// <param name="authRequest">The request to authorize.</param>
-        /// <param name="claimsUser">The claims user provisioned for this run.</param>
-        /// <returns>FieldAuthorizationResult.</returns>
-        private async Task<FieldAuthorizationResult> AuthorizeRequest(IGraphFieldAuthorizationRequest authRequest, ClaimsPrincipal claimsUser)
+        /// <param name="claimsUser">The claims user to authorize against.</param>
+        /// <returns>FieldSecurityChallengeResult.</returns>
+        private async Task<FieldSecurityChallengeResult> AuthorizeRequest(
+            IGraphFieldSecurityRequest authRequest,
+            ClaimsPrincipal claimsUser)
         {
             Validation.ThrowIfNull(authRequest?.Field, nameof(authRequest.Field));
 
             var securityGroups = authRequest.Field.SecurityGroups;
             if (securityGroups == null || !securityGroups.Any())
-            {
-                return FieldAuthorizationResult.Skipped();
-            }
+                return FieldSecurityChallengeResult.Skipped(claimsUser);
 
-            // each security group represents one level of security requirements (e.g. the controller group then the action)
-            // the user must autenticate to each of them in turn.
             foreach (var group in securityGroups)
             {
                 if (group.AllowAnonymous)
@@ -84,12 +88,12 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
                 // in which case auth services don't matter
                 if (claimsUser?.Identity == null)
                 {
-                    return FieldAuthorizationResult.Fail("The request contains no user context to validate.");
+                    return FieldSecurityChallengeResult.Unauthorized("The request contains no user context to validate.");
                 }
 
                 if (!claimsUser.Identity.IsAuthenticated)
                 {
-                    return FieldAuthorizationResult.Fail($"The supplied {nameof(ClaimsPrincipal)} was not successfully authenticated.");
+                    return FieldSecurityChallengeResult.Unauthorized($"The supplied {nameof(ClaimsPrincipal)} was not successfully authenticated.");
                 }
 
                 foreach (var rule in group)
@@ -98,7 +102,7 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
                     {
                         if (_authService == null)
                         {
-                            return FieldAuthorizationResult.Fail(
+                            return FieldSecurityChallengeResult.Fail(
                                 "The field defines authorization policies but " +
                                 $"no '{nameof(IAuthorizationService)}' exists to process them.");
                         }
@@ -106,28 +110,21 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization.Components
                         // policy check via the authorization service
                         var authResult = await _authService.AuthorizeAsync(claimsUser, rule.PolicyName).ConfigureAwait(false);
                         if (!authResult.Succeeded)
-                            return FieldAuthorizationResult.Fail($"Access denied via policy '{rule.PolicyName}'.");
+                            return FieldSecurityChallengeResult.Unauthorized($"Access denied via policy '{rule.PolicyName}'.");
                     }
 
                     if (rule.AllowedRoles.Count > 0)
                     {
                         // check any defined roles
                         if (rule.AllowedRoles.All(x => !claimsUser.IsInRole(x)))
-                            return FieldAuthorizationResult.Fail("Access denied due to missing a required role.");
-                    }
-
-                    if (rule.AuthenticationSchemes.Count > 0)
-                    {
-                        // check against any limiting authentication schemes
-                        if (claimsUser.Identities.All(x => !rule.AuthenticationSchemes.Contains(x.AuthenticationType)))
-                            return FieldAuthorizationResult.Fail("Access denied due to missing a required authentication scheme.");
+                            return FieldSecurityChallengeResult.Unauthorized("Access denied due to missing a required role.");
                     }
 
                     // all checks passed
                 }
             }
 
-            return FieldAuthorizationResult.Success();
+            return FieldSecurityChallengeResult.Success(claimsUser);
         }
     }
 }

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Contexts
 {
+    using System.Security.Claims;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware;
@@ -26,14 +27,18 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// extract is base data values.</param>
         /// <param name="request">The resolution request to carry with the context.</param>
         /// <param name="arguments">The arguments to be passed to the resolver when its executed.</param>
+        /// <param name="user">Optional. The user context that authenticated and authorized for this
+        /// resolution context.</param>
         protected ResolutionContext(
             IGraphExecutionContext parentContext,
             IDataRequest request,
-            IExecutionArgumentCollection arguments)
+            IExecutionArgumentCollection arguments,
+            ClaimsPrincipal user = null)
             : base(parentContext)
         {
             this.Request = Validation.ThrowIfNullOrReturn(request, nameof(request));
             this.Arguments = Validation.ThrowIfNullOrReturn(arguments, nameof(arguments));
+            this.User = user;
         }
 
         /// <summary>
@@ -48,5 +53,12 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The request.</value>
         public IDataRequest Request { get; }
+
+        /// <summary>
+        /// Gets the resolved user that was authenticated and authorized for this resolution context.
+        /// May be null if no authentication or authorization took place.
+        /// </summary>
+        /// <value>The user.</value>
+        public ClaimsPrincipal User { get; }
     }
 }

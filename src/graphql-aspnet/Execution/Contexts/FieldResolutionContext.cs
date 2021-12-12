@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Contexts
 {
     using System.Diagnostics;
+    using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
@@ -25,11 +26,14 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="fieldRequest">The request to resolve a specific field.</param>
         /// <param name="arguments">The execution arguments that need to be passed to the field
         /// resolver.</param>
+        /// <param name="user">Optional. The user context that authenticated and authorized for this
+        /// resolution context.</param>
         public FieldResolutionContext(
             IGraphExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
-            IExecutionArgumentCollection arguments)
-            : base(parentContext, fieldRequest, arguments)
+            IExecutionArgumentCollection arguments,
+            ClaimsPrincipal user = null)
+            : base(parentContext, fieldRequest, arguments, user)
         {
         }
 

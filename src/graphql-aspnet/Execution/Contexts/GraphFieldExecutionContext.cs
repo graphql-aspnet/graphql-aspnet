@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution.Contexts
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Security.Claims;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
@@ -51,6 +52,12 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The result.</value>
         public object Result { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user that was used to authenticate and authorize this field, if any.
+        /// </summary>
+        /// <value>The user.</value>
+        public ClaimsPrincipal User { get; set; }
 
         /// <summary>
         /// Gets the collection of source items that were successfully resolved from the generated <see cref="Result"/>.

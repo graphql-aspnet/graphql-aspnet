@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
@@ -50,11 +51,11 @@ namespace GraphQL.AspNet.Tests.Framework
             _initialSetup = initialSetup;
 
             this.Authorization = new TestAuthorizationBuilder();
-            this.User = new TestUserAccountBuilder();
+            this.UserContext = new TestUserSecurityContextBuilder();
             this.Logging = new TestLoggingBuilder();
 
             this.AddTestComponent(this.Authorization);
-            this.AddTestComponent(this.User);
+            this.AddTestComponent(this.UserContext);
             this.AddTestComponent(this.Logging);
 
             var serviceCollection = new ServiceCollection();
@@ -183,11 +184,11 @@ namespace GraphQL.AspNet.Tests.Framework
             foreach (var action in _schemaBuilderAdditions)
                 action.Invoke(injector.SchemaBuilder);
 
-            var userAccount = this.User.CreateUserAccount();
+            var userSecurityContext = this.UserContext.CreateSecurityContext();
             var serviceProvider = this.SchemaOptions.ServiceCollection.BuildServiceProvider();
 
             injector.UseSchema(serviceProvider);
-            return new TestServer<TSchema>(serviceProvider, userAccount);
+            return new TestServer<TSchema>(serviceProvider, userSecurityContext);
         }
 
         /// <summary>
@@ -198,16 +199,16 @@ namespace GraphQL.AspNet.Tests.Framework
         public SchemaOptions<TSchema> SchemaOptions { get; }
 
         /// <summary>
-        /// Gets the authorization builder used to configure the roles and policys known the test server.
+        /// Gets the authorization builder used to configure the roles and policys known the to test server.
         /// </summary>
         /// <value>The authorization.</value>
         public TestAuthorizationBuilder Authorization { get; }
 
         /// <summary>
-        /// Gets the builder to configure the creation of a mocked <see cref="ClaimsPrincipal"/>.
+        /// Gets the builder to configure the creation of a mocked <see cref="IUserSecurityContext"/>.
         /// </summary>
         /// <value>The user.</value>
-        public TestUserAccountBuilder User { get; }
+        public TestUserSecurityContextBuilder UserContext { get; }
 
         /// <summary>
         /// Gets the builder to configure the setup of the logging framework.

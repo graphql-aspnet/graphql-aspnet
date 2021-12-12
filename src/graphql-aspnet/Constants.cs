@@ -206,21 +206,7 @@ namespace GraphQL.AspNet
             public const string TYPENAME_FIELD = "__typename";
 
             private static readonly IReadOnlyDictionary<GraphCollection, string> GRAPH_OPERATION_TYPE_NAME_BY_TYPE;
-            private static readonly IReadOnlyDictionary<string, GraphCollection> GRAPH_OPERATION_TYPE_BY_TYPE_NAME;
             private static readonly IReadOnlyDictionary<string, GraphCollection> GRAPH_OPERATION_TYPE_BY_KEYWORD;
-
-            /// <summary>
-            /// Inspects the known operation graph type for a name matching the provided value returning it when found.
-            /// </summary>
-            /// <param name="operationTypeName">Name of the operation graph type as it exists in a schema (e.g. Query, Mutation).</param>
-            /// <returns>GraphCollection.</returns>
-            public static GraphCollection FindOperationTypeByTypeName(string operationTypeName)
-            {
-                if (GRAPH_OPERATION_TYPE_BY_TYPE_NAME.ContainsKey(operationTypeName))
-                    return GRAPH_OPERATION_TYPE_BY_TYPE_NAME[operationTypeName];
-
-                return GraphCollection.Unknown;
-            }
 
             /// <summary>
             /// Inspects the known operation types for a name matching the provided value returning it when found.
@@ -267,12 +253,6 @@ namespace GraphQL.AspNet
                 dicTypeToTypeName.Add(GraphCollection.Mutation, MUTATION_TYPE_NAME);
                 dicTypeToTypeName.Add(GraphCollection.Subscription, SUBSCRIPTION_TYPE_NAME);
                 GRAPH_OPERATION_TYPE_NAME_BY_TYPE = dicTypeToTypeName;
-
-                var dicTypeNameToType = new Dictionary<string, GraphCollection>();
-                foreach (var entry in dicTypeToTypeName)
-                    dicTypeNameToType.Add(entry.Value, entry.Key);
-
-                GRAPH_OPERATION_TYPE_BY_TYPE_NAME = dicTypeNameToType;
 
                 IntrospectableRouteNames = ImmutableHashSet.Create(
                             QUERY_TYPE_NAME,

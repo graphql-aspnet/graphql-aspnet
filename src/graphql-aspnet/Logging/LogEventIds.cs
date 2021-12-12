@@ -87,14 +87,26 @@ namespace GraphQL.AspNet.Logging
         public static EventId FieldResolutionStarted = new EventId(ROOT_EXECUTION_EVENT_ID + 500, "GraphQL Field Resolution Started");
 
         /// <summary>
-        /// A log event that occurs when the security middleware initiates a security challenge to evaluate
-        /// field level authorization policies.
+        /// A log event that occurs when the security middleware initiates an authentication challenge to evaluate
+        /// field level policies.
+        /// </summary>
+        public static EventId FieldAuthenticationStarted = new EventId(ROOT_EXECUTION_EVENT_ID + 510, "GraphQL Authentication Started");
+
+        /// <summary>
+        /// A log event that occurs when the security middleware completes an authentication challenge to evaluate
+        /// field level policies.
+        /// </summary>
+        public static EventId FieldAuthenticationCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 515, "GraphQL Authentication Completed");
+
+        /// <summary>
+        /// A log event that occurs when the security middleware initiates an authorization challenge to evaluate
+        /// field level policies.
         /// </summary>
         public static EventId FieldAuthorizationStarted = new EventId(ROOT_EXECUTION_EVENT_ID + 520, "GraphQL Authorization Started");
 
         /// <summary>
-        /// A log event that occurs when the security middleware completes a challenge to evaluate
-        /// field level authorization policies.
+        /// A log event that occurs when the security middleware completes an authorization challenge to evaluate
+        /// field level policies.
         /// </summary>
         public static EventId FieldAuthorizationCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 530, "GraphQL Authorization Completed");
 

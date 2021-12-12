@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
@@ -54,8 +53,8 @@ namespace GraphQL.AspNet.Tests.Middleware
             builder.AddSingleton<IGraphQueryPlanCacheProvider>(cache);
             builder.AddSingleton<IGraphQueryPlanCacheKeyManager>(keyManager);
 
-             // configure an absolute expriation of a few seconds to ensure the plan remains in cache
-             // long enough to be fetched by tis expected key
+            // configure an absolute expriation of a few seconds to ensure the plan remains in cache
+            // long enough to be fetched by tis expected key
             builder.AddGraphQL(o =>
             {
                 o.CacheOptions.TimeToLiveInMilliseconds = 10000;

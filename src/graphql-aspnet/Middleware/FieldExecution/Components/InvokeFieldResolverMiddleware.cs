@@ -74,7 +74,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 var resolutionContext = new FieldResolutionContext(
                     context,
                     context.Request,
-                    executionArguments);
+                    executionArguments,
+                    context.User);
 
                 context.Logger?.FieldResolutionStarted(resolutionContext);
 

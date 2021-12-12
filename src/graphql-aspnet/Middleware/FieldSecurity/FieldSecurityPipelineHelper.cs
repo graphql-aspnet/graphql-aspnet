@@ -7,30 +7,30 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldAuthorization
+namespace GraphQL.AspNet.Middleware.FieldSecurity
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldAuthorization.Components;
+    using GraphQL.AspNet.Middleware.FieldSecurity.Components;
 
     /// <summary>
     /// A wrapper for a schema pipeline builder to easily add the default middleware componentry for
     /// the field authorizatio pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the pipeline is being constructed for.</typeparam>
-    public class FieldAuthorizationPipelineHelper<TSchema>
+    public class FieldSecurityPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext> _pipelineBuilder;
+        private readonly ISchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> _pipelineBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldAuthorizationPipelineHelper{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="FieldSecurityPipelineHelper{TSchema}"/> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public FieldAuthorizationPipelineHelper(ISchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext> pipelineBuilder)
+        public FieldSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> pipelineBuilder)
         {
             _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }
@@ -40,18 +40,29 @@ namespace GraphQL.AspNet.Middleware.FieldAuthorization
         /// </summary>
         /// <param name="options">The configuration options to use when deriving the components to include.</param>
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
-        public FieldAuthorizationPipelineHelper<TSchema> AddDefaultMiddlewareComponents(Configuration.SchemaOptions options = null)
+        public FieldSecurityPipelineHelper<TSchema> AddDefaultMiddlewareComponents(Configuration.SchemaOptions options = null)
         {
-            return this.AddFieldAuthorizationMiddleware();
+            return this.AddFieldAuthenticationMiddleware()
+                       .AddFieldAuthorizationMiddleware();
+        }
+
+        /// <summary>
+        /// Adds the middleware component that performs authentication for the field.
+        /// </summary>
+        /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
+        public FieldSecurityPipelineHelper<TSchema> AddFieldAuthenticationMiddleware()
+        {
+            _pipelineBuilder.AddMiddleware<FieldAuthenticationMiddleware>();
+            return this;
         }
 
         /// <summary>
         /// Adds the middleware component that performs the primary field authorization.
         /// </summary>
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
-        public FieldAuthorizationPipelineHelper<TSchema> AddFieldAuthorizationMiddleware()
+        public FieldSecurityPipelineHelper<TSchema> AddFieldAuthorizationMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<FieldAuthorizationCheckMiddleware>();
+            _pipelineBuilder.AddMiddleware<FieldAuthorizationMiddleware>();
             return this;
         }
     }
