@@ -56,7 +56,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     var directiveContext = new DirectiveResolutionContext(
                         context,
                         beforeResolutionRequest,
-                        directiveArguments);
+                        directiveArguments,
+                        context.User);
 
                     await this.ExecuteDirective(directiveContext, cancelToken).ConfigureAwait(false);
                     context.Messages.AddRange(directiveContext.Messages);

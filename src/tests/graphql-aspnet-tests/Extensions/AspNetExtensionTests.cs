@@ -9,35 +9,38 @@
 
 namespace GraphQL.AspNet.Tests.Extensions
 {
-    using NUnit.Framework;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Tests.Framework;
+    using NUnit.Framework;
 
     [TestFixture]
     public class AspNetExtensionTests
     {
         [Test]
-        public void RetrieveUserName()
+        public async Task RetrieveUserName()
         {
             var builder = new TestServerBuilder();
-            var account = builder.User
+            var context = builder.UserContext
                 .SetUsername("bobSmith")
-                .CreateUserAccount();
+                .CreateSecurityContext();
 
-            var createdUsername = account.RetrieveUsername();
+            var result = await context.Authenticate();
+            var createdUsername = result.User.RetrieveUsername();
             Assert.AreEqual("bobSmith", createdUsername);
         }
 
         [Test]
-        public void RetrieveUserName_CustomClaimOverload()
+        public async Task RetrieveUserName_CustomClaimOverload()
         {
             var builder = new TestServerBuilder();
-            var account = builder.User
+            var context = builder.UserContext
                 .SetUsername("bobSmith")
                 .AddUserClaim("fakeClaim2", "janeDoe")
-                .CreateUserAccount();
+                .CreateSecurityContext();
 
-            var createdUsername = account.RetrieveUsername("fakeClaim2");
+            var result = await context.Authenticate();
+            var createdUsername = result.User.RetrieveUsername("fakeClaim2");
             Assert.AreEqual("janeDoe", createdUsername);
         }
 

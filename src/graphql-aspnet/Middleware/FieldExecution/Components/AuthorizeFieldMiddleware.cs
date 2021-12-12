@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -26,13 +25,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     public class AuthorizeFieldMiddleware<TSchema> : IGraphFieldExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipeline<TSchema, GraphFieldAuthorizationContext> _authPipeline;
+        private readonly ISchemaPipeline<TSchema, GraphFieldSecurityContext> _authPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeFieldMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="authPipeline">The authentication pipeline.</param>
-        public AuthorizeFieldMiddleware(ISchemaPipeline<TSchema, GraphFieldAuthorizationContext> authPipeline)
+        public AuthorizeFieldMiddleware(ISchemaPipeline<TSchema, GraphFieldSecurityContext> authPipeline)
         {
             _authPipeline = Validation.ThrowIfNullOrReturn(authPipeline, nameof(authPipeline));
         }
@@ -47,18 +46,22 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <returns>Task.</returns>
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken)
         {
-            FieldAuthorizationResult result = FieldAuthorizationResult.Default();
+            FieldSecurityChallengeResult result = FieldSecurityChallengeResult.Default();
             if (context.IsValid)
             {
                 // execute the authorization pipeline
-                var authRequest = new GraphFieldAuthorizationRequest(context.Request);
-                var authContext = new GraphFieldAuthorizationContext(context, authRequest);
+                var authRequest = new GraphFieldSecurityRequest(context.Request);
+                var authContext = new GraphFieldSecurityContext(context, authRequest);
                 await _authPipeline.InvokeAsync(authContext, cancelToken).ConfigureAwait(false);
 
-                result = authContext.Result ?? FieldAuthorizationResult.Default();
+                result = authContext.Result ?? FieldSecurityChallengeResult.Default();
 
                 // by default, deny any stati not explicitly declared as "successful" by this component.
-                if (!result.Status.IsAuthorized())
+                if (result.Status.IsAuthorized())
+                {
+                    context.User = result.User;
+                }
+                else
                 {
                     context.Messages.Critical(
                         $"Access Denied to field {context.Field.Route.Path}",

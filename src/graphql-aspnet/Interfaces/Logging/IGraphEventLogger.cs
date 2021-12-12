@@ -15,11 +15,9 @@ namespace GraphQL.AspNet.Interfaces.Logging
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
-    using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// A logging interface describing specific logged events in the completion of a graphql request.
@@ -68,18 +66,33 @@ namespace GraphQL.AspNet.Interfaces.Logging
             where TSchema : class, ISchema;
 
         /// <summary>
-        /// Recorded when the security middleware invokes a security challenge
-        /// against a <see cref="ClaimsPrincipal" />.
+        /// Recorded when the security middleware invokes an authentication challenge
+        /// against an <see cref="IUserSecurityContext"/> to produce a <see cref="ClaimsPrincipal"/>.
         /// </summary>
-        /// <param name="context">The authorization context that contains the request to be authorized.</param>
-        void FieldResolutionSecurityChallenge(GraphFieldAuthorizationContext context);
+        /// <param name="context">The field security context that contains the request to be authenticated.</param>
+        void FieldAuthenticationChallenge(GraphFieldSecurityContext context);
 
         /// <summary>
-        /// Recorded when the security middleware completes a security challenge and renders a
-        /// result.
+        /// Recorded when the security middleware completes an authentication challenge
+        /// against an <see cref="IUserSecurityContext" /> to produce a <see cref="ClaimsPrincipal" />.
         /// </summary>
-        /// <param name="context">The authorization context that completed authorization.</param>
-        void FieldResolutionSecurityChallengeResult(GraphFieldAuthorizationContext context);
+        /// <param name="context">The field security context that contains the request to be authenticated.</param>
+        /// <param name="authResult">The authentication result that was created.</param>
+        void FieldAuthenticationChallengeResult(GraphFieldSecurityContext context, IAuthenticationResult authResult);
+
+        /// <summary>
+        /// Recorded when the security middleware invokes an authorization challenge
+        /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
+        /// </summary>
+        /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
+        void FieldAuthorizationChallenge(GraphFieldSecurityContext context);
+
+        /// <summary>
+        /// Recorded when the security middleware completes an authorization challenge
+        /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
+        /// </summary>
+        /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
+        void FieldAuthorizationChallengeResult(GraphFieldSecurityContext context);
 
         /// <summary>
         /// Recorded when an executor attempts, and succeeds, to retrieve a query plan from its local cache.

@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
                 .AddQueryAssignOperationMiddleware();
 
             var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
-            if (authOption == Security.AuthorizationMethod.PerRequest)
+            if (authOption == AuthorizationMethod.PerRequest)
             {
                 this.AddQueryOperationAuthorizationMiddleware();
             }

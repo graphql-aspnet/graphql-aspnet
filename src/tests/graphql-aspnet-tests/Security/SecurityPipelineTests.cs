@@ -16,26 +16,33 @@ namespace GraphQL.AspNet.Tests.Security
     using NUnit.Framework;
 
     [TestFixture]
-    public class AuthorizationPipelineTests
+    public class SecurityPipelineTests
     {
-        private void AssertAuthorizationFails(FieldAuthorizationResult result)
+        private static void AssertAuthorizationFails(FieldSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
-            Assert.AreEqual(FieldAuthorizationStatus.Unauthorized, result.Status);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Status);
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private void AssertAuthorizationSuccess(FieldAuthorizationResult result)
+        private static void AssertAuthorizationIsUnAuthorized(FieldSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
-            Assert.AreEqual(FieldAuthorizationStatus.Authorized, result.Status);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Status);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(result.LogMessage));
+        }
+
+        private static void AssertAuthorizationSuccess(FieldSecurityChallengeResult result)
+        {
+            Assert.IsNotNull(result);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Status);
             Assert.IsTrue(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private void AssertAuthorizationSkipped(FieldAuthorizationResult result)
+        private static void AssertAuthorizationSkipped(FieldSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
-            Assert.AreEqual(FieldAuthorizationStatus.Skipped, result.Status);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Skipped, result.Status);
             Assert.IsTrue(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
@@ -46,17 +53,17 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
-            builder.User.AddUserRole("role4");
+            builder.UserContext.AddUserRole("role4");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireRolePolicy_RequiresRole1),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
-            AssertAuthorizationFails(authContext.Result);
+            AssertAuthorizationIsUnAuthorized(authContext.Result);
         }
 
         [Test]
@@ -66,14 +73,14 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
-            builder.User.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireRolePolicy_RequiresRole1),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSuccess(authContext.Result);
@@ -87,8 +94,8 @@ namespace GraphQL.AspNet.Tests.Security
 
             builder.Authorization.AddRolePolicy("RequireRole6", "role6");
             builder.Authorization.AddClaimPolicy("RequireClaim7", "testClaim7", "testClaim7Value");
-            builder.User.AddUserRole("role6");
-            builder.User.AddUserClaim("testClaim7", "testClaim7Value");
+            builder.UserContext.AddUserRole("role6");
+            builder.UserContext.AddUserClaim("testClaim7", "testClaim7Value");
 
             var server = builder.Build();
 
@@ -96,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.MultiPolicyMethod_RequireRole6_RequireClaim7),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSuccess(authContext.Result);
@@ -112,10 +119,10 @@ namespace GraphQL.AspNet.Tests.Security
             builder.Authorization.AddClaimPolicy("RequireClaim7", "testClaim7", "testClaim7Value");
 
             // user has role requirements
-            builder.User.AddUserRole("role6");
+            builder.UserContext.AddUserRole("role6");
 
             // user does not have claims requirements
-            builder.User.AddUserClaim("testClaim8", "testClaim8Value");
+            builder.UserContext.AddUserClaim("testClaim8", "testClaim8Value");
 
             var server = builder.Build();
 
@@ -123,10 +130,10 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.MultiPolicyMethod_RequireRole6_RequireClaim7),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
-            AssertAuthorizationFails(authContext.Result);
+            AssertAuthorizationIsUnAuthorized(authContext.Result);
         }
 
         [Test]
@@ -134,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             var builder = new TestServerBuilder()
                 .AddGraphType<Controller_NoPolicies>();
-            builder.User.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -142,10 +149,10 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.MethodHasRoles_Role5),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
-            AssertAuthorizationFails(authContext.Result);
+            AssertAuthorizationIsUnAuthorized(authContext.Result);
         }
 
         [Test]
@@ -153,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             var builder = new TestServerBuilder()
                 .AddGraphType<Controller_NoPolicies>();
-            builder.User.AddUserRole("role5");
+            builder.UserContext.AddUserRole("role5");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -161,7 +168,7 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.MethodHasRoles_Role5),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSuccess(authContext.Result);
@@ -174,17 +181,17 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
-            builder.User.AddUserClaim("testClaim5", "testClaim5Value");
+            builder.UserContext.AddUserClaim("testClaim5", "testClaim5Value");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim6),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
-            AssertAuthorizationFails(authContext.Result);
+            AssertAuthorizationIsUnAuthorized(authContext.Result);
         }
 
         [Test]
@@ -194,14 +201,14 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
-            builder.User.AddUserClaim("testClaim6", "testClaim6Value");
+            builder.UserContext.AddUserClaim("testClaim6", "testClaim6Value");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim6),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSuccess(authContext.Result);
@@ -214,17 +221,17 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
-            builder.User.AddUserClaim("testClaim6", "differentValueThanRequired");
+            builder.UserContext.AddUserClaim("testClaim6", "differentValueThanRequired");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim6),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
-            AssertAuthorizationFails(authContext.Result);
+            AssertAuthorizationIsUnAuthorized(authContext.Result);
         }
 
         [Test]
@@ -241,8 +248,8 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.GeneralSecureMethod),
                 new object());
 
-            fieldBuilder.AddUser(null);
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            fieldBuilder.AddSecurityContext(null);
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationFails(authContext.Result);
@@ -256,7 +263,7 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
             builder.Authorization.DisableAuthorization();
             builder.Authorization.AddRolePolicy("TestPolicy", "role1");
-            builder.User.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -264,7 +271,7 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.GeneralSecureMethod),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationFails(authContext.Result);
@@ -280,7 +287,7 @@ namespace GraphQL.AspNet.Tests.Security
 
             // user not in any declared role
             builder.Authorization.AddRolePolicy("TestPolicy", "role1");
-            builder.User.AddUserRole("role5");
+            builder.UserContext.AddUserRole("role5");
             var server = builder.Build();
 
             // policy name isnt declared on the controller method
@@ -288,7 +295,7 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.NoDefinedPolicies),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSkipped(authContext.Result);
@@ -308,9 +315,9 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_NoPolicies.NoDefinedPolicies),
                 new object());
 
-            fieldBuilder.AddUser(null);
+            fieldBuilder.AddSecurityContext(null);
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSkipped(authContext.Result);
@@ -323,14 +330,14 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim7", "testClaim7", "testClaim7Value");
-            builder.User.AddUserClaim("testClaim6", "testClaim6Value");
+            builder.UserContext.AddUserClaim("testClaim6", "testClaim6Value");
             var server = builder.Build();
 
             var fieldBuilder = server.CreateFieldContextBuilder<Controller_NoPolicies>(
                 nameof(Controller_NoPolicies.RequireClaimPolicy_RequiresTestClaim7_ButAlsoAllowAnon),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSuccess(authContext.Result);
@@ -349,10 +356,10 @@ namespace GraphQL.AspNet.Tests.Security
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
 
             // user meets controller policy
-            builder.User.AddUserClaim("testClaim5", "testClaim5Value");
+            builder.UserContext.AddUserClaim("testClaim5", "testClaim5Value");
 
             // user does not meet method policy
-            builder.User.AddUserRole("role5");
+            builder.UserContext.AddUserRole("role5");
 
             var server = builder.Build();
 
@@ -360,10 +367,10 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_Policy_RequiresPolicy5.Policy_RequiresRole1),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
-            AssertAuthorizationFails(authContext.Result);
+            AssertAuthorizationIsUnAuthorized(authContext.Result);
         }
 
         [Test]
@@ -379,10 +386,10 @@ namespace GraphQL.AspNet.Tests.Security
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
 
             // user meets controller policy
-            builder.User.AddUserClaim("testClaim5", "testClaim5Value");
+            builder.UserContext.AddUserClaim("testClaim5", "testClaim5Value");
 
             // user meet method policy
-            builder.User.AddUserRole("role1");
+            builder.UserContext.AddUserRole("role1");
 
             var server = builder.Build();
 
@@ -390,7 +397,7 @@ namespace GraphQL.AspNet.Tests.Security
                 nameof(Controller_Policy_RequiresPolicy5.Policy_RequiresRole1),
                 new object());
 
-            var authContext = fieldBuilder.CreateAuthorizationContext();
+            var authContext = fieldBuilder.CreateSecurityContext();
 
             await server.ExecuteFieldAuthorization(authContext);
             AssertAuthorizationSuccess(authContext.Result);

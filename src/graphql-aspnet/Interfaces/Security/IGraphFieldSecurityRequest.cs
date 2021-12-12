@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Interfaces.Security
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// An authorization request to authorize a user to a field of data.
+    /// An request to authentication and authorize a user to a field of data.
     /// </summary>
-    public interface IGraphFieldAuthorizationRequest : IDataRequest
+    public interface IGraphFieldSecurityRequest : IDataRequest
     {
         /// <summary>
         /// Gets the field being queried with this request.

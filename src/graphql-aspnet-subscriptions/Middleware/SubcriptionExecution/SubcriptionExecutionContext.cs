@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
-            : base(request, client?.ServiceProvider, client?.User, metrics, logger, items)
+            : base(request, client?.ServiceProvider, client?.SecurityContext, metrics, logger, items)
         {
             this.Client = Validation.ThrowIfNullOrReturn(client, nameof(client));
             this.SubscriptionId = Validation.ThrowIfNullWhiteSpaceOrReturn(subscriptionId, nameof(subscriptionId));

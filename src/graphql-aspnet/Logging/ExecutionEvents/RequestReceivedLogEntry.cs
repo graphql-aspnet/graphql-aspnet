@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             : base(LogEventIds.RequestReceived)
         {
             this.OperationRequestId = context.OperationRequest?.Id;
-            this.Username = context.User?.Identity?.Name;
+            this.Username = context.SecurityContext.DefaultUser?.Identity?.Name;
             this.QueryOperationName = context.OperationRequest?.OperationName;
             this.QueryText = context.OperationRequest?.QueryText;
         }

@@ -30,8 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj" />
     <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
+	<ProjectReference Include="..\..\graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj" />
     <ProjectReference Include="..\graphql-aspnet-testframework\graphql-aspnet-testframework.csproj" />
   </ItemGroup>
 

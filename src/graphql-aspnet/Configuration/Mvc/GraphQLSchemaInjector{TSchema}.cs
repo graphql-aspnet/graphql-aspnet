@@ -24,8 +24,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
     using GraphQL.AspNet.Middleware.FieldExecution;
+    using GraphQL.AspNet.Middleware.FieldSecurity;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Web;
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var fieldPipelineHelper = new FieldExecutionPipelineHelper<TSchema>(_schemaBuilder.FieldExecutionPipeline);
             fieldPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
-            var authPipelineHelper = new FieldAuthorizationPipelineHelper<TSchema>(_schemaBuilder.FieldAuthorizationPipeline);
+            var authPipelineHelper = new FieldSecurityPipelineHelper<TSchema>(_schemaBuilder.FieldAuthorizationPipeline);
             authPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
             // register the DI entries for each pipeline

@@ -21,8 +21,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Security;
@@ -42,26 +42,26 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         private readonly IGraphMessageCollection _messageCollection;
         private readonly InputArgumentCollection _arguments = new InputArgumentCollection();
 
-        private ClaimsPrincipal _user;
+        private IUserSecurityContext _securityContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldContextBuilder" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="user">The user.</param>
+        /// <param name="userSecurityContext">The user security context.</param>
         /// <param name="graphField">The graph field.</param>
         /// <param name="schema">The schema.</param>
         /// <param name="graphMethod">The metadata describing the method/functon to be invoked by a resolver.</param>
         public FieldContextBuilder(
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user,
+            IUserSecurityContext userSecurityContext,
             IGraphField graphField,
             ISchema schema,
             IGraphMethod graphMethod)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _graphField = Validation.ThrowIfNullOrReturn(graphField, nameof(graphField));
-            _user = Validation.ThrowIfNullOrReturn(user, nameof(user));
+            _securityContext = Validation.ThrowIfNullOrReturn(userSecurityContext, nameof(userSecurityContext));
             _messageCollection = new GraphMessageCollection();
 
             this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
@@ -150,13 +150,13 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         }
 
         /// <summary>
-        /// alters the user account to be different than that provided by the server that created this builder.
+        /// alters the security context to be different than that provided by the server that created this builder.
         /// </summary>
-        /// <param name="user">The user.</param>
+        /// <param name="securityContext">The security context.</param>
         /// <returns>MockFieldRequest.</returns>
-        public FieldContextBuilder AddUser(ClaimsPrincipal user)
+        public FieldContextBuilder AddSecurityContext(IUserSecurityContext securityContext)
         {
-            _user = user;
+            _securityContext = securityContext;
             return this;
         }
 
@@ -167,7 +167,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 
             parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
-            parentContext.Setup(x => x.User).Returns(_user);
+            parentContext.Setup(x => x.SecurityContext).Returns(_securityContext);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
             parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
             parentContext.Setup(x => x.Items).Returns(this.FieldRequest.Items ?? new MetaDataCollection());
@@ -180,13 +180,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Creates an authorization context to validate the field request this builder is creating.
         /// </summary>
         /// <returns>GraphFieldAuthorizationContext.</returns>
-        public GraphFieldAuthorizationContext CreateAuthorizationContext()
+        public GraphFieldSecurityContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
-            var request = new GraphFieldAuthorizationRequest(this.FieldRequest);
-
-            return new GraphFieldAuthorizationContext(
+            var request = new GraphFieldSecurityRequest(this.FieldRequest);
+            return new GraphFieldSecurityContext(
                 parent,
                 request);
         }

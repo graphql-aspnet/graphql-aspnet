@@ -10,13 +10,11 @@
 namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
-    using Microsoft.AspNetCore.Http;
+    using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
     /// An interface representing an object acting as the runtime for the core graphql
@@ -43,7 +41,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Accepts a query context to execute and renders the result.
         /// </summary>
         /// <param name="context">The execution context to process.</param>
-        /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         Task<IGraphOperationResult> ExecuteRequest(
             GraphQueryExecutionContext context,
@@ -54,16 +52,16 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <param name="serviceProvider">The service provider to use for resolving
         /// graph objects during execution.</param>
-        /// <param name="user">The claims principal representing the user to authorize
-        /// on the query.</param>
         /// <param name="request">The primary data request.</param>
+        /// <param name="securityContext">The security context used for just-in-time authentication
+        /// and authorization during the execution of the request.</param>
         /// <param name="metricsPackage">An optional metrics package to populate during the run.</param>
-        /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user,
             IGraphOperationRequest request,
+            IUserSecurityContext securityContext = null,
             IGraphQueryExecutionMetrics metricsPackage = null,
             CancellationToken cancelToken = default);
 
@@ -72,17 +70,17 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <param name="serviceProvider">The service provider to use for resolving
         /// graph objects.</param>
-        /// <param name="user">The claims principal representing the user to authorize
-        /// on the query.</param>
         /// <param name="request">The primary data request.</param>
-        /// <param name="enableMetrics">if set to <c>true</c> a metrics package will be created and automatically
-        /// supplied to the execution request.</param>
-        /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="securityContext">The security context used for just-in-time authentication
+        /// and authorization during the execution of the request.</param>
+        /// <param name="enableMetrics">if set to <c>true</c> a metrics package will be created using the default
+        /// metrics package factory for the runtime.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user,
             IGraphOperationRequest request,
+            IUserSecurityContext securityContext = null,
             bool enableMetrics = false,
             CancellationToken cancelToken = default);
     }

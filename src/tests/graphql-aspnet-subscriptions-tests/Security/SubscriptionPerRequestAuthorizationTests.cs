@@ -29,12 +29,12 @@ namespace GraphQL.Subscriptions.Tests.Security
             // define the policy (declared on the controller)
             // to require "role1"  but assign the user "role4"
             builder.Authorization.AddRolePolicy("SecureWidgetPolicy", "role1");
-            builder.User.AddUserRole("role4");
+            builder.UserContext.AddUserRole("role4");
             var server = builder.Build();
 
             var queryBuilder = server.CreateQueryContextBuilder();
             queryBuilder.AddQueryText(
-                @"subscription { 
+                @"subscription {
                     secureWidgetChanged(nameLike: ""j""){
                         id
                         name
@@ -60,7 +60,7 @@ namespace GraphQL.Subscriptions.Tests.Security
             // define the policy (declared on the controller)
             // to require "role1"  but assign the user "role4"
             builder.Authorization.AddRolePolicy("SecureWidgetPolicy", "role1");
-            builder.User.AddUserRole("role4");
+            builder.UserContext.AddUserRole("role4");
             var server = builder.Build();
 
             // setup a subscription against an insecure endpoint (unsecurewidgetChanged)

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Contexts
 {
+    using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
@@ -21,14 +22,18 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseResolutionContext{TRequest}"/> class.
         /// </summary>
-        /// <param name="parentContext">The parent context.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="arguments">The arguments.</param>
+        /// <param name="parentContext">The parent context from which this resolution context should
+        /// extract is base data values.</param>
+        /// <param name="request">The resolution request to carry with the context.</param>
+        /// <param name="arguments">The arguments to be passed to the resolver when its executed.</param>
+        /// <param name="user">Optional. The user context that authenticated and authorized for this
+        /// resolution context.</param>
         protected BaseResolutionContext(
             IGraphExecutionContext parentContext,
             TRequest request,
-            IExecutionArgumentCollection arguments)
-            : base(parentContext, request, arguments)
+            IExecutionArgumentCollection arguments,
+            ClaimsPrincipal user = null)
+            : base(parentContext, request, arguments, user)
         {
         }
 

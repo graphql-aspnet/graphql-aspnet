@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// the user to the field allowing or denying them access to it.
         /// </summary>
         /// <value>The field authorization pipeline.</value>
-        ISchemaPipelineBuilder<TSchema, IGraphFieldAuthorizationMiddleware, GraphFieldAuthorizationContext> FieldAuthorizationPipeline { get; }
+        ISchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> FieldAuthorizationPipeline { get; }
 
         /// <summary>
         /// Gets a builder to construct the primary query pipeline. This pipeline oversees the processing of a query and is invoked

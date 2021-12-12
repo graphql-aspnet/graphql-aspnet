@@ -13,11 +13,10 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
 
     /// <summary>
-    /// Recorded when the security middleware invokes a security challenge
-    /// against a <see cref="ClaimsPrincipal"/>.
+    /// Recorded when the security middleware invokes an authorization challenge
+    /// against a <see cref="ClaimsPrincipal"/> for a given field.
     /// </summary>
     public class FieldAuthorizationCompletedLogEntry : GraphLogEntry
     {
@@ -25,14 +24,14 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Initializes a new instance of the <see cref="FieldAuthorizationCompletedLogEntry" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public FieldAuthorizationCompletedLogEntry(GraphFieldAuthorizationContext context)
+        public FieldAuthorizationCompletedLogEntry(GraphFieldSecurityContext context)
             : base(LogEventIds.FieldAuthorizationCompleted)
         {
-            this.PipelineRequestId = context.Request.Id;
-            this.FieldPath = context.Request.Field.Route.Path;
-            this.Username = context.User?.RetrieveUsername();
-            this.AuthorizationStatus = context.Result.Status.ToString();
-            this.LogMessage = context.Result.LogMessage;
+            this.PipelineRequestId = context?.Request.Id;
+            this.FieldPath = context?.Request.Field.Route.Path;
+            this.Username = context?.AuthenticatedUser?.RetrieveUsername();
+            this.AuthorizationStatus = context?.Result?.Status.ToString();
+            this.LogMessage = context?.Result?.LogMessage;
         }
 
         /// <summary>
@@ -94,7 +93,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public override string ToString()
         {
             var idTruncated = this.PipelineRequestId?.Length > 8 ? this.PipelineRequestId.Substring(0, 8) : this.PipelineRequestId;
-            return $"Field Auth Challenge Completed | Id: {idTruncated},  Path: '{this.FieldPath}', Status: {this.AuthorizationStatus} ";
+            return $"Field Authorization Completed | Id: {idTruncated},  Path: '{this.FieldPath}', Status: {this.AuthorizationStatus} ";
         }
     }
 }

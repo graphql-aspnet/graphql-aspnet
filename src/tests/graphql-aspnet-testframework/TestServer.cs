@@ -22,10 +22,10 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldAuthorization;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Response;
@@ -44,19 +44,19 @@ namespace GraphQL.AspNet.Tests.Framework
     public class TestServer<TSchema>
          where TSchema : class, ISchema
     {
-        private readonly ClaimsPrincipal _userAccount;
+        private readonly IUserSecurityContext _userSecurityContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestServer{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="TestServer{TSchema}" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="userAccount">The user account.</param>
+        /// <param name="userSecurityContext">The user security context.</param>
         public TestServer(
             IServiceProvider serviceProvider,
-            ClaimsPrincipal userAccount)
+            IUserSecurityContext userSecurityContext)
         {
             this.ServiceProvider = serviceProvider;
-            _userAccount = userAccount;
+            _userSecurityContext = userSecurityContext;
             this.Schema = serviceProvider.GetService<TSchema>();
         }
 
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var responseStream = new MemoryStream();
 
             var httpContext = new DefaultHttpContext();
-            httpContext.User = _userAccount;
+            httpContext.User = _userSecurityContext?.DefaultUser;
             httpContext.RequestServices = this.ServiceProvider;
             httpContext.Response.Body = responseStream;
             httpContext.Request.Method = HttpMethods.Post.ToUpper();
@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             var builder = new FieldContextBuilder(
                 this.ServiceProvider,
-                _userAccount,
+                _userSecurityContext,
                 fieldResult.Field,
                 this.Schema,
                 template as IGraphMethod);
@@ -197,7 +197,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>MockOperationRequest.</returns>
         public QueryContextBuilder CreateQueryContextBuilder()
         {
-            return new QueryContextBuilder(this.ServiceProvider, _userAccount);
+            return new QueryContextBuilder(this.ServiceProvider, _userSecurityContext);
         }
 
         /// <summary>
@@ -288,9 +288,9 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        public async Task ExecuteFieldAuthorization(GraphFieldAuthorizationContext context)
+        public async Task ExecuteFieldAuthorization(GraphFieldSecurityContext context)
         {
-            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphFieldAuthorizationContext>>();
+            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphFieldSecurityContext>>();
             await pipeline.InvokeAsync(context, default).ConfigureAwait(false);
         }
 
@@ -307,9 +307,9 @@ namespace GraphQL.AspNet.Tests.Framework
         public IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Gets the claims principal of the user generated with the test server.
+        /// Gets the security context created to mock a user on this server.
         /// </summary>
-        /// <value>The user.</value>
-        public ClaimsPrincipal User => _userAccount;
+        /// <value>The security context.</value>
+        public IUserSecurityContext SecurityContext => _userSecurityContext;
     }
 }

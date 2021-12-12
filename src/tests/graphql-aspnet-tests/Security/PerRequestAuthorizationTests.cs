@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Security
                     options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;
                 });
 
-            serverBuilder.User.Authenticate();
+            serverBuilder.UserContext.Authenticate();
 
             // should produce no errors and render both fields
             var server = serverBuilder.Build();

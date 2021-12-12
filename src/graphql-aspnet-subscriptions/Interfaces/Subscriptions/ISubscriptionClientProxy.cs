@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -69,10 +70,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Gets the <see cref="ClaimsPrincipal"/> representing the user of the client.
+        /// Gets the Security Context governing this client connection.
         /// </summary>
         /// <value>The user.</value>
-        ClaimsPrincipal User { get; }
+        IUserSecurityContext SecurityContext { get; }
 
         /// <summary>
         /// Gets the state of the underlying connection.
