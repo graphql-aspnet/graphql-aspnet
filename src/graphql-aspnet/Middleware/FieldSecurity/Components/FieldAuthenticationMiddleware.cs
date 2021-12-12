@@ -65,8 +65,12 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         private async Task<(ClaimsPrincipal, IAuthenticationResult, FieldSecurityChallengeResult)> AuthenticateUser(GraphFieldSecurityContext context, CancellationToken cancelToken)
         {
             // Step 0: No authorization needed? just use the default user on the security context
-            if (context.Field.SecurityGroups == null || !context.Field.SecurityGroups.Any())
+            if (context.Field.SecurityGroups == null ||
+                !context.Field.SecurityGroups.Any() ||
+                context.Field.SecurityGroups.All(x => x.AllowAnonymous))
+            {
                 return (context.SecurityContext?.DefaultUser, null, null);
+            }
 
             if (context.SecurityContext == null)
             {
@@ -102,7 +106,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             if (authTicket == null)
             {
                 // try the other schemes
-                foreach (var scheme in allowedSchemes)
+                foreach (var scheme in allowedSchemes.Where(x => x != DEFAULT_AUTH_SCHEME_KEY))
                 {
                     authTicket = await context.SecurityContext.Authenticate(scheme, cancelToken);
                     if (authTicket?.Suceeded ?? false)
