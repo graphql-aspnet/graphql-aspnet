@@ -8,22 +8,19 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Middleware
 {
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldSecurity.Components;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Middleware.FieldSecurityPipelineTestData;
+    using GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData;
     using Moq;
     using NUnit.Framework;
 

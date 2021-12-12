@@ -6,12 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Middleware.FieldSecurityPipelineTestData
+
+namespace GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData
 {
     using Microsoft.AspNetCore.Authorization;
 
-    [AllowAnonymous]
-    public class AllowAnonymousOnAuthorize
+    [Authorize(AuthenticationSchemes = "testScheme")]
+    public class WithRequiredMatchedSchemeOnAuthorize
     {
     }
 }
