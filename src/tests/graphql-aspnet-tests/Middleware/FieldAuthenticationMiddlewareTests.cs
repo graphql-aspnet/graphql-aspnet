@@ -146,6 +146,33 @@ namespace GraphQL.AspNet.Tests.Middleware
         }
 
         [Test]
+        public async Task WhenAllowsAnonymousOnSecurityGroupsOnField_ButNoAuthenticatedUser_ProcessingIsNotStopped()
+        {
+            var builder = new TestServerBuilder();
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder().Build();
+            var expectedUser = queryContext.SecurityContext.DefaultUser;
+
+            var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
+
+            var field = new Mock<IGraphField>();
+            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityGroup>());
+
+            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
+            fieldSecurityRequest.Setup(x => x.Field)
+                .Returns(field.Object);
+
+            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
+
+            var middleware = new FieldAuthenticationMiddleware();
+            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
+
+            Assert.IsNull(securityContext.AuthenticatedUser);
+            Assert.IsNull(securityContext.Result);
+        }
+
+        [Test]
         public async Task WhenSecurityGroupsOnField_ButNoUserContext_NotAuthenticated()
         {
             var builder = new TestServerBuilder();
