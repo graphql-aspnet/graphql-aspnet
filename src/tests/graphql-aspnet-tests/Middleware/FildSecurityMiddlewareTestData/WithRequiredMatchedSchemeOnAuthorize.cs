@@ -7,16 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Security
+namespace GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData
 {
-    /// <summary>
-    /// A set of possible stati indicating the success or failure
-    /// of a pipeline authorization challenge.
-    /// </summary>
-    public enum FieldAuthorizationStatus
+    using Microsoft.AspNetCore.Authorization;
+
+    [Authorize(AuthenticationSchemes = "testScheme")]
+    public class WithRequiredMatchedSchemeOnAuthorize
     {
-        Skipped,
-        Unauthorized,
-        Authorized,
     }
 }

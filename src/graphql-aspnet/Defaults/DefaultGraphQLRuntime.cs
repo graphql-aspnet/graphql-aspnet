@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.QueryExecution;
     using Microsoft.AspNetCore.Http;
@@ -68,19 +69,18 @@ namespace GraphQL.AspNet.Defaults
         /// <inheritdoc />
         public Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user,
             IGraphOperationRequest request,
+            IUserSecurityContext securityContext = null,
             bool enableMetrics = false,
             CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
-            Validation.ThrowIfNull(user, nameof(user));
             Validation.ThrowIfNull(request, nameof(request));
 
             return this.ExecuteRequest(
                 serviceProvider,
-                user,
                 request,
+                securityContext,
                 enableMetrics ? this.CreateMetricsPackage() : null,
                 cancelToken);
         }
@@ -88,19 +88,18 @@ namespace GraphQL.AspNet.Defaults
         /// <inheritdoc />
         public Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
-            ClaimsPrincipal user,
             IGraphOperationRequest request,
+            IUserSecurityContext securityContext = null,
             IGraphQueryExecutionMetrics metricsPackage = null,
             CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
-            Validation.ThrowIfNull(user, nameof(user));
             Validation.ThrowIfNull(request, nameof(request));
 
             var context = new GraphQueryExecutionContext(
                 request,
                 serviceProvider,
-                user,
+                securityContext,
                 metricsPackage,
                 _logger);
 

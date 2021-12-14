@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using Moq;
 
@@ -45,16 +46,16 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// Initializes a new instance of the <see cref="MockClientConnection" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="user">The user.</param>
+        /// <param name="securityContext">The security context.</param>
         /// <param name="autoCloseOnReadCloseMessage">if set to <c>true</c> when the connection
         /// reads a close message, it will shut it self down.</param>
         public MockClientConnection(
             IServiceProvider serviceProvider = null,
-            ClaimsPrincipal user = null,
+            IUserSecurityContext securityContext = null,
             bool autoCloseOnReadCloseMessage = true)
         {
             this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
-            this.User = user;
+            this.SecurityContext = securityContext;
             _incomingMessageQueue = new Queue<MockClientMessage>();
 
             _outgoingMessageQueue = new Queue<MockClientMessage>();
@@ -150,13 +151,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Receives data from the connection asynchronously.
-        /// </summary>
-        /// <param name="buffer">References the application buffer that is the storage location for the received
-        ///  data.</param>
-        /// <param name="cancelToken">Propagates the notification that operations should be canceled.</param>
-        /// <returns>Task&lt;IClientConnectionResult&gt;.</returns>
+        /// <inheritdoc />
         public async Task<IClientConnectionReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancelToken = default)
         {
             if (_connectionClosed)
@@ -203,14 +198,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             return result;
         }
 
-        /// <summary>
-        /// Sends data over the connection asynchronously.
-        /// </summary>
-        /// <param name="buffer">The buffer to be sent over the connection.</param>
-        /// <param name="messageType">TIndicates whether the application is sending a binary or text message.</param>
-        /// <param name="endOfMessage">Indicates whether the data in "buffer" is the last part of a message.</param>
-        /// <param name="cancellationToken">The token that propagates the notification that operations should be canceled.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task SendAsync(ArraySegment<byte> buffer, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
             var message = new MockClientMessage(buffer.ToArray(), messageType, endOfMessage);
@@ -222,22 +210,13 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Getsa description applied by the remote endpoint to describe the why the connection was closed.
-        /// </summary>
-        /// <value>The description applied when this connection was closed.</value>
+        /// <inheritdoc />
         public string CloseStatusDescription { get; private set; }
 
-        /// <summary>
-        /// Gets the reason why the remote endpoint initiated the close handshake.
-        /// </summary>
-        /// <value>The final close status if this connection is closed, otherwise null.</value>
+        /// <inheritdoc />
         public ClientConnectionCloseStatus? CloseStatus { get; private set; }
 
-        /// <summary>
-        /// Gets the current state of the WebSocket connection.
-        /// </summary>
-        /// <value>The current state of this connection.</value>
+        /// <inheritdoc />
         public ClientConnectionState State { get; private set; }
 
         /// <summary>
@@ -253,17 +232,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <value>The queued message count.</value>
         public int QueuedMessageCount => _incomingMessageQueue.Count;
 
-        /// <summary>
-        /// Gets the configured service provider for the client connection.
-        /// </summary>
-        /// <value>The service provider.</value>
+        /// <inheritdoc />
         public IServiceProvider ServiceProvider { get; }
-
-        /// <summary>
-        /// Gets the authenticated user on the client connection, if any.
-        /// </summary>
-        /// <value>The user.</value>
-        public ClaimsPrincipal User { get; }
 
         /// <summary>
         /// Gets a value indicating whether this connection was closed by way
@@ -271,5 +241,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value><c>true</c> if closed by the server; otherwise, <c>false</c>.</value>
         public bool ConnectionClosedByServer => _connectionClosedByServer;
+
+        /// <inheritdoc />
+        public IUserSecurityContext SecurityContext { get; }
     }
 }

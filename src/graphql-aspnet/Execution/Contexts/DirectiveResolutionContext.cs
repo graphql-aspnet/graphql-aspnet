@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Contexts
 {
     using System.Diagnostics;
+    using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
@@ -25,11 +26,14 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="request">The direct request to execute.</param>
         /// <param name="arguments">The set of arguments to be passed to the directive
         /// resolver.</param>
+        /// <param name="user">Optional. The user context that authenticated and authorized for this
+        /// resolution context.</param>
         public DirectiveResolutionContext(
             IGraphExecutionContext parentContext,
             IGraphDirectiveRequest request,
-            IExecutionArgumentCollection arguments)
-            : base(parentContext, request, arguments)
+            IExecutionArgumentCollection arguments,
+            ClaimsPrincipal user = null)
+            : base(parentContext, request, arguments, user)
         {
         }
     }

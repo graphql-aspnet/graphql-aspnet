@@ -22,9 +22,11 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
+    using GraphQL.AspNet.Security.Web;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
 
@@ -145,16 +147,19 @@ namespace GraphQL.AspNet.Defaults
                 // Setup
                 // *******************************
                 var request = _runtime.CreateRequest(queryData);
+
+                // repackage the runtime request to carry the
+                // HttpContext along. It's not used or needed by the runtime
+                // but its useful within controller action method invocations
+                this.GraphQLRequest = this.PackageOperationRequest(request);
+
                 if (request == null)
                 {
                     await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
                     return;
                 }
 
-                // repackage the runtime request to carry the
-                // HttpContext along. It's not used or needed by the runtime
-                // but its useful within controller action method invocations
-                this.GraphQLRequest = new GraphOperationWebRequest(request, this.HttpContext);
+                var securityContext = this.CreateUserSecurityContext();
 
                 // *******************************
                 // Primary query execution
@@ -162,8 +167,8 @@ namespace GraphQL.AspNet.Defaults
                 var queryResponse = await _runtime
                     .ExecuteRequest(
                         this.HttpContext.RequestServices,
-                        this.HttpContext.User,
                         this.GraphQLRequest,
+                        securityContext,
                         this.EnableMetrics)
                     .ConfigureAwait(false);
 
@@ -202,6 +207,27 @@ namespace GraphQL.AspNet.Defaults
                     await this.WriteResponse(exceptionResult).ConfigureAwait(false);
                 }
             }
+        }
+
+        /// <summary>
+        /// When overriden in a child class, allows for updating or repackaging of the graphql operation
+        /// request before it is sent for processing.
+        /// </summary>
+        /// <param name="request">The internally generated request.</param>
+        /// <returns>IGraphOperationRequest.</returns>
+        protected virtual IGraphOperationRequest PackageOperationRequest(IGraphOperationRequest request)
+        {
+            return new GraphOperationWebRequest(request, this.HttpContext);
+        }
+
+        /// <summary>
+        /// When overriden in a child class, allows for the creation of a custom security context
+        /// to represent the user's supplied credentials to the graphql pipeline.
+        /// </summary>
+        /// <returns>IUserSecurityContext.</returns>
+        protected virtual IUserSecurityContext CreateUserSecurityContext()
+        {
+            return new HttpUserSecurityContext(this.HttpContext);
         }
 
         /// <summary>

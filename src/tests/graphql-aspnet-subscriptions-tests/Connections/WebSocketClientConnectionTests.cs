@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.AspNetCore.Http;
     using Moq;
@@ -35,6 +36,8 @@ namespace GraphQL.Subscriptions.Tests.Connections
             var context = new DefaultHttpContext();
 
             var provider = new Mock<IServiceProvider>().Object;
+            var securityContext = new Mock<IUserSecurityContext>().Object;
+
             var user = new ClaimsPrincipal();
             context.RequestServices = provider;
             context.User = user;
@@ -46,7 +49,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             Assert.AreEqual(ClientConnectionCloseStatus.EndpointUnavailable, client.CloseStatus.Value);
             Assert.AreEqual("close desc", client.CloseStatusDescription);
             Assert.AreEqual(provider, client.ServiceProvider);
-            Assert.AreEqual(user, client.User);
+            Assert.AreEqual(user, client.SecurityContext.DefaultUser);
         }
 
         [Test]

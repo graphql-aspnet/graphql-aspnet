@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System.Security.Claims;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
     /// A base context defining a set of items supported by all middleware pipelines.
@@ -46,10 +47,10 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Gets the user context executing this request.
+        /// Gets the security context used to authenticate and authorize field executions.
         /// </summary>
-        /// <value>The user.</value>
-        ClaimsPrincipal User { get; }
+        /// <value>The security context.</value>
+        IUserSecurityContext SecurityContext { get; }
 
         /// <summary>
         /// Gets the metrics package attached to this operation, if any.

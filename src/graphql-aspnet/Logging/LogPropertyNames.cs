@@ -58,6 +58,16 @@ namespace GraphQL.AspNet.Logging
         public const string USERNAME = "userName";
 
         /// <summary>
+        /// A boolean value indicating if authentication succeeded or not.
+        /// </summary>
+        public const string AUTHENTICATION_SUCCESS = "authenticationSuccess";
+
+        /// <summary>
+        /// The scheme of the authentication handler that successfully authenticated the request.
+        /// </summary>
+        public const string AUTHENTICATION_SCHEME = "authenticationScheme";
+
+        /// <summary>
         /// The first 300 characters of a query on an operation request.
         /// </summary>
         public const string QUERY_TEXT = "queryText";

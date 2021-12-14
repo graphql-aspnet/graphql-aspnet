@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
     using Moq;
@@ -35,12 +36,12 @@ namespace GraphQL.AspNet.Tests.Execution
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
             var metrics = new Mock<IGraphQueryExecutionMetrics>();
-            var user = new ClaimsPrincipal();
+            var securityContext = new Mock<IUserSecurityContext>();
             var metadata = new MetaDataCollection();
 
             parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
-            parentContext.Setup(x => x.User).Returns(user);
+            parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
             parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
             parentContext.Setup(x => x.Logger).Returns(logger.Object);
             parentContext.Setup(x => x.Items).Returns(metadata);
@@ -62,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
             Assert.AreEqual(metrics.Object, context.Metrics);
-            Assert.AreEqual(user, context.User);
+            Assert.AreEqual(securityContext.Object, context.SecurityContext);
             Assert.AreEqual(metadata, context.Items);
         }
 
@@ -76,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
             var metrics = new Mock<IGraphQueryExecutionMetrics>();
-            var user = new ClaimsPrincipal();
+            var securityContext = new Mock<IUserSecurityContext>();
             var metadata = new MetaDataCollection();
 
             var fieldRequest = new Mock<IGraphFieldRequest>();
@@ -85,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var context = new GraphQueryExecutionContext(
                 operationRequest.Object,
                 serviceProvider.Object,
-                user,
+                securityContext.Object,
                 metrics.Object,
                 logger.Object,
                 metadata);
@@ -95,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
             Assert.AreEqual(metrics.Object, context.Metrics);
-            Assert.AreEqual(user, context.User);
+            Assert.AreEqual(securityContext.Object, context.SecurityContext);
             Assert.AreEqual(metadata, context.Items);
             Assert.IsNotNull(context.DefaultFieldSources);
             Assert.IsNotNull(context.PostProcessingActions);
@@ -113,12 +114,12 @@ namespace GraphQL.AspNet.Tests.Execution
             var serviceProvider = new Mock<IServiceProvider>();
             var logger = new Mock<IGraphEventLogger>();
             var metrics = new Mock<IGraphQueryExecutionMetrics>();
-            var user = new ClaimsPrincipal();
+            var securityContext = new Mock<IUserSecurityContext>();
             var metadata = new MetaDataCollection();
 
             parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
-            parentContext.Setup(x => x.User).Returns(user);
+            parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
             parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
             parentContext.Setup(x => x.Logger).Returns(logger.Object);
             parentContext.Setup(x => x.Items).Returns(metadata);
@@ -137,7 +138,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
             Assert.AreEqual(metrics.Object, context.Metrics);
-            Assert.AreEqual(user, context.User);
+            Assert.AreEqual(securityContext.Object, context.SecurityContext);
             Assert.AreEqual(metadata, context.Items);
         }
     }

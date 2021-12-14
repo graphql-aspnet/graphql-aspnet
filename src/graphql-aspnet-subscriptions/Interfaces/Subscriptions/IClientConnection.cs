@@ -10,10 +10,10 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
     /// An decorator interface exposing the needed communication end points of some underlying
@@ -76,9 +76,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Gets the authenticated user on the client connection, if any.
+        /// Gets the security context governing this connection.
         /// </summary>
         /// <value>The user.</value>
-        ClaimsPrincipal User { get; }
+        IUserSecurityContext SecurityContext { get; }
     }
 }
