@@ -28,18 +28,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="BaseObjectGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
-        /// <param name="graphFields">The initial set of graph fields to add to this instance.</param>
-        protected BaseObjectGraphType(string name, IEnumerable<IGraphField> graphFields = null)
+        protected BaseObjectGraphType(string name)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             _graphFields = new GraphFieldCollection(this);
             this.InterfaceNames = new HashSet<string>();
             this.Publish = true;
-            if (graphFields != null)
-            {
-                foreach (var field in graphFields)
-                    _graphFields.AddField(field);
-            }
         }
 
         /// <summary>

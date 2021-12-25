@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                     $"The concrete type '{associatedType.FriendlyName()}' is an enum. It cannot be associated to a graph type of '{graphType.Kind.ToString()}'.");
             }
 
-            // directives must be assigned to a concrete type and it must inherit from graphdirective.
+            // directives must be assigned to a concrete type and it must inherit from GraphDirective.
             if (graphType.Kind == TypeKind.DIRECTIVE && (associatedType == null || !Validation.IsCastable<GraphDirective>(associatedType)))
             {
                 throw new GraphTypeDeclarationException(

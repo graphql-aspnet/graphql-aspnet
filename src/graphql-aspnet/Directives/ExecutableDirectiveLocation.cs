@@ -7,7 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-// ReSharper disable InconsistentNaming
 namespace GraphQL.AspNet.Directives
 {
     using System;
@@ -22,14 +21,15 @@ namespace GraphQL.AspNet.Directives
     public enum ExecutableDirectiveLocation
     {
         [GraphSkip]
-        NONE = DirectiveLocation.NONE,
-        QUERY = DirectiveLocation.QUERY,
-        MUTATION = DirectiveLocation.MUTATION,
-        SUBSCRIPTION = DirectiveLocation.SUBSCRIPTION,
-        FIELD = DirectiveLocation.FIELD,
+        NONE                = DirectiveLocation.NONE,
+
+        QUERY               = DirectiveLocation.QUERY,
+        MUTATION            = DirectiveLocation.MUTATION,
+        SUBSCRIPTION        = DirectiveLocation.SUBSCRIPTION,
+        FIELD               = DirectiveLocation.FIELD,
         FRAGMENT_DEFINITION = DirectiveLocation.FRAGMENT_DEFINITION,
-        FRAGMENT_SPREAD = DirectiveLocation.FRAGMENT_SPREAD,
-        INLINE_FRAGMENT = DirectiveLocation.INLINE_FRAGMENT,
-        AllFieldSelections = FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT,
+        FRAGMENT_SPREAD     = DirectiveLocation.FRAGMENT_SPREAD,
+        INLINE_FRAGMENT     = DirectiveLocation.INLINE_FRAGMENT,
+        AllFieldSelections  = FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT,
     }
 }

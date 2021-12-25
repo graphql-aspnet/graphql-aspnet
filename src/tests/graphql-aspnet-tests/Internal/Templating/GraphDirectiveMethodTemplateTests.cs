@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsTrue(template.IsValidDirectiveMethod);
             Assert.IsTrue(template.IsAsyncField);
             Assert.AreEqual(typeof(IGraphActionResult), template.ObjectType);
-            Assert.AreEqual(DirectiveLifeCycle.BeforeResolution, template.LifeCycle);
+            Assert.AreEqual(DirectiveLifeCyclePhase.BeforeResolution, template.LifeCycle);
             Assert.AreEqual(2, template.Arguments.Count);
             Assert.AreEqual("arg1", template.Arguments[0].Name);
             Assert.AreEqual(typeof(int), template.Arguments[0].ObjectType);

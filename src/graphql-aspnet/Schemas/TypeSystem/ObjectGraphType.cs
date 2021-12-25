@@ -29,9 +29,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
         /// <param name="objectType">The concrete type that this graphtype is made from.</param>
-        /// <param name="graphFields">The initial set of graph fields to add to this instance.</param>
-        public ObjectGraphType(string name, Type objectType, IEnumerable<IGraphField> graphFields = null)
-            : base(name, graphFields)
+        public ObjectGraphType(string name, Type objectType)
+            : base(name)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = this.ObjectType.FriendlyName();

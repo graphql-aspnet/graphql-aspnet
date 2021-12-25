@@ -184,6 +184,7 @@ namespace GraphQL.AspNet
             public const string INCLUDE_DIRECTIVE = "include";
             public const string DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME = "BeforeFieldResolution";
             public const string DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME = "AfterFieldResolution";
+            public const string DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME = "AlterTypeSystem";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
@@ -453,6 +454,6 @@ namespace GraphQL.AspNet
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.
         /// </summary>
-        public const string SPECIFICATION_URL = "http://spec.graphql.org/June2018/";
+        public const string SPECIFICATION_URL = "https://spec.graphql.org/June2018/";
     }
 }

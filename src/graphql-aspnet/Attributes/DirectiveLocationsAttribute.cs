@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Attributes
 {
     using System;
     using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// For a given directive, defines where in a query document the directive is allowed to appear.
@@ -21,8 +22,28 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
         /// </summary>
-        /// <param name="locations">The set of locations in a query document where the directive can be defined.</param>
+        /// <param name="locations">The set of locations in a query document where the directive can be declared.</param>
         public DirectiveLocationsAttribute(ExecutableDirectiveLocation locations)
+        {
+            this.Locations = (DirectiveLocation)locations;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
+        /// </summary>
+        /// <param name="locations">The set of types within the type system that
+        /// this directive can target.</param>
+        public DirectiveLocationsAttribute(TypeSystemDirectiveLocation locations)
+        {
+            this.Locations = (DirectiveLocation)locations;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
+        /// </summary>
+        /// <param name="locations">The set of types within the type system that
+        /// this directive can target.</param>
+        public DirectiveLocationsAttribute(DirectiveLocation locations)
         {
             this.Locations = locations;
         }
@@ -31,6 +52,6 @@ namespace GraphQL.AspNet.Attributes
         /// Gets the locations where this directive can be defined.
         /// </summary>
         /// <value>The locations.</value>
-        public ExecutableDirectiveLocation Locations { get; }
+        public DirectiveLocation Locations { get; }
     }
 }

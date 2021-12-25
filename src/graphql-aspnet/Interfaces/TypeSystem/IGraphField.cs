@@ -25,6 +25,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IGraphField : IDeprecatable, IGraphFieldArgumentContainer
     {
         /// <summary>
+        /// Updates the known graph type this field belongs to.
+        /// </summary>
+        /// <param name="parent">The new parent.</param>
+        void AssignParent(IGraphType parent);
+
+        /// <summary>
         /// Updates the field resolver used by this graph field.
         /// </summary>
         /// <param name="newResolver">The new resolver this field should use.</param>
@@ -112,5 +118,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The type of the declared return.</value>
         public Type DeclaredReturnType { get;  }
+
+        /// <summary>
+        /// Gets the parent item that owns this field.
+        /// </summary>
+        /// <value>The parent.</value>
+        ISchemaItem Parent { get; }
     }
 }

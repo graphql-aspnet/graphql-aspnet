@@ -32,13 +32,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         {
         }
 
-        /// <summary>
-        /// Instantiates the graph field according to the data provided.
-        /// </summary>
-        /// <param name="formatter">The formatter.</param>
-        /// <param name="template">The template.</param>
-        /// <param name="securityGroups">The security groups.</param>
-        /// <returns>MethodGraphField.</returns>
+        /// <inheritdoc />
         protected override MethodGraphField InstantiateField(
             GraphNameFormatter formatter,
             IGraphTypeFieldTemplate template,

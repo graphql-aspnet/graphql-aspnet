@@ -54,24 +54,21 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var result = new GraphTypeCreationResult();
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
 
-            var fieldSet = new List<IGraphField>();
-            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
-            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
-            {
-                var fieldResult = fieldMaker.CreateField(fieldTemplate);
-                fieldSet.Add(fieldResult.Field);
-
-                result.MergeDependents(fieldResult);
-            }
-
             var objectType = new ObjectGraphType(
-                formatter.FormatGraphTypeName(template.Name),
-                concreteType,
-                fieldSet)
+            formatter.FormatGraphTypeName(template.Name),
+            concreteType)
             {
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
+            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
+            {
+                var fieldResult = fieldMaker.CreateField(fieldTemplate);
+                objectType.Extend(fieldResult.Field);
+                result.MergeDependents(fieldResult);
+            }
 
             // add in declared interfaces by name
             foreach (var iface in template.DeclaredInterfaces)

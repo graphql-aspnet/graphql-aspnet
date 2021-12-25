@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         context.Request.Items);
 
                     var beforeResolutionRequest = request.ForLifeCycle(
-                        DirectiveLifeCycle.BeforeResolution,
+                        DirectiveLifeCyclePhase.BeforeResolution,
                         context.Request.DataSource);
 
                     var directiveContext = new DirectiveResolutionContext(
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         context.Request.Items);
 
                     var afterResolutionRequest = request.ForLifeCycle(
-                        DirectiveLifeCycle.AfterResolution,
+                        DirectiveLifeCyclePhase.AfterResolution,
                         context.Request.DataSource);
 
                     var directiveContext = new DirectiveResolutionContext(

@@ -29,18 +29,21 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     {
         private const string DEFAULT_AUTH_SCHEME_KEY = "~graphql.aspnet.default~";
 
-        private ConcurrentDictionary<IGraphField, ImmutableHashSet<string>> _allowedSchemesPerField;
+        private ConcurrentDictionary<IGraphField, AuthenticationDigest> _authDigests;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldAuthenticationMiddleware"/> class.
         /// </summary>
         public FieldAuthenticationMiddleware()
         {
-            _allowedSchemesPerField = new ConcurrentDictionary<IGraphField, ImmutableHashSet<string>>();
+            _authDigests = new ConcurrentDictionary<IGraphField, AuthenticationDigest>();
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(
+            GraphFieldSecurityContext context,
+            GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next,
+            CancellationToken cancelToken = default)
         {
             context.Logger?.FieldAuthenticationChallenge(context);
 
@@ -65,12 +68,9 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         private async Task<(ClaimsPrincipal, IAuthenticationResult, FieldSecurityChallengeResult)> AuthenticateUser(GraphFieldSecurityContext context, CancellationToken cancelToken)
         {
             // Step 0: No authorization needed? just use the default user on the security context
-            if (context.Field.SecurityGroups == null ||
-                !context.Field.SecurityGroups.Any() ||
-                context.Field.SecurityGroups.All(x => x.AllowAnonymous))
-            {
+            var authDigest = this.CreateAuthenticationDigest(context.Field);
+            if (authDigest.AllowAnonymous)
                 return (context.SecurityContext?.DefaultUser, null, null);
-            }
 
             if (context.SecurityContext == null)
             {
@@ -80,10 +80,9 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 return (null, null, failure);
             }
 
-            // Step 1: For all the stacked security group in the checked field is there a path
+            // Step 1: For all the stacked security groups in the field is there a path
             //         through the chain for any given authentication scheme
-            var allowedSchemes = this.DetermineAllowedSchemes(context.Field);
-            if (allowedSchemes.Count == 0)
+            if (authDigest.AllowedSchemes.Count == 0)
             {
                 // when no match found fail out.
                 var failure = FieldSecurityChallengeResult.Fail(
@@ -95,7 +94,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
             // Step 2: Attempt to authenticate the user against hte acceptable schemes
             IAuthenticationResult authTicket = null;
-            if (allowedSchemes.Contains(DEFAULT_AUTH_SCHEME_KEY))
+            if (authDigest.AllowedSchemes.Contains(DEFAULT_AUTH_SCHEME_KEY))
             {
                 // try the default scheme first
                 authTicket = await context.SecurityContext.Authenticate(cancelToken);
@@ -105,8 +104,10 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
             if (authTicket == null)
             {
-                // try the other schemes
-                foreach (var scheme in allowedSchemes.Where(x => x != DEFAULT_AUTH_SCHEME_KEY))
+                // default registered scheme didn't work or was not allowed
+                // try the others to look for a match
+                var otherSchemes = authDigest.AllowedSchemes.Where(x => x != DEFAULT_AUTH_SCHEME_KEY);
+                foreach (var scheme in otherSchemes)
                 {
                     authTicket = await context.SecurityContext.Authenticate(scheme, cancelToken);
                     if (authTicket?.Suceeded ?? false)
@@ -127,36 +128,53 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             return (authTicket.User, authTicket, null);
         }
 
-        private ImmutableHashSet<string> DetermineAllowedSchemes(IGraphField field)
+        /// <summary>
+        /// Attempts to figure what authentication schemes are allowed by the security groups
+        /// that make up the provided <paramref name="field"/>.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <returns>AuthMethods.</returns>
+        private AuthenticationDigest CreateAuthenticationDigest(IGraphField field)
         {
             if (field == null)
-                return ImmutableHashSet<string>.Empty;
+                return AuthenticationDigest.Empty;
 
-            if (_allowedSchemesPerField.TryGetValue(field, out var foundAllowedSchemes))
-                return foundAllowedSchemes;
+            if (_authDigests.TryGetValue(field, out var foundDigest))
+                return foundDigest;
 
-            var allowedSchemes = new HashSet<string>();
-            allowedSchemes.Add(DEFAULT_AUTH_SCHEME_KEY);
-            foreach (var group in field.SecurityGroups)
+            var allowAnonymous = field.SecurityGroups == null ||
+                !field.SecurityGroups.Any() ||
+                field.SecurityGroups.All(x => x.AllowAnonymous);
+
+            if (allowAnonymous)
             {
-                if (group.AllowAnonymous)
-                    continue;
-
-                foreach (var rule in group)
+                foundDigest = new AuthenticationDigest(true);
+            }
+            else
+            {
+                var allowedSchemes = new HashSet<string>();
+                allowedSchemes.Add(DEFAULT_AUTH_SCHEME_KEY);
+                foreach (var group in field.SecurityGroups)
                 {
-                    if (rule.AuthenticationSchemes.Count == 0)
+                    if (group.AllowAnonymous)
                         continue;
 
-                    allowedSchemes.Remove(DEFAULT_AUTH_SCHEME_KEY);
-                    if (allowedSchemes.Count == 0)
+                    foreach (var rule in group)
                     {
-                        // when required schemes are encounted for the first time
-                        // set them up as being required.
-                        foreach (var scheme in rule.AuthenticationSchemes)
-                            allowedSchemes.Add(scheme);
-                    }
-                    else
-                    {
+                        if (rule.AuthenticationSchemes.Count == 0)
+                            continue;
+
+                        allowedSchemes.Remove(DEFAULT_AUTH_SCHEME_KEY);
+                        if (allowedSchemes.Count == 0)
+                        {
+                            // when required schemes are encounted for the first time
+                            // set them up as being required.
+                            foreach (var scheme in rule.AuthenticationSchemes)
+                                allowedSchemes.Add(scheme);
+
+                            continue;
+                        }
+
                         // when required schemes are encounted a second time
                         // ensure that at least one of the encounted schemes
                         // is already in list, if its not then the path to authenticate
@@ -173,20 +191,18 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                             allowedSchemes.Clear();
                             break;
                         }
-                        else
-                        {
-                            // reduce the "allowed schemes" to just those that also match this
-                            // security group
-                            allowedSchemes = matchedSchemes;
-                        }
+
+                        // reduce the "allowed schemes" to just those that also match this
+                        // security group
+                        allowedSchemes = matchedSchemes;
                     }
                 }
+
+                foundDigest = new AuthenticationDigest(false, allowedSchemes);
             }
 
-            foundAllowedSchemes = allowedSchemes.ToImmutableHashSet();
-            _allowedSchemesPerField.TryAdd(field, foundAllowedSchemes);
-
-            return foundAllowedSchemes;
+            _authDigests.TryAdd(field, foundDigest);
+            return foundDigest;
         }
     }
 }

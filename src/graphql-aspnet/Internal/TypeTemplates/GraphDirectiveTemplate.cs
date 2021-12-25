@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// Describes an directive on a <see cref="ISchema"/>, that can be registered
+    /// Describes a directive on a <see cref="ISchema"/>, that can be registered
     /// and executed via an instruction from a query document.
     /// </summary>
     [DebuggerDisplay("Directive Template: {InternalName}")]
@@ -58,17 +58,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.Route = this.GenerateFieldPath();
 
-            var executableLocations = this.SingleAttributeOrDefault<DirectiveLocationsAttribute>()?.Locations ?? ExecutableDirectiveLocation.AllFieldSelections;
-            this.Locations = (DirectiveLocation)executableLocations;
+            this.Locations = this.SingleAttributeOrDefault<DirectiveLocationsAttribute>()?.Locations ?? (DirectiveLocation)ExecutableDirectiveLocation.AllFieldSelections;
 
             foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                if (!GraphDirectiveMethodTemplate.IsDirectiveMethod(methodInfo))
-                    continue;
-
-                var methodTemplate = new GraphDirectiveMethodTemplate(this, methodInfo);
-                methodTemplate.Parse();
-                this.Methods.RegisterMethod(methodTemplate);
+                GraphDirectiveMethodTemplate methodTemplate = GraphDirectiveMethodTemplate.CreateMethodTemplate(this, methodInfo);
+                if (methodTemplate != null)
+                {
+                    methodTemplate.Parse();
+                    this.Methods.RegisterMethod(methodTemplate);
+                }
             }
         }
 
@@ -89,7 +88,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="lifeCycle">The life cycle.</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphMethod FindMethod(DirectiveLifeCycle lifeCycle)
+        public IGraphMethod FindMethod(DirectiveLifeCyclePhase lifeCycle)
         {
             return this.Methods.FindMethod(lifeCycle);
         }
@@ -133,6 +132,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The locations.</value>
         public DirectiveLocation Locations { get; private set; }
+
+        /// <summary>
+        /// Gets the life cycle phases targeted by this directive.
+        /// </summary>
+        /// <value>The life cycle.</value>
+        public DirectiveLifeCyclePhase LifeCyclePhases => this.Methods.LifeCycle;
 
         /// <summary>
         /// Gets declared type of item minus any asyncronous wrappers (i.e. the T in Task{T}).

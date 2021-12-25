@@ -59,6 +59,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                     "INTERFACE extension with the same field name.");
             }
 
+            field.AssignParent(_owner);
             _fields.Add(field.Name, field);
             return field;
         }

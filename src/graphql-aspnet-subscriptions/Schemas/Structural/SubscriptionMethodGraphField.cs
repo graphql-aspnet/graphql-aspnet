@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A <see cref="MethodGraphField"/> with additional properties related to subscriptions.

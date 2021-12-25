@@ -6,12 +6,12 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -23,15 +23,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A single directive method within a declared directive.
+    /// A base template for all directive methods that can be declared.
     /// </summary>
-    [DebuggerDisplay("Directive Method: {InternalName}")]
     public class GraphDirectiveMethodTemplate : IGraphFieldBaseTemplate, IGraphMethod
     {
         private readonly List<GraphFieldArgumentTemplate> _arguments;
@@ -49,31 +49,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// Parses the primary metadata about the method.
+        /// Parses this template to extract required meta data about the directive method.
         /// </summary>
-        public void Parse()
+        public virtual void Parse()
         {
-            DirectiveLifeCycle lifeCycle;
-            switch (this.Method.Name)
-            {
-                case Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME:
-                    lifeCycle = DirectiveLifeCycle.BeforeResolution;
-                    break;
+            this.DeclaredType = this.Method.ReturnType;
+            this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredType);
+            this.TypeExpression = new GraphTypeExpression(this.ObjectType.FriendlyName());
 
-                case Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME:
-                    lifeCycle = DirectiveLifeCycle.AfterResolution;
-                    break;
-
-                default:
-                    return;
-            }
+            this.Description = this.Method.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
+            this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
 
             this.IsValidDirectiveMethod = (this.Method.ReturnType == typeof(IGraphActionResult) || this.Method.ReturnType == typeof(Task<IGraphActionResult>)) &&
                                           !this.Method.IsGenericMethod;
-
-            this.Description = this.Method.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-            this.DeclaredType = this.Method.ReturnType;
-            this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
 
             // is the method asyncronous? if so ensure that a Task<T> is returned
             // and not an empty task
@@ -85,10 +73,31 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.DeclaredType = genericArgs[0];
             }
 
-            this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredType);
+            this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
+                this.DeclaredType,
+                false,
+                true,
+                false);
+
+            // extract the lifecycle point indicated by this method
+            DirectiveLifeCyclePhase lifeCycle = DirectiveLifeCyclePhase.None;
+            switch (this.Method.Name)
+            {
+                case Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME:
+                    lifeCycle = DirectiveLifeCyclePhase.BeforeResolution;
+                    break;
+
+                case Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME:
+                    lifeCycle = DirectiveLifeCyclePhase.AfterResolution;
+                    break;
+
+                case Constants.ReservedNames.DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME:
+                    lifeCycle = DirectiveLifeCyclePhase.AlterTypeSystem;
+                    break;
+            }
+
             this.LifeCycle = lifeCycle;
-            this.Route = this.GenerateRoute();
-            this.TypeExpression = new GraphTypeExpression(this.ObjectType.FriendlyName());
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCycle.ToString()));
 
             // parse all input parameters into the method
             foreach (var parameter in this.Method.GetParameters())
@@ -99,21 +108,50 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             this.MethodSignature = this.GenerateMethodSignatureString();
-
-            this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
-                this.DeclaredType,
-                false,
-                true,
-                false);
         }
 
         /// <summary>
-        /// Generates the route.
+        /// A factor method to creates a qualified method template for the given <paramref name="methodInfo"/>.
         /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        private GraphFieldPath GenerateRoute()
+        /// <param name="parentTemplate">The template that owns <paramref name="methodInfo"/>.</param>
+        /// <param name="methodInfo">The method information to parse and create a template from.</param>
+        /// <returns>A completed method template or <c>null</c>.</returns>
+        public static GraphDirectiveMethodTemplate CreateMethodTemplate(IGraphTypeTemplate parentTemplate, MethodInfo methodInfo)
         {
-            return new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCycle.ToString()));
+            if (methodInfo != null && methodInfo.SingleAttributeOrDefault<GraphSkipAttribute>() == null)
+            {
+                switch (methodInfo.Name)
+                {
+                    case Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME:
+                    case Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME:
+                    case Constants.ReservedNames.DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME:
+                        return new GraphDirectiveMethodTemplate(parentTemplate, methodInfo);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Generates a human readable method signature string to use in error reporting.
+        /// </summary>
+        /// <returns>System.String.</returns>
+        private string GenerateMethodSignatureString()
+        {
+            // e.g.   "Task<int> (int, string, SomeType)"
+            var builder = new StringBuilder();
+            builder.Append($"{this.ObjectType.FriendlyName()} (");
+            for (var i = 0; i < _arguments.Count; i++)
+            {
+                var parameter = _arguments[i];
+                builder.Append($"{parameter.ObjectType?.FriendlyName()} {parameter.Name}");
+
+                if (i < _arguments.Count - 1)
+                    builder.Append(", ");
+            }
+
+            builder.Append(")");
+            return builder.ToString();
         }
 
         /// <summary>
@@ -121,7 +159,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// on the integrity of itself. An exception should be thrown to stop the template from being
         /// persisted if the object is unusable or otherwise invalid in the manner its been built.
         /// </summary>
-        public void ValidateOrThrow()
+        public virtual void ValidateOrThrow()
         {
             // ensure skip isnt set
             if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
@@ -150,9 +188,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (!this.IsValidDirectiveMethod)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive method '{this.InternalFullName}' has an invalid signature and cannot be used as a directive " +
-                    $"method. All Directive methods must not contain generic parameters and must return a '{typeof(IGraphActionResult).FriendlyName()}' or " +
-                    $"'{typeof(Task<IGraphActionResult>).FriendlyName()}' to be invoked properly.");
+                    $"The method '{this.InternalFullName}' has an invalid signature and cannot be used as a directive " +
+                    $"method. All Directive methods must not contain generic parameters and must return a '{typeof(IGraphActionResult).FriendlyName()}' " +
+                    $"to be invoked properly.");
             }
 
             if (this.ExpectedReturnType == null)
@@ -164,41 +202,29 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             foreach (var argument in _arguments)
                 argument.ValidateOrThrow();
-        }
 
-        /// <summary>
-        /// Generates a human readable method signature string to use in error reporting.
-        /// </summary>
-        /// <returns>System.String.</returns>
-        private string GenerateMethodSignatureString()
-        {
-            // e.g.   "Task<int> (int, string, SomeType)"
-            var builder = new StringBuilder();
-            builder.Append($"{this.ObjectType.FriendlyName()} (");
-            for (var i = 0; i < _arguments.Count; i++)
+            if (this.LifeCycle.IsTypeSystemPhase())
             {
-                var parameter = _arguments[i];
-                builder.Append($"{parameter.ObjectType?.FriendlyName()} {parameter.Name}");
-
-                if (i < _arguments.Count - 1)
-                    builder.Append(", ");
+                if (_arguments.Count != 1 || _arguments[1].ObjectType != typeof(ISchemaItem))
+                {
+                    throw new GraphTypeDeclarationException(
+                       $"The directive method '{this.InternalFullName}' must declare exactly one input parameter of type '{nameof(ISchemaItem)}'.");
+                }
             }
-
-            builder.Append(")");
-            return builder.ToString();
         }
 
         /// <summary>
         /// Gets the life cycle method hook this instance is representing.
         /// </summary>
         /// <value>The life cycle method.</value>
-        public DirectiveLifeCycle LifeCycle { get; private set; }
+        public DirectiveLifeCyclePhase LifeCycle { get; private set; }
 
         /// <summary>
-        /// Gets the concrete type this template represents.
+        /// Gets the actual type wrappers used to generate a type expression for this field.
+        /// This list represents the type requirements  of the field.
         /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; private set; }
+        /// <value>The custom wrappers.</value>
+        public MetaGraphTypes[] TypeWrappers => null;
 
         /// <summary>
         /// Gets declared type of item minus any asyncronous wrappers (i.e. the T in Task{T}).
@@ -207,23 +233,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public Type DeclaredType { get; private set; }
 
         /// <summary>
-        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
-        /// represents the implementation return type as opposed to the expected graph type.
+        /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
+        /// declaration used in schema definition language.)
         /// </summary>
-        /// <value>The type of the return.</value>
-        public Type ExpectedReturnType { get; private set; }
+        /// <value>The type expression.</value>
+        public GraphTypeExpression TypeExpression { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is asynchronous method.
+        /// Gets the human readable method signature identifying this method.
         /// </summary>
-        /// <value><c>true</c> if this instance is asynchronous method; otherwise, <c>false</c>.</value>
-        public bool IsAsyncField { get; private set; }
+        /// <value>The method signature.</value>
+        public string MethodSignature { get; private set; }
 
         /// <summary>
-        /// Gets the name of the item on the object graph as it is conveyed in an introspection request.
+        /// Gets a value indicating whether this instance has a defined default value.
         /// </summary>
-        /// <value>The name.</value>
-        public string Name => this.Method.Name;
+        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
+        public bool HasDefaultValue => false;
 
         /// <summary>
         /// Gets the human-readable description distributed with this field
@@ -247,10 +273,42 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public IReadOnlyList<IGraphFieldArgumentTemplate> Arguments => _arguments;
 
         /// <summary>
-        /// Gets the parent directive template this instance belongs to.
+        /// Gets or sets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
+        /// represents the implementation return type as opposed to the expected graph type.
         /// </summary>
-        /// <value>The parent.</value>
-        public IGraphTypeTemplate Parent { get; }
+        /// <value>The type of the return.</value>
+        public Type ExpectedReturnType { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is asynchronous method.
+        /// </summary>
+        /// <value><c>true</c> if this instance is asynchronous method; otherwise, <c>false</c>.</value>
+        public bool IsAsyncField { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the concrete type this template represents.
+        /// </summary>
+        /// <value>The type of the object.</value>
+        public Type ObjectType { get; protected set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance was explictly declared as a graph item via acceptable attribution or
+        /// if it was parsed as a matter of completeness.
+        /// </summary>
+        /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
+        public bool IsExplicitDeclaration => true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is valid directive method.
+        /// </summary>
+        /// <value><c>true</c> if this instance is valid directive method; otherwise, <c>false</c>.</value>
+        public bool IsValidDirectiveMethod { get; protected set; }
+
+        /// <summary>
+        /// Gets the name of the item on the object graph as it is conveyed in an introspection request.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name => this.Method.Name;
 
         /// <summary>
         /// Gets the type of the source object.
@@ -259,23 +317,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public Type SourceObjectType => this.Parent?.ObjectType;
 
         /// <summary>
-        /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
-        /// declaration used in schema definition language.)
+        /// Gets the parent directive template this instance belongs to.
         /// </summary>
-        /// <value>The type expression.</value>
-        public GraphTypeExpression TypeExpression { get; private set; }
-
-        /// <summary>
-        /// Gets the source type this field was created from.
-        /// </summary>
-        /// <value>The field souce.</value>
-        public GraphFieldSource FieldSource => GraphFieldSource.Method;
+        /// <value>The parent.</value>
+        public IGraphTypeTemplate Parent { get; }
 
         /// <summary>
         /// Gets the method information this instance describes.
         /// </summary>
         /// <value>The method.</value>
         public MethodInfo Method { get; }
+
+        /// <summary>
+        /// Gets the source type this field was created from.
+        /// </summary>
+        /// <value>The field souce.</value>
+        public GraphFieldSource FieldSource => GraphFieldSource.Method;
 
         /// <summary>
         /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
@@ -288,50 +345,5 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The internal name given to this item.</value>
         public string InternalName => this.Method.Name;
-
-        /// <summary>
-        /// Gets a value indicating whether this instance was explictly declared as a graph item via acceptable attribution or
-        /// if it was parsed as a matter of completeness.
-        /// </summary>
-        /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
-        public bool IsExplicitDeclaration => true;
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is valid directive method.
-        /// </summary>
-        /// <value><c>true</c> if this instance is valid directive method; otherwise, <c>false</c>.</value>
-        public bool IsValidDirectiveMethod { get; private set; }
-
-        /// <summary>
-        /// Gets the human readable method signature identifying this method.
-        /// </summary>
-        /// <value>The method signature.</value>
-        public string MethodSignature { get; private set; }
-
-        /// <summary>
-        /// Determines whether the provided method info is properly attributed to act as a directive processing method.
-        /// </summary>
-        /// <param name="methodInfo">The method information.</param>
-        /// <returns><c>true</c> if the method can be a directive method; otherwise, <c>false</c>.</returns>
-        public static bool IsDirectiveMethod(MethodInfo methodInfo)
-        {
-            return methodInfo != null &&
-                   methodInfo.SingleAttributeOrDefault<GraphSkipAttribute>() == null &&
-                   (methodInfo.Name == Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME ||
-                    methodInfo.Name == Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has a defined default value.
-        /// </summary>
-        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
-        public bool HasDefaultValue => false;
-
-        /// <summary>
-        /// Gets the actual type wrappers used to generate a type expression for this field.
-        /// This list represents the type requirements  of the field.
-        /// </summary>
-        /// <value>The custom wrappers.</value>
-        public MetaGraphTypes[] TypeWrappers => null;
     }
 }

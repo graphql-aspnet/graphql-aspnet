@@ -31,9 +31,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="graphFields">The initial set of graph fields to add to this instance.</param>
-        public InputObjectGraphType(string name, Type objectType, IEnumerable<IGraphField> graphFields)
-            : base(name, graphFields)
+        public InputObjectGraphType(string name, Type objectType)
+            : base(name)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = this.ObjectType.FriendlyName();
@@ -43,6 +42,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public override bool ValidateObject(object item)
         {
             return item == null || item.GetType() == this.ObjectType;
+        }
+
+        /// <summary>
+        /// Attempts to add the field to the collection tracked by this graph type.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        public void AddField(IGraphField field)
+        {
+            this.GraphFieldCollection.AddField(field);
         }
 
         /// <inheritdoc />

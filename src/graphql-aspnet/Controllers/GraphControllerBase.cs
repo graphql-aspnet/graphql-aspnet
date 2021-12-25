@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="context">The context.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
-        public async Task<object> InvokeActionAsync(
+        internal async Task<object> InvokeActionAsync(
             IGraphMethod actionToInvoke,
             BaseResolutionContext<TRequest> context)
         {
@@ -98,8 +98,9 @@ namespace GraphQL.AspNet.Controllers
                     else
                     {
                         // given all the checking and parsing this should be imnpossible, but just in case
-                        invokeReturn = new InternalServerErrorGraphActionResult($"The action '{_action.Route.Path}' is defined " +
-                                                        $"as asyncronous but it did not return a {typeof(Task)}.");
+                        invokeReturn = new InternalServerErrorGraphActionResult(
+                            $"The action '{_action.Route.Path}' is defined " +
+                            $"as asyncronous but it did not return a {typeof(Task)}.");
                     }
                 }
 

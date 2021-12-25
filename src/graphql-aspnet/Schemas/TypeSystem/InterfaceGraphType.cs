@@ -31,18 +31,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="concreteType">The concrete type representing this interface.</param>
-        /// <param name="fields">The fields that define the interface.</param>
-        public InterfaceGraphType(string name, Type concreteType, IEnumerable<IGraphField> fields)
+        public InterfaceGraphType(string name, Type concreteType)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
             _fieldSet = new GraphFieldCollection(this);
             _interfaceType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.Publish = true;
-            if (fields != null)
-            {
-                foreach (var field in fields)
-                    this.Extend(field);
-            }
 
             this.Extend(new Introspection_TypeNameMetaField(name));
         }

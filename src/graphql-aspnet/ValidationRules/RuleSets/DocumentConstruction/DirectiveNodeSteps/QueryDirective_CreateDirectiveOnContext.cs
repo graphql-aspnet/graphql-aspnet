@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
             if (directive == null)
                 return false;
 
-            var location = node.ParentNode?.DirectiveLocation() ?? DirectiveLocation.NONE;
+            var location = node.ParentNode?.AsDirectiveLocation() ?? DirectiveLocation.NONE;
             var queryDirective = new QueryDirective(node, directive, location);
             context.AddDocumentPart(queryDirective);
             return true;

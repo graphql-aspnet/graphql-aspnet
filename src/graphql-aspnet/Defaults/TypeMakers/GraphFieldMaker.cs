@@ -35,11 +35,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Creates a single graph field from the provided template using hte rules of this maker and the contained schema.
-        /// </summary>
-        /// <param name="template">The template to generate a field from.</param>
-        /// <returns>IGraphField.</returns>
+        /// <inheritdoc />
         public GraphFieldCreationResult CreateField(IGraphTypeFieldTemplate template)
         {
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;

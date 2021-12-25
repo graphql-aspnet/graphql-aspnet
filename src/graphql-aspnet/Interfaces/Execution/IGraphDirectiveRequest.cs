@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="dataSource">The data source being passed to the field this directive is attached to, if any.</param>
         /// <returns>GraphDirectiveRequest.</returns>
         IGraphDirectiveRequest ForLifeCycle(
-            DirectiveLifeCycle lifecycle,
+            DirectiveLifeCyclePhase lifecycle,
             GraphFieldDataSource dataSource);
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the life cycle method being invoked.
         /// </summary>
         /// <value>The life cycle.</value>
-        DirectiveLifeCycle LifeCycle { get; }
+        DirectiveLifeCyclePhase LifeCycle { get; }
 
         /// <summary>
         /// Gets the <see cref="DirectiveLocation"/> where the directive was declared in the source document.

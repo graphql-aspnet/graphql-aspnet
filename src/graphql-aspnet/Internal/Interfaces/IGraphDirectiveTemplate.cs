@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <param name="lifeCycle">The life cycle.</param>
         /// <returns>IGraphMethod.</returns>
-        IGraphMethod FindMethod(DirectiveLifeCycle lifeCycle);
+        IGraphMethod FindMethod(DirectiveLifeCyclePhase lifeCycle);
 
         /// <summary>
         /// Creates a resolver capable of completing a resolution of this directive.

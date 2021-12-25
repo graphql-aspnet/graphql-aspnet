@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(SimpleDirective), template.ObjectType);
             Assert.AreEqual("[directive]/Simple", template.Route.Path);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
-            Assert.IsNotNull(template.Methods.FindMethod(DirectiveLifeCycle.BeforeResolution));
+            Assert.IsNotNull(template.Methods.FindMethod(DirectiveLifeCyclePhase.BeforeResolution));
         }
 
         [Test]

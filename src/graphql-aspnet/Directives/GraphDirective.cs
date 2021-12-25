@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Directives
 
     /// <summary>
     /// A base class defining common requirements for any class wishing to be a graphql
-    /// directive.
+    /// executable directive.
     /// </summary>
     public abstract partial class GraphDirective : GraphControllerBase<IGraphDirectiveRequest>
     {
@@ -24,5 +24,12 @@ namespace GraphQL.AspNet.Directives
         protected GraphDirective()
         {
         }
+
+        // Sample Method declarations that will be recognized by the type system
+        /*
+        public IGraphActionResult BeforeFieldResolution(string someArgument)
+        public IGraphActionResult AfterFieldResolution(string someArgument);
+        public void AlterSchemaItem(ISchemaItem item);
+        */
     }
 }
