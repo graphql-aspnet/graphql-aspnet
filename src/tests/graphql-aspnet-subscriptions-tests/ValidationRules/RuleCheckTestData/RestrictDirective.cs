@@ -14,6 +14,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData
     using GraphQL.AspNet.Interfaces.Controllers;
 
     [GraphType("Restrict")]
+    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
     public class RestrictDirective : GraphDirective
     {
         public IGraphActionResult BeforeFieldResolution(int someValue)

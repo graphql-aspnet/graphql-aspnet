@@ -179,12 +179,21 @@ namespace GraphQL.AspNet
             /// <value>A read only hashset of all the known reserved names.</value>
             public static IImmutableSet<string> IntrospectableRouteNames { get; }
 
-            // directives
+            /// <summary>
+            /// Gets a collection of reserved names that can be used as method names for directive
+            /// lifecycle methods as well as the life cycle phases each method represents.
+            /// </summary>
+            /// <value>The directive method names.</value>
+            public static IReadOnlyDictionary<string, DirectiveLifeCyclePhase> DirectiveLifeCycleMethodNames { get; }
+
+            // public directive names
             public const string SKIP_DIRECTIVE = "skip";
             public const string INCLUDE_DIRECTIVE = "include";
-            public const string DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME = "BeforeFieldResolution";
-            public const string DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME = "AfterFieldResolution";
-            public const string DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME = "AlterTypeSystem";
+
+            // directive lifecycle method names
+            private const string DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME = "BeforeFieldResolution";
+            private const string DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME = "AfterFieldResolution";
+            private const string DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME = "AlterTypeSystem";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
@@ -271,6 +280,14 @@ namespace GraphQL.AspNet
                             SCHEMA_FIELD,
                             TYPE_FIELD,
                             TYPENAME_FIELD);
+
+                // setup the allowed directive lifecycle names
+                var dicDirectiveLifecylces = new Dictionary<string, DirectiveLifeCyclePhase>();
+                dicDirectiveLifecylces.Add(DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME, DirectiveLifeCyclePhase.BeforeResolution);
+                dicDirectiveLifecylces.Add(DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME, DirectiveLifeCyclePhase.AfterResolution);
+                dicDirectiveLifecylces.Add(DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME, DirectiveLifeCyclePhase.AlterTypeSystem);
+
+                DirectiveLifeCycleMethodNames = dicDirectiveLifecylces;
             }
         }
 

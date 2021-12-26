@@ -41,6 +41,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             _templateMap = new Dictionary<DirectiveLifeCyclePhase, GraphDirectiveMethodTemplate>();
+            _masterExecutionMethod = null;
         }
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
+            // no execution phase? then there is no dependents
             if (_masterExecutionMethod == null)
                 return Enumerable.Empty<DependentType>();
 
@@ -66,27 +68,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             Validation.ThrowIfNull(methodTemplate, nameof(methodTemplate));
 
-            if (!methodTemplate.LifeCycle.IsExecutionPhase() &&
-                !methodTemplate.LifeCycle.IsTypeSystemPhase())
-            {
-                throw new NotSupportedException($"The directive lifecycle option '{methodTemplate.LifeCycle}' is not supported.");
-            }
-
-            if (_templateMap.ContainsKey(methodTemplate.LifeCycle))
+            if (_templateMap.ContainsKey(methodTemplate.LifeCyclePhase))
             {
                 _duplciateLifecycleDeclarations = _duplciateLifecycleDeclarations ?? new HashSet<DirectiveLifeCyclePhase>();
-                _duplciateLifecycleDeclarations.Add(methodTemplate.LifeCycle);
+                _duplciateLifecycleDeclarations.Add(methodTemplate.LifeCyclePhase);
             }
             else
             {
-                _templateMap.Add(methodTemplate.LifeCycle, methodTemplate);
+                _templateMap.Add(methodTemplate.LifeCyclePhase, methodTemplate);
             }
 
-            if (methodTemplate.LifeCycle.IsExecutionPhase())
+            // snag a reference to the first execution method for additional
+            // argument processing
+            if (methodTemplate.LifeCyclePhase.IsExecutionPhase())
                 _masterExecutionMethod = _masterExecutionMethod ?? methodTemplate;
 
-            if (!this.LifeCycle.HasFlag(methodTemplate.LifeCycle))
-                this.LifeCycle = this.LifeCycle | methodTemplate.LifeCycle;
+            if (!this.LifeCycle.HasFlag(methodTemplate.LifeCyclePhase))
+                this.LifeCycle = this.LifeCycle | methodTemplate.LifeCyclePhase;
         }
 
         /// <summary>
@@ -136,14 +134,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 var duplicatedDecs = string.Join(",", _duplciateLifecycleDeclarations.Select(x => x.ToString()));
                 throw new GraphTypeDeclarationException(
-                    $"The directive '{_parent.InternalFullName}' attempted to register more than one method for a single lifecycle. Each directive can only define, at most, one method per {nameof(DirectiveLifeCyclePhase)}. " +
+                    $"The directive '{_parent.InternalFullName}' attempted to register more than one method for a " +
+                    $"single lifecycle phase. Each directive can only define, at most, one method per {nameof(DirectiveLifeCyclePhase)}. " +
                     $"Duplicated Lifecycle methods: {duplicatedDecs}");
             }
 
             if (this.Count == 0)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive '{_parent.InternalFullName}' declared no actionable execution " +
+                    $"The directive '{_parent.InternalFullName}' declared no actionable " +
                     $"methods to invoke. Either mark this directive with '{nameof(GraphSkipAttribute)}' " +
                     "or declare at least one valid lifecycle method.");
             }
@@ -154,7 +153,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var method in this)
             {
                 method.ValidateOrThrow();
-                if (method.LifeCycle.IsExecutionPhase() && !this.DoesMethodSignatureMatchMasterSignature(method))
+                if (method.LifeCyclePhase.IsExecutionPhase() && !this.DoesMethodSignatureMatchMasterSignature(method))
                 {
                     throw new GraphTypeDeclarationException(
                         "All field execution methods of a directive MUST be declared with the same method signature, including parameter names (not just types), to maintain consistancy across the " +
@@ -174,7 +173,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the argument collection this directive requires for use as an execution directive.
         /// </summary>
         /// <value>The arguments.</value>
-        public IEnumerable<IGraphFieldArgumentTemplate> Arguments => _masterExecutionMethod?.Arguments ?? Enumerable.Empty<IGraphFieldArgumentTemplate>();
+        public IEnumerable<IGraphFieldArgumentTemplate> ExecutionArguments => _masterExecutionMethod?.Arguments ?? Enumerable.Empty<IGraphFieldArgumentTemplate>();
 
         /// <summary>
         /// Gets the life cycle phases targeted by this set of methods.

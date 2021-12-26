@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public static class DirectiveLocationExtensions
     {
         /// <summary>
-        /// Directives the directive location corrisponding with this schema item.
+        /// Determines the directive location corrisponding with to the supplied schema item (Type System Locations).
         /// </summary>
         /// <param name="item">The item to inspect.</param>
         /// <returns>DirectiveLocation.</returns>
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <summary>
-        /// Determines the directive location corrisponding with this syntax node.
+        /// Determines the directive location corrisponding with this syntax node (Execution Locations).
         /// </summary>
         /// <param name="node">The node to inspect.</param>
         /// <returns>DirectiveLocation.</returns>

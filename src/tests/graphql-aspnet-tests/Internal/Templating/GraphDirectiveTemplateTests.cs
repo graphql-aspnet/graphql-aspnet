@@ -23,18 +23,18 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Simpletemplate_AllDefaults_GeneralPropertyCheck()
         {
-            var template = new GraphDirectiveTemplate(typeof(SimpleDirective));
+            var template = new GraphDirectiveTemplate(typeof(SimpleExecutableDirective));
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual("Simple", template.Name);
-            Assert.AreEqual(nameof(SimpleDirective), template.InternalName);
-            Assert.AreEqual(typeof(SimpleDirective).FriendlyName(true), template.InternalFullName);
+            Assert.AreEqual("SimpleExecutable", template.Name);
+            Assert.AreEqual(nameof(SimpleExecutableDirective), template.InternalName);
+            Assert.AreEqual(typeof(SimpleExecutableDirective).FriendlyName(true), template.InternalFullName);
             Assert.AreEqual("Simple Description", template.Description);
             Assert.AreEqual(1, template.Methods.Count);
             Assert.IsTrue(template.Locations.HasFlag(DirectiveLocation.FIELD));
-            Assert.AreEqual(typeof(SimpleDirective), template.ObjectType);
-            Assert.AreEqual("[directive]/Simple", template.Route.Path);
+            Assert.AreEqual(typeof(SimpleExecutableDirective), template.ObjectType);
+            Assert.AreEqual("[directive]/SimpleExecutable", template.Route.Path);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
             Assert.IsNotNull(template.Methods.FindMethod(DirectiveLifeCyclePhase.BeforeResolution));
         }
@@ -51,9 +51,20 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void InvalidDirective_MethodWithNoLocations_ThrowsException()
+        public void InvalidDirective_NoLocations_ThrowsException()
         {
             var template = new GraphDirectiveTemplate(typeof(NoLocationsDirective));
+            template.Parse();
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void InvalidDirective_NoLocationAttribute_ThrowsException()
+        {
+            var template = new GraphDirectiveTemplate(typeof(NoLocationAttributeDirective));
             template.Parse();
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -70,6 +81,20 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             {
                 template.ValidateOrThrow();
             });
+        }
+
+        [Test]
+        public void OverlappingDirectiveLocations_AreCountedCorrectlyAndNotDropped()
+        {
+            var expectedLocations = DirectiveLocation.FIELD | DirectiveLocation.MUTATION |
+                DirectiveLocation.ENUM | DirectiveLocation.OBJECT | DirectiveLocation.UNION |
+                DirectiveLocation.INPUT_OBJECT | DirectiveLocation.INPUT_FIELD_DEFINITION;
+
+            var template = new GraphDirectiveTemplate(typeof(OverlappingLocationsDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(expectedLocations, template.Locations);
         }
     }
 }

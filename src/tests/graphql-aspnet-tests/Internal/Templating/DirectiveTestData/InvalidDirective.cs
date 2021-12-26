@@ -10,8 +10,10 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
 
+    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
     public class InvalidDirective : GraphDirective
     {
         public Task<int> BeforeFieldResolution(int arg1, string arg2)

@@ -9,9 +9,11 @@
 
 namespace GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData
 {
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
 
+    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
     public class Sample2Directive : GraphDirective
     {
         public IGraphActionResult BeforeFieldResolution()

@@ -10,10 +10,12 @@
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
 
+    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
     public class CallTestDirective : GraphDirective
     {
         public static int TotalCalls { get; set; }

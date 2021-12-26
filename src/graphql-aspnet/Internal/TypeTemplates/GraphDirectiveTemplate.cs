@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
@@ -58,13 +59,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.Route = this.GenerateFieldPath();
 
-            this.Locations = this.SingleAttributeOrDefault<DirectiveLocationsAttribute>()?.Locations ?? (DirectiveLocation)ExecutableDirectiveLocation.AllFieldSelections;
+            var locationAttributes = this.RetrieveAttributes(x => x is DirectiveLocationsAttribute);
+            var allowedLocations = DirectiveLocation.NONE;
+
+            foreach (DirectiveLocationsAttribute attrib in locationAttributes)
+                allowedLocations = allowedLocations | attrib.Locations;
+
+            this.Locations = allowedLocations;
 
             foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                GraphDirectiveMethodTemplate methodTemplate = GraphDirectiveMethodTemplate.CreateMethodTemplate(this, methodInfo);
-                if (methodTemplate != null)
+                // only pay attention to those with valid method names
+                if (Constants.ReservedNames.DirectiveLifeCycleMethodNames.ContainsKey(methodInfo.Name))
                 {
+                    var methodTemplate = new GraphDirectiveMethodTemplate(this, methodInfo);
                     methodTemplate.Parse();
                     this.Methods.RegisterMethod(methodTemplate);
                 }
@@ -105,8 +113,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.Locations == DirectiveLocation.NONE)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive '{this.InternalFullName}' defines no locations to which it can be applied. You must specify at least" +
-                    $"one '{typeof(ExecutableDirectiveLocation)}' or remove the {typeof(DirectiveLocationsAttribute).FriendlyName()} attribute.");
+                    $"The directive '{this.InternalFullName}' defines no locations to which it can be applied. You must specify at least " +
+                    $"one '{typeof(DirectiveLocation)}' via the {typeof(DirectiveLocationsAttribute).FriendlyName()}.");
             }
 
             this.Methods.ValidateOrThrow();
@@ -180,6 +188,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the argument collection this directive contains.
         /// </summary>
         /// <value>The arguments.</value>
-        public IEnumerable<IGraphFieldArgumentTemplate> Arguments => this.Methods.Arguments;
+        public IEnumerable<IGraphFieldArgumentTemplate> Arguments => this.Methods.ExecutionArguments;
     }
 }

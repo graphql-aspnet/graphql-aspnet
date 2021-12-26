@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void SimpleDescriptor_AllDefaults_GeneralPropertyCheck()
         {
-            var method = typeof(SimpleDirective).GetMethod(nameof(SimpleDirective.BeforeFieldResolution));
+            var method = typeof(SimpleExecutableDirective).GetMethod(nameof(SimpleExecutableDirective.BeforeFieldResolution));
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");
@@ -40,12 +40,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(method, template.Method);
 
             Assert.AreEqual("IGraphActionResult (int arg1, string arg2)", template.MethodSignature);
-            Assert.AreEqual(nameof(SimpleDirective.BeforeFieldResolution), template.Name);
-            Assert.AreEqual($"Simple.{nameof(SimpleDirective.BeforeFieldResolution)}", template.InternalFullName);
-            Assert.IsTrue(template.IsValidDirectiveMethod);
+            Assert.AreEqual(nameof(SimpleExecutableDirective.BeforeFieldResolution), template.Name);
+            Assert.AreEqual($"Simple.{nameof(SimpleExecutableDirective.BeforeFieldResolution)}", template.InternalFullName);
+            Assert.IsTrue(template.IsValidDirectiveMethodName);
+            Assert.IsTrue(template.IsValidDirectiveMethodSignature);
             Assert.IsTrue(template.IsAsyncField);
             Assert.AreEqual(typeof(IGraphActionResult), template.ObjectType);
-            Assert.AreEqual(DirectiveLifeCyclePhase.BeforeResolution, template.LifeCycle);
+            Assert.AreEqual(DirectiveLifeCyclePhase.BeforeResolution, template.LifeCyclePhase);
             Assert.AreEqual(2, template.Arguments.Count);
             Assert.AreEqual("arg1", template.Arguments[0].Name);
             Assert.AreEqual(typeof(int), template.Arguments[0].ObjectType);

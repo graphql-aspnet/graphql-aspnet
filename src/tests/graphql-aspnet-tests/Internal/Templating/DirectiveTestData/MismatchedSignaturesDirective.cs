@@ -10,9 +10,11 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
 
+    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
     public class MismatchedSignaturesDirective : GraphDirective
     {
         public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)

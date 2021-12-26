@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
 
+    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
     public class TestDirectiveMethodTemplateContainer : GraphDirective
     {
         [GraphSkip]

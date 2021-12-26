@@ -19,7 +19,10 @@ namespace GraphQL.AspNet.Directives
     [GraphSkip]
     public enum DirectiveLifeCyclePhase
     {
-        None             = 0,
+        /// <summary>
+        /// An unknown phase, indicitive of an error state.
+        /// </summary>
+        Unknown = 0,
 
         /// <summary>
         /// The directive should be invoked before field resolution during the execution phase
@@ -31,11 +34,11 @@ namespace GraphQL.AspNet.Directives
         /// The directive should be invoked after field resolution during the execution phase
         /// of a query document.
         /// </summary>
-        AfterResolution = 1 << 1,
+        AfterResolution  = 1 << 1,
 
         /// <summary>
         /// The directive should be invoked during the building of a schema's type system.
         /// </summary>
-        AlterTypeSystem = 1 << 2,
+        AlterTypeSystem  = 1 << 2,
     }
 }

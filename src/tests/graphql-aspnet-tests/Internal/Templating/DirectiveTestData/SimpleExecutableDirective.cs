@@ -6,17 +6,22 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 {
+    using System.ComponentModel;
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
-    public class BaseTypeSystemDirective : GraphDirective
+    [Description("Simple Description")]
+    [DirectiveLocations(ExecutableDirectiveLocation.FIELD)]
+    public class SimpleExecutableDirective : GraphDirective
     {
-        public IGraphActionResult AlterTypeSystem(ISchemaItem item)
+        public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)
         {
-            return this.Ok();
+            return Task.FromResult(null as IGraphActionResult);
         }
     }
 }

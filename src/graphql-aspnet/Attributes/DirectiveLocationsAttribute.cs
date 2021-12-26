@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Attributes
     /// <summary>
     /// For a given directive, defines where in a query document the directive is allowed to appear.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class DirectiveLocationsAttribute : Attribute
     {
         /// <summary>
