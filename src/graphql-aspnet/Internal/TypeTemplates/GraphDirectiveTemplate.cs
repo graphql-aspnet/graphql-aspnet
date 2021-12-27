@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
@@ -69,7 +70,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
                 // only pay attention to those with valid method names
-                if (Constants.ReservedNames.DirectiveLifeCycleMethodNames.ContainsKey(methodInfo.Name))
+                if (DirectiveLifeCycleEvents.Instance[methodInfo.Name] != null)
                 {
                     var methodTemplate = new GraphDirectiveMethodTemplate(this, methodInfo);
                     methodTemplate.Parse();
@@ -114,52 +115,28 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         private void EnsureLifeCycleEventRepresentationOrThrow()
         {
-            var allowedLocations = this.Locations.GetIndividualFlags<DirectiveLocation>();
+            var requiredLifeCycleEvents = DirectiveLifeCycleEvents.Instance[this.Locations]
+                .GroupBy(x => x.Phase);
 
-            foreach (DirectiveLocation location in allowedLocations)
+            // at least one method must be declared to handle each required phase
+            foreach (var phaseGroup in requiredLifeCycleEvents)
             {
-                var lifeCycleEvent = location.SingleAttributeOrDefault<DirectiveLifeCycleEventAttribute>()?.LifeCycleEvent;
-                if (!lifeCycleEvent.HasValue && lifeCycleEvent.Value == DirectiveLifeCycleEvent.Unknown)
-                    continue;
+                var canHandlePhase = this.Methods
+                    .Any(x => x.LifeCycleEvent.Phase == phaseGroup.Key);
 
-                var individualEvents = lifeCycleEvent.Value.GetIndividualFlags<DirectiveLifeCycleEvent>();
-
-                var canHandle = false;
-                var failedEvents = new List<DirectiveLifeCycleEvent>();
-                foreach (DirectiveLifeCycleEvent evt in individualEvents)
+                if (!canHandlePhase)
                 {
-                    canHandle = this.LifeCycleEvents.HasFlag(evt);
-                    if (!canHandle)
-                        failedEvents.Add(evt);
-                    else
-                        break;
-                }
+                    var allowedMethods = string.Join(", ", DirectiveLifeCycleEvents.Instance[phaseGroup.Key]
+                        .Select(x => $"'{x.MethodName}'"));
 
-                // TODO: Fix this so that all missing events can be reported at once.
-                if (!canHandle)
-                {
-                    switch (failedEvents[0])
-                    {
-                        case DirectiveLifeCycleEvent.AlterTypeSystem:
-                            throw new GraphTypeDeclarationException(
-                                $"The directive '{this.InternalFullName}' defines a usage location of '{location}' " +
-                                $"but does not declare the '{Constants.ReservedNames.DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME}' lifecycle method to handle it." +
-                                $"Either declare the appropriate method or remove the location.");
+                    var phaseDescription = phaseGroup.Key.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
+                    if (string.IsNullOrWhiteSpace(phaseDescription))
+                        phaseDescription = "-unknown-";
 
-                        case DirectiveLifeCycleEvent.BeforeResolution:
-                        case DirectiveLifeCycleEvent.AfterResolution:
-                            throw new GraphTypeDeclarationException(
-                                $"The directive '{this.InternalFullName}' defines a usage location of '{location}' " +
-                                $"but does not declare an appropriate life cycle method " +
-                                $"(e.g. '{Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME}', '{Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME}') " +
-                                $"to handle it. Either declare one of the appropriate methods or remove the location.");
-
-                        default:
-                            throw new GraphTypeDeclarationException(
-                                $"The directive '{this.InternalFullName}' defines a usage location of '{location}' " +
-                                $"but does not declare an appropriate life cycle method " +
-                                $"to handle it. Either declare the one of the appropriate methods or remove the location.");
-                    }
+                    throw new GraphTypeDeclarationException(
+                        $"The directive '{this.InternalFullName}' defines a usage location encountered during '{phaseDescription}' " +
+                        "but does not declare an appropriate lifecycle method to handle it. " +
+                        $"At least one of the following methods is required: {allowedMethods}.");
                 }
             }
         }
@@ -178,9 +155,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public DirectiveLocation Locations { get; private set; }
-
-        /// <inheritdoc />
-        public DirectiveLifeCycleEvent LifeCycleEvents => this.Methods.LifeCycleEvents;
 
         /// <summary>
         /// Gets declared type of item minus any asyncronous wrappers (i.e. the T in Task{T}).

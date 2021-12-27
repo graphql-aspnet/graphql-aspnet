@@ -12,6 +12,7 @@ namespace GraphQL.AspNet
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
     using GraphQL.AspNet.Attributes;
@@ -181,11 +182,11 @@ namespace GraphQL.AspNet
             public static IImmutableSet<string> IntrospectableRouteNames { get; }
 
             /// <summary>
-            /// Gets a collection of reserved names that can be used as method names for directive
-            /// lifecycle methods as well as the life cycle phases each method represents.
+            /// Gets the set of names of the various directive methods that
+            /// can be declared in any directive.
             /// </summary>
             /// <value>The directive method names.</value>
-            public static IReadOnlyDictionary<string, DirectiveLifeCycleEvent> DirectiveLifeCycleMethodNames { get; }
+            public static IImmutableList<string> DirectiveMethodNames { get; }
 
             // public directive names
             public const string SKIP_DIRECTIVE = "skip";
@@ -283,12 +284,9 @@ namespace GraphQL.AspNet
                             TYPENAME_FIELD);
 
                 // setup the allowed directive lifecycle names
-                var dicDirectiveLifecylces = new Dictionary<string, DirectiveLifeCycleEvent>();
-                dicDirectiveLifecylces.Add(DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME, DirectiveLifeCycleEvent.BeforeResolution);
-                dicDirectiveLifecylces.Add(DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME, DirectiveLifeCycleEvent.AfterResolution);
-                dicDirectiveLifecylces.Add(DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME, DirectiveLifeCycleEvent.AlterTypeSystem);
-
-                DirectiveLifeCycleMethodNames = dicDirectiveLifecylces;
+                DirectiveMethodNames = DirectiveLifeCycleEvents.Instance
+                    .Select(x => x.MethodName)
+                    .ToImmutableList();
             }
         }
 

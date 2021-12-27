@@ -45,7 +45,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
-            this.LifeCycleEvent = DirectiveLifeCycleEvent.Unknown;
             _arguments = new List<GraphFieldArgumentTemplate>();
         }
 
@@ -61,15 +60,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.Method.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
 
-            this.IsValidDirectiveMethodSignature = (this.Method.ReturnType == typeof(IGraphActionResult) || this.Method.ReturnType == typeof(Task<IGraphActionResult>)) &&
-                                          !this.Method.IsGenericMethod;
-
-            // extract the lifecycle point indicated by this method
-            if (Constants.ReservedNames.DirectiveLifeCycleMethodNames.ContainsKey(this.Method.Name))
-            {
-                this.IsValidDirectiveMethodName = true;
-                this.LifeCycleEvent = Constants.ReservedNames.DirectiveLifeCycleMethodNames[this.Method.Name];
-            }
+            this.LifeCycleEvent = DirectiveLifeCycleEvents.Instance[this.Method.Name];
+            this.LifeCycleEvent = this.LifeCycleEvent ?? DirectiveLifeCycleEventItem.None;
 
             // is the method asyncronous? if so ensure that a Task<T> is returned
             // and not an empty task
@@ -87,7 +79,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 true,
                 false);
 
-            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCycleEvent.ToString()));
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCycleEvent.Event.ToString()));
 
             // parse all input parameters into the method
             foreach (var parameter in this.Method.GetParameters())
@@ -153,53 +145,17 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 }
             }
 
-            if (!this.IsValidDirectiveMethodName)
-            {
-                var allowedNames = string.Join(", ", Constants.ReservedNames.DirectiveLifeCycleMethodNames.Keys);
-                throw new GraphTypeDeclarationException(
-                    $"The method '{this.InternalFullName}' is not allowed lifecycle method name. " +
-                    $"All Directive methods must be one of the known lifecycle method names. ({allowedNames}).");
-            }
-
-            if (!this.IsValidDirectiveMethodSignature)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The method '{this.InternalFullName}' has an invalid signature and cannot be used as a directive " +
-                    $"method. All Directive methods must not contain generic parameters and must return a '{typeof(IGraphActionResult).FriendlyName()}' " +
-                    $"to be invoked properly.");
-            }
-
-            if (this.LifeCycleEvent == DirectiveLifeCycleEvent.Unknown)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The directive method '{this.InternalFullName}' has does not have a valid lifecycle phase.");
-            }
-
-            if (this.ExpectedReturnType == null)
-            {
-                throw new GraphTypeDeclarationException(
-                   $"The directive method '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
-                   "return type must be assigned from the declared return type.");
-            }
-
             foreach (var argument in _arguments)
                 argument.ValidateOrThrow();
 
-            if (this.LifeCycleEvent.IsTypeSystemPhase())
-            {
-                if (_arguments.Count != 1 || _arguments[0].ObjectType != typeof(ISchemaItem))
-                {
-                    throw new GraphTypeDeclarationException(
-                       $"The directive method '{this.InternalFullName}' must declare exactly one input parameter of type '{nameof(ISchemaItem)}'.");
-                }
-            }
+            this.LifeCycleEvent.ValidateDirectiveMethodTemplateOrThrow(this);
         }
 
         /// <summary>
         /// Gets the life cycle event this method represents within its parent directive.
         /// </summary>
         /// <value>The life cycle event.</value>
-        public DirectiveLifeCycleEvent LifeCycleEvent { get; private set; }
+        internal DirectiveLifeCycleEventItem LifeCycleEvent { get; private set; }
 
         /// <inheritdoc />
         public MetaGraphTypes[] TypeWrappers => null; // not used by directives
@@ -242,18 +198,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public bool IsExplicitDeclaration => true;
-
-        /// <summary>
-        /// Gets a value indicating whether this method is a valid directive method.
-        /// </summary>
-        /// <value><c>true</c> if this instance is valid directive method; otherwise, <c>false</c>.</value>
-        public bool IsValidDirectiveMethodSignature { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this method matches one of the allowed method names.
-        /// </summary>
-        /// <value><c>true</c> if this instance is valid directive method name; otherwise, <c>false</c>.</value>
-        public bool IsValidDirectiveMethodName { get; private set; }
 
         /// <inheritdoc />
         public string Name => this.Method.Name;

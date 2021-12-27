@@ -149,8 +149,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(DirectiveLifeCycleEvent.AlterTypeSystem, template.LifeCycleEvents);
             Assert.AreEqual(1, template.Methods.Count);
+            Assert.AreEqual(DirectiveLifeCycleEvent.AlterTypeSystem, template.Methods.First().LifeCycleEvent.Event);
 
             var method = template.Methods.First();
             Assert.AreEqual(DirectiveLifeCycleEvent.AlterTypeSystem, method.LifeCycleEvent);

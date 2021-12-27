@@ -14,8 +14,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
+    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class FieldLevelDirective : GraphDirective
     {
         public static int TotalCalls { get; set; }

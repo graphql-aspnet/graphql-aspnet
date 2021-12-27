@@ -22,25 +22,6 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
         /// </summary>
-        /// <param name="locations">The set of locations in a query document where the directive can be declared.</param>
-        public DirectiveLocationsAttribute(ExecutableDirectiveLocation locations)
-        {
-            this.Locations = (DirectiveLocation)locations;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
-        /// </summary>
-        /// <param name="locations">The set of types within the type system that
-        /// this directive can target.</param>
-        public DirectiveLocationsAttribute(TypeSystemDirectiveLocation locations)
-        {
-            this.Locations = (DirectiveLocation)locations;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
-        /// </summary>
         /// <param name="locations">The set of types within the type system that
         /// this directive can target.</param>
         public DirectiveLocationsAttribute(DirectiveLocation locations)

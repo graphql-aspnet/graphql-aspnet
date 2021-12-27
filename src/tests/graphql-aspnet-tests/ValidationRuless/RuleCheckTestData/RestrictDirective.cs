@@ -12,9 +12,10 @@ namespace GraphQL.AspNet.Tests.ValidationRuless.RuleCheckTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphType("Restrict")]
-    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
+    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class RestrictDirective : GraphDirective
     {
         public IGraphActionResult BeforeFieldResolution(int someValue)

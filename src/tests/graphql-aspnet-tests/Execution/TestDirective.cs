@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// <para>A directive, applicable to a field, that defines additional logic to determine if
@@ -20,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
     /// <para>Spec: https://graphql.github.io/graphql-spec/June2018/#sec--include .</para>
     /// </summary>
     [GraphType("FakeDirective")]
-    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
+    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class TestDirective : GraphDirective
     {
         public IGraphActionResult BeforeFieldResolution([FromGraphQL("if")] bool ifArgument)

@@ -12,8 +12,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(TypeSystemDirectiveLocation.ENUM)]
+    [DirectiveLocations(DirectiveLocation.ENUM)]
     public class SimpleTypeSystemDirective : GraphDirective
     {
         public IGraphActionResult AlterTypeSystem(ISchemaItem item)

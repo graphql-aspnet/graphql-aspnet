@@ -40,12 +40,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         DirectiveLocation Locations { get; }
 
         /// <summary>
-        /// Gets the specific life cycle event targeted by this directive.
-        /// </summary>
-        /// <value>The life cycle.</value>
-        DirectiveLifeCycleEvent LifeCycleEvents { get; }
-
-        /// <summary>
         /// Gets the argument collection this directive exposes during the execution phase.
         /// </summary>
         /// <value>The arguments.</value>

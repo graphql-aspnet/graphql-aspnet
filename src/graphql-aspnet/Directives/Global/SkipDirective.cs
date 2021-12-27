@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Directives.Global
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// <para>A directive, applicable to a field, that defines additional logic to determine if
@@ -18,7 +19,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <para>Spec: https://graphql.github.io/graphql-spec/June2018/#sec--skip .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.SKIP_DIRECTIVE)]
-    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
+    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public sealed class SkipDirective : GraphDirective
     {
         /// <summary>

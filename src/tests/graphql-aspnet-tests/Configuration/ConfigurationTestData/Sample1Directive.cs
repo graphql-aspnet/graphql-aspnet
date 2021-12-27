@@ -12,8 +12,9 @@ namespace GraphQL.AspNet.Tests.Configuration.ConfigurationTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections | ExecutableDirectiveLocation.FRAGMENT_DEFINITION)]
+    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT | DirectiveLocation.FRAGMENT_DEFINITION)]
     public class Sample1Directive : GraphDirective
     {
         public IGraphActionResult BeforeFieldResolution()

@@ -42,8 +42,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("IGraphActionResult (int arg1, string arg2)", template.MethodSignature);
             Assert.AreEqual(nameof(SimpleExecutableDirective.BeforeFieldResolution), template.Name);
             Assert.AreEqual($"Simple.{nameof(SimpleExecutableDirective.BeforeFieldResolution)}", template.InternalFullName);
-            Assert.IsTrue(template.IsValidDirectiveMethodName);
-            Assert.IsTrue(template.IsValidDirectiveMethodSignature);
             Assert.IsTrue(template.IsAsyncField);
             Assert.AreEqual(typeof(IGraphActionResult), template.ObjectType);
             Assert.AreEqual(DirectiveLifeCycleEvent.BeforeResolution, template.LifeCycleEvent);

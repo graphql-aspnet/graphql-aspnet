@@ -11,9 +11,10 @@ namespace GraphQL.AspNet.Tests.ValidationRuless.RuleCheckTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphType("Allow")]
-    [DirectiveLocations(ExecutableDirectiveLocation.FRAGMENT_SPREAD)]
+    [DirectiveLocations(DirectiveLocation.FRAGMENT_SPREAD)]
     public class AllowDirective : GraphDirective
     {
         public IGraphActionResult BeforeFieldResolution()

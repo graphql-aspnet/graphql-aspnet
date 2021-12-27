@@ -14,9 +14,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [Description("Simple Description")]
-    [DirectiveLocations(ExecutableDirectiveLocation.FIELD)]
+    [DirectiveLocations(DirectiveLocation.FIELD)]
     public class SimpleExecutableDirective : GraphDirective
     {
         public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)

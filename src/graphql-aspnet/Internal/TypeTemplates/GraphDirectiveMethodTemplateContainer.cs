@@ -29,8 +29,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         private readonly IGraphDirectiveTemplate _parent;
         private readonly Dictionary<DirectiveLifeCycleEvent, GraphDirectiveMethodTemplate> _templateMap;
 
-        private GraphDirectiveMethodTemplate _masterExecutionMethod;
-
         private HashSet<DirectiveLifeCycleEvent> _duplciateLifecycleDeclarations;
 
         /// <summary>
@@ -41,7 +39,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             _templateMap = new Dictionary<DirectiveLifeCycleEvent, GraphDirectiveMethodTemplate>();
-            _masterExecutionMethod = null;
         }
 
         /// <summary>
@@ -50,13 +47,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            // no execution phase? then there is no dependents
-            if (_masterExecutionMethod == null)
-                return Enumerable.Empty<DependentType>();
-
-            // a method is dependent on those types required by all fields
-            // as well as an input types needed for its method arguments
-            return _masterExecutionMethod.Arguments.SelectMany(arg => arg.RetrieveRequiredTypes());
+            return _templateMap.Values
+                .Where(x => x.LifeCycleEvent.Phase == DirectiveLifeCyclePhase.Execution)
+                .SelectMany(x => x.Arguments.SelectMany(arg => arg.RetrieveRequiredTypes()))
+                .Distinct();
         }
 
         /// <summary>
@@ -68,23 +62,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             Validation.ThrowIfNull(methodTemplate, nameof(methodTemplate));
 
-            if (_templateMap.ContainsKey(methodTemplate.LifeCycleEvent))
+            if (_templateMap.ContainsKey(methodTemplate.LifeCycleEvent.Event))
             {
                 _duplciateLifecycleDeclarations = _duplciateLifecycleDeclarations ?? new HashSet<DirectiveLifeCycleEvent>();
-                _duplciateLifecycleDeclarations.Add(methodTemplate.LifeCycleEvent);
+                _duplciateLifecycleDeclarations.Add(methodTemplate.LifeCycleEvent.Event);
             }
             else
             {
-                _templateMap.Add(methodTemplate.LifeCycleEvent, methodTemplate);
+                _templateMap.Add(methodTemplate.LifeCycleEvent.Event, methodTemplate);
             }
-
-            // snag a reference to the first execution method for additional
-            // argument processing
-            if (methodTemplate.LifeCycleEvent.IsExecutionPhase())
-                _masterExecutionMethod = _masterExecutionMethod ?? methodTemplate;
-
-            if (!this.LifeCycleEvents.HasFlag(methodTemplate.LifeCycleEvent))
-                this.LifeCycleEvents = this.LifeCycleEvents | methodTemplate.LifeCycleEvent;
         }
 
         /// <summary>
@@ -101,22 +87,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Deterimines if the provided <see cref="GraphDirectiveMethodTemplate" /> has an identical signature
         /// to the method this instance represents.
         /// </summary>
-        /// <param name="methodToCheck">The method to check.</param>
+        /// <param name="left">One method to check.</param>
+        /// <param name="right">A method to check against.</param>
         /// <returns><c>true</c> if the signatures are identical, <c>false</c> otherwise.</returns>
-        private bool DoesMethodSignatureMatchMasterSignature(GraphDirectiveMethodTemplate methodToCheck)
+        private bool DoMethodSignaturesMatch(GraphDirectiveMethodTemplate left, GraphDirectiveMethodTemplate right)
         {
-            if (_masterExecutionMethod == null || methodToCheck == _masterExecutionMethod)
+            if (left == null || right == null)
                 return true;
 
-            if (methodToCheck.Arguments.Count != _masterExecutionMethod.Arguments.Count)
+            if (left.Arguments.Count != right.Arguments.Count)
                 return false;
 
-            for (var i = 0; i < methodToCheck.Arguments.Count; i++)
+            for (var i = 0; i < left.Arguments.Count; i++)
             {
-                if (methodToCheck.Arguments[i].ObjectType != _masterExecutionMethod.Arguments[i].ObjectType)
+                if (left.Arguments[i].ObjectType != right.Arguments[i].ObjectType)
                     return false;
 
-                if (methodToCheck.Arguments[i].Name != _masterExecutionMethod.Arguments[i].Name)
+                if (left.Arguments[i].Name != right.Arguments[i].Name)
                     return false;
             }
 
@@ -153,12 +140,28 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var method in this)
             {
                 method.ValidateOrThrow();
-                if (method.LifeCycleEvent.IsExecutionPhase() && !this.DoesMethodSignatureMatchMasterSignature(method))
+
+                // if this method has decalred syblings, ensure all method signatures
+                // match
+                var declaredSyblings = new List<GraphDirectiveMethodTemplate>();
+                foreach (var syblingEvent in method.LifeCycleEvent.SyblingEvents)
                 {
-                    throw new GraphTypeDeclarationException(
-                        "All field execution methods of a directive MUST be declared with the same method signature, including parameter names (not just types), to maintain consistancy across the " +
-                        $"object graph. The method '{_masterExecutionMethod.InternalFullName}' declares a signature of '{_masterExecutionMethod.MethodSignature}' but the " +
-                        $"method '{method.InternalFullName}' declares a signature of '{method.MethodSignature}.");
+                    if (_templateMap.ContainsKey(syblingEvent.Event))
+                    {
+                        declaredSyblings.Add(_templateMap[syblingEvent.Event]);
+                    }
+                }
+
+                foreach (var sybling in declaredSyblings)
+                {
+                    if (!this.DoMethodSignaturesMatch(method, sybling))
+                    {
+                        throw new GraphTypeDeclarationException(
+                            $"The method '{method.InternalFullName}' declares a signature of '{method.MethodSignature}' but its declared " +
+                            $"sybling '{sybling.InternalFullName}' declares a signature of '{method.MethodSignature}. " +
+                            $"When declared together, they MUST have identical method signatures, including parameter names (not just types), to maintain consistancy across the " +
+                            $"object graph.");
+                    }
                 }
             }
         }
@@ -173,13 +176,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the argument collection this directive requires for use as an execution directive.
         /// </summary>
         /// <value>The arguments.</value>
-        public IEnumerable<IGraphFieldArgumentTemplate> ExecutionArguments => _masterExecutionMethod?.Arguments ?? Enumerable.Empty<IGraphFieldArgumentTemplate>();
-
-        /// <summary>
-        /// Gets the specific life cycle event targeted by this set of methods.
-        /// </summary>
-        /// <value>The life cycle.</value>
-        public DirectiveLifeCycleEvent LifeCycleEvents { get; private set; }
+        public IEnumerable<IGraphFieldArgumentTemplate> ExecutionArguments
+        {
+            get
+            {
+                return _templateMap.Values
+                    .FirstOrDefault(x => x.LifeCycleEvent.Phase == DirectiveLifeCyclePhase.Execution)?
+                    .Arguments
+                    ?? Enumerable.Empty<IGraphFieldArgumentTemplate>();
+            }
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

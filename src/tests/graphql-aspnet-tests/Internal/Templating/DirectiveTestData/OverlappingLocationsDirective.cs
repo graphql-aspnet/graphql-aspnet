@@ -13,13 +13,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(ExecutableDirectiveLocation.FIELD)]
-    [DirectiveLocations(ExecutableDirectiveLocation.FIELD | ExecutableDirectiveLocation.MUTATION)]
-    [DirectiveLocations(TypeSystemDirectiveLocation.ENUM)]
-    [DirectiveLocations(TypeSystemDirectiveLocation.OBJECT | TypeSystemDirectiveLocation.UNION)]
-    [DirectiveLocations(TypeSystemDirectiveLocation.INPUT_OBJECT)]
-    [DirectiveLocations(TypeSystemDirectiveLocation.INPUT_FIELD_DEFINITION)]
+    [DirectiveLocations(DirectiveLocation.FIELD)]
+    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.MUTATION)]
+    [DirectiveLocations(DirectiveLocation.ENUM)]
+    [DirectiveLocations(DirectiveLocation.OBJECT | DirectiveLocation.UNION)]
+    [DirectiveLocations(DirectiveLocation.INPUT_OBJECT)]
+    [DirectiveLocations(DirectiveLocation.INPUT_FIELD_DEFINITION)]
     public class OverlappingLocationsDirective : GraphDirective
     {
         public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)
