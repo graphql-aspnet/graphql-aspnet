@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsTrue(template.IsValidDirectiveMethodSignature);
             Assert.IsTrue(template.IsAsyncField);
             Assert.AreEqual(typeof(IGraphActionResult), template.ObjectType);
-            Assert.AreEqual(DirectiveLifeCyclePhase.BeforeResolution, template.LifeCyclePhase);
+            Assert.AreEqual(DirectiveLifeCycleEvent.BeforeResolution, template.LifeCycleEvent);
             Assert.AreEqual(2, template.Arguments.Count);
             Assert.AreEqual("arg1", template.Arguments[0].Name);
             Assert.AreEqual(typeof(int), template.Arguments[0].ObjectType);
@@ -102,6 +102,101 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var method = typeof(TestDirectiveMethodTemplateContainer)
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer.AfterFieldResolution));
+
+            var mock = new Mock<IGraphTypeTemplate>();
+            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            var route = new GraphFieldPath(GraphCollection.Directives, "Simple");
+            mock.Setup(x => x.Route).Returns(route);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void ValidLifeCycleMethod_WithGraphSkip_ThrowsException()
+        {
+            var method = typeof(TestDirectiveMethodTemplateContainer2)
+                .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.BeforeFieldResolution));
+
+            var mock = new Mock<IGraphTypeTemplate>();
+            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            var route = new GraphFieldPath(GraphCollection.Directives, "Simple");
+            mock.Setup(x => x.Route).Returns(route);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void InvalidValidLifeCycleMethodName_ThrowsException()
+        {
+            var method = typeof(TestDirectiveMethodTemplateContainer2)
+                .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.NotAValidMethodName));
+
+            var mock = new Mock<IGraphTypeTemplate>();
+            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            var route = new GraphFieldPath(GraphCollection.Directives, "Simple");
+            mock.Setup(x => x.Route).Returns(route);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void InvalidTaskReferenceOnMethod_ThrowsException()
+        {
+            var method = typeof(TestDirectiveMethodTemplateContainer2)
+                .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.AfterFieldResolution));
+
+            var mock = new Mock<IGraphTypeTemplate>();
+            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            var route = new GraphFieldPath(GraphCollection.Directives, "Simple");
+            mock.Setup(x => x.Route).Returns(route);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void AlterTypeSystemMethod_DoesNotHaveInputParameter_ThrowsException()
+        {
+            var method = typeof(TestDirectiveMethodTemplateContainer2)
+                .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.AlterTypeSystem));
+
+            var mock = new Mock<IGraphTypeTemplate>();
+            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            var route = new GraphFieldPath(GraphCollection.Directives, "Simple");
+            mock.Setup(x => x.Route).Returns(route);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void AlterTypeSystemMethod_HasWrongInputParameter_ThrowsException()
+        {
+            var method = typeof(TestDirectiveMethodTemplateContainer3)
+                .GetMethod(nameof(TestDirectiveMethodTemplateContainer3.AlterTypeSystem));
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");

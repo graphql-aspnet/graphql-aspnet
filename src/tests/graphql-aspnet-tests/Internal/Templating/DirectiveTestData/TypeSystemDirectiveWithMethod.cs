@@ -8,17 +8,20 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 {
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(TypeSystemDirectiveLocation.ENUM)]
-    public class SimpleTypeSystemDirective : GraphDirective
+    [DirectiveLocations(DirectiveLocation.SCALAR)]
+    public class TypeSystemDirectiveWithMethod : GraphDirective
     {
-        public IGraphActionResult AlterTypeSystem(ISchemaItem item)
+        // no "AlterTypeSystem" method defined
+        public Task<IGraphActionResult> AlterTypeSystem(ISchemaItem item)
         {
-            return this.Ok();
+            return null;
         }
     }
 }

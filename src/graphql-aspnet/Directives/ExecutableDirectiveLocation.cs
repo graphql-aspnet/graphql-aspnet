@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Directives
     /// which indicate an inbound query document location that can be acted on.
     /// </summary>
     [Flags]
+    [GraphSkip]
     public enum ExecutableDirectiveLocation
     {
-        [GraphSkip]
         NONE                = DirectiveLocation.NONE,
 
         QUERY               = DirectiveLocation.QUERY,

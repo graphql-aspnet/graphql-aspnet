@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
-    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
@@ -49,9 +48,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.ObjectType = graphDirectiveType;
         }
 
-        /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
-        /// </summary>
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             base.ParseTemplateDefinition();
@@ -59,6 +56,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.Route = this.GenerateFieldPath();
 
+            // extract all the allowed locations
+            // where this directive can be applied
             var locationAttributes = this.RetrieveAttributes(x => x is DirectiveLocationsAttribute);
             var allowedLocations = DirectiveLocation.NONE;
 
@@ -79,33 +78,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// When overridden in a child class, this method builds the unique graph route that will be assigned to this instance
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
+        /// <inheritdoc />
         protected override GraphFieldPath GenerateFieldPath()
         {
             var name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
             return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, name));
         }
 
-        /// <summary>
-        /// Attempts to find a declared graph method that can handle processing of the life cycle and location
-        /// requested of the directive.
-        /// </summary>
-        /// <param name="lifeCycle">The life cycle.</param>
-        /// <returns>IGraphMethod.</returns>
-        public IGraphMethod FindMethod(DirectiveLifeCyclePhase lifeCycle)
+        /// <inheritdoc />
+        public IGraphMethod FindMethod(DirectiveLifeCycleEvent lifeCycle)
         {
             return this.Methods.FindMethod(lifeCycle);
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
@@ -118,12 +104,67 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             this.Methods.ValidateOrThrow();
+
+            this.EnsureLifeCycleEventRepresentationOrThrow();
         }
 
         /// <summary>
-        /// Creates a resolver capable of completing a resolution of this directive.
+        /// Checks each defined location where this directive may be used against all the defined methods to ensure that at least
+        /// one method was declared that can process data at each location where it may appear.
         /// </summary>
-        /// <returns>IGraphFieldResolver.</returns>
+        private void EnsureLifeCycleEventRepresentationOrThrow()
+        {
+            var allowedLocations = this.Locations.GetIndividualFlags<DirectiveLocation>();
+
+            foreach (DirectiveLocation location in allowedLocations)
+            {
+                var lifeCycleEvent = location.SingleAttributeOrDefault<DirectiveLifeCycleEventAttribute>()?.LifeCycleEvent;
+                if (!lifeCycleEvent.HasValue && lifeCycleEvent.Value == DirectiveLifeCycleEvent.Unknown)
+                    continue;
+
+                var individualEvents = lifeCycleEvent.Value.GetIndividualFlags<DirectiveLifeCycleEvent>();
+
+                var canHandle = false;
+                var failedEvents = new List<DirectiveLifeCycleEvent>();
+                foreach (DirectiveLifeCycleEvent evt in individualEvents)
+                {
+                    canHandle = this.LifeCycleEvents.HasFlag(evt);
+                    if (!canHandle)
+                        failedEvents.Add(evt);
+                    else
+                        break;
+                }
+
+                // TODO: Fix this so that all missing events can be reported at once.
+                if (!canHandle)
+                {
+                    switch (failedEvents[0])
+                    {
+                        case DirectiveLifeCycleEvent.AlterTypeSystem:
+                            throw new GraphTypeDeclarationException(
+                                $"The directive '{this.InternalFullName}' defines a usage location of '{location}' " +
+                                $"but does not declare the '{Constants.ReservedNames.DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME}' lifecycle method to handle it." +
+                                $"Either declare the appropriate method or remove the location.");
+
+                        case DirectiveLifeCycleEvent.BeforeResolution:
+                        case DirectiveLifeCycleEvent.AfterResolution:
+                            throw new GraphTypeDeclarationException(
+                                $"The directive '{this.InternalFullName}' defines a usage location of '{location}' " +
+                                $"but does not declare an appropriate life cycle method " +
+                                $"(e.g. '{Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME}', '{Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME}') " +
+                                $"to handle it. Either declare one of the appropriate methods or remove the location.");
+
+                        default:
+                            throw new GraphTypeDeclarationException(
+                                $"The directive '{this.InternalFullName}' defines a usage location of '{location}' " +
+                                $"but does not declare an appropriate life cycle method " +
+                                $"to handle it. Either declare the one of the appropriate methods or remove the location.");
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc />
         public IGraphDirectiveResolver CreateResolver()
         {
             return new GraphDirectiveActionResolver(this);
@@ -135,17 +176,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The methods.</value>
         public GraphDirectiveMethodTemplateContainer Methods { get; }
 
-        /// <summary>
-        /// Gets the locations where this directive has been defined for usage.
-        /// </summary>
-        /// <value>The locations.</value>
+        /// <inheritdoc />
         public DirectiveLocation Locations { get; private set; }
 
-        /// <summary>
-        /// Gets the life cycle phases targeted by this directive.
-        /// </summary>
-        /// <value>The life cycle.</value>
-        public DirectiveLifeCyclePhase LifeCyclePhases => this.Methods.LifeCycle;
+        /// <inheritdoc />
+        public DirectiveLifeCycleEvent LifeCycleEvents => this.Methods.LifeCycleEvents;
 
         /// <summary>
         /// Gets declared type of item minus any asyncronous wrappers (i.e. the T in Task{T}).
@@ -153,41 +188,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The type of the declared.</value>
         public Type DeclaredType => this.ObjectType;
 
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalFullName => this.ObjectType?.FriendlyName(true);
 
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalName => this.ObjectType?.FriendlyName();
 
-        /// <summary>
-        /// Gets a value indicating whether this instance was explictly declared as a graph item via acceptable attribution or
-        /// if it was parsed as a matter of completeness.
-        /// </summary>
-        /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public override bool IsExplicitDeclaration => true;
 
-        /// <summary>
-        /// Gets the security policies found via defined attributes on the item that need to be enforced.
-        /// </summary>
-        /// <value>The security policies.</value>
+        /// <inheritdoc />
         public override FieldSecurityGroup SecurityPolicies { get; } = FieldSecurityGroup.Empty;
 
-        /// <summary>
-        /// Gets the kind of graph type that can be made from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.DIRECTIVE;
 
-        /// <summary>
-        /// Gets the argument collection this directive contains.
-        /// </summary>
-        /// <value>The arguments.</value>
+        /// <inheritdoc />
         public IEnumerable<IGraphFieldArgumentTemplate> Arguments => this.Methods.ExecutionArguments;
     }
 }

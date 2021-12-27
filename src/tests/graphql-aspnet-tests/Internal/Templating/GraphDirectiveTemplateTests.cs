@@ -9,12 +9,14 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
+    using System.Linq;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
-    using GraphQL.AspNet.Common.Extensions;
     using NUnit.Framework;
 
     [TestFixture]
@@ -36,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(SimpleExecutableDirective), template.ObjectType);
             Assert.AreEqual("[directive]/SimpleExecutable", template.Route.Path);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
-            Assert.IsNotNull(template.Methods.FindMethod(DirectiveLifeCyclePhase.BeforeResolution));
+            Assert.IsNotNull(template.Methods.FindMethod(DirectiveLifeCycleEvent.BeforeResolution));
         }
 
         [Test]
@@ -95,6 +97,67 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(expectedLocations, template.Locations);
+        }
+
+        [Test]
+        public void RequiredTypeSystemLocationWithNoMethodDefined_ThrowsException()
+        {
+            var template = new GraphDirectiveTemplate(typeof(TypeSystemDirectiveWithoutMethod));
+            template.Parse();
+
+            try
+            {
+                template.ValidateOrThrow();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                Assert.IsTrue(ex.Message.Contains(Constants.ReservedNames.DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME));
+            }
+            catch
+            {
+                Assert.Fail($"Invalid Exception Thrown. Expected {nameof(GraphTypeDeclarationException)}");
+            }
+        }
+
+        [Test]
+        public void RequiredExecutionLocationWithNoMethodDefined_ThrowsException()
+        {
+            var template = new GraphDirectiveTemplate(typeof(ExecutionDirectiveWithoutMethod));
+            template.Parse();
+
+            try
+            {
+                template.ValidateOrThrow();
+            }
+            catch (GraphTypeDeclarationException ex)
+            {
+                var containsRightMethodName = ex.Message.Contains(Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME)
+                    || ex.Message.Contains(Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME);
+
+                Assert.True(containsRightMethodName, "Expected execution method names.");
+            }
+            catch
+            {
+                Assert.Fail($"Invalid Exception Thrown. Expected {nameof(GraphTypeDeclarationException)}");
+            }
+        }
+
+        [Test]
+        public void RequiredTypeSystemLocationWithMethodDefined_PropertyCheck()
+        {
+            var template = new GraphDirectiveTemplate(typeof(TypeSystemDirectiveWithMethod));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(DirectiveLifeCycleEvent.AlterTypeSystem, template.LifeCycleEvents);
+            Assert.AreEqual(1, template.Methods.Count);
+
+            var method = template.Methods.First();
+            Assert.AreEqual(DirectiveLifeCycleEvent.AlterTypeSystem, method.LifeCycleEvent);
+            Assert.AreEqual(1, method.Arguments.Count);
+
+            var arg = method.Arguments[0];
+            Assert.AreEqual(typeof(ISchemaItem), arg.ObjectType);
         }
     }
 }

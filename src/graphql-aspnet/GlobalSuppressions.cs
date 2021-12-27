@@ -77,4 +77,4 @@ using System.Diagnostics.CodeAnalysis;
     "SA1025:Code should not contain multiple whitespace in a row",
     Justification = "Enum is cleaner to look at with extra white space",
     Scope = "type",
-    Target = "~T:GraphQL.AspNet.Directives.DirectiveLifeCyclePhase")]
+    Target = "~T:GraphQL.AspNet.Directives.DirectiveLifeCycleEvent")]

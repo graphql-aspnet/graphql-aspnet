@@ -27,11 +27,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     public class GraphDirectiveMethodTemplateContainer : IEnumerable<GraphDirectiveMethodTemplate>
     {
         private readonly IGraphDirectiveTemplate _parent;
-        private readonly Dictionary<DirectiveLifeCyclePhase, GraphDirectiveMethodTemplate> _templateMap;
+        private readonly Dictionary<DirectiveLifeCycleEvent, GraphDirectiveMethodTemplate> _templateMap;
 
         private GraphDirectiveMethodTemplate _masterExecutionMethod;
 
-        private HashSet<DirectiveLifeCyclePhase> _duplciateLifecycleDeclarations;
+        private HashSet<DirectiveLifeCycleEvent> _duplciateLifecycleDeclarations;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveMethodTemplateContainer" /> class.
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphDirectiveMethodTemplateContainer(IGraphDirectiveTemplate parent)
         {
             _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
-            _templateMap = new Dictionary<DirectiveLifeCyclePhase, GraphDirectiveMethodTemplate>();
+            _templateMap = new Dictionary<DirectiveLifeCycleEvent, GraphDirectiveMethodTemplate>();
             _masterExecutionMethod = null;
         }
 
@@ -68,23 +68,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             Validation.ThrowIfNull(methodTemplate, nameof(methodTemplate));
 
-            if (_templateMap.ContainsKey(methodTemplate.LifeCyclePhase))
+            if (_templateMap.ContainsKey(methodTemplate.LifeCycleEvent))
             {
-                _duplciateLifecycleDeclarations = _duplciateLifecycleDeclarations ?? new HashSet<DirectiveLifeCyclePhase>();
-                _duplciateLifecycleDeclarations.Add(methodTemplate.LifeCyclePhase);
+                _duplciateLifecycleDeclarations = _duplciateLifecycleDeclarations ?? new HashSet<DirectiveLifeCycleEvent>();
+                _duplciateLifecycleDeclarations.Add(methodTemplate.LifeCycleEvent);
             }
             else
             {
-                _templateMap.Add(methodTemplate.LifeCyclePhase, methodTemplate);
+                _templateMap.Add(methodTemplate.LifeCycleEvent, methodTemplate);
             }
 
             // snag a reference to the first execution method for additional
             // argument processing
-            if (methodTemplate.LifeCyclePhase.IsExecutionPhase())
+            if (methodTemplate.LifeCycleEvent.IsExecutionPhase())
                 _masterExecutionMethod = _masterExecutionMethod ?? methodTemplate;
 
-            if (!this.LifeCycle.HasFlag(methodTemplate.LifeCyclePhase))
-                this.LifeCycle = this.LifeCycle | methodTemplate.LifeCyclePhase;
+            if (!this.LifeCycleEvents.HasFlag(methodTemplate.LifeCycleEvent))
+                this.LifeCycleEvents = this.LifeCycleEvents | methodTemplate.LifeCycleEvent;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="lifeCycle">The life cycle hook.</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphMethod FindMethod(DirectiveLifeCyclePhase lifeCycle)
+        public IGraphMethod FindMethod(DirectiveLifeCycleEvent lifeCycle)
         {
             return _templateMap.ContainsKey(lifeCycle) ? _templateMap[lifeCycle] : null;
         }
@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 var duplicatedDecs = string.Join(",", _duplciateLifecycleDeclarations.Select(x => x.ToString()));
                 throw new GraphTypeDeclarationException(
                     $"The directive '{_parent.InternalFullName}' attempted to register more than one method for a " +
-                    $"single lifecycle phase. Each directive can only define, at most, one method per {nameof(DirectiveLifeCyclePhase)}. " +
+                    $"single lifecycle phase. Each directive can only define, at most, one method per {nameof(DirectiveLifeCycleEvent)}. " +
                     $"Duplicated Lifecycle methods: {duplicatedDecs}");
             }
 
@@ -153,7 +153,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var method in this)
             {
                 method.ValidateOrThrow();
-                if (method.LifeCyclePhase.IsExecutionPhase() && !this.DoesMethodSignatureMatchMasterSignature(method))
+                if (method.LifeCycleEvent.IsExecutionPhase() && !this.DoesMethodSignatureMatchMasterSignature(method))
                 {
                     throw new GraphTypeDeclarationException(
                         "All field execution methods of a directive MUST be declared with the same method signature, including parameter names (not just types), to maintain consistancy across the " +
@@ -176,10 +176,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public IEnumerable<IGraphFieldArgumentTemplate> ExecutionArguments => _masterExecutionMethod?.Arguments ?? Enumerable.Empty<IGraphFieldArgumentTemplate>();
 
         /// <summary>
-        /// Gets the life cycle phases targeted by this set of methods.
+        /// Gets the specific life cycle event targeted by this set of methods.
         /// </summary>
         /// <value>The life cycle.</value>
-        public DirectiveLifeCyclePhase LifeCycle { get; private set; }
+        public DirectiveLifeCycleEvent LifeCycleEvents { get; private set; }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

@@ -82,6 +82,23 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
+        /// Gets a single attribute of a given type on an enum field value.
+        /// </summary>
+        /// <typeparam name="T">The type of the attribute to retrieve.</typeparam>
+        /// <param name="enumValue">The enum value to inspect.</param>
+        /// <returns>The attribute of type T that exists on the enum value.</returns>
+        public static T SingleAttributeOrDefault<T>(this Enum enumValue)
+            where T : Attribute
+        {
+            var type = enumValue.GetType();
+            var memInfo = type.GetMember(enumValue.ToString());
+            if (memInfo == null)
+                return null;
+
+            return memInfo[0].SingleAttributeOfTypeOrDefault<T>(false);
+        }
+
+        /// <summary>
         /// Returns a single attribute of a given type or null. If the type declares more than one instance
         /// of the attribute type, null is returned.
         /// </summary>

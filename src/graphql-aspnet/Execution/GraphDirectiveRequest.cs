@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Execution
         {
             this.Id = Guid.NewGuid().ToString("N");
             this.Directive = Validation.ThrowIfNullOrReturn(targetDirective, nameof(targetDirective));
-            this.LifeCycle = DirectiveLifeCyclePhase.BeforeResolution;
+            this.LifeCycle = DirectiveLifeCycleEvent.BeforeResolution;
             this.DirectiveLocation = location;
             this.Origin = origin ?? SourceOrigin.None;
             this.Items = requestMetaData ?? new MetaDataCollection();
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="dataSource">The data source being passed to the field this directive is attached to, if any.</param>
         /// <returns>GraphDirectiveRequest.</returns>
         public IGraphDirectiveRequest ForLifeCycle(
-            DirectiveLifeCyclePhase lifecycle,
+            DirectiveLifeCycleEvent lifecycle,
             GraphFieldDataSource dataSource)
         {
             var request = new GraphDirectiveRequest(
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Execution
         /// Gets the life cycle method being invoked.
         /// </summary>
         /// <value>The life cycle.</value>
-        public DirectiveLifeCyclePhase LifeCycle { get; private set; }
+        public DirectiveLifeCycleEvent LifeCycle { get; private set; }
 
         /// <summary>
         /// Gets the source data, if any, that was made available to this request.

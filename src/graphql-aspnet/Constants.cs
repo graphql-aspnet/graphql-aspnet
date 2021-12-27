@@ -22,6 +22,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A set of constants known to the graphql library.
@@ -184,16 +185,16 @@ namespace GraphQL.AspNet
             /// lifecycle methods as well as the life cycle phases each method represents.
             /// </summary>
             /// <value>The directive method names.</value>
-            public static IReadOnlyDictionary<string, DirectiveLifeCyclePhase> DirectiveLifeCycleMethodNames { get; }
+            public static IReadOnlyDictionary<string, DirectiveLifeCycleEvent> DirectiveLifeCycleMethodNames { get; }
 
             // public directive names
             public const string SKIP_DIRECTIVE = "skip";
             public const string INCLUDE_DIRECTIVE = "include";
 
             // directive lifecycle method names
-            private const string DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME = "BeforeFieldResolution";
-            private const string DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME = "AfterFieldResolution";
-            private const string DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME = "AlterTypeSystem";
+            public const string DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME = "BeforeFieldResolution";
+            public const string DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME = "AfterFieldResolution";
+            public const string DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME = "AlterTypeSystem";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
@@ -282,10 +283,10 @@ namespace GraphQL.AspNet
                             TYPENAME_FIELD);
 
                 // setup the allowed directive lifecycle names
-                var dicDirectiveLifecylces = new Dictionary<string, DirectiveLifeCyclePhase>();
-                dicDirectiveLifecylces.Add(DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME, DirectiveLifeCyclePhase.BeforeResolution);
-                dicDirectiveLifecylces.Add(DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME, DirectiveLifeCyclePhase.AfterResolution);
-                dicDirectiveLifecylces.Add(DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME, DirectiveLifeCyclePhase.AlterTypeSystem);
+                var dicDirectiveLifecylces = new Dictionary<string, DirectiveLifeCycleEvent>();
+                dicDirectiveLifecylces.Add(DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME, DirectiveLifeCycleEvent.BeforeResolution);
+                dicDirectiveLifecylces.Add(DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME, DirectiveLifeCycleEvent.AfterResolution);
+                dicDirectiveLifecylces.Add(DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME, DirectiveLifeCycleEvent.AlterTypeSystem);
 
                 DirectiveLifeCycleMethodNames = dicDirectiveLifecylces;
             }
@@ -471,6 +472,6 @@ namespace GraphQL.AspNet
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.
         /// </summary>
-        public const string SPECIFICATION_URL = "https://spec.graphql.org/June2018/";
+        public const string SPECIFICATION_URL = "https://spec.graphql.org/October2021/";
     }
 }

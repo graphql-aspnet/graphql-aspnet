@@ -20,18 +20,12 @@ namespace GraphQL.AspNet.Internal.Interfaces
     public interface IGraphDirectiveTemplate : IGraphTypeTemplate
     {
         /// <summary>
-        /// Gets the locations where this directive has been defined for usage.
-        /// </summary>
-        /// <value>The locations.</value>
-        DirectiveLocation Locations { get; }
-
-        /// <summary>
         /// Attempts to find a declared graph method that can handle processing of the life cycle and location
         /// requested of the directive.
         /// </summary>
         /// <param name="lifeCycle">The life cycle.</param>
         /// <returns>IGraphMethod.</returns>
-        IGraphMethod FindMethod(DirectiveLifeCyclePhase lifeCycle);
+        IGraphMethod FindMethod(DirectiveLifeCycleEvent lifeCycle);
 
         /// <summary>
         /// Creates a resolver capable of completing a resolution of this directive.
@@ -40,7 +34,19 @@ namespace GraphQL.AspNet.Internal.Interfaces
         IGraphDirectiveResolver CreateResolver();
 
         /// <summary>
-        /// Gets the argument collection this directive contains.
+        /// Gets the locations where this directive has been defined for usage.
+        /// </summary>
+        /// <value>The locations.</value>
+        DirectiveLocation Locations { get; }
+
+        /// <summary>
+        /// Gets the specific life cycle event targeted by this directive.
+        /// </summary>
+        /// <value>The life cycle.</value>
+        DirectiveLifeCycleEvent LifeCycleEvents { get; }
+
+        /// <summary>
+        /// Gets the argument collection this directive exposes during the execution phase.
         /// </summary>
         /// <value>The arguments.</value>
         IEnumerable<IGraphFieldArgumentTemplate> Arguments { get; }

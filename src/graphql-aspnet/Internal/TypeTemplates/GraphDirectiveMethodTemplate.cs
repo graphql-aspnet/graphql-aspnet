@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
-            this.LifeCyclePhase = DirectiveLifeCyclePhase.Unknown;
+            this.LifeCycleEvent = DirectiveLifeCycleEvent.Unknown;
             _arguments = new List<GraphFieldArgumentTemplate>();
         }
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (Constants.ReservedNames.DirectiveLifeCycleMethodNames.ContainsKey(this.Method.Name))
             {
                 this.IsValidDirectiveMethodName = true;
-                this.LifeCyclePhase = Constants.ReservedNames.DirectiveLifeCycleMethodNames[this.Method.Name];
+                this.LifeCycleEvent = Constants.ReservedNames.DirectiveLifeCycleMethodNames[this.Method.Name];
             }
 
             // is the method asyncronous? if so ensure that a Task<T> is returned
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 true,
                 false);
 
-            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCyclePhase.ToString()));
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCycleEvent.ToString()));
 
             // parse all input parameters into the method
             foreach (var parameter in this.Method.GetParameters())
@@ -137,12 +137,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     "to the object graph.");
             }
 
-            if (this.LifeCyclePhase == DirectiveLifeCyclePhase.Unknown)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The directive method '{this.InternalFullName}' has does not have a valid lifecycle phase.");
-            }
-
             // is the method asyncronous? if so ensure that a Task<T> is returned
             // and not an empty task
             if (this.IsAsyncField)
@@ -175,6 +169,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"to be invoked properly.");
             }
 
+            if (this.LifeCycleEvent == DirectiveLifeCycleEvent.Unknown)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive method '{this.InternalFullName}' has does not have a valid lifecycle phase.");
+            }
+
             if (this.ExpectedReturnType == null)
             {
                 throw new GraphTypeDeclarationException(
@@ -185,9 +185,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var argument in _arguments)
                 argument.ValidateOrThrow();
 
-            if (this.LifeCyclePhase.IsTypeSystemPhase())
+            if (this.LifeCycleEvent.IsTypeSystemPhase())
             {
-                if (_arguments.Count != 1 || _arguments[1].ObjectType != typeof(ISchemaItem))
+                if (_arguments.Count != 1 || _arguments[0].ObjectType != typeof(ISchemaItem))
                 {
                     throw new GraphTypeDeclarationException(
                        $"The directive method '{this.InternalFullName}' must declare exactly one input parameter of type '{nameof(ISchemaItem)}'.");
@@ -196,10 +196,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// Gets the life cycle phase this method represents within its parent directive.
+        /// Gets the life cycle event this method represents within its parent directive.
         /// </summary>
-        /// <value>The life cycle phase.</value>
-        public DirectiveLifeCyclePhase LifeCyclePhase { get; private set; }
+        /// <value>The life cycle event.</value>
+        public DirectiveLifeCycleEvent LifeCycleEvent { get; private set; }
 
         /// <inheritdoc />
         public MetaGraphTypes[] TypeWrappers => null; // not used by directives

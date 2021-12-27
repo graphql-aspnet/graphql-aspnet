@@ -8,23 +8,26 @@
 // *************************************************************
 namespace GraphQL.AspNet.Directives
 {
+    using System.Collections.Generic;
+    using GraphQL.AspNet.Common.Extensions;
+
     /// <summary>
-    /// Helper methods for working with the <see cref="DirectiveLifeCyclePhase"/> enumeration.
+    /// Helper methods for working with the <see cref="DirectiveLifeCycleEvent"/> enumeration.
     /// </summary>
-    public static class DirectiveLifeCycleHelpers
+    public static class DirectiveLifeCycleEventExtensions
     {
         /// <summary>
-        /// Determines whether the specified lifecycle is considered part of the
+        /// Determines whether the specified lifecycle value is considered part of the
         /// "Execution" phase or not (vs. type system delcaration phase).
         /// </summary>
         /// <param name="lifecycle">The lifecycle to inspect.</param>
         /// <returns><c>true</c> if the specified lifecycle targets the execution phase; otherwise, <c>false</c>.</returns>
-        public static bool IsExecutionPhase(this DirectiveLifeCyclePhase lifecycle)
+        public static bool IsExecutionPhase(this DirectiveLifeCycleEvent lifecycle)
         {
             switch (lifecycle)
             {
-                case DirectiveLifeCyclePhase.BeforeResolution:
-                case DirectiveLifeCyclePhase.AfterResolution:
+                case DirectiveLifeCycleEvent.BeforeResolution:
+                case DirectiveLifeCycleEvent.AfterResolution:
                     return true;
 
                 default:
@@ -33,16 +36,16 @@ namespace GraphQL.AspNet.Directives
         }
 
         /// <summary>
-        /// Determines whether the specified lifecycle is considered part of the
+        /// Determines whether the specified lifecycle event is considered part of the
         /// "type system generation" phase or not (vs. field execution phase).
         /// </summary>
         /// <param name="lifecycle">The lifecycle value to inspect.</param>
         /// <returns><c>true</c> if the specified lifecycle targets the type system generation phase; otherwise, <c>false</c>.</returns>
-        public static bool IsTypeSystemPhase(this DirectiveLifeCyclePhase lifecycle)
+        public static bool IsTypeSystemPhase(this DirectiveLifeCycleEvent lifecycle)
         {
             switch (lifecycle)
             {
-                case DirectiveLifeCyclePhase.AlterTypeSystem:
+                case DirectiveLifeCycleEvent.AlterTypeSystem:
                     return true;
 
                 default:

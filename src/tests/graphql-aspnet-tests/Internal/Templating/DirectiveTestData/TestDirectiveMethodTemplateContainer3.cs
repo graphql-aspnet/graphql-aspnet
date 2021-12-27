@@ -6,19 +6,20 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 {
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
-    [DirectiveLocations(TypeSystemDirectiveLocation.ENUM)]
-    public class SimpleTypeSystemDirective : GraphDirective
+    [DirectiveLocations(ExecutableDirectiveLocation.AllFieldSelections)]
+    public class TestDirectiveMethodTemplateContainer3 : GraphDirective
     {
-        public IGraphActionResult AlterTypeSystem(ISchemaItem item)
+        public IGraphActionResult AlterTypeSystem(int wrongParameter)
         {
-            return this.Ok();
+            return null;
         }
     }
 }
