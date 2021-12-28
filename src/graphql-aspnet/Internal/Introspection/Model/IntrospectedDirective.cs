@@ -39,7 +39,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public override void Initialize(IntrospectedSchema schema)
         {
             var list = new List<IntrospectedInputValueType>();
-            foreach (var arg in this.GraphType.Arguments)
+            var directiveArguments = this.GraphType.Arguments.Where(x => !x.ArgumentModifiers.IsInternalParameter());
+            foreach (var arg in directiveArguments)
             {
                 var introspectedType = schema.FindIntrospectedType(arg.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, arg.TypeExpression);

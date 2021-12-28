@@ -443,7 +443,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public FieldResolutionMode Mode { get; protected set; }
 
         /// <inheritdoc />
-        public abstract IReadOnlyList<IGraphFieldArgumentTemplate> Arguments { get; }
+        public abstract IReadOnlyList<IGraphInputArgumentTemplate> Arguments { get; }
 
         /// <summary>
         /// Gets the subset of  <see cref="Arguments"/> defined to be "input parameters" to the field.
@@ -452,7 +452,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// structure.
         /// </summary>
         /// <value>The input arguments.</value>
-        public virtual IReadOnlyList<IGraphFieldArgumentTemplate> InputArguments => this.Arguments;
+        public virtual IReadOnlyList<IGraphInputArgumentTemplate> InputArguments => this.Arguments;
 
         /// <inheritdoc />
         public virtual FieldSecurityGroup SecurityPolicies => _securityPolicies;

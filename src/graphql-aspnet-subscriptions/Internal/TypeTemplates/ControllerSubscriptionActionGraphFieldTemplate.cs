@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="paramInfo">The parameter information.</param>
         /// <returns>IGraphFieldArgumentTemplate.</returns>
-        protected override GraphFieldArgumentTemplate CreateGraphFieldArgument(ParameterInfo paramInfo)
+        protected override GraphInputArgumentTemplate CreateGraphFieldArgument(ParameterInfo paramInfo)
         {
             if (this.Route.RootCollection == Execution.GraphCollection.Subscription)
             {

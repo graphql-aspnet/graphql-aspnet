@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -31,7 +30,7 @@ namespace GraphQL.AspNet.Controllers
     /// </summary>
     /// <typeparam name="TRequest">The type of the request this controller item is expected to process.</typeparam>
     public abstract class GraphControllerBase<TRequest>
-        where TRequest : class, IInvocationRequest
+        where TRequest : class, IDataRequest
     {
         private IGraphMethod _action;
         private IGraphEventLogger _logger;
@@ -42,17 +41,17 @@ namespace GraphQL.AspNet.Controllers
         /// Invoke the specified action method as an asynchronous operation.
         /// </summary>
         /// <param name="actionToInvoke">The action to invoke.</param>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The invocation context to process.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
-        internal async Task<object> InvokeActionAsync(
+        internal async virtual Task<object> InvokeActionAsync(
             IGraphMethod actionToInvoke,
             BaseResolutionContext<TRequest> context)
         {
             // deconstruct the context for processing
             _action = actionToInvoke;
 
-            var fieldRequest = context.Request;
+            var fieldRequest = context?.Request;
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
             _resolutionContext = context;
             _logger = context?.Logger;
@@ -197,12 +196,14 @@ namespace GraphQL.AspNet.Controllers
         /// Gets the resolved <see cref="ClaimsPrincipal"/> that was passed recieved on the request.
         /// </summary>
         /// <value>The user.</value>
+        [GraphSkip]
         protected ClaimsPrincipal User => _resolutionContext.User;
 
         /// <summary>
         /// Gets the scoped <see cref="IServiceProvider"/> supplied to the original controller action that is being invoked.
         /// </summary>
         /// <value>The request services.</value>
+        [GraphSkip]
         protected IServiceProvider RequestServices => _resolutionContext.ServiceProvider;
 
         /// <summary>
@@ -210,6 +211,7 @@ namespace GraphQL.AspNet.Controllers
         /// if this controller was not invoked from an ASP.NET pipeline.
         /// </summary>
         /// <value>The HTTP context.</value>
+        [GraphSkip]
         public HttpContext HttpContext { get; private set; }
     }
 }

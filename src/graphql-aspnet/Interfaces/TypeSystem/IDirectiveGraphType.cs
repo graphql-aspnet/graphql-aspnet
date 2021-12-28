@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -28,5 +29,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The locations.</value>
         DirectiveLocation Locations { get; }
+
+        /// <summary>
+        /// Gets the invocation phases this directive is allowed to
+        /// execute during.
+        /// </summary>
+        /// <value>The invocation phases.</value>
+        DirectiveInvocationPhase InvocationPhases { get; }
     }
 }

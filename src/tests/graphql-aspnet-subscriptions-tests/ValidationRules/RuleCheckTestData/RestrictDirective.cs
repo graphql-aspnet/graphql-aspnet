@@ -15,10 +15,10 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphType("Restrict")]
-    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class RestrictDirective : GraphDirective
     {
-        public IGraphActionResult BeforeFieldResolution(int someValue)
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
+        public IGraphActionResult Execute(int someValue)
         {
             return null;
         }

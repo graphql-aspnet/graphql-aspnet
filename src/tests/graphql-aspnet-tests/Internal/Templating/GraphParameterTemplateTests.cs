@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     [TestFixture]
     public class GraphParameterTemplateTests
     {
-        private GraphFieldArgumentTemplate ExtractParameterTemplate(string paramName, out ParameterInfo paramInfo)
+        private GraphInputArgumentTemplate ExtractParameterTemplate(string paramName, out ParameterInfo paramInfo)
         {
             paramInfo = typeof(ParameterTestClass)
                 .GetMethod(nameof(ParameterTestClass.TestMethod))
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 nameof(ParameterTestClass.TestMethod)));
             mockMethod.Setup(x => x.Route).Returns(route);
 
-            var argTemplate = new GraphFieldArgumentTemplate(mockMethod.Object, paramInfo);
+            var argTemplate = new GraphInputArgumentTemplate(mockMethod.Object, paramInfo);
             argTemplate.Parse();
             argTemplate.ValidateOrThrow();
 

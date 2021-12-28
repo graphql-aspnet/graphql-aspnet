@@ -52,20 +52,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
                 this.AddFieldAuthorizationMiddleware();
             }
 
-            this.AddResolveDirectivesMiddleware();
             this.AddResolveFieldMiddleware();
             this.AddChildFieldProcessingMiddleware();
 
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the middleware component to invoke/resolve each directive on a field request.
-        /// </summary>
-        /// <returns>FieldExecutionPipelineHelper&lt;TSchema&gt;.</returns>
-        public FieldExecutionPipelineHelper<TSchema> AddResolveDirectivesMiddleware()
-        {
-            _pipelineBuilder.AddMiddleware<InvokeDirectiveResolversMiddleware>();
             return this;
         }
 

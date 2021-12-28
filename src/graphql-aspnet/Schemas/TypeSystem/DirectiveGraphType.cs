@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
@@ -30,11 +31,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the directive as it appears in the schema.</param>
         /// <param name="locations">The locations where this directive is valid.</param>
+        /// <param name="phases">The phases under which this directive will be invoked.</param>
         /// <param name="directiveType">The concrete type of the directive.</param>
         /// <param name="resolver">The resolver used to process this instance.</param>
         public DirectiveGraphType(
             string name,
             DirectiveLocation locations,
+            DirectiveInvocationPhase phases,
             Type directiveType,
             IGraphDirectiveResolver resolver = null)
         {
@@ -43,69 +46,41 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Locations = locations;
             this.Resolver = resolver;
             this.Publish = true;
+            this.InvocationPhases = phases;
             _directiveType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool ValidateObject(object item)
         {
             return item == null || item.GetType() == _directiveType;
         }
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        /// Gets or sets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
+        /// <inheritdoc />
         public string Description { get; set; }
 
-        /// <summary>
-        /// Gets the value indicating what type of graph type this instance is in the type system. (object, scalar etc.)
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public TypeKind Kind => TypeKind.DIRECTIVE;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphType"/> is published on an introspection request.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool Publish { get; set; }
 
-        /// <summary>
-        /// Gets a collection of arguments this instance can accept on a query.
-        /// </summary>
-        /// <value>A collection of arguments assigned to this item.</value>
+        /// <inheritdoc />
         public IGraphFieldArgumentCollection Arguments { get; }
 
-        /// <summary>
-        /// Gets or sets the resolver asssigned to this directive type to process any invocations.
-        /// </summary>
-        /// <value>The resolver.</value>
+        /// <inheritdoc />
         public IGraphDirectiveResolver Resolver { get; set; }
 
-        /// <summary>
-        /// Gets the locations this directive can be defined.
-        /// </summary>
-        /// <value>The locations.</value>
+        /// <inheritdoc />
         public DirectiveLocation Locations { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
-        /// a user defined graph structure. When false, this graph types points to a concrete type
-        /// defined by a developer.
-        /// </summary>
-        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public virtual bool IsVirtual => false;
+
+        /// <inheritdoc />
+        public DirectiveInvocationPhase InvocationPhases { get; }
     }
 }

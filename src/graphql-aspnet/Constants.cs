@@ -181,21 +181,9 @@ namespace GraphQL.AspNet
             /// <value>A read only hashset of all the known reserved names.</value>
             public static IImmutableSet<string> IntrospectableRouteNames { get; }
 
-            /// <summary>
-            /// Gets the set of names of the various directive methods that
-            /// can be declared in any directive.
-            /// </summary>
-            /// <value>The directive method names.</value>
-            public static IImmutableList<string> DirectiveMethodNames { get; }
-
             // public directive names
             public const string SKIP_DIRECTIVE = "skip";
             public const string INCLUDE_DIRECTIVE = "include";
-
-            // directive lifecycle method names
-            public const string DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME = "BeforeFieldResolution";
-            public const string DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME = "AfterFieldResolution";
-            public const string DIRECTIVE_ALTER_TYPE_SYSTEM_METHOD_NAME = "AlterTypeSystem";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
@@ -282,11 +270,6 @@ namespace GraphQL.AspNet
                             SCHEMA_FIELD,
                             TYPE_FIELD,
                             TYPENAME_FIELD);
-
-                // setup the allowed directive lifecycle names
-                DirectiveMethodNames = DirectiveLifeCycleEvents.Instance
-                    .Select(x => x.MethodName)
-                    .ToImmutableList();
             }
         }
 

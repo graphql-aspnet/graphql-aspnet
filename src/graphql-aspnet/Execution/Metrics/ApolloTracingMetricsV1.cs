@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Execution.Metrics
                 }
                 else
                 {
-                    parentType = _schema.KnownTypes.FindGraphType(timeEntry.Key.Request?.DataSource?.Value);
+                    parentType = _schema.KnownTypes.FindGraphType(timeEntry.Key.Request?.Data?.Value);
                 }
 
                 if (parentType != null)

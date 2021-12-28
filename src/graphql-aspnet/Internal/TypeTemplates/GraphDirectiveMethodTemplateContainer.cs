@@ -9,16 +9,15 @@
 
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A collection of known methods that can be invoked by the run time
@@ -27,9 +26,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     public class GraphDirectiveMethodTemplateContainer : IEnumerable<GraphDirectiveMethodTemplate>
     {
         private readonly IGraphDirectiveTemplate _parent;
-        private readonly Dictionary<DirectiveLifeCycleEvent, GraphDirectiveMethodTemplate> _templateMap;
+        private readonly Dictionary<DirectiveLocation, GraphDirectiveMethodTemplate> _templateMap;
 
-        private HashSet<DirectiveLifeCycleEvent> _duplciateLifecycleDeclarations;
+        private HashSet<DirectiveLocation> _duplicateDirectiveLocations;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveMethodTemplateContainer" /> class.
@@ -38,7 +37,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphDirectiveMethodTemplateContainer(IGraphDirectiveTemplate parent)
         {
             _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
-            _templateMap = new Dictionary<DirectiveLifeCycleEvent, GraphDirectiveMethodTemplate>();
+            _templateMap = new Dictionary<DirectiveLocation, GraphDirectiveMethodTemplate>();
         }
 
         /// <summary>
@@ -47,10 +46,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            return _templateMap.Values
-                .Where(x => x.LifeCycleEvent.Phase == DirectiveLifeCyclePhase.Execution)
-                .SelectMany(x => x.Arguments.SelectMany(arg => arg.RetrieveRequiredTypes()))
-                .Distinct();
+            var list = new List<DependentType>();
+            foreach (var kvp in _templateMap)
+            {
+                if (kvp.Key.IsExecutionLocation())
+                    list.AddRange(kvp.Value.Arguments.SelectMany(x => x.RetrieveRequiredTypes()));
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -62,33 +65,42 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             Validation.ThrowIfNull(methodTemplate, nameof(methodTemplate));
 
-            if (_templateMap.ContainsKey(methodTemplate.LifeCycleEvent.Event))
+            var declaredLocations = methodTemplate.Locations.GetIndividualFlags<DirectiveLocation>();
+            foreach (var location in declaredLocations)
             {
-                _duplciateLifecycleDeclarations = _duplciateLifecycleDeclarations ?? new HashSet<DirectiveLifeCycleEvent>();
-                _duplciateLifecycleDeclarations.Add(methodTemplate.LifeCycleEvent.Event);
-            }
-            else
-            {
-                _templateMap.Add(methodTemplate.LifeCycleEvent.Event, methodTemplate);
+                if (_templateMap.ContainsKey(location))
+                {
+                    _duplicateDirectiveLocations = _duplicateDirectiveLocations ?? new HashSet<DirectiveLocation>();
+                    _duplicateDirectiveLocations.Add(location);
+                }
+                else
+                {
+                    _templateMap.Add(location, methodTemplate);
+                }
+
+                this.Locations = this.Locations | location;
             }
         }
 
         /// <summary>
         /// Retrieves the method template mapped to the given lifecycle and location. Returns null if nothing is registered.
         /// </summary>
-        /// <param name="lifeCycle">The life cycle hook.</param>
+        /// <param name="location">A valid graphql directive location.</param>
         /// <returns>IGraphMethod.</returns>
-        public IGraphMethod FindMethod(DirectiveLifeCycleEvent lifeCycle)
+        public IGraphMethod FindMethod(DirectiveLocation location)
         {
-            return _templateMap.ContainsKey(lifeCycle) ? _templateMap[lifeCycle] : null;
+            if (_templateMap.ContainsKey(location))
+                return _templateMap[location];
+
+            return null;
         }
 
         /// <summary>
         /// Deterimines if the provided <see cref="GraphDirectiveMethodTemplate" /> has an identical signature
         /// to the method this instance represents.
         /// </summary>
-        /// <param name="left">One method to check.</param>
-        /// <param name="right">A method to check against.</param>
+        /// <param name="left">A method to check.</param>
+        /// <param name="right">A method to compare against.</param>
         /// <returns><c>true</c> if the signatures are identical, <c>false</c> otherwise.</returns>
         private bool DoMethodSignaturesMatch(GraphDirectiveMethodTemplate left, GraphDirectiveMethodTemplate right)
         {
@@ -117,51 +129,42 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         public void ValidateOrThrow()
         {
-            if (_duplciateLifecycleDeclarations != null && _duplciateLifecycleDeclarations.Count > 0)
+            if (_duplicateDirectiveLocations != null && _duplicateDirectiveLocations.Count > 0)
             {
-                var duplicatedDecs = string.Join(",", _duplciateLifecycleDeclarations.Select(x => x.ToString()));
+                var duplicatedDecs = string.Join(",", _duplicateDirectiveLocations.Select(x => $"'{x.ToString()}'"));
                 throw new GraphTypeDeclarationException(
-                    $"The directive '{_parent.InternalFullName}' attempted to register more than one method for a " +
-                    $"single lifecycle phase. Each directive can only define, at most, one method per {nameof(DirectiveLifeCycleEvent)}. " +
-                    $"Duplicated Lifecycle methods: {duplicatedDecs}");
+                    $"The directive '{_parent.InternalFullName}' attempted to register more than one method to handle " +
+                    $"a single {nameof(DirectiveLocation)}. Each directive can only define, at most, one method per {nameof(DirectiveLocation)}. " +
+                    $"Duplicated Locations: {duplicatedDecs}");
             }
 
             if (this.Count == 0)
             {
-                throw new GraphTypeDeclarationException(
-                    $"The directive '{_parent.InternalFullName}' declared no actionable " +
-                    $"methods to invoke. Either mark this directive with '{nameof(GraphSkipAttribute)}' " +
-                    "or declare at least one valid lifecycle method.");
+                // TODO: When warnings are added throw a warning here on a misconfigured directive
             }
 
-            // ensure that all signatures match each other, the specification declares that a directive is exactly one "thing"
+            // ensure that all execution signatures match each other.
+            // The specification declares that a directive is exactly one "thing"
             // with an optional set of input arguments, invocation splitting via convient overloads should not violate this.
-            // spec: https://graphql.github.io/graphql-spec/October2021/#sec-Type-System.Directives
-            foreach (var method in this)
+            // Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Type-System.Directives
+            GraphDirectiveMethodTemplate baseExecutionMethod = null;
+            foreach (var kvp in _templateMap)
             {
-                method.ValidateOrThrow();
+                kvp.Value.ValidateOrThrow();
 
-                // if this method has decalred syblings, ensure all method signatures
-                // match
-                var declaredSyblings = new List<GraphDirectiveMethodTemplate>();
-                foreach (var syblingEvent in method.LifeCycleEvent.SyblingEvents)
+                if (baseExecutionMethod == null)
                 {
-                    if (_templateMap.ContainsKey(syblingEvent.Event))
-                    {
-                        declaredSyblings.Add(_templateMap[syblingEvent.Event]);
-                    }
+                    baseExecutionMethod = kvp.Value;
+                    continue;
                 }
 
-                foreach (var sybling in declaredSyblings)
+                if (!this.DoMethodSignaturesMatch(baseExecutionMethod, kvp.Value))
                 {
-                    if (!this.DoMethodSignaturesMatch(method, sybling))
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"The method '{method.InternalFullName}' declares a signature of '{method.MethodSignature}' but its declared " +
-                            $"sybling '{sybling.InternalFullName}' declares a signature of '{method.MethodSignature}. " +
-                            $"When declared together, they MUST have identical method signatures, including parameter names (not just types), to maintain consistancy across the " +
-                            $"object graph.");
-                    }
+                    throw new GraphTypeDeclarationException(
+                        $"The method '{kvp.Value.InternalFullName}' (Target Location: {kvp.Value}) declares a signature of '{kvp.Value.MethodSignature}'. " +
+                        $"However, which is different than the method '{baseExecutionMethod.InternalName}'. " +
+                        $"All location targeting methods on a directive must have the same method signature " +
+                        $"including parameter types, names and declaration order.");
                 }
             }
         }
@@ -173,19 +176,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public int Count => _templateMap.Count;
 
         /// <summary>
-        /// Gets the argument collection this directive requires for use as an execution directive.
+        /// Gets the argument collection this directive requires for invocation.
         /// </summary>
         /// <value>The arguments.</value>
-        public IEnumerable<IGraphFieldArgumentTemplate> ExecutionArguments
+        public IEnumerable<IGraphInputArgumentTemplate> Arguments
         {
             get
             {
-                return _templateMap.Values
-                    .FirstOrDefault(x => x.LifeCycleEvent.Phase == DirectiveLifeCyclePhase.Execution)?
-                    .Arguments
-                    ?? Enumerable.Empty<IGraphFieldArgumentTemplate>();
+                var args = _templateMap.Values.FirstOrDefault()?.Arguments;
+                return args ?? Enumerable.Empty<IGraphInputArgumentTemplate>();
             }
         }
+
+        /// <summary>
+        /// Gets the locations declared amongst the methods in this collection.
+        /// </summary>
+        /// <value>The locations.</value>
+        public DirectiveLocation Locations { get; private set; }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

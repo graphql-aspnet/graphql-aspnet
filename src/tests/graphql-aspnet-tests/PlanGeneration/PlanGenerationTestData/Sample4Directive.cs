@@ -14,10 +14,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.QUERY)]
     public class Sample4Directive : GraphDirective
     {
-        public IGraphActionResult BeforeFieldResolution()
+        [DirectiveLocations(DirectiveLocation.QUERY)]
+        public IGraphActionResult Execute()
         {
             return null;
         }

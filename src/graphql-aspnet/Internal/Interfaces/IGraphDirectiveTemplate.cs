@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Attempts to find a declared graph method that can handle processing of the life cycle and location
         /// requested of the directive.
         /// </summary>
-        /// <param name="lifeCycle">The life cycle.</param>
+        /// <param name="location">The location.</param>
         /// <returns>IGraphMethod.</returns>
-        IGraphMethod FindMethod(DirectiveLifeCycleEvent lifeCycle);
+        IGraphMethod FindMethod(DirectiveLocation location);
 
         /// <summary>
         /// Creates a resolver capable of completing a resolution of this directive.
@@ -43,6 +43,13 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the argument collection this directive exposes during the execution phase.
         /// </summary>
         /// <value>The arguments.</value>
-        IEnumerable<IGraphFieldArgumentTemplate> Arguments { get; }
+        IEnumerable<IGraphInputArgumentTemplate> Arguments { get; }
+
+        /// <summary>
+        /// Gets the invocation phases this directive is allowed to
+        /// execute during.
+        /// </summary>
+        /// <value>The invocation phases.</value>
+        DirectiveInvocationPhase InvocationPhases { get; }
     }
 }

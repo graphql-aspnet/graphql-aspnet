@@ -117,8 +117,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             path = path ?? SourcePath.None;
             var item = new GraphDataItem(_mockInvocationContext.Object, sourceData, path);
-            var dataSource = new GraphFieldDataSource(sourceData, path, item);
-            _mockRequest.Setup(x => x.DataSource).Returns(dataSource);
+            var dataSource = new GraphDataContainer(sourceData, path, item);
+            _mockRequest.Setup(x => x.Data).Returns(dataSource);
             return this;
         }
 
@@ -214,7 +214,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 .InvocationContext
                 .Arguments
                 .Merge(context.VariableData)
-                .WithSourceData(context.Request.DataSource.Value);
+                .WithSourceData(context.Request.Data.Value);
 
             return new FieldResolutionContext(
                 this.CreateFakeParentMiddlewareContext(),

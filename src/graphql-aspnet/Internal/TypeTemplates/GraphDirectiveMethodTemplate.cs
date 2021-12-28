@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// </summary>
     public class GraphDirectiveMethodTemplate : IGraphFieldBaseTemplate, IGraphMethod
     {
-        private readonly List<GraphFieldArgumentTemplate> _arguments;
+        private readonly List<GraphInputArgumentTemplate> _arguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveMethodTemplate"/> class.
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
-            _arguments = new List<GraphFieldArgumentTemplate>();
+            _arguments = new List<GraphInputArgumentTemplate>();
         }
 
         /// <summary>
@@ -60,8 +60,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.Method.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
 
-            this.LifeCycleEvent = DirectiveLifeCycleEvents.Instance[this.Method.Name];
-            this.LifeCycleEvent = this.LifeCycleEvent ?? DirectiveLifeCycleEventItem.None;
+            // deteremine all the directive locations where this method should be invoked
+            var locations = DirectiveLocation.NONE;
+            foreach (var attrib in this.Method.AttributesOfType<DirectiveLocationsAttribute>())
+            {
+                locations = locations | attrib.Locations;
+            }
+
+            this.Locations = locations;
 
             // is the method asyncronous? if so ensure that a Task<T> is returned
             // and not an empty task
@@ -79,12 +85,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 true,
                 false);
 
-            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCycleEvent.Event.ToString()));
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.Name));
 
             // parse all input parameters into the method
             foreach (var parameter in this.Method.GetParameters())
             {
-                var argTemplate = new GraphFieldArgumentTemplate(this, parameter);
+                var argTemplate = new GraphInputArgumentTemplate(this, parameter);
                 argTemplate.Parse();
                 _arguments.Add(argTemplate);
             }
@@ -145,17 +151,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 }
             }
 
+            if (this.ExpectedReturnType != typeof(IGraphActionResult))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive method '{this.InternalFullName}' does not return a {nameof(IGraphActionResult)}. " +
+                    $"All directive methods must return a {nameof(IGraphActionResult)} or {typeof(Task<IGraphActionResult>).FriendlyName()}");
+            }
+
             foreach (var argument in _arguments)
                 argument.ValidateOrThrow();
-
-            this.LifeCycleEvent.ValidateDirectiveMethodTemplateOrThrow(this);
         }
 
         /// <summary>
-        /// Gets the life cycle event this method represents within its parent directive.
+        /// Gets the bitwise flags of locations that this method is defined
+        /// to handle.
         /// </summary>
-        /// <value>The life cycle event.</value>
-        internal DirectiveLifeCycleEventItem LifeCycleEvent { get; private set; }
+        /// <value>The locations.</value>
+        public DirectiveLocation Locations { get; private set; }
 
         /// <inheritdoc />
         public MetaGraphTypes[] TypeWrappers => null; // not used by directives
@@ -185,7 +197,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphFieldPath Route { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyList<IGraphFieldArgumentTemplate> Arguments => _arguments;
+        public IReadOnlyList<IGraphInputArgumentTemplate> Arguments => _arguments;
 
         /// <inheritdoc />
         public Type ExpectedReturnType { get; protected set; }

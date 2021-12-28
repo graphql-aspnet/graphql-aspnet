@@ -14,10 +14,10 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphType("Allow")]
-    [DirectiveLocations(DirectiveLocation.FRAGMENT_SPREAD)]
     public class AllowDirective : GraphDirective
     {
-        public IGraphActionResult BeforeFieldResolution()
+        [DirectiveLocations(DirectiveLocation.FRAGMENT_SPREAD)]
+        public IGraphActionResult Execute()
         {
             return null;
         }

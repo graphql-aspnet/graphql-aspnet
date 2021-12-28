@@ -16,12 +16,12 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class CallTestDirective : GraphDirective
     {
         public static int TotalCalls { get; set; }
 
-        public Task<IGraphActionResult> BeforeFieldResolution(int arg)
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
+        public Task<IGraphActionResult> Execute(int arg)
         {
             TotalCalls += 1;
 

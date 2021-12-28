@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
         public async Task Resolve(DirectiveResolutionContext context, CancellationToken cancelToken = default)
         {
-            var action = _directiveTemplate.FindMethod(context.Request.LifeCycle);
+            var action = _directiveTemplate.FindMethod(context.Request.DirectiveLocation);
 
             // if no action is found skip processing of this directive
             if (action == null)

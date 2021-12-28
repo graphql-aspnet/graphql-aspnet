@@ -15,10 +15,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.SCALAR)]
     public class TypeSystemDirectiveWithMethod : GraphDirective
     {
-        // no "AlterTypeSystem" method defined
+        [DirectiveLocations(DirectiveLocation.SCALAR)]
         public Task<IGraphActionResult> AlterTypeSystem(ISchemaItem item)
         {
             return null;

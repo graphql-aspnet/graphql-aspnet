@@ -15,10 +15,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.NONE)]
     public class NoLocationsDirective : GraphDirective
     {
-        public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)
+        public Task<IGraphActionResult> Execute(int arg1, string arg2)
         {
             return null;
         }

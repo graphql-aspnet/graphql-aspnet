@@ -16,25 +16,29 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
+    [DirectiveInvocation(DirectiveInvocationPhase.BeforeFieldResolution | DirectiveInvocationPhase.AfterFieldResolution)]
     public class MetaDataShareDirective : GraphDirective
     {
         public static bool FoundInAfterCompletion;
 
         private static object _objItem;
 
-        public Task<IGraphActionResult> BeforeFieldResolution(int arg)
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
+        public Task<IGraphActionResult> ExecuteFromField(int arg)
         {
-            _objItem = new object();
-            this.Request.Items.TryAdd($"testKey_{arg}", _objItem);
-            return this.Ok().AsCompletedTask();
-        }
-
-        public Task<IGraphActionResult> AfterFieldResolution(int arg)
-        {
-            if (this.Request.Items.ContainsKey($"testKey_{arg}"))
+            if (this.DirectivePhase == DirectiveInvocationPhase.BeforeFieldResolution)
             {
-                FoundInAfterCompletion = this.Request.Items[$"testKey_{arg}"] == _objItem && _objItem != null;
+                _objItem = new object();
+                this.Request.Items.TryAdd($"testKey_{arg}", _objItem);
+                return this.Ok().AsCompletedTask();
+            }
+
+            if (this.DirectivePhase == DirectiveInvocationPhase.AfterFieldResolution)
+            {
+                if (this.Request.Items.ContainsKey($"testKey_{arg}"))
+                {
+                    FoundInAfterCompletion = this.Request.Items[$"testKey_{arg}"] == _objItem && _objItem != null;
+                }
             }
 
             return this.Ok().AsCompletedTask();

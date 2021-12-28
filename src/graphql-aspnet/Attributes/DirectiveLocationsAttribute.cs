@@ -10,14 +10,13 @@
 namespace GraphQL.AspNet.Attributes
 {
     using System;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// For a given directive, defines where in a query document the directive is allowed to appear.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class DirectiveLocationsAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class DirectiveLocationsAttribute : BaseGraphAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.

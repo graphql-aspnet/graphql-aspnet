@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// <summary>
     /// An interface describing a template that can accurately represent an input argument in the object graph.
     /// </summary>
-    public interface IGraphFieldArgumentTemplate : IGraphItemTemplate, IGraphTypeExpressionDeclaration
+    public interface IGraphInputArgumentTemplate : IGraphItemTemplate, IGraphTypeExpressionDeclaration
     {
         /// <summary>
         /// Retrieves the concrete types that this instance may return in response to a field request.

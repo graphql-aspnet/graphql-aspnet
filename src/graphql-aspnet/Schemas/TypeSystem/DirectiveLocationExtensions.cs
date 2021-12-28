@@ -71,13 +71,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <summary>
-        /// Determines the directive location corrisponding with this syntax node (Execution Locations).
+        /// Determines the directive location corrisponding with this syntax node in the AST representing
+        /// a query document. (Execution Locations).
         /// </summary>
         /// <param name="node">The node to inspect.</param>
         /// <returns>DirectiveLocation.</returns>
         public static DirectiveLocation AsDirectiveLocation(this SyntaxNode node)
         {
-            // only supporting "execuable directives" at this time.
+            // all syntax nodes (those parsed on a document) will be
+            // "execution phase" locations.
             switch (node)
             {
                 case NamedFragmentNode _:
@@ -113,6 +115,40 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             }
 
             return DirectiveLocation.NONE;
+        }
+
+        /// <summary>
+        /// Determines whether the provided location is one declared duing the
+        /// execution of a query document.
+        /// </summary>
+        /// <param name="location">The location.</param>
+        /// <returns><c>true</c> if the location specifies an execution location; otherwise, <c>false</c>.</returns>
+        public static bool IsExecutionLocation(this DirectiveLocation location)
+        {
+            switch (location)
+            {
+                case DirectiveLocation.QUERY:
+                case DirectiveLocation.MUTATION:
+                case DirectiveLocation.SUBSCRIPTION:
+                case DirectiveLocation.FIELD:
+                case DirectiveLocation.FRAGMENT_DEFINITION:
+                case DirectiveLocation.FRAGMENT_SPREAD:
+                case DirectiveLocation.INLINE_FRAGMENT:
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether the provided location is one declared during
+        /// the creation of a <see cref="ISchema"/> and its associated types.
+        /// </summary>
+        /// <param name="location">The location.</param>
+        /// <returns><c>true</c> if the location specifies an type system location; otherwise, <c>false</c>.</returns>
+        public static bool IsTypeSystemLocation(this DirectiveLocation location)
+        {
+            return !location.IsExecutionLocation();
         }
     }
 }

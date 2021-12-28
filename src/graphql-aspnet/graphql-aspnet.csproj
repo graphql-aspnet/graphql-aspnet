@@ -25,6 +25,10 @@
     <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Internal\TypeTemplates\DirectiveLifeCycleEventItemExtensions.cs" />
+  </ItemGroup>
+
 <ItemGroup>
   <None Include="..\icon.png">
     <Pack>True</Pack>

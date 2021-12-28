@@ -21,14 +21,15 @@ namespace GraphQL.AspNet.Tests.Execution
     /// <para>Spec: https://graphql.github.io/graphql-spec/June2018/#sec--include .</para>
     /// </summary>
     [GraphType("FakeDirective")]
-    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class TestDirective : GraphDirective
     {
-        public IGraphActionResult BeforeFieldResolution([FromGraphQL("if")] bool ifArgument)
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
+        public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
         {
             return ifArgument ? this.Ok() : this.Cancel();
         }
 
+        [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION)]
         public ISchemaItem AlterSchemaItem(ISchemaItem schemaItem)
         {
             return schemaItem;

@@ -15,15 +15,16 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class MismatchedSignaturesDirective : GraphDirective
     {
-        public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD)]
+        public Task<IGraphActionResult> Execute(int arg1, string arg2)
         {
             return null;
         }
 
-        public Task<IGraphActionResult> BeforeFieldResolution(long arg1)
+        [DirectiveLocations(DirectiveLocation.INLINE_FRAGMENT)]
+        public Task<IGraphActionResult> Execute(long arg1)
         {
             return null;
         }

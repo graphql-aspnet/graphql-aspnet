@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// A maker capable of turning a <see cref="IGraphFieldArgumentTemplate"/> into a usable <see cref="IGraphFieldArgument"/> on a graph field.
+    /// A maker capable of turning a <see cref="IGraphInputArgumentTemplate"/> into a usable <see cref="IGraphFieldArgument"/> on a graph field.
     /// </summary>
     public class GraphArgumentMaker
     {
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// </summary>
         /// <param name="template">The template to generate a field from.</param>
         /// <returns>IGraphField.</returns>
-        public GraphArgumentCreationResult CreateArgument(IGraphFieldArgumentTemplate template)
+        public GraphArgumentCreationResult CreateArgument(IGraphInputArgumentTemplate template)
         {
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
 

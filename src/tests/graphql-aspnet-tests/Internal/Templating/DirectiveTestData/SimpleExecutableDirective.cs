@@ -17,10 +17,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     [Description("Simple Description")]
-    [DirectiveLocations(DirectiveLocation.FIELD)]
     public class SimpleExecutableDirective : GraphDirective
     {
-        public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)
+        [DirectiveLocations(DirectiveLocation.FIELD)]
+        public Task<IGraphActionResult> Execute(object source, int arg1, string arg2)
         {
             return Task.FromResult(null as IGraphActionResult);
         }

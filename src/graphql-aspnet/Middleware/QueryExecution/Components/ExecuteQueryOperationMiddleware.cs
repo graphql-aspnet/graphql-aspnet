@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                     var topLevelDataItem = new GraphDataItem(sortedContext.Context, dataSourceValue, path);
 
-                    var sourceData = new GraphFieldDataSource(dataSourceValue, path, topLevelDataItem);
+                    var sourceData = new GraphDataContainer(dataSourceValue, path, topLevelDataItem);
 
                     var fieldRequest = new GraphFieldRequest(
                         context.OperationRequest,

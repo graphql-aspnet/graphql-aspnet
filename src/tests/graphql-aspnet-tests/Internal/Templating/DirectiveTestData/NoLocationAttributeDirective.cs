@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 
     public class NoLocationAttributeDirective : GraphDirective
     {
-        public Task<IGraphActionResult> BeforeFieldResolution(int arg1, string arg2)
+        public Task<IGraphActionResult> Execute(int arg1, string arg2)
         {
             return null;
         }

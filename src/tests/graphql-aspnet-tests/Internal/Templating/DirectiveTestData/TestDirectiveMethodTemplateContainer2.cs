@@ -15,26 +15,21 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class TestDirectiveMethodTemplateContainer2 : GraphDirective
     {
-        [GraphSkip]
-        public Task<IGraphActionResult> BeforeFieldResolution()
-        {
-            return Task.FromResult(null as IGraphActionResult);
-        }
-
         public Task<IGraphActionResult> NotAValidMethodName()
         {
             return Task.FromResult(null as IGraphActionResult);
         }
 
-        public Task AfterFieldResolution()
+        [DirectiveLocations(DirectiveLocation.FIELD)]
+        public Task InvalidTaskReference(object source)
         {
             return null;
         }
 
-        public IGraphActionResult AlterTypeSystem()
+        [DirectiveLocations(DirectiveLocation.SCALAR)]
+        public IGraphActionResult NoSourceItemDeclaration()
         {
             return null;
         }

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution
 
     /// <summary>
     /// A collection of objects supplied to a pipeline that can act as an input object for
-    /// a <see cref="GraphFieldDataSource"/>.
+    /// a <see cref="GraphDataContainer"/>.
     /// </summary>
     public class DefaultFieldSourceCollection : IEnumerable<KeyValuePair<GraphFieldPath, object>>
     {

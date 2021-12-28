@@ -120,6 +120,24 @@ namespace GraphQL.AspNet.Common.Extensions
         }
 
         /// <summary>
+        /// Returns a single attribute of a given type or null. If the type declares more than one instance
+        /// of the attribute type, the first instance encountered is returned.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute to check for.</typeparam>
+        /// <param name="type">The type to inspect.</param>
+        /// <param name="inherit">When true, look up the hierarchy chain for the inherited custom attribute..</param>
+        /// <returns>TAttribute.</returns>
+        public static TAttribute FirstAttributeOfTypeOrDefault<TAttribute>(this ICustomAttributeProvider type, bool inherit = false)
+            where TAttribute : Attribute
+        {
+            if (type == null)
+                return null;
+
+            var attribs = type.GetCustomAttributes(typeof(TAttribute), inherit).Where(x => x.GetType() == typeof(TAttribute)).Take(2);
+            return attribs.FirstOrDefault() as TAttribute;
+        }
+
+        /// <summary>
         /// Returns a single attribute that is castable to the given type or null. If the type declares more than one instance
         /// that matches the type condition, null is returned.
         /// </summary>
@@ -138,6 +156,27 @@ namespace GraphQL.AspNet.Common.Extensions
                 return attribs.Single();
 
             return null;
+        }
+
+        /// <summary>
+        /// Returns an attribute or set of attributes that are castable to the given type. If no types match
+        /// the given <typeparamref name="TAttribute"/> an empty set is returned.
+        /// </summary>
+        /// <typeparam name="TAttribute">The type of the attribute to check for.</typeparam>
+        /// <param name="type">The type to inspect.</param>
+        /// <param name="inherit">When true, look up the hierarchy chain for the inherited custom attribute..</param>
+        /// <returns>TAttribute.</returns>
+        public static IEnumerable<TAttribute> AttributesOfType<TAttribute>(this ICustomAttributeProvider type, bool inherit = false)
+            where TAttribute : Attribute
+        {
+            if (type == null)
+                return null;
+
+            var attribs = type.GetCustomAttributes(typeof(TAttribute), inherit)
+                .Where(x => x.GetType() == typeof(TAttribute))
+                .Cast<TAttribute>();
+
+            return attribs;
         }
 
         /// <summary>

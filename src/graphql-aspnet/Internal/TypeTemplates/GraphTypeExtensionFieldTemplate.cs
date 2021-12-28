@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     {
         private Type _sourceType;
         private TypeExtensionAttribute _typeAttrib;
-        private List<IGraphFieldArgumentTemplate> _inputArguments;
+        private List<IGraphInputArgumentTemplate> _inputArguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphTypeExtensionFieldTemplate"/> class.
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphTypeExtensionFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo)
             : base(parent, methodInfo)
         {
-            _inputArguments = new List<IGraphFieldArgumentTemplate>();
+            _inputArguments = new List<IGraphInputArgumentTemplate>();
         }
 
         /// <summary>
@@ -166,6 +166,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => _typeAttrib?.TypeDefinition;
 
         /// <inheritdoc />
-        public override IReadOnlyList<IGraphFieldArgumentTemplate> InputArguments => _inputArguments;
+        public override IReadOnlyList<IGraphInputArgumentTemplate> InputArguments => _inputArguments;
     }
 }

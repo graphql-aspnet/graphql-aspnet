@@ -39,23 +39,5 @@ namespace GraphQL.AspNet.Tests.Schemas
                 seenValues.Add(asLong);
             }
         }
-
-        [Test]
-        public void AllLocations_HaveAPhase()
-        {
-            var allValues = Enum.GetValues<DirectiveLocation>();
-            var seenValues = new HashSet<long>();
-
-            foreach (DirectiveLocation location in allValues)
-            {
-                if (location == DirectiveLocation.NONE)
-                    continue;
-
-                var dleattribute = location.SingleAttributeOrDefault<DirectiveLifeCycleEventAttribute>();
-                Assert.IsNotNull(dleattribute);
-
-                Assert.AreNotEqual(DirectiveLifeCycleEvent.Unknown, dleattribute.LifeCycleEvent);
-            }
-        }
     }
 }

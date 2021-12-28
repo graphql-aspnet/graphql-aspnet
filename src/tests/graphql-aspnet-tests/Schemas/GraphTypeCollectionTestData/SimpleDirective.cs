@@ -15,10 +15,10 @@ namespace GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
     public class SimpleDirective : GraphDirective
     {
-        public Task<IGraphActionResult> BeforeFieldResolution()
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
+        public Task<IGraphActionResult> Execute(object source)
         {
             return null;
         }

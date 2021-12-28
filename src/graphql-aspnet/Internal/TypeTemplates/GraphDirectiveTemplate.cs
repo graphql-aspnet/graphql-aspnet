@@ -57,20 +57,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.Route = this.GenerateFieldPath();
 
-            // extract all the allowed locations
-            // where this directive can be applied
-            var locationAttributes = this.RetrieveAttributes(x => x is DirectiveLocationsAttribute);
-            var allowedLocations = DirectiveLocation.NONE;
+            var phases = DirectiveInvocationPhase.SchemaGeneration | DirectiveInvocationPhase.AfterFieldResolution;
+            var phaseAttrib = this.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
+            if (phaseAttrib != null)
+                phases = phaseAttrib.Phases;
 
-            foreach (DirectiveLocationsAttribute attrib in locationAttributes)
-                allowedLocations = allowedLocations | attrib.Locations;
-
-            this.Locations = allowedLocations;
+            this.InvocationPhases = phases;
 
             foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                // only pay attention to those with valid method names
-                if (DirectiveLifeCycleEvents.Instance[methodInfo.Name] != null)
+                if (methodInfo.FirstAttributeOfTypeOrDefault<DirectiveLocationsAttribute>() != null)
                 {
                     var methodTemplate = new GraphDirectiveMethodTemplate(this, methodInfo);
                     methodTemplate.Parse();
@@ -87,9 +83,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public IGraphMethod FindMethod(DirectiveLifeCycleEvent lifeCycle)
+        public IGraphMethod FindMethod(DirectiveLocation location)
         {
-            return this.Methods.FindMethod(lifeCycle);
+            return this.Methods.FindMethod(location);
         }
 
         /// <inheritdoc />
@@ -105,40 +101,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             this.Methods.ValidateOrThrow();
-
-            this.EnsureLifeCycleEventRepresentationOrThrow();
-        }
-
-        /// <summary>
-        /// Checks each defined location where this directive may be used against all the defined methods to ensure that at least
-        /// one method was declared that can process data at each location where it may appear.
-        /// </summary>
-        private void EnsureLifeCycleEventRepresentationOrThrow()
-        {
-            var requiredLifeCycleEvents = DirectiveLifeCycleEvents.Instance[this.Locations]
-                .GroupBy(x => x.Phase);
-
-            // at least one method must be declared to handle each required phase
-            foreach (var phaseGroup in requiredLifeCycleEvents)
-            {
-                var canHandlePhase = this.Methods
-                    .Any(x => x.LifeCycleEvent.Phase == phaseGroup.Key);
-
-                if (!canHandlePhase)
-                {
-                    var allowedMethods = string.Join(", ", DirectiveLifeCycleEvents.Instance[phaseGroup.Key]
-                        .Select(x => $"'{x.MethodName}'"));
-
-                    var phaseDescription = phaseGroup.Key.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-                    if (string.IsNullOrWhiteSpace(phaseDescription))
-                        phaseDescription = "-unknown-";
-
-                    throw new GraphTypeDeclarationException(
-                        $"The directive '{this.InternalFullName}' defines a usage location encountered during '{phaseDescription}' " +
-                        "but does not declare an appropriate lifecycle method to handle it. " +
-                        $"At least one of the following methods is required: {allowedMethods}.");
-                }
-            }
         }
 
         /// <inheritdoc />
@@ -154,7 +116,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphDirectiveMethodTemplateContainer Methods { get; }
 
         /// <inheritdoc />
-        public DirectiveLocation Locations { get; private set; }
+        public DirectiveLocation Locations => this.Methods.Locations;
 
         /// <summary>
         /// Gets declared type of item minus any asyncronous wrappers (i.e. the T in Task{T}).
@@ -178,6 +140,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override TypeKind Kind => TypeKind.DIRECTIVE;
 
         /// <inheritdoc />
-        public IEnumerable<IGraphFieldArgumentTemplate> Arguments => this.Methods.ExecutionArguments;
+        public IEnumerable<IGraphInputArgumentTemplate> Arguments => this.Methods.Arguments;
+
+        /// <inheritdoc />
+        public DirectiveInvocationPhase InvocationPhases { get; private set;  }
     }
 }

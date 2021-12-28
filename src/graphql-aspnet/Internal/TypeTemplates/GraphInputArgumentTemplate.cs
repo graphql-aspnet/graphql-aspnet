@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -26,19 +25,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
     /// <summary>
     /// A fully qualified description of a single input parameter to a <see cref="ControllerActionGraphFieldTemplate"/>.
-    /// This template can be added as an input argument to a field.
+    /// This template can be added as an input argument to a field or directive.
     /// </summary>
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
-    public class GraphFieldArgumentTemplate : IGraphFieldArgumentTemplate
+    public class GraphInputArgumentTemplate : IGraphInputArgumentTemplate
     {
         private FromGraphQLAttribute _fieldDeclaration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldArgumentTemplate" /> class.
+        /// Initializes a new instance of the <see cref="GraphInputArgumentTemplate" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
         /// <param name="parameter">The parameter.</param>
-        public GraphFieldArgumentTemplate(IGraphFieldBaseTemplate parent, ParameterInfo parameter)
+        public GraphInputArgumentTemplate(IGraphFieldBaseTemplate parent, ParameterInfo parameter)
         {
             Validation.ThrowIfNull(parent, nameof(parent));
             Validation.ThrowIfNull(parameter, nameof(parameter));
@@ -199,12 +198,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
 
 #if DEBUG
+
         /// <summary>
         /// Gets a string representing the name of the parameter's concrete type.
         /// This is an an internal helper property for helpful debugging information only.
         /// </summary>
         /// <value>The name of the parameter type friendly.</value>
         public string FriendlyObjectTypeName => this.Parameter.ParameterType.FriendlyName();
+
 #endif
     }
 }
