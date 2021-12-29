@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData
+namespace GraphQL.AspNet.Tests.Default.TypeMakers.TestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;

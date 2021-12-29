@@ -7,18 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.EnumTestData
+namespace GraphQL.AspNet.Tests.Default.TypeMakers.TestData
 {
-    using GraphQL.AspNet.Attributes;
-
-    public enum EnumWithUndeclaredValues
+    public class UnionDataA : IUnionTestDataItem
     {
-        [GraphEnumValue]
-        DeclaredValue1,
+        public string Property1 { get; set; }
 
-        [GraphEnumValue("VALUE_AWESOME")]
-        DeclaredValue2,
-
-        UndeclaredValue1,
+        public string Property2 { get; set; }
     }
 }

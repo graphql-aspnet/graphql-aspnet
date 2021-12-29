@@ -42,5 +42,10 @@ namespace GraphQL.AspNet.Directives
         /// field of data is resolved.
         /// </summary>
         AfterFieldResolution = 1 << 2,
+
+        /// <summary>
+        /// The directive phases applied to all directives by default unless changed.
+        /// </summary>
+        Default = SchemaGeneration | AfterFieldResolution,
     }
 }

@@ -15,21 +15,21 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
-    /// A field argument template that is capable of parsing additional information
+    /// An input argument template that is capable of parsing additional information
     /// related to subscriptions.
     /// </summary>
-    public class GraphSubscriptionFieldArgumentTemplate : GraphInputArgumentTemplate
+    public class GraphSubscriptionInputArgumentTemplate : GraphInputArgumentTemplate
     {
         private readonly bool _requireSourceDeclaration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSubscriptionFieldArgumentTemplate" /> class.
+        /// Initializes a new instance of the <see cref="GraphSubscriptionInputArgumentTemplate" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
         /// <param name="parameter">The parameter.</param>
         /// <param name="resourceSubscriptionSourceDeclaration">if set to <c>true</c> this field must be tagged with <see cref="SubscriptionSourceAttribute"/> to be marked
         /// as a source parameter.</param>
-        public GraphSubscriptionFieldArgumentTemplate(
+        public GraphSubscriptionInputArgumentTemplate(
             IGraphFieldBaseTemplate parent,
             ParameterInfo parameter,
             bool resourceSubscriptionSourceDeclaration = false)
@@ -38,11 +38,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _requireSourceDeclaration = resourceSubscriptionSourceDeclaration;
         }
 
-        /// <summary>
-        /// Determines whether this instance represents a parameter that should be marked as the "source data"
-        /// for the field its attached to.
-        /// </summary>
-        /// <returns>System.Boolean.</returns>
+        /// <inheritdoc />
         protected override bool IsSourceDataArgument()
         {
             if (this.Parameter.HasAttribute<SubscriptionSourceAttribute>())

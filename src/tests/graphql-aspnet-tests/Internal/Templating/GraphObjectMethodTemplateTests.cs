@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_DefaultValuesCheck()
+        public void DefaultValuesCheck()
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
@@ -62,28 +62,28 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_ExplicitFieldTypeOptions_SetsFieldOptionsCorrectly()
+        public void ExplicitFieldTypeOptions_SetsFieldOptionsCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.ForceNotNull));
             CollectionAssert.AreEqual(new[] { MetaGraphTypes.IsNotNull }, template.TypeExpression.Wrappers);
         }
 
         [Test]
-        public void Parse_GraphNameAttribute_SetsDataCorrectly()
+        public void GraphNameAttribute_SetsDataCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.overriddenName));
             Assert.AreEqual("SuperName", template.Name);
         }
 
         [Test]
-        public void Parse_DescriptionAttribute_SetsDataCorrectly()
+        public void DescriptionAttribute_SetsDataCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DescriptiionMethod));
             Assert.AreEqual("A Valid Description", template.Description);
         }
 
         [Test]
-        public void Parse_DepreciatedAttribute_SetsDataCorrectly()
+        public void DepreciatedAttribute_SetsDataCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DepreciatedMethodWithReason));
             Assert.AreEqual("A Dep reason", template.DeprecationReason);
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_DepreciatedAttribute_NoReason_SetsDataCorrectly()
+        public void DepreciatedAttribute_NoReason_SetsDataCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DepreciatedMethodWithNoReason));
             Assert.AreEqual(null, template.DeprecationReason);
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_ParameterParsing_SetsParamsCorrectly()
+        public void ParameterParsing_SetsParamsCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.SimpleParameterCheck));
             Assert.AreEqual(1, template.Arguments.Count);
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_AlternateNameParameterParsing_SetsParamsCorrectly()
+        public void AlternateNameParameterParsing_SetsParamsCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.ParamWithAlternateName));
 
@@ -122,14 +122,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_PropertyAsAList_SetsOptionsCorrectly()
+        public void PropertyAsAList_SetsOptionsCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.ListOfObjectReturnType));
             CollectionAssert.AreEqual(new[] { MetaGraphTypes.IsList }, template.TypeExpression.Wrappers);
         }
 
         [Test]
-        public void Parse_InvalidParameterName_ThrowsException()
+        public void InvalidParameterName_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_InterfaceAsInputParameter_ThrowsException()
+        public void InterfaceAsInputParameter_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_AsyncMethodWithNoReturnType_ThrowsException()
+        public void AsyncMethodWithNoReturnType_ThrowsException()
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -156,28 +156,28 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_PropertyAsAnObject_SetsReturnTypeCorrectly()
+        public void PropertyAsAnObject_SetsReturnTypeCorrectly()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.ObjectReturnType));
             Assert.AreEqual(typeof(TwoPropertyObject), template.ObjectType);
         }
 
         [Test]
-        public void Parse_PropertyAsAList_SetsReturnType_AsCoreItemNotTheList()
+        public void PropertyAsAList_SetsReturnType_AsCoreItemNotTheList()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.ListOfObjectReturnType));
             Assert.AreEqual(typeof(TwoPropertyObject), template.ObjectType);
         }
 
         [Test]
-        public void Parse_PropertyAsATaskOfList_SetsReturnType_AsCoreItemNotTheList()
+        public void PropertyAsATaskOfList_SetsReturnType_AsCoreItemNotTheList()
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.TaskOfListOfObjectReturnType));
             Assert.AreEqual(typeof(TwoPropertyObject), template.ObjectType);
         }
 
         [Test]
-        public void Parse_ArrayFromMethod_YieldsTemplate()
+        public void ArrayFromMethod_YieldsTemplate()
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
             obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));

@@ -68,7 +68,6 @@ namespace GraphQL.AspNet.Directives
                 if (_context?.Request != null)
                     _context.Request.DirectiveTarget = value;
             }
-
         }
     }
 }

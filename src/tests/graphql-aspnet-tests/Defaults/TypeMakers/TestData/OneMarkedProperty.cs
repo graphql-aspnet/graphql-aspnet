@@ -7,16 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
+namespace GraphQL.AspNet.Tests.Default.TypeMakers.TestData
 {
     using GraphQL.AspNet.Attributes;
 
-    public class SelfReferencingObject
+    public class OneMarkedProperty
     {
-        [GraphField]
-        public string Name { get; set; }
+        public string Prop1 { get; set; }
 
         [GraphField]
-        public SelfReferencingObject Parent { get; set; }
+        public string Prop2 { get; set; }
     }
 }

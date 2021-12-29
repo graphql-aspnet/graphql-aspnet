@@ -7,16 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
+namespace GraphQL.AspNet.Tests.Default.TypeMakers.TestData
 {
     using GraphQL.AspNet.Attributes;
 
-    public class ComplexInputObject
+    [GraphType("ValidGraphName")]
+    public enum EnumWithGraphName
     {
-        [GraphField]
-        public string Prop1 { get; set; }
-
-        [GraphField]
-        public OneMarkedProperty Prop2 { get; set; }
+        Value1,
+        Value2,
     }
 }

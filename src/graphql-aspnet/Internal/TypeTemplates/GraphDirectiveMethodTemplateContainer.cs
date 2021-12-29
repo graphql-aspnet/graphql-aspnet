@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A collection of known methods that can be invoked by the run time
     /// in response to the directive being included in a query document at various locations.
     /// </summary>
-    public class GraphDirectiveMethodTemplateContainer : IEnumerable<GraphDirectiveMethodTemplate>
+    public class GraphDirectiveMethodTemplateContainer
     {
         private readonly IGraphDirectiveTemplate _parent;
         private readonly Dictionary<DirectiveLocation, GraphDirectiveMethodTemplate> _templateMap;
@@ -38,22 +38,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             _parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             _templateMap = new Dictionary<DirectiveLocation, GraphDirectiveMethodTemplate>();
-        }
-
-        /// <summary>
-        /// Retrieves the concrete types that this instance may return in response to a field request.
-        /// </summary>
-        /// <returns>IEnumerable&lt;Type&gt;.</returns>
-        public IEnumerable<DependentType> RetrieveRequiredTypes()
-        {
-            var list = new List<DependentType>();
-            foreach (var kvp in _templateMap)
-            {
-                if (kvp.Key.IsExecutionLocation())
-                    list.AddRange(kvp.Value.Arguments.SelectMany(x => x.RetrieveRequiredTypes()));
-            }
-
-            return list;
         }
 
         /// <summary>
@@ -193,23 +177,5 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The locations.</value>
         public DirectiveLocation Locations { get; private set; }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<GraphDirectiveMethodTemplate> GetEnumerator()
-        {
-            return _templateMap.Values.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
     }
 }

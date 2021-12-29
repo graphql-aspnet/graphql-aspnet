@@ -283,19 +283,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var argument in this.Arguments)
                 argument.ValidateOrThrow();
 
-            // specific validation for those arguments destinated to be input arguments
-            // that exist on the object graph
-            // (inputArguments does not contain any args defined as source data args)
-            foreach (var inputArgument in this.InputArguments)
-            {
-                if (inputArgument.ObjectType.IsInterface)
-                {
-                    throw new GraphTypeDeclarationException(
-                        $"The field '{this.InternalFullName}' declares an input argument '{inputArgument.Name}' of type  '{inputArgument.ObjectType.FriendlyName()}' " +
-                        $"which is an interface. Interfaces cannot be used as input arguments to a field.");
-                }
-            }
-
             if (this.Complexity.HasValue && this.Complexity < 0)
             {
                 throw new GraphTypeDeclarationException(
@@ -444,15 +431,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public abstract IReadOnlyList<IGraphInputArgumentTemplate> Arguments { get; }
-
-        /// <summary>
-        /// Gets the subset of  <see cref="Arguments"/> defined to be "input parameters" to the field.
-        /// This list may be different than <see cref="Arguments"/> in some cases where one field argument
-        /// is used as a source data input value and is not designated to be part of a graph
-        /// structure.
-        /// </summary>
-        /// <value>The input arguments.</value>
-        public virtual IReadOnlyList<IGraphInputArgumentTemplate> InputArguments => this.Arguments;
 
         /// <inheritdoc />
         public virtual FieldSecurityGroup SecurityPolicies => _securityPolicies;

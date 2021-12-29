@@ -50,12 +50,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             _exception = exception;
         }
 
-        /// <summary>
-        /// Processes the provided resolution context against this action result instance to
-        /// generate the expected response in accordance with this instance's rule set.
-        /// </summary>
-        /// <param name="context">The context being processed.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task Complete(ResolutionContext context)
         {
             if (_customMessage != null)

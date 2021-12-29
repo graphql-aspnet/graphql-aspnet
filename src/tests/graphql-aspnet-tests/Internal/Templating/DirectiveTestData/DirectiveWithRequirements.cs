@@ -6,27 +6,20 @@
 // --
 // License:  MIT
 // *************************************************************
-
-namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
+namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class TypeCreationItem
+    public class DirectiveWithRequirements : GraphDirective
     {
-        [GraphField]
-        public double Method1(string arg1, int arg2, int arg3 = 5)
-        {
-            return double.MinValue;
-        }
-
-        [GraphField]
-        public TwoPropertyObject Method2(long arg1, decimal? arg2)
+        [DirectiveLocations(DirectiveLocation.FIELD)]
+        public IGraphActionResult Execute(TwoPropertyObject obj)
         {
             return null;
         }
-
-        [GraphField]
-        public string Prop1 { get; set; }
     }
 }

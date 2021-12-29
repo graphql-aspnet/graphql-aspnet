@@ -43,12 +43,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             _modelState = modelState;
         }
 
-        /// <summary>
-        /// Processes the provided resolution context against this action result instance to
-        /// generate the expected response in accordance with this instance's rule set.
-        /// </summary>
-        /// <param name="resolutionContext">The resolution context.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task Complete(ResolutionContext resolutionContext)
         {
             if (_modelState != null)

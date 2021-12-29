@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class TestDirectiveMethodTemplateContainer2 : GraphDirective
     {
@@ -30,6 +31,12 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 
         [DirectiveLocations(DirectiveLocation.SCALAR)]
         public IGraphActionResult NoSourceItemDeclaration()
+        {
+            return null;
+        }
+
+        [DirectiveLocations(DirectiveLocation.QUERY)]
+        public IGraphActionResult InterfaceAsParameter(ITwoPropertyObject obj)
         {
             return null;
         }

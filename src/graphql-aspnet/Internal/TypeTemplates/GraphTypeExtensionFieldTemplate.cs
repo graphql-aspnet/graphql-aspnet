@@ -10,9 +10,7 @@
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
-    using System.Collections.Generic;
     using System.Reflection;
-    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
@@ -32,7 +30,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     {
         private Type _sourceType;
         private TypeExtensionAttribute _typeAttrib;
-        private List<IGraphInputArgumentTemplate> _inputArguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphTypeExtensionFieldTemplate"/> class.
@@ -42,7 +39,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphTypeExtensionFieldTemplate(IGraphTypeTemplate parent, MethodInfo methodInfo)
             : base(parent, methodInfo)
         {
-            _inputArguments = new List<IGraphInputArgumentTemplate>();
         }
 
         /// <summary>
@@ -73,16 +69,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.TypeExpression = GraphValidation.GenerateTypeExpression(returnType, this);
                     this.PossibleTypes.Insert(0, this.ObjectType);
                 }
-            }
-
-            // remove the first instance of the type extension declaration
-            // from the argument list, its not an input parameter
-            foreach (var arg in this.Arguments)
-            {
-                if (arg.ArgumentModifiers.IsInternalParameter() || arg.ArgumentModifiers.IsSourceParameter())
-                    continue;
-
-                _inputArguments.Add(arg);
             }
         }
 
@@ -164,8 +150,5 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The custom wrappers.</value>
         MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => _typeAttrib?.TypeDefinition;
-
-        /// <inheritdoc />
-        public override IReadOnlyList<IGraphInputArgumentTemplate> InputArguments => _inputArguments;
     }
 }

@@ -7,11 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
+namespace GraphQL.AspNet.Tests.Default.TypeMakers.TestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Configuration;
 
-    public class TypeWithUndeclaredFields
+    [GraphType(FieldDeclarationRequirements = TemplateDeclarationRequirements.None)]
+    public class TypeWithUndeclaredFieldsWithOverrideNone
     {
         [GraphField]
         public string DeclaredMethod()

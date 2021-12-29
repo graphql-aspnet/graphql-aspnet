@@ -102,10 +102,29 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void InvalidTaskReferenceOnMethod_ThrowsException()
+        public void AsyncMethodWithNoReturnType_ThrowsException()
         {
             var method = typeof(TestDirectiveMethodTemplateContainer2)
                 .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.InvalidTaskReference));
+
+            var mock = new Mock<IGraphTypeTemplate>();
+            mock.Setup(x => x.InternalFullName).Returns("Simple");
+            var route = new GraphFieldPath(GraphCollection.Directives, "Simple");
+            mock.Setup(x => x.Route).Returns(route);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = new GraphDirectiveMethodTemplate(mock.Object, method);
+                template.Parse();
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void InterfaceAsInputParameter_ThrowsException()
+        {
+            var method = typeof(TestDirectiveMethodTemplateContainer2)
+                .GetMethod(nameof(TestDirectiveMethodTemplateContainer2.InterfaceAsParameter));
 
             var mock = new Mock<IGraphTypeTemplate>();
             mock.Setup(x => x.InternalFullName).Returns("Simple");

@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -144,6 +145,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public void ValidateOrThrow()
         {
             GraphValidation.EnsureGraphNameOrThrow(this.InternalFullName, this.Name);
+
+            if (!this.ArgumentModifiers.IsInternalParameter() && this.ObjectType.IsInterface)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
+                    $"which is an interface. Interfaces cannot be used as input arguments to any type.");
+            }
         }
 
         /// <inheritdoc />

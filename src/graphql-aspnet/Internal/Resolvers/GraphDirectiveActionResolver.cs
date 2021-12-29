@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// The default resolver for processing directive requests.

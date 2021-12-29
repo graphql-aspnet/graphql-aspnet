@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.Route = this.GenerateFieldPath();
 
-            var phases = DirectiveInvocationPhase.SchemaGeneration | DirectiveInvocationPhase.AfterFieldResolution;
+            var phases = DirectiveInvocationPhase.Default;
             var phaseAttrib = this.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
             if (phaseAttrib != null)
                 phases = phaseAttrib.Phases;

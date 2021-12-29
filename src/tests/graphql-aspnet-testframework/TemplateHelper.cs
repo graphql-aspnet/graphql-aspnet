@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
@@ -104,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Creates a template of the given type in its "INPUT_OBJECT" graph type representation.
         /// </summary>
         /// <typeparam name="TObject">The type to create a template of.</typeparam>
-        /// <returns>IObjectGraphTypeTemplate.</returns>
+        /// <returns>IInputObjectGraphTypeTemplate.</returns>
         public static IInputObjectGraphTypeTemplate CreateInputObjectTemplate<TObject>()
            where TObject : class
         {
@@ -115,7 +116,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Creates a template of the given enum value.
         /// </summary>
         /// <typeparam name="TEnum">The enum to template.</typeparam>
-        /// <returns>IObjectGraphTypeTemplate.</returns>
+        /// <returns>IEnumGraphTypeTemplate.</returns>
         public static IEnumGraphTypeTemplate CreateEnumTemplate<TEnum>()
             where TEnum : Enum
         {
@@ -126,10 +127,21 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Creates a template of the given interface.
         /// </summary>
         /// <typeparam name="TInterface">The interface to template.</typeparam>
-        /// <returns>IObjectGraphTypeTemplate.</returns>
+        /// <returns>IInterfaceGraphTypeTemplate.</returns>
         public static IInterfaceGraphTypeTemplate CreateInterfaceTemplate<TInterface>()
         {
             return CreateGraphTypeTemplate<TInterface>(TypeKind.INTERFACE) as IInterfaceGraphTypeTemplate;
+        }
+
+        /// <summary>
+        /// Creates a template of the given directive.
+        /// </summary>
+        /// <typeparam name="TDirective">The type of the directive to template.</typeparam>
+        /// <returns>IGraphDirectiveTemplate.</returns>
+        public static IGraphDirectiveTemplate CreateDirectiveTemplate<TDirective>()
+            where TDirective : GraphDirective
+        {
+            return CreateGraphTypeTemplate<TDirective>(TypeKind.DIRECTIVE) as IGraphDirectiveTemplate;
         }
     }
 }

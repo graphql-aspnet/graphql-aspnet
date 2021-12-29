@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void InvalidDirective_NoLocations_ThrowsException()
+        public void InvalidDirective_NoLocationsDefined_ThrowsException()
         {
             var template = new GraphDirectiveTemplate(typeof(NoLocationsDirective));
             template.Parse();
@@ -73,17 +73,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(expectedLocations, template.Locations);
-        }
-
-        [Test]
-        public void RequiredTypeSystemLocationWithMethodDefined_PropertyCheck()
-        {
-            var template = new GraphDirectiveTemplate(typeof(TypeSystemDirectiveWithMethod));
-            template.Parse();
-            template.ValidateOrThrow();
-
-            Assert.AreEqual(1, template.Methods.Count);
-            Assert.AreEqual(DirectiveLocation.SCALAR, template.Locations);
         }
     }
 }

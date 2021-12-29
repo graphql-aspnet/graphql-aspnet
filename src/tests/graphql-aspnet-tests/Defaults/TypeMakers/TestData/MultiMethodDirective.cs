@@ -6,19 +6,26 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
+namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 {
-    using System.Threading.Tasks;
+    using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class TypeSystemDirectiveWithMethod : GraphDirective
+    [Description("A Multi Method Directive")]
+    public class MultiMethodDirective : GraphDirective
     {
+        [DirectiveLocations(DirectiveLocation.FIELD)]
+        public IGraphActionResult ForField(int firstArg, TwoPropertyObject secondArg)
+        {
+            return null;
+        }
+
         [DirectiveLocations(DirectiveLocation.SCALAR)]
-        public Task<IGraphActionResult> AlterTypeSystem(ISchemaItem item)
+        public IGraphActionResult ForTypeSystem(int firstArg, TwoPropertyObject secondArg)
         {
             return null;
         }

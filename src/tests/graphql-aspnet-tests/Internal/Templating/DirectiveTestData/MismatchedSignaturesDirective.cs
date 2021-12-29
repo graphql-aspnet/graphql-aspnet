@@ -18,13 +18,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     public class MismatchedSignaturesDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD)]
-        public Task<IGraphActionResult> Execute(int arg1, string arg2)
+        public Task<IGraphActionResult> Execute1(int arg1, string arg2)
         {
             return null;
         }
 
         [DirectiveLocations(DirectiveLocation.INLINE_FRAGMENT)]
-        public Task<IGraphActionResult> Execute(long arg1)
+        public Task<IGraphActionResult> Execute2(long arg1)
         {
             return null;
         }

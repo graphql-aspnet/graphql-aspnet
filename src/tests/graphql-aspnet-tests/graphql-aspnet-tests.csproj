@@ -65,9 +65,5 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Internal\Templating\DirectiveTestData\" />
-  </ItemGroup>
-
 
 </Project>
