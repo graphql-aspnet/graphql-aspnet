@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A result indicating an ok return status and an object to be rendered to the graph.

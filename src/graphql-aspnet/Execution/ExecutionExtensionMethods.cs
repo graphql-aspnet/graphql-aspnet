@@ -9,12 +9,18 @@
 
 namespace GraphQL.AspNet.Execution
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.ValueResolvers;
+    using GraphQL.AspNet.Interfaces.Execution;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>
-    /// Helper methods for <see cref="GraphCollection"/>.
+    /// Helper methods useful during document execution.
     /// </summary>
-    public static class GraphCollectionExtensionMethods
+    public static class ExecutionExtensionMethods
     {
         /// <summary>
         /// Converts the value into its equivilant routing constant.
@@ -46,6 +52,21 @@ namespace GraphQL.AspNet.Execution
                 default:
                     return RouteConstants.NOOP_ROOT;
             }
+        }
+
+        /// <summary>
+        /// Extends the resolver, executing the supplied function
+        /// after the resolver completes. This method is executed regardless
+        /// of the state of the context (successfully completed or failed).
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="extension">The extension.</param>
+        /// <returns>IGraphFieldResolver.</returns>
+        public static IGraphFieldResolver Extend(
+            this IGraphFieldResolver resolver,
+            Func<FieldResolutionContext, CancellationToken, Task> extension)
+        {
+            return new ExtendedResolver(resolver, extension);
         }
     }
 }

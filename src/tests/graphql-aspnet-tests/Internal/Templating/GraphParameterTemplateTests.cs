@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.ParameterTestData;
     using Moq;
     using NUnit.Framework;
@@ -223,6 +224,17 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(Person[][][][][][][][][][][][][][][][][][][]), template.Parameter.ParameterType);
             Assert.AreEqual("[[[[[[[[[[[[[[[[[[[Input_Person]]]]]]]]]]]]]]]]]]]", template.TypeExpression.ToString());
             Assert.AreEqual(null, template.DefaultValue);
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var template = this.ExtractParameterTemplate("paramDirective", out var paramInfo);
+            Assert.AreEqual(1, template.Directives.Count());
+
+            var appliedDirective = template.Directives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
+            Assert.AreEqual(new object[] { 77, "param arg" }, appliedDirective.Arguments);
         }
     }
 }

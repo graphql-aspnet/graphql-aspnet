@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                 "directives",
                 new GraphTypeExpression(Constants.ReservedNames.DIRECTIVE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "directives"),
-                (its) => its.Directives.Where(x => x.Publish).AsCompletedTask(),
+                (its) => its.DeclaredDirectives.Where(x => x.Publish).AsCompletedTask(),
                 "A complete collection of the directives supported by this schema.");
         }
     }

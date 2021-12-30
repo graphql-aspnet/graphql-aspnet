@@ -55,7 +55,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             base.ParseTemplateDefinition();
 
             this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-            this.Route = this.GenerateFieldPath();
+
+            var routeName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, routeName));
 
             var phases = DirectiveInvocationPhase.Default;
             var phaseAttrib = this.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
@@ -73,13 +75,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.Methods.RegisterMethod(methodTemplate);
                 }
             }
-        }
-
-        /// <inheritdoc />
-        protected override GraphFieldPath GenerateFieldPath()
-        {
-            var name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
-            return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, name));
         }
 
         /// <inheritdoc />

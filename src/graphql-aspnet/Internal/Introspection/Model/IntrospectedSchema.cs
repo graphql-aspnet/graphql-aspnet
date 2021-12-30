@@ -13,12 +13,14 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A model object containing data for the __schema meta field.
@@ -38,6 +40,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _typeList = new OrderedDictionary<string, IntrospectedType>();
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
 
         /// <summary>
         /// Attempts to find a single introspected object representing the given graph type. If not found
-        /// it will attempt to create it. This method does not support directives. Use the <see cref="Directives"/>
+        /// it will attempt to create it. This method does not support directives. Use the <see cref="DeclaredDirectives"/>
         /// properties to find directives.
         /// </summary>
         /// <param name="graphType">Type of the graph.</param>
@@ -108,6 +111,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
                 case IUnionGraphType _:
                     creator = (gt) => new IntrospectedType(gt);
                     break;
+
                 default:
                     throw new GraphExecutionException($"Invalid graph type. '{graphType.Kind}' is not supported by introspection.");
             }
@@ -199,10 +203,11 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public IntrospectedType SubscriptionType => this.FindOperationType(GraphCollection.Subscription);
 
         /// <summary>
-        /// Gets the directives known to this schema.
+        /// Gets the directives declared to be a part of this schema.
         /// </summary>
         /// <value>The directives.</value>
-        public IEnumerable<IntrospectedDirective> Directives => _directiveList;
+        [GraphField("Directives")]
+        public IEnumerable<IntrospectedDirective> DeclaredDirectives => _directiveList;
 
         /// <inheritdoc />
         public string Name => _schema?.Name;
@@ -215,5 +220,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
 
         /// <inheritdoc />
         public string Description => _schema.Description;
+
+        /// <inheritdoc />
+        [GraphSkip]
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

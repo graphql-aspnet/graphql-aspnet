@@ -69,12 +69,14 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.SecurityGroups = Enumerable.Empty<FieldSecurityGroup>();
             this.Complexity = 1;
             this.Mode = FieldResolutionMode.PerSourceItem;
+
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
         /// <inheritdoc />
-        public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode mode)
+        public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null)
         {
-            throw new InvalidOperationException($"The resolver for '{typeof(VirtualGraphField).FriendlyName()}' cannot be altered.");
+            throw new NotSupportedException($"The resolver for '{typeof(VirtualGraphField).FriendlyName()}' cannot be altered.");
         }
 
         /// <inheritdoc />
@@ -161,5 +163,8 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public ISchemaItem Parent { get; private set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

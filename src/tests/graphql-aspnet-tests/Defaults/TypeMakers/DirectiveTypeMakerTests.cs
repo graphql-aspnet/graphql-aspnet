@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual("A Multi Method Directive", directive.Description);
             Assert.AreEqual(TypeKind.DIRECTIVE, directive.Kind);
             Assert.IsTrue(directive.Publish);
-            Assert.AreEqual(DirectiveLocation.FIELD | DirectiveLocation.SCALAR, directive.Locations);Assert.AreEqual(DirectiveInvocationPhase.Default, directive.InvocationPhases);
+            Assert.AreEqual(DirectiveInvocationPhase.Default, directive.InvocationPhases);
             Assert.AreEqual(DirectiveLocation.FIELD | DirectiveLocation.SCALAR, directive.Locations);
             Assert.AreEqual(typeof(GraphDirectiveActionResolver), directive.Resolver.GetType());
 

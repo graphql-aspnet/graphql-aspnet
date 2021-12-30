@@ -36,8 +36,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphInputArgumentTemplate" /> class.
         /// </summary>
-        /// <param name="parent">The parent.</param>
-        /// <param name="parameter">The parameter.</param>
+        /// <param name="parent">The owner of this argument.</param>
+        /// <param name="parameter">The parameter on which this
+        /// argument template is made.</param>
         public GraphInputArgumentTemplate(IGraphFieldBaseTemplate parent, ParameterInfo parameter)
         {
             Validation.ThrowIfNull(parent, nameof(parent));
@@ -52,14 +53,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             this.DeclaredArgumentType = this.Parameter.ParameterType;
             this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.Parameter.ParameterType);
+            this.Directives = this.ExtractAppliedDirectiveTemplates();
 
             // set the name
             _fieldDeclaration = this.Parameter.SingleAttributeOrDefault<FromGraphQLAttribute>();
             string name = null;
             if (_fieldDeclaration != null)
-            {
                 name = _fieldDeclaration?.ArgumentName?.Trim();
-            }
 
             if (string.IsNullOrWhiteSpace(name))
                 name = Constants.Routing.PARAMETER_META_NAME;
@@ -152,6 +152,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"The item '{this.Parent.InternalFullName}' declares an argument '{this.Name}' of type  '{this.ObjectType.FriendlyName()}' " +
                     $"which is an interface. Interfaces cannot be used as input arguments to any type.");
             }
+
+            foreach (var directive in this.Directives)
+                directive.ValidateOrThrow();
         }
 
         /// <inheritdoc />
@@ -205,15 +208,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
 
-#if DEBUG
+        /// <inheritdoc />
+        public ICustomAttributeProvider AttributeProvider => this.Parameter;
 
+        /// <inheritdoc />
+        public IEnumerable<AppliedDirectiveTemplate> Directives { get; private set; }
+
+#if DEBUG
         /// <summary>
         /// Gets a string representing the name of the parameter's concrete type.
         /// This is an an internal helper property for helpful debugging information only.
         /// </summary>
         /// <value>The name of the parameter type friendly.</value>
         public string FriendlyObjectTypeName => this.Parameter.ParameterType.FriendlyName();
-
 #endif
     }
 }

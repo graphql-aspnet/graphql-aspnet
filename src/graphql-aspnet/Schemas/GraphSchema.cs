@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
     /// <summary>
@@ -42,6 +43,7 @@ namespace GraphQL.AspNet.Schemas
             this.OperationTypes = new Dictionary<GraphCollection, IGraphOperation>();
             this.KnownTypes = new SchemaTypeCollection();
             this.Configuration = new SchemaConfiguration();
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
         /// <inheritdoc />
@@ -61,5 +63,8 @@ namespace GraphQL.AspNet.Schemas
 
         /// <inheritdoc />
         public virtual string Description { get; } = DEFAULT_DESCRIPTION;
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

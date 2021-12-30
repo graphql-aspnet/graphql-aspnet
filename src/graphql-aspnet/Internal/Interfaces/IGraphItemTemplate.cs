@@ -10,7 +10,11 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An interface describing an arbitrary <see cref="Type"/> that will be injected into
@@ -29,6 +33,13 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Parses the template contents according to the rules of the template.
         /// </summary>
         void Parse();
+
+        /// <summary>
+        /// Gets the attribute provider that supplies the various configuration
+        /// attributes to this template.
+        /// </summary>
+        /// <value>The attribute provider.</value>
+        ICustomAttributeProvider AttributeProvider { get; }
 
         /// <summary>
         /// Gets the formal name of this item as it exists in the object graph.
@@ -75,5 +86,11 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
         bool IsExplicitDeclaration { get; }
+
+        /// <summary>
+        /// Gets the set of directives declared on this graph item.
+        /// </summary>
+        /// <value>The directives.</value>
+        IEnumerable<AppliedDirectiveTemplate> Directives { get; }
     }
 }

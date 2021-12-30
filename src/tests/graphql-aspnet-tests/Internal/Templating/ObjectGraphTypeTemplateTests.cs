@@ -21,11 +21,12 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using NUnit.Framework;
 
     [TestFixture]
-    public class ObjectTemplateTests
+    public class ObjectGraphTypeTemplateTests
     {
         [Test]
         public void UnparsedTemplate_ThrowsException()
@@ -378,6 +379,20 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 template.Parse();
                 template.ValidateOrThrow();
             });
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.Directives.Count());
+
+            var appliedDirective = template.Directives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
+            Assert.AreEqual(new object[] { 1, "object arg" }, appliedDirective.Arguments);
         }
     }
 }

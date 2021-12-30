@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     [DebuggerDisplay("Enum Template: {InternalName}")]
     public class EnumGraphTypeTemplate : BaseGraphTypeTemplate, IEnumGraphTypeTemplate
     {
-        private readonly List<GraphEnumOption> _values;
+        private readonly List<EnumOptionTemplate> _values;
         private Dictionary<string, IList<string>> _valuesTolabels;
         private string _name;
 
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             Validation.ThrowIfNull(enumType, nameof(enumType));
             this.ObjectType = enumType;
 
-            _values = new List<GraphEnumOption>();
+            _values = new List<EnumOptionTemplate>();
             _valuesTolabels = new Dictionary<string, IList<string>>();
         }
 
@@ -58,18 +58,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (!this.ObjectType.IsEnum)
                 return;
 
+            base.ParseTemplateDefinition();
+
             _name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.ENUM);
             this.Description = this.ObjectType.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
-            this.Route = this.GenerateFieldPath();
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Enums, _name));
 
             // parse the enum values for later injection
             var labels = Enum.GetNames(this.ObjectType);
-            var typeIsUnsigned = this.ObjectType.IsEnumOfUnsignedNumericType();
             foreach (var label in labels)
             {
                 var fi = this.ObjectType.GetField(label);
 
-                var value = fi.GetValue(null);
+                if (fi.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
+                    continue;
+
+                var optionTemplate = new EnumOptionTemplate(this, fi);
+                optionTemplate.Parse();
 
                 // we must have unique labels to values
                 // (no enums with duplicate values)
@@ -91,37 +96,17 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 // into the coorisponding enum graph type
                 // and ultimately serialization
                 // to a requestor
-                string numericAsString;
-                if (typeIsUnsigned)
-                {
-                    numericAsString = Convert.ToUInt64(value).ToString();
-                }
-                else
-                {
-                    numericAsString = Convert.ToInt64(value).ToString();
-                }
+                //
+                // keep track of the number of labels share a valid so we can
+                // throw an exception during validation if there are any duplicates
+                if (!_valuesTolabels.ContainsKey(optionTemplate.NumericValueAsString))
+                    _valuesTolabels.Add(optionTemplate.NumericValueAsString, new List<string>());
 
-                if (!_valuesTolabels.ContainsKey(numericAsString))
-                    _valuesTolabels.Add(numericAsString, new List<string>());
-
-                _valuesTolabels[numericAsString].Add(label);
-                if (_valuesTolabels[numericAsString].Count != 1)
+                _valuesTolabels[optionTemplate.NumericValueAsString].Add(label);
+                if (_valuesTolabels[optionTemplate.NumericValueAsString].Count != 1)
                     continue;
 
-                if (fi.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
-                    continue;
-
-                var description = fi.SingleAttributeOrDefault<DescriptionAttribute>()?.Description ?? null;
-                var enumAttrib = fi.SingleAttributeOrDefault<GraphEnumValueAttribute>();
-
-                var valueName = enumAttrib?.Name?.Trim() ?? Constants.Routing.ENUM_VALUE_META_NAME;
-                if (valueName.Length == 0)
-                    valueName = Constants.Routing.ENUM_VALUE_META_NAME;
-
-                valueName = valueName.Replace(Constants.Routing.ENUM_VALUE_META_NAME, label);
-
-                var deprecated = fi.SingleAttributeOrDefault<DeprecatedAttribute>();
-                _values.Add(new GraphEnumOption(this.ObjectType, valueName, description, enumAttrib != null, deprecated != null, deprecated?.Reason));
+                _values.Add(optionTemplate);
             }
         }
 
@@ -168,20 +153,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// When overridden in a child class, this method builds the route that will be assigned to this method
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        protected override GraphFieldPath GenerateFieldPath()
-        {
-            return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Enums, _name));
-        }
-
-        /// <summary>
         /// Gets the collected set of enumeration values that this template parsed.
         /// </summary>
         /// <value>The values.</value>
-        public IReadOnlyList<IEnumOption> Values => _values;
+        public IReadOnlyList<IEnumOptionTemplate> Values => _values;
 
         /// <summary>
         /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').

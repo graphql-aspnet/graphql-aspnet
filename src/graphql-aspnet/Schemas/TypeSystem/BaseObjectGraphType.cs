@@ -28,19 +28,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="BaseObjectGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
-        protected BaseObjectGraphType(string name)
+        /// <param name="directives">The directives applied to this schema item
+        /// when its added to a schema.</param>
+        protected BaseObjectGraphType(string name, IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             _graphFields = new GraphFieldCollection(this);
             this.InterfaceNames = new HashSet<string>();
             this.Publish = true;
+
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public abstract bool ValidateObject(object item);
 
         /// <summary>
@@ -62,24 +62,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns>IGraphTypeField.</returns>
         public virtual IGraphField this[string fieldName] => this.Fields[fieldName];
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
+        /// <inheritdoc />
         public virtual string Name { get; }
 
-        /// <summary>
-        /// Gets or sets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
+        /// <inheritdoc />
         public virtual string Description { get; set; }
 
-        /// <summary>
-        /// Gets the value indicating what type of graph type this instance is in the type system. (object, scalar etc.)
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public virtual TypeKind Kind => TypeKind.OBJECT;
 
         /// <summary>
@@ -88,18 +77,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <value>The interfaces.</value>
         public HashSet<string> InterfaceNames { get; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphType" /> is published on an introspection request.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public virtual bool Publish { get; set; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
-        /// a user defined graph structure. When false, this graph types points to a concrete type
-        /// defined by a developer.
-        /// </summary>
-        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public virtual bool IsVirtual => false;
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

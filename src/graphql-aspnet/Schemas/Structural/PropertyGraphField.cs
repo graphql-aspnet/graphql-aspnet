@@ -34,6 +34,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="mode">The mode in which the runtime will process this field.</param>
         /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
         /// <param name="securityPolicies">The security policies that apply to this field.</param>
+        /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
         public PropertyGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
@@ -43,8 +44,9 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
-            IEnumerable<FieldSecurityGroup> securityPolicies = null)
-            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies)
+            IEnumerable<FieldSecurityGroup> securityPolicies = null,
+            IAppliedDirectiveCollection directives = null)
+            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
         {
             this.InternalName = declaredPropertyName;
         }

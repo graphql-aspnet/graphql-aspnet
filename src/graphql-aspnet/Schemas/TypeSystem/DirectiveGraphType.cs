@@ -48,6 +48,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Publish = true;
             this.InvocationPhases = phases;
             _directiveType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
+
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
         /// <inheritdoc />
@@ -82,5 +84,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public DirectiveInvocationPhase InvocationPhases { get; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

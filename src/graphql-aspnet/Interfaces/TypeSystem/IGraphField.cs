@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
     /// accepted arguments, any nullable or list modifiers and publication and depreciation information.
     /// </summary>
-    public interface IGraphField : IDeprecatable, IGraphFieldArgumentContainer
+    public interface IGraphField : IDeprecatable, IGraphFieldArgumentContainer, ISchemaItem
     {
         /// <summary>
         /// Updates the known graph type this field belongs to.
@@ -34,8 +34,9 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Updates the field resolver used by this graph field.
         /// </summary>
         /// <param name="newResolver">The new resolver this field should use.</param>
-        /// <param name="mode">The new resolution mode used by the runtime to invoke the resolver.</param>
-        void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode mode);
+        /// <param name="mode">The new resolution mode used by the runtime to invoke the resolver.
+        /// When null, the current resolution mode of this field is retained.</param>
+        void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null);
 
         /// <summary>
         /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
@@ -52,8 +53,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         bool IsLeaf { get; }
 
         /// <summary>
-        /// Gets an object that will perform some operation against an execution
+        /// <para>Gets an object that will perform some operation against an execution
         /// context to fulfill the requirements of this resolvable entity.
+        /// </para>
+        /// <para>
+        /// Call <see cref="UpdateResolver"/> to change.</para>
         /// </summary>
         /// <value>The resolver assigned to this instance.</value>
         IGraphFieldResolver Resolver { get; }

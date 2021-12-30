@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -39,6 +40,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="mode">The mode in which the runtime will process this field.</param>
         /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
         /// <param name="securityPolicies">The security policies that apply to this field.</param>
+        /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
         public MethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
@@ -47,7 +49,8 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
-            IEnumerable<FieldSecurityGroup> securityPolicies = null)
+            IEnumerable<FieldSecurityGroup> securityPolicies = null,
+            IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
@@ -56,14 +59,19 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.SecurityGroups = securityPolicies ?? Enumerable.Empty<FieldSecurityGroup>();
             this.ObjectType = objectType;
             this.DeclaredReturnType = declaredReturnType;
+
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
+
             this.UpdateResolver(resolver, mode);
         }
 
         /// <inheritdoc/>
-        public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode mode)
+        public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null)
         {
             this.Resolver = newResolver;
-            this.Mode = mode;
+
+            if (mode.HasValue)
+                this.Mode = mode.Value;
 
             var unrwrappedType = GraphValidation.EliminateWrappersFromCoreType(this.Resolver?.ObjectType);
             this.IsLeaf = this.Resolver?.ObjectType != null && GraphQLProviders.ScalarProvider.IsLeaf(unrwrappedType);
@@ -128,5 +136,8 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc/>
         public ISchemaItem Parent { get; private set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

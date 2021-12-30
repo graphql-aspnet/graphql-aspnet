@@ -53,13 +53,5 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                var template = templateProvider.ParseType(typeof(FakeProxy), TypeKind.UNION);
            });
         }
-
-        [Test]
-        public void ParseObject_ReturnsItem()
-        {
-            var templateProvider = new DefaultTypeTemplateProvider();
-            var template = templateProvider.ParseType(typeof(DefaultUnionTemplateProviderTests), TypeKind.OBJECT);
-            Assert.IsNotNull(template);
-        }
     }
 }

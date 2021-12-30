@@ -56,15 +56,13 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 Publish = template.Publish,
             };
 
-            // clone each option using the formatter supplied by the schema configuration
-            var enumValuesToInclude = template.Values.Where(value => value.IsExplicitlyDeclared || requirements.AllowImplicitEnumValues());
+            // create an enum option from each template
+            var enumValuesToInclude = template.Values.Where(value => requirements.AllowImplicitEnumValues() || value.IsExplicitDeclaration);
             foreach (var value in enumValuesToInclude)
             {
                 var modifiedValue = new GraphEnumOption(
-                    concreteType,
                     _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
                     value.Description,
-                    value.IsExplicitlyDeclared,
                     value.IsDeprecated,
                     value.DeprecationReason);
 

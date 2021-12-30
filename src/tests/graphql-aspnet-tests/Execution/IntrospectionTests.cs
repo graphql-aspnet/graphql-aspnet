@@ -43,8 +43,8 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(schema.QueryType);
             Assert.IsNull(schema.MutationType);
             Assert.IsNull(schema.SubscriptionType);
-            Assert.IsNotNull(schema.Directives);
-            Assert.AreEqual(2, schema.Directives.Count()); // skip , include
+            Assert.IsNotNull(schema.DeclaredDirectives);
+            Assert.AreEqual(2, schema.DeclaredDirectives.Count()); // skip , include
         }
 
         [Test]

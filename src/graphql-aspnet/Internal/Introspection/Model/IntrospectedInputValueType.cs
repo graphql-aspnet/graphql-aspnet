@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.Introspection.Model
 {
     using System.Diagnostics;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;
@@ -29,6 +30,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <param name="argument">The field argument used to populate this input value.</param>
         /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
         public IntrospectedInputValueType(IGraphFieldArgument argument, IntrospectedType introspectedGraphType)
+            : this()
         {
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
             Validation.ThrowIfNull(argument, nameof(argument));
@@ -38,10 +40,29 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         }
 
         /// <summary>
-        /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
-        /// other references in this instance.
+        /// Initializes a new instance of the <see cref="IntrospectedInputValueType"/> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <param name="inputField">The field of an input object used to populate this value.</param>
+        /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
+        public IntrospectedInputValueType(IGraphField inputField, IntrospectedType introspectedGraphType)
+            : this()
+        {
+            Validation.ThrowIfNull(inputField, nameof(inputField));
+            this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
+
+            this.Name = inputField.Name;
+            this.Description = inputField.Description;
+        }
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="IntrospectedInputValueType"/> class from being created.
+        /// </summary>
+        private IntrospectedInputValueType()
+        {
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
+        }
+
+        /// <inheritdoc />
         public override void Initialize(IntrospectedSchema schema)
         {
             if (_rawDefaultValue == null)
@@ -73,37 +94,15 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntrospectedInputValueType"/> class.
-        /// </summary>
-        /// <param name="inputField">The field of an input object used to populate this value.</param>
-        /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
-        public IntrospectedInputValueType(IGraphField inputField, IntrospectedType introspectedGraphType)
-        {
-            Validation.ThrowIfNull(inputField, nameof(inputField));
-            this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
-
-            this.Name = inputField.Name;
-            this.Description = inputField.Description;
-        }
-
-        /// <summary>
         /// Gets the data model item representing the <see cref="IGraphType"/> this input value is an instance of.
         /// </summary>
         /// <value>The type.</value>
         public IntrospectedType IntrospectedGraphType { get; }
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
+        /// <inheritdoc />
         public string Description { get; }
 
         /// <summary>
@@ -111,5 +110,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <value>The default value.</value>
         public string DefaultValue { get; private set; }
+
+        /// <inheritdoc />
+        [GraphSkip]
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

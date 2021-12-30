@@ -43,7 +43,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
         /// <param name="enumType">Type of the enum.</param>
         /// <param name="resolver">The resolver.</param>
-        public EnumGraphType(string name, Type enumType, ILeafValueResolver resolver)
+        /// <param name="directives">The directives to apply to this enum type.</param>
+        public EnumGraphType(
+            string name,
+            Type enumType,
+            ILeafValueResolver resolver,
+            IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullEmptyOrReturn(name, nameof(name));
             this.ObjectType = Validation.ThrowIfNullOrReturn(enumType, nameof(enumType));
@@ -51,6 +56,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.InternalName = this.ObjectType.FriendlyName();
             this.Publish = true;
+
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
             _options = new Dictionary<string, IEnumOption>(StringComparer.OrdinalIgnoreCase);
         }
@@ -113,5 +120,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public virtual ILeafValueResolver SourceResolver { get; set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

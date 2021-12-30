@@ -22,11 +22,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public abstract class BaseScalarType : IScalarGraphType, ILeafValueResolver, IScalarValueSerializer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseScalarType"/> class.
+        /// Initializes a new instance of the <see cref="BaseScalarType" /> class.
         /// </summary>
         /// <param name="name">The name of the scalar as it appears in a schema.</param>
         /// <param name="primaryType">The primary datatype that represents this scalar.</param>
-        protected BaseScalarType(string name, Type primaryType)
+        /// <param name="directives">The directives to apply to this scalar
+        /// when its added to a schema.</param>
+        protected BaseScalarType(
+            string name,
+            Type primaryType,
+            IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
             this.ObjectType = Validation.ThrowIfNullOrReturn(primaryType, nameof(primaryType));
@@ -34,6 +39,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.Publish = true;
             this.SourceResolver = this;
             this.Serializer = this;
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
         }
 
         /// <inheritdoc />
@@ -84,5 +90,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
         /// <inheritdoc />
         public virtual bool IsVirtual => false;
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

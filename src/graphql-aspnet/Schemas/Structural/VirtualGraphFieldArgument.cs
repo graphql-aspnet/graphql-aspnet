@@ -46,58 +46,35 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ArgumentModifiers = argModifiers;
             this.DefaultValue = defaultValue;
+
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
-        /// <summary>
-        /// Gets the type of the object this graph type was made from.
-        /// </summary>
-        /// <value>The type of the object.</value>
+        /// <inheritdoc />
         public Type ObjectType { get; }
 
-        /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
-        /// is used in many exceptions and internal error messages.
-        /// </summary>
-        /// <value>The name of the internal.</value>
+        /// <inheritdoc />
         public string InternalName { get; }
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        /// Gets or sets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
+        /// <inheritdoc />
         public string Description { get; set; }
 
-        /// <summary>
-        /// Gets a default value to use for any instances of this argument when one is not explicitly provided.
-        /// </summary>
-        /// <value>The boxed, default value, if any.</value>
+        /// <inheritdoc />
         public object DefaultValue { get; }
 
-        /// <summary>
-        /// Gets the argument modifiers that modify how this argument is interpreted by the runtime.
-        /// </summary>
-        /// <value>The argument modifiers.</value>
+        /// <inheritdoc />
         public GraphArgumentModifiers ArgumentModifiers { get; }
 
-        /// <summary>
-        /// Gets the type expression that represents the data of this argument (i.e. the '[SomeType!]'
-        /// declaration used in schema definition language.)
-        /// </summary>
-        /// <value>The type expression.</value>
+        /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }
 
-        /// <summary>
-        /// Gets the name of the parameter as it was defined on a concrete method.
-        /// </summary>
-        /// <value>The name of the parameter.</value>
+        /// <inheritdoc />
         public string ParameterName { get; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

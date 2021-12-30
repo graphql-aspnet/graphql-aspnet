@@ -10,14 +10,10 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>
     /// A represention of a graphql object in the schema. This object defines all the exposed
@@ -31,8 +27,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
         /// <param name="objectType">Type of the object.</param>
-        public InputObjectGraphType(string name, Type objectType)
-            : base(name)
+        /// <param name="directives">The directives to apply to this input
+        /// object when its added to a schema.</param>
+        public InputObjectGraphType(
+            string name,
+            Type objectType,
+            IAppliedDirectiveCollection directives = null)
+            : base(name, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = this.ObjectType.FriendlyName();

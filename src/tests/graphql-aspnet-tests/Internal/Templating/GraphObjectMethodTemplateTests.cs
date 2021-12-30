@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
+    using System.Linq;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -16,8 +18,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.MethodTestData;
-    using GraphQL.AspNet.Common.Extensions;
     using Moq;
     using NUnit.Framework;
 
@@ -192,6 +194,27 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
             Assert.AreEqual(typeof(TwoPropertyObject[]), template.DeclaredReturnType);
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(TwoPropertyObject).FriendlyName(),
+                MetaGraphTypes.IsList);
+
+            var parent = obj.Object;
+            var template = this.CreateMethodTemplate<MethodClassWithDirective>(nameof(MethodClassWithDirective.Counter));
+
+            Assert.AreEqual(1, template.Directives.Count());
+
+            var appliedDirective = template.Directives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
+            Assert.AreEqual(new object[] { 44, "method arg" }, appliedDirective.Arguments);
         }
     }
 }

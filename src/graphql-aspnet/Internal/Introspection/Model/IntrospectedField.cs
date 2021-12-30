@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -34,13 +35,10 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         {
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedType, nameof(introspectedType));
             _field = Validation.ThrowIfNullOrReturn(field, nameof(field));
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
-        /// <summary>
-        /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
-        /// other references in this instance.
-        /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <inheritdoc />
         public override void Initialize(IntrospectedSchema schema)
         {
             var list = new List<IntrospectedInputValueType>();
@@ -62,10 +60,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <value>The type of the graph.</value>
         public IntrospectedType IntrospectedGraphType { get; }
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
+        /// <inheritdoc />
         public string Name => _field.Name;
 
         /// <summary>
@@ -74,25 +69,17 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <value>A collection of arguments assigned to this item.</value>
         public IReadOnlyList<IntrospectedInputValueType> Arguments { get; private set; }
 
-        /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
+        /// <inheritdoc />
         public string Description => _field.Description;
 
-        /// <summary>
-        /// Gets a value indicating whether this action method is depreciated. The <see cref="DeprecationReason"/> will be displayed
-        /// on any itnrospection requests.
-        /// </summary>
-        /// <value><c>true</c> if this instance is depreciated; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsDeprecated => _field.IsDeprecated;
 
-        /// <summary>
-        /// Gets the provided reason for this item being depreciated.
-        /// </summary>
-        /// <value>The depreciation reason.</value>
+        /// <inheritdoc />
         public string DeprecationReason => _field.DeprecationReason;
+
+        /// <inheritdoc />
+        [GraphSkip]
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

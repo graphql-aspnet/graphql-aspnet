@@ -27,8 +27,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="operationType">The operation type this instance represents.</param>
         /// <param name="name">The name of the operation type as it would appear in the object graph.</param>
-        public GraphOperation(GraphCollection operationType, string name)
-            : base(Constants.ReservedNames.FindOperationTypeNameByType(operationType))
+        /// <param name="directives">The directives to apply to this operation
+        /// when its added to a schema.</param>
+        public GraphOperation(
+            GraphCollection operationType,
+            string name,
+            IAppliedDirectiveCollection directives = null)
+            : base(Constants.ReservedNames.FindOperationTypeNameByType(operationType), directives)
         {
             this.OperationType = operationType;
             this.Extend(new Introspection_TypeNameMetaField(name));

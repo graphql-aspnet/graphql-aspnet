@@ -38,6 +38,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         protected override void ParseTemplateDefinition()
         {
+            base.ParseTemplateDefinition();
+
             // account for type level field declaration overrides
             var graphTypeDeclaration = this.SingleAttributeOrDefault<GraphTypeAttribute>();
             if (graphTypeDeclaration != null)

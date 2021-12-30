@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A base template defining common attribute across all template definitions.
@@ -89,13 +90,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <summary>
         /// When overridden in a child class this method builds out the template according to its own individual requirements.
         /// </summary>
-        protected abstract void ParseTemplateDefinition();
+        protected virtual void ParseTemplateDefinition()
+        {
+            this.Directives = this.ExtractAppliedDirectiveTemplates();
+        }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void ValidateOrThrow()
         {
             if (!_isParsed)
@@ -120,66 +120,40 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                         $"Each segment of the route must conform to standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )",
                         this.ObjectType);
             }
+
+            foreach (var directive in this.Directives)
+                directive.ValidateOrThrow();
         }
 
-        /// <summary>
-        /// When overridden in a child class, this method builds the unique field path that will be assigned to this instance
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        protected abstract GraphFieldPath GenerateFieldPath();
+        /// <inheritdoc />
+        public virtual Type ObjectType { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets the singular concrete type this definition represents in the object graph.
-        /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; protected set; }
+        /// <inheritdoc />
+        public virtual string Description { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        /// <value>The description.</value>
-        public string Description { get; protected set; }
-
-        /// <summary>
-        /// Gets the name of the item on the object graph as it is conveyed in an introspection request.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public virtual string Name => this.Route?.Name;
 
-        /// <summary>
-        /// Gets or sets a the canonical path on the graph where this item sits.
-        /// </summary>
-        /// <value>The route.</value>
+        /// <inheritdoc />
         public GraphFieldPath Route { get; protected set; }
 
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public abstract string InternalFullName { get; }
 
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public abstract string InternalName { get; }
 
-        /// <summary>
-        /// Gets the attribute provider for this template item.
-        /// </summary>
-        /// <value>The attribute provider.</value>
-        protected ICustomAttributeProvider AttributeProvider { get; }
+        /// <inheritdoc />
+        public ICustomAttributeProvider AttributeProvider { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance was explictly declared as a graph item via acceptable attribution or
-        /// if it was parsed as a matter of completeness.
-        /// </summary>
-        /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public virtual bool IsExplicitDeclaration
         {
             get
             {
+                // this may be called prior to parsing
+                // and this value needs to be correct regardless
+                // of parse status
                 if (_isExplicitlyDeclared.HasValue)
                     return _isExplicitlyDeclared.Value;
 
@@ -196,5 +170,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 return _isExplicitlyDeclared.Value;
             }
         }
+
+        /// <inheritdoc />
+        public IEnumerable<AppliedDirectiveTemplate> Directives { get; private set; }
     }
 }

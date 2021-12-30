@@ -35,7 +35,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name of the union as it appears in the target schema (case sensitive).</param>
         /// <param name="typeResolver">The type resolver used to match field resolve values with
         /// expected graph types in this union.</param>
-        public UnionGraphType(string name, IUnionTypeMapper typeResolver)
+        /// <param name="directives">The collection of directives
+        /// to execute against this union when it is added to a schema.</param>
+        public UnionGraphType(
+            string name,
+            IUnionTypeMapper typeResolver,
+            IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
 
@@ -43,6 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             _types = ImmutableHashSet.Create<Type>();
             _names = ImmutableHashSet.Create<string>();
             this.Publish = true;
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
         }
 
         /// <inheritdoc />
@@ -92,5 +98,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IUnionTypeMapper TypeMapper { get; set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

@@ -9,6 +9,10 @@
 
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
+    using System;
+    using System.Collections.Generic;
+    using GraphQL.AspNet.Internal.TypeTemplates;
+
     /// <summary>
     /// An item that is part of a <see cref="ISchema"/>.
     /// </summary>
@@ -27,5 +31,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The publically referenced description of this field in the type system.</value>
         string Description { get; }
+
+        /// <summary>
+        /// Gets a collection of directives applied to this schema item
+        /// when it was instantiated in a schema.
+        /// </summary>
+        /// <value>The directives.</value>
+        IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

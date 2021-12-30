@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using System.Linq;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.InterfaceTestData;
     using NUnit.Framework;
 
@@ -39,6 +40,20 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             {
                 var template = new InterfaceGraphTypeTemplate(typeof(GraphInterfaceTemplateTests));
             });
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var template = new InterfaceGraphTypeTemplate(typeof(IInterfaceWithDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.Directives.Count());
+
+            var appliedDirective = template.Directives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
+            Assert.AreEqual(new object[] { 8, "big face" }, appliedDirective.Arguments);
         }
     }
 }

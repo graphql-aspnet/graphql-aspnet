@@ -29,8 +29,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
         /// <param name="objectType">The concrete type that this graphtype is made from.</param>
-        public ObjectGraphType(string name, Type objectType)
-            : base(name)
+        /// <param name="directives">The directives applied to this object
+        /// when its added to a schema.</param>
+        public ObjectGraphType(
+            string name,
+            Type objectType,
+            IAppliedDirectiveCollection directives = null)
+            : base(name, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = this.ObjectType.FriendlyName();

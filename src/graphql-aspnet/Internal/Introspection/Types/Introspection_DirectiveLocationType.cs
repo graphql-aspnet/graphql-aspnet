@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                     continue;
 
                 var description = fi.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-                this.AddOption(new GraphEnumOption(this.ObjectType, value.ToString(), description, true, false, null));
+                this.AddOption(new GraphEnumOption(value.ToString(), description, false, null));
             }
         }
     }
