@@ -34,17 +34,20 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="variableData">The variable data.</param>
         /// <param name="defaultFieldSources">A collection of objects to use
         /// when attempting to resolve source objects for any down stream fields.</param>
+        /// <param name="user">The user data used to process the execution request, if any.</param>
         public GraphFieldExecutionContext(
             IGraphExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IResolvedVariableCollection variableData,
-            DefaultFieldSourceCollection defaultFieldSources = null)
+            DefaultFieldSourceCollection defaultFieldSources = null,
+            ClaimsPrincipal user = null)
              : base(parentContext)
         {
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
             this.VariableData = variableData;
             this.ResolvedSourceItems = new List<GraphDataItem>();
             this.DefaultFieldSources = defaultFieldSources ?? new DefaultFieldSourceCollection();
+            this.User = user;
         }
 
         /// <summary>

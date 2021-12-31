@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc/>
-        protected override GraphInputArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
+        protected override GraphArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
         {
             if (this.Route.RootCollection == Execution.GraphCollection.Subscription)
             {

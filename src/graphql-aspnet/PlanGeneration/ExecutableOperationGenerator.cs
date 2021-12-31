@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.PlanGeneration
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -209,9 +210,9 @@ namespace GraphQL.AspNet.PlanGeneration
 
             foreach (var directive in queryDirectives)
             {
-                var directiveContext = new GraphDirectiveExecutionContext(
-                    directive.Location,
+                var directiveContext = new DirectiveInvocationContext(
                     directive.Directive,
+                    directive.Location,
                     directive.Node.Location.AsOrigin());
 
                 // gather arguments

@@ -82,6 +82,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the arguments defined on the method this instance represents.
         /// </summary>
         /// <value>The arguments.</value>
-        IReadOnlyList<IGraphInputArgumentTemplate> Arguments { get; }
+        IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
     }
 }

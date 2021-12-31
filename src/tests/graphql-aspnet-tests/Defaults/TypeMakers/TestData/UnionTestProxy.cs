@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Default.TypeMakers.TestData
+namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 {
     using System;
     using System.Collections.Generic;

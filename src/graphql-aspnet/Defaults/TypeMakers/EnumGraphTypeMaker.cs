@@ -48,9 +48,13 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             var requirements = template.DeclarationRequirements ?? _schema.Configuration.DeclarationOptions.FieldDeclarationRequirements;
 
+            // enum level directives
+            var enumDirectives = template.CreateAppliedDirectives();
+
             var graphType = new EnumGraphType(
                 _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(template.Name),
-                concreteType)
+                concreteType,
+                enumDirectives)
             {
                 Description = template.Description,
                 Publish = template.Publish,
@@ -60,13 +64,17 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var enumValuesToInclude = template.Values.Where(value => requirements.AllowImplicitEnumValues() || value.IsExplicitDeclaration);
             foreach (var value in enumValuesToInclude)
             {
-                var modifiedValue = new GraphEnumOption(
+                // enum option directives
+                var valueDirectives = value.CreateAppliedDirectives();
+
+                var valueOption = new GraphEnumOption(
                     _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
                     value.Description,
                     value.IsDeprecated,
-                    value.DeprecationReason);
+                    value.DeprecationReason,
+                    valueDirectives);
 
-                graphType.AddOption(modifiedValue);
+                graphType.AddOption(valueOption);
             }
 
             return new GraphTypeCreationResult()

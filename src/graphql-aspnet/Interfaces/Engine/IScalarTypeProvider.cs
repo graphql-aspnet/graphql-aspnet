@@ -51,21 +51,24 @@ namespace GraphQL.AspNet.Interfaces.Engine
         bool IsScalar(string scalarName);
 
         /// <summary>
-        /// Retrieves the mapped concrete type assigned to the given scalar name.
+        /// Retrieves the mapped concrete type assigned to the given scalar name or null if no
+        /// scalar is registered.
         /// </summary>
         /// <param name="scalarName">Name of the scalar.</param>
         /// <returns>Type.</returns>
         Type RetrieveConcreteType(string scalarName);
 
         /// <summary>
-        /// Retrieves the scalar by its defined graph type name.
+        /// Retrieves the scalar by its defined graph type name or null if no
+        /// scalar is registered.
         /// </summary>
         /// <param name="scalarName">Name of the scalar.</param>
         /// <returns>IScalarType.</returns>
         IScalarGraphType RetrieveScalar(string scalarName);
 
         /// <summary>
-        /// Retrieves the scalar by an assigned concrete type.
+        /// Retrieves the scalar by an assigned concrete type or null if no
+        /// scalar is registered.
         /// </summary>
         /// <param name="concreteType">Type of the concrete.</param>
         /// <returns>IScalarType.</returns>

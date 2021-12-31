@@ -163,12 +163,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the argument collection this directive requires for invocation.
         /// </summary>
         /// <value>The arguments.</value>
-        public IEnumerable<IGraphInputArgumentTemplate> Arguments
+        public IEnumerable<IGraphArgumentTemplate> Arguments
         {
             get
             {
                 var args = _templateMap.Values.FirstOrDefault()?.Arguments;
-                return args ?? Enumerable.Empty<IGraphInputArgumentTemplate>();
+                return args ?? Enumerable.Empty<IGraphArgumentTemplate>();
             }
         }
 

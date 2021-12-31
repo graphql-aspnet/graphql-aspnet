@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets a list of arguments this field can accept.
         /// </summary>
         /// <value>The parameters.</value>
-        IReadOnlyList<IGraphInputArgumentTemplate> Arguments { get; }
+        IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
 
         /// <summary>
         /// Gets the type of the object that supplies data to this field during a resolution. This is usually

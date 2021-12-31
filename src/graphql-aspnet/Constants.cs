@@ -446,6 +446,12 @@ namespace GraphQL.AspNet
             /// authorize a request to a field for the given context.
             /// </summary>
             public const string FIELD_AUTHORIZATION_PIPELINE = "Field Authorization Pipeline";
+
+            /// <summary>
+            /// the pipeline invoked to process any directive against a data target be that
+            /// during schema construction or during document execution.
+            /// </summary>
+            public const string DIRECTIVE_PIPELINE = "Directive Execution Pipeline";
         }
 
         /// <summary>

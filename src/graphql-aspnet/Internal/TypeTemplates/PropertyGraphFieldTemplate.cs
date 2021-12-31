@@ -154,7 +154,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets a list of parameters, in the order they are declared on this field.
         /// </summary>
         /// <value>The parameters.</value>
-        public override IReadOnlyList<IGraphInputArgumentTemplate> Arguments { get; } = new List<IGraphInputArgumentTemplate>();
+        public override IReadOnlyList<IGraphArgumentTemplate> Arguments { get; } = new List<IGraphArgumentTemplate>();
 
         /// <summary>
         /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').

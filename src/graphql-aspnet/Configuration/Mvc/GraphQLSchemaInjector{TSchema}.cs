@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -24,6 +23,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Middleware.DirectiveExecution;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.FieldSecurity;
     using GraphQL.AspNet.Middleware.QueryExecution;
@@ -132,10 +132,14 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var authPipelineHelper = new FieldSecurityPipelineHelper<TSchema>(_schemaBuilder.FieldAuthorizationPipeline);
             authPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
+            var directivePipelineHelper = new DirectiveExecutionPipelineHelper<TSchema>(_schemaBuilder.DirectiveExecutionPipeline);
+            directivePipelineHelper.AddDefaultMiddlewareComponents(_options);
+
             // register the DI entries for each pipeline
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldExecutionPipeline));
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldAuthorizationPipeline));
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
+            _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.DirectiveExecutionPipeline));
 
             this.RegisterEngineComponents();
 

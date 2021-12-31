@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal.Templating
+namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 {
     using System;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -17,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
     using Moq;
     using NUnit.Framework;
 
@@ -37,6 +39,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
             mock.Setup(x => x.ValueType).Returns(ScalarValueType.String);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             provider.RegisterCustomScalar(mock.Object);
 
@@ -66,6 +69,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -87,6 +91,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -108,6 +113,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -129,6 +135,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -150,6 +157,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -171,6 +179,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(null as TypeCollection);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -192,6 +201,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(new TypeCollection(typeof(string)));
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -213,6 +223,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(null as TypeCollection);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -234,6 +245,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -255,6 +267,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -276,6 +289,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(new TypeCollection(typeof(int)));
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -297,6 +311,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.OBJECT);
             mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -317,11 +332,73 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
             mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
             mock.Setup(x => x.SourceResolver).Returns(null as ILeafValueResolver);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(mock.Object));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
                 provider.RegisterCustomScalar(mock.Object);
             });
+        }
+
+        [Test]
+        public void NoDirectiveCollection_ThrowsException()
+        {
+            var provider = new DefaultScalarTypeProvider();
+            var mockResolver = new Mock<ILeafValueResolver>();
+
+            var mock = new Mock<IScalarGraphType>();
+            mock.Setup(x => x.Name).Returns("MyScalar");
+            mock.Setup(x => x.Description).Returns(null as string);
+            mock.Setup(x => x.ValueType).Returns(ScalarValueType.String);
+            mock.Setup(x => x.ObjectType).Returns(typeof(CustomScalarTypeRegistrationTests));
+            mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
+            mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
+            mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(null as IAppliedDirectiveCollection);
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                provider.RegisterCustomScalar(mock.Object);
+            });
+        }
+
+        [Test]
+        public void InvalidReferenceOnDirectiveCollection_ThrowsException()
+        {
+            var provider = new DefaultScalarTypeProvider();
+
+            var mockResolver = new Mock<ILeafValueResolver>();
+            var otherItem = new Mock<ISchemaItem>();
+
+            var mock = new Mock<IScalarGraphType>();
+            mock.Setup(x => x.Name).Returns("MyScalar");
+            mock.Setup(x => x.Description).Returns(null as string);
+            mock.Setup(x => x.ValueType).Returns(ScalarValueType.String);
+            mock.Setup(x => x.ObjectType).Returns(typeof(CustomScalarTypeRegistrationTests));
+            mock.Setup(x => x.OtherKnownTypes).Returns(TypeCollection.Empty);
+            mock.Setup(x => x.Kind).Returns(TypeKind.SCALAR);
+            mock.Setup(x => x.SourceResolver).Returns(mockResolver.Object);
+            mock.Setup(x => x.AppliedDirectives).Returns(new AppliedDirectiveCollection(otherItem.Object));
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                provider.RegisterCustomScalar(mock.Object);
+            });
+        }
+
+        [Test]
+        public void ScalarMadeFrom_BaseScalarType_ParsesDirectives()
+        {
+            var scalar = new CustomScalarWithDirectives();
+            Assert.IsNotNull(scalar);
+
+            Assert.AreEqual(1, scalar.AppliedDirectives.Count);
+            Assert.AreEqual(scalar, scalar.AppliedDirectives.Parent);
+
+            var appliedDirective = scalar.AppliedDirectives[0];
+            Assert.IsNotNull(appliedDirective);
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 87, "scalar arg" }, appliedDirective.Arguments);
         }
 
         [Test]

@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration
         void Add(InputArgument input);
 
         /// <summary>
-        /// Merges the supplied variable data into a colleciton a new collection of arguments
+        /// Merges the supplied variable data into a new collection of arguments
         /// capable of fulfilling a request. Any deferred arguments in this instance are resolved
         /// to the data contained in the provided dataset or null if not found.
         /// </summary>

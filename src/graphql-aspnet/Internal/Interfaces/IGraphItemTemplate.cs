@@ -12,15 +12,14 @@ namespace GraphQL.AspNet.Internal.Interfaces
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An interface describing an arbitrary <see cref="Type"/> that will be injected into
     /// an object graph. This is the base interface that will universially capture all template types.
     /// </summary>
-    public interface IGraphItemTemplate
+    public interface IGraphItemTemplate : INamedItem
     {
         /// <summary>
         /// When overridden in a child class, allows the template to perform some final validation checks
@@ -40,20 +39,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <value>The attribute provider.</value>
         ICustomAttributeProvider AttributeProvider { get; }
-
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        string Name { get; }
-
-        /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        string Description { get; }
 
         /// <summary>
         /// Gets a the canonical path on the graph where this item sits.
@@ -91,6 +76,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the set of directives declared on this graph item.
         /// </summary>
         /// <value>The directives.</value>
-        IEnumerable<AppliedDirectiveTemplate> Directives { get; }
+        IEnumerable<IAppliedDirectiveTemplate> Directives { get; }
     }
 }

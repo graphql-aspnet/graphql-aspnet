@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// The default concrete representation of a field execution context.
     /// </summary>
-    /// <seealso cref="GraphQL.AspNet.Interfaces.Execution.IGraphFieldInvocationContext" />
+    /// <seealso cref="IGraphFieldInvocationContext" />
     [Serializable]
     [DebuggerDisplay("Field Context: {Name} (Restict To: {ExpectedSourceTypeName}, Children = {ChildContexts.Count})")]
     public class FieldInvocationContext : IGraphFieldInvocationContext

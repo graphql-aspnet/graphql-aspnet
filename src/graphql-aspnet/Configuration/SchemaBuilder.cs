@@ -33,51 +33,34 @@ namespace GraphQL.AspNet.Configuration
             this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(options, Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
             this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
             this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
+            this.DirectiveExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext>(options, Constants.Pipelines.DIRECTIVE_PIPELINE);
 
             this.Options = options;
         }
 
-        /// <summary>
-        /// Gets a builder to construct the field execution pipeline. This pipeline is invoked per field resolution request to generate a
-        /// piece of data in the process of fulfilling the primary query.
-        /// </summary>
-        /// <value>The field execution pipeline.</value>
-        public SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> FieldExecutionPipeline { get; }
-
-        /// <summary>
-        /// Gets a builder to construct the field authorization pipeline. This pipeline is invoked per field resolution request to authorize
-        /// the user to the field allowing or denying them access to it.
-        /// </summary>
-        /// <value>The field authorization pipeline.</value>
-        public SchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> FieldAuthorizationPipeline { get; }
-
-        /// <summary>
-        /// Gets a builder to construct the primary query pipeline. This pipeline oversees the processing of a query and is invoked
-        /// directly by the http handler.
-        /// </summary>
-        /// <value>The query execution pipeline.</value>
+        /// <inheritdoc cref="ISchemaBuilder{TSchema}.QueryExecutionPipeline" />
         public SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> QueryExecutionPipeline { get; }
 
-        /// <summary>
-        /// Gets a builder to construct the field execution pipeline. This pipeline is invoked per field resolution request to generate a
-        /// piece of data in the process of fulfilling the primary query.
-        /// </summary>
-        /// <value>The field execution pipeline.</value>
+        /// <inheritdoc cref="ISchemaBuilder{TSchema}.FieldExecutionPipeline" />
+        public SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> FieldExecutionPipeline { get; }
+
+        /// <inheritdoc cref="ISchemaBuilder{TSchema}.FieldAuthorizationPipeline" />
+        public SchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> FieldAuthorizationPipeline { get; }
+
+        /// <inheritdoc cref="ISchemaBuilder{TSchema}.DirectiveExecutionPipeline" />
+        public SchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
+
+        /// <inheritdoc />
         ISchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> ISchemaBuilder<TSchema>.FieldExecutionPipeline => this.FieldExecutionPipeline;
 
-        /// <summary>
-        /// Gets a builder to construct the field authorization pipeline. This pipeline is invoked per field resolution request to authorize
-        /// the user to the field allowing or denying them access to it.
-        /// </summary>
-        /// <value>The field authorization pipeline.</value>
+        /// <inheritdoc />
         ISchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> ISchemaBuilder<TSchema>.FieldAuthorizationPipeline => this.FieldAuthorizationPipeline;
 
-        /// <summary>
-        /// Gets a builder to construct the primary query pipeline. This pipeline oversees the processing of a query and is invoked
-        /// directly by the http handler.
-        /// </summary>
-        /// <value>The query execution pipeline.</value>
+        /// <inheritdoc />
         ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> ISchemaBuilder<TSchema>.QueryExecutionPipeline => this.QueryExecutionPipeline;
+
+        /// <inheritdoc />
+        ISchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> ISchemaBuilder<TSchema>.DirectiveExecutionPipeline => this.DirectiveExecutionPipeline;
 
         /// <summary>
         /// Gets the completed options used to configure this schema.

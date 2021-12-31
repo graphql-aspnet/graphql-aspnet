@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
         {
         }
 
-        [DirectiveLocations(DirectiveLocation.AllTypeSystemLocations)]
+        [DirectiveLocations(DirectiveLocation.AllTypeDeclarationLocations)]
         public IGraphActionResult Execute(int arg1, string arg2)
         {
             return null;

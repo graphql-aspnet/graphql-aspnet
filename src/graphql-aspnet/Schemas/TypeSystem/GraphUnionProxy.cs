@@ -54,15 +54,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public virtual string Name { get; }
 
         /// <inheritdoc />
-        public string Description { get; }
+        public virtual string Description { get; }
 
         /// <inheritdoc />
-        public HashSet<Type> Types { get; }
+        public virtual HashSet<Type> Types { get; }
 
         /// <inheritdoc />
-        public bool Publish => true;
+        public virtual bool Publish => true;
     }
 }

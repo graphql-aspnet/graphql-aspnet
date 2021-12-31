@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution
         /// Adds all default middleware components, in standard order, to the pipeline.
         /// </summary>
         /// <param name="options">The configuration options to use when deriving the components to include.</param>
-        /// <returns>GraphQL.AspNet.Middleware.FieldExecution.FieldExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        /// <returns>FieldExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public FieldExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(SchemaOptions options = null)
         {
             this.AddValidateContextMiddleware();

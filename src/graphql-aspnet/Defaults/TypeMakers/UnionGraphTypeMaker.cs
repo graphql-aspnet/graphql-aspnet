@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -34,16 +35,21 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// Creates a union graph type from the given proxy.
         /// </summary>
         /// <param name="proxy">The proxy to convert to a union.</param>
-        /// <param name="ownerKind">The typekind of the <see cref="IGraphType"/> that sponsors this union.</param>
         /// <returns>IUnionGraphType.</returns>
-        public IUnionGraphType CreateGraphType(IGraphUnionProxy proxy, TypeKind ownerKind)
+        public IUnionGraphType CreateGraphType(IGraphUnionProxy proxy)
         {
             if (proxy == null)
                 return null;
 
+            var directiveTemplates = proxy.GetType().ExtractAppliedDirectiveTemplates(proxy);
+            foreach (var dt in directiveTemplates)
+                dt.ValidateOrThrow();
+
+            var directives = directiveTemplates.CreateAppliedDirectives();
+
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var name = formatter.FormatGraphTypeName(proxy.Name);
-            var union = new UnionGraphType(name, (IUnionTypeMapper)proxy)
+            var union = new UnionGraphType(name, (IUnionTypeMapper)proxy, directives)
             {
                 Description = proxy.Description,
                 Publish = proxy.Publish,
@@ -52,7 +58,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             foreach (var type in proxy.Types)
             {
                 union.AddPossibleGraphType(
-                    formatter.FormatGraphTypeName(GraphTypeNames.ParseName(type, ownerKind)),
+                    formatter.FormatGraphTypeName(GraphTypeNames.ParseName(type, TypeKind.OBJECT)),
                     type);
             }
 

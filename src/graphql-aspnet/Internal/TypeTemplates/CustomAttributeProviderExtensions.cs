@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
@@ -24,17 +25,27 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="itemTemplate">The item template which may contain applied directives.</param>
         /// <returns>IEnumerable&lt;AppliedDirectiveTemplate&gt;.</returns>
-        public static IEnumerable<AppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this IGraphItemTemplate itemTemplate)
+        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this IGraphItemTemplate itemTemplate)
         {
-            var directiveAttribs = itemTemplate
-                                    .AttributeProvider
+            return itemTemplate.AttributeProvider.ExtractAppliedDirectiveTemplates(itemTemplate);
+        }
+
+        /// <summary>
+        /// Retrieves the directive types declared on this item template.
+        /// </summary>
+        /// <param name="attributeProvider">The attribute provider.</param>
+        /// <param name="owner">The owner of the created templates.</param>
+        /// <returns>IEnumerable&lt;AppliedDirectiveTemplate&gt;.</returns>
+        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this ICustomAttributeProvider attributeProvider, INamedItem owner)
+        {
+            var directiveAttribs = attributeProvider
                                     .AttributesOfType<ApplyDirectiveAttribute>();
 
-            var directiveList = new List<AppliedDirectiveTemplate>();
+            var directiveList = new List<IAppliedDirectiveTemplate>();
             foreach (var directiveAttrib in directiveAttribs)
             {
                 var template = new AppliedDirectiveTemplate(
-                    itemTemplate,
+                    owner,
                     directiveAttrib.DirectiveType,
                     directiveAttrib.Arguments);
 

@@ -13,11 +13,12 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A maker capable of turning a <see cref="IGraphInputArgumentTemplate"/> into a usable <see cref="IGraphFieldArgument"/> on a graph field.
+    /// A maker capable of turning a <see cref="IGraphArgumentTemplate"/> into a usable <see cref="IGraphFieldArgument"/> on a graph field.
     /// </summary>
-    public class GraphArgumentMaker
+    public class GraphArgumentMaker : IGraphArgumentMaker
     {
         private readonly ISchema _schema;
 
@@ -30,14 +31,12 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Creates a single graph field from the provided template using hte rules of this maker and the contained schema.
-        /// </summary>
-        /// <param name="template">The template to generate a field from.</param>
-        /// <returns>IGraphField.</returns>
-        public GraphArgumentCreationResult CreateArgument(IGraphInputArgumentTemplate template)
+        /// <inheritdoc />
+        public GraphArgumentCreationResult CreateArgument(IGraphArgumentTemplate template)
         {
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+
+            var directives = template.CreateAppliedDirectives();
 
             var argument = new GraphFieldArgument(
                 formatter.FormatFieldName(template.Name),
@@ -47,7 +46,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 template.InternalFullName,
                 template.ObjectType,
                 template.DefaultValue,
-                template.Description);
+                template.Description,
+                directives);
 
             var result = new GraphArgumentCreationResult();
             result.Argument = argument;

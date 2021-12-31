@@ -172,6 +172,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public IEnumerable<AppliedDirectiveTemplate> Directives { get; private set; }
+        public IEnumerable<IAppliedDirectiveTemplate> Directives { get; private set; }
     }
 }

@@ -63,12 +63,8 @@ namespace GraphQL.AspNet.Defaults
 #endif
         }
 
-        /// <summary>
-        /// Determines whether the specified type is considered a leaf type in the graph system (Scalars and enumerations).
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if the specified type is leaf; otherwise, <c>false</c>.</returns>
-        public bool IsLeaf(Type type)
+        /// <inheritdoc />
+        public virtual bool IsLeaf(Type type)
         {
             if (type == null)
                 return false;
@@ -79,14 +75,8 @@ namespace GraphQL.AspNet.Defaults
             return _scalarsByType.ContainsKey(type);
         }
 
-        /// <summary>
-        /// Converts the given scalar reference to its formal reference type removing any
-        /// nullability modifications that may be applied (e.g. converts 'int?' to 'int'). If the supplied
-        /// type is already a a formal reference or is not a valid scalar type it is returned unchanged.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>Type.</returns>
-        public Type EnsureBuiltInTypeReference(Type type)
+        /// <inheritdoc />
+        public virtual Type EnsureBuiltInTypeReference(Type type)
         {
             if (type != null && _scalarsByType.ContainsKey(type))
             {
@@ -96,62 +86,44 @@ namespace GraphQL.AspNet.Defaults
             return type;
         }
 
-        /// <summary>
-        /// Determines whether the specified concrete type is a known scalar.
-        /// </summary>
-        /// <param name="concreteType">Type of the concrete.</param>
-        /// <returns><c>true</c> if the specified concrete type is a scalar; otherwise, <c>false</c>.</returns>
-        public bool IsScalar(Type concreteType)
+        /// <inheritdoc />
+        public virtual bool IsScalar(Type concreteType)
         {
             return concreteType != null && _scalarsByType.ContainsKey(concreteType);
         }
 
-        /// <summary>
-        /// Determines whether the specified name represents a known scalar.
-        /// </summary>
-        /// <param name="scalarName">Name of the scalar.</param>
-        /// <returns><c>true</c> if the specified name is a scalar; otherwise, <c>false</c>.</returns>
-        public bool IsScalar(string scalarName)
+        /// <inheritdoc />
+        public virtual bool IsScalar(string scalarName)
         {
-            return _scalarsByName.ContainsKey(scalarName);
+            return scalarName != null && _scalarsByName.ContainsKey(scalarName);
         }
 
-        /// <summary>
-        /// Retrieves the mapped concrete type assigned to the given scalar name.
-        /// </summary>
-        /// <param name="scalarName">Name of the scalar.</param>
-        /// <returns>Type.</returns>
-        public Type RetrieveConcreteType(string scalarName)
+        /// <inheritdoc />
+        public virtual Type RetrieveConcreteType(string scalarName)
         {
-            return _scalarsTypesByName[scalarName];
+            if (scalarName != null && _scalarsTypesByName.ContainsKey(scalarName))
+                return _scalarsTypesByName[scalarName];
+            return null;
         }
 
-        /// <summary>
-        /// Retrieves the scalar by its defined graph type name.
-        /// </summary>
-        /// <param name="scalarName">Name of the scalar.</param>
-        /// <returns>IScalarType.</returns>
-        public IScalarGraphType RetrieveScalar(string scalarName)
+        /// <inheritdoc />
+        public virtual IScalarGraphType RetrieveScalar(string scalarName)
         {
-            return _scalarsByName[scalarName];
+            if (scalarName != null && _scalarsByName.ContainsKey(scalarName))
+                return _scalarsByName[scalarName];
+            return null;
         }
 
-        /// <summary>
-        /// Retrieves the scalar by an assigned concrete type.
-        /// </summary>
-        /// <param name="concreteType">Type of the concrete.</param>
-        /// <returns>IScalarType.</returns>
-        public IScalarGraphType RetrieveScalar(Type concreteType)
+        /// <inheritdoc />
+        public virtual IScalarGraphType RetrieveScalar(Type concreteType)
         {
-            return _scalarsByType[concreteType];
+            if (concreteType != null && _scalarsByType.ContainsKey(concreteType))
+                return _scalarsByType[concreteType];
+            return null;
         }
 
-        /// <summary>
-        /// Adds a new scalar type to the global collection of recognized scalar values. These graph types are used as
-        /// singleton instances across all schema's and all querys.
-        /// </summary>
-        /// <param name="graphType">The scalar type to register.</param>
-        public void RegisterCustomScalar(IScalarGraphType graphType)
+        /// <inheritdoc />
+        public virtual void RegisterCustomScalar(IScalarGraphType graphType)
         {
             Validation.ThrowIfNull(graphType, nameof(graphType));
             if (string.IsNullOrWhiteSpace(graphType.Name))
@@ -197,6 +169,13 @@ namespace GraphQL.AspNet.Defaults
                 throw new GraphTypeDeclarationException(
                     $"Custom scalars must supply a value for '{nameof(graphType.OtherKnownTypes)}', it cannot be null. " +
                     "Use an empty list if there are no other known types.");
+            }
+
+            if (graphType.AppliedDirectives == null || graphType.AppliedDirectives.Parent != graphType)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"Custom scalars must supply a value for '{nameof(graphType.AppliedDirectives)}', it cannot be null. " +
+                    $"The '{nameof(IAppliedDirectiveCollection.Parent)}' property must also be set to the scalar itself.");
             }
 
             var isAScalarAlready = this.IsScalar(graphType.Name);
@@ -246,19 +225,13 @@ namespace GraphQL.AspNet.Defaults
             }
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<IScalarGraphType> GetEnumerator()
+        /// <inheritdoc />
+        public virtual IEnumerator<IScalarGraphType> GetEnumerator()
         {
             return _scalarsByName.Values.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

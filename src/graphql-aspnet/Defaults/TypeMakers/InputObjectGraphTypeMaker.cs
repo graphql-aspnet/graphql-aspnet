@@ -47,9 +47,13 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphTypeCreationResult();
 
+            // gather directives
+            var directives = template.CreateAppliedDirectives();
+
             var inputObjectType = new InputObjectGraphType(
                 formatter.FormatGraphTypeName(template.Name),
-                concreteType)
+                concreteType,
+                directives)
             {
                 Description = template.Description,
                 Publish = template.Publish,

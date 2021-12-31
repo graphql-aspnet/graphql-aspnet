@@ -9,6 +9,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -39,7 +40,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.Publish = true;
             this.SourceResolver = this;
             this.Serializer = this;
-            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
+
+            // since scalars are special
+            // we can't do any validation here on directives decalred on the scalar
+            // must rely on runtime validation in the execution pipeline
+            foreach (var attrib in this.GetType().AttributesOfType<ApplyDirectiveAttribute>(true))
+            {
+                var appliedDirective = new AppliedDirective(attrib.DirectiveType, attrib.Arguments);
+                this.AppliedDirectives.Add(appliedDirective);
+            }
+
+            if (directives != null)
+            {
+                foreach (var directive in directives)
+                    this.AppliedDirectives.Add(directive);
+            }
         }
 
         /// <inheritdoc />

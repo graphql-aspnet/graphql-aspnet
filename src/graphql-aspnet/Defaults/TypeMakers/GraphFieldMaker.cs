@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -24,21 +25,19 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     /// </summary>
     public class GraphFieldMaker : IGraphFieldMaker
     {
-        private readonly ISchema _schema;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldMaker"/> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
         public GraphFieldMaker(ISchema schema)
         {
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
         /// <inheritdoc />
-        public GraphFieldCreationResult CreateField(IGraphTypeFieldTemplate template)
+        public virtual GraphFieldCreationResult CreateField(IGraphTypeFieldTemplate template)
         {
-            var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+            var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult();
 
             // if the owner of this field declared top level objects append them to the
@@ -61,7 +60,9 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             if (template.Arguments != null)
             {
-                var argumentMaker = new GraphArgumentMaker(_schema);
+                var argumentMaker = this.CreateArgumentMaker();
+                Validation.ThrowIfNull(argumentMaker, nameof(argumentMaker));
+
                 foreach (var argTemplate in template.Arguments)
                 {
                     var argumentResult = argumentMaker.CreateArgument(argTemplate);
@@ -75,12 +76,22 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             if (template.UnionProxy != null)
             {
-                var unionMaker = new UnionGraphTypeMaker(_schema);
-                result.AddDependent(unionMaker.CreateGraphType(template.UnionProxy, template.OwnerTypeKind));
+                var unionMaker = new UnionGraphTypeMaker(this.Schema);
+                result.AddDependent(unionMaker.CreateGraphType(template.UnionProxy));
             }
 
             result.Field = field;
             return result;
+        }
+
+        /// <summary>
+        /// Creates an argument maker that will be used to create all the
+        /// arguments of a given field.
+        /// </summary>
+        /// <returns>IGraphArgumentMaker.</returns>
+        protected virtual IGraphArgumentMaker CreateArgumentMaker()
+        {
+            return new GraphArgumentMaker(this.Schema);
         }
 
         /// <summary>
@@ -95,6 +106,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             IGraphTypeFieldTemplate template,
             List<FieldSecurityGroup> securityGroups)
         {
+            var directives = template.CreateAppliedDirectives();
+
             switch (template.FieldSource)
             {
                 case GraphFieldSource.Method:
@@ -107,7 +120,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                         template.DeclaredReturnType,
                         template.Mode,
                         template.CreateResolver(),
-                        securityGroups);
+                        securityGroups,
+                        directives);
 
                 case GraphFieldSource.Property:
                     return new PropertyGraphField(
@@ -119,11 +133,18 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                         template.DeclaredReturnType,
                         template.Mode,
                         template.CreateResolver(),
-                        securityGroups);
+                        securityGroups,
+                        directives);
 
                 default:
                     throw new ArgumentOutOfRangeException($"Template field source of {template.FieldSource.ToString()} is not supported by {this.GetType().FriendlyName()}.");
             }
         }
+
+        /// <summary>
+        /// Gets the schema this field maker is creating fields for.
+        /// </summary>
+        /// <value>The schema.</value>
+        protected ISchema Schema { get; }
     }
 }

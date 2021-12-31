@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// An input argument template that is capable of parsing additional information
     /// related to subscriptions.
     /// </summary>
-    public class GraphSubscriptionInputArgumentTemplate : GraphInputArgumentTemplate
+    public class GraphSubscriptionInputArgumentTemplate : GraphArgumentTemplate
     {
         private readonly bool _requireSourceDeclaration;
 

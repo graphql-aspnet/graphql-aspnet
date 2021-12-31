@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Default.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using Moq;
     using NUnit.Framework;
@@ -157,6 +157,83 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.IsNotNull(field);
             Assert.AreEqual(Constants.ScalarNames.INT, field.TypeExpression.TypeName);
             CollectionAssert.AreEqual(TypeExpressions.IsNotNull.ToTypeWrapperSet(), field.TypeExpression.Wrappers);
+        }
+
+        [Test]
+        public void PropertyGraphField_DirectivesAreAppliedToCreatedField()
+        {
+            var server = new TestServerBuilder().Build();
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var parent = obj.Object;
+            var propInfo = typeof(ObjectDirectiveTestItem).GetProperty(nameof(ObjectDirectiveTestItem.Prop1));
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var field = this.MakeGraphField(template);
+
+            Assert.AreEqual(1, field.AppliedDirectives.Count);
+            Assert.AreEqual(field, field.AppliedDirectives.Parent);
+
+            var appliedDirective = field.AppliedDirectives[0];
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 13, "prop field arg" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void MethodGraphField_DirectivesAreAppliedToCreatedField()
+        {
+            var server = new TestServerBuilder().Build();
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var parent = obj.Object;
+            var methodInfo = typeof(ObjectDirectiveTestItem).GetMethod(nameof(ObjectDirectiveTestItem.Method1));
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var field = this.MakeGraphField(template);
+
+            Assert.AreEqual(1, field.AppliedDirectives.Count);
+            Assert.AreEqual(field, field.AppliedDirectives.Parent);
+
+            var appliedDirective = field.AppliedDirectives[0];
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 14, "method field arg" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void Arguments_DirectivesAreApplied()
+        {
+            var server = new TestServerBuilder().Build();
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var parent = obj.Object;
+            var methodInfo = typeof(ObjectDirectiveTestItem).GetMethod(nameof(ObjectDirectiveTestItem.MethodWithArgDirectives));
+            var template = new MethodGraphFieldTemplate(parent, methodInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+
+            var field = this.MakeGraphField(template);
+
+            Assert.AreEqual(0, field.AppliedDirectives.Count);
+            Assert.AreEqual(field, field.AppliedDirectives.Parent);
+            var arg = field.Arguments["arg1"];
+
+            Assert.AreEqual(1, arg.AppliedDirectives.Count);
+            Assert.AreEqual(arg, arg.AppliedDirectives.Parent);
+
+            var appliedDirective = field.Arguments["arg1"].AppliedDirectives[0];
+
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 15, "arg arg" }, appliedDirective.Arguments);
         }
     }
 }

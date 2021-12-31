@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Default.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
@@ -200,6 +200,22 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(template.Name, objectGraphType.Name);
             Assert.IsNotNull(objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(SelfReferencingObject.Name)));
             Assert.IsNotNull(objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(SelfReferencingObject.Parent)));
+        }
+
+        [Test]
+        public void CreateGraphType_DirectivesAreApplied()
+        {
+            var result = this.MakeGraphType(typeof(ObjectDirectiveTestItem), TypeKind.OBJECT);
+            var objectType = result.GraphType as IObjectGraphType;
+
+            Assert.IsNotNull(objectType);
+            Assert.AreEqual(1, objectType.AppliedDirectives.Count);
+            Assert.AreEqual(objectType, objectType.AppliedDirectives.Parent);
+
+            var appliedDirective = objectType.AppliedDirectives[0];
+            Assert.IsNotNull(appliedDirective);
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 12, "object directive" }, appliedDirective.Arguments);
         }
     }
 }

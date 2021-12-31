@@ -12,13 +12,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A template outlining a directive to be invoked against a schema
     /// item.
     /// </summary>
-    public class AppliedDirectiveTemplate
+    public class AppliedDirectiveTemplate : IAppliedDirectiveTemplate
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
@@ -26,7 +28,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="owner">The item to which the directive would be applied.</param>
         /// <param name="type">The type.</param>
         /// <param name="arguments">The arguments.</param>
-        public AppliedDirectiveTemplate(IGraphItemTemplate owner, Type type, params object[] arguments)
+        public AppliedDirectiveTemplate(INamedItem owner, Type type, params object[] arguments)
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             this.Directive = type;
@@ -34,44 +36,46 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// Parses this template setting various properties needed to
-        /// construct it.
+        /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
         /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="arguments">The arguments.</param>
+        public AppliedDirectiveTemplate(Type type, params object[] arguments)
+        {
+            this.Directive = type;
+            this.Arguments = arguments;
+        }
+
+        /// <inheritdoc />
         public virtual void Parse()
         {
         }
 
-        /// <summary>
-        /// Validates that this template is valid and correct
-        /// or throws an exception.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void ValidateOrThrow()
         {
             if (this.Directive == null || !Validation.IsCastable<GraphDirective>(this.Directive))
             {
                 throw new GraphTypeDeclarationException(
                     "Invalid Applied Directive. A directive was assigned to " +
-                    $"the item {this.Owner.InternalFullName} but the supplied type '{this.Directive?.GetType().FriendlyGraphTypeName() ?? "-null-"}' " +
+                    $"the item {this.Owner.Name} but the supplied type '{this.Directive?.GetType().FriendlyGraphTypeName() ?? "-null-"}' " +
                     $"is not a valid directive. All applied directive must inherit from {nameof(GraphDirective)}.");
             }
         }
 
-        /// <summary>
-        /// Gets the owner template of this directive invocation.
-        /// </summary>
-        /// <value>The owner.</value>
-        public IGraphItemTemplate Owner { get; }
+        /// <inheritdoc />
+        public virtual IAppliedDirective CreateAppliedDirective()
+        {
+            return new AppliedDirective(this.Directive, this.Arguments);
+        }
 
-        /// <summary>
-        /// Gets the directive to be invoked.
-        /// </summary>
-        /// <value>The directive.</value>
+        /// <inheritdoc />
+        public INamedItem Owner { get; }
+
+        /// <inheritdoc />
         public Type Directive { get; }
 
-        /// <summary>
-        /// Gets the argument values to pass to the directive when its invoked.
-        /// </summary>
-        /// <value>The arguments.</value>
+        /// <inheritdoc />
         public object[] Arguments { get; }
     }
 }

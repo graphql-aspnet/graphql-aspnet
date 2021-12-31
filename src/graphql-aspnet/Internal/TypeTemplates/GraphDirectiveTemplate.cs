@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override TypeKind Kind => TypeKind.DIRECTIVE;
 
         /// <inheritdoc />
-        public IEnumerable<IGraphInputArgumentTemplate> Arguments => this.Methods.Arguments;
+        public IEnumerable<IGraphArgumentTemplate> Arguments => this.Methods.Arguments;
 
         /// <inheritdoc />
         public DirectiveInvocationPhase InvocationPhases { get; private set;  }

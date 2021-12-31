@@ -8,11 +8,13 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 {
+    using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Default.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -22,17 +24,16 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void Parse_EnumWithUndeclaredValues_WhenConfigRequiresDeclaration_DoesntIncludeUndeclared_InGraphType()
         {
-            var template = TemplateHelper.CreateEnumTemplate<EnumWithUndeclaredValues>();
+            var schema = new TestServerBuilder().AddGraphQL(o =>
+                        {
+                            o.DeclarationOptions.FieldDeclarationRequirements = TemplateDeclarationRequirements.EnumValue;
+                        })
+                        .Build()
+                        .Schema;
 
-            var builder = new TestServerBuilder();
-            builder.AddGraphQL(o =>
-            {
-                o.DeclarationOptions.FieldDeclarationRequirements = TemplateDeclarationRequirements.EnumValue;
-            });
+            var maker = new EnumGraphTypeMaker(schema);
 
-            var server = builder.Build();
-
-            var graphType = server.CreateGraphType(template.ObjectType, TypeKind.ENUM).GraphType as IEnumGraphType;
+            var graphType = maker.CreateGraphType(typeof(EnumWithUndeclaredValues)).GraphType as IEnumGraphType;
             Assert.AreEqual(2, graphType.Values.Count);
             Assert.IsTrue(graphType.Values.ContainsKey("DECLAREDVALUE1"));
             Assert.IsTrue(graphType.Values.ContainsKey("VALUE_AWESOME"));
@@ -41,15 +42,16 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void Parse_EnumWithUndeclaredValues_WhenConfigDoesNotRequireDeclaration_DoesIncludeUndeclared_InGraphType()
         {
-            var builder = new TestServerBuilder()
-                .AddGraphType<EnumWithUndeclaredValues>();
-            builder.AddGraphQL(o =>
+            var schema = new TestServerBuilder().AddGraphQL(o =>
             {
                 o.DeclarationOptions.FieldDeclarationRequirements = TemplateDeclarationRequirements.None;
-            });
+            })
+                        .Build()
+                        .Schema;
 
-            var server = builder.Build();
-            var graphType = server.CreateGraphType(typeof(EnumWithUndeclaredValues), TypeKind.ENUM).GraphType as IEnumGraphType;
+            var maker = new EnumGraphTypeMaker(schema);
+            var graphType = maker.CreateGraphType(typeof(EnumWithUndeclaredValues)).GraphType as IEnumGraphType;
+
             Assert.AreEqual(3, graphType.Values.Count);
             Assert.IsTrue(graphType.Values.ContainsKey("DECLAREDVALUE1"));
 
@@ -62,39 +64,80 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void Parse_EnumWithCustomGraphTypeName_YieldsName_InGraphType()
         {
-            var template = TemplateHelper.CreateEnumTemplate<EnumWithGraphName>();
+            var schema = new TestServerBuilder()
+                        .Build()
+                        .Schema;
 
-            var builder = new TestServerBuilder()
-                .AddGraphQL(o =>
-                {
-                    o.AddGraphType<EnumWithGraphName>();
-                });
-
-            var server = builder.Build();
-            var graphType = server.CreateGraphType(template.ObjectType, TypeKind.ENUM).GraphType as IEnumGraphType;
-
+            var maker = new EnumGraphTypeMaker(schema);
+            var graphType = maker.CreateGraphType(typeof(EnumWithGraphName)).GraphType as IEnumGraphType;
             Assert.AreEqual("ValidGraphName", graphType.Name);
         }
 
         [Test]
         public void CreateGraphType_ParsesAsExpected()
         {
-            var builder = new TestServerBuilder();
-            builder.AddGraphQL(o =>
-            {
-                o.DeclarationOptions.GraphNamingFormatter =
-                    new GraphNameFormatter(enumValueStrategy: GraphNameFormatStrategy.NoChanges);
-            });
+            var schema = new TestServerBuilder()
+                .AddGraphQL(o =>
+                {
+                    o.DeclarationOptions.GraphNamingFormatter =
+                        new GraphNameFormatter(enumValueStrategy: GraphNameFormatStrategy.NoChanges);
+                })
+                .Build()
+                .Schema;
 
-            var server = builder.Build();
             var template = TemplateHelper.CreateEnumTemplate<EnumWithDescriptionOnValues>();
 
-            var type = server.CreateGraphType(typeof(EnumWithDescriptionOnValues), TypeKind.ENUM).GraphType as IEnumGraphType;
-            Assert.IsNotNull(type);
-            Assert.AreEqual(template.Name, type.Name);
+            var maker = new EnumGraphTypeMaker(schema);
+            var graphType = maker.CreateGraphType(typeof(EnumWithDescriptionOnValues)).GraphType as IEnumGraphType;
 
-            Assert.IsTrue(type is EnumGraphType);
-            Assert.AreEqual(4, ((EnumGraphType)type).Values.Count);
+            Assert.IsNotNull(graphType);
+            Assert.AreEqual(template.Name, graphType.Name);
+
+            Assert.IsTrue(graphType is EnumGraphType);
+            Assert.AreEqual(4, ((EnumGraphType)graphType).Values.Count);
+        }
+
+        [Test]
+        public void AppliedDirectives_TransferFromTemplate()
+        {
+            var schema = new TestServerBuilder()
+                           .Build()
+                           .Schema;
+
+            var maker = new EnumGraphTypeMaker(schema);
+            var graphType = maker.CreateGraphType(typeof(EnumWithDirective)).GraphType as IEnumGraphType;
+
+            Assert.AreEqual(graphType, graphType.AppliedDirectives.Parent);
+
+            var appliedDirective = graphType.AppliedDirectives.Single();
+            Assert.IsNotNull(appliedDirective);
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 23, "enum arg" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void DirectivesAreTransferedToGraphType()
+        {
+            var schema = new TestServerBuilder()
+                           .Build()
+                           .Schema;
+
+            var maker = new EnumGraphTypeMaker(schema);
+            var graphType = maker.CreateGraphType(typeof(EnumValueWithDirective)).GraphType as IEnumGraphType;
+
+            Assert.AreEqual(0, graphType.AppliedDirectives.Count);
+
+            var value1 = graphType.Values["VALUE1"];
+            var value2 = graphType.Values["VALUE2"];
+
+            Assert.AreEqual(0, value1.AppliedDirectives.Count);
+            Assert.AreEqual(1, value2.AppliedDirectives.Count);
+
+            var appliedDirective = value2.AppliedDirectives[0];
+            Assert.IsNotNull(appliedDirective);
+            Assert.AreEqual(value2, value2.AppliedDirectives.Parent);
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 33, "enum value arg" }, appliedDirective.Arguments);
         }
     }
 }

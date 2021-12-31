@@ -25,21 +25,21 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A fully qualified description of a single input parameter to a <see cref="ControllerActionGraphFieldTemplate"/>.
+    /// A fully qualified description of a single argument of a method.
     /// This template can be added as an input argument to a field or directive.
     /// </summary>
     [DebuggerDisplay("{Name} (Type: {FriendlyObjectTypeName})")]
-    public class GraphInputArgumentTemplate : IGraphInputArgumentTemplate
+    public class GraphArgumentTemplate : IGraphArgumentTemplate
     {
         private FromGraphQLAttribute _fieldDeclaration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphInputArgumentTemplate" /> class.
+        /// Initializes a new instance of the <see cref="GraphArgumentTemplate" /> class.
         /// </summary>
         /// <param name="parent">The owner of this argument.</param>
         /// <param name="parameter">The parameter on which this
         /// argument template is made.</param>
-        public GraphInputArgumentTemplate(IGraphFieldBaseTemplate parent, ParameterInfo parameter)
+        public GraphArgumentTemplate(IGraphFieldBaseTemplate parent, ParameterInfo parameter)
         {
             Validation.ThrowIfNull(parent, nameof(parent));
             Validation.ThrowIfNull(parameter, nameof(parameter));
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public ICustomAttributeProvider AttributeProvider => this.Parameter;
 
         /// <inheritdoc />
-        public IEnumerable<AppliedDirectiveTemplate> Directives { get; private set; }
+        public IEnumerable<IAppliedDirectiveTemplate> Directives { get; private set; }
 
 #if DEBUG
         /// <summary>

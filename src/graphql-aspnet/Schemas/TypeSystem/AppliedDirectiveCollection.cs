@@ -11,22 +11,24 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A collection of directives applied to some <see cref="ISchemaItem"/>.
     /// </summary>
+    [DebuggerDisplay("Count = {Count}")]
     public class AppliedDirectiveCollection : IAppliedDirectiveCollection
     {
-        private List<AppliedDirective> _appliedDirectives;
+        private List<IAppliedDirective> _appliedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirectiveCollection"/> class.
         /// </summary>
         public AppliedDirectiveCollection()
         {
-            _appliedDirectives = new List<AppliedDirective>();
+            _appliedDirectives = new List<IAppliedDirective>();
         }
 
         /// <summary>
@@ -43,12 +45,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection Clone(ISchemaItem newParent)
         {
             var clone = new AppliedDirectiveCollection(newParent);
-            clone._appliedDirectives = new List<AppliedDirective>(_appliedDirectives);
+            clone._appliedDirectives = new List<IAppliedDirective>(_appliedDirectives);
             return clone;
         }
 
         /// <inheritdoc />
-        public void Add(AppliedDirective directive)
+        public void Add(IAppliedDirective directive)
         {
             Validation.ThrowIfNull(directive, nameof(directive));
             _appliedDirectives.Add(directive);
@@ -58,7 +60,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public ISchemaItem Parent { get; }
 
         /// <inheritdoc />
-        public IEnumerator<AppliedDirective> GetEnumerator()
+        public int Count => _appliedDirectives.Count;
+
+        /// <inheritdoc />
+        public IAppliedDirective this[int index] => _appliedDirectives[index];
+
+        /// <inheritdoc />
+        public IEnumerator<IAppliedDirective> GetEnumerator()
         {
             return _appliedDirectives.GetEnumerator();
         }

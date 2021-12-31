@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Default.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -35,6 +35,22 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             // Property1, Property2, __typename
             Assert.AreEqual(3, graphType.Fields.Count());
+        }
+
+        [Test]
+        public void CreateGraphType_DirectivesAreApplied()
+        {
+            var result = this.MakeGraphType(typeof(InterfaceWithDirective), TypeKind.INTERFACE);
+            var interfaceType = result.GraphType as IInterfaceGraphType;
+
+            Assert.IsNotNull(interfaceType);
+            Assert.AreEqual(1, interfaceType.AppliedDirectives.Count);
+            Assert.AreEqual(interfaceType, interfaceType.AppliedDirectives.Parent);
+
+            var appliedDirective = interfaceType.AppliedDirectives[0];
+            Assert.IsNotNull(appliedDirective);
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 58, "interface arg" }, appliedDirective.Arguments);
         }
     }
 }

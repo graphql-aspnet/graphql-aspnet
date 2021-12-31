@@ -11,43 +11,19 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A request, resolved by a <see cref="IDirectiveGraphType"/> to perform some augmented
-    /// or conditional processing on a segment of a query document or schema item.
+    /// A request to perform some augmented or conditional processing
+    /// on a segment of a query document or schema item.
     /// </summary>
     public interface IGraphDirectiveRequest : IDataRequest
     {
         /// <summary>
-        /// Clones this request setting the given data items.
+        /// Gets the invocation context containing the specific details
+        /// of the directive to be processed against the <see cref="DirectiveTarget"/>.
         /// </summary>
-        /// <param name="phase">The phase of execution the directive is currently
-        /// processing.</param>
-        /// <param name="targetData">The data item being passed through this directive, if any.
-        /// Typically a field result during execution or a schema item during schema building.</param>
-        /// <returns>IGraphDirectiveRequest.</returns>
-        IGraphDirectiveRequest AtPhase(
-            DirectiveInvocationPhase phase,
-            object targetData = null);
-
-        /// <summary>
-        /// Gets the directive being executed.
-        /// </summary>
-        /// <value>The directive.</value>
-        IDirectiveGraphType Directive { get; }
-
-        /// <summary>
-        /// Gets the <see cref="DirectiveLocation"/> where the directive was invoked.
-        /// </summary>
-        /// <value>The location.</value>
-        DirectiveLocation DirectiveLocation { get; }
-
-        /// <summary>
-        /// Gets the current phase of execution this directive is processing.
-        /// </summary>
-        /// <value>The directive phase.</value>
-        DirectiveInvocationPhase DirectivePhase { get; }
+        /// <value>The invocation context.</value>
+        IDirectiveInvocationContext InvocationContext { get; }
 
         /// <summary>
         /// Gets or sets the target object this directive is being executed for. This is
@@ -56,5 +32,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The directive target.</value>
         object DirectiveTarget { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating the directive execution phase this request is scoped under.
+        /// </summary>
+        /// <value>The directive phase.</value>
+        DirectiveInvocationPhase DirectivePhase { get; }
     }
 }

@@ -53,10 +53,12 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             var result = new GraphTypeCreationResult();
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+            var directives = template.CreateAppliedDirectives();
 
             var objectType = new ObjectGraphType(
             formatter.FormatGraphTypeName(template.Name),
-            concreteType)
+            concreteType,
+            directives)
             {
                 Description = template.Description,
                 Publish = template.Publish,

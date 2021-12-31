@@ -440,7 +440,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public FieldResolutionMode Mode { get; protected set; }
 
         /// <inheritdoc />
-        public abstract IReadOnlyList<IGraphInputArgumentTemplate> Arguments { get; }
+        public abstract IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
 
         /// <inheritdoc />
         public virtual FieldSecurityGroup SecurityPolicies => _securityPolicies;

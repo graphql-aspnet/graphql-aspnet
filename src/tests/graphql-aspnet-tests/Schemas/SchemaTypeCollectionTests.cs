@@ -276,7 +276,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var collection = new SchemaTypeCollection();
 
             var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new PersonUnionData(), TypeKind.OBJECT);
+            var unionType = unionTypeMaker.CreateGraphType(new PersonUnionData());
             var personType = this.MakeGraphType(typeof(PersonData), TypeKind.OBJECT) as IObjectGraphType;
             var employeeType = this.MakeGraphType(typeof(EmployeeData), TypeKind.OBJECT) as IObjectGraphType;
 
@@ -300,7 +300,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var collection = new SchemaTypeCollection();
 
             var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new ValidUnionForAnalysis(), TypeKind.OBJECT);
+            var unionType = unionTypeMaker.CreateGraphType(new ValidUnionForAnalysis());
             var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
             var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
 
@@ -325,7 +325,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var collection = new SchemaTypeCollection();
 
             var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new InvalidUnionForAnalysis(), TypeKind.OBJECT);
+            var unionType = unionTypeMaker.CreateGraphType(new InvalidUnionForAnalysis());
             var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
             var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
 

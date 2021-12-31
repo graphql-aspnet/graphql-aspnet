@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     [DebuggerDisplay("Route: {Route.Path}")]
     public abstract class MethodGraphFieldTemplateBase : GraphFieldTemplate, IGraphMethod
     {
-        private readonly List<GraphInputArgumentTemplate> _arguments;
+        private readonly List<GraphArgumentTemplate> _arguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodGraphFieldTemplateBase" /> class.
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             : base(parent, methodInfo)
         {
             this.Method = Validation.ThrowIfNullOrReturn(methodInfo, nameof(methodInfo));
-            _arguments = new List<GraphInputArgumentTemplate>();
+            _arguments = new List<GraphArgumentTemplate>();
         }
 
         /// <summary>
@@ -68,9 +68,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="paramInfo">The parameter information.</param>
         /// <returns>IGraphFieldArgumentTemplate.</returns>
-        protected virtual GraphInputArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
+        protected virtual GraphArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
         {
-            return new GraphInputArgumentTemplate(this, paramInfo);
+            return new GraphArgumentTemplate(this, paramInfo);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets a list of parameters, in the order they are declared on this field.
         /// </summary>
         /// <value>The parameters.</value>
-        public override IReadOnlyList<IGraphInputArgumentTemplate> Arguments => _arguments;
+        public override IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;
 
         /// <summary>
         /// Gets method meta data this method template applies to.

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -30,9 +31,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// <summary>
     /// A base template for all directive methods that can be declared.
     /// </summary>
+    [DebuggerDisplay("{InternalName} (Type: {Parent.InternalName})")]
     public class GraphDirectiveMethodTemplate : IGraphFieldBaseTemplate, IGraphMethod
     {
-        private readonly List<GraphInputArgumentTemplate> _arguments;
+        private readonly List<GraphArgumentTemplate> _arguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveMethodTemplate"/> class.
@@ -43,7 +45,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
-            _arguments = new List<GraphInputArgumentTemplate>();
+            _arguments = new List<GraphArgumentTemplate>();
         }
 
         /// <summary>
@@ -89,7 +91,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // parse all input parameters into the method
             foreach (var parameter in this.Method.GetParameters())
             {
-                var argTemplate = new GraphInputArgumentTemplate(this, parameter);
+                var argTemplate = new GraphArgumentTemplate(this, parameter);
                 argTemplate.Parse();
                 _arguments.Add(argTemplate);
             }
@@ -199,7 +201,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public GraphFieldPath Route { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyList<IGraphInputArgumentTemplate> Arguments => _arguments;
+        public IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;
 
         /// <inheritdoc />
         public Type ExpectedReturnType { get; protected set; }
@@ -238,6 +240,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public ICustomAttributeProvider AttributeProvider => this.Method;
 
         /// <inheritdoc />
-        public IEnumerable<AppliedDirectiveTemplate> Directives { get; private set; }
+        public IEnumerable<IAppliedDirectiveTemplate> Directives { get; private set; }
     }
 }

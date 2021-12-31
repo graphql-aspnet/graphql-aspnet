@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task DirectiveExecution_MaintainsRequestMetaDataCollection_CallsDirectiveCorrectly()
+        public async Task DirectiveExecution_MaintainsRequestMetaDataCollectionAcrossPhases_CallsDirectiveCorrectly()
         {
             var server = new TestServerBuilder()
             .AddGraphType<SimpleExecutionController>()

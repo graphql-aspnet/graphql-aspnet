@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the argument collection this directive exposes during the execution phase.
         /// </summary>
         /// <value>The arguments.</value>
-        IEnumerable<IGraphInputArgumentTemplate> Arguments { get; }
+        IEnumerable<IGraphArgumentTemplate> Arguments { get; }
 
         /// <summary>
         /// Gets the invocation phases this directive is allowed to

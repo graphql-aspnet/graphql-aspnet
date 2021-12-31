@@ -33,14 +33,20 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
+        private readonly ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directiveExecutionPipeline;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvokeFieldResolverMiddleware{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="InvokeFieldResolverMiddleware{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        public InvokeFieldResolverMiddleware(TSchema schema)
+        /// <param name="directiveExecutionPipeline">The directive execution pipeline
+        /// to invoke for any directives attached to this field.</param>
+        public InvokeFieldResolverMiddleware(
+            TSchema schema,
+            ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> directiveExecutionPipeline)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _directiveExecutionPipeline = Validation.ThrowIfNullOrReturn(directiveExecutionPipeline, nameof(directiveExecutionPipeline));
         }
 
         /// <summary>
@@ -109,8 +115,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 var resolutionContext = new FieldResolutionContext(
                     context,
                     context.Request,
-                    executionArguments,
-                    context.User);
+                    executionArguments);
 
                 // Step 2: Resolve the field
                 context.Logger?.FieldResolutionStarted(resolutionContext);
@@ -149,13 +154,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             object dataTarget,
             CancellationToken cancelToken = default)
         {
-            IEnumerable<IDirectiveInvocationContext> directives = executionContext
-                .Request
-                .InvocationContext
+            IEnumerable<IDirectiveInvocationContext> contextSearchResult = executionContext?
+                .Request?
+                .InvocationContext?
                 .Directives?
                 .Where(x => x.Directive.InvocationPhases.HasFlag(invocationPhase));
 
-            directives = directives ?? Enumerable.Empty<IDirectiveInvocationContext>();
+            var invocationContexts = new List<IDirectiveInvocationContext>();
+            if (contextSearchResult != null)
+                invocationContexts.AddRange(contextSearchResult);
 
             // generate requests context for each directive to be processed
             // then process the directive sequentially.
@@ -163,37 +170,29 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // NOTE: Order matters, they can't be executed in parallel
             // https://spec.graphql.org/October2021/#sec-Language.Directives
             bool continueExecution = true;
-            object resolvedData = dataTarget;
-            foreach (var directive in directives)
+            object localDataTaret = dataTarget; // box the data target
+            for (var i = 0; i < invocationContexts.Count; i++)
             {
-                var directiveArguments = directive.Arguments.Merge(executionContext.VariableData);
                 var request = new GraphDirectiveRequest(
-                    directive.Directive,
-                    directive.Location,
-                    directive.Origin,
-                    executionContext.Request.Items);
-
-                var directiveRequest = request.AtPhase(
+                    invocationContexts[i],
                     invocationPhase,
-                    resolvedData);
+                    localDataTaret,
+                    executionContext?.Request?.Items);
 
-                var directiveContext = new DirectiveResolutionContext(
+                var directiveContext = new GraphDirectiveExecutionContext(
                     executionContext,
-                    directiveRequest,
-                    directiveArguments,
+                    request,
+                    executionContext.VariableData,
                     executionContext.User);
 
-                // execute the directive
-                await directiveContext
-                    .Request
-                    .Directive
-                    .Resolver
-                    .Resolve(directiveContext, cancelToken)
+                // directives must be awaited individually
+                // the spec dictates they must be executed in a predictable order
+                await _directiveExecutionPipeline.InvokeAsync(directiveContext, cancelToken)
                     .ConfigureAwait(false);
 
                 executionContext.Messages.AddRange(directiveContext.Messages);
 
-                resolvedData = directiveRequest.DirectiveTarget;
+                localDataTaret = request.DirectiveTarget;
                 continueExecution = !directiveContext.IsCancelled;
 
                 // when one directive fails or cancels
@@ -202,7 +201,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     break;
             }
 
-            return (continueExecution, resolvedData);
+            return (continueExecution, localDataTaret);
         }
 
         /// <summary>

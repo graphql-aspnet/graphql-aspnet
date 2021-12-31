@@ -10,9 +10,6 @@ namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using NUnit.Framework;
 
@@ -31,12 +28,16 @@ namespace GraphQL.AspNet.Tests.Schemas
                 if (seenValues.Contains(asLong))
                     Assert.Fail($"The directive location value {asLong} (Name: {location}) is declared twice.");
 
+                seenValues.Add(asLong);
+
+                if (location == DirectiveLocation.AllExecutionLocations ||
+                    location == DirectiveLocation.AllTypeDeclarationLocations)
+                    continue;
+
                 if ((asLong % 2) != 0 && asLong != 1)
                 {
                     Assert.Fail($"The directive location {location} (Value: {asLong}) is not a power of two.");
                 }
-
-                seenValues.Add(asLong);
             }
         }
     }

@@ -12,9 +12,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Default.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -25,8 +24,6 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         public void Parse_FieldAndDependencies_SetCorrectly()
         {
             var server = new TestServerBuilder().Build();
-
-            var template = TemplateHelper.CreateGraphTypeTemplate<ComplexInputObject>(TypeKind.INPUT_OBJECT) as IInputObjectGraphTypeTemplate;
 
             var typeResult = this.MakeGraphType(typeof(ComplexInputObject), TypeKind.INPUT_OBJECT);
             var graphType = typeResult.GraphType as IInputObjectGraphType;
@@ -48,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void InputObject_CreateGraphType_ParsesCorrectly()
         {
-            var template = TemplateHelper.CreateGraphTypeTemplate<TypeCreationItem>(TypeKind.INPUT_OBJECT) as IInputObjectGraphTypeTemplate;
+            var template = TemplateHelper.CreateInputObjectTemplate<TypeCreationItem>();
 
             var result = this.MakeGraphType(typeof(TypeCreationItem), TypeKind.INPUT_OBJECT);
             var objectGraphType = result.GraphType as IInputObjectGraphType;
@@ -77,32 +74,29 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void InputObject_CreateGraphType_WhenPropertyDelcarationIsRequired_DoesNotIncludeUndeclaredProperties()
         {
-            var template = TemplateHelper.CreateGraphTypeTemplate<TypeWithUndeclaredFields>(TypeKind.INPUT_OBJECT) as IInputObjectGraphTypeTemplate;
             var result = this.MakeGraphType(typeof(TypeWithUndeclaredFields), TypeKind.INPUT_OBJECT, TemplateDeclarationRequirements.Property);
-            var objectGraphType = result.GraphType as IInputObjectGraphType;
+            var inputType = result.GraphType as IInputObjectGraphType;
 
-            Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsNotNull(inputType);
+            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsFalse(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
         public void CreateGraphType_WhenPropertyDelcarationIsNotRequired_DoesIncludeUndeclaredProperties()
         {
-            var template = TemplateHelper.CreateGraphTypeTemplate<TypeWithUndeclaredFields>() as IInputObjectGraphTypeTemplate;
             var result = this.MakeGraphType(typeof(TypeWithUndeclaredFields), TypeKind.INPUT_OBJECT, TemplateDeclarationRequirements.None);
-            var objectGraphType = result.GraphType as IInputObjectGraphType;
+            var inputType = result.GraphType as IInputObjectGraphType;
 
-            Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsNotNull(inputType);
+            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
         public void CreateGraphType_WhenPropertyDelcarationIsRequired_ButWithGraphTypeOverride_DoesNotIncludeUndeclaredProperties()
         {
             // config says properties dont require declaration, override on type says it does
-            var template = TemplateHelper.CreateGraphTypeTemplate<TypeWithUndeclaredFieldsWithOverride>() as IInputObjectGraphTypeTemplate;
             var result = this.MakeGraphType(typeof(TypeWithUndeclaredFieldsWithOverride), TypeKind.INPUT_OBJECT, TemplateDeclarationRequirements.None);
             var objectGraphType = result.GraphType as IInputObjectGraphType;
 
@@ -115,13 +109,12 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         public void InputObject_CreateGraphType_WhenPropertyDelcarationIsNotRequired_ButWithGraphTypeOverride_DoesIncludeUndeclaredProperties()
         {
             // config says properties DO require declaration, override on type says it does not
-            var template = TemplateHelper.CreateGraphTypeTemplate<TypeWithUndeclaredFieldsWithOverrideNone>() as IInputObjectGraphTypeTemplate;
             var result = this.MakeGraphType(typeof(TypeWithUndeclaredFieldsWithOverrideNone), TypeKind.INPUT_OBJECT, TemplateDeclarationRequirements.Property);
-            var objectGraphType = result.GraphType as IInputObjectGraphType;
+            var inputType = result.GraphType as IInputObjectGraphType;
 
-            Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsNotNull(inputType);
+            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
@@ -130,7 +123,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             // ensure no stack overflows occur by attempting to create types of types
             // from self references
             // config says properties DO require declaration, override on type says it does not
-            var template = TemplateHelper.CreateGraphTypeTemplate<SelfReferencingObject>(TypeKind.INPUT_OBJECT) as IInputObjectGraphTypeTemplate;
+            var template = TemplateHelper.CreateInputObjectTemplate<SelfReferencingObject>();
             var result = this.MakeGraphType(typeof(SelfReferencingObject), TypeKind.INPUT_OBJECT);
 
             var inputType = result.GraphType as IInputObjectGraphType;
@@ -138,6 +131,23 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(template.Name, inputType.Name);
             Assert.IsNotNull(inputType.Fields.FirstOrDefault(x => x.Name == nameof(SelfReferencingObject.Name)));
             Assert.IsNotNull(inputType.Fields.FirstOrDefault(x => x.Name == nameof(SelfReferencingObject.Parent)));
+        }
+
+        [Test]
+        public void InputObject_CreateGraphType_DirectivesAreApplied()
+        {
+            // config says properties DO require declaration, override on type says it does not
+            var result = this.MakeGraphType(typeof(InputTypeWithDirective), TypeKind.INPUT_OBJECT, TemplateDeclarationRequirements.Property);
+            var inputType = result.GraphType as IInputObjectGraphType;
+
+            Assert.IsNotNull(inputType);
+            Assert.AreEqual(1, inputType.AppliedDirectives.Count);
+            Assert.AreEqual(inputType, inputType.AppliedDirectives.Parent);
+
+            var appliedDirective = inputType.AppliedDirectives[0];
+            Assert.IsNotNull(appliedDirective);
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            CollectionAssert.AreEqual(new object[] { 44, "input arg" }, appliedDirective.Arguments);
         }
     }
 }

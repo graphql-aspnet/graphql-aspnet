@@ -32,8 +32,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
         /// <param name="enumType">Type of the enum.</param>
-        public EnumGraphType(string name, Type enumType)
-            : this(name, enumType, new EnumLeafValueResolver(enumType))
+        /// <param name="directives">The directives to apply to this enum type.</param>
+        public EnumGraphType(string name, Type enumType, IAppliedDirectiveCollection directives = null)
+            : this(name, enumType, new EnumLeafValueResolver(enumType), directives)
         {
         }
 
