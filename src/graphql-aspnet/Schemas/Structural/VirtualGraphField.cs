@@ -46,21 +46,21 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Initializes a new instance of the <see cref="VirtualGraphField" /> class.
         /// </summary>
         /// <param name="fieldName">Name of the field in the object graph.</param>
-        /// <param name="path">The path segment this virtual field will represent.</param>
-        /// <param name="typeName">The type name to use for the virtual type generated from this route field.</param>
+        /// <param name="route">The path segment that represents this virtual field.</param>
+        /// <param name="parentTypeName">The type name to use for the virtual type that owns this field.</param>
         public VirtualGraphField(
             string fieldName,
-            GraphFieldPath path,
-            string typeName)
+            GraphFieldPath route,
+            string parentTypeName)
         {
-            Validation.ThrowIfNull(path, nameof(path));
-            Validation.ThrowIfNullWhiteSpace(typeName, nameof(typeName));
+            Validation.ThrowIfNull(route, nameof(route));
+            Validation.ThrowIfNullWhiteSpace(parentTypeName, nameof(parentTypeName));
 
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
-            this.Route = Validation.ThrowIfNullOrReturn(path, nameof(path));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
 
-            this.AssociatedGraphType = new VirtualObjectGraphType(typeName);
-            this.TypeExpression = new GraphTypeExpression(typeName);
+            this.AssociatedGraphType = new VirtualObjectGraphType(parentTypeName);
+            this.TypeExpression = new GraphTypeExpression(parentTypeName);
             this.Arguments = new GraphFieldArgumentCollection(this);
             this.Resolver = new GraphRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
 

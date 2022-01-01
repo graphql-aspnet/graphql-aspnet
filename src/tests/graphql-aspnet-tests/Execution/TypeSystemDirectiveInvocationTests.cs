@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 LastName = "Smith",
             };
 
-            var builder = server.CreateFieldContextBuilder<TestPerson>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<TestPerson>(
                 nameof(TestPerson.Name),
                 person);
 

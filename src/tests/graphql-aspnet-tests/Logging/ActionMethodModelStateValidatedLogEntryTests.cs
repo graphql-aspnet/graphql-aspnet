@@ -107,13 +107,12 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void InvalidModelItem_BuildsLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<LogTestController>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<LogTestController>(
-                    nameof(LogTestController.ValidatableInputObject),
-                    new object());
+            var builder = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                    nameof(LogTestController.ValidatableInputObject));
 
             var context = builder.CreateExecutionContext();
 
@@ -138,13 +137,12 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ValidModelItem_BuildsLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<LogTestController>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ValidatableInputObject),
-                new object());
+            var builder = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ValidatableInputObject));
 
             var context = builder.CreateExecutionContext();
 

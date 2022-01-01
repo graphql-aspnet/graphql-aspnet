@@ -26,11 +26,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task NullSourceData_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1),
                 null);
 
@@ -48,12 +48,12 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task TemplateIsInterface_SourceDataDoesImplementInterface_RendersCorrectly()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .AddGraphType<IResolverInterface>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1),
                 null);
 
@@ -79,11 +79,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task TemplateIsInterface_SourceDataDoesNotImplementInterface_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1),
                 null);
 
@@ -108,12 +108,12 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task SourceDataIsNotOfTheTemplate_FailsRequest()
         {
-            var server = new TestServerBuilder()
-                .AddGraphType<ResolverObject>()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<ResolverStructA>()
                 .Build();
 
             // resolving structA, but supplying structB as source
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverStructA>(
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverStructA>(
                 nameof(ResolverStructA.Prop1),
                 new ResolverStructB("struct"));
 
@@ -130,11 +130,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task PropertyThrowsException_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.PropertyThrowException),
                 new ResolverObject());
 
@@ -154,11 +154,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task AsyncProperty_ValidSourceData_ReturnsData()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.Address1Async),
                 new ResolverObject());
 
@@ -175,11 +175,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task AsyncProperty_ThrowsException_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<ResolverObject>(
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.AsyncPropException),
                 new ResolverObject());
 

@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Tests.Controllers.ActionResults.ActuionResultTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
@@ -26,14 +25,14 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     [TestFixture]
     public class ActionResultTests
     {
-        private FieldResolutionContext CreateResolutionContext(object sourceData = null)
+        private FieldResolutionContext CreateResolutionContext()
         {
             var server = new TestServerBuilder()
                 .AddGraphType<ActionableController>()
                 .Build();
 
-            var builder = server
-                .CreateFieldContextBuilder<ActionableController>(nameof(ActionableController.DoStuff), sourceData);
+            var builder = server.CreateGraphTypeFieldContextBuilder<ActionableController>(
+                nameof(ActionableController.DoStuff));
             return builder.CreateResolutionContext();
         }
 
