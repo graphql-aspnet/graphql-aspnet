@@ -46,6 +46,6 @@ namespace GraphQL.AspNet.Directives
         /// <summary>
         /// The directive phases applied to all directives by default unless changed.
         /// </summary>
-        Default = SchemaGeneration | AfterFieldResolution,
+        DefaultPhases = SchemaGeneration | AfterFieldResolution,
     }
 }

@@ -17,10 +17,11 @@ namespace GraphQL.AspNet.Tests.Execution
     public class TypeSystemDirectiveInvocationTests
     {
         [Test]
-        public async Task Directive_DeclaredOnField_IsExecuted()
+        public async Task Directive_DeclaredOnField_IsApplied()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<TestPerson>()
+                .AddGraphType<ToUpperDirective>()
                 .Build();
 
             var person = new TestPerson()

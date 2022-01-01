@@ -11,13 +11,17 @@ namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
     using System.IO;
-    using System.Security.Claims;
+    using System.Linq;
+    using System.Linq.Expressions;
     using System.Text.Encodings.Web;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -26,13 +30,13 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using NUnit.Framework;
 
     /// <summary>
     /// A mocked server instance built for a given schema and with a service provider (such as would exist at runtime)
@@ -170,24 +174,84 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Either a graph type, directive or controller.</typeparam>
         /// <param name="fieldName">Name of the field, on the type, as it exists in the schema.</param>
         /// <param name="sourceData">The source data to use as the input to the field. This can be changed, but must be supplied. A
-        /// generic <see cref="object"/> will be used if not supplied.</param>
+        /// generic <see cref="object" /> will be used if not supplied.</param>
+        /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
         /// <returns>IMockFieldRequest.</returns>
-        public FieldContextBuilder CreateFieldContextBuilder<TType>(string fieldName, object sourceData)
+        public FieldContextBuilder CreateFieldContextBuilder<TType>(string fieldName, object sourceData, TypeKind? typeKind = null)
         {
-            var template = TemplateHelper.CreateFieldTemplate<TType>(fieldName);
-            var fieldMaker = new GraphFieldMaker(this.Schema);
-            var fieldResult = fieldMaker.CreateField(template);
+            if (sourceData == null)
+                Assert.Inconclusive("Can't create field context builder due to null source data");
+
+            var template = TemplateHelper.CreateGraphTypeTemplate<TType>(typeKind);
+
+            var graphType = this.Schema.KnownTypes.FirstOrDefault(x => x.Route == template.Route);
+
+            if (graphType == null)
+                Assert.Inconclusive($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
+
+            var typedGraphType = graphType as ITypedSchemaItem;
+            if (typedGraphType == null)
+                Assert.Inconclusive($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
+
+            var container = graphType as IGraphFieldContainer;
+            if (container == null)
+                Assert.Inconclusive($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
+
+            var field = container.Fields.FindField(fieldName);
+            if (field == null)
+                Assert.Inconclusive($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
+
+            var graphMethod = this.CreateInvokableReference<TType>(fieldName, typeKind);
 
             var builder = new FieldContextBuilder(
                 this.ServiceProvider,
                 _userSecurityContext,
-                fieldResult.Field,
+                field,
                 this.Schema,
-                template as IGraphMethod);
+                graphMethod);
 
             builder.AddSourceData(sourceData);
 
             return builder;
+        }
+
+        /// <summary>
+        /// Creates a reference to the invokable method or property that represents the
+        /// root resolver for the given <paramref name="fieldName"/>. (i.e. the method
+        /// or property of the object that can produce the core data value).
+        /// </summary>
+        /// <typeparam name="TObjectType">The type of the t object type.</typeparam>
+        /// <param name="fieldName">Name of the field.</param>
+        /// <param name="typeKind">The type kind to resolve the field as (only necessary for input object types).</param>
+        /// <returns>IGraphMethod.</returns>
+        public IGraphMethod CreateInvokableReference<TObjectType>(string fieldName, TypeKind? typeKind = null)
+        {
+            var template = TemplateHelper.CreateGraphTypeTemplate<TObjectType>(typeKind);
+            var fieldContainer = template as IGraphTypeFieldTemplateContainer;
+            if (fieldContainer == null)
+            {
+                Assert.Inconclusive($"The provided type '{typeof(TObjectType).FriendlyName()}' is not " +
+                    $"a field container, no invokable method references can be created from it.");
+            }
+
+            var fieldTemplate = fieldContainer.FieldTemplates
+                .SingleOrDefault(x => string.Compare(x.Value.Name, fieldName, StringComparison.OrdinalIgnoreCase) == 0)
+                .Value;
+
+            if (fieldTemplate == null)
+            {
+                Assert.Inconclusive($"The provided type '{typeof(TObjectType).FriendlyName()}' does not " +
+                      $"contain a field named '{fieldName}'.");
+            }
+
+            var method = fieldTemplate as IGraphMethod;
+            if (method == null)
+            {
+                Assert.Inconclusive($"The field named '{fieldName}' on the provided type '{typeof(TObjectType).FriendlyName()}' " +
+                      $"does not represent an invokable {typeof(IGraphMethod)}. Operation cannot proceed.");
+            }
+
+            return method;
         }
 
         /// <summary>

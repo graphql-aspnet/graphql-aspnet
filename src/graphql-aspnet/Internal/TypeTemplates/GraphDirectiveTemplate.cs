@@ -50,17 +50,26 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
+        public override IEnumerable<DependentType> RetrieveRequiredTypes()
+        {
+            var list = new List<DependentType>();
+            list.AddRange(this.Methods.RetrieveRequiredTypes());
+
+            return list;
+        }
+
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             base.ParseTemplateDefinition();
 
-            this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
+            this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
 
             var routeName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
             this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, routeName));
 
-            var phases = DirectiveInvocationPhase.Default;
-            var phaseAttrib = this.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
+            var phases = DirectiveInvocationPhase.DefaultPhases;
+            var phaseAttrib = this.AttributeProvider.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
             if (phaseAttrib != null)
                 phases = phaseAttrib.Phases;
 

@@ -230,9 +230,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
-            Assert.AreEqual(1, template.Directives.Count());
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
 
-            var appliedDirective = template.Directives.First();
+            var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
             Assert.AreEqual(new object[] { 55, "property arg" }, appliedDirective.Arguments);
         }

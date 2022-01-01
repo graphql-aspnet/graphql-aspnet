@@ -9,6 +9,7 @@
 namespace GraphQL.AspNet.Execution.ValueResolvers
 {
     using System;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// <summary>
     /// A resolver that can extend an exsiting resolver.
     /// </summary>
+    [DebuggerDisplay("Extended Resolver")]
     public class ExtendedResolver : IGraphFieldResolver
     {
         private readonly IGraphFieldResolver _primaryResolver;

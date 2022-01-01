@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
 {
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
         protected BaseIntrospectionObjectType(string name)
-            : base(name)
+            : base(name, new GraphIntrospectionFieldPath(name))
         {
         }
 

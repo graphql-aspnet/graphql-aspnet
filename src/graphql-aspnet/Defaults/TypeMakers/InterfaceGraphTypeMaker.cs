@@ -55,6 +55,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var interfaceType = new InterfaceGraphType(
                 formatter.FormatGraphTypeName(template.Name),
                 template.ObjectType,
+                template.Route,
                 directives)
             {
                 Description = template.Description,

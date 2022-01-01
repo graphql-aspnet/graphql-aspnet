@@ -27,6 +27,6 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// Gets or sets the generated graph type.
         /// </summary>
         /// <value>The type of the graph.</value>
-        public IGraphFieldArgument Argument { get; set; }
+        public IGraphArgument Argument { get; set; }
     }
 }

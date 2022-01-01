@@ -53,6 +53,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var inputObjectType = new InputObjectGraphType(
                 formatter.FormatGraphTypeName(template.Name),
                 concreteType,
+                template.Route,
                 directives)
             {
                 Description = template.Description,

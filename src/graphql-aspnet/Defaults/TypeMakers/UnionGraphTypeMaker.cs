@@ -9,10 +9,12 @@
 
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -49,7 +51,11 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var name = formatter.FormatGraphTypeName(proxy.Name);
-            var union = new UnionGraphType(name, (IUnionTypeMapper)proxy, directives)
+            var union = new UnionGraphType(
+                name,
+                (IUnionTypeMapper)proxy,
+                new GraphFieldPath(GraphCollection.Types, name),
+                directives)
             {
                 Description = proxy.Description,
                 Publish = proxy.Publish,

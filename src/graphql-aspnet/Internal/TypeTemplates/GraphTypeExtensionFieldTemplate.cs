@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             // ensure type extension right out of the gate
             // the field can't be built otherwise
-            _typeAttrib = this.SingleAttributeOfTypeOrDefault<TypeExtensionAttribute>();
+            _typeAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<TypeExtensionAttribute>();
             if (_typeAttrib == null)
                 return;
 

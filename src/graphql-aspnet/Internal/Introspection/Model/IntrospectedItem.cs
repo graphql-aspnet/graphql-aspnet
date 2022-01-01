@@ -9,11 +9,30 @@
 
 namespace GraphQL.AspNet.Internal.Introspection.Model
 {
+    using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
+
     /// <summary>
     /// A base class for all introspected data model items.
     /// </summary>
-    public abstract class IntrospectedItem
+    public abstract class IntrospectedItem : ISchemaItem
     {
+        private readonly ISchemaItem _item;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectedItem"/> class.
+        /// </summary>
+        /// <param name="item">The item being introspected.</param>
+        public IntrospectedItem(ISchemaItem item)
+        {
+            _item = Validation.ThrowIfNullOrReturn(item, nameof(item));
+            this.Route = item.Route.ReParent(Constants.Routing.INTROSPECTION_ROOT);
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
+        }
+
         /// <summary>
         /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
         /// other references in this instance.
@@ -22,5 +41,19 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public virtual void Initialize(IntrospectedSchema schema)
         {
         }
+
+        /// <inheritdoc />
+        [GraphSkip]
+        public virtual GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        [GraphSkip]
+        public virtual IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public virtual string Name => _item.Name;
+
+        /// <inheritdoc />
+        public virtual string Description => _item.Description;
     }
 }

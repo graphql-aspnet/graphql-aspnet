@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             this.DeclaredArgumentType = this.Parameter.ParameterType;
             this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.Parameter.ParameterType);
-            this.Directives = this.ExtractAppliedDirectiveTemplates();
+            this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
 
             // set the name
             _fieldDeclaration = this.Parameter.SingleAttributeOrDefault<FromGraphQLAttribute>();
@@ -134,11 +134,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 // so they have no dependents
                 return Enumerable.Empty<DependentType>();
             }
-            else
+
+            var types = new List<DependentType>();
+            var expectedTypeKind = GraphValidation.ResolveTypeKind(this.ObjectType, TypeKind.INPUT_OBJECT);
+            types.Add(new DependentType(this.ObjectType, expectedTypeKind));
+
+            if (this.AppliedDirectives != null)
             {
-                var expectedTypeKind = GraphValidation.ResolveTypeKind(this.ObjectType, TypeKind.INPUT_OBJECT);
-                return new DependentType(this.ObjectType, expectedTypeKind).AsEnumerable();
+                var directiveTypes = this.AppliedDirectives.Select(x => new DependentType(x.Directive, TypeKind.DIRECTIVE));
+                types.AddRange(directiveTypes);
             }
+
+            return types;
         }
 
         /// <inheritdoc />
@@ -153,7 +160,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"which is an interface. Interfaces cannot be used as input arguments to any type.");
             }
 
-            foreach (var directive in this.Directives)
+            foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();
         }
 
@@ -212,7 +219,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public ICustomAttributeProvider AttributeProvider => this.Parameter;
 
         /// <inheritdoc />
-        public IEnumerable<IAppliedDirectiveTemplate> Directives { get; private set; }
+        public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
 
 #if DEBUG
         /// <summary>

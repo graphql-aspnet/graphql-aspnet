@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -41,7 +42,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             base.ParseTemplateDefinition();
 
             // account for type level field declaration overrides
-            var graphTypeDeclaration = this.SingleAttributeOrDefault<GraphTypeAttribute>();
+            var graphTypeDeclaration = this.AttributeProvider.SingleAttributeOrDefault<GraphTypeAttribute>();
             if (graphTypeDeclaration != null)
             {
                 this.Publish = graphTypeDeclaration.Publish;

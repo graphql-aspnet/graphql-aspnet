@@ -229,9 +229,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(1, template.Directives.Count());
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
 
-            var appliedDirective = template.Directives.First();
+            var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
             Assert.AreEqual(new object[] { 5, "bob" }, appliedDirective.Arguments);
         }
@@ -243,15 +243,15 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(0, template.Directives.Count());
+            Assert.AreEqual(0, template.AppliedDirectives.Count());
 
             var optionTemplate = template.Values.FirstOrDefault(x => x.Name == "Value1");
-            Assert.AreEqual(0, optionTemplate.Directives.Count());
+            Assert.AreEqual(0, optionTemplate.AppliedDirectives.Count());
 
             optionTemplate = template.Values.FirstOrDefault(x => x.Name == "Value2");
-            Assert.AreEqual(1, optionTemplate.Directives.Count());
+            Assert.AreEqual(1, optionTemplate.AppliedDirectives.Count());
 
-            var appliedDirective = optionTemplate.Directives.First();
+            var appliedDirective = optionTemplate.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
             Assert.AreEqual(new object[] { 88, "enum option arg" }, appliedDirective.Arguments);
         }

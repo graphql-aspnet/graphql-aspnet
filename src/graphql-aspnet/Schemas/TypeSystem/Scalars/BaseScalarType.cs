@@ -12,9 +12,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A base class for all scalar types. This base class serves as the scalar type itself, the value resolver and the serializer
@@ -34,7 +36,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             Type primaryType,
             IAppliedDirectiveCollection directives = null)
         {
-            this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
+            this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+            this.Route = new GraphFieldPath(GraphCollection.Scalars, this.Name);
             this.ObjectType = Validation.ThrowIfNullOrReturn(primaryType, nameof(primaryType));
             this.InternalName = this.ObjectType.FriendlyName();
             this.Publish = true;
@@ -109,5 +112,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

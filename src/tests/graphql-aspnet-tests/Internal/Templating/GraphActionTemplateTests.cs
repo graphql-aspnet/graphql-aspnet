@@ -253,7 +253,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
-            Assert.AreEqual(1, types.Count());
 
             Assert.IsTrue(types.Any(x => x.Type == typeof(string)));
 
@@ -267,9 +266,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var action = this.CreateActionTemplate<ActionMethodWithDirectiveController>(nameof(ActionMethodWithDirectiveController.Execute));
 
-            Assert.AreEqual(1, action.Directives.Count());
+            Assert.AreEqual(1, action.AppliedDirectives.Count());
 
-            var appliedDirective = action.Directives.First();
+            var appliedDirective = action.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
             Assert.AreEqual(new object[] { 202, "controller action arg" }, appliedDirective.Arguments);
         }

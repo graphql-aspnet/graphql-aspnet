@@ -39,43 +39,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// Retrieves the single attribute of the given type (or castable to the given type) if it is declared on this instance; otherwise null. This method
-        /// limits itself to only those attributes that are decalred once (as is the case with all required graph attributes).  If an attribute
-        /// is declared on the provider more than once no instances will not be returned.
-        /// </summary>
-        /// <typeparam name="TAttribute">The type of the graph attribute to return.</typeparam>
-        /// <returns>TAttribute.</returns>
-        protected TAttribute SingleAttributeOfTypeOrDefault<TAttribute>()
-            where TAttribute : Attribute
-        {
-            return this.AttributeProvider.SingleAttributeOfTypeOrDefault<TAttribute>();
-        }
-
-        /// <summary>
-        /// Retrieves the single attribute of the given type if it is declared on this instance; otherwise null. This method
-        /// limits itself to only those attributes that are decalred once (as is the case with all required graph attributes).  If an attribute
-        /// is declared on the provider more than once no instances will not be returned.
-        /// </summary>
-        /// <typeparam name="TAttribute">The type of the graph attribute to return.</typeparam>
-        /// <returns>TAttribute.</returns>
-        protected TAttribute SingleAttributeOrDefault<TAttribute>()
-            where TAttribute : Attribute
-        {
-            return this.AttributeProvider.SingleAttributeOrDefault<TAttribute>();
-        }
-
-        /// <summary>
-        /// Retrieves a set of attribute that match the provided filter.
-        /// </summary>
-        /// <param name="filter">The filter.</param>
-        /// <param name="includeInheritedAttributes">if set to <c>true</c> attributes inherited in the dependency chain of the attribute provider will also be inspected.</param>
-        /// <returns>TAttribute.</returns>
-        protected IEnumerable<Attribute> RetrieveAttributes(Func<Attribute, bool> filter, bool includeInheritedAttributes = true)
-        {
-            return this.AttributeProvider.GetCustomAttributes(includeInheritedAttributes).Where(x => x is Attribute attrib && filter(attrib)).Cast<Attribute>();
-        }
-
-        /// <summary>
         /// Parses the template contents according to the rules of the template.
         /// </summary>
         public void Parse()
@@ -92,7 +55,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         protected virtual void ParseTemplateDefinition()
         {
-            this.Directives = this.ExtractAppliedDirectiveTemplates();
+            this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
+        }
+
+        /// <inheritdoc />
+        public virtual IEnumerable<DependentType> RetrieveRequiredTypes()
+        {
+            if (this.AppliedDirectives != null)
+                return this.AppliedDirectives.Select(x => new DependentType(x.Directive, TypeKind.DIRECTIVE));
+
+            return Enumerable.Empty<DependentType>();
         }
 
         /// <inheritdoc />
@@ -105,7 +77,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     "validate this instance.");
             }
 
-            if (this.SingleAttributeOfTypeOrDefault<GraphSkipAttribute>() != null)
+            if (this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphSkipAttribute>() != null)
             {
                 throw new GraphTypeDeclarationException(
                     $"The graph item {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
@@ -121,7 +93,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                         this.ObjectType);
             }
 
-            foreach (var directive in this.Directives)
+            foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();
         }
 
@@ -172,6 +144,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        public IEnumerable<IAppliedDirectiveTemplate> Directives { get; private set; }
+        public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
     }
 }

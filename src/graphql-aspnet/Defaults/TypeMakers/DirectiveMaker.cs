@@ -51,6 +51,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 template.Locations,
                 template.InvocationPhases,
                 template.ObjectType,
+                template.Route,
                 template.CreateResolver())
             {
                 Description = template.Description,

@@ -356,6 +356,16 @@ namespace GraphQL.AspNet
             public const string TYPE_ROOT = DELIMITER_ROOT_START + "type" + DELIMITER_ROOT_END;
 
             /// <summary>
+            /// A phrase, used at the start of a route string, to indicate its part of the global scalar tree.
+            /// </summary>
+            public const string SCALAR_ROOT = DELIMITER_ROOT_START + "scalar" + DELIMITER_ROOT_END;
+
+            /// <summary>
+            /// A phrase, used at the start of a route string, to indicate that the object is a top level schema.
+            /// </summary>
+            public const string SCHEMA_ROOT = DELIMITER_ROOT_START + "schema" + DELIMITER_ROOT_END;
+
+            /// <summary>
             /// A phrase, used at the start of a route string, to indicate its part of the subscription root.
             /// </summary>
             public const string SUBSCRIPTION_ROOT = DELIMITER_ROOT_START + "subscription" + DELIMITER_ROOT_END;
@@ -369,6 +379,12 @@ namespace GraphQL.AspNet
             /// A phrase, used at the start of a route string, to indicate its part of the directive tree.
             /// </summary>
             public const string DIRECTIVE_ROOT = DELIMITER_ROOT_START + "directive" + DELIMITER_ROOT_END;
+
+            /// <summary>
+            /// A phrase, used at the start of a route string, to indicate its part of the introspection
+            /// item collection.
+            /// </summary>
+            public const string INTROSPECTION_ROOT = DELIMITER_ROOT_START + "introspection" + DELIMITER_ROOT_END;
 
             /// <summary>
             /// The phrase used to seperate individual elements of a route fragement.
@@ -459,6 +475,6 @@ namespace GraphQL.AspNet
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.
         /// </summary>
-        public const string SPECIFICATION_URL = "https://spec.graphql.org/October2021/";
+        public const string SPECIFICATION_URL = "https://spec.graphql.org/June2018/";
     }
 }

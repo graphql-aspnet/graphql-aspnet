@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     using System.Collections.Generic;
     using System.Reflection;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -21,6 +22,14 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// </summary>
     public interface IGraphItemTemplate : INamedItem
     {
+        /// <summary>
+        /// Retrieves the concrete types that this template
+        /// may need to fullfil a request made against any created
+        /// entites.
+        /// </summary>
+        /// <returns>IEnumerable&lt;Type&gt;.</returns>
+        IEnumerable<DependentType> RetrieveRequiredTypes();
+
         /// <summary>
         /// When overridden in a child class, allows the template to perform some final validation checks
         /// on the integrity of itself. An exception should be thrown to stop the template from being
@@ -76,6 +85,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the set of directives declared on this graph item.
         /// </summary>
         /// <value>The directives.</value>
-        IEnumerable<IAppliedDirectiveTemplate> Directives { get; }
+        IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; }
     }
 }

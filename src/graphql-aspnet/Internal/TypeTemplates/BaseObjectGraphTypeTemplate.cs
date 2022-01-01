@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // Common Metadata
             // ------------------------------------
             this.Route = this.GenerateFieldPath();
-            this.Description = this.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
+            this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
             // ------------------------------------
             // Security Policies

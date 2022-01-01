@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
-    using System.Collections.Generic;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -20,12 +18,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// </summary>
     public interface IGraphArgumentTemplate : IGraphItemTemplate, IGraphTypeExpressionDeclaration
     {
-        /// <summary>
-        /// Retrieves the concrete types that this instance may return in response to a field request.
-        /// </summary>
-        /// <returns>IEnumerable&lt;DependentType&gt;.</returns>
-        IEnumerable<DependentType> RetrieveRequiredTypes();
-
         /// <summary>
         /// Gets the parent method this parameter belongs to.
         /// </summary>

@@ -198,7 +198,10 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             {
                 var introspectedType = schema.FindIntrospectedType(field.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, field.TypeExpression);
-                var inputField = new IntrospectedInputValueType(field, introspectedType);
+                var inputField = new IntrospectedInputValueType(
+                    field,
+                    introspectedType);
+
                 inputField.Initialize(schema);
                 inputFields.Add(inputField);
             }

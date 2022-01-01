@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A graph type representing a UNION.
@@ -35,20 +36,24 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The name of the union as it appears in the target schema (case sensitive).</param>
         /// <param name="typeResolver">The type resolver used to match field resolve values with
         /// expected graph types in this union.</param>
+        /// <param name="route">The unique route of this item.</param>
         /// <param name="directives">The collection of directives
         /// to execute against this union when it is added to a schema.</param>
         public UnionGraphType(
             string name,
             IUnionTypeMapper typeResolver,
+            GraphFieldPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
-
             this.TypeMapper = Validation.ThrowIfNullOrReturn(typeResolver, nameof(TypeMapper));
-            _types = ImmutableHashSet.Create<Type>();
-            _names = ImmutableHashSet.Create<string>();
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+
             this.Publish = true;
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
+
+            _types = ImmutableHashSet.Create<Type>();
+            _names = ImmutableHashSet.Create<string>();
         }
 
         /// <inheritdoc />
@@ -101,5 +106,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

@@ -388,9 +388,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(1, template.Directives.Count());
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
 
-            var appliedDirective = template.Directives.First();
+            var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
             Assert.AreEqual(new object[] { 1, "object arg" }, appliedDirective.Arguments);
         }

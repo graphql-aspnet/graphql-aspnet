@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                         return DirectiveLocation.INPUT_FIELD_DEFINITION;
                     break;
 
-                case IGraphFieldArgument _:
+                case IGraphArgument _:
                     return DirectiveLocation.ARGUMENT_DEFINITION;
             }
 
@@ -125,19 +125,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the location specifies an execution location; otherwise, <c>false</c>.</returns>
         public static bool IsExecutionLocation(this DirectiveLocation location)
         {
-            switch (location)
-            {
-                case DirectiveLocation.QUERY:
-                case DirectiveLocation.MUTATION:
-                case DirectiveLocation.SUBSCRIPTION:
-                case DirectiveLocation.FIELD:
-                case DirectiveLocation.FRAGMENT_DEFINITION:
-                case DirectiveLocation.FRAGMENT_SPREAD:
-                case DirectiveLocation.INLINE_FRAGMENT:
-                    return true;
-            }
-
-            return false;
+            return (location & DirectiveLocation.AllExecutionLocations) > 0;
         }
 
         /// <summary>
@@ -146,9 +134,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if the location specifies an type system location; otherwise, <c>false</c>.</returns>
-        public static bool IsTypeSystemLocation(this DirectiveLocation location)
+        public static bool IsTypeDeclarationLocation(this DirectiveLocation location)
         {
-            return !location.IsExecutionLocation();
+            return (location & DirectiveLocation.AllTypeDeclarationLocations) > 0;
         }
     }
 }

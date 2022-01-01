@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A representation of a object field as it would be defined in the graph type system.
     /// </summary>
     /// <seealso cref="IGraphField" />
-    [DebuggerDisplay("Field: {Name}")]
+    [DebuggerDisplay("Field: {Route.Path}")]
     public class MethodGraphField : IGraphField
     {
         /// <summary>
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            this.Arguments = new GraphFieldArgumentCollection();
+            this.Arguments = new GraphFieldArgumentCollection(this);
             this.SecurityGroups = securityPolicies ?? Enumerable.Empty<FieldSecurityGroup>();
             this.ObjectType = objectType;
             this.DeclaredReturnType = declaredReturnType;
@@ -68,6 +68,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <inheritdoc/>
         public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null)
         {
+            if (this.Route.Path.Contains("TestPerson") && this.Name == "name")
+            {
+                var str = "";
+            }
             this.Resolver = newResolver;
 
             if (mode.HasValue)
@@ -99,7 +103,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public IEnumerable<FieldSecurityGroup> SecurityGroups { get; }
 
         /// <inheritdoc/>
-        public IGraphFieldArgumentCollection Arguments { get; }
+        public IGraphArgumentCollection Arguments { get; }
 
         /// <inheritdoc/>
         public string Description { get; set; }

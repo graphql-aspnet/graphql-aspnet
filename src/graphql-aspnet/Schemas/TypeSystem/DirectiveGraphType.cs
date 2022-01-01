@@ -33,20 +33,23 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="locations">The locations where this directive is valid.</param>
         /// <param name="phases">The phases under which this directive will be invoked.</param>
         /// <param name="directiveType">The concrete type of the directive.</param>
+        /// <param name="route">The route path that identifies this directive.</param>
         /// <param name="resolver">The resolver used to process this instance.</param>
         public DirectiveGraphType(
             string name,
             DirectiveLocation locations,
             DirectiveInvocationPhase phases,
             Type directiveType,
+            GraphFieldPath route,
             IGraphDirectiveResolver resolver = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
-            this.Arguments = new GraphFieldArgumentCollection();
+            this.Arguments = new GraphFieldArgumentCollection(this);
             this.Locations = locations;
             this.Resolver = resolver;
             this.Publish = true;
             this.InvocationPhases = phases;
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             _directiveType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
@@ -71,7 +74,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool Publish { get; set; }
 
         /// <inheritdoc />
-        public IGraphFieldArgumentCollection Arguments { get; }
+        public IGraphArgumentCollection Arguments { get; }
 
         /// <inheritdoc />
         public IGraphDirectiveResolver Resolver { get; set; }
@@ -87,5 +90,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

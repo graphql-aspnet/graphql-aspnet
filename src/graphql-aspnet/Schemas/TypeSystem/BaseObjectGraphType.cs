@@ -28,11 +28,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Initializes a new instance of the <see cref="BaseObjectGraphType" /> class.
         /// </summary>
         /// <param name="name">The name of the graph type as it is displayed in the __type information.</param>
+        /// <param name="route">The route path of this object.</param>
         /// <param name="directives">The directives applied to this schema item
         /// when its added to a schema.</param>
-        protected BaseObjectGraphType(string name, IAppliedDirectiveCollection directives = null)
+        protected BaseObjectGraphType(
+            string name,
+            GraphFieldPath route,
+            IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             _graphFields = new GraphFieldCollection(this);
             this.InterfaceNames = new HashSet<string>();
             this.Publish = true;
@@ -85,5 +90,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

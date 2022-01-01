@@ -38,10 +38,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>IEnumerable&lt;AppliedDirectiveTemplate&gt;.</returns>
         public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this ICustomAttributeProvider attributeProvider, INamedItem owner)
         {
+            var directiveList = new List<IAppliedDirectiveTemplate>();
+
             var directiveAttribs = attributeProvider
                                     .AttributesOfType<ApplyDirectiveAttribute>();
 
-            var directiveList = new List<IAppliedDirectiveTemplate>();
             foreach (var directiveAttrib in directiveAttribs)
             {
                 var template = new AppliedDirectiveTemplate(

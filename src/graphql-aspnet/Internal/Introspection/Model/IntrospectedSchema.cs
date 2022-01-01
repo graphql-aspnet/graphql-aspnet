@@ -20,13 +20,14 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A model object containing data for the __schema meta field.
     /// </summary>
     [DebuggerDisplay("Introspected Schema: {Name}")]
-    public class IntrospectedSchema : ISchemaItem
+    public class IntrospectedSchema : IntrospectedItem, ISchemaItem
     {
         private readonly ISchema _schema;
         private OrderedDictionary<string, IntrospectedType> _typeList;
@@ -37,10 +38,10 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <param name="schema">The schema.</param>
         public IntrospectedSchema(ISchema schema)
+            : base(schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _typeList = new OrderedDictionary<string, IntrospectedType>();
-            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
         /// <summary>
@@ -209,20 +210,10 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         [GraphField("Directives")]
         public IEnumerable<IntrospectedDirective> DeclaredDirectives => _directiveList;
 
-        /// <inheritdoc />
-        public string Name => _schema?.Name;
-
         /// <summary>
         /// Gets the core schema represented by this introspected entity.
         /// </summary>
         /// <value>The schema.</value>
         public ISchema Schema => _schema;
-
-        /// <inheritdoc />
-        public string Description => _schema.Description;
-
-        /// <inheritdoc />
-        [GraphSkip]
-        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

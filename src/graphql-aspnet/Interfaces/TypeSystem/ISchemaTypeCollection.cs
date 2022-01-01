@@ -115,6 +115,14 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IDirectiveGraphType FindDirective(string name);
 
         /// <summary>
+        /// Attempts to find a single directive within this schema by its name. Returns null
+        /// if the directive is not found.
+        /// </summary>
+        /// <param name="directiveType">The registered type of the directive to search for.</param>
+        /// <returns>IDirectiveGraphType.</returns>
+        IDirectiveGraphType FindDirective(Type directiveType);
+
+        /// <summary>
         /// Retrieves the collection of graph types that implement the provided named interface,
         /// if any.
         /// </summary>

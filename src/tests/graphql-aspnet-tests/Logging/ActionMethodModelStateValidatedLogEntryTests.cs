@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             concreteType = concreteType ?? value?.GetType() ?? throw new ArgumentException();
 
-            var argTemplate = new Mock<IGraphFieldArgument>();
+            var argTemplate = new Mock<IGraphArgument>();
 
             argTemplate.Setup(x => x.Name).Returns(name);
             argTemplate.Setup(x => x.TypeExpression).Returns(new GraphTypeExpression(name, wrappers));

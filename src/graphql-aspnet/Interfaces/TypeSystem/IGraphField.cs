@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
     /// accepted arguments, any nullable or list modifiers and publication and depreciation information.
     /// </summary>
-    public interface IGraphField : IDeprecatable, IGraphFieldArgumentContainer, ISchemaItem
+    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISchemaItem
     {
         /// <summary>
         /// Updates the known graph type this field belongs to.
@@ -75,12 +75,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
         bool Publish { get; }
-
-        /// <summary>
-        /// Gets the route assigned to this field in the object graph.
-        /// </summary>
-        /// <value>The route.</value>
-        GraphFieldPath Route { get; }
 
         /// <summary>
         /// Gets an estimated weight value of this field in terms of the overall impact it has on the execution of a query.

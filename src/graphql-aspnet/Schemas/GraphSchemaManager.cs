@@ -153,8 +153,7 @@ namespace GraphQL.AspNet.Schemas
         {
             if (!this.Schema.OperationTypes.ContainsKey(operationType))
             {
-                var name = _formatter.FormatGraphTypeName(operationType.ToString());
-                var operation = new GraphOperation(operationType, name);
+                var operation = new GraphOperation(operationType);
                 this.Schema.KnownTypes.EnsureGraphType(operation);
                 this.Schema.OperationTypes.Add(operation.OperationType, operation);
             }
@@ -330,7 +329,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <typeparam name="TItem">The type of the item to add to the schema.</typeparam>
         /// <param name="kind">The kind of graph type to create from the supplied concrete type.</param>
-        public void EnsureGraphType<TItem>(TypeKind kind)
+        public void EnsureGraphType<TItem>(TypeKind? kind = null)
         {
             this.EnsureGraphType(typeof(TItem), kind);
         }

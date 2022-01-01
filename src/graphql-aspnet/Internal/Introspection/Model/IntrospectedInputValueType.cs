@@ -27,15 +27,13 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedInputValueType" /> class.
         /// </summary>
-        /// <param name="argument">The field argument used to populate this input value.</param>
+        /// <param name="argument">The argument being introspected.</param>
         /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
-        public IntrospectedInputValueType(IGraphFieldArgument argument, IntrospectedType introspectedGraphType)
-            : this()
+        public IntrospectedInputValueType(IGraphArgument argument, IntrospectedType introspectedGraphType)
+            : this(argument)
         {
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
             Validation.ThrowIfNull(argument, nameof(argument));
-            this.Name = argument.Name;
-            this.Description = argument.Description;
             _rawDefaultValue = argument.DefaultValue;
         }
 
@@ -45,21 +43,19 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <param name="inputField">The field of an input object used to populate this value.</param>
         /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
         public IntrospectedInputValueType(IGraphField inputField, IntrospectedType introspectedGraphType)
-            : this()
+            : this(inputField)
         {
             Validation.ThrowIfNull(inputField, nameof(inputField));
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
-
-            this.Name = inputField.Name;
-            this.Description = inputField.Description;
         }
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="IntrospectedInputValueType"/> class from being created.
+        /// Prevents a default instance of the <see cref="IntrospectedInputValueType" /> class from being created.
         /// </summary>
-        private IntrospectedInputValueType()
+        /// <param name="argument">The argument being introspected.</param>
+        private IntrospectedInputValueType(ISchemaItem argument)
+            : base(argument)
         {
-            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
         /// <inheritdoc />
@@ -99,20 +95,10 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <value>The type.</value>
         public IntrospectedType IntrospectedGraphType { get; }
 
-        /// <inheritdoc />
-        public string Name { get; }
-
-        /// <inheritdoc />
-        public string Description { get; }
-
         /// <summary>
         /// Gets the default value of this argument, represented as a string.
         /// </summary>
         /// <value>The default value.</value>
         public string DefaultValue { get; private set; }
-
-        /// <inheritdoc />
-        [GraphSkip]
-        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

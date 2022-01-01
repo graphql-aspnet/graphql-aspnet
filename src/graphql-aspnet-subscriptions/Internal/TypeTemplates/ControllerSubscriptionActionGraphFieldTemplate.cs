@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         protected override void ParseTemplateDefinition()
         {
-            var fieldDeclaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            var fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
             if (fieldDeclaration is SubscriptionAttribute sa)
                 EventName = sa.EventName;
             else if (fieldDeclaration is SubscriptionRootAttribute sra)

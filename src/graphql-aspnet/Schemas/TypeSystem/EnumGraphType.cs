@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Execution.ValueResolvers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A representation of any given enumeration (fixed set of values) in the type system.
@@ -32,9 +33,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
         /// <param name="enumType">Type of the enum.</param>
+        /// <param name="route">The route path that identifies this enum type.</param>
         /// <param name="directives">The directives to apply to this enum type.</param>
-        public EnumGraphType(string name, Type enumType, IAppliedDirectiveCollection directives = null)
-            : this(name, enumType, new EnumLeafValueResolver(enumType), directives)
+        public EnumGraphType(string name, Type enumType, GraphFieldPath route, IAppliedDirectiveCollection directives = null)
+            : this(name, enumType, route, new EnumLeafValueResolver(enumType), directives)
         {
         }
 
@@ -43,16 +45,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
         /// <param name="enumType">Type of the enum.</param>
+        /// <param name="route">The route path that identifies this enum type.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="directives">The directives to apply to this enum type.</param>
         public EnumGraphType(
             string name,
             Type enumType,
+            GraphFieldPath route,
             ILeafValueResolver resolver,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullEmptyOrReturn(name, nameof(name));
             this.ObjectType = Validation.ThrowIfNullOrReturn(enumType, nameof(enumType));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.SourceResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
 
             this.InternalName = this.ObjectType.FriendlyName();
@@ -124,5 +129,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

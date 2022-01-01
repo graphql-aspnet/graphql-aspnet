@@ -205,6 +205,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         }
 
         /// <inheritdoc />
+        public IDirectiveGraphType FindDirective(Type directiveType)
+        {
+            return this.FindGraphType(directiveType, TypeKind.DIRECTIVE) as IDirectiveGraphType;
+        }
+
+        /// <inheritdoc />
         public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(IInterfaceGraphType interfaceType)
         {
             if (interfaceType == null)

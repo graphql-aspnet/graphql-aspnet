@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             base.ParseTemplateDefinition();
 
-            _fieldDeclaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            _fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
 
             // ------------------------------------
             // Common Metadata
@@ -64,8 +64,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Route = this.GenerateFieldPath();
             this.Mode = _fieldDeclaration?.ExecutionMode ?? FieldResolutionMode.PerSourceItem;
             this.Complexity = _fieldDeclaration?.Complexity;
-            this.Description = this.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
-            var deprecated = this.SingleAttributeOfTypeOrDefault<DeprecatedAttribute>();
+            this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
+            var deprecated = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DeprecatedAttribute>();
             if (deprecated != null)
             {
                 this.IsDeprecated = true;
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
                 // the possible types attribte is optional but expects that the concrete types are added
                 // to the schema else where lest a runtime exception occurs of a missing graph type.
-                var typesAttrib = this.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
+                var typesAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
                 if (typesAttrib != null)
                 {
                     foreach (var type in typesAttrib.PossibleTypes)
@@ -364,11 +364,24 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public abstract IGraphFieldResolver CreateResolver();
 
         /// <inheritdoc />
-        public virtual IEnumerable<DependentType> RetrieveRequiredTypes()
+        public override IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            // a base field knows, at most, about the return object type it is dependent on
-            return this.PossibleTypes?.Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)))
-                                ?? Enumerable.Empty<DependentType>();
+            var list = new List<DependentType>();
+            list.AddRange(base.RetrieveRequiredTypes());
+
+            if (this.PossibleTypes != null)
+            {
+                var dependentTypes = this.PossibleTypes.Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)));
+                list.AddRange(dependentTypes);
+            }
+
+            if (this.Arguments != null)
+            {
+                foreach (var arg in this.Arguments)
+                    list.AddRange(arg.RetrieveRequiredTypes());
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -376,7 +389,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         private void BuildUnionProxyInstance()
         {
-            var fieldAttribute = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            var fieldAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
             if (fieldAttribute == null)
                 return;
 

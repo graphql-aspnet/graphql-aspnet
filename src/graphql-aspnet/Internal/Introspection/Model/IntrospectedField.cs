@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -29,13 +30,13 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Initializes a new instance of the <see cref="IntrospectedField" /> class.
         /// </summary>
         /// <param name="field">The field itself.</param>
-        /// <param name="introspectedType">The introspected object representing the graph type returned
+        /// <param name="introspectedFieldOwner">The introspected object representing the graph type returned
         /// by this field.</param>
-        public IntrospectedField(IGraphField field, IntrospectedType introspectedType)
+        public IntrospectedField(IGraphField field, IntrospectedType introspectedFieldOwner)
+            : base(field)
         {
-            this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedType, nameof(introspectedType));
+            this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedFieldOwner, nameof(introspectedFieldOwner));
             _field = Validation.ThrowIfNullOrReturn(field, nameof(field));
-            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
         /// <inheritdoc />
@@ -60,9 +61,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <value>The type of the graph.</value>
         public IntrospectedType IntrospectedGraphType { get; }
 
-        /// <inheritdoc />
-        public string Name => _field.Name;
-
         /// <summary>
         /// Gets a collection of arguments this instance can accept on a query.
         /// </summary>
@@ -70,16 +68,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public IReadOnlyList<IntrospectedInputValueType> Arguments { get; private set; }
 
         /// <inheritdoc />
-        public string Description => _field.Description;
-
-        /// <inheritdoc />
         public bool IsDeprecated => _field.IsDeprecated;
 
         /// <inheritdoc />
         public string DeprecationReason => _field.DeprecationReason;
-
-        /// <inheritdoc />
-        [GraphSkip]
-        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

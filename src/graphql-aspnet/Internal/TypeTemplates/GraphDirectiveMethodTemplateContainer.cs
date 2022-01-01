@@ -40,6 +40,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             _templateMap = new Dictionary<DirectiveLocation, GraphDirectiveMethodTemplate>();
         }
 
+        /// <inheritdoc cref="IGraphItemTemplate.RetrieveRequiredTypes" />
+        public IEnumerable<DependentType> RetrieveRequiredTypes()
+        {
+            // all methods are required to be the same signatured
+            // we can just pull the dependnent types on the first
+            var list = new List<DependentType>();
+            if (_templateMap.Count > 0)
+                return _templateMap.Values.First().RetrieveRequiredTypes();
+
+            return Enumerable.Empty<DependentType>();
+        }
+
         /// <summary>
         /// Registers the method template to this container, slotting it in to handle the lifecycle hook it defines. If a hook/location
         /// combination is already registered that this method also defines, an exception will be thrown.

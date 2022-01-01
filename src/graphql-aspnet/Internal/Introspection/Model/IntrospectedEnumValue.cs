@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// </summary>
     [GraphType(Constants.ReservedNames.ENUM_VALUE_TYPE)]
     [DebuggerDisplay("Introspected Enum Value: {Name}")]
-    public class IntrospectedEnumValue : IDeprecatable, ISchemaItem
+    public class IntrospectedEnumValue : IntrospectedItem, IDeprecatable, ISchemaItem
     {
         private readonly IEnumOption _enumOption;
 
@@ -29,25 +29,15 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <param name="enumOption">The enum option.</param>
         public IntrospectedEnumValue(IEnumOption enumOption)
+            : base(enumOption)
         {
             _enumOption = Validation.ThrowIfNullOrReturn(enumOption, nameof(enumOption));
-            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
-
-        /// <inheritdoc />
-        public string Name => _enumOption.Name;
-
-        /// <inheritdoc />
-        public string Description => _enumOption.Description;
 
         /// <inheritdoc />
         public bool IsDeprecated => _enumOption.IsDeprecated;
 
         /// <inheritdoc />
         public string DeprecationReason => _enumOption.DeprecationReason;
-
-        /// <inheritdoc />
-        [GraphSkip]
-        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

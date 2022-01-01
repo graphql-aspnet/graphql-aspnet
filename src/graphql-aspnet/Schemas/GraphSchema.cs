@@ -11,10 +11,14 @@ namespace GraphQL.AspNet.Schemas
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
@@ -44,6 +48,17 @@ namespace GraphQL.AspNet.Schemas
             this.KnownTypes = new SchemaTypeCollection();
             this.Configuration = new SchemaConfiguration();
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
+
+            var graphName = this.GetType().FriendlyGraphTypeName();
+            if (!GraphValidation.IsValidGraphName(graphName))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The object {this.GetType().FriendlyName()} cannot be used as a " +
+                    $"schema due to its name. Ensure all proposed schema types have no " +
+                    $"special characters (such as carrots for generics) and does not start with an underscore.");
+            }
+
+            this.Route = new GraphFieldPath(GraphCollection.Schemas, graphName);
         }
 
         /// <inheritdoc />
@@ -66,5 +81,8 @@ namespace GraphQL.AspNet.Schemas
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

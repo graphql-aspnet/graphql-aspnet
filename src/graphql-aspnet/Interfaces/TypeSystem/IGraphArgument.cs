@@ -15,13 +15,21 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// An argument/input value that can be applied to a field.
     /// </summary>
-    public interface IGraphFieldArgument : ITypedSchemaItem, ISchemaItem
+    public interface IGraphArgument : ITypedSchemaItem, ISchemaItem
     {
         /// <summary>
         /// Gets a default value to use for any instances of this argument when one is not explicitly provided.
+        /// The default can be <c>null</c>. Inspect <see cref="HasDefaultValue"/>
+        /// to determine if a default value is present.
         /// </summary>
         /// <value>The boxed, default value, if any.</value>
         object DefaultValue { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has a defined <see cref="DefaultValue"/>.
+        /// </summary>
+        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
+        bool HasDefaultValue { get; }
 
         /// <summary>
         /// Gets the argument modifiers that modify how this argument is interpreted by the runtime.

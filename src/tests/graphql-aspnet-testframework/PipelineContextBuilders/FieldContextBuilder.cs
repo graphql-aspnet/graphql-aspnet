@@ -235,7 +235,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
-        /// Gets a mock reference to the method that will be resonsible for resolving the context in case any direct
+        /// Gets a mock reference to the root method that will be resonsible for resolving the context in case any direct
         /// invocation tests are needed. Otherwise, this property is not used in resolving a context put directly
         /// against the testserver.
         /// </summary>

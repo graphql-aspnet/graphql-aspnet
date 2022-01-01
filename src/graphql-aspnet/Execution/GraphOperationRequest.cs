@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution
     {
         /// <summary>
         /// Creates a new operation result from a collection of generated messages and optional raw data
-        /// provided by a requestor.
+        /// provided by a requestor. If no error level messages are supplied a generic one is created.
         /// </summary>
         /// <param name="errorMessages">The collection of messages. Must be not null and contain at least one message.</param>
         /// <param name="queryData">The original query data.</param>

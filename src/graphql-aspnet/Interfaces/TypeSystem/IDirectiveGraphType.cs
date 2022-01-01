@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// An interface describing a directive in the schema type system.
     /// </summary>
-    public interface IDirectiveGraphType : IGraphType, IGraphFieldArgumentContainer
+    public interface IDirectiveGraphType : IGraphType, IGraphArgumentContainer
     {
         /// <summary>
         /// Gets the resolver asssigned to this directive type to process any invocations.

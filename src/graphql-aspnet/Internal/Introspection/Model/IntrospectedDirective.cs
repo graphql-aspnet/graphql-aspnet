@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <param name="directiveType">Type of the directive.</param>
         public IntrospectedDirective(IDirectiveGraphType directiveType)
+            : base(directiveType)
         {
             this.GraphType = directiveType;
         }
@@ -58,20 +59,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <value>The type of the graph.</value>
         protected IDirectiveGraphType GraphType { get; }
-
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name => this.GraphType.Name;
-
-        /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        public string Description => this.GraphType.Description;
 
         /// <summary>
         /// Gets a collection of arguments this instance can accept on a query.

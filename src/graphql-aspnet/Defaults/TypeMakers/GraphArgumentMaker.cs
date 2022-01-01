@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A maker capable of turning a <see cref="IGraphArgumentTemplate"/> into a usable <see cref="IGraphFieldArgument"/> on a graph field.
+    /// A maker capable of turning a <see cref="IGraphArgumentTemplate"/> into a usable <see cref="IGraphArgument"/> on a graph field.
     /// </summary>
     public class GraphArgumentMaker : IGraphArgumentMaker
     {
@@ -41,10 +41,12 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var argument = new GraphFieldArgument(
                 formatter.FormatFieldName(template.Name),
                 template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                template.Route,
                 template.ArgumentModifiers,
                 template.DeclaredArgumentName,
                 template.InternalFullName,
                 template.ObjectType,
+                template.HasDefaultValue,
                 template.DefaultValue,
                 template.Description,
                 directives);

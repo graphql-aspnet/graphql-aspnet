@@ -15,9 +15,12 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     public enum GraphCollection
     {
-        Directives = -3,
-        Enums = -2,
-        Types = -1,
+        Introspection = -60,
+        Schemas = -50,
+        Directives = -40,
+        Scalars = -30,
+        Enums = -20,
+        Types = -10,
         Unknown = 0,
         Query = 1,
         Mutation = 2,

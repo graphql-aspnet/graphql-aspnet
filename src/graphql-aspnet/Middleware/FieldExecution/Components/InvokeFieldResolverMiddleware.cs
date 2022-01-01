@@ -180,6 +180,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     executionContext?.Request?.Items);
 
                 var directiveContext = new GraphDirectiveExecutionContext(
+                    _schema,
                     executionContext,
                     request,
                     executionContext.VariableData,

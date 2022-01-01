@@ -31,14 +31,17 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the interface as it will appear in the schema.</param>
         /// <param name="concreteType">The concrete type representing this interface.</param>
+        /// <param name="route">The route path that identifies this interface.</param>
         /// <param name="directives">The directives to apply to this type
         /// when its added to a schema.</param>
         public InterfaceGraphType(
             string name,
             Type concreteType,
+            GraphFieldPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             _fieldSet = new GraphFieldCollection(this);
             _interfaceType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.Publish = true;
@@ -87,5 +90,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

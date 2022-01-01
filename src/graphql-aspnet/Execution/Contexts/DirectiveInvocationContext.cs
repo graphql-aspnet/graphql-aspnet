@@ -28,6 +28,8 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="location">The target location type of this invocation.</param>
         /// <param name="origin">The origin point in source document
         /// where this directive invocation appeared.</param>
+        /// <param name="args">The collection of arguments
+        /// obtained or parsed during source document construction.</param>
         public DirectiveInvocationContext(
             IDirectiveGraphType directiveType,
             DirectiveLocation location,

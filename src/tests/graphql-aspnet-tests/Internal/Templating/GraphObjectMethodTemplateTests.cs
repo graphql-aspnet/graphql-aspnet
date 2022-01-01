@@ -210,9 +210,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var parent = obj.Object;
             var template = this.CreateMethodTemplate<MethodClassWithDirective>(nameof(MethodClassWithDirective.Counter));
 
-            Assert.AreEqual(1, template.Directives.Count());
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
 
-            var appliedDirective = template.Directives.First();
+            var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.Directive);
             Assert.AreEqual(new object[] { 44, "method arg" }, appliedDirective.Arguments);
         }

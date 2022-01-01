@@ -54,6 +54,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var graphType = new EnumGraphType(
                 _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(template.Name),
                 concreteType,
+                template.Route,
                 enumDirectives)
             {
                 Description = template.Description,
@@ -70,6 +71,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 var valueOption = new GraphEnumOption(
                     _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
                     value.Description,
+                    value.Route,
                     value.IsDeprecated,
                     value.DeprecationReason,
                     valueDirectives);

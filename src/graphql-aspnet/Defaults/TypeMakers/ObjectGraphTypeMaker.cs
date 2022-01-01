@@ -58,6 +58,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var objectType = new ObjectGraphType(
             formatter.FormatGraphTypeName(template.Name),
             concreteType,
+            template.Route,
             directives)
             {
                 Description = template.Description,

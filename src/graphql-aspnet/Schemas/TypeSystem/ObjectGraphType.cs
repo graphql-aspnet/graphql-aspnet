@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Fields;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A represention of a graphql object in the schema. This object defines all the exposed
@@ -29,13 +30,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
         /// <param name="objectType">The concrete type that this graphtype is made from.</param>
+        /// <param name="route">The route path that identifies this object in the schema..</param>
         /// <param name="directives">The directives applied to this object
         /// when its added to a schema.</param>
         public ObjectGraphType(
             string name,
             Type objectType,
+            GraphFieldPath route,
             IAppliedDirectiveCollection directives = null)
-            : base(name, directives)
+            : base(name, route, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = this.ObjectType.FriendlyName();

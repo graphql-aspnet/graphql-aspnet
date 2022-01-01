@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.ValidationRules.Interfaces;
     using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldValidation;
 
@@ -38,11 +37,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution
             _ruleSet.Add(new GraphDataItem_FinalizeDataItem());
         }
 
-        /// <summary>
-        /// Fetches the rules that should be executed, in order, for the given context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns>IEnumerable&lt;IRuleStep&lt;TContext&gt;&gt;.</returns>
+        /// <inheritdoc/>
         public IEnumerable<IRuleStep<FieldValidationContext>> FetchRules(FieldValidationContext context)
         {
             return _ruleSet;

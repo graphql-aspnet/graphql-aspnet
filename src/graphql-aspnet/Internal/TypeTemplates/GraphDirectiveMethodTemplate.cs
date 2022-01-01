@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             this.Description = this.Method.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
             this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
-            this.Directives = this.ExtractAppliedDirectiveTemplates();
+            this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
 
             // deteremine all the directive locations where this method should be invoked
             var locations = DirectiveLocation.NONE;
@@ -162,8 +162,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var argument in _arguments)
                 argument.ValidateOrThrow();
 
-            foreach (var directive in this.Directives)
+            foreach (var directive in this.AppliedDirectives)
                 directive.ValidateOrThrow();
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<DependentType> RetrieveRequiredTypes()
+        {
+            var list = new List<DependentType>();
+            foreach (var argument in this.Arguments)
+                list.AddRange(argument.RetrieveRequiredTypes());
+
+            return list;
         }
 
         /// <summary>
@@ -240,6 +250,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public ICustomAttributeProvider AttributeProvider => this.Method;
 
         /// <inheritdoc />
-        public IEnumerable<IAppliedDirectiveTemplate> Directives { get; private set; }
+        public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
     }
 }

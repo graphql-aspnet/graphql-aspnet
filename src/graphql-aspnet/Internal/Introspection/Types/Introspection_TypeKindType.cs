@@ -14,6 +14,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -39,7 +41,10 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
         /// Initializes a new instance of the <see cref="Introspection_TypeKindType"/> class.
         /// </summary>
         private Introspection_TypeKindType()
-            : base(Constants.ReservedNames.TYPE_KIND_ENUM, typeof(TypeKind))
+            : base(
+                  Constants.ReservedNames.TYPE_KIND_ENUM,
+                  typeof(TypeKind),
+                  new GraphIntrospectionFieldPath(Constants.ReservedNames.TYPE_KIND_ENUM))
         {
             foreach (var value in Enum.GetValues(this.ObjectType))
             {
@@ -47,8 +52,16 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                 if (fi.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
                     continue;
 
+                var name = value.ToString();
                 var description = fi.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-                this.AddOption(new GraphEnumOption(value.ToString(), description, false, null));
+                var option = new GraphEnumOption(
+                    name,
+                    description,
+                    this.Route.CreateChild(name),
+                    false,
+                    null);
+
+                this.AddOption(option);
             }
         }
     }

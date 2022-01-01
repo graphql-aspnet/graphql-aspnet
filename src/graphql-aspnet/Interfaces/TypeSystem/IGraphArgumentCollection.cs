@@ -14,16 +14,16 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using GraphQL.AspNet.Schemas;
 
     /// <summary>
-    /// A collection of <see cref="IGraphFieldArgument"/> for a single <see cref="IGraphField"/> or <see cref="IDirectiveGraphType"/>.
+    /// A collection of <see cref="IGraphArgument"/> for a single <see cref="IGraphField"/> or <see cref="IDirectiveGraphType"/>.
     /// </summary>
-    public interface IGraphFieldArgumentCollection : IEnumerable<IGraphFieldArgument>
+    public interface IGraphArgumentCollection : IEnumerable<IGraphArgument>
     {
         /// <summary>
-        /// Adds the <see cref="IGraphFieldArgument" /> to the collection.
+        /// Adds the <see cref="IGraphArgument" /> to the collection.
         /// </summary>
         /// <param name="argument">The argument to add.</param>
         /// <returns>IArgument.</returns>
-        IGraphFieldArgument AddArgument(IGraphFieldArgument argument);
+        IGraphArgument AddArgument(IGraphArgument argument);
 
         /// <summary>
         /// Adds the input argument to the growing collection.
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <param name="typeExpression">The type expression representing how this value is represented in this graph schema.</param>
         /// <param name="concreteType">The concrete type this field is on the server.</param>
         /// <returns>IGraphFieldArgument.</returns>
-        IGraphFieldArgument AddArgument(
+        IGraphArgument AddArgument(
             string name,
             string internalName,
             GraphTypeExpression typeExpression,
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <param name="defaultValue">The default value to set for the argument. If null, indicates
         /// the argument supplies null as the default value.</param>
         /// <returns>IGraphFieldArgument.</returns>
-        IGraphFieldArgument AddArgument(
+        IGraphArgument AddArgument(
             string name,
             string internalName,
             GraphTypeExpression typeExpression,
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
             object defaultValue);
 
         /// <summary>
-        /// Determines whether this collection contains a <see cref="IGraphFieldArgument" />. Argument
+        /// Determines whether this collection contains a <see cref="IGraphArgument" />. Argument
         /// names are case sensitive and should match the public name as its defined on the target schema
         /// ...NOT the internal concrete parameter name if the argument is bound to a method parameter.
         /// </summary>
@@ -66,12 +66,28 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         bool ContainsKey(string argumentName);
 
         /// <summary>
-        /// Gets the <see cref="IGraphFieldArgument" /> with the specified name. Argument
+        /// Finds the argument by the supplied name. Returns null if no
+        /// match is found.
+        /// </summary>
+        /// <param name="argumentName">Name of the argument to locate.</param>
+        /// <returns>IGraphArgument.</returns>
+        IGraphArgument FindArgument(string argumentName);
+
+        /// <summary>
+        /// Gets the <see cref="IGraphArgument" /> with the specified name. Argument
         /// names are case sensitive and should match the public name as its defined on the target schema.
         /// </summary>
         /// <param name="argumentName">Name of the argument to return.</param>
         /// <returns>IGraphFieldArgument.</returns>
-        IGraphFieldArgument this[string argumentName] { get; }
+        IGraphArgument this[string argumentName] { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IGraphArgument" /> with the specified index
+        /// in the collection.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>IGraphFieldArgument.</returns>
+        IGraphArgument this[int index] { get; }
 
         /// <summary>
         /// Gets the count of arguments in this collection.
@@ -83,6 +99,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets the singular argument that is to recieve source data for the field resolution.
         /// </summary>
         /// <value>The source data argument.</value>
-        IGraphFieldArgument SourceDataArgument { get; }
+        IGraphArgument SourceDataArgument { get; }
     }
 }

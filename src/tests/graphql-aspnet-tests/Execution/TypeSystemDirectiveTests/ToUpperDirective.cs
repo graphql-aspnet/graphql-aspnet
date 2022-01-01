@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
             if (item != null)
             {
                 if (item.ObjectType != typeof(string))
-                    throw new System.Exception("ONLY STRINGS, NO STAIRS!");
+                    throw new System.Exception("ONLY STRINGS, NO STAIRS!"); // - hulk
 
                 // update the resolver to execute the orignal
                 // resolver then upper case any string result

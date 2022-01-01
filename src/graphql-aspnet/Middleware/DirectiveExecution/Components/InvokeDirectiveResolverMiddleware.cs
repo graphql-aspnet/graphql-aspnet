@@ -42,27 +42,32 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
             // create a collection of arguments used to invoke the
             // directive
             // build a collection of invokable parameters from the supplied context
-            var executionArgs = context
-                .Request
-                .InvocationContext
-                .Arguments
-                .Merge(context.VariableData);
+            if (context.IsValid && !context.IsCancelled)
+            {
+                var executionArgs = context
+                    .Request
+                    .InvocationContext
+                    .Arguments
+                    .Merge(context.VariableData);
 
-            var resolutionContext = new DirectiveResolutionContext(
-                context,
-                context.Request,
-                executionArgs,
-                context.User);
+                var resolutionContext = new DirectiveResolutionContext(
+                    context,
+                    context.Request,
+                    executionArgs,
+                    context.User);
 
-            // execute the directive
-            await context
-                .Directive
-                .Resolver
-                .Resolve(resolutionContext, cancelToken)
-                .ConfigureAwait(false);
+                // execute the directive
+                await context
+                    .Directive
+                    .Resolver
+                    .Resolve(resolutionContext, cancelToken)
+                    .ConfigureAwait(false);
 
-            if (resolutionContext.IsCancelled)
-                context.Cancel();
+                context.Messages.AddRange(resolutionContext.Messages);
+
+                if (resolutionContext.IsCancelled)
+                    context.Cancel();
+            }
 
             await next.Invoke(context, cancelToken);
         }

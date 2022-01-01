@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// <param name="argument">The argument defined on schema that needs to have
         /// an input value created fro.</param>
         /// <returns>Task.</returns>
-        public ArgumentGenerationResult CreateInputArgument(IGraphFieldArgument argument)
+        public ArgumentGenerationResult CreateInputArgument(IGraphArgument argument)
         {
             Validation.ThrowIfNull(argument, nameof(argument));
 

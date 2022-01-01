@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <param name="querySuppliedArguments">The supplied argument collection parsed from the user query document.</param>
         /// <returns>Task&lt;IInputArgumentCollection&gt;.</returns>
         private IInputArgumentCollection CreateArgumentList(
-            IGraphFieldArgumentContainer argumentContainer,
+            IGraphArgumentContainer argumentContainer,
             IQueryInputArgumentCollection querySuppliedArguments)
         {
             var collection = new InputArgumentCollection();

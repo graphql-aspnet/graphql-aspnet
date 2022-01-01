@@ -14,14 +14,12 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A request, resolved by a <see cref="GraphDirective"/> to perform some augmented
     /// or conditional processing on a segment of a query document.
     /// </summary>
-    [DebuggerDisplay("@{Directive.Name}  (LifeCylce = {LifeCycle})")]
+    [DebuggerDisplay("@{InvocationContext.Directive.Name}  (Phase = {DirectivePhase})")]
     public class GraphDirectiveRequest : IGraphDirectiveRequest
     {
         /// <summary>

@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             this.AssociatedGraphType = new VirtualObjectGraphType(typeName);
             this.TypeExpression = new GraphTypeExpression(typeName);
-            this.Arguments = new GraphFieldArgumentCollection();
+            this.Arguments = new GraphFieldArgumentCollection(this);
             this.Resolver = new GraphRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
 
             // fields made from controller route parameters have no policies directly unto themselves
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public GraphTypeExpression TypeExpression { get; }
 
         /// <inheritdoc />
-        public IGraphFieldArgumentCollection Arguments { get; }
+        public IGraphArgumentCollection Arguments { get; }
 
         /// <inheritdoc />
         public string Description { get; set; }

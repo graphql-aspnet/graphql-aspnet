@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -52,7 +53,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // A class property cannot contain any route pathing or nesting like controllers or actions.
             // Before creating hte route, ensure that the declared name, by itself, is valid for graphql such that resultant
             // global path for this property will also be correct.
-            var graphName = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
+            var graphName = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Property.Name).Trim();
 
             return new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, graphName));

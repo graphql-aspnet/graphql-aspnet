@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         public static IAppliedDirectiveCollection CreateAppliedDirectives(this IGraphItemTemplate template)
         {
             Validation.ThrowIfNull(template, nameof(template));
-            return template.Directives.CreateAppliedDirectives();
+            return template.AppliedDirectives.CreateAppliedDirectives();
         }
 
         /// <summary>

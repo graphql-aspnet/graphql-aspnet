@@ -22,17 +22,20 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// into a <see cref="GraphFieldArgument"/> for purposes of mapping, data coersion and introspection.
     /// </summary>
     [DebuggerDisplay("Argument: {Name}")]
-    public class GraphFieldArgument : IGraphFieldArgument
+    public class GraphFieldArgument : IGraphArgument
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldArgument" /> class.
         /// </summary>
         /// <param name="argumentName">Name of the argument.</param>
         /// <param name="typeExpression">The type expression.</param>
+        /// <param name="route">The route path that identifies this argument.</param>
         /// <param name="modifiers">The modifiers.</param>
         /// <param name="parameterName">Name of the parameter as it is declared in the source code.</param>
         /// <param name="internalname">The fully qualified internal name identifiying this argument.</param>
         /// <param name="objectType">The concrete type of the object representing this argument.</param>
+        /// <param name="hasDefaultValue">if set to <c>true</c> indicates that this
+        /// argument has a default value assigned, even if that argument is <c>null</c>.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <param name="description">The description about this argument.</param>
         /// <param name="directives">The directives to apply to this argument
@@ -40,20 +43,24 @@ namespace GraphQL.AspNet.Schemas.Structural
         public GraphFieldArgument(
             string argumentName,
             GraphTypeExpression typeExpression,
+            GraphFieldPath route,
             GraphArgumentModifiers modifiers,
             string parameterName,
             string internalname,
             Type objectType,
+            bool hasDefaultValue,
             object defaultValue = null,
             string description = null,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(argumentName, nameof(argumentName));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalname, nameof(internalname));
             this.ParameterName = Validation.ThrowIfNullWhiteSpaceOrReturn(parameterName, nameof(parameterName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.ArgumentModifiers = modifiers;
+            this.HasDefaultValue = hasDefaultValue;
             this.DefaultValue = defaultValue;
             this.Description = description?.Trim();
 
@@ -86,5 +93,11 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public bool HasDefaultValue { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }
