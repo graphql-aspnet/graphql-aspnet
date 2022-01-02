@@ -62,7 +62,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public virtual IEnumerable<DependentType> RetrieveRequiredTypes()
         {
             if (this.AppliedDirectives != null)
-                return this.AppliedDirectives.Select(x => new DependentType(x.Directive, TypeKind.DIRECTIVE));
+            {
+                return this.AppliedDirectives
+                    .Where(x => x.DirectiveType != null)
+                    .Select(x => new DependentType(x.DirectiveType, TypeKind.DIRECTIVE));
+            }
 
             return Enumerable.Empty<DependentType>();
         }

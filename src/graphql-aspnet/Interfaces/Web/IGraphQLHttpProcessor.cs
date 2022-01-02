@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Web
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
@@ -21,8 +22,9 @@ namespace GraphQL.AspNet.Interfaces.Web
         /// <summary>
         /// Accepts the post request and attempts to convert the body to a query data item.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The context to process.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task Invoke(HttpContext context);
+        Task Invoke(HttpContext context, CancellationToken cancelToken = default);
     }
 }

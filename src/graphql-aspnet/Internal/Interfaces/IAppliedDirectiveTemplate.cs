@@ -43,10 +43,16 @@ namespace GraphQL.AspNet.Internal.Interfaces
         INamedItem Owner { get; }
 
         /// <summary>
-        /// Gets the directive to be invoked.
+        /// Gets the concrete type of the directive to apply.
         /// </summary>
-        /// <value>The directive.</value>
-        Type Directive { get; }
+        /// <value>The type of the directive.</value>
+        Type DirectiveType { get; }
+
+        /// <summary>
+        /// Gets the name of the directive to apply as it exists in the schema.
+        /// </summary>
+        /// <value>The name of the directive.</value>
+        string DirectiveName { get; }
 
         /// <summary>
         /// Gets the argument values to pass to the directive when its invoked.

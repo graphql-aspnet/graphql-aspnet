@@ -8,6 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
+    using System;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -33,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(owner.Object, template.Owner);
-            Assert.AreEqual(typeof(DirectiveWithArgs), template.Directive);
+            Assert.AreEqual(typeof(DirectiveWithArgs), template.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 1, "bob" }, template.Arguments);
         }
 
@@ -44,7 +45,44 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             owner.Setup(x => x.InternalFullName).Returns("OWNER");
             var template = new AppliedDirectiveTemplate(
                 owner.Object,
-                null,
+                null as Type,
+                1,
+                "bob");
+
+            template.Parse();
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
+        }
+
+
+        [Test]
+        public void NullName_ThrowsException()
+        {
+            var owner = new Mock<IGraphItemTemplate>();
+            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            var template = new AppliedDirectiveTemplate(
+                owner.Object,
+                null as string,
+                1,
+                "bob");
+
+            template.Parse();
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void EmptyName_ThrowsException()
+        {
+            var owner = new Mock<IGraphItemTemplate>();
+            owner.Setup(x => x.InternalFullName).Returns("OWNER");
+            var template = new AppliedDirectiveTemplate(
+                owner.Object,
+                string.Empty,
                 1,
                 "bob");
 

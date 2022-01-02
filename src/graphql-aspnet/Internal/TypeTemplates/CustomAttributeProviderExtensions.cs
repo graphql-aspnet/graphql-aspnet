@@ -45,10 +45,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             foreach (var directiveAttrib in directiveAttribs)
             {
-                var template = new AppliedDirectiveTemplate(
-                    owner,
-                    directiveAttrib.DirectiveType,
-                    directiveAttrib.Arguments);
+                AppliedDirectiveTemplate template;
+
+                if (directiveAttrib.DirectiveType != null)
+                {
+                    template = new AppliedDirectiveTemplate(
+                        owner,
+                        directiveAttrib.DirectiveType,
+                        directiveAttrib.Arguments);
+                }
+                else
+                {
+                    template = new AppliedDirectiveTemplate(
+                        owner,
+                        directiveAttrib.DirectiveName,
+                        directiveAttrib.Arguments);
+                }
 
                 template.Parse();
                 directiveList.Add(template);

@@ -68,12 +68,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <inheritdoc/>
         public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null)
         {
-            if (this.Route.Path.Contains("TestPerson") && this.Name == "name")
-            {
-                var str = "";
-            }
             this.Resolver = newResolver;
-
             if (mode.HasValue)
                 this.Mode = mode.Value;
 

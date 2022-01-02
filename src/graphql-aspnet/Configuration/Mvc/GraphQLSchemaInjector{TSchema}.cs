@@ -183,7 +183,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         private TSchema BuildNewSchemaInstance(IServiceProvider serviceProvider)
         {
             var schemaInstance = GraphSchemaBuilder.BuildSchema<TSchema>(serviceProvider);
-            var initializer = new GraphSchemaInitializer<TSchema>(_options, serviceProvider);
+            var initializer = new GraphSchemaInitializer<TSchema>(_options);
             initializer.Initialize(schemaInstance);
 
             serviceProvider.WriteLogEntry(
@@ -265,8 +265,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
                 // create and setup the schema FIRST
                 var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
 
-                // once the schema and types are setup
-                // start processing directives
+                // once the schema and types are realized
+                // start processing directives set against those types
                 var directiveProcess = new GraphSchemaDirectiveProcessor<TSchema>(_options, scope.ServiceProvider);
                 directiveProcess.ApplyDirectives(schema);
             }

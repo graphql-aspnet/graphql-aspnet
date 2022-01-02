@@ -10,10 +10,8 @@
 namespace GraphQL.AspNet.Execution
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
@@ -27,7 +25,6 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
-    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -105,7 +102,12 @@ namespace GraphQL.AspNet.Execution
                           $"No valid directive processing pipeline was found.");
                 }
 
-                var targetDirective = schema.KnownTypes.FindDirective(appliedDirective.DirectiveType);
+                IDirectiveGraphType targetDirective = null;
+                if (appliedDirective.DirectiveType != null)
+                    targetDirective = schema.KnownTypes.FindDirective(appliedDirective.DirectiveType);
+                else if (!string.IsNullOrWhiteSpace(appliedDirective.DirectiveName))
+                    targetDirective = schema.KnownTypes.FindDirective(appliedDirective.DirectiveName);
+
                 if (targetDirective == null)
                 {
                     throw new GraphExecutionException(

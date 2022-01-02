@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -26,14 +25,27 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirective" /> class.
         /// </summary>
-        /// <param name="directiveType">Type of the directive.</param>
+        /// <param name="directiveType">Type of the directive to invoke.</param>
         /// <param name="arguments">The input arguments that will be used
         /// when this directive is invoked.</param>
         public AppliedDirective(Type directiveType, params object[] arguments)
         {
             this.DirectiveType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
+
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
 
+            this.Arguments = arguments;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppliedDirective" /> class.
+        /// </summary>
+        /// <param name="directiveName">Name of the directive as it will exist in the target schema.</param>
+        /// <param name="arguments">The input arguments that will be used
+        /// when this directive is invoked.</param>
+        public AppliedDirective(string directiveName, params object[] arguments)
+        {
+            this.DirectiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
             this.Arguments = arguments;
         }
 
@@ -41,12 +53,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Type DirectiveType { get; }
 
         /// <inheritdoc />
-        public object[] Arguments { get; }
+        public string DirectiveName { get; }
 
-        /// <summary>
-        /// Gets the friendly name of the directive type.
-        /// </summary>
-        /// <value>The name of the directive type.</value>
-        public string DirectiveTypeName => this.DirectiveType?.FriendlyName();
+        /// <inheritdoc />
+        public object[] Arguments { get; }
     }
 }

@@ -17,10 +17,16 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IAppliedDirective
     {
         /// <summary>
-        /// Gets the concrete type of the directive that has been applied.
+        /// Gets the concrete type of the directive to apply.
         /// </summary>
         /// <value>The type of the directive.</value>
         Type DirectiveType { get; }
+
+        /// <summary>
+        /// Gets the name of the directive to apply as it exists in the schema.
+        /// </summary>
+        /// <value>The name of the directive.</value>
+        string DirectiveName { get; }
 
         /// <summary>
         /// Gets the collection of arguments supplied on the directive

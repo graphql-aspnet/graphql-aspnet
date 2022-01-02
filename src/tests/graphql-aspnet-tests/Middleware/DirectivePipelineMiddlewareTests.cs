@@ -6,15 +6,12 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
+namespace GraphQL.AspNet.Tests.Middleware
 {
-    using GraphQL.AspNet.Attributes;
+    using NUnit.Framework;
 
-    public class TestPerson
+    [TestFixture]
+    public class DirectivePipelineMiddlewareTests
     {
-        [ApplyDirective(typeof(ToUpperDirective))]
-        public string Name { get; set; }
-
-        public string LastName { get; set; }
     }
 }

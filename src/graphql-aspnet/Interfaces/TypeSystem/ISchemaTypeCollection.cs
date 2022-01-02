@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
@@ -121,6 +122,15 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <param name="directiveType">The registered type of the directive to search for.</param>
         /// <returns>IDirectiveGraphType.</returns>
         IDirectiveGraphType FindDirective(Type directiveType);
+
+        /// <summary>
+        /// Attempts to find a single directive within this schema by its name. Returns null
+        /// if the directive is not found.
+        /// </summary>
+        /// <typeparam name="TDirective">The type of the directive to fetch.</typeparam>
+        /// <returns>IDirectiveGraphType.</returns>
+        IDirectiveGraphType FindDirective<TDirective>()
+            where TDirective : GraphDirective;
 
         /// <summary>
         /// Retrieves the collection of graph types that implement the provided named interface,

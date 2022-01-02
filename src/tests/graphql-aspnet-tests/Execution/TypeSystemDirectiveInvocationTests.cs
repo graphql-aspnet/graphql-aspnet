@@ -17,21 +17,46 @@ namespace GraphQL.AspNet.Tests.Execution
     public class TypeSystemDirectiveInvocationTests
     {
         [Test]
-        public async Task Directive_DeclaredOnField_IsApplied()
+        public async Task Directive_ByType_DeclaredOnField_IsApplied()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestPerson>()
+                .AddGraphType<TestPersonWithDirectiveType>()
                 .AddGraphType<ToUpperDirective>()
                 .Build();
 
-            var person = new TestPerson()
+            var person = new TestPersonWithDirectiveType()
             {
                 Name = "big john",
                 LastName = "Smith",
             };
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<TestPerson>(
-                nameof(TestPerson.Name),
+            var builder = server.CreateGraphTypeFieldContextBuilder<TestPersonWithDirectiveType>(
+                nameof(TestPersonWithDirectiveType.Name),
+                person);
+
+            var context = builder.CreateExecutionContext();
+            await server.ExecuteField(context);
+
+            var data = context.Result?.ToString();
+            Assert.AreEqual("BIG JOHN", data);
+        }
+
+        [Test]
+        public async Task Directive_ByName_DeclaredOnField_IsApplied()
+        {
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<TestPersonWithDirectiveName>()
+                .AddGraphType<ToUpperDirective>()
+                .Build();
+
+            var person = new TestPersonWithDirectiveName()
+            {
+                Name = "big john",
+                LastName = "Smith",
+            };
+
+            var builder = server.CreateGraphTypeFieldContextBuilder<TestPersonWithDirectiveName>(
+                nameof(TestPersonWithDirectiveName.Name),
                 person);
 
             var context = builder.CreateExecutionContext();

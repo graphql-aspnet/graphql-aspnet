@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Apollo.Messages.Converters
             }
             else
             {
-                _responseWriter.WriteAsync(
+                _responseWriter.Write(
                        writer,
                        value.Payload,
                        new GraphQLResponseOptions()

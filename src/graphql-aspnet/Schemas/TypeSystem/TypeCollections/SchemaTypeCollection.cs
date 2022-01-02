@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
@@ -208,6 +209,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         public IDirectiveGraphType FindDirective(Type directiveType)
         {
             return this.FindGraphType(directiveType, TypeKind.DIRECTIVE) as IDirectiveGraphType;
+        }
+
+        /// <inheritdoc />
+        public IDirectiveGraphType FindDirective<TDirective>()
+            where TDirective : GraphDirective
+        {
+            return this.FindDirective(typeof(TDirective));
         }
 
         /// <inheritdoc />

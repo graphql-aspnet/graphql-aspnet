@@ -38,14 +38,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
             var directive = context.Directive;
             var directiveArgs = context.Directive.Arguments;
             var suppliedArgs = context.Request.InvocationContext.Arguments;
-
-            if (directiveArgs.Count != suppliedArgs.Count)
-            {
-                this.ValidationError(
-                    context,
-                    $"Invalid Directive Invocation. The directive '{directive.Name}' requires exactly {directiveArgs.Count} input argument(s) " +
-                    $"but received {suppliedArgs.Count}.");
-            }
+            var completedSuccessfully = true;
 
             // ensure every  argument on the request
             // matches a decalration in the directive
@@ -60,10 +53,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
                         $"Invalid Directive Invocation. The supplied argument named '{suppliedArg.Name}' does not " +
                         $"match any known argument on the directive '{directive.Name}'.");
 
+                    completedSuccessfully = false;
                     continue;
                 }
 
-                this.CompareArguments(context, directiveArg, suppliedArg);
+                completedSuccessfully= this.CompareArguments(context, directiveArg, suppliedArg) && completedSuccessfully;
                 touchedArgs.Add(directiveArg);
             }
 
@@ -79,9 +73,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
                         context,
                         $"Invalid Directive Invocation. The directive '{directive.Name}' " +
                         $"declares some required arguments that were not provided. Missing arguments: {args}.");
+
+                completedSuccessfully = false;
             }
 
-            return true;
+            return completedSuccessfully;
         }
 
         /// <summary>
@@ -91,23 +87,27 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
         /// <param name="context">The owning context.</param>
         /// <param name="directiveArg">The directive argument.</param>
         /// <param name="suppliedArg">The supplied argument.</param>
-        private void CompareArguments(
+        private bool CompareArguments(
             GraphDirectiveExecutionContext context,
             IGraphArgument directiveArg,
             InputArgument suppliedArg)
         {
             var suppliedData = suppliedArg.Value.Resolve(context.VariableData);
+            var completedSuccessfully = true;
 
             // when no value is supplied
             if (suppliedData == null)
             {
-                if (directiveArg.TypeExpression.IsNullable)
-                    return;
+                if (!directiveArg.TypeExpression.IsNullable)
+                {
+                    this.ValidationError(
+                            context,
+                            $"Invalid Directive Invocation. The directive '{context.Directive.Name}' " +
+                            $"requires that the value for argument '{suppliedArg.Name}' not be null.");
+                    completedSuccessfully = false;
+                }
 
-                this.ValidationError(
-                        context,
-                        $"Invalid Directive Invocation. The directive '{context.Directive.Name}' " +
-                        $"requires that the value for argument '{suppliedArg.Name}' not be null.");
+                return completedSuccessfully;
             }
 
             var coreSuppliedType = suppliedData?.GetType();
@@ -130,6 +130,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
                         $"requires that the argument '{suppliedArg.Name}' be coercable to type '{directiveArg.TypeExpression.CloneTo(argType.Name)}'. " +
                         $"See exception for details.",
                         exception);
+                completedSuccessfully = false;
             }
 
             // is the value of a valid type expression
@@ -141,7 +142,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
                  context,
                  $"Invalid Directive Invocation. The argument value for '{directiveArg.Name}' on directive '{context.Directive.Name}' " +
                  $"cannot be coerced to '{directiveArg.TypeExpression.CloneTo(argType.Name)}'");
+                completedSuccessfully = false;
             }
+
+            return completedSuccessfully;
         }
 
         /// <inheritdoc />

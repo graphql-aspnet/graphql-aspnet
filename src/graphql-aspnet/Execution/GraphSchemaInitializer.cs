@@ -10,26 +10,12 @@
 namespace GraphQL.AspNet.Execution
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Directives;
-    using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.TypeSystem;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Perform a set of standardized steps to setup and configure any graph schema according to the rules
@@ -41,18 +27,14 @@ namespace GraphQL.AspNet.Execution
         where TSchema : class, ISchema
     {
         private readonly SchemaOptions _options;
-        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaInitializer{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        /// <param name="serviceProvider">The service provider used to instantiate
-        /// and apply type system directives.</param>
-        public GraphSchemaInitializer(SchemaOptions options, IServiceProvider serviceProvider)
+        public GraphSchemaInitializer(SchemaOptions options)
         {
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
         /// <summary>
