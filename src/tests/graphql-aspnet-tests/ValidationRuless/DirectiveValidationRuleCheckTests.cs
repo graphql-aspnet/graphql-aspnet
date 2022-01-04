@@ -30,70 +30,18 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
     [TestFixture]
     public class DirectiveValidationRuleCheckTests
     {
-        private (GraphDirectiveExecutionContext, GraphSchema) CreateContext<TDirective>(
-            DirectiveLocation location,
-            object directiveTarget,
-            DirectiveInvocationPhase phase = DirectiveInvocationPhase.SchemaGeneration,
-            SourceOrigin origin = null,
-            object[] arguments = null)
-            where TDirective : class
-        {
-            origin = origin ?? SourceOrigin.None;
 
-            var server = new TestServerBuilder()
-                .AddGraphType<TDirective>()
-                .Build();
-
-            var targetDirective = server.Schema.KnownTypes.FindDirective(typeof(TDirective));
-
-            var operationRequest = new Mock<IGraphOperationRequest>();
-            var directiveRequest = new Mock<IGraphDirectiveRequest>();
-            var invocationContext = new Mock<IDirectiveInvocationContext>();
-            var argCollection = new InputArgumentCollection();
-
-            directiveRequest.Setup(x => x.DirectivePhase).Returns(phase);
-            directiveRequest.Setup(x => x.InvocationContext).Returns(invocationContext.Object);
-            directiveRequest.Setup(x => x.DirectiveTarget).Returns(directiveTarget);
-            directiveRequest.Setup(x => x.Items).Returns(new MetaDataCollection());
-
-            invocationContext.Setup(x => x.Location).Returns(location);
-            invocationContext.Setup(x => x.Arguments).Returns(argCollection);
-            invocationContext.Setup(x => x.Origin).Returns(origin);
-            invocationContext.Setup(x => x.Directive).Returns(targetDirective);
-
-            if (targetDirective != null && targetDirective.Kind == TypeKind.DIRECTIVE
-                && arguments != null)
-            {
-                for (var i = 0; i < targetDirective.Arguments.Count; i++)
-                {
-                    if (arguments.Length <= i)
-                        break;
-
-                    var directiveArg = targetDirective.Arguments[i];
-                    var resolvedValue = arguments[i];
-
-                    var argValue = new ResolvedInputArgumentValue(directiveArg.Name, resolvedValue);
-                    var inputArg = new InputArgument(directiveArg, argValue);
-                    argCollection.Add(inputArg);
-                }
-            }
-
-                var context = new GraphDirectiveExecutionContext(
-                server.Schema,
-                server.ServiceProvider,
-                operationRequest.Object,
-                directiveRequest.Object,
-                items: directiveRequest.Object.Items);
-
-            return (context, server.Schema);
-        }
 
         [Test]
         public void UnknownLocation_FailsValidation()
         {
+            var server = new TestServerBuilder()
+                .AddGraphType<ObjectTypeDirective>()
+                .Build();
+
             var obj = new Mock<IObjectGraphType>();
 
-            (var context, var schema) = this.CreateContext<ObjectTypeDirective>(
+            var context = server.CreateDirectiveExecutionContext<ObjectTypeDirective>(
                 DirectiveLocation.NONE,
                 obj.Object);
 
@@ -108,9 +56,12 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         [Test]
         public void UnknownPhase_FailsValidation()
         {
+            var server = new TestServerBuilder()
+                .AddGraphType<ObjectTypeDirective>()
+                .Build();
             var obj = new Mock<IObjectGraphType>();
 
-            (var context, var schema) = this.CreateContext<ObjectTypeDirective>(
+            var context = server.CreateDirectiveExecutionContext<ObjectTypeDirective>(
                 DirectiveLocation.OBJECT,
                 obj.Object,
                 DirectiveInvocationPhase.Unknown);
@@ -126,9 +77,12 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         [Test]
         public void LocationMisMatch_FailsValidation()
         {
+            var server = new TestServerBuilder()
+                .AddGraphType<ObjectTypeDirective>()
+                .Build();
             var obj = new Mock<IObjectGraphType>();
 
-            (var context, var schema) = this.CreateContext<ObjectTypeDirective>(
+            var context = server.CreateDirectiveExecutionContext<ObjectTypeDirective>(
                 DirectiveLocation.FIELD,
                 obj.Object,
                 DirectiveInvocationPhase.SchemaGeneration);
@@ -145,9 +99,12 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         [Test]
         public void NotADirective_FailsValidation()
         {
+            var server = new TestServerBuilder()
+                .AddGraphType<TwoPropertyObject>()
+                .Build();
             var obj = new Mock<IObjectGraphType>();
 
-            (var context, var schema) = this.CreateContext<TwoPropertyObject>(
+            var context = server.CreateDirectiveExecutionContext<TwoPropertyObject>(
                 DirectiveLocation.OBJECT,
                 obj.Object,
                 DirectiveInvocationPhase.SchemaGeneration);
@@ -164,9 +121,12 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         [Test]
         public void ValidateRequest_PassedValidation()
         {
+            var server = new TestServerBuilder()
+                .AddGraphType<ObjectTypeDirectiveWithParams>()
+                .Build();
             var obj = new Mock<IObjectGraphType>();
 
-            (var context, var schema) = this.CreateContext<ObjectTypeDirectiveWithParams>(
+            var context = server.CreateDirectiveExecutionContext<ObjectTypeDirectiveWithParams>(
                 DirectiveLocation.OBJECT,
                 obj.Object,
                 DirectiveInvocationPhase.SchemaGeneration,
@@ -184,9 +144,13 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         [Test]
         public void IncorrectNumberOfArguments_FailsValidation()
         {
+            var server = new TestServerBuilder()
+                .AddGraphType<ObjectTypeDirectiveWithParams>()
+                .Build();
+
             var obj = new Mock<IObjectGraphType>();
 
-            (var context, var schema) = this.CreateContext<ObjectTypeDirectiveWithParams>(
+            var context = server.CreateDirectiveExecutionContext<ObjectTypeDirectiveWithParams>(
                 DirectiveLocation.OBJECT,
                 obj.Object,
                 DirectiveInvocationPhase.SchemaGeneration,
@@ -205,9 +169,13 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         [Test]
         public void InvalidArgument_FailsValidation()
         {
+            var server = new TestServerBuilder()
+                .AddGraphType<ObjectTypeDirectiveWithParams>()
+                .Build();
+
             var obj = new Mock<IObjectGraphType>();
 
-            (var context, var schema) = this.CreateContext<ObjectTypeDirectiveWithParams>(
+            var context = server.CreateDirectiveExecutionContext<ObjectTypeDirectiveWithParams>(
                 DirectiveLocation.OBJECT,
                 obj.Object,
                 DirectiveInvocationPhase.SchemaGeneration,

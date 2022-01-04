@@ -41,13 +41,10 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
         }
 
         /// <inheritdoc />
-        public Task InvokeAsync(GraphDirectiveExecutionContext context, GraphMiddlewareInvocationDelegate<GraphDirectiveExecutionContext> next, CancellationToken cancelToken)
+        public Task InvokeAsync(GraphDirectiveExecutionContext context, GraphMiddlewareInvocationDelegate<GraphDirectiveExecutionContext> next, CancellationToken cancelToken = default)
         {
-            var list = new List<GraphDirectiveExecutionContext>();
-            list.Add(context);
-
             var validationProcessor = new DirectiveValidationRuleProcessor();
-            validationProcessor.Execute(list);
+            validationProcessor.Execute(context);
 
             return next.Invoke(context, cancelToken);
         }

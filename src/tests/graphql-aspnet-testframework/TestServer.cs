@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Defaults.TypeMakers;
@@ -32,11 +33,13 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     /// <summary>
@@ -273,6 +276,64 @@ namespace GraphQL.AspNet.Tests.Framework
             }
 
             return method;
+        }
+
+        public GraphDirectiveExecutionContext CreateDirectiveExecutionContext<TDirective>(
+            DirectiveLocation location,
+            object directiveTarget,
+            DirectiveInvocationPhase phase = DirectiveInvocationPhase.SchemaGeneration,
+            SourceOrigin origin = null,
+            object[] arguments = null)
+            where TDirective : class
+        {
+            origin = origin ?? SourceOrigin.None;
+
+            var server = new TestServerBuilder()
+                .AddGraphType<TDirective>()
+                .Build();
+
+            var targetDirective = server.Schema.KnownTypes.FindDirective(typeof(TDirective));
+
+            var operationRequest = new Mock<IGraphOperationRequest>();
+            var directiveRequest = new Mock<IGraphDirectiveRequest>();
+            var invocationContext = new Mock<IDirectiveInvocationContext>();
+            var argCollection = new InputArgumentCollection();
+
+            directiveRequest.Setup(x => x.DirectivePhase).Returns(phase);
+            directiveRequest.Setup(x => x.InvocationContext).Returns(invocationContext.Object);
+            directiveRequest.Setup(x => x.DirectiveTarget).Returns(directiveTarget);
+            directiveRequest.Setup(x => x.Items).Returns(new MetaDataCollection());
+
+            invocationContext.Setup(x => x.Location).Returns(location);
+            invocationContext.Setup(x => x.Arguments).Returns(argCollection);
+            invocationContext.Setup(x => x.Origin).Returns(origin);
+            invocationContext.Setup(x => x.Directive).Returns(targetDirective);
+
+            if (targetDirective != null && targetDirective.Kind == TypeKind.DIRECTIVE
+                && arguments != null)
+            {
+                for (var i = 0; i < targetDirective.Arguments.Count; i++)
+                {
+                    if (arguments.Length <= i)
+                        break;
+
+                    var directiveArg = targetDirective.Arguments[i];
+                    var resolvedValue = arguments[i];
+
+                    var argValue = new ResolvedInputArgumentValue(directiveArg.Name, resolvedValue);
+                    var inputArg = new InputArgument(directiveArg, argValue);
+                    argCollection.Add(inputArg);
+                }
+            }
+
+            var context = new GraphDirectiveExecutionContext(
+            server.Schema,
+            server.ServiceProvider,
+            operationRequest.Object,
+            directiveRequest.Object,
+            items: directiveRequest.Object.Items);
+
+            return context;
         }
 
         /// <summary>

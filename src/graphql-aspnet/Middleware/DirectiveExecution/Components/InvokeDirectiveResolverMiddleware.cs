@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -37,7 +36,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphDirectiveExecutionContext context, GraphMiddlewareInvocationDelegate<GraphDirectiveExecutionContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(GraphDirectiveExecutionContext context, GraphMiddlewareInvocationDelegate<GraphDirectiveExecutionContext> next, CancellationToken cancelToken = default)
         {
             // create a collection of arguments used to invoke the
             // directive
