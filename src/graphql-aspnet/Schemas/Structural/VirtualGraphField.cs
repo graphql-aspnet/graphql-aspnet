@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             // fields made from controller route parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare
-            this.SecurityGroups = Enumerable.Empty<FieldSecurityGroup>();
+            this.SecurityGroups = Enumerable.Empty<SecurityGroup>();
             this.Complexity = 1;
             this.Mode = FieldResolutionMode.PerSourceItem;
 
@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public string DeprecationReason => null;
 
         /// <inheritdoc />
-        public IEnumerable<FieldSecurityGroup> SecurityGroups { get; }
+        public IEnumerable<SecurityGroup> SecurityGroups { get; }
 
         /// <inheritdoc />
         public float? Complexity { get; }

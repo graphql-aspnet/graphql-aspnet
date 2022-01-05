@@ -19,15 +19,15 @@ namespace GraphQL.AspNet.Security
     /// <summary>
     /// A single security policy derived from an attribute implementing <see cref="IAuthorizeData"/>.
     /// </summary>
-    public class FieldSecurityPolicy
+    public class SecurityPolicy
     {
         private readonly IAuthorizeData _authData;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldSecurityPolicy"/> class.
+        /// Initializes a new instance of the <see cref="SecurityPolicy"/> class.
         /// </summary>
         /// <param name="authorizationData">The authorization data.</param>
-        public FieldSecurityPolicy(IAuthorizeData authorizationData)
+        public SecurityPolicy(IAuthorizeData authorizationData)
         {
             _authData = Validation.ThrowIfNullOrReturn(authorizationData, nameof(authorizationData));
 

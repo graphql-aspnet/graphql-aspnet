@@ -49,14 +49,14 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
-            IEnumerable<FieldSecurityGroup> securityPolicies = null,
+            IEnumerable<SecurityGroup> securityPolicies = null,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.Arguments = new GraphFieldArgumentCollection(this);
-            this.SecurityGroups = securityPolicies ?? Enumerable.Empty<FieldSecurityGroup>();
+            this.SecurityGroups = securityPolicies ?? Enumerable.Empty<SecurityGroup>();
             this.ObjectType = objectType;
             this.DeclaredReturnType = declaredReturnType;
 
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public GraphTypeExpression TypeExpression { get; }
 
         /// <inheritdoc/>
-        public IEnumerable<FieldSecurityGroup> SecurityGroups { get; }
+        public IEnumerable<SecurityGroup> SecurityGroups { get; }
 
         /// <inheritdoc/>
         public IGraphArgumentCollection Arguments { get; }

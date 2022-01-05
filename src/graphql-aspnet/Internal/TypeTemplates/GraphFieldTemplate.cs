@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// </summary>
     public abstract class GraphFieldTemplate : BaseItemTemplate, IGraphTypeFieldTemplate
     {
-        private FieldSecurityGroup _securityPolicies;
+        private SecurityGroup _securityPolicies;
         private GraphFieldAttribute _fieldDeclaration;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             : base(attributeProvider)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
-            _securityPolicies = FieldSecurityGroup.Empty;
+            _securityPolicies = SecurityGroup.Empty;
         }
 
         /// <inheritdoc />
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // ------------------------------------
             // Security Policies
             // ------------------------------------
-            _securityPolicies = FieldSecurityGroup.FromAttributeCollection(this.AttributeProvider);
+            _securityPolicies = SecurityGroup.FromAttributeCollection(this.AttributeProvider);
         }
 
         /// <inheritdoc />
@@ -456,7 +456,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public abstract IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
 
         /// <inheritdoc />
-        public virtual FieldSecurityGroup SecurityPolicies => _securityPolicies;
+        public virtual SecurityGroup SecurityPolicies => _securityPolicies;
 
         /// <inheritdoc />
         public bool IsDeprecated { get; private set; }

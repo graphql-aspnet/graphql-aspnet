@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             // if the owner of this field declared top level objects append them to the
             // field for evaluation
-            var securityGroups = new List<FieldSecurityGroup>();
+            var securityGroups = new List<SecurityGroup>();
 
             if (template.Parent?.SecurityPolicies?.Count > 0)
                 securityGroups.Add(template.Parent.SecurityPolicies);
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         protected virtual MethodGraphField InstantiateField(
             GraphNameFormatter formatter,
             IGraphTypeFieldTemplate template,
-            List<FieldSecurityGroup> securityGroups)
+            List<SecurityGroup> securityGroups)
         {
             var directives = template.CreateAppliedDirectives();
 

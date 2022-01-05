@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// <summary>
     /// A container of field templates.
     /// </summary>
-    public interface IGraphTypeFieldTemplateContainer : IGraphTypeTemplate
+    public interface IGraphTypeFieldTemplateContainer
     {
         /// <summary>
         /// Gets the explicitly and implicitly decalred fields found on this instance.

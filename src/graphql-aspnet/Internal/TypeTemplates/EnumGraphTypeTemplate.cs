@@ -175,7 +175,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Enumerations do no enforce security policies.
         /// </summary>
         /// <value>The security policies.</value>
-        public override FieldSecurityGroup SecurityPolicies => FieldSecurityGroup.Empty;
+        public override SecurityGroup SecurityPolicies => SecurityGroup.Empty;
 
         /// <summary>
         /// Gets the kind of graph type that can be made from this template.
