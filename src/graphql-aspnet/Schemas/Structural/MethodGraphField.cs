@@ -56,13 +56,16 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.Arguments = new GraphFieldArgumentCollection(this);
-            this.SecurityGroups = securityPolicies ?? Enumerable.Empty<SecurityGroup>();
             this.ObjectType = objectType;
             this.DeclaredReturnType = declaredReturnType;
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
+            securityPolicies = securityPolicies ?? Enumerable.Empty<SecurityGroup>();
+            this.SecurityGroups = new List<SecurityGroup>(securityPolicies);
+
             this.UpdateResolver(resolver, mode);
+            this.Publish = true;
         }
 
         /// <inheritdoc/>
@@ -83,7 +86,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc/>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <inheritdoc />
         public Type ObjectType { get; }
@@ -92,10 +95,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         public Type DeclaredReturnType { get; set; }
 
         /// <inheritdoc/>
-        public GraphTypeExpression TypeExpression { get; }
+        public GraphTypeExpression TypeExpression { get; set; }
 
         /// <inheritdoc/>
-        public IEnumerable<SecurityGroup> SecurityGroups { get; }
+        public IList<SecurityGroup> SecurityGroups { get; }
 
         /// <inheritdoc/>
         public IGraphArgumentCollection Arguments { get; }
@@ -104,7 +107,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public string Description { get; set; }
 
         /// <inheritdoc/>
-        public virtual bool Publish => true;
+        public virtual bool Publish { get; set; }
 
         /// <inheritdoc/>
         public GraphFieldPath Route { get; }
@@ -119,13 +122,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         public bool IsLeaf { get; private set; }
 
         /// <inheritdoc/>
-        public bool IsDeprecated { get; internal set; }
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc/>
-        public string DeprecationReason { get; internal set; }
+        public string DeprecationReason { get; set; }
 
         /// <inheritdoc/>
-        public float? Complexity { get; internal set; }
+        public float? Complexity { get; set; }
 
         /// <inheritdoc/>
         public GraphFieldSource FieldSource { get; internal set; }

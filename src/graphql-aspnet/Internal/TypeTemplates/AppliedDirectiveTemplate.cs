@@ -22,15 +22,17 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// </summary>
     public class AppliedDirectiveTemplate : IAppliedDirectiveTemplate
     {
+        private object _owner = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
         /// </summary>
         /// <param name="owner">The item to which the directive would be applied.</param>
         /// <param name="type">The type.</param>
         /// <param name="arguments">The arguments.</param>
-        public AppliedDirectiveTemplate(INamedItem owner, Type type, params object[] arguments)
+        public AppliedDirectiveTemplate(object owner, Type type, params object[] arguments)
         {
-            this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
+            _owner = owner;
             this.DirectiveType = type;
             this.Arguments = arguments;
         }
@@ -41,31 +43,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="owner">The item to which the directive would be applied.</param>
         /// <param name="directiveName">Name of the directive as it will appear in the target schema.</param>
         /// <param name="arguments">The arguments.</param>
-        public AppliedDirectiveTemplate(INamedItem owner, string directiveName, params object[] arguments)
+        public AppliedDirectiveTemplate(object owner, string directiveName, params object[] arguments)
         {
-            this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
-            this.DirectiveName = directiveName;
-            this.Arguments = arguments;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="arguments">The arguments.</param>
-        public AppliedDirectiveTemplate(Type type, params object[] arguments)
-        {
-            this.DirectiveType = type;
-            this.Arguments = arguments;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppliedDirectiveTemplate" /> class.
-        /// </summary>
-        /// <param name="directiveName">Name of the directive as it will appear in the target schema.</param>
-        /// <param name="arguments">The arguments.</param>
-        public AppliedDirectiveTemplate(string directiveName, params object[] arguments)
-        {
+            _owner = owner;
             this.DirectiveName = directiveName;
             this.Arguments = arguments;
         }
@@ -88,7 +68,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     "Invalid Applied Directive. A directive was assigned to " +
-                    $"the item {this.Owner.Name} but both the expected type " +
+                    $"the item {this.RetrieveOwnerName()} but both the expected type " +
                     $"and the expected directive name were null. Either a type or a name must be supplied.");
             }
 
@@ -96,9 +76,22 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     "Invalid Applied Directive. A directive was assigned to " +
-                    $"the item {this.Owner.Name} but the supplied type '{this.DirectiveType?.GetType().FriendlyGraphTypeName() ?? "-null-"}' " +
+                    $"the item {this.RetrieveOwnerName()} but the supplied type '{this.DirectiveType?.GetType().FriendlyGraphTypeName() ?? "-null-"}' " +
                     $"is not a valid directive. All applied directive must inherit from {nameof(GraphDirective)}.");
             }
+        }
+
+        private string RetrieveOwnerName()
+        {
+            if (_owner is INamedTemplateItem nti)
+                return nti.Name;
+            if (_owner is INamedItem ni)
+                return ni.Name;
+
+            if (_owner != null)
+                return _owner.ToString();
+
+            return "-unknown-";
         }
 
         /// <inheritdoc />
@@ -109,9 +102,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             else
                 return new AppliedDirective(this.DirectiveName, this.Arguments);
         }
-
-        /// <inheritdoc />
-        public INamedItem Owner { get; }
 
         /// <inheritdoc />
         public Type DirectiveType { get; }

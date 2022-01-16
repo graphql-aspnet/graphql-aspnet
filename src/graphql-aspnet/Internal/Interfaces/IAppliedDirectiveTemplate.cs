@@ -37,12 +37,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         IAppliedDirective CreateAppliedDirective();
 
         /// <summary>
-        /// Gets the owner template of this directive invocation.
-        /// </summary>
-        /// <value>The owner.</value>
-        INamedItem Owner { get; }
-
-        /// <summary>
         /// Gets the concrete type of the directive to apply.
         /// </summary>
         /// <value>The type of the directive.</value>

@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
             IAppliedDirectiveCollection directives = null)
             : base("twoType", typeof(TwoPropertyObject), directives)
         {
+            this.Description = "desc";
         }
 
         public override object Resolve(ReadOnlySpan<char> data)
@@ -35,8 +36,6 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
         {
             return null;
         }
-
-        public override string Description => "desc";
 
         public override ScalarValueType ValueType => ScalarValueType.String;
 

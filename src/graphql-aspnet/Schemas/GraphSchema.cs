@@ -59,6 +59,8 @@ namespace GraphQL.AspNet.Schemas
             }
 
             this.Route = new GraphFieldPath(GraphCollection.Schemas, graphName);
+            this.Name = DEFAULT_NAME;
+            this.Description = DEFAULT_DESCRIPTION;
         }
 
         /// <inheritdoc />
@@ -74,10 +76,10 @@ namespace GraphQL.AspNet.Schemas
         public ISchemaConfiguration Configuration { get; }
 
         /// <inheritdoc />
-        public virtual string Name => DEFAULT_NAME;
+        public virtual string Name { get; set; }
 
         /// <inheritdoc />
-        public virtual string Description { get; } = DEFAULT_DESCRIPTION;
+        public virtual string Description { get; set; }
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

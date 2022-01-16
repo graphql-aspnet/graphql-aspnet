@@ -50,16 +50,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <inheritdoc />
-        public string Description { get; }
+        public string Description { get; set; }
 
         /// <inheritdoc />
-        public bool IsDeprecated { get; }
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
-        public string DeprecationReason { get; }
+        public string DeprecationReason { get; set; }
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

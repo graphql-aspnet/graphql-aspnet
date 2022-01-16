@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
                     continue;
                 }
 
-                completedSuccessfully= this.CompareArguments(context, directiveArg, suppliedArg) && completedSuccessfully;
+                completedSuccessfully = this.CompareArguments(context, directiveArg, suppliedArg) && completedSuccessfully;
                 touchedArgs.Add(directiveArg);
             }
 

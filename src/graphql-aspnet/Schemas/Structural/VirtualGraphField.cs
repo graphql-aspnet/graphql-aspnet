@@ -66,11 +66,14 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             // fields made from controller route parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare
-            this.SecurityGroups = Enumerable.Empty<SecurityGroup>();
+            this.SecurityGroups = new List<SecurityGroup>();
             this.Complexity = 1;
             this.Mode = FieldResolutionMode.PerSourceItem;
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
+            this.Publish = true;
+            this.IsDeprecated = false;
+            this.DeprecationReason = null;
         }
 
         /// <inheritdoc />
@@ -98,13 +101,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         public FieldResolutionMode Mode { get; }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <inheritdoc />
         public GraphFieldPath Route { get; }
 
         /// <inheritdoc />
-        public GraphTypeExpression TypeExpression { get; }
+        public GraphTypeExpression TypeExpression { get; set; }
 
         /// <inheritdoc />
         public IGraphArgumentCollection Arguments { get; }
@@ -113,7 +116,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public string Description { get; set; }
 
         /// <inheritdoc />
-        public bool Publish => true;
+        public bool Publish { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this action method is depreciated. The <see cref="DepreciationReason" /> will be displayed
@@ -132,16 +135,16 @@ namespace GraphQL.AspNet.Schemas.Structural
         public bool IsLeaf => false;
 
         /// <inheritdoc />
-        public bool IsDeprecated => false;
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
-        public string DeprecationReason => null;
+        public string DeprecationReason { get; set; }
 
         /// <inheritdoc />
-        public IEnumerable<SecurityGroup> SecurityGroups { get; }
+        public IList<SecurityGroup> SecurityGroups { get; }
 
         /// <inheritdoc />
-        public float? Complexity { get; }
+        public float? Complexity { get; set; }
 
         /// <inheritdoc />
         public GraphFieldSource FieldSource => GraphFieldSource.Virtual;

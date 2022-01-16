@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         {
             _directiveList?.Clear();
             _directiveList = new List<IntrospectedDirective>();
-            foreach (var directiveType in _schema.KnownTypes.OfType<IDirectiveGraphType>().Where(x => x.Publish))
+            foreach (var directiveType in _schema.KnownTypes.OfType<IDirective>().Where(x => x.Publish))
             {
                 var directive = new IntrospectedDirective(directiveType);
                 directive.Initialize(this);
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             // because of the hierarchtical nature introspected types
             // may need to store a reference to a type (becaues a field returns it) but it has to exist
             // in the collection first
-            foreach (var graphType in _schema.KnownTypes.OfTypeButNotType<IGraphType, IDirectiveGraphType>())
+            foreach (var graphType in _schema.KnownTypes.OfTypeButNotType<IGraphType, IDirective>())
                 this.CreateAndStoreIntrospectedType(graphType);
 
             // initialize each type creatd

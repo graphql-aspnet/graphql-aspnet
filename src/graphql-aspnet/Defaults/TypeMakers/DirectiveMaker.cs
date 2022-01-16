@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A "maker" capable of producing a qualified <see cref="IDirectiveGraphType"/> from its related <see cref="IGraphDirectiveTemplate"/>.
+    /// A "maker" capable of producing a qualified <see cref="IDirective"/> from its related <see cref="IGraphDirectiveTemplate"/>.
     /// </summary>
     public class DirectiveMaker : IGraphTypeMaker
     {
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             var result = new GraphTypeCreationResult();
 
-            var directive = new DirectiveGraphType(
+            var directive = new Directive(
                 formatter.FormatFieldName(template.Name),
                 template.Locations,
                 template.InvocationPhases,

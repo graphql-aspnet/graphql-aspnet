@@ -65,9 +65,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <inheritdoc />
-        public override string Description { get; }
-
-        /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />

@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public abstract object Serialize(object item);
 
         /// <inheritdoc />
-        public virtual string Name { get; }
+        public virtual string Name { get; set; }
 
         /// <inheritdoc />
         public virtual Type ObjectType { get; }
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public virtual string InternalName { get; }
 
         /// <inheritdoc />
-        public abstract string Description { get; }
+        public string Description { get; set; }
 
         /// <inheritdoc />
         public TypeKind Kind => TypeKind.SCALAR;

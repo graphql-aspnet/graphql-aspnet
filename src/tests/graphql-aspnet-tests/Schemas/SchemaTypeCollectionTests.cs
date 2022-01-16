@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void EnsureGraphType_Directive_OfCorrectKind_WorksAsIntended()
         {
             var collection = new SchemaTypeCollection();
-            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirectiveGraphType;
+            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirective;
 
             collection.EnsureGraphType(graphType, typeof(SimpleDirective));
             Assert.AreEqual(1, collection.Count);
@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void EnsureGraphType_Directive_OfIncorrectConcreteType_ThrowsException()
         {
             var collection = new SchemaTypeCollection();
-            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirectiveGraphType;
+            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirective;
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void EnsureGraphType_Directive_FromConcreteType_ThrowsException()
         {
             var collection = new SchemaTypeCollection();
-            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirectiveGraphType;
+            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirective;
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {

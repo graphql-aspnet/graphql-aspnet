@@ -33,7 +33,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(owner.Object, template.Owner);
             Assert.AreEqual(typeof(DirectiveWithArgs), template.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 1, "bob" }, template.Arguments);
         }
@@ -55,7 +54,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 template.ValidateOrThrow();
             });
         }
-
 
         [Test]
         public void NullName_ThrowsException()

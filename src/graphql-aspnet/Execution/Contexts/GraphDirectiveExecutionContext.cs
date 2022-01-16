@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the directive type being targeted by this context.
         /// </summary>
         /// <value>The directive.</value>
-        public IDirectiveGraphType Directive => this.Request?.InvocationContext?.Directive;
+        public IDirective Directive => this.Request?.InvocationContext?.Directive;
 
         /// <summary>
         /// Gets a collection of fully resolved variables for the currently executing pipeline that can be utilized in

@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual IReadOnlyDictionary<string, IEnumOption> Values => _options;
 
         /// <inheritdoc />
-        public virtual string Name { get; }
+        public virtual string Name { get; set; }
 
         /// <inheritdoc />
         public virtual string Description { get; set; }

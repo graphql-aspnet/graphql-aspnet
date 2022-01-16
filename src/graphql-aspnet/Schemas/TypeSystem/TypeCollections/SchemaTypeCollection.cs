@@ -200,19 +200,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         }
 
         /// <inheritdoc />
-        public IDirectiveGraphType FindDirective(string name)
+        public IDirective FindDirective(string name)
         {
-            return this.FindGraphType(name) as IDirectiveGraphType;
+            return this.FindGraphType(name) as IDirective;
         }
 
         /// <inheritdoc />
-        public IDirectiveGraphType FindDirective(Type directiveType)
+        public IDirective FindDirective(Type directiveType)
         {
-            return this.FindGraphType(directiveType, TypeKind.DIRECTIVE) as IDirectiveGraphType;
+            return this.FindGraphType(directiveType, TypeKind.DIRECTIVE) as IDirective;
         }
 
         /// <inheritdoc />
-        public IDirectiveGraphType FindDirective<TDirective>()
+        public IDirective FindDirective<TDirective>()
             where TDirective : GraphDirective
         {
             return this.FindDirective(typeof(TDirective));

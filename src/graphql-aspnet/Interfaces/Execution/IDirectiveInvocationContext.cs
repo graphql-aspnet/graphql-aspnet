@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the directive type that should be invoked.
         /// </summary>
         /// <value>The directive.</value>
-        IDirectiveGraphType Directive { get; }
+        IDirective Directive { get; }
 
         /// <summary>
         /// Gets a set of arguments that were supplied at the invocation site

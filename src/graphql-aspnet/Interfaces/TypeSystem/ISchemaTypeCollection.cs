@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>IDirectiveGraphType.</returns>
-        IDirectiveGraphType FindDirective(string name);
+        IDirective FindDirective(string name);
 
         /// <summary>
         /// Attempts to find a single directive within this schema by its name. Returns null
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <param name="directiveType">The registered type of the directive to search for.</param>
         /// <returns>IDirectiveGraphType.</returns>
-        IDirectiveGraphType FindDirective(Type directiveType);
+        IDirective FindDirective(Type directiveType);
 
         /// <summary>
         /// Attempts to find a single directive within this schema by its name. Returns null
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <typeparam name="TDirective">The type of the directive to fetch.</typeparam>
         /// <returns>IDirectiveGraphType.</returns>
-        IDirectiveGraphType FindDirective<TDirective>()
+        IDirective FindDirective<TDirective>()
             where TDirective : GraphDirective;
 
         /// <summary>

@@ -15,9 +15,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
 
     public class UnionTestProxy : IGraphUnionProxy
     {
-        public string Name { get; } = "BobUnion";
+        public string Name { get; set; } = "BobUnion";
 
-        public string Description { get; } = "This is the Bob union";
+        public string Description { get; set; } = "This is the Bob union";
 
         public HashSet<Type> Types { get; } = new HashSet<Type>()
         {
@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
             typeof(UnionDataB),
         };
 
-        public bool Publish => true;
+        public bool Publish { get; set; }
 
         public Type MapType(Type runtimeObjectType)
         {

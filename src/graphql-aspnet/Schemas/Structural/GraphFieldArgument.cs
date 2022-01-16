@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <inheritdoc />
         public string Description { get; set; }

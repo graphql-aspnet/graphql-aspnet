@@ -39,11 +39,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null);
 
         /// <summary>
-        /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
+        /// Gets or sets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
         /// declaration used in schema definition language.)
         /// </summary>
         /// <value>The type expression.</value>
-        GraphTypeExpression TypeExpression { get; }
+        GraphTypeExpression TypeExpression { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is a leaf field; one capable of generating
@@ -56,8 +56,9 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <para>Gets an object that will perform some operation against an execution
         /// context to fulfill the requirements of this resolvable entity.
         /// </para>
-        /// <para>
-        /// Call <see cref="UpdateResolver"/> to change.</para>
+        /// <remarks>
+        /// Call <see cref="UpdateResolver"/> to change.
+        /// </remarks>
         /// </summary>
         /// <value>The resolver assigned to this instance.</value>
         IGraphFieldResolver Resolver { get; }
@@ -70,18 +71,18 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         FieldResolutionMode Mode { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="IGraphField" /> is published
+        /// Gets or sets a value indicating whether this <see cref="IGraphField" /> is published
         /// in the schema delivered to introspection requests.
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
-        bool Publish { get; }
+        bool Publish { get; set; }
 
         /// <summary>
-        /// Gets an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
+        /// Gets or sets an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
         /// See the documentation for an understanding of how query complexity is calculated.
         /// </summary>
         /// <value>The estimated complexity value for this field.</value>
-        float? Complexity { get; }
+        float? Complexity { get; set; }
 
         /// <summary>
         /// Gets the source type this field was created from.
@@ -94,7 +95,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// in order to access this field.
         /// </summary>
         /// <value>The security groups.</value>
-        IEnumerable<SecurityGroup> SecurityGroups { get; }
+        IList<SecurityGroup> SecurityGroups { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate

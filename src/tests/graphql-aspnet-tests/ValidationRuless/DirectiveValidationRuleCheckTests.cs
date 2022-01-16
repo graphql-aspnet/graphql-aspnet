@@ -30,8 +30,6 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
     [TestFixture]
     public class DirectiveValidationRuleCheckTests
     {
-
-
         [Test]
         public void UnknownLocation_FailsValidation()
         {

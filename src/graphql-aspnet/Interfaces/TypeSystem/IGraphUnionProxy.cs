@@ -28,10 +28,10 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         HashSet<Type> Types { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this any union types created from this proxy
+        /// Gets or sets a value indicating whether this any union types created from this proxy
         /// are published in a schema introspection request.
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
-        bool Publish { get; }
+        bool Publish { get; set; }
     }
 }

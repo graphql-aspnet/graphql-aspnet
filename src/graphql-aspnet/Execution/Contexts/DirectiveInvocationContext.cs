@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="args">The collection of arguments
         /// obtained or parsed during source document construction.</param>
         public DirectiveInvocationContext(
-            IDirectiveGraphType directiveType,
+            IDirective directiveType,
             DirectiveLocation location,
             SourceOrigin origin = null,
             IInputArgumentCollection args = null)
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         public DirectiveLocation Location { get; }
 
         /// <inheritdoc />
-        public IDirectiveGraphType Directive { get; }
+        public IDirective Directive { get; }
 
         /// <inheritdoc />
         public IInputArgumentCollection Arguments { get; }

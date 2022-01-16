@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A collection of allowed arguments defined for a <see cref="IGraphField"/> or <see cref="IDirectiveGraphType"/>.
+    /// A collection of allowed arguments defined for a <see cref="IGraphField"/> or <see cref="IDirective"/>.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
     public class GraphFieldArgumentCollection : IGraphArgumentCollection

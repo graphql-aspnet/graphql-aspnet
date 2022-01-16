@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Execution
                           $"No valid directive processing pipeline was found.");
                 }
 
-                IDirectiveGraphType targetDirective = null;
+                IDirective targetDirective = null;
                 if (appliedDirective.DirectiveType != null)
                     targetDirective = schema.KnownTypes.FindDirective(appliedDirective.DirectiveType);
                 else if (!string.IsNullOrWhiteSpace(appliedDirective.DirectiveName))
@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Execution
             }
         }
 
-        private IInputArgumentCollection GatherInputArguments(IDirectiveGraphType targetDirective, object[] arguments)
+        private IInputArgumentCollection GatherInputArguments(IDirective targetDirective, object[] arguments)
         {
             var argCollection = new InputArgumentCollection();
             for (var i = 0; i < targetDirective.Arguments.Count; i++)

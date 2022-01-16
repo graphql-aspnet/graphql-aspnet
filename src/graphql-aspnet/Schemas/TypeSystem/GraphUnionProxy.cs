@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Name = unionName?.Trim() ?? this.GetType().Name;
             this.Description = null;
             this.Types = new HashSet<Type>(typesToInclude);
+            this.Publish = true;
         }
 
         /// <summary>
@@ -54,15 +55,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public virtual string Name { get; }
+        public virtual string Name { get; set; }
 
         /// <inheritdoc />
-        public virtual string Description { get; }
+        public virtual string Description { get; set; }
 
         /// <inheritdoc />
         public virtual HashSet<Type> Types { get; }
 
         /// <inheritdoc />
-        public virtual bool Publish => true;
+        public virtual bool Publish { get; set; }
     }
 }

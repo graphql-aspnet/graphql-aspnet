@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Initializes a new instance of the <see cref="IntrospectedDirective" /> class.
         /// </summary>
         /// <param name="directiveType">Type of the directive.</param>
-        public IntrospectedDirective(IDirectiveGraphType directiveType)
+        public IntrospectedDirective(IDirective directiveType)
             : base(directiveType)
         {
             this.GraphType = directiveType;
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Gets the type of the graph.
         /// </summary>
         /// <value>The type of the graph.</value>
-        protected IDirectiveGraphType GraphType { get; }
+        protected IDirective GraphType { get; }
 
         /// <summary>
         /// Gets a collection of arguments this instance can accept on a query.

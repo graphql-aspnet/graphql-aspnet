@@ -32,12 +32,14 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             : base(enumOption)
         {
             _enumOption = Validation.ThrowIfNullOrReturn(enumOption, nameof(enumOption));
+            this.IsDeprecated = _enumOption.IsDeprecated;
+            this.DeprecationReason = _enumOption.DeprecationReason;
         }
 
         /// <inheritdoc />
-        public bool IsDeprecated => _enumOption.IsDeprecated;
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
-        public string DeprecationReason => _enumOption.DeprecationReason;
+        public string DeprecationReason { get; set; }
     }
 }

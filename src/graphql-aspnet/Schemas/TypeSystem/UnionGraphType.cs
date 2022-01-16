@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual IImmutableSet<string> PossibleGraphTypeNames => _names;
 
         /// <inheritdoc />
-        public virtual string Name { get; }
+        public virtual string Name { get; set; }
 
         /// <inheritdoc />
         public virtual string Description { get; set; }

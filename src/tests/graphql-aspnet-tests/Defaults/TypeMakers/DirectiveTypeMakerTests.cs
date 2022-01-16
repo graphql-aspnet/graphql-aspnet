@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var typeMaker = new DefaultGraphTypeMakerProvider()
                                 .CreateTypeMaker(server.Schema, TypeKind.DIRECTIVE);
 
-            var directive = typeMaker.CreateGraphType(typeof(MultiMethodDirective)).GraphType as IDirectiveGraphType;
+            var directive = typeMaker.CreateGraphType(typeof(MultiMethodDirective)).GraphType as IDirective;
 
             Assert.AreEqual("multiMethod", directive.Name);
             Assert.AreEqual("A Multi Method Directive", directive.Description);

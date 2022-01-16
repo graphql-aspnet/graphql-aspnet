@@ -22,12 +22,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// meta data and invocation information when this directive is queried.
     /// </summary>
     [DebuggerDisplay("DIRECTIVE {Name}")]
-    public class DirectiveGraphType : IDirectiveGraphType
+    public class Directive : IDirective
     {
         private readonly Type _directiveType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveGraphType" /> class.
+        /// Initializes a new instance of the <see cref="Directive" /> class.
         /// </summary>
         /// <param name="name">The name of the directive as it appears in the schema.</param>
         /// <param name="locations">The locations where this directive is valid.</param>
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="directiveType">The concrete type of the directive.</param>
         /// <param name="route">The route path that identifies this directive.</param>
         /// <param name="resolver">The resolver used to process this instance.</param>
-        public DirectiveGraphType(
+        public Directive(
             string name,
             DirectiveLocation locations,
             DirectiveInvocationPhase phases,
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <inheritdoc />
         public string Description { get; set; }

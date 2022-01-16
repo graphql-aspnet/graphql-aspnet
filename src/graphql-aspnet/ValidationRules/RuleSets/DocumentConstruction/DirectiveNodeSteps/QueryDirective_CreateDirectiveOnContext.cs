@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (DirectiveNode)context.ActiveNode;
-            var directive = context.DocumentContext.Schema.KnownTypes.FindGraphType(node.DirectiveName.ToString()) as IDirectiveGraphType;
+            var directive = context.DocumentContext.Schema.KnownTypes.FindGraphType(node.DirectiveName.ToString()) as IDirective;
             if (directive == null)
                 return false;
 

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// An interface describing an arbitrary <see cref="Type"/> that will be injected into
     /// an object graph. This is the base interface that will universially capture all template types.
     /// </summary>
-    public interface IGraphItemTemplate : INamedItem
+    public interface IGraphItemTemplate : INamedTemplateItem
     {
         /// <summary>
         /// Retrieves the concrete types that this template

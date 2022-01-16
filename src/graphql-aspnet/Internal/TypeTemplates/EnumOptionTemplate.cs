@@ -96,9 +96,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override string InternalName => this.FieldInfo.Name;
 
         /// <inheritdoc />
-        public bool IsDeprecated { get; private set; }
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
-        public string DeprecationReason { get; private set; }
+        public string DeprecationReason { get; set; }
     }
 }

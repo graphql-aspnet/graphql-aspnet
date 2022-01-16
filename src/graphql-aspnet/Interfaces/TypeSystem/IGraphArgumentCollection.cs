@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using GraphQL.AspNet.Schemas;
 
     /// <summary>
-    /// A collection of <see cref="IGraphArgument"/> for a single <see cref="IGraphField"/> or <see cref="IDirectiveGraphType"/>.
+    /// A collection of <see cref="IGraphArgument"/> for a single <see cref="IGraphField"/> or <see cref="IDirective"/>.
     /// </summary>
     public interface IGraphArgumentCollection : IEnumerable<IGraphArgument>
     {

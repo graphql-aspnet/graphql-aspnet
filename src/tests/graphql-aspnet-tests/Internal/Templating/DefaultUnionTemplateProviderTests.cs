@@ -22,13 +22,25 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     {
         public class FakeProxy : IGraphUnionProxy
         {
-            public string Name => throw new NotImplementedException();
+            public string Name
+            {
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
+            }
 
-            public string Description => throw new NotImplementedException();
+            public string Description
+            {
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
+            }
 
             public HashSet<Type> Types => throw new NotImplementedException();
 
-            public bool Publish => throw new NotImplementedException();
+            public bool Publish
+            {
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
+            }
 
             public Type MapType(Type runtimeObjectType) => throw new NotImplementedException();
         }

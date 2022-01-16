@@ -29,7 +29,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public IntrospectedItem(ISchemaItem item)
         {
             _item = Validation.ThrowIfNullOrReturn(item, nameof(item));
-            this.Route = item.Route.ReParent(Constants.Routing.INTROSPECTION_ROOT);
+            this.Name = _item.Name;
+            this.Description = _item.Description;
+            this.Route = _item.Route.ReParent(Constants.Routing.INTROSPECTION_ROOT);
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
@@ -51,9 +53,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public virtual IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public virtual string Name => _item.Name;
+        public virtual string Name { get; set; }
 
         /// <inheritdoc />
-        public virtual string Description => _item.Description;
+        public virtual string Description { get; set; }
     }
 }

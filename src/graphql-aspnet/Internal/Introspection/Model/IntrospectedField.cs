@@ -37,6 +37,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         {
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedFieldOwner, nameof(introspectedFieldOwner));
             _field = Validation.ThrowIfNullOrReturn(field, nameof(field));
+            this.IsDeprecated = _field.IsDeprecated;
+            this.DeprecationReason = _field.DeprecationReason;
         }
 
         /// <inheritdoc />
@@ -68,9 +70,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public IReadOnlyList<IntrospectedInputValueType> Arguments { get; private set; }
 
         /// <inheritdoc />
-        public bool IsDeprecated => _field.IsDeprecated;
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
-        public string DeprecationReason => _field.DeprecationReason;
+        public string DeprecationReason { get; set; }
     }
 }

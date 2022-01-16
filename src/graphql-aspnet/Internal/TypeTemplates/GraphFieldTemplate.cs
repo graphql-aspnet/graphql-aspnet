@@ -459,10 +459,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public virtual SecurityGroup SecurityPolicies => _securityPolicies;
 
         /// <inheritdoc />
-        public bool IsDeprecated { get; private set; }
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
-        public string DeprecationReason { get; private set; }
+        public string DeprecationReason { get; set; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; protected set; }
@@ -483,6 +483,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
 
         /// <inheritdoc />
-        public float? Complexity { get; private set; }
+        public float? Complexity { get; set; }
     }
 }

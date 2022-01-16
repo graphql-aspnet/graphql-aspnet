@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <param name="node">The node denoting the directive.</param>
         /// <param name="directive">The directive pulled from the target schema.</param>
         /// <param name="location">The location in the source document where this directive instance was seen.</param>
-        public QueryDirective(DirectiveNode node, IDirectiveGraphType directive, DirectiveLocation location)
+        public QueryDirective(DirectiveNode node, IDirective directive, DirectiveLocation location)
         {
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.Directive = Validation.ThrowIfNullOrReturn(directive, nameof(directive));
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// Gets the actual directive from the graph schema this instance is referencing.
         /// </summary>
         /// <value>The directive.</value>
-        public IDirectiveGraphType Directive { get; }
+        public IDirective Directive { get; }
 
         /// <summary>
         /// Gets the location in the source document where this directive was seen.

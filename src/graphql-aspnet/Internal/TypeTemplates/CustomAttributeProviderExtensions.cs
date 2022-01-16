@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <param name="attributeProvider">The attribute provider.</param>
         /// <param name="owner">The owner of the created templates.</param>
         /// <returns>IEnumerable&lt;AppliedDirectiveTemplate&gt;.</returns>
-        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this ICustomAttributeProvider attributeProvider, INamedItem owner)
+        public static IEnumerable<IAppliedDirectiveTemplate> ExtractAppliedDirectiveTemplates(this ICustomAttributeProvider attributeProvider, object owner)
         {
             var directiveList = new List<IAppliedDirectiveTemplate>();
 
