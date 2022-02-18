@@ -306,6 +306,8 @@ namespace GraphQL.AspNet.Tests.Security
 
             // user not in any declared role
             builder.Authorization.AddRolePolicy("TestPolicy", "role1");
+
+            builder.UserContext.Authenticate();
             builder.UserContext.AddUserRole("role5");
             var server = builder.Build();
 
@@ -349,6 +351,8 @@ namespace GraphQL.AspNet.Tests.Security
                 .AddGraphType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim7", "testClaim7", "testClaim7Value");
+
+            builder.UserContext.Authenticate();
             builder.UserContext.AddUserClaim("testClaim6", "testClaim6Value");
             var server = builder.Build();
 

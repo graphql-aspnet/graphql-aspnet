@@ -37,6 +37,7 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         public const string AUTH_SCHEMA = "GraphQLTestServer.AuthSchema";
 
         private bool _includeAuthProvider;
+        private AuthorizationPolicyBuilder _standardDefaultPolicyBuilder;
         private AuthorizationPolicyBuilder _defaultPolicyBuilder;
         private List<KeyValuePair<string, AuthorizationPolicyBuilder>> _policyBuilders;
 
@@ -49,6 +50,9 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
             _policyBuilders = new List<KeyValuePair<string, AuthorizationPolicyBuilder>>();
             _defaultPolicyBuilder = null;
             _includeAuthProvider = enableAuthServices;
+
+            _standardDefaultPolicyBuilder = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser();
         }
 
         /// <summary>
@@ -64,8 +68,9 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
                     foreach (var kvp in _policyBuilders)
                         o.AddPolicy(kvp.Key, kvp.Value.Build());
 
-                    if (_defaultPolicyBuilder != null)
-                        o.DefaultPolicy = _defaultPolicyBuilder.Build();
+                    var defaultPolicyToUse = _defaultPolicyBuilder ?? _standardDefaultPolicyBuilder;
+                    if (defaultPolicyToUse != null)
+                        o.DefaultPolicy = defaultPolicyToUse.Build();
                 });
             }
         }

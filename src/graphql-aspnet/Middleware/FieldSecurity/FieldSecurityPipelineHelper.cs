@@ -9,12 +9,15 @@
 
 namespace GraphQL.AspNet.Middleware.FieldSecurity
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldSecurity.Components;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A wrapper for a schema pipeline builder to easily add the default middleware componentry for
@@ -42,8 +45,29 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
         public FieldSecurityPipelineHelper<TSchema> AddDefaultMiddlewareComponents(Configuration.SchemaOptions options = null)
         {
-            return this.AddFieldAuthenticationMiddleware()
+            return this.AddPolicyAggregationMiddleware()
+                       .AddFieldAuthenticationMiddleware()
                        .AddFieldAuthorizationMiddleware();
+        }
+
+        /// <summary>
+        /// Adds the middleware component that performs the primary field authorization.
+        /// </summary>
+        /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
+        public FieldSecurityPipelineHelper<TSchema> AddPolicyAggregationMiddleware()
+        {
+            FieldSecurityRequirementsMiddleware MiddlewareFactory(IServiceProvider sp)
+            {
+                // policy provider may not be registered and is optional
+                var policyProvider = sp.GetService<IAuthorizationPolicyProvider>();
+                return new FieldSecurityRequirementsMiddleware(policyProvider);
+            }
+
+            _pipelineBuilder.AddMiddleware<FieldSecurityRequirementsMiddleware>(
+                MiddlewareFactory,
+                ServiceLifetime.Singleton);
+
+            return this;
         }
 
         /// <summary>
