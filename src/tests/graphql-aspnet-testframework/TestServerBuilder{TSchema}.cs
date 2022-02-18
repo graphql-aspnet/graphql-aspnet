@@ -1,4 +1,12 @@
-﻿// *************************************************************// project:  graphql-aspnet
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+// *************************************************************// project:  graphql-aspnet
 // --
 // repo: https://github.com/graphql-aspnet
 // docs: https://graphql-aspnet.github.io
@@ -9,16 +17,12 @@
 namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Security.Claims;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
@@ -28,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Framework
     /// A builder class to configure a scenario and generate a test server to execute unit tests against.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema being built by this instance.</typeparam>
-    public partial class TestServerBuilder<TSchema> : IServiceCollection
+    public partial class TestServerBuilder<TSchema> : ITestServerBuilder<TSchema>
         where TSchema : class, ISchema
     {
         private readonly List<IGraphTestFrameworkComponent> _testComponents;
@@ -36,6 +40,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
         // colleciton of types added to this server external to the AddGraphQL call.
         private readonly HashSet<Type> _additionalTypes = new HashSet<Type>();
+
         private readonly List<Action<ISchemaBuilder<TSchema>>> _schemaBuilderAdditions;
 
         private Action<SchemaOptions> _configureOptions;
@@ -51,7 +56,8 @@ namespace GraphQL.AspNet.Tests.Framework
             _initialSetup = initialSetup;
 
             this.Authorization = new TestAuthorizationBuilder();
-            this.UserContext = new TestUserSecurityContextBuilder();
+            this.Authentication = new TestAuthenticationBuilder();
+            this.UserContext = new TestUserSecurityContextBuilder(this);
             this.Logging = new TestLoggingBuilder();
 
             this.AddTestComponent(this.Authorization);
@@ -89,78 +95,48 @@ namespace GraphQL.AspNet.Tests.Framework
             }
         }
 
-        /// <summary>
-        /// Adds the test component to those injected into the service provider when the server is built.
-        /// </summary>
-        /// <param name="component">The component.</param>
-        /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        public TestServerBuilder<TSchema> AddTestComponent(IGraphTestFrameworkComponent component)
+        /// <inheritdoc />
+        public ITestServerBuilder<TSchema> AddTestComponent(IGraphTestFrameworkComponent component)
         {
             _testComponents.Add(component);
             return this;
         }
 
-        /// <summary>
-        /// Helpful overload for direct access to inject a graph type into the server.
-        /// </summary>
-        /// <typeparam name="TType">The concrete type to parse when creating a graph type.</typeparam>
-        /// <returns>TestServerBuilder.</returns>
-        public TestServerBuilder<TSchema> AddGraphType<TType>()
+        /// <inheritdoc />
+        public ITestServerBuilder<TSchema> AddGraphType<TType>()
         {
             return this.AddGraphType(typeof(TType));
         }
 
-        /// <summary>
-        /// Helpful overload for direct access to inject a graph type into the server.
-        /// </summary>
-        /// <param name="type">The type to inject.</param>
-        /// <returns>TestServerBuilder.</returns>
-        public TestServerBuilder<TSchema> AddGraphType(Type type)
+        /// <inheritdoc />
+        public ITestServerBuilder<TSchema> AddGraphType(Type type)
         {
             _additionalTypes.Add(type);
             return this;
         }
 
-        /// <summary>
-        /// Adds the graph controller to the server and renders it and its dependents into the target schema.
-        /// </summary>
-        /// <typeparam name="TController">The type of the t controller.</typeparam>
-        /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        public TestServerBuilder<TSchema> AddGraphController<TController>()
+        /// <inheritdoc />
+        public ITestServerBuilder<TSchema> AddGraphController<TController>()
             where TController : GraphController
         {
             return this.AddGraphType<TController>();
         }
 
-        /// <summary>
-        /// Provides access to the options configuration function used when graphQL is first added
-        /// to a server instance.
-        /// </summary>
-        /// <param name="configureOptions">The function to invoke to configure graphql settings.</param>
-        /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        public TestServerBuilder<TSchema> AddGraphQL(Action<SchemaOptions> configureOptions)
+        /// <inheritdoc />
+        public ITestServerBuilder<TSchema> AddGraphQL(Action<SchemaOptions> configureOptions)
         {
             _configureOptions = configureOptions;
             return this;
         }
 
-        /// <summary>
-        /// Adds an action to execute against the master schema builder when this server is built. Mimics a
-        /// call to <see cref="AddGraphQL(Action{SchemaOptions})"/> then taking further action against
-        /// the returned <see cref="ISchemaBuilder{TSchema}"/>.
-        /// </summary>
-        /// <param name="action">The action.</param>
-        /// <returns>GraphQL.AspNet.Tests.Framework.TestServerBuilder&lt;TSchema&gt;.</returns>
-        public TestServerBuilder<TSchema> AddSchemaBuilderAction(Action<ISchemaBuilder<TSchema>> action)
+        /// <inheritdoc />
+        public ITestServerBuilder<TSchema> AddSchemaBuilderAction(Action<ISchemaBuilder<TSchema>> action)
         {
             _schemaBuilderAdditions.Add(action);
             return this;
         }
 
-        /// <summary>
-        /// Creates a new test server instance from the current settings in this builder.
-        /// </summary>
-        /// <returns>TestServer.</returns>
+        /// <inheritdoc />
         public TestServer<TSchema> Build()
         {
             // register all test components
@@ -191,29 +167,19 @@ namespace GraphQL.AspNet.Tests.Framework
             return new TestServer<TSchema>(serviceProvider, userSecurityContext);
         }
 
-        /// <summary>
-        /// Gets the schema options containing all the configuration data for the schema this test
-        /// server will execute for.
-        /// </summary>
-        /// <value>The schema options.</value>
+        /// <inheritdoc />
         public SchemaOptions<TSchema> SchemaOptions { get; }
 
-        /// <summary>
-        /// Gets the authorization builder used to configure the roles and policys known the to test server.
-        /// </summary>
-        /// <value>The authorization.</value>
+        /// <inheritdoc />
+        public TestAuthenticationBuilder Authentication { get; }
+
+        /// <inheritdoc />
         public TestAuthorizationBuilder Authorization { get; }
 
-        /// <summary>
-        /// Gets the builder to configure the creation of a mocked <see cref="IUserSecurityContext"/>.
-        /// </summary>
-        /// <value>The user.</value>
+        /// <inheritdoc />
         public TestUserSecurityContextBuilder UserContext { get; }
 
-        /// <summary>
-        /// Gets the builder to configure the setup of the logging framework.
-        /// </summary>
-        /// <value>The logging.</value>
+        /// <inheritdoc />
         public TestLoggingBuilder Logging { get; }
     }
 }

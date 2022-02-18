@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
 {
+    using System;
     using System.Collections.Generic;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Security;
@@ -16,26 +17,31 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A builder for generating a <see cref="ClaimsPrincipal"/> from a set of claims and roles.
+    /// A builder for generating a <see cref="ClaimsPrincipal" /> from a set of claims and roles.
     /// </summary>
     public class TestUserSecurityContextBuilder : IGraphTestFrameworkComponent
     {
-        private const string DEFAULT_SCHEME = "graphql.testing.defaultscheme";
+        /// <summary>
+        /// The scheme under which the user is authenticated if no scheme
+        /// is supplied.
+        /// </summary>
+        public const string DEFAULT_SCHEME = TestAuthenticationBuilder.DEFAULT_AUTH_SCHEMA;
 
-        private readonly HashSet<string> _knownSchemes;
-        private readonly Dictionary<string, List<string>> _userRoles;
-        private readonly Dictionary<string, List<Claim>> _userClaims;
-        private readonly Dictionary<string, bool> _userIsAuthenticated;
+        private readonly List<string> _userRoles;
+        private readonly List<Claim> _userClaims;
+        private readonly ITestServerBuilder _parentServerBuilder;
+        private string _authScheme;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestUserSecurityContextBuilder"/> class.
         /// </summary>
-        public TestUserSecurityContextBuilder()
+        /// <param name="serverBuilder">The server builder.</param>
+        public TestUserSecurityContextBuilder(ITestServerBuilder serverBuilder)
         {
-            _knownSchemes = new HashSet<string>();
-            _userRoles = new Dictionary<string, List<string>>();
-            _userClaims = new Dictionary<string, List<Claim>>();
-            _userIsAuthenticated = new Dictionary<string, bool>();
+            _authScheme = null;
+            _parentServerBuilder = serverBuilder;
+            _userRoles = new List<string>();
+            _userClaims = new List<Claim>();
         }
 
         /// <summary>
@@ -50,28 +56,23 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// <summary>
         /// Authenticates the user with the default username, on the "default scheme", but assigns no roles or other claims.
         /// </summary>
+        /// <param name="username">The username to assign to the user.</param>
         /// <param name="authScheme">The authentication scheme under which the user should be authenticated.</param>
+        /// <param name="usernameClaimType">The name of the claim that will hold the username on the <see cref="ClaimsPrincipal"/>.</param>
         /// <returns>TestUserAccountBuilder.</returns>
-        public TestUserSecurityContextBuilder Authenticate(string authScheme = null)
+        public TestUserSecurityContextBuilder Authenticate(string username = "john-doe", string authScheme = DEFAULT_SCHEME, string usernameClaimType = TestAuthorizationBuilder.USERNAME_CLAIM_TYPE)
         {
-            return this.SetUsername(
-                "john-doe",
-                authScheme: authScheme);
-        }
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException(nameof(username));
 
-        /// <summary>
-        /// Sets the username as a claim on the principal with the given claim type.
-        /// If not supplied an internal, default test value for the claim type will be used. The user is automatically authenticated
-        /// when the username is set.
-        /// </summary>
-        /// <param name="username">The username.</param>
-        /// <param name="claimType">The name of the claim to use when identifying usernames.</param>
-        /// <param name="authScheme">The authentication scheme to apply this username to.</param>
-        /// <returns>TestAuthorizationBuilder.</returns>
-        public TestUserSecurityContextBuilder SetUsername(string username, string claimType = null, string authScheme = null)
-        {
-            claimType = claimType ?? TestAuthorizationBuilder.USERNAME_CLAIM_TYPE;
-            return this.AddUserClaim(claimType, username, authScheme);
+            if (string.IsNullOrWhiteSpace(authScheme))
+                throw new ArgumentException(nameof(authScheme));
+
+            if (string.IsNullOrWhiteSpace(usernameClaimType))
+                throw new ArgumentException(nameof(usernameClaimType));
+
+            _authScheme = authScheme;
+            return this.AddUserClaim(usernameClaimType, username);
         }
 
         /// <summary>
@@ -80,21 +81,10 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// </summary>
         /// <param name="claimType">The claim type.</param>
         /// <param name="claimValue">The claim value.</param>
-        /// <param name="authScheme">The authentication scheme, under which this claim will be applied.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
-        public TestUserSecurityContextBuilder AddUserClaim(string claimType, string claimValue, string authScheme = null)
+        public TestUserSecurityContextBuilder AddUserClaim(string claimType, string claimValue)
         {
-            authScheme = authScheme ?? DEFAULT_SCHEME;
-
-            if (!_userIsAuthenticated.ContainsKey(authScheme))
-                _userIsAuthenticated.Add(authScheme, false);
-
-            if (!_userClaims.ContainsKey(authScheme))
-                _userClaims.Add(authScheme, new List<Claim>());
-
-            _knownSchemes.Add(authScheme);
-            _userIsAuthenticated[authScheme] = true;
-            _userClaims[authScheme].Add(new Claim(claimType, claimValue));
+            _userClaims.Add(new Claim(claimType, claimValue));
             return this;
         }
 
@@ -102,22 +92,11 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// Adds a single, authorized role to the user account. The user is automatically authenticated
         /// when the role is added.
         /// </summary>
-        /// <param name="roleName">Name of the role.</param>
-        /// <param name="authScheme">The authentication scheme under which this role will be applied.</param>
+        /// <param name="roleName">Name of the role to add.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
-        public TestUserSecurityContextBuilder AddUserRole(string roleName, string authScheme = null)
+        public TestUserSecurityContextBuilder AddUserRole(string roleName)
         {
-            authScheme = authScheme ?? DEFAULT_SCHEME;
-
-            if (!_userIsAuthenticated.ContainsKey(authScheme))
-                _userIsAuthenticated.Add(authScheme, false);
-
-            if (!_userRoles.ContainsKey(authScheme))
-                _userRoles.Add(authScheme, new List<string>());
-
-            _knownSchemes.Add(authScheme);
-            _userIsAuthenticated[authScheme] = true;
-            _userRoles[authScheme].Add(roleName);
+            _userRoles.Add(roleName);
             return this;
         }
 
@@ -127,28 +106,8 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// <returns>ClaimsPrincipal.</returns>
         public IUserSecurityContext CreateSecurityContext()
         {
-            var context = new TestUserSecurityContext();
-
-            foreach (var scheme in _knownSchemes)
-            {
-                var actualScheme = scheme;
-                if (actualScheme == DEFAULT_SCHEME)
-                    actualScheme = null;
-
-                IEnumerable<Claim> claims = null;
-                IEnumerable<string> roles = null;
-                var isAuthed = false;
-
-                if (_userClaims.ContainsKey(scheme))
-                    claims = _userClaims[scheme];
-                if (_userRoles.ContainsKey(scheme))
-                    roles = _userRoles[scheme];
-                if (_userIsAuthenticated.ContainsKey(scheme))
-                    isAuthed = _userIsAuthenticated[scheme];
-
-                context.AddFakeUser(actualScheme, isAuthed, claims, roles);
-            }
-
+            var context = new TestUserSecurityContext(_parentServerBuilder?.Authentication?.DefaultAuthScheme);
+            context.Setup(_authScheme, _userClaims, _userRoles);
             return context;
         }
     }

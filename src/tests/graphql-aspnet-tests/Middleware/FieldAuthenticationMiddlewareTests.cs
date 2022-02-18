@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             var server = builder.Build();
 
             var queryContext = server.CreateQueryContextBuilder().Build();
-            var expectedUser = queryContext.SecurityContext.DefaultUser;
+            var expectedUser = (await queryContext.SecurityContext.Authenticate(builder.Authentication.DefaultAuthScheme))?.User;
 
             var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
 
@@ -152,7 +152,6 @@ namespace GraphQL.AspNet.Tests.Middleware
             var server = builder.Build();
 
             var queryContext = server.CreateQueryContextBuilder().Build();
-            var expectedUser = queryContext.SecurityContext.DefaultUser;
 
             var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
 
@@ -205,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task WhenSecurityGroupsOnFieldWithRequiredScheme_ButUserContextDoesntMatch_NotAuthenticated()
         {
             var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate("testScheme");
+            builder.UserContext.Authenticate(authScheme: "testScheme");
             var server = builder.Build();
 
             var contextBuilder = server.CreateQueryContextBuilder();
@@ -235,13 +234,13 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task WhenSecurityGroupsOnFieldWithRequiredScheme_AndUserContextMatches_IsAuthenticated()
         {
             var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate("testScheme");
+            builder.UserContext.Authenticate(authScheme: "testScheme");
             var server = builder.Build();
 
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();
 
-            var expectedUser = queryContext.SecurityContext.DefaultUser;
+            var expectedUser = (await queryContext.SecurityContext.Authenticate("testScheme"))?.User;
 
             // has "testScheme" required
             var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(WithRequiredMatchedSchemeOnAuthorize));
@@ -267,7 +266,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task WhenNestedMismatchedGroupsEncountered_AuthIsFailed()
         {
             var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate("testScheme");
+            builder.UserContext.Authenticate(authScheme: "testScheme");
             var server = builder.Build();
 
             var contextBuilder = server.CreateQueryContextBuilder();
@@ -301,13 +300,13 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task WhenNestedGroupsEncountered_AndUserContextMatches_IsAuthorized()
         {
             var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate("testScheme1");
+            builder.UserContext.Authenticate(authScheme: "testScheme1");
             var server = builder.Build();
 
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();
 
-            var expectedUser = queryContext.SecurityContext.DefaultUser;
+            var expectedUser = (await queryContext.SecurityContext.Authenticate("testScheme1"))?.User;
 
             // has "testScheme1" required
             var testGroupTop = FieldSecurityGroup.FromAttributeCollection(typeof(WithNestedMatchedSchemesOnAuthorize));
