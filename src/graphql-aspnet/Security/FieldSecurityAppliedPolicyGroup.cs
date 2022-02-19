@@ -17,30 +17,30 @@ namespace GraphQL.AspNet.Security
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// A group of <see cref="FieldSecurityPolicy"/>s describing the collected security requirements
+    /// A group of <see cref="FieldSecurityAppliedPolicy"/>s describing the collected security requirements
     /// of an entity such as the policies applied to a controller or to a field method.
     /// </summary>
-    public sealed class FieldSecurityGroup : IEnumerable<FieldSecurityPolicy>
+    public sealed class FieldSecurityAppliedPolicyGroup : IEnumerable<FieldSecurityAppliedPolicy>
     {
         /// <summary>
         /// Gets a static instance of an empty set of requirements. This instance allows anonymous access.
         /// </summary>
         /// <value>The empty.</value>
-        public static FieldSecurityGroup Empty { get; }
+        public static FieldSecurityAppliedPolicyGroup Empty { get; }
 
         /// <summary>
         /// Generates a security group from a given attribute container.
         /// </summary>
         /// <param name="attributedItem">The attributed item to build the group from.</param>
         /// <returns>SecurityGroup.</returns>
-        public static FieldSecurityGroup FromAttributeCollection(ICustomAttributeProvider attributedItem)
+        public static FieldSecurityAppliedPolicyGroup FromAttributeCollection(ICustomAttributeProvider attributedItem)
         {
-            var group = new FieldSecurityGroup
+            var group = new FieldSecurityAppliedPolicyGroup
             {
                 _requirements = attributedItem.GetCustomAttributes(true)
                         .Where(x => x is Attribute && x is IAuthorizeData)
                         .OfType<IAuthorizeData>()
-                        .Select(x => new FieldSecurityPolicy(x)).ToList(),
+                        .Select(x => new FieldSecurityAppliedPolicy(x)).ToList(),
 
                 AllowAnonymous = attributedItem.GetCustomAttributes(true)
                         .Any(x => x is Attribute && x is IAllowAnonymous),
@@ -49,22 +49,22 @@ namespace GraphQL.AspNet.Security
             return group;
         }
 
-        static FieldSecurityGroup()
+        static FieldSecurityAppliedPolicyGroup()
         {
-            Empty = new FieldSecurityGroup
+            Empty = new FieldSecurityAppliedPolicyGroup
             {
                 AllowAnonymous = true,
             };
         }
 
-        private List<FieldSecurityPolicy> _requirements;
+        private List<FieldSecurityAppliedPolicy> _requirements;
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="FieldSecurityGroup"/> class from being created.
+        /// Prevents a default instance of the <see cref="FieldSecurityAppliedPolicyGroup"/> class from being created.
         /// </summary>
-        private FieldSecurityGroup()
+        private FieldSecurityAppliedPolicyGroup()
         {
-            _requirements = new List<FieldSecurityPolicy>();
+            _requirements = new List<FieldSecurityAppliedPolicy>();
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Security
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<FieldSecurityPolicy> GetEnumerator()
+        public IEnumerator<FieldSecurityAppliedPolicy> GetEnumerator()
         {
             return _requirements.GetEnumerator();
         }

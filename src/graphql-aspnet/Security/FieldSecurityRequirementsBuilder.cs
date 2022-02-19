@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Security
         private HashSet<string> _schemes;
         private List<IEnumerable<string>> _roles;
         private List<EnforcedSecurityPolicy> _policies;
-        private bool _allowDefaultScheme = false;
         private bool _allowAnonymous = false;
 
         /// <summary>
@@ -33,7 +32,7 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Adds the the authentication scheme as one that is allowed
+        /// Adds the authentication scheme as one that is allowed
         /// for the user.
         /// </summary>
         /// <param name="scheme">The scheme to add.</param>
@@ -41,17 +40,6 @@ namespace GraphQL.AspNet.Security
         public FieldSecurityRequirementsBuilder AddAllowedAuthenticationScheme(string scheme)
         {
             _schemes.Add(scheme);
-            return this;
-        }
-
-        /// <summary>
-        /// Allows the default authentication scheme to be considered as an authentication
-        /// scheme.
-        /// </summary>
-        /// <returns>FieldSecurityRequirementsBuilder.</returns>
-        public FieldSecurityRequirementsBuilder AllowDefaultAuthenticationScheme()
-        {
-            _allowDefaultScheme = true;
             return this;
         }
 
@@ -83,10 +71,14 @@ namespace GraphQL.AspNet.Security
         /// <returns>GraphQL.AspNet.Security.FieldSecurityRequirements.</returns>
         public FieldSecurityRequirements Build()
         {
+            var allowedSchemes = new List<AllowedAuthenticationScheme>();
+
+            foreach (var scheme in _schemes)
+                allowedSchemes.Add(new AllowedAuthenticationScheme(scheme));
+
             return FieldSecurityRequirements.Create(
                 _allowAnonymous,
-                _allowDefaultScheme,
-                _schemes,
+                allowedSchemes,
                 _policies,
                 _roles);
         }

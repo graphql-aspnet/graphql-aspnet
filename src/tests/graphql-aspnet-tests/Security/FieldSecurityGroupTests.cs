@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Security
         [Test]
         public void PolicyName_YieldsPolicyNameInRule()
         {
-            var group = FieldSecurityGroup.FromAttributeCollection(typeof(PolicyNameObject));
+            var group = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(PolicyNameObject));
 
             Assert.IsNotNull(group);
             Assert.AreEqual(1, group.Count);
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Security
         [Test]
         public void Roles_YieldsRoleInRule()
         {
-            var group = FieldSecurityGroup.FromAttributeCollection(typeof(RoleListObject));
+            var group = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(RoleListObject));
 
             Assert.IsNotNull(group);
             Assert.AreEqual(1, group.Count);
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Security
         [Test]
         public void RolePolicyCombined_YieldsSingleRule()
         {
-            var group = FieldSecurityGroup.FromAttributeCollection(typeof(PolicyNameWithRolesObject));
+            var group = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(PolicyNameWithRolesObject));
 
             Assert.IsNotNull(group);
             Assert.AreEqual(1, group.Count);
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Security
         [Test]
         public void MultiPolicy_HasAnonymousAttribute_IndicatesAll()
         {
-            var group = FieldSecurityGroup.FromAttributeCollection(typeof(PolicyNameWithAnonymousObject));
+            var group = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(PolicyNameWithAnonymousObject));
 
             Assert.IsNotNull(group);
             Assert.AreEqual(2, group.Count);

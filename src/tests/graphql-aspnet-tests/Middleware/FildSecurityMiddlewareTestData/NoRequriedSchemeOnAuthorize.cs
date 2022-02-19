@@ -11,8 +11,11 @@ namespace GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData
 {
     using Microsoft.AspNetCore.Authorization;
 
-    [Authorize]
     public class NoRequriedSchemeOnAuthorize
     {
+        [Authorize]
+        public void BasicAuthorize()
+        {
+        }
     }
 }

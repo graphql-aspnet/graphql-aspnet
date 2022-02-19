@@ -29,35 +29,6 @@ namespace GraphQL.AspNet.Tests.Middleware
     [TestFixture]
     public class FieldAuthenticationMiddlewareTests
     {
-        /// <summary>
-        /// Creates a set of requirements indicating authentication and authorization
-        /// are not required.
-        /// </summary>
-        /// <returns>FieldSecurityRequirements.</returns>
-        public FieldSecurityRequirements AnonymousRequirements()
-        {
-            return FieldSecurityRequirements.Create(true, false);
-        }
-
-        /// <summary>
-        /// Creates a new set of security requirements that indicate an authenticated
-        /// user (and nothing else) is required.
-        /// </summary>
-        /// <returns>FieldSecurityRequirements.</returns>
-        public FieldSecurityRequirements AuthenticatedUserRequirements()
-        {
-            var policy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .Build();
-
-            var enforcedPolicy = new EnforcedSecurityPolicy("required-user", policy);
-
-            return FieldSecurityRequirements.Create(
-                false,
-                true,
-                enforcedPolicies: enforcedPolicy.AsEnumerable());
-        }
-
         public Task EmptyNextDelegate(GraphFieldSecurityContext context, CancellationToken token)
         {
             return Task.CompletedTask;
@@ -73,17 +44,16 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = server.CreateQueryContextBuilder().Build();
             var expectedUser = (await queryContext.SecurityContext.Authenticate(builder.Authentication.DefaultAuthScheme))?.User;
 
-            var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
+            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
 
             var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityGroup>());
+            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityAppliedPolicyGroup>());
 
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.Field)
                 .Returns(field.Object);
 
             var requirements = new FieldSecurityRequirementsBuilder()
-                .AllowDefaultAuthenticationScheme()
                 .Build();
 
             var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
@@ -107,17 +77,19 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = server.CreateQueryContextBuilder().Build();
             var expectedUser = queryContext.SecurityContext.DefaultUser;
 
-            var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
+            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
 
             var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityGroup>());
+            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityAppliedPolicyGroup>());
 
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.Field)
                 .Returns(field.Object);
 
             var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = this.AnonymousRequirements();
+            securityContext.SecurityRequirements = new FieldSecurityRequirementsBuilder()
+                .AllowAnonymousUsers()
+                .Build();
 
             var middleware = new FieldAuthenticationMiddleware();
             await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
@@ -135,10 +107,10 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var queryContext = server.CreateQueryContextBuilder().Build();
 
-            var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
+            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
 
             var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityGroup>());
+            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityAppliedPolicyGroup>());
 
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.Field)
@@ -168,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             contextBuilder.AddSecurityContext(null); // no context
             var queryContext = contextBuilder.Build();
 
-            var testGroup = FieldSecurityGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
+            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
 
             var field = new Mock<IGraphField>();
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
@@ -176,7 +148,6 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .Returns(field.Object);
 
             var requirements = new FieldSecurityRequirementsBuilder()
-                .AllowDefaultAuthenticationScheme()
                 .Build();
 
             var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
@@ -270,7 +241,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             userSecurityContext.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(defaultResult.Object);
 
-            // exception for specific scheme
+            // exception for specific scheme if its inadverantly called (will fail test)
             userSecurityContext.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new InvalidOperationException("unknown scheme"));
 
@@ -278,43 +249,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             contextBuilder.AddSecurityContext(userSecurityContext.Object);
             var queryContext = contextBuilder.Build();
 
-            // has "default" required
-            var requirements = new FieldSecurityRequirementsBuilder()
-                .AllowDefaultAuthenticationScheme()
-                .Build();
-
-            var field = new Mock<IGraphField>();
-            field.Setup(x => x.Route).Returns(new GraphFieldPath(AspNet.Execution.GraphCollection.Types, "segment1"));
-
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
-                .Returns(field.Object);
-
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = requirements;
-
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
-
-            Assert.IsNull(securityContext.AuthenticatedUser);
-            Assert.IsNotNull(securityContext.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, securityContext.Result.Status);
-        }
-
-        [Test]
-        public async Task WhenNoAllowedSchemesExist_AndDefaultSchemeIsDisallowed_FailsToAuthenticate()
-        {
-            var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate(); // auth with default
-            var server = builder.Build();
-
-            var defaultResult = new Mock<IAuthenticationResult>();
-            defaultResult.Setup(x => x.Suceeded).Returns(false);
-
-            var contextBuilder = server.CreateQueryContextBuilder();
-            var queryContext = contextBuilder.Build();
-
-            // has nothing allowed
+            // just basic authentication using the default scheme
             var requirements = new FieldSecurityRequirementsBuilder()
                 .Build();
 

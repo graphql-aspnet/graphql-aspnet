@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -46,11 +47,11 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         public async Task InvokeAsync(
             GraphFieldSecurityContext context,
             GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next,
-            CancellationToken cancelToken)
+            CancellationToken cancelToken = default)
         {
             if (context.SecurityRequirements == null)
             {
-                (var requirements, var result) = await this.CreateSecurityRequirements(context.Field, cancelToken);
+                (var requirements, var result) = await this.CreateSecurityRequirements(context.Field);
                 context.Result = context.Result ?? result;
                 context.SecurityRequirements = requirements;
             }
@@ -58,7 +59,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             await next.Invoke(context, cancelToken);
         }
 
-        private async Task<(FieldSecurityRequirements, FieldSecurityChallengeResult)> CreateSecurityRequirements(IGraphField field, CancellationToken cancelToken)
+        private async Task<(FieldSecurityRequirements, FieldSecurityChallengeResult)> CreateSecurityRequirements(IGraphField field)
         {
             if (field?.SecurityGroups == null)
                 return (FieldSecurityRequirements.AutoDeny, null);
@@ -73,7 +74,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 defaultPolicy = await _policyProvider.GetDefaultPolicyAsync();
 
             var enforcedPolicies = new List<EnforcedSecurityPolicy>();
-            var schemeGroups = new List<IEnumerable<string>>();
+            var schemeGroups = new List<IEnumerable<AllowedAuthenticationScheme>>();
             var enforcedRoleGroups = new List<IEnumerable<string>>();
 
             foreach (var group in field.SecurityGroups)
@@ -86,7 +87,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 {
                     // schemes defined on the rule are applied first
                     if (rule.AuthenticationSchemes.Any())
-                        schemeGroups.Add(rule.AuthenticationSchemes);
+                        schemeGroups.Add(rule.AuthenticationSchemes.Select(x => new AllowedAuthenticationScheme(x)));
 
                     // if this rule defines an explicit policy attempt to
                     // find it
@@ -113,7 +114,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
                         // enforce any scheme requirements on the policy
                         if (policy.AuthenticationSchemes.Count > 0)
-                            schemeGroups.Add(policy.AuthenticationSchemes);
+                            schemeGroups.Add(policy.AuthenticationSchemes.Select(x => new AllowedAuthenticationScheme(x)));
 
                         enforcedPolicies.Add(new EnforcedSecurityPolicy(rule.PolicyName, policy));
                     }
@@ -121,7 +122,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                     {
                         // no policy named, add in the default policy schemes for the app domain
                         if (defaultPolicy.AuthenticationSchemes.Count > 0)
-                            schemeGroups.Add(defaultPolicy.AuthenticationSchemes);
+                            schemeGroups.Add(defaultPolicy.AuthenticationSchemes.Select(x => new AllowedAuthenticationScheme(x)));
 
                         enforcedPolicies.Add(new EnforcedSecurityPolicy(DEFAULT_POLICY, defaultPolicy));
                     }
@@ -133,10 +134,10 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
             // only when no required schemes are ever supplied
             // can we allow the fallback default
-            var allowDefaultSchemeCheck = schemeGroups.Count == 0;
+            var allowDefaultSchemeFallThrough = schemeGroups.Count == 0;
+
             requirements = FieldSecurityRequirements.Create(
                 allowAnonmous,
-                allowDefaultSchemeCheck,
                 this.DeteremineFinalSchemeSet(schemeGroups),
                 this.DeteremineFinalPolicySet(enforcedPolicies),
                 enforcedRoleGroups);
@@ -144,12 +145,12 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             // ensure that there exists a scenario where its possible that
             // someone could be authenticated
             if (!requirements.AllowAnonymous
-                && !requirements.RequiredAuthenticationSchemes.Any()
-                && !requirements.AllowDefaultAuthenticationScheme)
+                && !requirements.AllowedAuthenticationSchemes.Any()
+                && !allowDefaultSchemeFallThrough)
             {
                 var result = FieldSecurityChallengeResult.Fail(
-                    $"The field '{field.Route}' has mismatched required authentication schemes in its security groups. It contains " +
-                    $"no scenarios where an authentication scheme can be used to authenticate a user to all possible security groups.");
+                    $"The field '{field.Route}' has mismatched required authentication schemes in its applied security groups. It contains " +
+                    $"no scenarios where an authentication scheme can be used to authenticate a user to all possible required authorizations.");
 
                 return (null, result);
             }
@@ -175,14 +176,14 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             }
         }
 
-        private IEnumerable<string> DeteremineFinalSchemeSet(List<IEnumerable<string>> schemeGroups)
+        private IEnumerable<AllowedAuthenticationScheme> DeteremineFinalSchemeSet(List<IEnumerable<AllowedAuthenticationScheme>> schemeGroups)
         {
             if (schemeGroups.Count == 0)
-                return Enumerable.Empty<string>();
+                return Enumerable.Empty<AllowedAuthenticationScheme>();
 
             // establish a list of schemes that are required
             // via the first level of security
-            var allowedSchemes = new HashSet<string>();
+            var allowedSchemes = new HashSet<AllowedAuthenticationScheme>(AllowedAuthenticationScheme.DefaultComparer);
             foreach (var scheme in schemeGroups.First())
             {
                 allowedSchemes.Add(scheme);
@@ -194,7 +195,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 // ensure that at least one of the encounted schemes
                 // is already in list, if its not then the path to authenticate
                 // this field (with a single auth handler) can never be achieved.
-                var matchedSchemes = new HashSet<string>();
+                var matchedSchemes = new HashSet<AllowedAuthenticationScheme>(AllowedAuthenticationScheme.DefaultComparer);
                 foreach (var scheme in schemeGroup)
                 {
                     if (allowedSchemes.Contains(scheme))
