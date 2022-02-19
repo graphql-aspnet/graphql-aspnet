@@ -6,9 +6,11 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Security
+
+namespace GraphQL.AspNet.Tests.Framework
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A builder that can generate a <see cref="FieldSecurityRequirements"/>

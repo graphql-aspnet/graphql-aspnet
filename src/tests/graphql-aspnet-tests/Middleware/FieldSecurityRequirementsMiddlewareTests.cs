@@ -55,10 +55,10 @@ namespace GraphQL.AspNet.Tests.Middleware
             if (method == null)
                 Assert.Fail("Invalid Method, can't create test field");
 
-            var controllerGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(TController));
-            var methodGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(method);
+            var controllerGroup = AppliedSecurityPolicyGroup.FromAttributeCollection(typeof(TController));
+            var methodGroup = AppliedSecurityPolicyGroup.FromAttributeCollection(method);
 
-            var list = new List<FieldSecurityAppliedPolicyGroup>();
+            var list = new List<AppliedSecurityPolicyGroup>();
             list.Add(controllerGroup);
             list.Add(methodGroup);
 

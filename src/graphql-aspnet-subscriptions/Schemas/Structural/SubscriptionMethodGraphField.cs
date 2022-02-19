@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
             Interfaces.Execution.IGraphFieldResolver resolver = null,
-            IEnumerable<FieldSecurityAppliedPolicyGroup> securityPolicies = null,
+            IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             string eventName = null)
             : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies)
         {

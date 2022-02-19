@@ -44,10 +44,10 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = server.CreateQueryContextBuilder().Build();
             var expectedUser = (await queryContext.SecurityContext.Authenticate(builder.Authentication.DefaultAuthScheme))?.User;
 
-            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
+            var testGroup = AppliedSecurityPolicyGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
 
             var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityAppliedPolicyGroup>());
+            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<AppliedSecurityPolicyGroup>());
 
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.Field)
@@ -77,10 +77,10 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = server.CreateQueryContextBuilder().Build();
             var expectedUser = queryContext.SecurityContext.DefaultUser;
 
-            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
+            var testGroup = AppliedSecurityPolicyGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
 
             var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityAppliedPolicyGroup>());
+            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<AppliedSecurityPolicyGroup>());
 
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.Field)
@@ -107,10 +107,10 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var queryContext = server.CreateQueryContextBuilder().Build();
 
-            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
+            var testGroup = AppliedSecurityPolicyGroup.FromAttributeCollection(typeof(AllowAnonymousOnAuthorize));
 
             var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<FieldSecurityAppliedPolicyGroup>());
+            field.Setup(x => x.SecurityGroups).Returns(testGroup.AsEnumerable<AppliedSecurityPolicyGroup>());
 
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
             fieldSecurityRequest.Setup(x => x.Field)
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             contextBuilder.AddSecurityContext(null); // no context
             var queryContext = contextBuilder.Build();
 
-            var testGroup = FieldSecurityAppliedPolicyGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
+            var testGroup = AppliedSecurityPolicyGroup.FromAttributeCollection(typeof(NoRequriedSchemeOnAuthorize));
 
             var field = new Mock<IGraphField>();
             var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();

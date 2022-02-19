@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.Security
         /// <param name="enforcedRoleGroups">The enforced role groups.</param>
         /// <returns>FieldSecurityRequirements.</returns>
         public static FieldSecurityRequirements Create(
-        bool allowAnonymous,
-        IEnumerable<AllowedAuthenticationScheme> allowedAuthSchemes,
-        IEnumerable<EnforcedSecurityPolicy> enforcedPolicies = null,
-        IEnumerable<IEnumerable<string>> enforcedRoleGroups = null)
+            bool allowAnonymous,
+            IEnumerable<AllowedAuthenticationScheme> allowedAuthSchemes,
+            IEnumerable<EnforcedSecurityPolicy> enforcedPolicies = null,
+            IEnumerable<IEnumerable<string>> enforcedRoleGroups = null)
         {
             var result = new FieldSecurityRequirements();
 
