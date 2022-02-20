@@ -6,17 +6,20 @@
 // --
 // License:  MIT
 // *************************************************************
-
 namespace GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData
 {
     using Microsoft.AspNetCore.Authorization;
 
-    [Authorize(AuthenticationSchemes = "testScheme1")]
-    public class WithNestedMatchedSchemesOnAuthorize
+    [Authorize(Roles = "role1, role2")]
+    public class RolesOnClass
     {
-        // no way for one auth'd user to authenticate with both schemes (its one or the other).
-        [Authorize(AuthenticationSchemes = "testScheme2, testScheme1")]
-        public void TestMethod()
+        [Authorize(Roles = "role2, role3")]
+        public void RolesOnMethod()
+        {
+        }
+
+        [Authorize]
+        public void NoRolesOnMethod()
         {
         }
     }

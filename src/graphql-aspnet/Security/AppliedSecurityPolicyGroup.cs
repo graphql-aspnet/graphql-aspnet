@@ -17,30 +17,31 @@ namespace GraphQL.AspNet.Security
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// A group of <see cref="FieldSecurityPolicy"/>s describing the collected security requirements
+    /// A group of <see cref="AppliedSecurityPolicy"/>s describing the collected security requirements
     /// of an entity such as the policies applied to a controller or to a field method.
     /// </summary>
-    public sealed class FieldSecurityGroup : IEnumerable<FieldSecurityPolicy>
+    public sealed class AppliedSecurityPolicyGroup : IEnumerable<AppliedSecurityPolicy>
     {
         /// <summary>
         /// Gets a static instance of an empty set of requirements. This instance allows anonymous access.
         /// </summary>
         /// <value>The empty.</value>
-        public static FieldSecurityGroup Empty { get; }
+        public static AppliedSecurityPolicyGroup Empty { get; }
 
         /// <summary>
         /// Generates a security group from a given attribute container.
         /// </summary>
         /// <param name="attributedItem">The attributed item to build the group from.</param>
         /// <returns>SecurityGroup.</returns>
-        public static FieldSecurityGroup FromAttributeCollection(ICustomAttributeProvider attributedItem)
+        public static AppliedSecurityPolicyGroup FromAttributeCollection(ICustomAttributeProvider attributedItem)
         {
-            var group = new FieldSecurityGroup
+            var group = new AppliedSecurityPolicyGroup
             {
-                _requirements = attributedItem.GetCustomAttributes(true)
+                _policies = attributedItem.GetCustomAttributes(true)
                         .Where(x => x is Attribute && x is IAuthorizeData)
                         .OfType<IAuthorizeData>()
-                        .Select(x => new FieldSecurityPolicy(x)).ToList(),
+                        .Select(x => new AppliedSecurityPolicy(x))
+                        .ToList(),
 
                 AllowAnonymous = attributedItem.GetCustomAttributes(true)
                         .Any(x => x is Attribute && x is IAllowAnonymous),
@@ -49,29 +50,29 @@ namespace GraphQL.AspNet.Security
             return group;
         }
 
-        static FieldSecurityGroup()
+        static AppliedSecurityPolicyGroup()
         {
-            Empty = new FieldSecurityGroup
+            Empty = new AppliedSecurityPolicyGroup
             {
                 AllowAnonymous = true,
             };
         }
 
-        private List<FieldSecurityPolicy> _requirements;
+        private List<AppliedSecurityPolicy> _policies;
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="FieldSecurityGroup"/> class from being created.
+        /// Prevents a default instance of the <see cref="AppliedSecurityPolicyGroup"/> class from being created.
         /// </summary>
-        private FieldSecurityGroup()
+        private AppliedSecurityPolicyGroup()
         {
-            _requirements = new List<FieldSecurityPolicy>();
+            _policies = new List<AppliedSecurityPolicy>();
         }
 
         /// <summary>
         /// Gets a count of the number of requirements in this group.
         /// </summary>
         /// <value>The count.</value>
-        public int Count => _requirements.Count;
+        public int Count => _policies.Count;
 
         /// <summary>
         /// Gets a value indicating whether this group permits anonymous access or not.
@@ -80,12 +81,18 @@ namespace GraphQL.AspNet.Security
         public bool AllowAnonymous { get; private set; }
 
         /// <summary>
+        /// Gets the collection of policies defined on this group.
+        /// </summary>
+        /// <value>The applied policies.</value>
+        public IReadOnlyList<AppliedSecurityPolicy> AppliedPolicies => _policies;
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<FieldSecurityPolicy> GetEnumerator()
+        public IEnumerator<AppliedSecurityPolicy> GetEnumerator()
         {
-            return _requirements.GetEnumerator();
+            return _policies.GetEnumerator();
         }
 
         /// <summary>

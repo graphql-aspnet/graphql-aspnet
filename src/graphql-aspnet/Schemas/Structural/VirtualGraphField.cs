@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             // fields made from controller route parameters have no policies directly unto themselves
             // any controller class level policies are individually added to fields they declare
-            this.SecurityGroups = Enumerable.Empty<FieldSecurityGroup>();
+            this.SecurityGroups = Enumerable.Empty<AppliedSecurityPolicyGroup>();
             this.Complexity = 1;
             this.Mode = FieldResolutionMode.PerSourceItem;
         }
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Gets the security policies found via defined attributes on the item that need to be enforced.
         /// </summary>
         /// <value>The security policies.</value>
-        public IEnumerable<FieldSecurityGroup> SecurityGroups { get; }
+        public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
 
         /// <summary>
         /// Gets  an estimated weight value of this field in terms of the overall impact it has on the execution of a query.

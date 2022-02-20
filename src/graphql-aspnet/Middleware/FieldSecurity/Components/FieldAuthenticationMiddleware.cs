@@ -8,7 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 {
-    using System.Collections.Concurrent;
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -18,25 +18,31 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Security;
+    using Microsoft.AspNetCore.Authentication;
 
     /// <summary>
     /// A piece of middleware, on the authorization pipeline, that can successfuly authenticate a
     /// <see cref="IUserSecurityContext"/>.
     /// </summary>
-    public class FieldAuthenticationMiddleware : IGraphFieldSecurityMiddleware
+    public class FieldAuthenticationMiddleware : IGraphFieldSecurityMiddleware, IDisposable
     {
-        private const string DEFAULT_AUTH_SCHEME_KEY = "~graphql.aspnet.default~";
-
-        private ConcurrentDictionary<IGraphField, ImmutableHashSet<string>> _allowedSchemesPerField;
+        private SemaphoreSlim _locker = new SemaphoreSlim(1);
+        private IAuthenticationSchemeProvider _schemeProvider;
+        private bool _defaultsSet;
+        private string _defaultScheme;
+        private ImmutableHashSet<string> _allKnownSchemes;
+        private bool disposedValue;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldAuthenticationMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="FieldAuthenticationMiddleware" /> class.
         /// </summary>
-        public FieldAuthenticationMiddleware()
+        /// <param name="schemeProvider">The scheme provider used to determine
+        /// various authentication defaults.</param>
+        public FieldAuthenticationMiddleware(IAuthenticationSchemeProvider schemeProvider = null)
         {
-            _allowedSchemesPerField = new ConcurrentDictionary<IGraphField, ImmutableHashSet<string>>();
+            _schemeProvider = schemeProvider;
+            _allKnownSchemes = ImmutableHashSet.Create<string>();
         }
 
         /// <inheritdoc />
@@ -62,16 +68,70 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             await next.Invoke(context, cancelToken).ConfigureAwait(false);
         }
 
-        private async Task<(ClaimsPrincipal, IAuthenticationResult, FieldSecurityChallengeResult)> AuthenticateUser(GraphFieldSecurityContext context, CancellationToken cancelToken)
+        private async Task<(ClaimsPrincipal, IAuthenticationResult, FieldSecurityChallengeResult)>
+            AuthenticateUser(GraphFieldSecurityContext context, CancellationToken cancelToken)
         {
-            // Step 0: No authorization needed? just use the default user on the security context
-            if (context.Field.SecurityGroups == null ||
-                !context.Field.SecurityGroups.Any() ||
-                context.Field.SecurityGroups.All(x => x.AllowAnonymous))
+            // Step 1: Initial check for null requirements or allowed anonymous access
+            if (context.SecurityRequirements == null)
             {
-                return (context.SecurityContext?.DefaultUser, null, null);
+                var failure = FieldSecurityChallengeResult.Fail(
+                    $"No user could be authenticated because no security requirements were available on the request.");
+
+                return (null, null, failure);
             }
 
+            if (context.SecurityRequirements == FieldSecurityRequirements.AutoDeny)
+            {
+                var failure = FieldSecurityChallengeResult.UnAuthenticated(
+                    $"No user could be authenticated because the request indicated no user could ever be authorized.");
+
+                return (null, null, failure);
+            }
+
+            var canBeAnonymous = context.SecurityRequirements.AllowAnonymous;
+
+            await this.EnsureDefaults();
+
+            // Step 2: Attempt to authenticate the user against the acceptable schemes
+            IAuthenticationResult authTicket = null;
+
+            // when no explicit schemes are defined
+            // attempt to fall back to the default scheme configured on this
+            // app instance (if one even exists)
+            if (context.SecurityRequirements.AllowedAuthenticationSchemes.Count == 0)
+            {
+                authTicket = await this.AuthenticateUserToScheme(
+                    context.SecurityContext,
+                    _defaultScheme,
+                    !canBeAnonymous,
+                    cancelToken);
+            }
+            else
+            {
+                foreach (var scheme in context.SecurityRequirements.AllowedAuthenticationSchemes)
+                {
+                    authTicket = await this.AuthenticateUserToScheme(context.SecurityContext, scheme.AuthScheme, !canBeAnonymous, cancelToken);
+                    if (authTicket?.Suceeded ?? false)
+                        break;
+
+                    authTicket = null;
+                }
+            }
+
+            // if no auth is "required" then return back
+            // but include the user that was found (when it was)
+            if (context.SecurityRequirements.AllowAnonymous)
+            {
+                if (authTicket != null && authTicket.Suceeded)
+                    return (authTicket.User, authTicket, null);
+                else
+                    return (context.SecurityContext?.DefaultUser, null, null);
+            }
+
+            // when anonymous is not allowed
+            // then a user must be authenticated
+            // when no user could have been authed fail with a
+            // special message
             if (context.SecurityContext == null)
             {
                 var failure = FieldSecurityChallengeResult.Fail(
@@ -80,42 +140,8 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 return (null, null, failure);
             }
 
-            // Step 1: For all the stacked security group in the checked field is there a path
-            //         through the chain for any given authentication scheme
-            var allowedSchemes = this.DetermineAllowedSchemes(context.Field);
-            if (allowedSchemes.Count == 0)
-            {
-                // when no match found fail out.
-                var failure = FieldSecurityChallengeResult.Fail(
-                    $"The field '{context.Field.Route}' has mismatched required authentication schemes in its security groups. It contains " +
-                    $"no scenarios where an authentication scheme can be used to authenticate a user to all possible security groups.");
-
-                return (null, null, failure);
-            }
-
-            // Step 2: Attempt to authenticate the user against hte acceptable schemes
-            IAuthenticationResult authTicket = null;
-            if (allowedSchemes.Contains(DEFAULT_AUTH_SCHEME_KEY))
-            {
-                // try the default scheme first
-                authTicket = await context.SecurityContext.Authenticate(cancelToken);
-                if (authTicket != null && !authTicket.Suceeded)
-                    authTicket = null;
-            }
-
-            if (authTicket == null)
-            {
-                // try the other schemes
-                foreach (var scheme in allowedSchemes.Where(x => x != DEFAULT_AUTH_SCHEME_KEY))
-                {
-                    authTicket = await context.SecurityContext.Authenticate(scheme, cancelToken);
-                    if (authTicket?.Suceeded ?? false)
-                        break;
-
-                    authTicket = null;
-                }
-            }
-
+            // when authentication failed
+            // indicate as such
             if (authTicket == null || !authTicket.Suceeded)
             {
                 var failure = FieldSecurityChallengeResult.UnAuthenticated(
@@ -124,69 +150,90 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 return (null, authTicket, failure);
             }
 
+            // authentication successful!
             return (authTicket.User, authTicket, null);
         }
 
-        private ImmutableHashSet<string> DetermineAllowedSchemes(IGraphField field)
+        /// <summary>
+        /// Extracts the default and all known schemes available to this instance.
+        /// </summary>
+        private async Task EnsureDefaults()
         {
-            if (field == null)
-                return ImmutableHashSet<string>.Empty;
+            if (_defaultsSet)
+                return;
 
-            if (_allowedSchemesPerField.TryGetValue(field, out var foundAllowedSchemes))
-                return foundAllowedSchemes;
-
-            var allowedSchemes = new HashSet<string>();
-            allowedSchemes.Add(DEFAULT_AUTH_SCHEME_KEY);
-            foreach (var group in field.SecurityGroups)
+            await _locker.WaitAsync();
+            try
             {
-                if (group.AllowAnonymous)
-                    continue;
+                if (_defaultsSet)
+                    return;
 
-                foreach (var rule in group)
+                _defaultsSet = true;
+                if (_schemeProvider != null)
                 {
-                    if (rule.AuthenticationSchemes.Count == 0)
-                        continue;
+                    var foundDefault = await _schemeProvider.GetDefaultAuthenticateSchemeAsync();
+                    _defaultScheme = foundDefault?.Name;
 
-                    allowedSchemes.Remove(DEFAULT_AUTH_SCHEME_KEY);
-                    if (allowedSchemes.Count == 0)
+                    var allSchemes = await _schemeProvider.GetAllSchemesAsync();
+                    if (allSchemes != null)
                     {
-                        // when required schemes are encounted for the first time
-                        // set them up as being required.
-                        foreach (var scheme in rule.AuthenticationSchemes)
-                            allowedSchemes.Add(scheme);
-                    }
-                    else
-                    {
-                        // when required schemes are encounted a second time
-                        // ensure that at least one of the encounted schemes
-                        // is already in list, if its not then the path to authenticate
-                        // this field (with a single auth handler) can never be achieved.
-                        var matchedSchemes = new HashSet<string>();
-                        foreach (var scheme in rule.AuthenticationSchemes)
-                        {
-                            if (allowedSchemes.Contains(scheme))
-                                matchedSchemes.Add(scheme);
-                        }
-
-                        if (matchedSchemes.Count == 0)
-                        {
-                            allowedSchemes.Clear();
-                            break;
-                        }
-                        else
-                        {
-                            // reduce the "allowed schemes" to just those that also match this
-                            // security group
-                            allowedSchemes = matchedSchemes;
-                        }
+                        _allKnownSchemes = allSchemes.Select(x => x.Name)
+                            .ToImmutableHashSet();
                     }
                 }
             }
+            finally
+            {
+                _locker.Release();
+            }
+        }
 
-            foundAllowedSchemes = allowedSchemes.ToImmutableHashSet();
-            _allowedSchemesPerField.TryAdd(field, foundAllowedSchemes);
+        private async Task<IAuthenticationResult> AuthenticateUserToScheme(
+            IUserSecurityContext userContext,
+            string scheme,
+            bool shouldThrowOnFail,
+            CancellationToken cancelToken)
+        {
+            // since authenticate can result in an exception, espeically when no default exsists
+            // or some scheme is defined that doesnt really exist. We want those exceptions to bubble
+            // (and prevent execution) in cases where the method completing is needed (i.e. when auth is absolutely required)
+            // but in cases where anonymous is allowed there is no reason to fail, we just let
+            // execution continue without authentication
+            if (!shouldThrowOnFail)
+            {
+                if (!_allKnownSchemes.Contains(scheme))
+                    return null;
+            }
 
-            return foundAllowedSchemes;
+            if (userContext != null)
+                return await userContext.Authenticate(scheme, cancelToken);
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _locker.Dispose();
+                }
+
+                _allKnownSchemes = null;
+                disposedValue = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

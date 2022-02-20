@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authorize a single user
     /// to a single field of data.
     /// </summary>
-    internal class FieldAuthorizationMiddleware : IGraphFieldSecurityMiddleware
+    public class FieldAuthorizationMiddleware : IGraphFieldSecurityMiddleware
     {
         private readonly IAuthorizationService _authService;
 
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken = default)
         {
             context.Logger?.FieldAuthorizationChallenge(context);
 
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             // in this auth pipeline, if a result is already determined just skip this step
             if (context.Result == null)
             {
-                var result = await this.AuthorizeRequest(context.Request, context.AuthenticatedUser).ConfigureAwait(false);
+                var result = await this.AuthorizeRequest(context).ConfigureAwait(false);
                 context.Result = result ?? FieldSecurityChallengeResult.Default();
             }
 
@@ -65,62 +65,50 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <summary>
         /// Attempts to authorize the request using the field based <see cref="IAuthorizeData" /> attributes.
         /// </summary>
-        /// <param name="authRequest">The request to authorize.</param>
-        /// <param name="claimsUser">The claims user to authorize against.</param>
+        /// <param name="context">The context to process.</param>
         /// <returns>FieldSecurityChallengeResult.</returns>
-        private async Task<FieldSecurityChallengeResult> AuthorizeRequest(
-            IGraphFieldSecurityRequest authRequest,
-            ClaimsPrincipal claimsUser)
+        private async Task<FieldSecurityChallengeResult> AuthorizeRequest(GraphFieldSecurityContext context)
         {
-            Validation.ThrowIfNull(authRequest?.Field, nameof(authRequest.Field));
+            Validation.ThrowIfNull(context?.SecurityRequirements, nameof(GraphFieldSecurityContext.SecurityRequirements));
 
-            var securityGroups = authRequest.Field.SecurityGroups;
-            if (securityGroups == null || !securityGroups.Any())
-                return FieldSecurityChallengeResult.Skipped(claimsUser);
+            var claimsUser = context.AuthenticatedUser;
 
-            foreach (var group in securityGroups)
+            // when there is nothing to enforce, just skip
+            var anyPoliciesToEnforce = context.SecurityRequirements.EnforcedPolicies.Any();
+            var anyRolesToCheck = context.SecurityRequirements.EnforcedRoleGroups.Any();
+            if (!anyPoliciesToEnforce
+                && !anyRolesToCheck)
             {
-                if (group.AllowAnonymous)
-                    continue;
+                return FieldSecurityChallengeResult.Skipped(claimsUser);
+            }
 
-                // dont inspect these services before this
-                // point in case the only security requirements set are all "allow anonymous"
-                // in which case auth services don't matter
-                if (claimsUser?.Identity == null)
+            if (context.SecurityRequirements.AllowAnonymous)
+                return FieldSecurityChallengeResult.Success(claimsUser);
+
+            if (anyPoliciesToEnforce && _authService == null)
+            {
+                return FieldSecurityChallengeResult.Fail(
+                    "The field defines authorization policies but " +
+                    $"no '{nameof(IAuthorizationService)}' exists to enforce them.");
+            }
+
+            // ensure all policies are met
+            foreach (var policy in context.SecurityRequirements.EnforcedPolicies)
+            {
+                var authResult = await _authService.AuthorizeAsync(claimsUser, policy.Policy).ConfigureAwait(false);
+                if (!authResult.Succeeded)
+                    return FieldSecurityChallengeResult.Unauthorized($"Access denied via policy '{policy.Name}'.");
+            }
+
+            // for any roles groups defined in the hierarchy of [Authorize]
+            // statements ensure the user belongs to at least one from each level
+            foreach (var roleSet in context.SecurityRequirements.EnforcedRoleGroups)
+            {
+                var hasARole = roleSet.Any(roleName => (claimsUser?.IsInRole(roleName) ?? false));
+                if (!hasARole)
                 {
-                    return FieldSecurityChallengeResult.Unauthorized("The request contains no user context to validate.");
-                }
-
-                if (!claimsUser.Identity.IsAuthenticated)
-                {
-                    return FieldSecurityChallengeResult.Unauthorized($"The supplied {nameof(ClaimsPrincipal)} was not successfully authenticated.");
-                }
-
-                foreach (var rule in group)
-                {
-                    if (rule.IsNamedPolicy)
-                    {
-                        if (_authService == null)
-                        {
-                            return FieldSecurityChallengeResult.Fail(
-                                "The field defines authorization policies but " +
-                                $"no '{nameof(IAuthorizationService)}' exists to process them.");
-                        }
-
-                        // policy check via the authorization service
-                        var authResult = await _authService.AuthorizeAsync(claimsUser, rule.PolicyName).ConfigureAwait(false);
-                        if (!authResult.Succeeded)
-                            return FieldSecurityChallengeResult.Unauthorized($"Access denied via policy '{rule.PolicyName}'.");
-                    }
-
-                    if (rule.AllowedRoles.Count > 0)
-                    {
-                        // check any defined roles
-                        if (rule.AllowedRoles.All(x => !claimsUser.IsInRole(x)))
-                            return FieldSecurityChallengeResult.Unauthorized("Access denied due to missing a required role.");
-                    }
-
-                    // all checks passed
+                    var roleNames = string.Join(", ", roleSet.Select(roleName => $"'{roleName}'"));
+                    return FieldSecurityChallengeResult.Unauthorized($"Access denied. User must belong to at least one role: {roleNames}.");
                 }
             }
 

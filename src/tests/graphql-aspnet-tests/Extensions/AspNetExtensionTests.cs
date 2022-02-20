@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Extensions
         {
             var builder = new TestServerBuilder();
             var context = builder.UserContext
-                .SetUsername("bobSmith")
+                .Authenticate("bobSmith")
                 .CreateSecurityContext();
 
             var result = await context.Authenticate();
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Extensions
         {
             var builder = new TestServerBuilder();
             var context = builder.UserContext
-                .SetUsername("bobSmith")
+                .Authenticate("bobSmith")
                 .AddUserClaim("fakeClaim2", "janeDoe")
                 .CreateSecurityContext();
 

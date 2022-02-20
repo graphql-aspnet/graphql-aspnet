@@ -10,24 +10,24 @@
 namespace GraphQL.AspNet.Security
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using GraphQL.AspNet.Common;
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// A single security policy derived from an attribute implementing <see cref="IAuthorizeData"/>.
+    /// The application of a policy or set of roles derived from an attribute implementing <see cref="IAuthorizeData"/>
+    /// against an entity such as a controller or action method.
     /// </summary>
-    public class FieldSecurityPolicy
+    public class AppliedSecurityPolicy
     {
         private readonly IAuthorizeData _authData;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldSecurityPolicy"/> class.
+        /// Initializes a new instance of the <see cref="AppliedSecurityPolicy"/> class.
         /// </summary>
         /// <param name="authorizationData">The authorization data.</param>
-        public FieldSecurityPolicy(IAuthorizeData authorizationData)
+        public AppliedSecurityPolicy(IAuthorizeData authorizationData)
         {
             _authData = Validation.ThrowIfNullOrReturn(authorizationData, nameof(authorizationData));
 

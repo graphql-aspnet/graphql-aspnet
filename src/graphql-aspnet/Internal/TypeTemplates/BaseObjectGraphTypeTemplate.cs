@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         private readonly HashSet<Type> _interfaces;
         private IEnumerable<string> _duplicateNames;
         private List<IGraphTypeFieldTemplate> _invalidFields;
-        private FieldSecurityGroup _securityPolicies;
+        private AppliedSecurityPolicyGroup _securityPolicies;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseObjectGraphTypeTemplate"/> class.
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             _fields = new GraphFieldCollection();
             _interfaces = new HashSet<Type>();
-            _securityPolicies = FieldSecurityGroup.Empty;
+            _securityPolicies = AppliedSecurityPolicyGroup.Empty;
 
             // customize the error message on the thrown exception for some helpful hints.
             string rejectionReason = null;
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // ------------------------------------
             // Security Policies
             // ------------------------------------
-            _securityPolicies = FieldSecurityGroup.FromAttributeCollection(this.AttributeProvider);
+            _securityPolicies = AppliedSecurityPolicyGroup.FromAttributeCollection(this.AttributeProvider);
 
             // ------------------------------------
             // Parse the methods on this type for fields to include in the graph
@@ -287,7 +287,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the security policies found via defined attributes on the item that need to be enforced.
         /// </summary>
         /// <value>The security policies.</value>
-        public override FieldSecurityGroup SecurityPolicies => _securityPolicies;
+        public override AppliedSecurityPolicyGroup SecurityPolicies => _securityPolicies;
 
         /// <summary>
         /// Gets the explicitly and implicitly decalred fields found on this instance.

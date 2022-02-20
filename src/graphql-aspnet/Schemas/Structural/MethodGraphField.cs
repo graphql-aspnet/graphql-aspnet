@@ -47,13 +47,13 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
-            IEnumerable<FieldSecurityGroup> securityPolicies = null)
+            IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null)
         {
             this.Name = fieldName;
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.Arguments = new GraphFieldArgumentCollection();
-            this.SecurityGroups = securityPolicies ?? Enumerable.Empty<FieldSecurityGroup>();
+            this.SecurityGroups = securityPolicies ?? Enumerable.Empty<AppliedSecurityPolicyGroup>();
             this.ObjectType = objectType;
             this.DeclaredReturnType = declaredReturnType;
             this.UpdateResolver(resolver, mode);
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Gets the security policies that must be passed in order to allow access to this field.
         /// </summary>
         /// <value>The security policies.</value>
-        public IEnumerable<FieldSecurityGroup> SecurityGroups { get; }
+        public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
 
         /// <summary>
         /// Gets the arguments this field can accept, if any.
