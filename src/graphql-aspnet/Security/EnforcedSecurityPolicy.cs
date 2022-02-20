@@ -9,12 +9,14 @@
 
 namespace GraphQL.AspNet.Security
 {
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// A formal definition of policy enforced against an entity.
     /// </summary>
+    [DebuggerDisplay("{Name}")]
     public class EnforcedSecurityPolicy
     {
         /// <summary>

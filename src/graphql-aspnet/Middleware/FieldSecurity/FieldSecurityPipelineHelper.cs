@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldSecurity.Components;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -76,7 +77,17 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
         public FieldSecurityPipelineHelper<TSchema> AddFieldAuthenticationMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<FieldAuthenticationMiddleware>();
+            FieldAuthenticationMiddleware MiddlewareFactory(IServiceProvider sp)
+            {
+                // policy provider may not be registered and is optional
+                var schemeProvider = sp.GetService<IAuthenticationSchemeProvider>();
+                return new FieldAuthenticationMiddleware(schemeProvider);
+            }
+
+            _pipelineBuilder.AddMiddleware<FieldAuthenticationMiddleware>(
+                MiddlewareFactory,
+                ServiceLifetime.Singleton);
+
             return this;
         }
 

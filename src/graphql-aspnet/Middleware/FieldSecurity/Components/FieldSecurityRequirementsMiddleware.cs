@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         {
             if (context.SecurityRequirements == null)
             {
-                var reqSet= await this.RetrieveSecurityRequirements(context.Field);
+                var reqSet = await this.RetrieveSecurityRequirements(context.Field);
                 context.Result = context.Result ?? reqSet.ChallengeResult;
                 context.SecurityRequirements = reqSet.Requirements;
             }
@@ -92,7 +92,10 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                     null);
             }
 
-            var allowAnonmous = true;
+            // when no policies are ever defined (meaning no security)
+            // then we assume anon access is allowed
+            bool allowAnonmous = field.SecurityGroups.Sum(x => x.AppliedPolicies.Count) == 0;
+
             AuthorizationPolicy defaultPolicy = null;
             if (_policyProvider != null)
                 defaultPolicy = await _policyProvider.GetDefaultPolicyAsync();
@@ -103,10 +106,11 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
             foreach (var group in field.SecurityGroups)
             {
-                // determine if anonmous is allowed trhough the whole
-                // field stack...continue to flesh out the required policies
-                // regardless
-                allowAnonmous = group.AllowAnonymous && group.AllowAnonymous;
+                // when [AllowAnonymous] is encountered in the group chain
+                // it is applied regardless of other settings
+                if (group.AllowAnonymous)
+                    allowAnonmous = true;
+
                 foreach (var rule in group)
                 {
                     // schemes defined on the rule are applied first
@@ -124,7 +128,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                                 $"no policy provider is configured that can handle it.");
 
                             return new CachedRequirements(
-                                null,
+                                FieldSecurityRequirements.AutoDeny,
                                 result);
                         }
 
@@ -136,7 +140,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                                 $"no policy provider is configured that can handle it.");
 
                             return new CachedRequirements(
-                                null,
+                                FieldSecurityRequirements.AutoDeny,
                                 result);
                         }
 
@@ -181,7 +185,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                     $"no scenarios where an authentication scheme can be used to authenticate a user to all possible required authorizations.");
 
                 return new CachedRequirements(
-                    null,
+                    FieldSecurityRequirements.AutoDeny,
                     result);
             }
 

@@ -10,11 +10,13 @@
 namespace GraphQL.AspNet.Security
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
 
     /// <summary>
     /// An instance of an allowed authentication scheme.
     /// </summary>
+    [DebuggerDisplay("{AuthScheme}")]
     public class AllowedAuthenticationScheme
     {
         /// <summary>

@@ -12,7 +12,26 @@ namespace GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData
     using Microsoft.AspNetCore.Authorization;
 
     [AllowAnonymous]
-    public class AllowAnonymousOnAuthorize
+    public class AllowAnonymousOnClass
     {
+        [Authorize]
+        public void AuthorizeOnMethod()
+        {
+        }
+
+        [AllowAnonymous]
+        public void AnonOnMethod()
+        {
+        }
+
+        [Authorize]
+        [AllowAnonymous]
+        public void AnonAndAuthorizeOnMethod()
+        {
+        }
+
+        public void NothingOnMethod()
+        {
+        }
     }
 }
