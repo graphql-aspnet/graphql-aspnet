@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// Initializes a new instance of the <see cref="FieldSecurityRequirementsMiddleware"/> class.
         /// </summary>
         /// <param name="policyProvider">The policy provider used by this application instance.</param>
-        public FieldSecurityRequirementsMiddleware(IAuthorizationPolicyProvider policyProvider)
+        public FieldSecurityRequirementsMiddleware(IAuthorizationPolicyProvider policyProvider = null)
         {
             _policyProvider = policyProvider;
             _cachedRequirements = new ConcurrentDictionary<IGraphField, CachedRequirements>();

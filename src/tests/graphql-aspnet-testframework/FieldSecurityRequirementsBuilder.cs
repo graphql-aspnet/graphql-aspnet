@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Security;
+    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// A builder that can generate a <see cref="FieldSecurityRequirements"/>
@@ -31,6 +32,19 @@ namespace GraphQL.AspNet.Tests.Framework
             _schemes = new HashSet<string>();
             _roles = new List<IEnumerable<string>>();
             _policies = new List<EnforcedSecurityPolicy>();
+        }
+
+        /// <summary>
+        /// Adds the authentication scheme as one that is allowed
+        /// for the user.
+        /// </summary>
+        /// <param name="policyName">Name of the policy.</param>
+        /// <param name="policy">The policy.</param>
+        /// <returns>FieldSecurityRequirementsBuilder.</returns>
+        public FieldSecurityRequirementsBuilder AddEnforcePolicy(string policyName, AuthorizationPolicy policy)
+        {
+            _policies.Add(new EnforcedSecurityPolicy(policyName, policy));
+            return this;
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authorize a single user
     /// to a single field of data.
     /// </summary>
-    internal class FieldAuthorizationMiddleware : IGraphFieldSecurityMiddleware
+    public class FieldAuthorizationMiddleware : IGraphFieldSecurityMiddleware
     {
         private readonly IAuthorizationService _authService;
 
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken)
+        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken = default)
         {
             context.Logger?.FieldAuthorizationChallenge(context);
 
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             // statements ensure the user belongs to at least one from each level
             foreach (var roleSet in context.SecurityRequirements.EnforcedRoleGroups)
             {
-                var hasARole = roleSet.Any(roleName => claimsUser.IsInRole(roleName));
+                var hasARole = roleSet.Any(roleName => (claimsUser?.IsInRole(roleName) ?? false));
                 if (!hasARole)
                 {
                     var roleNames = string.Join(", ", roleSet.Select(roleName => $"'{roleName}'"));

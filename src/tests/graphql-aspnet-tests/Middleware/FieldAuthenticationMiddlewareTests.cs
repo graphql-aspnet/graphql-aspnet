@@ -31,25 +31,13 @@ namespace GraphQL.AspNet.Tests.Middleware
     {
         private class TestHandler : IAuthenticationHandler
         {
-            public Task<AuthenticateResult> AuthenticateAsync()
-            {
-                throw new NotImplementedException();
-            }
+            public Task<AuthenticateResult> AuthenticateAsync() => Task.FromResult(null as AuthenticateResult);
 
-            public Task ChallengeAsync(AuthenticationProperties properties)
-            {
-                throw new NotImplementedException();
-            }
+            public Task ChallengeAsync(AuthenticationProperties properties) => Task.CompletedTask;
 
-            public Task ForbidAsync(AuthenticationProperties properties)
-            {
-                throw new NotImplementedException();
-            }
+            public Task ForbidAsync(AuthenticationProperties properties) => Task.CompletedTask;
 
-            public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
-            {
-                throw new NotImplementedException();
-            }
+            public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context) => Task.CompletedTask;
         }
 
         private const string DEFAULT_SCHEME = "Default";
@@ -104,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             if (!defaultSet)
             {
-                _userSecurityContext.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
+                _userSecurityContext?.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new InvalidOperationException("No Default Scheme Defined"));
             }
 
@@ -125,12 +113,13 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var middleware = new FieldAuthenticationMiddleware(_provider?.Object);
             await middleware.InvokeAsync(fieldSecurityContext, this.EmptyNextDelegate);
+            middleware.Dispose();
 
             return fieldSecurityContext;
         }
 
         [Test]
-        public async Task WhenNoSchemeIsRequired_DefaultSchemeIsUsed()
+        public async Task WhenNoSchemeIsSpecified_DefaultSchemeIsUsed()
         {
             var requirements = new FieldSecurityRequirementsBuilder()
                 .Build();
@@ -140,6 +129,38 @@ namespace GraphQL.AspNet.Tests.Middleware
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.AreEqual(_usersByScheme[DEFAULT_SCHEME], result.AuthenticatedUser);
             Assert.IsNull(result.Result);
+        }
+
+        [Test]
+        public async Task WhenNoSchemeIsSpecified_AndDefaultSchemeFails_NotAuthenticated()
+        {
+            _usersByScheme[DEFAULT_SCHEME] = null; // no default user authenticated
+
+            // just basic authentication using the default scheme
+            var requirements = new FieldSecurityRequirementsBuilder()
+                .Build();
+
+            var result = await this.ExecuteTest(requirements);
+
+            Assert.IsNull(result.AuthenticatedUser);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
+        }
+
+        [Test]
+        public async Task WhenNoSchemeIsSPecified_AndNoDefaultSchemeIsSet_NotAuthenticated()
+        {
+            var requirements = new FieldSecurityRequirementsBuilder()
+                .Build();
+
+            // mimic "no default scheme set"
+            _usersByScheme.Clear();
+
+            var result = await this.ExecuteTest(requirements);
+
+            Assert.IsNull(result.AuthenticatedUser);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
         }
 
         [Test]
@@ -209,11 +230,10 @@ namespace GraphQL.AspNet.Tests.Middleware
         }
 
         [Test]
-        public async Task WhenDefaultSchemeFails_FailsToAuthenticate()
+        public async Task NoSecurityContext_Fails()
         {
-            _usersByScheme[DEFAULT_SCHEME] = null; // no default user authenticated
+            _userSecurityContext = null;
 
-            // just basic authentication using the default scheme
             var requirements = new FieldSecurityRequirementsBuilder()
                 .Build();
 
@@ -221,20 +241,23 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
         }
 
         [Test]
-        public async Task WhenRequirementsExist_ButNoUserContext_NotAuthenticated()
+        public async Task NoSecurityRequirements_Fails()
         {
-            var requirements = new FieldSecurityRequirementsBuilder()
-                .Build();
+            var result = await this.ExecuteTest(null);
 
-            // nothing available. Not a failed authentication
-            // mimics when no default auth scheme is declared
-            _usersByScheme.Clear();
+            Assert.IsNull(result.AuthenticatedUser);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+        }
 
-            var result = await this.ExecuteTest(requirements);
+        [Test]
+        public async Task SecurityRequirementsAreAutoDeny_Unauthenticated()
+        {
+            var result = await this.ExecuteTest(FieldSecurityRequirements.AutoDeny);
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);

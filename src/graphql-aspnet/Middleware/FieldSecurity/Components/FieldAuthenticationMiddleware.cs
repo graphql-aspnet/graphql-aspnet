@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// </summary>
         /// <param name="schemeProvider">The scheme provider used to determine
         /// various authentication defaults.</param>
-        public FieldAuthenticationMiddleware(IAuthenticationSchemeProvider schemeProvider)
+        public FieldAuthenticationMiddleware(IAuthenticationSchemeProvider schemeProvider = null)
         {
             _schemeProvider = schemeProvider;
             _allKnownSchemes = ImmutableHashSet.Create<string>();
@@ -82,8 +82,8 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
             if (context.SecurityRequirements == FieldSecurityRequirements.AutoDeny)
             {
-                var failure = FieldSecurityChallengeResult.Fail(
-                    $"No user could be authenticated because the request indicated no user can be authorized.");
+                var failure = FieldSecurityChallengeResult.UnAuthenticated(
+                    $"No user could be authenticated because the request indicated no user could ever be authorized.");
 
                 return (null, null, failure);
             }
@@ -205,7 +205,10 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                     return null;
             }
 
-            return await userContext?.Authenticate(scheme, cancelToken);
+            if (userContext != null)
+                return await userContext.Authenticate(scheme, cancelToken);
+            else
+                return null;
         }
 
         /// <summary>
