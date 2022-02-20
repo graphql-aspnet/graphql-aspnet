@@ -8,6 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -24,13 +25,14 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authenticate a
     /// <see cref="IUserSecurityContext"/>.
     /// </summary>
-    public class FieldAuthenticationMiddleware : IGraphFieldSecurityMiddleware
+    public class FieldAuthenticationMiddleware : IGraphFieldSecurityMiddleware, IDisposable
     {
         private SemaphoreSlim _locker = new SemaphoreSlim(1);
         private IAuthenticationSchemeProvider _schemeProvider;
         private bool _defaultsSet;
         private string _defaultScheme;
         private ImmutableHashSet<string> _allKnownSchemes;
+        private bool disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldAuthenticationMiddleware" /> class.
@@ -203,7 +205,32 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                     return null;
             }
 
-            return await userContext.Authenticate(scheme, cancelToken);
+            return await userContext?.Authenticate(scheme, cancelToken);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _locker.Dispose();
+                }
+
+                _allKnownSchemes = null;
+                disposedValue = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

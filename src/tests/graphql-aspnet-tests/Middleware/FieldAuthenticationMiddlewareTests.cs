@@ -10,10 +10,9 @@ namespace GraphQL.AspNet.Tests.Middleware
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -21,113 +20,99 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData;
-    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
+    [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class FieldAuthenticationMiddlewareTests
     {
+        private class TestHandler : IAuthenticationHandler
+        {
+            public Task<AuthenticateResult> AuthenticateAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task ChallengeAsync(AuthenticationProperties properties)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task ForbidAsync(AuthenticationProperties properties)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private const string DEFAULT_SCHEME = "Default";
+        private Mock<IAuthenticationSchemeProvider> _provider;
+        private Mock<IUserSecurityContext> _userSecurityContext;
+        private Dictionary<string, ClaimsPrincipal> _usersByScheme;
+
+        public FieldAuthenticationMiddlewareTests()
+        {
+            var defaultScheme = new AuthenticationScheme(
+                DEFAULT_SCHEME,
+                null,
+                typeof(TestHandler));
+
+            _provider = new Mock<IAuthenticationSchemeProvider>();
+            _provider.Setup(x => x.GetDefaultAuthenticateSchemeAsync())
+                .ReturnsAsync(defaultScheme);
+
+            _provider.Setup(x => x.GetAllSchemesAsync())
+                .ReturnsAsync(new[] { defaultScheme });
+
+            _userSecurityContext = new Mock<IUserSecurityContext>();
+
+            _usersByScheme = new Dictionary<string, ClaimsPrincipal>();
+            _usersByScheme.Add(DEFAULT_SCHEME, new ClaimsPrincipal());
+        }
+
         public Task EmptyNextDelegate(GraphFieldSecurityContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        [Test]
-        public async Task WhenDefaultSchemeIsUsed_DefaultUserOncontextIsReturned()
+        private async Task<GraphFieldSecurityContext> ExecuteTest(FieldSecurityRequirements secRequirements)
         {
-            var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate();
-            var server = builder.Build();
+            var defaultSet = false;
+            foreach (var kvp in _usersByScheme)
+            {
+                var authResult = new Mock<IAuthenticationResult>();
+                authResult.Setup(x => x.Suceeded).Returns(kvp.Value != null);
+                authResult.Setup(x => x.User).Returns(kvp.Value);
+                authResult.Setup(x => x.AuthenticationScheme).Returns(kvp.Key);
+                _userSecurityContext?.Setup(x => x.Authenticate(kvp.Key, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(authResult.Object);
 
-            var queryContext = server.CreateQueryContextBuilder().Build();
-            var expectedUser = (await queryContext.SecurityContext.Authenticate(builder.Authentication.DefaultAuthScheme))?.User;
+                if (kvp.Key == DEFAULT_SCHEME)
+                {
+                    _userSecurityContext?.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(authResult.Object);
+                    defaultSet = true;
+                }
+            }
 
-            var field = new Mock<IGraphField>();
+            if (!defaultSet)
+            {
+                _userSecurityContext.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
+                    .ThrowsAsync(new InvalidOperationException("No Default Scheme Defined"));
+            }
 
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
-                .Returns(field.Object);
-
-            var requirements = new FieldSecurityRequirementsBuilder()
-                .Build();
-
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = requirements;
-
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
-
-            Assert.IsNotNull(securityContext.AuthenticatedUser);
-            Assert.AreEqual(expectedUser, securityContext.AuthenticatedUser);
-            Assert.IsNull(securityContext.Result);
-        }
-
-        [Test]
-        public async Task WhenAllowsAnonymous_DefaultUserOnContextIsReturned_WhenFound()
-        {
-            var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate();
-            var server = builder.Build();
-
-            var queryContext = server.CreateQueryContextBuilder().Build();
-            var expectedUser = queryContext.SecurityContext.DefaultUser;
-
-            var field = new Mock<IGraphField>();
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
-                .Returns(field.Object);
-
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = new FieldSecurityRequirementsBuilder()
-                .AllowAnonymousUsers()
-                .Build();
-
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
-
-            Assert.IsNotNull(securityContext.AuthenticatedUser);
-            Assert.AreEqual(expectedUser, securityContext.AuthenticatedUser);
-            Assert.IsNull(securityContext.Result);
-        }
-
-        [Test]
-        public async Task WhenAllowsAnonymous_ButNoAuthenticatedUserFound_ProcessingIsNotStopped()
-        {
-            var builder = new TestServerBuilder();
-            var server = builder.Build();
-
-            var queryContext = server.CreateQueryContextBuilder().Build();
-
-            var field = new Mock<IGraphField>();
-
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
-                .Returns(field.Object);
-
-            var requirements = new FieldSecurityRequirementsBuilder()
-                .AllowAnonymousUsers()
-                .Build();
-
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = requirements;
-
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
-
-            Assert.IsNull(securityContext.AuthenticatedUser);
-            Assert.IsNull(securityContext.Result);
-        }
-
-        [Test]
-        public async Task WhenRequirementsExist_ButNoUserContext_NotAuthenticated()
-        {
             var builder = new TestServerBuilder();
             var server = builder.Build();
 
             var contextBuilder = server.CreateQueryContextBuilder();
-            contextBuilder.AddSecurityContext(null); // no context
+            contextBuilder.AddUserSecurityContext(_userSecurityContext?.Object);
             var queryContext = contextBuilder.Build();
 
             var field = new Mock<IGraphField>();
@@ -135,128 +120,125 @@ namespace GraphQL.AspNet.Tests.Middleware
             fieldSecurityRequest.Setup(x => x.Field)
                 .Returns(field.Object);
 
+            var fieldSecurityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
+            fieldSecurityContext.SecurityRequirements = secRequirements;
+
+            var middleware = new FieldAuthenticationMiddleware(_provider?.Object);
+            await middleware.InvokeAsync(fieldSecurityContext, this.EmptyNextDelegate);
+
+            return fieldSecurityContext;
+        }
+
+        [Test]
+        public async Task WhenNoSchemeIsRequired_DefaultSchemeIsUsed()
+        {
             var requirements = new FieldSecurityRequirementsBuilder()
                 .Build();
 
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = requirements;
+            var result = await this.ExecuteTest(requirements);
 
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
+            Assert.IsNotNull(result.AuthenticatedUser);
+            Assert.AreEqual(_usersByScheme[DEFAULT_SCHEME], result.AuthenticatedUser);
+            Assert.IsNull(result.Result);
+        }
 
-            Assert.IsNull(securityContext.AuthenticatedUser);
-            Assert.IsNotNull(securityContext.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, securityContext.Result.Status);
+        [Test]
+        public async Task WhenAllowAnonymous_ButDefaultAuthenticatedUserFound_UserIsReturned()
+        {
+            // anonymous users are allowed and no specific authentication
+            // scheme is indicated. Attempt to authenticate with the known default
+            var requirements = new FieldSecurityRequirementsBuilder()
+                .AllowAnonymousUsers()
+                .Build();
+
+            var result = await this.ExecuteTest(requirements);
+
+            Assert.IsNotNull(result.AuthenticatedUser);
+            Assert.AreEqual(_usersByScheme[DEFAULT_SCHEME], result.AuthenticatedUser);
+            Assert.IsNull(result.Result);
+        }
+
+        [Test]
+        public async Task WhenAllowsAnonymous_AndNoAuthenticatedUserFound_NoUserIsReturned_ProcessingNotBlocked()
+        {
+            var requirements = new FieldSecurityRequirementsBuilder()
+                .AllowAnonymousUsers()
+                .Build();
+
+            _usersByScheme.Clear();
+
+            var result = await this.ExecuteTest(requirements);
+
+            Assert.IsNull(result.AuthenticatedUser); // no user
+            Assert.IsNull(result.Result);  // no assigned result yet
         }
 
         [Test]
         public async Task WhenSpecificSchemeRequired_AndUserContextDoesNotMatch_IsNotAuthorized()
         {
-            var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate(authScheme: "testScheme");
-            var server = builder.Build();
-
-            var contextBuilder = server.CreateQueryContextBuilder();
-            var queryContext = contextBuilder.Build();
+            _usersByScheme.Add("testScheme", new ClaimsPrincipal());
 
             // does not match auth's scheme
             var requirements = new FieldSecurityRequirementsBuilder()
                 .AddAllowedAuthenticationScheme("testScheme2")
                 .Build();
 
-            var field = new Mock<IGraphField>();
+            var result = await this.ExecuteTest(requirements);
 
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
-                .Returns(field.Object);
-
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = requirements;
-
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
-
-            Assert.IsNull(securityContext.AuthenticatedUser);
-            Assert.IsNotNull(securityContext.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, securityContext.Result.Status);
+            Assert.IsNull(result.AuthenticatedUser);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
         }
 
         [Test]
         public async Task WhenSpecificSchemeRequired_AndUserContextMatches_IsAuthorized()
         {
-            var builder = new TestServerBuilder();
-            builder.UserContext.Authenticate(authScheme: "testScheme1");
-            var server = builder.Build();
+            var authedUser = new ClaimsPrincipal();
+            _usersByScheme.Add("testScheme", authedUser);
 
-            var contextBuilder = server.CreateQueryContextBuilder();
-            var queryContext = contextBuilder.Build();
-
-            var expectedUser = (await queryContext.SecurityContext.Authenticate("testScheme1"))?.User;
-
+            // does match auth's scheme
             var requirements = new FieldSecurityRequirementsBuilder()
-                .AddAllowedAuthenticationScheme("testScheme1")
+                .AddAllowedAuthenticationScheme("testScheme")
                 .Build();
 
-            var field = new Mock<IGraphField>();
-            field.Setup(x => x.Route).Returns(new GraphFieldPath(AspNet.Execution.GraphCollection.Types, "segment1"));
+            var result = await this.ExecuteTest(requirements);
 
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
-                .Returns(field.Object);
-
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = requirements;
-
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
-
-            Assert.IsNotNull(securityContext.AuthenticatedUser);
-            Assert.AreEqual(expectedUser, securityContext.AuthenticatedUser);
-            Assert.IsNull(securityContext.Result);
+            Assert.IsNotNull(result.AuthenticatedUser);
+            Assert.AreEqual(authedUser, result.AuthenticatedUser);
+            Assert.IsNull(result.Result);
         }
 
         [Test]
-        public async Task WhenDefaultSchemeFails_AndOthersNotAllowed_FailsToAuthenticate()
+        public async Task WhenDefaultSchemeFails_FailsToAuthenticate()
         {
-            var builder = new TestServerBuilder();
-            var server = builder.Build();
-
-            var defaultResult = new Mock<IAuthenticationResult>();
-            defaultResult.Setup(x => x.Suceeded).Returns(false);
-
-            // fails for default
-            var userSecurityContext = new Mock<IUserSecurityContext>();
-            userSecurityContext.Setup(x => x.Authenticate(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(defaultResult.Object);
-
-            // exception for specific scheme if its inadverantly called (will fail test)
-            userSecurityContext.Setup(x => x.Authenticate(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new InvalidOperationException("unknown scheme"));
-
-            var contextBuilder = server.CreateQueryContextBuilder();
-            contextBuilder.AddSecurityContext(userSecurityContext.Object);
-            var queryContext = contextBuilder.Build();
+            _usersByScheme[DEFAULT_SCHEME] = null; // no default user authenticated
 
             // just basic authentication using the default scheme
             var requirements = new FieldSecurityRequirementsBuilder()
                 .Build();
 
-            var field = new Mock<IGraphField>();
-            field.Setup(x => x.Route).Returns(new GraphFieldPath(AspNet.Execution.GraphCollection.Types, "segment1"));
+            var result = await this.ExecuteTest(requirements);
 
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
-                .Returns(field.Object);
+            Assert.IsNull(result.AuthenticatedUser);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
+        }
 
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
-            securityContext.SecurityRequirements = requirements;
+        [Test]
+        public async Task WhenRequirementsExist_ButNoUserContext_NotAuthenticated()
+        {
+            var requirements = new FieldSecurityRequirementsBuilder()
+                .Build();
 
-            var middleware = new FieldAuthenticationMiddleware();
-            await middleware.InvokeAsync(securityContext, this.EmptyNextDelegate);
+            // nothing available. Not a failed authentication
+            // mimics when no default auth scheme is declared
+            _usersByScheme.Clear();
 
-            Assert.IsNull(securityContext.AuthenticatedUser);
-            Assert.IsNotNull(securityContext.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, securityContext.Result.Status);
+            var result = await this.ExecuteTest(requirements);
+
+            Assert.IsNull(result.AuthenticatedUser);
+            Assert.IsNotNull(result.Result);
+            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
         }
     }
 }
