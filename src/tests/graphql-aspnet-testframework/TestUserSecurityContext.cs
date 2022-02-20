@@ -8,13 +8,13 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Framework
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
     using Moq;
 
@@ -26,65 +26,74 @@ namespace GraphQL.AspNet.Tests.Framework
     {
         private const string DEFAULT_SCHEME = "graphql.testing.defaultscheme";
 
-        private Dictionary<string, ClaimsPrincipal> _userByScheme;
+        private readonly string _defaultAuthScheme;
+        private string _schemeAuthedWith;
+        private ClaimsPrincipal _userPrincipal = null;
+        private ClaimsPrincipal _defaultUser = null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestUserSecurityContext"/> class.
+        /// Initializes a new instance of the <see cref="TestUserSecurityContext" /> class.
         /// </summary>
-        public TestUserSecurityContext()
+        /// <param name="defaultAuthScheme">The default authentication scheme
+        /// to use, alowing this test context to mimic the fallback
+        /// chain used when no scheme is provided on a
+        /// <c>IAuthorizeData</c> item but one supplied during <c>AddAuthentication</c> setup.</param>
+        public TestUserSecurityContext(string defaultAuthScheme)
         {
-            _userByScheme = new Dictionary<string, ClaimsPrincipal>();
+            _defaultAuthScheme = defaultAuthScheme;
         }
 
         /// <summary>
-        /// Adds a fake user to this context mimicing hte claims principal that would be
-        /// generated as a result of authenticating with the given <paramref name="authScheme"/>.
+        /// Assembles the facke user on this context mimicing the claims principal that would be
+        /// generated as a result of authenticating with the given <paramref name="authSchemeUsed"/>.
         /// </summary>
-        /// <param name="authScheme">The authentication scheme.</param>
-        /// <param name="isAuthenticated">if set to <c>true</c> the created user
-        /// will be considered "authenticated".</param>
+        /// <param name="authSchemeUsed">The authentication scheme the user
+        /// is authenticated under. If null, the user will be set as "not authenticated".</param>
         /// <param name="claims">The claims to add the the principal.</param>
         /// <param name="roles">The roles to add to the principal.</param>
-        public void AddFakeUser(string authScheme, bool isAuthenticated, IEnumerable<Claim> claims, IEnumerable<string> roles)
+        public void Setup(string authSchemeUsed, IEnumerable<Claim> claims, IEnumerable<string> roles)
         {
-            var schemeKey = authScheme ?? DEFAULT_SCHEME;
-            claims = claims ?? Enumerable.Empty<Claim>();
-            roles = roles ?? Enumerable.Empty<string>();
-
-            var claimsPrincipal = new ClaimsPrincipal();
-            var claimsToAdd = new List<Claim>();
-            claimsToAdd.AddRange(claims);
-            foreach (var role in roles)
-                claimsToAdd.Add(new Claim(TestAuthorizationBuilder.ROLE_CLAIM_TYPE, role));
-
-            ClaimsIdentity identity;
-            if (claimsToAdd.Any() || isAuthenticated)
+            _schemeAuthedWith = authSchemeUsed;
+            var isAuthenticated = authSchemeUsed != null;
+            if (isAuthenticated)
             {
-                identity = new ClaimsIdentity(
-                    claimsToAdd,
-                    TestAuthorizationBuilder.AUTH_SCHEMA,
-                    TestAuthorizationBuilder.USERNAME_CLAIM_TYPE,
-                    TestAuthorizationBuilder.ROLE_CLAIM_TYPE);
-            }
-            else
-            {
-                identity = new ClaimsIdentity();
-            }
+                claims = claims ?? Enumerable.Empty<Claim>();
+                roles = roles ?? Enumerable.Empty<string>();
 
-            claimsPrincipal.AddIdentity(identity);
-            _userByScheme.Add(schemeKey, claimsPrincipal);
-            if (authScheme == DEFAULT_SCHEME || this.DefaultUser == null)
-                this.DefaultUser = claimsPrincipal;
+                var claimsPrincipal = new ClaimsPrincipal();
+                var claimsToAdd = new List<Claim>();
+                claimsToAdd.AddRange(claims);
+                foreach (var role in roles)
+                    claimsToAdd.Add(new Claim(TestAuthorizationBuilder.ROLE_CLAIM_TYPE, role));
+
+                ClaimsIdentity identity;
+                if (isAuthenticated)
+                {
+                    identity = new ClaimsIdentity(
+                        claimsToAdd,
+                        TestAuthorizationBuilder.AUTH_SCHEMA,
+                        TestAuthorizationBuilder.USERNAME_CLAIM_TYPE,
+                        TestAuthorizationBuilder.ROLE_CLAIM_TYPE);
+                }
+                else
+                {
+                    identity = new ClaimsIdentity();
+                }
+
+                claimsPrincipal.AddIdentity(identity);
+                _userPrincipal = claimsPrincipal;
+                _defaultUser = _userPrincipal;
+            }
         }
 
         /// <inheritdoc />
         public Task<IAuthenticationResult> Authenticate(string scheme, CancellationToken token = default)
         {
-            var schemeKey = scheme ?? DEFAULT_SCHEME;
+            var schemeToCheckAgainst = scheme ?? _defaultAuthScheme;
 
             ClaimsPrincipal user = null;
-            if (_userByScheme.ContainsKey(schemeKey))
-                user = _userByScheme[schemeKey];
+            if (_schemeAuthedWith != null && _schemeAuthedWith == schemeToCheckAgainst)
+                user = _userPrincipal;
 
             var mock = new Mock<IAuthenticationResult>();
             mock.Setup(x => x.AuthenticationScheme).Returns(scheme);
@@ -101,6 +110,6 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public ClaimsPrincipal DefaultUser { get; private set; }
+        public ClaimsPrincipal DefaultUser => _defaultUser;
     }
 }

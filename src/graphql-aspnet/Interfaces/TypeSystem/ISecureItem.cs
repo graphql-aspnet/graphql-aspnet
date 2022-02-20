@@ -19,6 +19,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets the security policies found via defined attributes on the item that need to be enforced.
         /// </summary>
         /// <value>The security policies.</value>
-        FieldSecurityGroup SecurityPolicies { get; }
+        AppliedSecurityPolicyGroup SecurityPolicies { get; }
     }
 }

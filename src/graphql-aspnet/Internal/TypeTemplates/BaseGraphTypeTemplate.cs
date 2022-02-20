@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the security policies found via defined attributes on the item that need to be enforced.
         /// </summary>
         /// <value>The security policies.</value>
-        public abstract FieldSecurityGroup SecurityPolicies { get; }
+        public abstract AppliedSecurityPolicyGroup SecurityPolicies { get; }
 
         /// <summary>
         /// Gets the kind of graph type that can be made from this template.

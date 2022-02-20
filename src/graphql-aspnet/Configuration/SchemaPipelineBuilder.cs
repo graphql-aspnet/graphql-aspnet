@@ -49,13 +49,7 @@ namespace GraphQL.AspNet.Configuration
             _middleware = new LinkedList<GraphMiddlewareDefinition<TContext>>();
         }
 
-        /// <summary>
-        /// Adds the given type as a middleware component for the pipeline executed for this schema type. The middleware component
-        /// will be added to the DI collection and created from it.
-        /// </summary>
-        /// <param name="middlewareInstance">The middleware instance to add to the pipeline.</param>
-        /// <param name="name">A friendly, internal name to assign to this component. It will be referenced in any names or log messages that are generated.</param>
-        /// <returns>ISchemaConfigurationBuilder.</returns>
+        /// <inheritdoc/>
         public ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> AddMiddleware(TMiddleware middlewareInstance, string name = null)
         {
             var definition = new GraphMiddlewareDefinition<TContext>(middlewareInstance, name);
@@ -63,13 +57,7 @@ namespace GraphQL.AspNet.Configuration
             return this;
         }
 
-        /// <summary>
-        /// Adds the given Func as a middleware component for this pipeline.
-        /// </summary>
-        /// <param name="operation"><para>The function to execute in the request pipeline.</para>
-        /// <para>Method signature is: The invocation context context, The next delegate in the chain, The cancelation token | Returns a task.</para></param>
-        /// <param name="name">A friendly, internal name to assign to this component. It will be referenced in any names or log messages that are generated.</param>
-        /// <returns>ISchemaConfigurationBuilder.</returns>
+        /// <inheritdoc/>
         public ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> AddMiddleware(
             Func<TContext, GraphMiddlewareInvocationDelegate<TContext>, CancellationToken, Task> operation,
             string name = null)
@@ -80,14 +68,7 @@ namespace GraphQL.AspNet.Configuration
             return this;
         }
 
-        /// <summary>
-        /// Adds the given type as a middleware component for this pipeline.
-        /// </summary>
-        /// <typeparam name="TComponent">The type of the middlware component.</typeparam>
-        /// <param name="lifetime">The life time of the component will determine how often it is recreated or reused
-        /// over mulitple invocations..</param>
-        /// <param name="name">A friendly, internal name to assign to this component. It will be referenced in any names or log messages that are generated.</param>
-        /// <returns>ISchemaConfigurationBuilder.</returns>
+        /// <inheritdoc/>
         public ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> AddMiddleware<TComponent>(
             ServiceLifetime lifetime = ServiceLifetime.Singleton,
             string name = null)
@@ -100,20 +81,28 @@ namespace GraphQL.AspNet.Configuration
             return this;
         }
 
-        /// <summary>
-        /// Clears this pipeline of any registered middleware items.
-        /// </summary>
-        /// <returns>ISchemaPipelineBuilder&lt;TMiddleware, TContext&gt;.</returns>
+        /// <inheritdoc/>
+        public ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> AddMiddleware<TComponent>(
+            Func<IServiceProvider, TMiddleware> instanceFactory,
+            ServiceLifetime lifetime = ServiceLifetime.Singleton,
+            string name = null)
+            where TComponent : class, TMiddleware
+        {
+            var definition = new GraphMiddlewareDefinition<TContext>(typeof(TComponent), lifetime, name);
+            _middleware.AddLast(definition);
+            _options.ServiceCollection.Add(new ServiceDescriptor(typeof(TComponent), instanceFactory, lifetime));
+
+            return this;
+        }
+
+        /// <inheritdoc/>
         public ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> Clear()
         {
             _middleware.Clear();
             return this;
         }
 
-        /// <summary>
-        /// Builds out the pipeline, in context of the schema, using the components added to this builder.
-        /// </summary>
-        /// <returns>IGraphPipeline&lt;TContext&gt;.</returns>
+        /// <inheritdoc/>
         public ISchemaPipeline<TSchema, TContext> Build()
         {
             GraphMiddlewareInvocationDelegate<TContext> leadInvoker = null;
@@ -142,10 +131,7 @@ namespace GraphQL.AspNet.Configuration
             return new GraphSchemaPipeline<TSchema, TContext>(leadInvoker, this.PipelineName, middlewareNameList);
         }
 
-        /// <summary>
-        /// Gets the count of components in this pipeline.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc/>
         public int Count => _middleware.Count;
 
         /// <summary>

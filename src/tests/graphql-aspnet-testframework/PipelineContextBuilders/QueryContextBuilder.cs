@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// </summary>
         /// <param name="securityContext">The security context.</param>
         /// <returns>QueryContextBuilder.</returns>
-        public QueryContextBuilder AddSecurityContext(IUserSecurityContext securityContext)
+        public QueryContextBuilder AddUserSecurityContext(IUserSecurityContext securityContext)
         {
             _userSecurityContext = securityContext;
             return this;

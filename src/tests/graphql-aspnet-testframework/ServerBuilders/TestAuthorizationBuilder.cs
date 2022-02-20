@@ -36,8 +36,10 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// </summary>
         public const string AUTH_SCHEMA = "GraphQLTestServer.AuthSchema";
 
-        private readonly List<Action<AuthorizationOptions>> _optionConfigurators;
         private bool _includeAuthProvider;
+        private AuthorizationPolicyBuilder _standardDefaultPolicyBuilder;
+        private AuthorizationPolicyBuilder _defaultPolicyBuilder;
+        private List<KeyValuePair<string, AuthorizationPolicyBuilder>> _policyBuilders;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAuthorizationBuilder" /> class.
@@ -45,8 +47,12 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         /// <param name="enableAuthServices">if set to <c>true</c> authorization services will be configured for this instance.</param>
         public TestAuthorizationBuilder(bool enableAuthServices = true)
         {
-            _optionConfigurators = new List<Action<AuthorizationOptions>>();
+            _policyBuilders = new List<KeyValuePair<string, AuthorizationPolicyBuilder>>();
+            _defaultPolicyBuilder = null;
             _includeAuthProvider = enableAuthServices;
+
+            _standardDefaultPolicyBuilder = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser();
         }
 
         /// <summary>
@@ -58,15 +64,20 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
             if (_includeAuthProvider)
             {
                 serviceCollection.AddAuthorization((o) =>
-                   {
-                       foreach (var action in _optionConfigurators)
-                           action(o);
-                   });
+                {
+                    foreach (var kvp in _policyBuilders)
+                        o.AddPolicy(kvp.Key, kvp.Value.Build());
+
+                    var defaultPolicyToUse = _defaultPolicyBuilder ?? _standardDefaultPolicyBuilder;
+                    if (defaultPolicyToUse != null)
+                        o.DefaultPolicy = defaultPolicyToUse.Build();
+                });
             }
         }
 
         /// <summary>
-        /// Disables the authorization provider, it will not be injected into the server.
+        /// Disables the authorization provider, no provider and no policies
+        /// will not be injected into the server.
         /// </summary>
         /// <returns>TestAuthorizationBuilder.</returns>
         public TestAuthorizationBuilder DisableAuthorization()
@@ -76,36 +87,61 @@ namespace GraphQL.AspNet.Tests.Framework.ServerBuilders
         }
 
         /// <summary>
-        /// Adds a new policy to the service based on a list of roles. When enforcing this policy
-        /// the authorization service will check to see if the user belongs to any role in the list.
+        /// Adds a simple new policy to the service based on a list of roles. When enforcing this policy
+        /// the authorization service will require an authenticated user and
+        /// check to see if the user belongs to any role in the list.
         /// </summary>
         /// <param name="policyName">Name of the policy.</param>
         /// <param name="roleList">A comma-sepeated list of roles.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
         public TestAuthorizationBuilder AddRolePolicy(string policyName, string roleList)
         {
-            _optionConfigurators.Add((o) =>
-            {
-                o.AddPolicy(policyName, (builder) =>
-                {
-                    builder.RequireRole(roleList.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-                });
-            });
+            this.NewPolicy(policyName)
+                .RequireRole(roleList.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                .RequireAuthenticatedUser();
 
             return this;
         }
 
         /// <summary>
-        /// Adds a new policy to the service requiring that the user have the given claim type and value pair.
+        /// Adds a simple new policy to the service requiring that the user be authenticated
+        /// and have the given claim type and value pair.
         /// </summary>
-        /// <param name="name">The name of the policy.</param>
+        /// <param name="policyName">The name of the policy.</param>
         /// <param name="claimType">The claim type to require.</param>
         /// <param name="claimValue">The claim value to require.</param>
         /// <returns>TestAuthorizationBuilder.</returns>
-        public TestAuthorizationBuilder AddClaimPolicy(string name, string claimType, string claimValue)
+        public TestAuthorizationBuilder AddClaimPolicy(string policyName, string claimType, string claimValue)
         {
-            _optionConfigurators.Add((o) => o.AddPolicy(name, (builder) => builder.RequireClaim(claimType, claimValue)));
+            this.NewPolicy(policyName)
+                .RequireClaim(claimType, claimValue)
+                .RequireAuthenticatedUser();
+
             return this;
+        }
+
+        /// <summary>
+        /// Adds a default policy to the <see cref="IAuthorizationService" /> service, mimicing an action similar to calling
+        /// <c>AddAuthorization</c> and setting a <c>DefaultPolicy</c> during startup.
+        /// </summary>
+        /// <returns>TestAuthorizationBuilder.</returns>
+        public AuthorizationPolicyBuilder DefaultPolicy()
+        {
+            _defaultPolicyBuilder = _defaultPolicyBuilder ?? new AuthorizationPolicyBuilder();
+            return _defaultPolicyBuilder;
+        }
+
+        /// <summary>
+        /// Creates a new policy via a raw builder allowing for the testing of an open ended
+        /// policy.
+        /// </summary>
+        /// <param name="policyName">The unique name to give to this policy.</param>
+        /// <returns>AuthorizationPolicyBuilder.</returns>
+        public AuthorizationPolicyBuilder NewPolicy(string policyName)
+        {
+            var kvp = new KeyValuePair<string, AuthorizationPolicyBuilder>(policyName, new AuthorizationPolicyBuilder());
+            _policyBuilders.Add(kvp);
+            return kvp.Value;
         }
     }
 }

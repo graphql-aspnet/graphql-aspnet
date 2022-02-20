@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
-            IEnumerable<FieldSecurityGroup> securityPolicies = null)
+            IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null)
             : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies)
         {
             this.InternalName = declaredPropertyName;

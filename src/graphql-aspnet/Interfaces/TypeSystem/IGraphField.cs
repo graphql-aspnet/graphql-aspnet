@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// in order to access this field.
         /// </summary>
         /// <value>The security groups.</value>
-        IEnumerable<FieldSecurityGroup> SecurityGroups { get; }
+        IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
