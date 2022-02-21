@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
-            IEnumerable<SecurityGroup> securityPolicies = null,
+            IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
@@ -61,8 +61,8 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
-            securityPolicies = securityPolicies ?? Enumerable.Empty<SecurityGroup>();
-            this.SecurityGroups = new List<SecurityGroup>(securityPolicies);
+            securityPolicies = securityPolicies ?? Enumerable.Empty<AppliedSecurityPolicyGroup>();
+            this.SecurityGroups = new List<AppliedSecurityPolicyGroup>(securityPolicies);
 
             this.UpdateResolver(resolver, mode);
             this.Publish = true;
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public GraphTypeExpression TypeExpression { get; set; }
 
         /// <inheritdoc/>
-        public IList<SecurityGroup> SecurityGroups { get; }
+        public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
 
         /// <inheritdoc/>
         public IGraphArgumentCollection Arguments { get; }

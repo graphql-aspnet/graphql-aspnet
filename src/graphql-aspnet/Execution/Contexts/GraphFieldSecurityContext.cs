@@ -36,13 +36,20 @@ namespace GraphQL.AspNet.Execution.Contexts
         }
 
         /// <summary>
+        /// Gets or sets the security group that should be enforced
+        /// during this context invocation.
+        /// </summary>
+        /// <value>The enforced security group.</value>
+        public FieldSecurityRequirements SecurityRequirements { get; set; }
+
+        /// <summary>
         /// Gets the request that is being passed through this pipeline.
         /// </summary>
         /// <value>The request.</value>
         public IGraphFieldSecurityRequest Request { get; }
 
         /// <summary>
-        /// Gets or sets the response generated from a middleware component as a result of executing the pipeline.
+        /// Gets or sets the final response generated from a middleware component as a result of executing the pipeline.
         /// </summary>
         /// <value>The response.</value>
         public FieldSecurityChallengeResult Result { get; set; }

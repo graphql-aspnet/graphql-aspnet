@@ -61,6 +61,22 @@ namespace GraphQL.AspNet.Interfaces.Configuration
             where TComponent : class, TMiddleware;
 
         /// <summary>
+        /// Adds the given type as a middleware component for this pipeline.
+        /// </summary>
+        /// <typeparam name="TComponent">The type of the middlware component.</typeparam>
+        /// <param name="instanceFactory">The instance factory that will create
+        /// instances of the middleware component.</param>
+        /// <param name="lifetime">The life time of the component will determine how often it is recreated or reused
+        /// over mulitple invocations..</param>
+        /// <param name="name">A friendly, internal name to assign to this component. It will be referenced in any names or log messages that are generated.</param>
+        /// <returns>ISchemaConfigurationBuilder.</returns>
+        public ISchemaPipelineBuilder<TSchema, TMiddleware, TContext> AddMiddleware<TComponent>(
+            Func<IServiceProvider, TMiddleware> instanceFactory,
+            ServiceLifetime lifetime = ServiceLifetime.Singleton,
+            string name = null)
+            where TComponent : class, TMiddleware;
+
+        /// <summary>
         /// Clears this pipeline of any registered middleware items.
         /// </summary>
         /// <returns>ISchemaPipelineBuilder&lt;TMiddleware, TContext&gt;.</returns>

@@ -20,7 +20,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
-    using Microsoft.AspNetCore.Http;
+    using GraphQL.AspNet.Tests.Framework.Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -33,8 +33,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="serverBuilder">The server builder.</param>
         /// <param name="options">The options to configure the schema with.</param>
         /// <returns>TestServerBuilder&lt;TSchema&gt;.</returns>
-        public static TestServerBuilder<TSchema> AddSubscriptionServer<TSchema>(
-            this TestServerBuilder<TSchema> serverBuilder,
+        public static ITestServerBuilder<TSchema> AddSubscriptionServer<TSchema>(
+            this ITestServerBuilder<TSchema> serverBuilder,
             Action<SubscriptionServerOptions<TSchema>> options = null)
             where TSchema : class, ISchema
         {
@@ -56,7 +56,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <typeparam name="TSchema">The type of schema being configured.</typeparam>
         /// <param name="serverBuilder">The server builder.</param>
         /// <returns>GraphQL.AspNet.Interfaces.Configuration.ISchemaBuilder&lt;TSchema&gt;.</returns>
-        public static TestServerBuilder<TSchema> AddSubscriptionPublishing<TSchema>(this TestServerBuilder<TSchema> serverBuilder)
+        public static ITestServerBuilder<TSchema> AddSubscriptionPublishing<TSchema>(this ITestServerBuilder<TSchema> serverBuilder)
             where TSchema : class, ISchema
         {
             serverBuilder.AddSchemaBuilderAction(builder =>

@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override bool IsExplicitDeclaration => true;
 
         /// <inheritdoc />
-        public override SecurityGroup SecurityPolicies { get; } = SecurityGroup.Empty;
+        public override AppliedSecurityPolicyGroup SecurityPolicies { get; } = AppliedSecurityPolicyGroup.Empty;
 
         /// <inheritdoc />
         public override TypeKind Kind => TypeKind.DIRECTIVE;

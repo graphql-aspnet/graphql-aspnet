@@ -11,12 +11,26 @@ namespace GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData
 {
     using Microsoft.AspNetCore.Authorization;
 
-    [Authorize(AuthenticationSchemes = "testScheme1")]
-    public class WithNestedMisMatchSchemesOnAuthorize
+    [AllowAnonymous]
+    public class AllowAnonymousOnClass
     {
-        // no way for one auth'd user to authenticate with both schemes (its one or the other).
-        [Authorize(AuthenticationSchemes = "testScheme2")]
-        public void TestMethod()
+        [Authorize]
+        public void AuthorizeOnMethod()
+        {
+        }
+
+        [AllowAnonymous]
+        public void AnonOnMethod()
+        {
+        }
+
+        [Authorize]
+        [AllowAnonymous]
+        public void AnonAndAuthorizeOnMethod()
+        {
+        }
+
+        public void NothingOnMethod()
         {
         }
     }

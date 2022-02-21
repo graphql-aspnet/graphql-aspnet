@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var serverBuilder = new TestServerBuilder()
                             .AddGraphType<LogTestController>();
-            serverBuilder.UserContext.SetUsername("fakeUserName");
+            serverBuilder.UserContext.Authenticate("fakeUserName");
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -273,7 +273,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                             .AddGraphType<LogTestController>();
 
-            builder.UserContext.SetUsername("bobSmith");
+            builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
@@ -298,7 +298,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>();
 
-            builder.UserContext.SetUsername("bobSmith");
+            builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
@@ -325,7 +325,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                             .AddGraphType<LogTestController>();
 
-            builder.UserContext.SetUsername("bobSmith");
+            builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
@@ -348,7 +348,7 @@ namespace GraphQL.AspNet.Tests.Logging
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>();
-            builder.UserContext.SetUsername("bob-smith");
+            builder.UserContext.Authenticate("bob-smith");
             var server = builder.Build();
 
             var ident = new Mock<IIdentity>();

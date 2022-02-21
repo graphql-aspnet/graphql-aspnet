@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A <see cref="MethodGraphField"/> with additional properties related to subscriptions.
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
             Interfaces.Execution.IGraphFieldResolver resolver = null,
-            IEnumerable<Security.SecurityGroup> securityPolicies = null,
+            IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
             string eventName = null,
             IAppliedDirectiveCollection directives = null)
             : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
