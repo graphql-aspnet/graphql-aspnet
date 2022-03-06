@@ -50,6 +50,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
                     .Merge(context.VariableData);
 
                 var resolutionContext = new DirectiveResolutionContext(
+                    _schema,
                     context,
                     context.Request,
                     executionArgs,

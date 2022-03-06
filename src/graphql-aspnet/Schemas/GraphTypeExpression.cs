@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Text;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -29,6 +30,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="typeExpression">The type expression.</param>
         /// <returns>GraphTypeDeclaration.</returns>
+        [DebuggerStepperBoundary]
         public static GraphTypeExpression FromDeclaration(string typeExpression)
         {
             ReadOnlySpan<char> data = ReadOnlySpan<char>.Empty;
@@ -43,6 +45,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="typeExpression">The type expression to parse.</param>
         /// <returns>GraphTypeDeclaration.</returns>
+        [DebuggerStepperBoundary]
         public static GraphTypeExpression FromDeclaration(ReadOnlySpan<char> typeExpression)
         {
             if (typeExpression.IsEmpty)

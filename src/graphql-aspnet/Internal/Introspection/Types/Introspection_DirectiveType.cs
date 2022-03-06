@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Internal.Introspection.Model;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

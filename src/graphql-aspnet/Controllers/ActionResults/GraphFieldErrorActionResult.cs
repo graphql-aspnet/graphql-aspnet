@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(ResolutionContext context)
+        public Task Complete(BaseResolutionContext context)
         {
             if (_customMessage != null)
             {

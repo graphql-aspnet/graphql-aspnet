@@ -26,6 +26,6 @@ namespace GraphQL.AspNet.Interfaces.Controllers
         /// </summary>
         /// <param name="context">The context being processed.</param>
         /// <returns>Task.</returns>
-        Task Complete(ResolutionContext context);
+        Task Complete(BaseResolutionContext context);
     }
 }

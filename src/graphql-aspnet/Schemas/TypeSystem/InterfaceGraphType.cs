@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -52,9 +51,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public void Extend(IGraphField newField)
+        public IGraphField Extend(IGraphField newField)
         {
-            _fieldSet.AddField(newField);
+            return _fieldSet.AddField(newField);
         }
 
         /// <inheritdoc />

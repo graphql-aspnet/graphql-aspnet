@@ -38,9 +38,10 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDataItem" /> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="sourceData">The source data.</param>
-        /// <param name="path">The path.</param>
+        /// <param name="context">The context where the <paramref name="sourceData"/>
+        /// is being processed.</param>
+        /// <param name="sourceData">The source data item being wrapped.</param>
+        /// <param name="path">The path to the data item in the query.</param>
         public GraphDataItem(IGraphFieldInvocationContext context, object sourceData, SourcePath path)
         {
             Validation.ThrowIfNull(path, nameof(path));

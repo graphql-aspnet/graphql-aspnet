@@ -17,24 +17,23 @@ namespace GraphQL.AspNet.Tests.Execution
     public class TypeSystemDirectiveInvocationTests
     {
         [Test]
-        public async Task Directive_ByType_DeclaredOnField_IsApplied()
+        public async Task ExtendAResolver_DirectiveDeclaredByType()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestPersonWithDirectiveType>()
+                .AddGraphType<TestPersonWithResolverExtensionDirectiveByType>()
                 .AddGraphType<ToUpperDirective>()
                 .Build();
 
-            var person = new TestPersonWithDirectiveType()
+            var person = new TestPersonWithResolverExtensionDirectiveByType()
             {
                 Name = "big john",
                 LastName = "Smith",
             };
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<TestPersonWithDirectiveType>(
-                nameof(TestPersonWithDirectiveType.Name),
+            var context = server.CreateFieldExecutionContext<TestPersonWithResolverExtensionDirectiveByType>(
+                nameof(TestPersonWithResolverExtensionDirectiveByType.Name),
                 person);
 
-            var context = builder.CreateExecutionContext();
             await server.ExecuteField(context);
 
             var data = context.Result?.ToString();
@@ -42,36 +41,57 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task Directive_ByName_DeclaredOnField_IsApplied()
+        public async Task ExtendAResolver_DirectiveDeclaredByName()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestPersonWithDirectiveName>()
+                .AddGraphType<TestPersonWithResolverExtensionDirectiveByName>()
                 .AddGraphType<ToUpperDirective>()
                 .Build();
 
-            var person = new TestPersonWithDirectiveName()
+            var person = new TestPersonWithResolverExtensionDirectiveByName()
             {
                 Name = "big john",
                 LastName = "Smith",
             };
 
-            var builder = server.CreateGraphTypeFieldContextBuilder<TestPersonWithDirectiveName>(
-                nameof(TestPersonWithDirectiveName.Name),
+            var context = server.CreateFieldExecutionContext<TestPersonWithResolverExtensionDirectiveByName>(
+                nameof(TestPersonWithResolverExtensionDirectiveByName.Name),
                 person);
 
-            var context = builder.CreateExecutionContext();
             await server.ExecuteField(context);
 
             var data = context.Result?.ToString();
             Assert.AreEqual("BIG JOHN", data);
         }
 
-        // adding a field
+        [Test]
+        public async Task ExtendAnObjectType_AddField_DirectiveDecelaredByType()
+        {
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<TestObjectWithFieldExtensionDirectiveByType>()
+                .AddGraphType<AddProperty3Directive>()
+                .Build();
 
-        // removing a field
+            var obj = new TestObjectWithFieldExtensionDirectiveByType()
+            {
+                Property1 = "prop 1",
+                Property2 = "prop 2",
+            };
+
+            var context = server.CreateFieldExecutionContext<TestObjectWithFieldExtensionDirectiveByType>(
+                "property3",
+                obj);
+
+            await server.ExecuteField(context);
+
+            var data = context.Result?.ToString();
+            Assert.AreEqual("prop 1 property 3", data);
+        }
 
         // renaming a field
 
         // renaming an input argument
+
+        // directive doesn't exist
     }
 }

@@ -217,6 +217,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 .WithSourceData(context.Request.Data.Value);
 
             return new FieldResolutionContext(
+                _schema,
                 this.CreateFakeParentMiddlewareContext(),
                 this.FieldRequest,
                 executionArguments);

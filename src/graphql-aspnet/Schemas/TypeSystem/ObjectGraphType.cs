@@ -47,9 +47,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public void Extend(IGraphField newField)
+        public IGraphField Extend(IGraphField newField)
         {
-            this.GraphFieldCollection.AddField(newField);
+            return this.GraphFieldCollection.AddField(newField);
         }
 
         /// <inheritdoc />

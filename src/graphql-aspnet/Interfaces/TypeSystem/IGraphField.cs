@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -116,7 +115,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets .NET type of the method or property that generated this field as it was declared in code.
         /// </summary>
         /// <value>The type of the declared return.</value>
-        public Type DeclaredReturnType { get;  }
+        public Type DeclaredReturnType { get; }
 
         /// <summary>
         /// Gets the parent item that owns this field.

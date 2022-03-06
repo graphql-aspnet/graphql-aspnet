@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Linq.Expressions;
@@ -25,8 +26,10 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -37,6 +40,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.PipelineContextBuilders;
+    using GraphQL.AspNet.Variables;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
@@ -194,6 +198,88 @@ namespace GraphQL.AspNet.Tests.Framework
 
             builder.AddSourceData(new object());
             return builder;
+        }
+
+        /// <summary>
+        /// Creates a fully resolved field context that can be processed by the test server.
+        /// </summary>
+        /// <typeparam name="TType">The concrete type representing the graph type in the schema.</typeparam>
+        /// <param name="fieldName">Name of the field, on the type, as it exists in the schema.</param>
+        /// <param name="sourceData">The source data to use as the input to the field. This can be changed, but must be supplied. A
+        /// generic <see cref="object" /> will be used if not supplied.</param>
+        /// <param name="arguments">The collection of arguments that need to be supplied
+        /// to the field to properly resolve it.</param>
+        /// <returns>FieldContextBuilder.</returns>
+        public GraphFieldExecutionContext CreateFieldExecutionContext<TType>(
+            string fieldName,
+            object sourceData,
+            InputArgumentCollection arguments = null)
+        {
+            IGraphType graphType = this.Schema.KnownTypes.FindGraphType(typeof(TType));
+
+            if (graphType == null)
+                Assert.Fail($"Unable to locate a registered graph type that matched the supplied source data (Type: {typeof(TType).FriendlyName()})");
+
+            var typedGraphType = graphType as ITypedSchemaItem;
+            if (typedGraphType == null)
+                Assert.Fail($"The target graph type '{graphType.Name}' is not a strongly typed graph type and cannot be invoked via this builder.");
+
+            var container = graphType as IGraphFieldContainer;
+            if (container == null)
+                Assert.Fail($"The target graph type '{graphType.Name}' is not a field container. No field context builder can be created.");
+
+            var field = container.Fields.FindField(fieldName);
+            if (field == null)
+                Assert.Fail($"The target graph type '{graphType.Name}' does not contain a field named '{fieldName}'.");
+
+            arguments = arguments ?? new InputArgumentCollection();
+            var messages = new GraphMessageCollection();
+            var metaData = new MetaDataCollection();
+
+            var operationRequest = new Mock<IGraphOperationRequest>();
+            var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
+            var parentContext = new Mock<IGraphExecutionContext>();
+            var graphFieldRequest = new Mock<IGraphFieldRequest>();
+
+            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
+            parentContext.Setup(x => x.SecurityContext).Returns(this.SecurityContext);
+            parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
+            parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
+            parentContext.Setup(x => x.Items).Returns(() => metaData);
+            parentContext.Setup(x => x.Messages).Returns(() => messages);
+            parentContext.Setup(x => x.IsValid).Returns(() => messages.IsSucessful);
+
+            fieldInvocationContext.Setup(x => x.ExpectedSourceType).Returns(typeof(TType));
+            fieldInvocationContext.Setup(x => x.Field).Returns(field);
+            fieldInvocationContext.Setup(x => x.Arguments).Returns(arguments);
+            fieldInvocationContext.Setup(x => x.Name).Returns(field.Name);
+            fieldInvocationContext.Setup(x => x.Directives).Returns(new List<IDirectiveInvocationContext>());
+            fieldInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
+            fieldInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
+
+            var resolvedParentDataItem = new GraphDataItem(
+                fieldInvocationContext.Object,
+                sourceData,
+                SourcePath.None);
+
+            var sourceDataContainer = new GraphDataContainer(
+                sourceData,
+                SourcePath.None,
+                resolvedParentDataItem);
+
+            var id = Guid.NewGuid().ToString("N");
+            graphFieldRequest.Setup(x => x.Id).Returns(id);
+            graphFieldRequest.Setup(x => x.Origin).Returns(SourceOrigin.None);
+            graphFieldRequest.Setup(x => x.Items).Returns(metaData);
+            graphFieldRequest.Setup(x => x.Field).Returns(field);
+            graphFieldRequest.Setup(x => x.InvocationContext).Returns(fieldInvocationContext.Object);
+            graphFieldRequest.Setup(x => x.Data).Returns(() => sourceDataContainer);
+
+            return new GraphFieldExecutionContext(
+                parentContext.Object,
+                graphFieldRequest.Object,
+                new ResolvedVariableCollection());
         }
 
         /// <summary>

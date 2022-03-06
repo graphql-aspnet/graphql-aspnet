@@ -10,10 +10,10 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
-    using System.Security.Claims;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A base context defining a set of items supported by all middleware pipelines.

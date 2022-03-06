@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Schemas;
     using Moq;
     using NUnit.Framework;
 
@@ -116,6 +117,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var metrics = new Mock<IGraphQueryExecutionMetrics>();
             var securityContext = new Mock<IUserSecurityContext>();
             var metadata = new MetaDataCollection();
+            var schema = new GraphSchema();
 
             parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
@@ -129,6 +131,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var sourceFieldCollection = new DefaultFieldSourceCollection();
 
             var context = new DirectiveResolutionContext(
+                schema,
                 parentContext.Object,
                 directiveRequest.Object,
                 args.Object);
@@ -140,6 +143,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(metrics.Object, context.Metrics);
             Assert.AreEqual(securityContext.Object, context.SecurityContext);
             Assert.AreEqual(metadata, context.Items);
+            Assert.AreEqual(schema, context.Schema);
         }
     }
 }

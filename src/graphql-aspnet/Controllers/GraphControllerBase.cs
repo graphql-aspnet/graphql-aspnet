@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -34,6 +35,7 @@ namespace GraphQL.AspNet.Controllers
     {
         private IGraphMethod _action;
         private IGraphEventLogger _logger;
+        private ISchema _schema;
 
         private BaseResolutionContext<TRequest> _resolutionContext;
 
@@ -52,6 +54,7 @@ namespace GraphQL.AspNet.Controllers
             _action = actionToInvoke;
 
             var fieldRequest = context?.Request;
+            _schema = context?.Schema;
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
             _resolutionContext = context;
             _logger = context?.Logger;
@@ -197,7 +200,13 @@ namespace GraphQL.AspNet.Controllers
         /// </summary>
         /// <value>The user.</value>
         [GraphSkip]
-        protected ClaimsPrincipal User => _resolutionContext.User;
+        public ClaimsPrincipal User => _resolutionContext.User;
+
+        /// <summary>
+        /// Gets the schema in scope for the currently executed operation.
+        /// </summary>
+        /// <value>The schema.</value>
+        public ISchema Schema => _schema;
 
         /// <summary>
         /// Gets the scoped <see cref="IServiceProvider"/> supplied to the original controller action that is being invoked.

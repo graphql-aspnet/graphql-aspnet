@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
@@ -373,7 +374,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="pathSegments">The path segments to append
         /// to the current path.</param>
         /// <returns>GraphFieldPath.</returns>
-        public GraphFieldPath CreateChild(params string[] pathSegments)
+        public virtual GraphFieldPath CreateChild(params string[] pathSegments)
         {
             var list = new List<string>();
             list.Add(this.Path);

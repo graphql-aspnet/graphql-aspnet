@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(ResolutionContext context)
+        public Task Complete(BaseResolutionContext context)
         {
             context.Messages.Critical(
                    _errorMessage,

@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// a field with the same name already exists.
         /// </summary>
         /// <param name="newField">The new field to add.</param>
-        void Extend(IGraphField newField);
+        /// <returns>The newly added field.</returns>
+        IGraphField Extend(IGraphField newField);
     }
 }

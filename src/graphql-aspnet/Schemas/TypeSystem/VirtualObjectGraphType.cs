@@ -44,32 +44,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.GraphFieldCollection.AddField(new Introspection_TypeNameMetaField(name));
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public override bool ValidateObject(object item)
         {
             return true;
         }
 
-        /// <summary>
-        /// Extends this graph type by adding a new field to its collection. An exception may be thrown if
-        /// a field with the same name already exists.
-        /// </summary>
-        /// <param name="newField">The new field.</param>
-        public void Extend(IGraphField newField)
+        /// <inheritdoc />
+        public IGraphField Extend(IGraphField newField)
         {
-            this.GraphFieldCollection.AddField(newField);
+            return this.GraphFieldCollection.AddField(newField);
         }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
-        /// a user defined graph structure. When false, this graph types points to a concrete type
-        /// defined by a developer.
-        /// </summary>
-        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public override bool IsVirtual => true;
     }
 }

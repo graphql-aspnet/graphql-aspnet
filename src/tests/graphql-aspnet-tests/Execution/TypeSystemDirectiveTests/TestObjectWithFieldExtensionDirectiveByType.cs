@@ -10,11 +10,11 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
 {
     using GraphQL.AspNet.Attributes;
 
-    public class TestPersonWithDirectiveName
+    [ApplyDirective(typeof(AddProperty3Directive))]
+    public class TestObjectWithFieldExtensionDirectiveByType
     {
-        [ApplyDirective("ToUpper")]
-        public string Name { get; set; }
+        public string Property1 { get; set; }
 
-        public string LastName { get; set; }
+        public string Property2 { get; set; }
     }
 }

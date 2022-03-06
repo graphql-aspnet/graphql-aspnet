@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Diagnostics;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A context passed to a directive resolver to complete its resolution task for the field its attached to.
@@ -20,20 +21,22 @@ namespace GraphQL.AspNet.Execution.Contexts
     public class DirectiveResolutionContext : BaseResolutionContext<IGraphDirectiveRequest>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveResolutionContext"/> class.
+        /// Initializes a new instance of the <see cref="DirectiveResolutionContext" /> class.
         /// </summary>
-        /// <param name="parentContext">The parent context.</param>
-        /// <param name="request">The direct request to execute.</param>
-        /// <param name="arguments">The set of arguments to be passed to the directive
-        /// resolver.</param>
+        /// <param name="targetSchema">The schema in scope for this resolution context.</param>
+        /// <param name="parentContext">The parent context from which this resolution context should
+        /// extract is base data values.</param>
+        /// <param name="request">The resolution request to carry with the context.</param>
+        /// <param name="arguments">The arguments to be passed to the resolver when its executed.</param>
         /// <param name="user">Optional. The user context that authenticated and authorized for this
         /// resolution context.</param>
         public DirectiveResolutionContext(
+            ISchema targetSchema,
             IGraphExecutionContext parentContext,
             IGraphDirectiveRequest request,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)
-            : base(parentContext, request, arguments, user)
+            : base(targetSchema, parentContext, request, arguments, user)
         {
         }
     }

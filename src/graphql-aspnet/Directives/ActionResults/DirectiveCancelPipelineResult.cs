@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Directives.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(ResolutionContext context)
+        public Task Complete(BaseResolutionContext context)
         {
             context.Cancel();
             return Task.CompletedTask;

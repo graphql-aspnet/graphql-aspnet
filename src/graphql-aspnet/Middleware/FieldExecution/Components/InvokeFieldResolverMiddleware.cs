@@ -113,6 +113,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     .WithSourceData(context.Request.Data.Value);
 
                 var resolutionContext = new FieldResolutionContext(
+                    _schema,
                     context,
                     context.Request,
                     executionArguments);
