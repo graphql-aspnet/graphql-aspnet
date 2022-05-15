@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A configuration that determines operations that effect all registered schemas
+    /// A configuration that contains operations and options that effect all registered schemas
     /// for the entire server instance.
     /// </summary>
     public interface IGraphQLGlobalConfiguration

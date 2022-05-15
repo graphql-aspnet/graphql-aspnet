@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Execution
             // Process the schema
             this.ApplyDirectivesToItem(schema, schema);
 
-            // process each graph type (includes top level operations)
+            // process each graph type (including top level operations)
             var graphTypesToProcess = schema.KnownTypes.Where(x => x.Kind != TypeKind.DIRECTIVE);
             foreach (var graphType in graphTypesToProcess)
             {
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Execution
                     var directiveName = appliedDirective.DirectiveType?.FriendlyName() ?? appliedDirective.DirectiveName ?? "-unknown-";
                     var failureMessage =
                         $"Type System Directive Invocation Failure. " +
-                        $"The supplied directive type '{directiveName}' " +
+                        $"The directive type named '{directiveName}' " +
                         $"does not represent a valid directive on the target schema. (Target: '{item.Route.Path}', Schema: {schema.Name})";
 
                     throw new GraphTypeDeclarationException(failureMessage);
@@ -145,6 +145,41 @@ namespace GraphQL.AspNet.Execution
                     items: request.Items);
 
                 directivePipeline.InvokeAsync(context, CancellationToken.None).Wait();
+
+                if (!context.Messages.IsSucessful)
+                {
+                    GraphTypeDeclarationException causalException = null;
+                    if (context.Messages.Count == 1)
+                    {
+                        var message = context.Messages[0];
+                        causalException = new GraphTypeDeclarationException(message.Message, item.GetType());
+                    }
+                    else
+                    {
+                        // when lots of failures are indicated
+                        // nest them into each other before throwing
+                        foreach (var message in context.Messages.Where(x => x.Severity.IsCritical()).Reverse())
+                        {
+                            causalException = new GraphTypeDeclarationException(
+                                message.Message,
+                                item.GetType(),
+                                causalException);
+                        }
+
+                        if (causalException == null)
+                        {
+                            causalException = new GraphTypeDeclarationException(
+                                $"An Unknown error occured while applying a directive " +
+                                    $"to {item.GetType().FriendlyName()} (Directive: '{targetDirective.Name}')",
+                                item.GetType());
+                        }
+                    }
+
+                    throw new GraphTypeDeclarationException(
+                        $"An exception occured applying the type system directive '{targetDirective.Name}' to schema item '{item.Name}'. " +
+                        $"See inner exception(s) for details.",
+                        causalException);
+                }
             }
         }
 

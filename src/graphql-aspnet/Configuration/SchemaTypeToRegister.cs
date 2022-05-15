@@ -17,30 +17,22 @@ namespace GraphQL.AspNet.Configuration
     /// A representation of a type that needs to be registered to a schema when its
     /// initialied by the runtime.
     /// </summary>
-    public class TypeToRegister
+    public class SchemaTypeToRegister
     {
         /// <summary>
-        /// Gets a comparer that can properly compare two <see cref="TypeToRegister"/> objects.
+        /// Gets a comparer that can properly compare two <see cref="SchemaTypeToRegister"/> objects.
         /// </summary>
         /// <value>The default comparer.</value>
-        public static IEqualityComparer<TypeToRegister> DefaultComparer { get; } = new TypeToRegisterComparer();
+        public static IEqualityComparer<SchemaTypeToRegister> DefaultComparer { get; } = new TypeToRegisterComparer();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeToRegister"/> class.
+        /// Initializes a new instance of the <see cref="SchemaTypeToRegister"/> class.
         /// </summary>
         /// <param name="type">The type to be registered to the schema.</param>
-        public TypeToRegister(Type type)
+        public SchemaTypeToRegister(Type type)
         {
             this.Type = Validation.ThrowIfNullOrReturn(type, nameof(type));
-            this.AppliedDirectives = new List<IAppliedDirective>();
         }
-
-        /// <summary>
-        /// Gets the set of directives to be applied to <see cref="Type"/> when
-        /// its added to the target schema.
-        /// </summary>
-        /// <value>The applied directives.</value>
-        public IEnumerable<IAppliedDirective> AppliedDirectives { get; }
 
         /// <summary>
         /// Gets the type that needs to be registered to the schema.
@@ -49,12 +41,12 @@ namespace GraphQL.AspNet.Configuration
         public Type Type { get; }
 
         /// <summary>
-        /// A comparer to equate to <see cref="TypeToRegister"/> objects.
+        /// A comparer to equate to <see cref="SchemaTypeToRegister"/> objects.
         /// </summary>
-        public class TypeToRegisterComparer : IEqualityComparer<TypeToRegister>
+        public class TypeToRegisterComparer : IEqualityComparer<SchemaTypeToRegister>
         {
             /// <inheritdoc />
-            public bool Equals(TypeToRegister x, TypeToRegister y)
+            public bool Equals(SchemaTypeToRegister x, SchemaTypeToRegister y)
             {
                 if (x != null && y != null)
                     return x.Type == y.Type;
@@ -65,7 +57,7 @@ namespace GraphQL.AspNet.Configuration
             }
 
             /// <inheritdoc />
-            public int GetHashCode(TypeToRegister obj)
+            public int GetHashCode(SchemaTypeToRegister obj)
             {
                 return obj.GetHashCode();
             }

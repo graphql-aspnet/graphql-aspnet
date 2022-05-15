@@ -8,7 +8,9 @@
 // *************************************************************
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
@@ -19,7 +21,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// <summary>
     /// Helper methods for <see cref="IGraphItemTemplate"/>.
     /// </summary>
-    internal static class CustomAttributeProviderExtensions
+    internal static class ApplyDirectiveAttributeExtensions
     {
         /// <summary>
         /// Retrieves the directive types declared on this item template.
@@ -78,7 +80,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <returns>IEnumerable&lt;IAppliedDirective&gt;.</returns>
         public static IEnumerable<IAppliedDirective> ExtractAppliedDirectives(this ICustomAttributeProvider attributeProvider)
         {
-
             var directiveList = new List<IAppliedDirective>();
 
             var directiveAttribs = attributeProvider
@@ -96,7 +97,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 }
                 else
                 {
-
                     dir = new AppliedDirective(
                         directiveAttrib.DirectiveName,
                         directiveAttrib.Arguments);

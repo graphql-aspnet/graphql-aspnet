@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -27,7 +29,7 @@ namespace GraphQL.AspNet.Configuration
     public class SchemaOptions
     {
         private readonly Dictionary<Type, IGraphQLServerExtension> _extensions;
-        private readonly HashSet<TypeToRegister> _possibleTypes;
+        private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
 
         private readonly Type _schemaType;
         private readonly List<ServiceToRegister> _registeredServices;
@@ -42,7 +44,7 @@ namespace GraphQL.AspNet.Configuration
         {
             this.ServiceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _schemaType = Validation.ThrowIfNullOrReturn(schemaType, nameof(schemaType));
-            _possibleTypes = new HashSet<TypeToRegister>(TypeToRegister.DefaultComparer);
+            _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultComparer);
             _extensions = new Dictionary<Type, IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
 
@@ -115,22 +117,25 @@ namespace GraphQL.AspNet.Configuration
         public SchemaOptions AddGraphType(Type type)
         {
             Validation.ThrowIfNull(type, nameof(type));
-            var newAdd = _possibleTypes.Add(new TypeToRegister(type));
+            var newAdd = _possibleTypes.Add(new SchemaTypeToRegister(type));
             if (newAdd)
             {
                 if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
-                {
-                    var typeToRegister = new ServiceToRegister(
-                        type,
-                        type,
-                        GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime,
-                        false);
-
-                    _registeredServices.Add(typeToRegister);
-                }
+                    this.RegisterTypeAsDependentService(type);
             }
 
             return this;
+        }
+
+        private void RegisterTypeAsDependentService(Type type)
+        {
+            var serviceToRegister = new ServiceToRegister(
+                type,
+                type,
+                GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime,
+                false);
+
+            _registeredServices.Add(serviceToRegister);
         }
 
         /// <summary>
@@ -168,7 +173,7 @@ namespace GraphQL.AspNet.Configuration
         /// registered to the schema when its created.
         /// </summary>
         /// <value>The registered schema types.</value>
-        public IEnumerable<TypeToRegister> SchemaTypesToRegister => _possibleTypes;
+        public IEnumerable<SchemaTypeToRegister> SchemaTypesToRegister => _possibleTypes;
 
         /// <summary>
         /// Gets or sets a value indicating whether any <see cref="GraphController"/>, <see cref="GraphDirective"/>  or
@@ -228,5 +233,17 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The service collection.</value>
         public IServiceCollection ServiceCollection { get; }
+
+        /// <summary>
+        /// <para>Gets a value indicating to what depth any added graph type
+        /// will be inspected for dependent services. A deeper inspection
+        /// will traverse the type system deeper but may take longer to initialize.
+        /// </para>
+        /// <para>
+        /// Default = 3 .
+        /// </para>
+        /// </summary>
+        /// <value>The service introspection depth.</value>
+        public int ServiceIntrospectionDepth { get; }
     }
 }

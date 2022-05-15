@@ -65,9 +65,5 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Execution\TypeSystemDirectiveInvocationTestData\" />
-  </ItemGroup>
-
 
 </Project>
