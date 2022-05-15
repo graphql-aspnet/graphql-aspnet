@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,6 +18,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type representing a UTF-8 encoded string of characters.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class StringScalarType : BaseScalarType
     {
         /// <summary>

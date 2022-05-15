@@ -21,14 +21,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("Count = {Count}")]
     public class AppliedDirectiveCollection : IAppliedDirectiveCollection
     {
-        private List<IAppliedDirective> _appliedDirectives;
+        private HashSet<IAppliedDirective> _appliedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppliedDirectiveCollection"/> class.
         /// </summary>
         public AppliedDirectiveCollection()
         {
-            _appliedDirectives = new List<IAppliedDirective>();
+            _appliedDirectives = new HashSet<IAppliedDirective>(AppliedDirectiveEqualityComparer.Instance);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection Clone(ISchemaItem newParent)
         {
             var clone = new AppliedDirectiveCollection(newParent);
-            clone._appliedDirectives = new List<IAppliedDirective>(_appliedDirectives);
+            clone._appliedDirectives = new HashSet<IAppliedDirective>(_appliedDirectives, AppliedDirectiveEqualityComparer.Instance);
             return clone;
         }
 
@@ -61,9 +61,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public int Count => _appliedDirectives.Count;
-
-        /// <inheritdoc />
-        public IAppliedDirective this[int index] => _appliedDirectives[index];
 
         /// <inheritdoc />
         public IEnumerator<IAppliedDirective> GetEnumerator()

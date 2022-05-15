@@ -399,21 +399,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (fieldAttribute.Types.Count == 1)
             {
                 var proxyType = fieldAttribute.Types.FirstOrDefault();
-
-                // declaring a proxy type overrides all other declarations for a union
-                // use it regardless of any names or other types that may be supplied
-                if (proxyType != null && Validation.IsCastable<IGraphUnionProxy>(proxyType))
-                {
-                    var paramlessConstructor = proxyType.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
-                    if (paramlessConstructor == null)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"The union proxy type '{proxyType.FriendlyName()}' could not be instantiated. " +
-                            "All union proxies must declare a parameterless constructor.");
-                    }
-
-                    proxy = InstanceFactory.CreateInstance(proxyType) as IGraphUnionProxy;
-                }
+                if (proxyType != null)
+                    proxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(proxyType);
             }
 
             // when no proxy type is declared attempt to construct the proxy from types supplied

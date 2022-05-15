@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, interfaceType.AppliedDirectives.Count);
             Assert.AreEqual(interfaceType, interfaceType.AppliedDirectives.Parent);
 
-            var appliedDirective = interfaceType.AppliedDirectives[0];
+            var appliedDirective = interfaceType.AppliedDirectives.FirstOrDefault();
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 58, "interface arg" }, appliedDirective.Arguments);

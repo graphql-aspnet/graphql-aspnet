@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.Structural;
 
@@ -46,14 +47,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
 
             // since scalars are special
-            // we can't do any validation here on directives decalred on the scalar
+            // we can't do any validation here on directives declared on the scalar
             // must rely on runtime validation in the execution pipeline
-            foreach (var attrib in this.GetType().AttributesOfType<ApplyDirectiveAttribute>(true))
+
+            // look for directives declared on the scalar class as attributes
+            foreach (var appliedDirective in this.GetType().ExtractAppliedDirectives())
             {
-                var appliedDirective = new AppliedDirective(attrib.DirectiveType, attrib.Arguments);
-                this.AppliedDirectives.Add(appliedDirective);
+                if (appliedDirective != null)
+                    this.AppliedDirectives.Add(appliedDirective);
             }
 
+            // add any directives directly applied in the constructor
+            // usually from a scalar inheriting from this base type
             if (directives != null)
             {
                 foreach (var directive in directives)

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
     using System.Linq;
     using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
@@ -27,7 +28,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             schema.SetNoAlterationConfiguration();
 
             var action = TemplateHelper.CreateActionMethodTemplate<UnionTestController>(nameof(UnionTestController.TwoTypeUnion));
-            var union = new UnionGraphTypeMaker(schema).CreateGraphType(action.UnionProxy);
+            var unionResult = new UnionGraphTypeMaker(schema).CreateUnionFromProxy(action.UnionProxy);
+            var union = unionResult.GraphType as IUnionGraphType;
 
             Assert.IsNotNull(union);
             Assert.IsTrue(union is UnionGraphType);
@@ -50,13 +52,14 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             schema.SetNoAlterationConfiguration();
 
             var maker = new UnionGraphTypeMaker(schema);
-            var unionType = maker.CreateGraphType(new UnionProxyWithDirective());
+            var unionResult= maker.CreateUnionFromProxy(new UnionProxyWithDirective());
+            var unionType = unionResult.GraphType as IUnionGraphType;
 
             Assert.IsNotNull(unionType);
             Assert.AreEqual(1, unionType.AppliedDirectives.Count);
             Assert.AreEqual(unionType, unionType.AppliedDirectives.Parent);
 
-            var appliedDirective = unionType.AppliedDirectives[0];
+            var appliedDirective = unionType.AppliedDirectives.FirstOrDefault();
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 121, "union directive" }, appliedDirective.Arguments);
@@ -71,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var unionType = maker.CreateGraphType(new UnionProxyWithInvalidDirective());
+                var unionType = maker.CreateUnionFromProxy(new UnionProxyWithInvalidDirective());
             });
         }
 
@@ -82,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             schema.SetNoAlterationConfiguration();
             var maker = new UnionGraphTypeMaker(schema);
 
-            var unionType = maker.CreateGraphType(null);
+            var unionType = maker.CreateUnionFromProxy(null);
             Assert.IsNull(unionType);
         }
     }

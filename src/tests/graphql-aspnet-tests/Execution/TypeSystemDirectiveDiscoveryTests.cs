@@ -45,17 +45,6 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public void ObjectLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
-        {
-            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MarkedObject>()
-                .Build();
-
-            var type = server.Schema.KnownTypes.FindDirective(typeof(ObjectMarkerDirective));
-            Assert.IsNotNull(type);
-        }
-
-        [Test]
         public void InputObjectLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
@@ -78,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public void ArgumentLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
+        public void ArgumentDefinitionLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ArgumentMarkedDirectiveTestController>() // input arg on controller method has a directive assigned
@@ -107,6 +96,55 @@ namespace GraphQL.AspNet.Tests.Execution
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(EnumValueMarkerDirective));
+            Assert.IsNotNull(type);
+        }
+
+        [Test]
+        public void InterfaceDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
+        {
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<IMarkedInterface>()
+                .Build();
+
+            var type = server.Schema.KnownTypes.FindDirective(typeof(InterfaceMarkerDirective));
+            Assert.IsNotNull(type);
+        }
+
+        [Test]
+        public void UnionDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
+        {
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<MarkedUnion>()
+                .Build();
+
+            var type = server.Schema.KnownTypes.FindDirective(typeof(UnionMarkerDirective));
+            Assert.IsNotNull(type);
+        }
+
+        [Test]
+        public void ScalarDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
+        {
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(new MarkedScalarByAttribute());
+
+            // the object has a property that returns the custom scalar
+            // forcing the enclusion of the scalar and thus the directive on said scalar
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<ObjectWithMarkedScalar>()
+                .Build();
+
+            var type = server.Schema.KnownTypes.FindDirective(typeof(ScalarMarkerDirective));
+            Assert.IsNotNull(type);
+        }
+
+        [Test]
+        public void SchemaDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
+        {
+            var server = new TestServerBuilder<MarkedSchema>(TestOptions.UseCodeDeclaredNames)
+                .Build();
+
+            var type = server.Schema.KnownTypes.FindDirective(typeof(SchemaMarkerDirective));
             Assert.IsNotNull(type);
         }
     }

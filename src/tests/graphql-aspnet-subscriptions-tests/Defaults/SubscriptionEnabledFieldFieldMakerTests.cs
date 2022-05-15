@@ -8,6 +8,7 @@
 // *************************************************************
 namespace GraphQL.Subscriptions.Tests.Defaults
 {
+    using System.Linq;
     using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -43,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             Assert.AreEqual(field, field.AppliedDirectives.Parent);
             Assert.AreEqual(1, field.AppliedDirectives.Count);
 
-            var appliedDirective = field.AppliedDirectives[0];
+            var appliedDirective = field.AppliedDirectives.FirstOrDefault();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 99, "sub action arg" }, appliedDirective.Arguments);
         }

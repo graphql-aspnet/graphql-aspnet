@@ -11,9 +11,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <inheritdoc cref="IGraphUnionProxy" />
+    [DebuggerDisplay("UNION PROXY: {Name}")]
     public class GraphUnionProxy : IGraphUnionProxy
     {
         /// <summary>

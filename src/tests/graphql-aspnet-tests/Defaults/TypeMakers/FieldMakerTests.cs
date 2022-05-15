@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, field.AppliedDirectives.Count);
             Assert.AreEqual(field, field.AppliedDirectives.Parent);
 
-            var appliedDirective = field.AppliedDirectives[0];
+            var appliedDirective = field.AppliedDirectives.FirstOrDefault();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 13, "prop field arg" }, appliedDirective.Arguments);
         }
@@ -202,7 +202,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, field.AppliedDirectives.Count);
             Assert.AreEqual(field, field.AppliedDirectives.Parent);
 
-            var appliedDirective = field.AppliedDirectives[0];
+            var appliedDirective = field.AppliedDirectives.FirstOrDefault();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 14, "method field arg" }, appliedDirective.Arguments);
         }
@@ -230,7 +230,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, arg.AppliedDirectives.Count);
             Assert.AreEqual(arg, arg.AppliedDirectives.Parent);
 
-            var appliedDirective = field.Arguments["arg1"].AppliedDirectives[0];
+            var appliedDirective = field.Arguments["arg1"].AppliedDirectives.FirstOrDefault();
 
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 15, "arg arg" }, appliedDirective.Arguments);

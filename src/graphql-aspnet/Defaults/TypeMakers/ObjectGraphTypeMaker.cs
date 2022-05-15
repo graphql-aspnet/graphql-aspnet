@@ -66,6 +66,9 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 Publish = template.Publish,
             };
 
+            result.GraphType = objectType;
+            result.ConcreteType = concreteType;
+
             // account for any potential type system directives
             result.AddDependentRange(template.RetrieveRequiredTypes());
 
@@ -83,8 +86,6 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 objectType.InterfaceNames.Add(formatter.FormatGraphTypeName(GraphTypeNames.ParseName(iface, TypeKind.OBJECT)));
             }
 
-            result.GraphType = objectType;
-            result.ConcreteType = concreteType;
             return result;
         }
 

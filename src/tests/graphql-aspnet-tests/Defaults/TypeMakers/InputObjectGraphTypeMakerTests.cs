@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, inputType.AppliedDirectives.Count);
             Assert.AreEqual(inputType, inputType.AppliedDirectives.Parent);
 
-            var appliedDirective = inputType.AppliedDirectives[0];
+            var appliedDirective = inputType.AppliedDirectives.FirstOrDefault();
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 44, "input arg" }, appliedDirective.Arguments);

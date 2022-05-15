@@ -9,10 +9,12 @@
 
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
+    using System.Linq;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -20,7 +22,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     /// <summary>
     /// An object responsible for generating a union graph type from a proxy.
     /// </summary>
-    public class UnionGraphTypeMaker
+    public sealed class UnionGraphTypeMaker : IUnionGraphTypeMaker
     {
         private readonly ISchema _schema;
 
@@ -33,15 +35,13 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             _schema = schema;
         }
 
-        /// <summary>
-        /// Creates a union graph type from the given proxy.
-        /// </summary>
-        /// <param name="proxy">The proxy to convert to a union.</param>
-        /// <returns>IUnionGraphType.</returns>
-        public IUnionGraphType CreateGraphType(IGraphUnionProxy proxy)
+        /// <inheritdoc />
+        public GraphTypeCreationResult CreateUnionFromProxy(IGraphUnionProxy proxy)
         {
             if (proxy == null)
                 return null;
+
+            var result = new GraphTypeCreationResult();
 
             var directiveTemplates = proxy.GetType().ExtractAppliedDirectiveTemplates(proxy);
             foreach (var dt in directiveTemplates)
@@ -61,6 +61,9 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 Publish = proxy.Publish,
             };
 
+            result.GraphType = union;
+
+            // add dependencies to each type included in the union
             foreach (var type in proxy.Types)
             {
                 union.AddPossibleGraphType(
@@ -68,7 +71,13 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                     type);
             }
 
-            return union;
+            // add dependencies for the directives declared on the union
+            foreach (var d in directives.Where(x => x.DirectiveType != null))
+            {
+                result.AddDependent(d.DirectiveType, TypeKind.DIRECTIVE);
+            }
+
+            return result;
         }
     }
 }

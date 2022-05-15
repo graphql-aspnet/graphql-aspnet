@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Helper methods for <see cref="IGraphItemTemplate"/>.
@@ -41,7 +42,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             var directiveList = new List<IAppliedDirectiveTemplate>();
 
             var directiveAttribs = attributeProvider
-                                    .AttributesOfType<ApplyDirectiveAttribute>();
+                                    .AttributesOfType<ApplyDirectiveAttribute>(true);
 
             foreach (var directiveAttrib in directiveAttribs)
             {
@@ -64,6 +65,44 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
                 template.Parse();
                 directiveList.Add(template);
+            }
+
+            return directiveList;
+        }
+
+        /// <summary>
+        /// Inspects the provider for <see cref="ApplyDirectiveAttribute"/> items and creates an applied
+        /// directive object from any found attributes.
+        /// </summary>
+        /// <param name="attributeProvider">The attribute provider to inspect.</param>
+        /// <returns>IEnumerable&lt;IAppliedDirective&gt;.</returns>
+        public static IEnumerable<IAppliedDirective> ExtractAppliedDirectives(this ICustomAttributeProvider attributeProvider)
+        {
+
+            var directiveList = new List<IAppliedDirective>();
+
+            var directiveAttribs = attributeProvider
+                                    .AttributesOfType<ApplyDirectiveAttribute>(true);
+
+            foreach (var directiveAttrib in directiveAttribs)
+            {
+                AppliedDirective dir;
+
+                if (directiveAttrib.DirectiveType != null)
+                {
+                    dir = new AppliedDirective(
+                        directiveAttrib.DirectiveType,
+                        directiveAttrib.Arguments);
+                }
+                else
+                {
+
+                    dir = new AppliedDirective(
+                        directiveAttrib.DirectiveName,
+                        directiveAttrib.Arguments);
+                }
+
+                directiveList.Add(dir);
             }
 
             return directiveList;

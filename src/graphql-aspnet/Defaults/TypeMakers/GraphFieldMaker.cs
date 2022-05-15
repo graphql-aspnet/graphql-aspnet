@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -76,8 +75,13 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             if (template.UnionProxy != null)
             {
-                var unionMaker = new UnionGraphTypeMaker(this.Schema);
-                result.AddAbstractDependent(unionMaker.CreateGraphType(template.UnionProxy));
+                var unionMaker = GraphQLProviders.GraphTypeMakerProvider.CreateUnionMaker(this.Schema);
+                var unionResult = unionMaker.CreateUnionFromProxy(template.UnionProxy);
+                if (unionResult != null)
+                {
+                    result.AddAbstractDependent(unionResult.GraphType);
+                    result.MergeDependents(unionResult);
+                }
             }
 
             result.Field = field;

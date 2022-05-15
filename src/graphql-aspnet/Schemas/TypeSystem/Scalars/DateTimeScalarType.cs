@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -18,6 +19,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type reprsenting a calendar date that does include a time component.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class DateTimeScalarType : BaseScalarType
     {
         /// <summary>

@@ -11,9 +11,11 @@ namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -44,7 +46,24 @@ namespace GraphQL.AspNet.Schemas
         {
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+            this.EnsureSchemaDependencies();
             this.EnsureGraphOperationType(GraphCollection.Query);
+        }
+
+        /// <summary>
+        /// Inspects the schema instance for any necessary dependencies
+        /// and adds them to itself (e.g. schema declared directives).
+        /// </summary>
+        private void EnsureSchemaDependencies()
+        {
+            this.Schema.EnsureAppliedDirectives();
+
+            foreach (var appliedDirective in this.Schema.AppliedDirectives.Where(x => x.DirectiveType != null))
+            {
+                this.EnsureGraphType(
+                    appliedDirective.DirectiveType,
+                    TypeKind.DIRECTIVE);
+            }
         }
 
         /// <summary>
@@ -343,6 +362,7 @@ namespace GraphQL.AspNet.Schemas
         /// attempt to auto assign a type of scalar, enum or object as necessary.</param>
         public void EnsureGraphType(Type type, TypeKind? kind = null)
         {
+            Validation.ThrowIfNull(type, nameof(type));
             if (Validation.IsCastable<GraphController>(type))
             {
                 if (GraphQLProviders.TemplateProvider.ParseType(type) is IGraphControllerTemplate controllerDefinition)
@@ -358,15 +378,30 @@ namespace GraphQL.AspNet.Schemas
             if (this.Schema.KnownTypes.Contains(type, actualKind))
                 return;
 
+            GraphTypeCreationResult makerResult = null;
             var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(this.Schema, actualKind);
             if (maker != null)
             {
-                var result = maker.CreateGraphType(type);
-                if (result != null)
+                // if a maker can be assigned for this graph type
+                // create the graph type directly
+                makerResult = maker.CreateGraphType(type);
+            }
+            else if (Validation.IsCastable<IGraphUnionProxy>(type))
+            {
+                // if this type represents a well-known union proxy try and add in the union proxy
+                // directly
+                var unionProxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(type);
+                if (unionProxy != null)
                 {
-                    this.Schema.KnownTypes.EnsureGraphType(result.GraphType, result.ConcreteType);
-                    this.EnsureDependents(result);
+                    var unionMaker = GraphQLProviders.GraphTypeMakerProvider.CreateUnionMaker(this.Schema);
+                    makerResult = unionMaker.CreateUnionFromProxy(unionProxy);
                 }
+            }
+
+            if (makerResult != null)
+            {
+                this.Schema.KnownTypes.EnsureGraphType(makerResult.GraphType, makerResult.ConcreteType);
+                this.EnsureDependents(makerResult);
             }
         }
 

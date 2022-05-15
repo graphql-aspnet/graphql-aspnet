@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Defaults
             {
                 throw new GraphTypeDeclarationException(
                     $"Custom scalars must supply a value for '{nameof(graphType.OtherKnownTypes)}', it cannot be null. " +
-                    "Use an empty list if there are no other known types.");
+                    $"Use '{nameof(TypeCollection)}.{nameof(TypeCollection.Empty)}' if there are no other known types.");
             }
 
             if (graphType.AppliedDirectives == null || graphType.AppliedDirectives.Parent != graphType)

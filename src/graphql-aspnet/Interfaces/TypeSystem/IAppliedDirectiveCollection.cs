@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// A collection of directives that have been applied to a schema
     /// item.
     /// </summary>
-    public interface IAppliedDirectiveCollection : IReadOnlyList<IAppliedDirective>
+    public interface IAppliedDirectiveCollection : IEnumerable<IAppliedDirective>
     {
         /// <summary>
         /// Clones this collection and assigns the provided parent to it.
@@ -35,5 +35,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The parent.</value>
         ISchemaItem Parent { get; }
+
+        /// <summary>
+        /// Gets the total number of directives in this collection.
+        /// </summary>
+        /// <value>The count of directives.</value>
+        int Count { get; }
     }
 }

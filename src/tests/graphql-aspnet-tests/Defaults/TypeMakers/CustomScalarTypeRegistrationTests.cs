@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Defaults;
@@ -395,7 +396,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, scalar.AppliedDirectives.Count);
             Assert.AreEqual(scalar, scalar.AppliedDirectives.Parent);
 
-            var appliedDirective = scalar.AppliedDirectives[0];
+            var appliedDirective = scalar.AppliedDirectives.FirstOrDefault();
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 87, "scalar arg" }, appliedDirective.Arguments);

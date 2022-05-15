@@ -38,8 +38,17 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
-            return maker.CreateGraphType(type).GraphType;
+            switch (kind)
+            {
+                case TypeKind.UNION:
+                    var proxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(type);
+                    var unionMaker = GraphQLProviders.GraphTypeMakerProvider.CreateUnionMaker(testServer.Schema);
+                    return unionMaker.CreateUnionFromProxy(proxy).GraphType;
+
+                default:
+                    var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
+                    return maker.CreateGraphType(type).GraphType;
+            }
         }
 
         private IGraphField MakeGraphField(IGraphTypeFieldTemplate fieldTemplate)
@@ -275,8 +284,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new PersonUnionData());
+            var unionType = this.MakeGraphType(typeof(PersonUnionData), TypeKind.UNION) as IUnionGraphType;
             var personType = this.MakeGraphType(typeof(PersonData), TypeKind.OBJECT) as IObjectGraphType;
             var employeeType = this.MakeGraphType(typeof(EmployeeData), TypeKind.OBJECT) as IObjectGraphType;
 
@@ -299,8 +307,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new ValidUnionForAnalysis());
+            var unionType = this.MakeGraphType(typeof(ValidUnionForAnalysis), TypeKind.UNION) as IUnionGraphType;
             var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
             var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
 
@@ -324,8 +331,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new InvalidUnionForAnalysis());
+            var unionType = this.MakeGraphType(typeof(InvalidUnionForAnalysis), TypeKind.UNION) as IUnionGraphType;
             var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
             var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
 

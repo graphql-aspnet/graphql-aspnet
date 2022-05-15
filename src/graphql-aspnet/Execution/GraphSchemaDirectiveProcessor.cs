@@ -29,8 +29,8 @@ namespace GraphQL.AspNet.Execution
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// Processes the entire schema applying any assigned directives to their
-    /// schema items.
+    /// Performs post processing on a built schema applying any assigned directives to their
+    /// respective schema items.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to work with.</typeparam>
     public class GraphSchemaDirectiveProcessor<TSchema>

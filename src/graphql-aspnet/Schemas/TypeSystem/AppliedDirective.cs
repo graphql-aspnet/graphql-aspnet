@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -19,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// A class representing the application of a <see cref="GraphDirective"/>
     /// to a schema item.
     /// </summary>
-    [DebuggerDisplay("Directive = {DirectiveTypeName} (Arg Count = {Arguments.Length})")]
+    [DebuggerDisplay("Directive = {DiagnosticName} (Arg Count = {Arguments.Length})")]
     public class AppliedDirective : IAppliedDirective
     {
         /// <summary>
@@ -57,5 +58,21 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public object[] Arguments { get; }
+
+        /// <summary>
+        /// Gets a diagnostics friendly name that can be used in the debugger
+        /// regardless of how this directive is applied.
+        /// </summary>
+        /// <value>The name of the diagnostic.</value>
+        private string DiagnosticName
+        {
+            get
+            {
+                if (this.DirectiveType != null)
+                    return this.DirectiveType.FriendlyName();
+                else
+                    return this.DirectiveName ?? string.Empty;
+            }
+        }
     }
 }
