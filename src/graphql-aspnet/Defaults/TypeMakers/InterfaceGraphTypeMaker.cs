@@ -62,6 +62,9 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 Publish = template.Publish,
             };
 
+            // account for any potential type system directives
+            result.AddDependentRange(template.RetrieveRequiredTypes());
+
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
             foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
             {

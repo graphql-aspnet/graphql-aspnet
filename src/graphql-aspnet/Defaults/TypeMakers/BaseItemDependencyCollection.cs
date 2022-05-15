@@ -9,10 +9,12 @@
 
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
+    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A base collection of possible field item dependencies.
@@ -41,17 +43,41 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             if (dependencySet?.DependentTypes != null)
                 this.AddDependentRange(dependencySet.DependentTypes);
             if (dependencySet?.AbstractGraphTypes != null)
-                this.AddDependentRange(dependencySet.AbstractGraphTypes);
+                this.AddAbstractDependentRange(dependencySet.AbstractGraphTypes);
         }
 
         /// <summary>
-        /// Adds the specified abstract type to this instance.
+        /// Adds the specified abstract graph type (Unions or interface) to this instance.
         /// </summary>
         /// <param name="abstractType">The abstract type to add.</param>
-        public void AddDependent(IGraphType abstractType)
+        public void AddAbstractDependent(IGraphType abstractType)
         {
             if (abstractType != null)
                 _abstractTypes.Add(abstractType);
+        }
+
+        /// <summary>
+        /// Adds the single dependent type to this instance.
+        /// </summary>
+        /// <param name="type">The concrete type of the dependent.</param>
+        /// <param name="expectedKind">The expected kind of the dependent when its part of the graph.</param>
+        public void AddDependent(Type type, TypeKind expectedKind)
+        {
+            if (type != null)
+            {
+                var dependentType = new DependentType(type, expectedKind);
+                this.AddDependent(dependentType);
+            }
+        }
+
+        /// <summary>
+        /// Adds the single dependent type to this instance.
+        /// </summary>
+        /// <param name="dependentType">The dependent type item to include.</param>
+        public void AddDependent(DependentType dependentType)
+        {
+            if (dependentType != null)
+                _dependentTypes.Add(dependentType);
         }
 
         /// <summary>
@@ -65,10 +91,10 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         }
 
         /// <summary>
-        /// Adds the set of abstract types to this instance.
+        /// Adds the set of abstract graph types (Unions and interfaces) to this instance.
         /// </summary>
         /// <param name="abstractTypes">The set of abstract types.</param>
-        public void AddDependentRange(IEnumerable<IGraphType> abstractTypes)
+        public void AddAbstractDependentRange(IEnumerable<IGraphType> abstractTypes)
         {
             if (abstractTypes != null)
                 _abstractTypes.AddRange(abstractTypes);

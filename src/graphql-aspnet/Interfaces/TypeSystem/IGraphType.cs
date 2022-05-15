@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
+    using System;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

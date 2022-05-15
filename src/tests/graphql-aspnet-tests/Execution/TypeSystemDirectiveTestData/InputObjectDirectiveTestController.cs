@@ -9,12 +9,14 @@
 namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers;
 
-    [ApplyDirective(typeof(AddProperty3Directive))]
-    public class TestObjectWithFieldExtensionDirectiveByType
+    public class InputObjectDirectiveTestController : GraphController
     {
-        public string Property1 { get; set; }
-
-        public string Property2 { get; set; }
+        [Query]
+        public int DoThing(MarkedInputObject obj)
+        {
+            return 0;
+        }
     }
 }

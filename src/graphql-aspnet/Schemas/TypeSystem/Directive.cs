@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -24,8 +25,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("DIRECTIVE {Name}")]
     public class Directive : IDirective
     {
-        private readonly Type _directiveType;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Directive" /> class.
         /// </summary>
@@ -50,7 +49,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Publish = true;
             this.InvocationPhases = phases;
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            _directiveType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
+            this.ObjectType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
+            this.InternalName = this.ObjectType.FriendlyName();
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc />
         public bool ValidateObject(object item)
         {
-            return item == null || item.GetType() == _directiveType;
+            return item == null || item.GetType() == this.ObjectType;
         }
 
         /// <inheritdoc />
@@ -74,24 +74,30 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public bool Publish { get; set; }
 
         /// <inheritdoc />
-        public IGraphArgumentCollection Arguments { get; }
+        public virtual IGraphArgumentCollection Arguments { get; }
 
         /// <inheritdoc />
         public IGraphDirectiveResolver Resolver { get; set; }
 
         /// <inheritdoc />
-        public DirectiveLocation Locations { get; }
+        public virtual DirectiveLocation Locations { get; }
 
         /// <inheritdoc />
         public virtual bool IsVirtual => false;
 
         /// <inheritdoc />
-        public DirectiveInvocationPhase InvocationPhases { get; }
+        public virtual DirectiveInvocationPhase InvocationPhases { get; }
 
         /// <inheritdoc />
-        public IAppliedDirectiveCollection AppliedDirectives { get; }
+        public virtual IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
         public GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        public Type ObjectType { get; }
+
+        /// <inheritdoc />
+        public string InternalName { get; }
     }
 }

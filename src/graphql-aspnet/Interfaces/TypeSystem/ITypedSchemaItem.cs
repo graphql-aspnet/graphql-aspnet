@@ -12,21 +12,30 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using System;
 
     /// <summary>
-    /// A graph type constructed from a specific concrete <see cref="Type"/>.
+    /// A  <see cref="ISchemaItem"/> constructed from a specific concrete <see cref="Type"/>.
     /// </summary>
-    public interface ITypedSchemaItem
+    public interface ITypedSchemaItem : ISchemaItem
     {
         /// <summary>
-        /// Gets the concrete type of an object that represents a graph type at runtime.
+        /// Gets the .NET type of the class or struct that represents this schema item at runtime.
         /// </summary>
         /// <value>The type of the object.</value>
         Type ObjectType { get; }
 
         /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
+        /// <para>Gets a fully-qualified, internall name of schema item as it exists on the server. This name
         /// is used in many exceptions and internal error messages.
+        /// </para>
+        /// <para>
+        /// Examples: <br/>
+        /// <b>Scalar:</b>                     System.Int<br/>
+        /// <b>Controller Resolver Method:</b> MyProject.MyController.RetrieveWidgets<br/>
+        /// <b>Object Property:</b>            MyProject.Widget.Name<br/>
+        /// .
+        /// </para>
         /// </summary>
-        /// <value>The name of the internal.</value>
+        ///
+        /// <value>The fully qualiified, internal name of this schema item.</value>
         string InternalName { get; }
     }
 }

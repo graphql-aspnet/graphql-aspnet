@@ -27,10 +27,10 @@ namespace GraphQL.AspNet.Configuration
     public class SchemaOptions
     {
         private readonly Dictionary<Type, IGraphQLServerExtension> _extensions;
-        private readonly HashSet<Type> _possibleTypes;
+        private readonly HashSet<TypeToRegister> _possibleTypes;
 
         private readonly Type _schemaType;
-        private readonly List<TypeToRegister> _registeredServices;
+        private readonly List<ServiceToRegister> _registeredServices;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaOptions" /> class.
@@ -42,9 +42,9 @@ namespace GraphQL.AspNet.Configuration
         {
             this.ServiceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _schemaType = Validation.ThrowIfNullOrReturn(schemaType, nameof(schemaType));
-            _possibleTypes = new HashSet<Type>();
+            _possibleTypes = new HashSet<TypeToRegister>(TypeToRegister.DefaultComparer);
             _extensions = new Dictionary<Type, IGraphQLServerExtension>();
-            _registeredServices = new List<TypeToRegister>();
+            _registeredServices = new List<ServiceToRegister>();
 
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
             this.CacheOptions = new SchemaQueryPlanCacheConfiguration();
@@ -115,12 +115,12 @@ namespace GraphQL.AspNet.Configuration
         public SchemaOptions AddGraphType(Type type)
         {
             Validation.ThrowIfNull(type, nameof(type));
-            var newAdd = _possibleTypes.Add(type);
+            var newAdd = _possibleTypes.Add(new TypeToRegister(type));
             if (newAdd)
             {
                 if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
                 {
-                    var typeToRegister = new TypeToRegister(
+                    var typeToRegister = new ServiceToRegister(
                         type,
                         type,
                         GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime,
@@ -164,10 +164,11 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Gets the registered schema types.
+        /// Gets the classes, enums, structs and other types that need to be
+        /// registered to the schema when its created.
         /// </summary>
         /// <value>The registered schema types.</value>
-        public IEnumerable<Type> RegisteredSchemaTypes => _possibleTypes;
+        public IEnumerable<TypeToRegister> SchemaTypesToRegister => _possibleTypes;
 
         /// <summary>
         /// Gets or sets a value indicating whether any <see cref="GraphController"/>, <see cref="GraphDirective"/>  or

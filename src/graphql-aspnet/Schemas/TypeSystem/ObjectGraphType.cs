@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// fields that can be "requested" when this type is queried.
     /// </summary>
     [DebuggerDisplay("OBJECT {Name} (Fields = {Fields.Count})")]
-    public class ObjectGraphType : BaseObjectGraphType, IObjectGraphType, ITypedSchemaItem
+    public class ObjectGraphType : BaseObjectGraphType, IObjectGraphType
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectGraphType" /> class.

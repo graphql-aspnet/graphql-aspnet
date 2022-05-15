@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration.Mvc
 {
     using System;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -243,7 +244,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             // pre-parse any types known to this schema
             var preCacher = new SchemaPreCacher();
-            preCacher.PrecacheTemplates(_options.RegisteredSchemaTypes);
+            preCacher.PrecacheTemplates(_options.SchemaTypesToRegister.Select(x => x.Type));
 
             // only when the service provider is used for final configuration do we
             // invoke extensions with just the service provider

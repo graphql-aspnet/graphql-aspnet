@@ -52,18 +52,22 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 return null;
 
             var result = new GraphTypeCreationResult();
+
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var directives = template.CreateAppliedDirectives();
 
             var objectType = new ObjectGraphType(
-            formatter.FormatGraphTypeName(template.Name),
-            concreteType,
-            template.Route,
-            directives)
+                formatter.FormatGraphTypeName(template.Name),
+                concreteType,
+                template.Route,
+                directives)
             {
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            // account for any potential type system directives
+            result.AddDependentRange(template.RetrieveRequiredTypes());
 
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
             foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))

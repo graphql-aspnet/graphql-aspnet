@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A representation of a complex object type known to a schema, used in an "input" scenario.
     /// </summary>
-    public interface IInputObjectGraphType : IGraphType, ITypedSchemaItem, IGraphFieldContainer
+    public interface IInputObjectGraphType : IGraphType, IGraphFieldContainer, ITypedSchemaItem
     {
     }
 }

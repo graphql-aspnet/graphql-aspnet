@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -22,7 +23,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     /// Represents the introspection enumeration '__TypeKind'.
     /// </summary>
     [DebuggerDisplay("INTROSPECTION TYPE __TypeKind")]
-    internal class Introspection_TypeKindType : EnumGraphType
+    internal class Introspection_TypeKindType : EnumGraphType, IInternalSchemaItem
     {
         /// <summary>
         /// Gets the instance of this meta-type.

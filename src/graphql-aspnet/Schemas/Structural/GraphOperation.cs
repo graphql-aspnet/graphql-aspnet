@@ -9,7 +9,9 @@
 
 namespace GraphQL.AspNet.Schemas.Structural
 {
+    using System;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Fields;
@@ -20,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// fields that can be acted on to fulfill a requested operation.
     /// </summary>
     [DebuggerDisplay("{Name}, Fields = {Fields.Count}")]
-    public class GraphOperation : BaseObjectGraphType, IGraphOperation
+    public sealed class GraphOperation : BaseObjectGraphType, IGraphOperation, IInternalSchemaItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphOperation" /> class.
@@ -43,6 +45,9 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <inheritdoc />
         public override bool ValidateObject(object item)
         {
+            // graph opertions are top level objects generated internally based on the query type
+            // there is no scenario where one would be generated and "returned" from a resolver
+            // such that it should or would need to be validated
             return false;
         }
 
@@ -57,5 +62,11 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public override bool IsVirtual => true;
+
+        /// <inheritdoc />
+        public Type ObjectType => typeof(GraphOperation);
+
+        /// <inheritdoc />
+        public string InternalName => $"{typeof(GraphOperation).FriendlyName()}.{this.OperationType}";
     }
 }

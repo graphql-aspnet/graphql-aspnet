@@ -173,6 +173,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var argument in this.Arguments)
                 list.AddRange(argument.RetrieveRequiredTypes());
 
+            if (this.AppliedDirectives != null)
+            {
+                var dependentTypes = this.AppliedDirectives
+                    .Where(x => x.DirectiveType != null)
+                    .Select(x => new DependentType(x.DirectiveType, TypeKind.DIRECTIVE));
+                list.AddRange(dependentTypes);
+            }
+
             return list;
         }
 

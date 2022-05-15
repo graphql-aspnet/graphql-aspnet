@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -21,7 +22,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     /// Represents the introspection enumeration '__DirectiveLocation'.
     /// </summary>
     [DebuggerDisplay("INTROSPECTION TYPE __DirectiveLocation")]
-    internal class Introspection_DirectiveLocationType : EnumGraphType
+    internal class Introspection_DirectiveLocationType : EnumGraphType, IInternalSchemaItem
     {
         /// <summary>
         /// Gets the instance of this meta-type.

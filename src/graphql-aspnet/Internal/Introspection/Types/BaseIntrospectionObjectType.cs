@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet.Internal.Introspection.Types
 {
+    using System;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
@@ -17,7 +19,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     /// <summary>
     /// An intermediate base class to define logic common to all schema types for the native introspection schema.
     /// </summary>
-    internal abstract class BaseIntrospectionObjectType : BaseObjectGraphType, IObjectGraphType
+    internal abstract class BaseIntrospectionObjectType : BaseObjectGraphType, IObjectGraphType, IInternalSchemaItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseIntrospectionObjectType"/> class.
@@ -39,5 +41,11 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
         {
             throw new GraphTypeDeclarationException($"Introspection type '{this.Name}' cannot be extended");
         }
+
+        /// <inheritdoc />
+        public virtual Type ObjectType => this.GetType();
+
+        /// <inheritdoc />
+        public virtual string InternalName => this.ObjectType.FriendlyName();
     }
 }

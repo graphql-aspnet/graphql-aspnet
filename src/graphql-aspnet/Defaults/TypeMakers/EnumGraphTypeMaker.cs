@@ -61,6 +61,15 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 Publish = template.Publish,
             };
 
+            var result = new GraphTypeCreationResult()
+            {
+                GraphType = graphType,
+                ConcreteType = concreteType,
+            };
+
+            // account for any potential type system directives
+            result.AddDependentRange(template.RetrieveRequiredTypes());
+
             // create an enum option from each template
             var enumValuesToInclude = template.Values.Where(value => requirements.AllowImplicitEnumValues() || value.IsExplicitDeclaration);
             foreach (var value in enumValuesToInclude)
@@ -77,13 +86,11 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                     valueDirectives);
 
                 graphType.AddOption(valueOption);
+
+                result.AddDependentRange(value.RetrieveRequiredTypes());
             }
 
-            return new GraphTypeCreationResult()
-            {
-                GraphType = graphType,
-                ConcreteType = concreteType,
-            };
+            return result;
         }
     }
 }

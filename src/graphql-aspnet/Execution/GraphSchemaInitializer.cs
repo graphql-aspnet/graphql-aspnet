@@ -63,13 +63,13 @@ namespace GraphQL.AspNet.Execution
                 manager.AddBuiltInDirectives();
 
                 // add any configured types to this instance
-                foreach (var type in _options.RegisteredSchemaTypes)
+                foreach (var registration in _options.SchemaTypesToRegister)
                 {
-                    var typeDeclaration = type.SingleAttributeOrDefault<GraphTypeAttribute>();
+                    var typeDeclaration = registration.Type.SingleAttributeOrDefault<GraphTypeAttribute>();
                     if (typeDeclaration != null && typeDeclaration.PreventAutoInclusion)
                         continue;
 
-                    manager.EnsureGraphType(type);
+                    manager.EnsureGraphType(registration.Type);
                 }
 
                 manager.BuildIntrospectionData();

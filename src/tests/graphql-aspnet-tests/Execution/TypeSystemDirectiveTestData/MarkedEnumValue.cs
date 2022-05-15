@@ -6,13 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
-
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
 {
-    /// <summary>
-    /// A graph type representing an interface in the type system.
-    /// </summary>
-    public interface IInterfaceGraphType : IGraphFieldContainer, IExtendableGraphType, ITypedSchemaItem
+    using GraphQL.AspNet.Attributes;
+
+    public enum MarkedEnumValue
     {
+        Value1,
+
+        [ApplyDirective(typeof(EnumValueMarkerDirective))]
+        Value2,
     }
 }

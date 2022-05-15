@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Fields;
     using GraphQL.AspNet.Schemas.Structural;
@@ -23,7 +24,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public class InterfaceGraphType : IInterfaceGraphType
     {
         private readonly GraphFieldCollection _fieldSet;
-        private readonly Type _interfaceType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceGraphType" /> class.
@@ -41,8 +41,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
+            this.InternalName = this.ObjectType.FriendlyName();
+
             _fieldSet = new GraphFieldCollection(this);
-            _interfaceType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
+
             this.Publish = true;
 
             this.Extend(new Introspection_TypeNameMetaField(name));
@@ -59,7 +62,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc />
         public bool ValidateObject(object item)
         {
-            return item == null || Validation.IsCastable(item.GetType(), _interfaceType);
+            return item == null || Validation.IsCastable(item.GetType(), this.ObjectType);
         }
 
         /// <inheritdoc />
@@ -92,5 +95,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        public Type ObjectType { get; }
+
+        /// <inheritdoc />
+        public virtual string InternalName { get; }
     }
 }

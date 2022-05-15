@@ -110,10 +110,13 @@ namespace GraphQL.AspNet.Execution
 
                 if (targetDirective == null)
                 {
-                    throw new GraphExecutionException(
+                    var directiveName = appliedDirective.DirectiveType?.FriendlyName() ?? appliedDirective.DirectiveName ?? "-unknown-";
+                    var failureMessage =
                         $"Type System Directive Invocation Failure. " +
-                        $"The supplied directive type '{appliedDirective.DirectiveType.FriendlyName()}' " +
-                        $"does not represent a valid directive on the target schema. (Target Schema: {schema.Name})");
+                        $"The supplied directive type '{directiveName}' " +
+                        $"does not represent a valid directive on the target schema. (Target: '{item.Route.Path}', Schema: {schema.Name})";
+
+                    throw new GraphTypeDeclarationException(failureMessage);
                 }
 
                 var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.Arguments);

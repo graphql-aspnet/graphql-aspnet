@@ -9,13 +9,11 @@
 
 namespace GraphQL.AspNet.Internal.Introspection.Types
 {
-    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Internal.Introspection.Model;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -74,22 +72,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "deprecationReason"),
                 (ev) => ev.DeprecationReason.AsCompletedTask(),
                 "A human-friendly reason as to why this value has been deprecated.");
-
-            this.ObjectType = typeof(Introspection_EnumValueType);
-            this.InternalName = this.ObjectType.FriendlyName();
         }
-
-        /// <summary>
-        /// Gets the type of the object this graph type was made from.
-        /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; }
-
-        /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
-        /// is used in many exceptions and internal error messages.
-        /// </summary>
-        /// <value>The name of the internal.</value>
-        public string InternalName { get; }
     }
 }

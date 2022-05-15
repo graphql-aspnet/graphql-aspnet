@@ -371,7 +371,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             if (this.PossibleTypes != null)
             {
-                var dependentTypes = this.PossibleTypes.Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)));
+                var dependentTypes = this.PossibleTypes
+                    .Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)));
                 list.AddRange(dependentTypes);
             }
 

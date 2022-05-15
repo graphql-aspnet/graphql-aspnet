@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Internal.Introspection.Types
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Extensions;

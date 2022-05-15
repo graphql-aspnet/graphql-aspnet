@@ -6,13 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
-
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
 {
-    /// <summary>
-    /// A graph type representing an interface in the type system.
-    /// </summary>
-    public interface IInterfaceGraphType : IGraphFieldContainer, IExtendableGraphType, ITypedSchemaItem
+    using GraphQL.AspNet.Attributes;
+
+    [ApplyDirective(typeof(ObjectMarkerDirective))]
+    public class MarkedObject
     {
+        public string Prop1 { get; set; }
     }
 }

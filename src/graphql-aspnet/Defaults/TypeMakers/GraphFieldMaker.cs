@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             if (template.UnionProxy != null)
             {
                 var unionMaker = new UnionGraphTypeMaker(this.Schema);
-                result.AddDependent(unionMaker.CreateGraphType(template.UnionProxy));
+                result.AddAbstractDependent(unionMaker.CreateGraphType(template.UnionProxy));
             }
 
             result.Field = field;

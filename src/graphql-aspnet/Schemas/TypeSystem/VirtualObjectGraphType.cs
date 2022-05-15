@@ -9,8 +9,10 @@
 
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
+    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Fields;
@@ -21,13 +23,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// Used as a mechanism to convert virtual paths in <see cref="GraphRouteAttribute"/> declarations into fields on the object graph.
     /// </summary>
     [DebuggerDisplay("OBJECT (virtual) {Name}")]
-    public class VirtualObjectGraphType : BaseObjectGraphType, IObjectGraphType
+    public class VirtualObjectGraphType : BaseObjectGraphType, IObjectGraphType, IInternalSchemaItem
     {
         // Implementation Note:
         //
         // This object represents the "binder" between controllers, actions and the type system.
-        // The controller is an abstract concept, not tied to any "piece of data" (like a real "Person" object would be) so this virtual graph type
-        // is used to expose the controller's action methods as though they were fields on a class
+        // The controller is an abstract concept, not tied to any "piece of data" (like a real "Person" object would be)
+        // so this virtual graph type is used to expose the controller's action methods as though they were fields on a class
         // to allow for proper navigation of an object structure in graphql. This object is generated dynamically from the parsed
         // metadata of a controller.
 
@@ -58,5 +60,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public override bool IsVirtual => true;
+
+        /// <inheritdoc />
+        public Type ObjectType => typeof(VirtualObjectGraphType);
+
+        /// <inheritdoc />
+        public string InternalName => typeof(VirtualObjectGraphType).FriendlyName();
     }
 }

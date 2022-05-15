@@ -17,12 +17,13 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    public class AddProperty3Directive : GraphDirective
+    public class AddFieldDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.OBJECT)]
-        public IGraphActionResult AddProperty3()
+        public IGraphActionResult AddFieldNamedProperty3()
         {
-            // ensure we are working with a graph field definition
+            // ensure we are working with an object graph type
+            // so we can extend it with a new field
             var item = this.DirectiveTarget as IObjectGraphType;
             if (item != null)
             {
@@ -30,17 +31,17 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
                 item.Extend(
                     "property3",
                     GraphTypeExpression.FromDeclaration(stringType.Name),
-                    RetrieveProperty3,
+                    ResolverForNewProperty,
                     "retrieves a prop 3");
             }
 
             return this.Ok();
         }
 
-        private Task<string> RetrieveProperty3(object item)
+        private Task<string> ResolverForNewProperty(object item)
         {
             var str = string.Empty;
-            if (item is TestObjectWithFieldExtensionDirectiveByType obj)
+            if (item is TestObjectWithAddFieldDirectiveByType obj)
             {
                 str += obj.Property1 ?? string.Empty;
                 str += " ";
