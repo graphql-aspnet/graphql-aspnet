@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
@@ -119,7 +120,16 @@ namespace GraphQL.AspNet.Tests.Framework
         public ITestServerBuilder<TSchema> AddGraphController<TController>()
             where TController : GraphController
         {
-            return this.AddGraphType<TController>();
+            this.AddGraphType(typeof(TController));
+            return this;
+        }
+
+        /// <inheritdoc />
+        public ITestServerBuilder<TSchema> AddDirective<TDirective>()
+            where TDirective : GraphDirective
+        {
+            this.AddGraphType(typeof(TDirective));
+            return this;
         }
 
         /// <inheritdoc />
@@ -148,7 +158,7 @@ namespace GraphQL.AspNet.Tests.Framework
             {
                 this.PerformInitialConfiguration(options);
                 foreach (var type in _additionalTypes)
-                    options.AddGraphType(type);
+                    options.AddType(type);
 
                 userProvidedConfigOptions?.Invoke(options);
             };

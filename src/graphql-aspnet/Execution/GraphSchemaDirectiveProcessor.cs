@@ -33,10 +33,9 @@ namespace GraphQL.AspNet.Execution
     /// respective schema items.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to work with.</typeparam>
-    public class GraphSchemaDirectiveProcessor<TSchema>
+    public class GraphSchemaDirectiveProcessor<TSchema> : IGraphSchemaDirectiveProcessor<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly SchemaOptions _options;
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
@@ -45,17 +44,12 @@ namespace GraphQL.AspNet.Execution
         /// <param name="options">The options.</param>
         /// <param name="serviceProvider">The service provider used to instantiate
         /// and apply type system directives.</param>
-        public GraphSchemaDirectiveProcessor(SchemaOptions options, IServiceProvider serviceProvider)
+        public GraphSchemaDirectiveProcessor(IServiceProvider serviceProvider)
         {
-            _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
-        /// <summary>
-        /// Scans all types, fields and arguments and applies any
-        /// found directives in their declared order.
-        /// </summary>
-        /// <param name="schema">The schema to scan.</param>
+        /// <inheritdoc />
         public void ApplyDirectives(TSchema schema)
         {
             // Process the schema
@@ -144,41 +138,67 @@ namespace GraphQL.AspNet.Execution
                     logger,
                     items: request.Items);
 
-                directivePipeline.InvokeAsync(context, CancellationToken.None).Wait();
+                Exception causalException = null;
 
-                if (!context.Messages.IsSucessful)
+                try
                 {
-                    GraphTypeDeclarationException causalException = null;
-                    if (context.Messages.Count == 1)
-                    {
-                        var message = context.Messages[0];
-                        causalException = new GraphTypeDeclarationException(message.Message, item.GetType());
-                    }
-                    else
+                    directivePipeline.InvokeAsync(context, CancellationToken.None).Wait();
+                }
+                catch (Exception ex)
+                {
+                    // SUPER FAIL!!!
+                    context.Cancel();
+                    causalException = ex;
+                }
+
+                if (context.IsCancelled || !context.Messages.IsSucessful)
+                {
+                    Type failedType = null;
+                    if (item is ITypedSchemaItem tsi)
+                        failedType = tsi.ObjectType;
+
+                    // attempt to discover the reason for the failure if its contained within the
+                    // executed context
+                    if (causalException == null)
                     {
                         // when lots of failures are indicated
                         // nest them into each other before throwing
-                        foreach (var message in context.Messages.Where(x => x.Severity.IsCritical()).Reverse())
+                        foreach (var message in context.Messages.Where(x => x.Severity.IsCritical()))
                         {
+                            // when an actual exception was encountered
+                            // use it as the causal exception
+                            if (message.Exception != null)
+                            {
+                                causalException = message.Exception;
+                                break;
+                            }
+
+                            // otherwise chain together any failure messages
+                            var errorMessage = message.Message;
+                            if (!string.IsNullOrWhiteSpace(message.Code))
+                                errorMessage = message.Code + " : " + errorMessage;
+
                             causalException = new GraphTypeDeclarationException(
-                                message.Message,
-                                item.GetType(),
+                                errorMessage,
+                                failedType,
                                 causalException);
                         }
 
                         if (causalException == null)
                         {
+                            // out of options, cant figure out the issue
+                            // just declare a general failure   ¯\_(ツ)_/¯
                             causalException = new GraphTypeDeclarationException(
                                 $"An Unknown error occured while applying a directive " +
-                                    $"to {item.GetType().FriendlyName()} (Directive: '{targetDirective.Name}')",
-                                item.GetType());
+                                    $"to graph type '{item.Name}' (Directive: '{targetDirective.Name}')",
+                                failedType);
                         }
                     }
 
-                    throw new GraphTypeDeclarationException(
+                    throw new GraphExecutionException(
                         $"An exception occured applying the type system directive '{targetDirective.Name}' to schema item '{item.Name}'. " +
                         $"See inner exception(s) for details.",
-                        causalException);
+                        innerException: causalException);
                 }
             }
         }

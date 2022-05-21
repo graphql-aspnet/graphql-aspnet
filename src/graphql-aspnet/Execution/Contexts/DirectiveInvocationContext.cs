@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.Origin = origin ?? SourceOrigin.None;
             this.Location = location;
             this.Directive = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
-            this.Arguments = new InputArgumentCollection();
+            this.Arguments = args ?? new InputArgumentCollection();
         }
 
         /// <inheritdoc />

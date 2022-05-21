@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // register global directives to the schema
             foreach (var type in Constants.GlobalDirectives)
             {
-                _options.AddGraphType(type);
+                _options.AddType(type);
             }
 
             // add execution assembly for auto loading of graph types
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
                 _options.AddGraphAssembly(assembly);
             }
 
-            // ensure some http processor is set
+            // ensure an http processor is set
             if (_options.QueryHandler.HttpProcessorType == null)
             {
                 if (_options.QueryHandler.AuthenticatedRequestsOnly)
@@ -122,6 +122,13 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             // register the schema
             _options.ServiceCollection.TryAddSingleton(this.BuildNewSchemaInstance);
+
+            // register the default directive processor for the schema
+            _options.ServiceCollection.TryAddTransient<IGraphSchemaDirectiveProcessor<TSchema>>(
+                (sp) =>
+                {
+                    return new GraphSchemaDirectiveProcessor<TSchema>(sp);
+                });
 
             // setup default middleware for each required pipeline
             var queryPipelineHelper = new QueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
@@ -184,7 +191,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         private TSchema BuildNewSchemaInstance(IServiceProvider serviceProvider)
         {
             var schemaInstance = GraphSchemaBuilder.BuildSchema<TSchema>(serviceProvider);
-            var initializer = new GraphSchemaInitializer<TSchema>(_options);
+            var initializer = new GraphSchemaInitializer<TSchema>(serviceProvider, _options);
             initializer.Initialize(schemaInstance);
 
             serviceProvider.WriteLogEntry(
@@ -203,9 +210,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             this.UseSchema(appBuilder.ApplicationServices, false);
 
-            if (_options.Extensions != null)
+            if (_options.ServerExtensions != null)
             {
-                foreach (var additionalOptions in _options.Extensions)
+                foreach (var additionalOptions in _options.ServerExtensions)
                     additionalOptions.Value.UseExtension(appBuilder, appBuilder.ApplicationServices);
             }
 
@@ -251,7 +258,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // (mostly just for test harnessing, but may be used by developers as well)
             if (invokeAdditionalOptions)
             {
-                foreach (var additionalOptions in _options.Extensions)
+                foreach (var additionalOptions in _options.ServerExtensions)
                     additionalOptions.Value.UseExtension(serviceProvider: serviceProvider);
             }
 
@@ -264,12 +271,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             using (var scope = serviceProvider.CreateScope())
             {
                 // create and setup the schema FIRST
-                var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
-
-                // once the schema and types are realized
-                // start processing directives set against those types
-                var directiveProcess = new GraphSchemaDirectiveProcessor<TSchema>(_options, scope.ServiceProvider);
-                directiveProcess.ApplyDirectives(schema);
+                var schema = scope.ServiceProvider.GetRequiredService<TSchema>();;
             }
         }
 

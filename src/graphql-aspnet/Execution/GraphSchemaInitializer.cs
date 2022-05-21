@@ -14,8 +14,10 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Perform a set of standardized steps to setup and configure any graph schema according to the rules
@@ -26,14 +28,16 @@ namespace GraphQL.AspNet.Execution
     public class GraphSchemaInitializer<TSchema>
         where TSchema : class, ISchema
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly SchemaOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaInitializer{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public GraphSchemaInitializer(SchemaOptions options)
+        public GraphSchemaInitializer(IServiceProvider serviceProvider, SchemaOptions options)
         {
+            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
         }
 
@@ -73,6 +77,21 @@ namespace GraphQL.AspNet.Execution
                 }
 
                 manager.BuildIntrospectionData();
+
+                // execute any assigned schema configuration extensions
+                foreach (var extension in _options.ConfigurationExtensions)
+                    extension.Configure(schema);
+
+                // apply directives
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var processor = scope.ServiceProvider.GetService<IGraphSchemaDirectiveProcessor<TSchema>>();
+                    if (processor != null)
+                    {
+                        processor.ApplyDirectives(schema);
+                    }
+                }
+
                 schema.IsInitialized = true;
             }
         }

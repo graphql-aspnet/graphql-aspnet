@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
                 return completedSuccessfully;
             }
 
-            var coreSuppliedType = suppliedData?.GetType();
+            var coreSuppliedType = suppliedData.GetType();
             if (coreSuppliedType != null)
                 coreSuppliedType = GraphValidation.EliminateWrappersFromCoreType(coreSuppliedType);
 
@@ -120,8 +120,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
                 var argType = context.Schema.KnownTypes.FindGraphType(directiveArg.ObjectType);
 
                 var exception = new GraphExecutionException(
-                    $"The supplied argument type '{suppliedArg.Value.GetType().FriendlyName()}' cannot be " +
-                    $"cast to the expected type '{directiveArg.ObjectType.GetType().FriendlyName()}' for directive '{context.Directive.Name}'.",
+                    $"The supplied argument type '{coreSuppliedType?.FriendlyName()}' cannot be " +
+                    $"cast to the expected type '{directiveArg.ObjectType.FriendlyName()}' for directive '{context.Directive.Name}', parameter: '{directiveArg.ParameterName}'.",
                     context.Request.Origin);
 
                 this.ValidationError(

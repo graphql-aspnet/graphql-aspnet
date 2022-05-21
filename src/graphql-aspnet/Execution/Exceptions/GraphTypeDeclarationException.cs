@@ -37,13 +37,13 @@ namespace GraphQL.AspNet.Execution.Exceptions
         public GraphTypeDeclarationException(string message, Type failedType, Exception innerException = null)
             : base(message, innerException)
         {
-            this.FailedGraphType = failedType;
+            this.FailedObjectType = failedType;
         }
 
         /// <summary>
-        /// Gets the type that was being evaluated for conversion to a Graph Type.
+        /// Gets the concrete .NET type that was being evaluated for conversion to a Graph Type.
         /// </summary>
-        /// <value>The type of the failed graph.</value>
-        public Type FailedGraphType { get; }
+        /// <value>The type that was being evaluated.</value>
+        public Type FailedObjectType { get; }
     }
 }

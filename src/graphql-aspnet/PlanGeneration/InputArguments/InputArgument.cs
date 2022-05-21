@@ -41,7 +41,9 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         public string Name => this.Argument.Name;
 
         /// <summary>
-        /// Gets the assigned value of the input argument.
+        /// Gets an object container that can resolve the value of this input argument
+        /// at runtime. This value container may itself hold a pre-resolved static value or a
+        /// reference to an input variable which it needs to extract from a variable collection.
         /// </summary>
         /// <value>The value.</value>
         public IInputArgumentValue Value { get; }
