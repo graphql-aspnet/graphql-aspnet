@@ -6,13 +6,10 @@
 // --
 // License:  MIT
 // *************************************************************
-
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Tests.Configuration.SchemaOptionsTestData
 {
-    /// <summary>
-    /// An interface describing data to fully populate an enumeration item into the object graph.
-    /// </summary>
-    public interface IEnumOption : ISchemaItem, IDeprecatable
+    public class ObjectForLateBoundDirective
     {
+        public int Prop1 { get; set; }
     }
 }

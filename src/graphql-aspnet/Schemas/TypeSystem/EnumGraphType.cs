@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("ENUM {Name}")]
     public class EnumGraphType : IEnumGraphType
     {
-        private readonly Dictionary<string, IEnumOption> _options;
+        private readonly Dictionary<string, IEnumValue> _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
@@ -65,11 +65,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
-            _options = new Dictionary<string, IEnumOption>(StringComparer.OrdinalIgnoreCase);
+            _options = new Dictionary<string, IEnumValue>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <inheritdoc />
-        public virtual void AddOption(IEnumOption option)
+        public virtual void AddOption(IEnumValue option)
         {
             Validation.ThrowIfNull(option, nameof(option));
             _options.Add(option.Name, option);
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public virtual IEnumOption RemoveOption(string name)
+        public virtual IEnumValue RemoveOption(string name)
         {
             if (_options.ContainsKey(name))
             {
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public virtual IReadOnlyDictionary<string, IEnumOption> Values => _options;
+        public virtual IReadOnlyDictionary<string, IEnumValue> Values => _options;
 
         /// <inheritdoc />
         public virtual string Name { get; set; }

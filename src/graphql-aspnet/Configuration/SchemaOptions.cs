@@ -208,7 +208,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <typeparam name="TDirectiveType">The type of the directive to apply.</typeparam>
         /// <returns>IDirectiveInjector.</returns>
-        public IDirectiveApplicator ApplyDirective<TDirectiveType>()
+        public DirectiveApplicator ApplyDirective<TDirectiveType>()
             where TDirectiveType : GraphDirective
         {
             return this.ApplyDirective(typeof(TDirectiveType));
@@ -220,10 +220,12 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveType">The type of the directive to apply to schema items.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public IDirectiveApplicator ApplyDirective(Type directiveType)
+        public DirectiveApplicator ApplyDirective(Type directiveType)
         {
             Validation.ThrowIfNull(directiveType, nameof(directiveType));
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
+
+            this.AddType(directiveType);
             var applicator = new DirectiveApplicator(directiveType);
             this.AddConfigurationExtension(applicator);
 
@@ -237,7 +239,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="directiveName">Name of the directive.</param>
         /// <returns>IDirectiveInjector.</returns>
-        public IDirectiveApplicator ApplyDirective(string directiveName)
+        public DirectiveApplicator ApplyDirective(string directiveName)
         {
             directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
             var applicator = new DirectiveApplicator(directiveName);

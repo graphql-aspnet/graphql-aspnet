@@ -41,7 +41,6 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaDirectiveProcessor{TSchema}" /> class.
         /// </summary>
-        /// <param name="options">The options.</param>
         /// <param name="serviceProvider">The service provider used to instantiate
         /// and apply type system directives.</param>
         public GraphSchemaDirectiveProcessor(IServiceProvider serviceProvider)
@@ -52,34 +51,9 @@ namespace GraphQL.AspNet.Execution
         /// <inheritdoc />
         public void ApplyDirectives(TSchema schema)
         {
-            // Process the schema
-            this.ApplyDirectivesToItem(schema, schema);
-
-            // process each graph type (including top level operations)
-            var graphTypesToProcess = schema.KnownTypes.Where(x => x.Kind != TypeKind.DIRECTIVE);
-            foreach (var graphType in graphTypesToProcess)
-            {
-                this.ApplyDirectivesToItem(schema, graphType);
-
-                if (graphType is IEnumGraphType enumType)
-                {
-                    // each option on each enum
-                    foreach (var option in enumType.Values)
-                        this.ApplyDirectivesToItem(schema, option.Value);
-                }
-                else if (graphType is IGraphFieldContainer fieldContainer)
-                {
-                    // each field in each graph type
-                    foreach (var field in fieldContainer.Fields)
-                    {
-                        this.ApplyDirectivesToItem(schema, field);
-
-                        // each argument on each field
-                        foreach (var argument in field.Arguments)
-                            this.ApplyDirectivesToItem(schema, argument);
-                    }
-                }
-            }
+            // all schema items
+            foreach (var item in schema.AllSchemaItems())
+                this.ApplyDirectivesToItem(schema, item);
         }
 
         private void ApplyDirectivesToItem(TSchema schema, ISchemaItem item)

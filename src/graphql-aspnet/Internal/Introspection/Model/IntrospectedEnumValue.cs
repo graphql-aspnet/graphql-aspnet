@@ -22,13 +22,13 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     [DebuggerDisplay("Introspected Enum Value: {Name}")]
     public class IntrospectedEnumValue : IntrospectedItem, IDeprecatable, ISchemaItem
     {
-        private readonly IEnumOption _enumOption;
+        private readonly IEnumValue _enumOption;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedEnumValue" /> class.
         /// </summary>
         /// <param name="enumOption">The enum option.</param>
-        public IntrospectedEnumValue(IEnumOption enumOption)
+        public IntrospectedEnumValue(IEnumValue enumOption)
             : base(enumOption)
         {
             _enumOption = Validation.ThrowIfNullOrReturn(enumOption, nameof(enumOption));

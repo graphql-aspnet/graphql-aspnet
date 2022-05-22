@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 case IEnumGraphType _:
                     return DirectiveLocation.ENUM;
 
-                case IEnumOption _:
+                case IEnumValue _:
                     return DirectiveLocation.ENUM_VALUE;
 
                 case IInputObjectGraphType _:

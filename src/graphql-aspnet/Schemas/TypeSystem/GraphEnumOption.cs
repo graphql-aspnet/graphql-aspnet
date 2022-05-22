@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// A qualified option on a published ENUM graph type.
     /// </summary>
     [DebuggerDisplay("Value = {Name}")]
-    public class GraphEnumOption : IEnumOption
+    public class GraphEnumOption : IEnumValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphEnumOption" /> class.
