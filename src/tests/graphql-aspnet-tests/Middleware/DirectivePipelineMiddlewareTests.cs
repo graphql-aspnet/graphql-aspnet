@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsTrue(context.IsValid);
 
-            var component = new ValidateDirectiveExecutionMiddleware<GraphSchema>(server.Schema);
+            var component = new ValidateDirectiveExecutionMiddleware<GraphSchema>();
             await component.InvokeAsync(context, this.EmptyNextDelegate);
 
             Assert.IsFalse(context.IsValid);

@@ -6,13 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Common.ExpressionExtensionTestData
+namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
-    public class ParameterizedMethodExpressionTestObject
+    /// <summary>
+    /// A marker interface to identify <see cref="ISchemaItem"/>
+    /// objects that are part of the introspection system.
+    /// </summary>
+    public interface IIntrospectionSchemaItem : ISchemaItem
     {
-        public int SomeMethod(int a)
-        {
-            return 0;
-        }
     }
 }

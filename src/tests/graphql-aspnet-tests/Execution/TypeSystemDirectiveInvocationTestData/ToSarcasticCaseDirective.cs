@@ -1,8 +1,13 @@
-﻿namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveInvocationTestData
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveInvocationTestData
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -40,9 +45,8 @@
             if (context.Result is string)
             {
                 var data = context.Result?.ToString();
-                if(data.Length > 0)
+                if (data.Length > 0)
                 {
-
                     var builder = new StringBuilder();
                     for (var i = 0; i < data.Length; i++)
                     {

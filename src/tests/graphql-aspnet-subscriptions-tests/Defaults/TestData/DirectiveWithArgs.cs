@@ -15,7 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults.TestData
 
     public class DirectiveWithArgs : GraphDirective
     {
-        [DirectiveLocations(DirectiveLocation.AllTypeDeclarationLocations)]
+        [DirectiveLocations(DirectiveLocation.AllTypeSystemLocations)]
         public IGraphActionResult Execute(int arg1, string arg2)
         {
             return null;

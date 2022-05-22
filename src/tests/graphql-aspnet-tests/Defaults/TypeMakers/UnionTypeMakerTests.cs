@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             schema.SetNoAlterationConfiguration();
 
             var maker = new UnionGraphTypeMaker(schema);
-            var unionResult= maker.CreateUnionFromProxy(new UnionProxyWithDirective());
+            var unionResult = maker.CreateUnionFromProxy(new UnionProxyWithDirective());
             var unionType = unionResult.GraphType as IUnionGraphType;
 
             Assert.IsNotNull(unionType);

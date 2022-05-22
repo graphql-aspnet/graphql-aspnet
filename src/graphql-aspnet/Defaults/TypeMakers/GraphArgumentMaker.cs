@@ -32,13 +32,15 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         }
 
         /// <inheritdoc />
-        public GraphArgumentCreationResult CreateArgument(IGraphArgumentTemplate template)
+        public GraphArgumentCreationResult CreateArgument(ISchemaItem owner, IGraphArgumentTemplate template)
         {
+            Validation.ThrowIfNull(owner, nameof(owner));
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
 
             var directives = template.CreateAppliedDirectives();
 
             var argument = new GraphFieldArgument(
+                owner,
                 formatter.FormatFieldName(template.Name),
                 template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                 template.Route,

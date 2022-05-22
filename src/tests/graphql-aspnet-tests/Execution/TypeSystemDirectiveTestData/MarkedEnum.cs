@@ -1,10 +1,13 @@
-﻿namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
 
     [ApplyDirective(typeof(EnumMarkerDirective))]

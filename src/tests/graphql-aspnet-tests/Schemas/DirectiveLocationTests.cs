@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 seenValues.Add(asLong);
 
                 if (location == DirectiveLocation.AllExecutionLocations ||
-                    location == DirectiveLocation.AllTypeDeclarationLocations)
+                    location == DirectiveLocation.AllTypeSystemLocations)
                     continue;
 
                 if ((asLong % 2) != 0 && asLong != 1)

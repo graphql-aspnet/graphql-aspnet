@@ -14,5 +14,10 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// </summary>
     public interface IEnumValue : ISchemaItem, IDeprecatable
     {
+        /// <summary>
+        /// Gets the parent enum graph type that owns this value.
+        /// </summary>
+        /// <value>The parent.</value>
+        IEnumGraphType Parent { get; }
     }
 }

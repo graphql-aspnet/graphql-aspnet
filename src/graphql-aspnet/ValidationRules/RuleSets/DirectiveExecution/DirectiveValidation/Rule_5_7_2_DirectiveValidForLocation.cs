@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveVa
             {
                 this.ValidationError(
                     context,
-                    $"Invalid Directive Location. The target location '{targetLocation}'" +
+                    $"Invalid Directive Location. The target location '{targetLocation}' " +
                     $"is not supported by the directive '{context.Directive.Name}'");
             }
 

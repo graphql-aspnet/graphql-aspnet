@@ -8,23 +8,33 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Configuration.SchemaOptionsTestData
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    internal class SimpleLateBoundObjectDirective : GraphDirective
+    internal class CountableLateBoundDirective : GraphDirective
     {
-        public static int TOTAL_INVOCATIONS = 0;
+        public Dictionary<ISchemaItem, int> Invocations { get; }
 
-        [DirectiveLocations(DirectiveLocation.OBJECT)]
+        public CountableLateBoundDirective()
+        {
+            this.Invocations = new Dictionary<ISchemaItem, int>();
+        }
+
+        [DirectiveLocations(DirectiveLocation.AllTypeSystemLocations)]
         public IGraphActionResult PerformOperationon()
         {
-            if (this.DirectiveTarget is IObjectGraphType graphType && graphType.ObjectType == typeof(ObjectForLateBoundDirective))
-            {
-                TOTAL_INVOCATIONS += 1;
-            }
+            if (!(this.DirectiveTarget is ISchemaItem))
+                throw new System.Exception("Unexpected directive target");
+
+            var item = this.DirectiveTarget as ISchemaItem;
+            if (!this.Invocations.ContainsKey(this.DirectiveTarget as ISchemaItem))
+                this.Invocations[item] = 0;
+
+            this.Invocations[item] += 1;
 
             // dont actually do anything, this is just a test for inclusion
             return this.Ok();

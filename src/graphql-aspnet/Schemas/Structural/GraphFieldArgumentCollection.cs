@@ -65,6 +65,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type concreteType)
         {
             var argument = new VirtualGraphFieldArgument(
+                _owner,
                 name,
                 internalName,
                 typeExpression,
@@ -93,6 +94,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             object defaultValue)
         {
             var argument = new VirtualGraphFieldArgument(
+                _owner,
                 name,
                 internalName,
                 typeExpression,

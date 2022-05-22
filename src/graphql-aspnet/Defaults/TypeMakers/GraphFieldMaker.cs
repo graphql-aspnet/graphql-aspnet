@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
                 foreach (var argTemplate in template.Arguments)
                 {
-                    var argumentResult = argumentMaker.CreateArgument(argTemplate);
+                    var argumentResult = argumentMaker.CreateArgument(field, argTemplate);
                     field.Arguments.AddArgument(argumentResult.Argument);
 
                     result.MergeDependents(argumentResult);

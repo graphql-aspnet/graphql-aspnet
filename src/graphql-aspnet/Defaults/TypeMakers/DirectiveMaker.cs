@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var argMaker = new GraphArgumentMaker(_schema);
             foreach (var argTemplate in template.Arguments)
             {
-                var argumentResult = argMaker.CreateArgument(argTemplate);
+                var argumentResult = argMaker.CreateArgument(directive, argTemplate);
                 directive.Arguments.AddArgument(argumentResult.Argument);
 
                 result.MergeDependents(argumentResult);

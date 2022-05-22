@@ -77,7 +77,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 // enum option directives
                 var valueDirectives = value.CreateAppliedDirectives();
 
-                var valueOption = new GraphEnumOption(
+                var valueOption = new GraphEnumValue(
+                    graphType,
                     _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
                     value.Description,
                     value.Route,

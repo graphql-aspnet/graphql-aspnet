@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualGraphFieldArgument" /> class.
         /// </summary>
+        /// <param name="parent">The parent graph type that owns this virutal field.</param>
         /// <param name="name">The name of this field in the object graph.</param>
         /// <param name="internalName">The name of this field as it exists in the .NET code.</param>
         /// <param name="typeExpression">The graph type expression representing this field.</param>
@@ -35,6 +36,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="defaultValue">The default value.</param>
         /// <param name="argModifiers">The argument modifiers.</param>
         public VirtualGraphFieldArgument(
+            ISchemaItem parent,
             string name,
             string internalName,
             GraphTypeExpression typeExpression,
@@ -44,6 +46,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             object defaultValue = null,
             GraphArgumentModifiers argModifiers = GraphArgumentModifiers.None)
         {
+            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
@@ -89,5 +92,8 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        public ISchemaItem Parent { get; }
     }
 }

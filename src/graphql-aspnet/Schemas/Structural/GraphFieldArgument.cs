@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldArgument" /> class.
         /// </summary>
+        /// <param name="parent">The parent schema item that owns this argument.</param>
         /// <param name="argumentName">Name of the argument.</param>
         /// <param name="typeExpression">The type expression.</param>
         /// <param name="route">The route path that identifies this argument.</param>
@@ -41,6 +42,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="directives">The directives to apply to this argument
         /// when its added to a schema.</param>
         public GraphFieldArgument(
+            ISchemaItem parent,
             string argumentName,
             GraphTypeExpression typeExpression,
             GraphFieldPath route,
@@ -53,6 +55,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             string description = null,
             IAppliedDirectiveCollection directives = null)
         {
+            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(argumentName, nameof(argumentName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalname, nameof(internalname));
@@ -99,5 +102,8 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        public ISchemaItem Parent { get; }
     }
 }

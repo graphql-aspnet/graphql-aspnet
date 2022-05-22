@@ -8,16 +8,11 @@
 // *************************************************************
 namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules;
 
     /// <summary>
@@ -29,15 +24,11 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     public class ValidateDirectiveExecutionMiddleware<TSchema> : IGraphDirectiveExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly TSchema _schema;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidateDirectiveExecutionMiddleware{TSchema}"/> class.
         /// </summary>
-        /// <param name="schema">The schema instance to reference.</param>
-        public ValidateDirectiveExecutionMiddleware(TSchema schema)
+        public ValidateDirectiveExecutionMiddleware()
         {
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
         /// <inheritdoc />

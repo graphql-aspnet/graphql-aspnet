@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// <summary>
     /// A base class for all introspected data model items.
     /// </summary>
-    public abstract class IntrospectedItem : ISchemaItem
+    public abstract class IntrospectedItem : IIntrospectionSchemaItem
     {
         private readonly ISchemaItem _item;
 

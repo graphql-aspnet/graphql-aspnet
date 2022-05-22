@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns><c>true</c> if the location specifies an type system location; otherwise, <c>false</c>.</returns>
         public static bool IsTypeDeclarationLocation(this DirectiveLocation location)
         {
-            return (location & DirectiveLocation.AllTypeDeclarationLocations) > 0;
+            return (location & DirectiveLocation.AllTypeSystemLocations) > 0;
         }
     }
 }

@@ -28,16 +28,14 @@ namespace GraphQL.AspNet.Execution
     public class GraphSchemaInitializer<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly SchemaOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaInitializer{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public GraphSchemaInitializer(IServiceProvider serviceProvider, SchemaOptions options)
+        public GraphSchemaInitializer(SchemaOptions options)
         {
-            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
         }
 
@@ -81,16 +79,6 @@ namespace GraphQL.AspNet.Execution
                 // execute any assigned schema configuration extensions
                 foreach (var extension in _options.ConfigurationExtensions)
                     extension.Configure(schema);
-
-                // apply directives
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var processor = scope.ServiceProvider.GetService<IGraphSchemaDirectiveProcessor<TSchema>>();
-                    if (processor != null)
-                    {
-                        processor.ApplyDirectives(schema);
-                    }
-                }
 
                 schema.IsInitialized = true;
             }

@@ -49,5 +49,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The name of the parameter.</value>
         string ParameterName { get; }
+
+        /// <summary>
+        /// Gets the field that owns this argument.
+        /// </summary>
+        /// <value>The parent.</value>
+        ISchemaItem Parent { get; }
     }
 }

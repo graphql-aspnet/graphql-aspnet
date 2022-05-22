@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -20,8 +21,25 @@ namespace GraphQL.AspNet.Configuration
     /// A class that encapsulates the late binding of a directive to a schema item
     /// and relavant fields there in.
     /// </summary>
-    public class DirectiveApplicator : ISchemaConfigurationExtension
+    public sealed class DirectiveApplicator : ISchemaConfigurationExtension
     {
+        private static IReadOnlyList<Func<ISchemaItem, bool>> _requiredFilters;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="DirectiveApplicator"/> class.
+        /// </summary>
+        static DirectiveApplicator()
+        {
+            var list = new List<Func<ISchemaItem, bool>>();
+
+            // auto remove introspection data, system level items and any virtual items added to the graph
+            list.Add(x => !x.IsIntrospectionItem());
+            list.Add(x => !x.IsSystemItem());
+            list.Add(x => !x.IsVirtualItem());
+
+            _requiredFilters = list;
+        }
+
         private Type _directiveType;
         private string _directiveName;
         private Func<ISchemaItem, object[]> _argumentFunction;
@@ -58,11 +76,13 @@ namespace GraphQL.AspNet.Configuration
         /// <inheritdoc />
         void ISchemaConfigurationExtension.Configure(ISchema schema)
         {
+            var allFilters = _requiredFilters.Concat(_filters).ToList();
+
             foreach (var schemaItem in schema.AllSchemaItems())
             {
                 // ensure the current item matches all supplied filters
                 var shouldBeApplied = true;
-                foreach (var filter in _filters)
+                foreach (var filter in allFilters)
                 {
                     if (!filter(schemaItem))
                     {

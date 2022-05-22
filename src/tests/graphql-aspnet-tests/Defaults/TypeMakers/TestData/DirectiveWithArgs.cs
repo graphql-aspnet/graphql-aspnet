@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 
     public class DirectiveWithArgs : GraphDirective
     {
-        [DirectiveLocations(DirectiveLocation.AllTypeDeclarationLocations)]
+        [DirectiveLocations(DirectiveLocation.AllTypeSystemLocations)]
         public IGraphActionResult Execute(int arg1, string arg2)
         {
             return null;
