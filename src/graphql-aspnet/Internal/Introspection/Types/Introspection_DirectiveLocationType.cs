@@ -25,22 +25,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_DirectiveLocationType : EnumGraphType, IInternalSchemaItem
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_DirectiveLocationType Instance { get; } = new Introspection_DirectiveLocationType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_DirectiveLocationType"/> class.
-        /// </summary>
-        static Introspection_DirectiveLocationType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_DirectiveLocationType"/> class.
         /// </summary>
-        private Introspection_DirectiveLocationType()
+        public Introspection_DirectiveLocationType()
             : base(
                   Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM,
                   typeof(DirectiveLocation),

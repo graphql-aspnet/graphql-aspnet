@@ -90,9 +90,12 @@ namespace GraphQL.AspNet.Tests.Schemas
             collection.EnsureGraphType(scalar);
             collection.EnsureGraphType(scalar);
 
+            var scalarByType = collection.FindGraphType(typeof(int));
+            var scalarByName = collection.FindGraphType(Constants.ScalarNames.INT);
+
             Assert.AreEqual(1, collection.Count);
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int))));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
+            Assert.IsNotNull(scalarByType);
+            Assert.IsNotNull(scalarByName);
             Assert.IsTrue(collection.Contains(typeof(int)));
         }
 
@@ -107,11 +110,17 @@ namespace GraphQL.AspNet.Tests.Schemas
             scalar = this.MakeGraphType(typeof(long), TypeKind.SCALAR) as IScalarGraphType;
             collection.EnsureGraphType(scalar);
 
+            var intScalarByType = collection.FindGraphType(typeof(int));
+            var intScalarByName = collection.FindGraphType(Constants.ScalarNames.INT);
+
+            var longScalarByType = collection.FindGraphType(typeof(long));
+            var longScalarByName = collection.FindGraphType(Constants.ScalarNames.LONG);
+
             Assert.AreEqual(2, collection.Count);
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int))));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(long))));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.LONG)));
+            Assert.IsNotNull(intScalarByType);
+            Assert.IsNotNull(intScalarByName);
+            Assert.IsNotNull(longScalarByType);
+            Assert.IsNotNull(longScalarByName);
         }
 
         [Test]

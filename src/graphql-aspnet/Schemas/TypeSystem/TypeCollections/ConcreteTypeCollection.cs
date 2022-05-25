@@ -177,7 +177,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             // instances of scalar graph types must be their pre-defined instance as well
             if (graphType.Kind == TypeKind.SCALAR)
             {
-                if (associatedType == null || GraphQLProviders.ScalarProvider.RetrieveScalar(associatedType) != graphType)
+                if (associatedType == null || GraphQLProviders.ScalarProvider.RetrieveScalarName(associatedType) != graphType.Name)
                 {
                     throw new GraphTypeDeclarationException(
                         $"The scalar type '{graphType.Name}' cannot be added and associated to the concrete type '{associatedType?.FriendlyName() ?? "-null-"}' it is not an approved scalar type.");

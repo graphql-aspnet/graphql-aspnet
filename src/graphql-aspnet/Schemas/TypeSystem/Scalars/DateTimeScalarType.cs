@@ -23,22 +23,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class DateTimeScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static DateTimeScalarType Instance { get; } = new DateTimeScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="DateTimeScalarType"/> class.
-        /// </summary>
-        static DateTimeScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeScalarType"/> class.
         /// </summary>
-        private DateTimeScalarType()
+        public DateTimeScalarType()
             : base(Constants.ScalarNames.DATETIME, typeof(DateTime))
         {
             this.Description = "A calendar date that does include a time component.";

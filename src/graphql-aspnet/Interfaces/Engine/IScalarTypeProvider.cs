@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
     /// and must be explicitly defined. The object implementing this provider should be designed in a thread-safe, singleton fashion. Only one
     /// instance of this provider exists for the application instance.
     /// </summary>
-    public interface IScalarTypeProvider : IEnumerable<IScalarGraphType>
+    public interface IScalarTypeProvider
     {
         /// <summary>
         /// Determines whether the specified type is considered a leaf type in the graph system (Scalars and enumerations).
@@ -59,25 +59,39 @@ namespace GraphQL.AspNet.Interfaces.Engine
         Type RetrieveConcreteType(string scalarName);
 
         /// <summary>
-        /// Retrieves the scalar by its defined graph type name or null if no
+        /// Retrieves the name of the scalar registered for the given concrete type.
+        /// </summary>
+        /// <param name="concreteType">The concrete type which is registered as a known scalars.</param>
+        /// <returns>System.String.</returns>
+        string RetrieveScalarName(Type concreteType);
+
+        /// <summary>
+        /// Creates a new instance of the scalar by its defined graph type name or null if no
         /// scalar is registered.
         /// </summary>
         /// <param name="scalarName">Name of the scalar.</param>
         /// <returns>IScalarType.</returns>
-        IScalarGraphType RetrieveScalar(string scalarName);
+        IScalarGraphType CreateScalar(string scalarName);
 
         /// <summary>
-        /// Retrieves the scalar by an assigned concrete type or null if no
+        /// Creates a new instance of the scalar by an assigned concrete type or null if no
         /// scalar is registered.
         /// </summary>
         /// <param name="concreteType">Type of the concrete.</param>
         /// <returns>IScalarType.</returns>
-        IScalarGraphType RetrieveScalar(Type concreteType);
+        IScalarGraphType CreateScalar(Type concreteType);
 
         /// <summary>
-        /// Registers the custom scalar as a pre-parsed template to the provider.
+        /// Registers the custom scalar type as a pre-parsed template to the provider.
         /// </summary>
-        /// <param name="graphType">Type of the graph.</param>
-        void RegisterCustomScalar(IScalarGraphType graphType);
+        /// <param name="scalarType">Type of the scalar to register.</param>
+        void RegisterCustomScalar(Type scalarType);
+
+        /// <summary>
+        /// Gets a list of all registered scalar instance types (i.e. the types that
+        /// implement <see cref="IScalarTypeProvider"/>).
+        /// </summary>
+        /// <value>An enumeration of all registered scalar instance types.</value>
+        IEnumerable<Type> AllScalarInstanceTypes { get; }
     }
 }

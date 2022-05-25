@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class UIntScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static UIntScalarType Instance { get; } = new UIntScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="UIntScalarType"/> class.
-        /// </summary>
-        static UIntScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="UIntScalarType"/> class.
         /// </summary>
-        private UIntScalarType()
+        public UIntScalarType()
             : base(Constants.ScalarNames.UINT, typeof(uint))
         {
             this.Description = $"A 32-bit, unsigned integer. (Min: {uint.MinValue}, Max: {uint.MaxValue})";

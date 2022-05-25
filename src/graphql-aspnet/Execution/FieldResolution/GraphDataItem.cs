@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Response;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// An ecapsulation of a piece of source data submitted for processing by the field execution pipeline.
@@ -50,6 +51,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             this.Status = FieldItemResolutionStatus.NotStarted;
             this.Origin = new SourceOrigin(context.Origin.Location, path);
             this.TypeExpression = context.Field.TypeExpression;
+            this.Schema = Validation.ThrowIfNullOrReturn(context.Schema, nameof(context.Schema));
         }
 
         /// <summary>
@@ -297,6 +299,12 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         public GraphTypeExpression TypeExpression { get; private set; }
 
         /// <summary>
+        /// Gets the schema on which this data item is based.
+        /// </summary>
+        /// <value>The schema.</value>
+        public ISchema Schema { get; }
+
+        /// <summary>
         /// Gets the list items of this instance that were generated from resolved data, if any.
         /// </summary>
         /// <value>The children.</value>
@@ -401,10 +409,10 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             if (resultData != null)
             {
                 var type = resultData.GetType();
-                if (GraphQLProviders.ScalarProvider.IsScalar(type))
+                var graphType = this.Schema.KnownTypes.FindGraphType(type);
+                if (graphType is IScalarGraphType sgt)
                 {
-                    var graphType = GraphQLProviders.ScalarProvider.RetrieveScalar(type);
-                    resultData = graphType.Serializer.Serialize(resultData);
+                    resultData = sgt.Serializer.Serialize(resultData);
                 }
             }
 

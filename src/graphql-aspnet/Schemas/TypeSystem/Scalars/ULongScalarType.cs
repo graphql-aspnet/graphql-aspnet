@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class ULongScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static ULongScalarType Instance { get; } = new ULongScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="ULongScalarType"/> class.
-        /// </summary>
-        static ULongScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ULongScalarType"/> class.
         /// </summary>
-        private ULongScalarType()
+        public ULongScalarType()
             : base(Constants.ScalarNames.ULONG, typeof(ulong))
         {
             this.Description = $"A 64-bit, unsigned integer. (Min: {ulong.MinValue}, Max: {ulong.MaxValue})";

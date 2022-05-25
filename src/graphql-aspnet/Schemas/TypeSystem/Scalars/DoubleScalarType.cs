@@ -23,22 +23,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class DoubleScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static DoubleScalarType Instance { get; } = new DoubleScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="DoubleScalarType"/> class.
-        /// </summary>
-        static DoubleScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DoubleScalarType"/> class.
         /// </summary>
-        private DoubleScalarType()
+        public DoubleScalarType()
             : base(Constants.ScalarNames.DOUBLE, typeof(double))
         {
             this.Description = $"A 64-bit, floating-point value. (Min: {double.MinValue}, Max: {double.MaxValue})";

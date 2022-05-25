@@ -26,22 +26,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_TypeKindType : EnumGraphType, IInternalSchemaItem
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_TypeKindType Instance { get; } = new Introspection_TypeKindType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_TypeKindType"/> class.
-        /// </summary>
-        static Introspection_TypeKindType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_TypeKindType"/> class.
         /// </summary>
-        private Introspection_TypeKindType()
+        public Introspection_TypeKindType()
             : base(
                   Constants.ReservedNames.TYPE_KIND_ENUM,
                   typeof(TypeKind),

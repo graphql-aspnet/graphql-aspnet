@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     public class SchemaOptionsApplyDirectiveTests
     {
         [Test]
-        public void ApplyDirective_AgainstObjectSingleObject()
+        public void ApplyDirective_AppliesToItemsInSelectionCriteria()
         {
             var directiveInstance = new CountableLateBoundDirective();
 

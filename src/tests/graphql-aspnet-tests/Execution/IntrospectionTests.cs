@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = serverBuilder.Build();
 
             var schema = new IntrospectedSchema(server.Schema);
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = new IntrospectedType(scalar);
             spected.Initialize(schema);
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -218,7 +218,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -242,7 +242,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 

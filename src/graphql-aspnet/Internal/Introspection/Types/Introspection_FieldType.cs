@@ -25,22 +25,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_FieldType : BaseIntrospectionObjectType
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_FieldType Instance { get; } = new Introspection_FieldType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_FieldType" /> class.
-        /// </summary>
-        static Introspection_FieldType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_FieldType"/> class.
         /// </summary>
-        private Introspection_FieldType()
+        public Introspection_FieldType()
             : base(Constants.ReservedNames.FIELD_TYPE)
         {
             // "__Field" type definition

@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class IntScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static IntScalarType Instance { get; } = new IntScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="IntScalarType"/> class.
-        /// </summary>
-        static IntScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="IntScalarType"/> class.
         /// </summary>
-        private IntScalarType()
+        public IntScalarType()
             : base(Constants.ScalarNames.INT, typeof(int))
         {
             this.Description = $"A 32-bit integer. (Min: {int.MinValue}, Max: {int.MaxValue})";

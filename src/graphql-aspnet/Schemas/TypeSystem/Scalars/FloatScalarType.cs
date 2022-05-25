@@ -23,22 +23,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class FloatScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static FloatScalarType Instance { get; } = new FloatScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="FloatScalarType"/> class.
-        /// </summary>
-        static FloatScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="FloatScalarType"/> class.
         /// </summary>
-        private FloatScalarType()
+        public FloatScalarType()
             : base(Constants.ScalarNames.FLOAT, typeof(float))
         {
             this.Description = $"A 32-bit, floating-point value. (Min: {float.MinValue}, Max: {float.MaxValue})";

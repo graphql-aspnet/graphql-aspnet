@@ -23,7 +23,11 @@ namespace GraphQL.AspNet.Configuration
     /// </summary>
     public sealed class DirectiveApplicator : ISchemaConfigurationExtension
     {
-        private static IReadOnlyList<Func<ISchemaItem, bool>> _requiredFilters;
+        // a set of default filters applied to any directive applicator unless explicitly removed
+        // by the developer. Used to auto filter items down to those reasonably assumed
+        // to be included by the developer, the classes and items they have defined not those defined
+        // or maintained by the library
+        private static IReadOnlyList<Func<ISchemaItem, bool>> _defaultFilters;
 
         /// <summary>
         /// Initializes static members of the <see cref="DirectiveApplicator"/> class.
@@ -37,13 +41,14 @@ namespace GraphQL.AspNet.Configuration
             list.Add(x => !x.IsSystemItem());
             list.Add(x => !x.IsVirtualItem());
 
-            _requiredFilters = list;
+            _defaultFilters = list;
         }
 
         private Type _directiveType;
         private string _directiveName;
         private Func<ISchemaItem, object[]> _argumentFunction;
-        private List<Func<ISchemaItem, bool>> _filters;
+        private bool _includeDefaultFilters;
+        private List<Func<ISchemaItem, bool>> _customFilters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveApplicator"/> class.
@@ -69,14 +74,19 @@ namespace GraphQL.AspNet.Configuration
 
         private DirectiveApplicator()
         {
-            _filters = new List<Func<ISchemaItem, bool>>();
+            _customFilters = new List<Func<ISchemaItem, bool>>();
+            _includeDefaultFilters = true;
             this.WithArguments();
         }
 
         /// <inheritdoc />
         void ISchemaConfigurationExtension.Configure(ISchema schema)
         {
-            var allFilters = _requiredFilters.Concat(_filters).ToList();
+            List<Func<ISchemaItem, bool>> allFilters;
+            if (_includeDefaultFilters)
+                allFilters = _defaultFilters.Concat(_customFilters).ToList();
+            else
+                allFilters = _customFilters.ToList();
 
             foreach (var schemaItem in schema.AllSchemaItems())
             {
@@ -155,7 +165,7 @@ namespace GraphQL.AspNet.Configuration
         public DirectiveApplicator Where(Func<ISchemaItem, bool> itemFilter)
         {
             Validation.ThrowIfNull(itemFilter, nameof(itemFilter));
-            _filters.Add(itemFilter);
+            _customFilters.Add(itemFilter);
             return this;
         }
 
@@ -165,7 +175,8 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>DirectiveApplicator.</returns>
         public DirectiveApplicator Clear()
         {
-            _filters.Clear();
+            _customFilters.Clear();
+            _includeDefaultFilters = false;
             this.WithArguments();
             return this;
         }

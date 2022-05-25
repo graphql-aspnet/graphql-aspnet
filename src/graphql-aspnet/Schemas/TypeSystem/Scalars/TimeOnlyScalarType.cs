@@ -24,22 +24,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class TimeOnlyScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static TimeOnlyScalarType Instance { get; } = new TimeOnlyScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="TimeOnlyScalarType"/> class.
-        /// </summary>
-        static TimeOnlyScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TimeOnlyScalarType"/> class.
         /// </summary>
-        private TimeOnlyScalarType()
+        public TimeOnlyScalarType()
             : base(Constants.ScalarNames.TIMEONLY, typeof(TimeOnly))
         {
             this.Description = "A time of day that does not include a date component.";

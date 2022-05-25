@@ -31,12 +31,14 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldInvocationContext" /> class.
         /// </summary>
+        /// <param name="schema">The schema from which this invocation context was created.</param>
         /// <param name="expectedSourceType">Expected type of the source.</param>
         /// <param name="name">The name to apply to this data set once resolution is complete.</param>
         /// <param name="field">The field.</param>
         /// <param name="origin">The origin, in the source text, that this context was generated from.</param>
         /// <param name="directives">The directives parsed from a query document that are to be executed as part of this context.</param>
         public FieldInvocationContext(
+            ISchema schema,
             Type expectedSourceType,
             string name,
             IGraphField field,
@@ -49,6 +51,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.Origin = origin;
             this.ChildContexts = new FieldInvocationContextCollection();
             this.Arguments = new InputArgumentCollection();
+            this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
 
             var list = new List<IDirectiveInvocationContext>();
             if (directives != null)
@@ -56,33 +59,22 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.Directives = list;
         }
 
-        /// <summary>
-        /// Places a restriction on this context such that it will only be executed if the provided source item can be successfully
-        /// cast to the provided type. Pass null to indicate no restrictions.
-        /// </summary>
-        /// <param name="restrictToType">The concrete object type to restrict execution to.</param>
+        /// <inheritdoc />
         public void Restrict(Type restrictToType)
         {
             this.ExpectedSourceType = restrictToType;
         }
 
-        /// <summary>
-        /// Gets a set of arguments that need to be passed to the resolver to complete the operation.
-        /// </summary>
-        /// <value>The arguments.</value>
+        /// <inheritdoc />
         public IInputArgumentCollection Arguments { get; }
 
-        /// <summary>
-        /// Gets the field to be executed when this context is invoked.
-        /// </summary>
-        /// <value>The field.</value>
+        /// <inheritdoc />
+        public ISchema Schema { get; }
+
+        /// <inheritdoc />
         public IGraphField Field { get; }
 
-        /// <summary>
-        /// Gets the source type, if any, that the source object (when this field is executed) must be castable to
-        /// in order for it to be resolved. A value of null indicates no restrictions are set.
-        /// </summary>
-        /// <value>The source type restriction.</value>
+        /// <inheritdoc />
         public Type ExpectedSourceType { get; private set; }
 
         /// <summary>
@@ -91,29 +83,16 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <value>The expected name of the source type.</value>
         private string ExpectedSourceTypeName => this.ExpectedSourceType?.FriendlyName() ?? "null";
 
-        /// <summary>
-        /// Gets the directives that should be executed as part of this context.
-        /// </summary>
-        /// <value>The directives.</value>
+        /// <inheritdoc />
         public IList<IDirectiveInvocationContext> Directives { get; }
 
-        /// <summary>
-        /// Gets the name of the field as it exists in the execution chain. This is typically
-        /// the field name or an alias, if it was supplied in the source document.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        /// Gets the child contexts that are dependent on this context's result in order to execute.
-        /// </summary>
-        /// <value>The child contexts.</value>
+        /// <inheritdoc />
         public IFieldInvocationContextCollection ChildContexts { get; }
 
-        /// <summary>
-        /// Gets the origin location, in the source document, that coorisponds to this field context.
-        /// </summary>
-        /// <value>The location.</value>
+        /// <inheritdoc />
         public SourceOrigin Origin { get; }
     }
 }

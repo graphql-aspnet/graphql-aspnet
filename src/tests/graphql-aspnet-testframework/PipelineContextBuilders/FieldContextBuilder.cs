@@ -93,6 +93,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockInvocationContext.Setup(x => x.Directives).Returns(new List<IDirectiveInvocationContext>());
             _mockInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
             _mockInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
+            _mockInvocationContext.Setup(x => x.Schema).Returns(_schema);
 
             this.GraphMethod = new Mock<IGraphMethod>();
             this.GraphMethod.Setup(x => x.Parent).Returns(graphMethod.Parent);

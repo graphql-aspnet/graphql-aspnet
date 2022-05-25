@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class StringScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static StringScalarType Instance { get; } = new StringScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="StringScalarType"/> class.
-        /// </summary>
-        static StringScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="StringScalarType"/> class.
         /// </summary>
-        private StringScalarType()
+        public StringScalarType()
             : base(Constants.ScalarNames.STRING, typeof(string))
         {
             this.Description = "A UTF-8 encoded string of characters.";

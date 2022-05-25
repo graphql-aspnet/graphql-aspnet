@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// <returns>GraphTypeCreationResult.</returns>
         public GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
-            var scalarType = GraphQLProviders.ScalarProvider.RetrieveScalar(concreteType);
+            var scalarType = GraphQLProviders.ScalarProvider.CreateScalar(concreteType);
             if (scalarType != null)
             {
                 var result = new GraphTypeCreationResult()

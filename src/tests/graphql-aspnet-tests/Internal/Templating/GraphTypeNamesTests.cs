@@ -12,7 +12,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Internal.Templating.GraphTypeNameTestData;
@@ -62,8 +64,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Item_ScalarParsesToScalarName_Always()
         {
-            foreach (var scalar in GraphQLProviders.ScalarProvider)
+            foreach (var scalarType in GraphQLProviders.ScalarProvider.AllScalarInstanceTypes)
             {
+                var scalar = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
                 var nameSet = new HashSet<string>();
                 var concreteType = GraphQLProviders.ScalarProvider.RetrieveConcreteType(scalar.Name);
                 foreach (var typeKind in Enum.GetValues(typeof(TypeKind)).Cast<TypeKind>())

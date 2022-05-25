@@ -354,12 +354,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             using var point = new GraphQLProviderRestorePoint();
 
-            var scalarType = new SimpleScalarStructGraphType();
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(scalarType);
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(SimpleScalarStructGraphType));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new ObjectGraphTypeTemplate(scalarType.ObjectType);
+                var template = new ObjectGraphTypeTemplate(typeof(SimpleScalarStructGraphType));
                 template.Parse();
                 template.ValidateOrThrow();
             });
@@ -370,12 +369,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             using var point = new GraphQLProviderRestorePoint();
 
-            var scalarType = new SimpleScalarObjectGraphType();
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(scalarType);
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(SimpleScalarObjectGraphType));
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new ObjectGraphTypeTemplate(scalarType.ObjectType);
+                var template = new ObjectGraphTypeTemplate(typeof(SimpleScalarObjectGraphType));
                 template.Parse();
                 template.ValidateOrThrow();
             });

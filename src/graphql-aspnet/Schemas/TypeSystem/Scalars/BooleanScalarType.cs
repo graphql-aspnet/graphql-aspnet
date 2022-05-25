@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
@@ -22,22 +23,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class BooleanScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static BooleanScalarType Instance { get; } = new BooleanScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="BooleanScalarType"/> class.
-        /// </summary>
-        static BooleanScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BooleanScalarType"/> class.
         /// </summary>
-        private BooleanScalarType()
+        public BooleanScalarType()
             : base(Constants.ScalarNames.BOOLEAN, typeof(bool))
         {
             this.Description = "A boolean value (Expressed as: true | false)";

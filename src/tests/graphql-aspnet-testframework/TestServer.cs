@@ -257,6 +257,7 @@ namespace GraphQL.AspNet.Tests.Framework
             fieldInvocationContext.Setup(x => x.Directives).Returns(new List<IDirectiveInvocationContext>());
             fieldInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
             fieldInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
+            fieldInvocationContext.Setup(x => x.Schema).Returns(this.Schema);
 
             var resolvedParentDataItem = new GraphDataItem(
                 fieldInvocationContext.Object,

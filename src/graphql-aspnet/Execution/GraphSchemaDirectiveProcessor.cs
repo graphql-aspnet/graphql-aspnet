@@ -56,6 +56,11 @@ namespace GraphQL.AspNet.Execution
                 this.ApplyDirectivesToItem(schema, item);
         }
 
+        /// <summary>
+        /// Applies the directives to item.
+        /// </summary>
+        /// <param name="schema">The schema.</param>
+        /// <param name="item">The item.</param>
         private void ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
         {
             var fullRouteName = item.Name;

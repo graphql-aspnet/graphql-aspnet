@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class GuidScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static GuidScalarType Instance { get; } = new GuidScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="GuidScalarType"/> class.
-        /// </summary>
-        static GuidScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GuidScalarType"/> class.
         /// </summary>
-        private GuidScalarType()
+        public GuidScalarType()
             : base(Constants.ScalarNames.GUID, typeof(Guid))
         {
             this.Description = "A standard guid (e.g. '6dd43342-ffe6-4964-bb6f-e31c8e50ec86').";

@@ -26,22 +26,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_DirectiveType : BaseIntrospectionObjectType
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_DirectiveType Instance { get; } = new Introspection_DirectiveType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_DirectiveType"/> class.
-        /// </summary>
-        static Introspection_DirectiveType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_DirectiveType"/> class.
         /// </summary>
-        private Introspection_DirectiveType()
+        public Introspection_DirectiveType()
             : base(Constants.ReservedNames.DIRECTIVE_TYPE)
         {
             // "__Directive" type definition

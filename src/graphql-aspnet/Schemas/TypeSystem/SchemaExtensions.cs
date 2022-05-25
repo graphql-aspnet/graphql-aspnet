@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             foreach (var operationEntry in schema.OperationTypes)
                 yield return operationEntry.Value;
 
-            // process each graph type except directives
+            // process each graph item except directives
             var graphTypesToProcess = schema.KnownTypes.Where(x =>
                 x.Kind != TypeKind.DIRECTIVE
                 && !(x is IGraphOperation));

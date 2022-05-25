@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class GraphIdScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static GraphIdScalarType Instance { get; } = new GraphIdScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="GraphIdScalarType"/> class.
-        /// </summary>
-        static GraphIdScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GraphIdScalarType"/> class.
         /// </summary>
-        private GraphIdScalarType()
+        public GraphIdScalarType()
             : base(Constants.ScalarNames.ID, typeof(GraphId))
         {
             this.Description = "The id scalar type represents a unique identifier in graphql.";

@@ -122,6 +122,7 @@ namespace GraphQL.AspNet.PlanGeneration
             var targetField = sourceGraphType.Fields[fieldSelection.Field.Name];
 
             var fieldContext = new FieldInvocationContext(
+                _schema,
                 concreteType,
                 fieldSelection.Alias.ToString(),
                 targetField,

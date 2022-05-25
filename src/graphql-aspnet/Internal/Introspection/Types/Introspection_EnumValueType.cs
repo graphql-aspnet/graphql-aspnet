@@ -23,22 +23,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_EnumValueType : BaseIntrospectionObjectType
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_EnumValueType Instance { get; } = new Introspection_EnumValueType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_EnumValueType"/> class.
-        /// </summary>
-        static Introspection_EnumValueType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_EnumValueType"/> class.
         /// </summary>
-        private Introspection_EnumValueType()
+        public Introspection_EnumValueType()
             : base(Constants.ReservedNames.ENUM_VALUE_TYPE)
         {
             // "__EnumValue" type definition

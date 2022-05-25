@@ -44,8 +44,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             manager.AddIntrospectionFields();
 
             Assert.AreEqual(2, schema.KnownTypes.Count(x => x.Kind == TypeKind.SCALAR));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.STRING)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.BOOLEAN)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.BOOLEAN));
 
             Assert.AreEqual(2, schema.KnownTypes.Count(x => x.Kind == TypeKind.ENUM));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(DirectiveLocation), TypeKind.ENUM));
@@ -132,8 +132,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             manager.EnsureGraphType<SimpleMethodController>();
 
             // scalars for arguments on the method exists
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.STRING)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.INT));
 
             // return type exists as an object type
             var returnType = typeof(SimpleMethodController).GetMethod(nameof(SimpleMethodController.TestActionMethod)).ReturnType;
@@ -157,8 +157,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.AreEqual(7, schema.KnownTypes.Count);
 
             // expect 2 scalars
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.FLOAT)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.DATETIME)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.FLOAT));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.DATETIME));
 
             // expect 5 types to be generated
             // ----------------------------------
@@ -195,11 +195,11 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // 5 distinct scalars (int, uint, float, decimal, string)
             Assert.AreEqual(5, schema.KnownTypes.Count(x => x.Kind == TypeKind.SCALAR));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.STRING)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.DECIMAL)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.FLOAT)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.UINT)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.INT));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.DECIMAL));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.FLOAT));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.UINT));
 
             // 8 types
             // ----------------------
@@ -348,19 +348,20 @@ namespace GraphQL.AspNet.Tests.Schemas
             // scalars (2): string, int (from TwoPropertyObject)
             // scalars (2): float, datetime (from TwoPropertyObjectV2)
             // scalars (2): ulong, long (from method declarations)
-            // scalars (1): dceimal (from CompletePropertyObject)
+            // scalars (1): decimal (from CompletePropertyObject)
             // the nullable<T> types resolve to their non-nullable scalar in the type list
             Assert.AreEqual(7, schema.KnownTypes.Count(x => x.Kind == TypeKind.SCALAR));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(ulong))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(DateTime))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(DateTime?))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(long))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(long?))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(decimal))));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(string)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(int)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(ulong)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(DateTime)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(DateTime?)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(long)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(long?)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(decimal)));
 
-            Assert.IsFalse(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(double))));
+            // should not have double
+            Assert.IsNull(schema.KnownTypes.FindGraphType(typeof(double)));
 
             // enumerations
             Assert.AreEqual(1, schema.KnownTypes.Count(x => x.Kind == TypeKind.ENUM));
@@ -509,8 +510,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             manager.EnsureGraphType(typeof(int));
 
             Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(int)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.INT));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
         }
 
@@ -523,10 +524,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             manager.EnsureGraphType(typeof(long));
 
             Assert.AreEqual(3, schema.KnownTypes.Count); // added types + query
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(long))));
-            Assert.IsTrue(schema.KnownTypes.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.LONG)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(int)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.INT));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(long)));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.LONG));
         }
 
         [Test]
@@ -559,13 +560,16 @@ namespace GraphQL.AspNet.Tests.Schemas
             var schema = new GraphSchema() as ISchema;
             var manager = new GraphSchemaManager(schema);
 
-            var intScalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int));
+            var intScalar = GraphQLProviders.ScalarProvider.CreateScalar(typeof(int));
             schema.KnownTypes.EnsureGraphType(intScalar, typeof(int));
             manager.EnsureGraphType(typeof(List<int>));
 
             Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
             Assert.IsTrue(schema.KnownTypes.Contains(Constants.ScalarNames.INT));
+
+            var includedType = schema.KnownTypes.FindGraphType(typeof(int));
+            Assert.AreEqual(includedType, intScalar);
         }
 
         [Test]

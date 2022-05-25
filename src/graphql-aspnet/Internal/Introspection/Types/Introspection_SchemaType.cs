@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Internal.Introspection.Model;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -26,22 +25,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_SchemaType : BaseIntrospectionObjectType
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_SchemaType Instance { get; } = new Introspection_SchemaType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_SchemaType"/> class.
-        /// </summary>
-        static Introspection_SchemaType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_SchemaType"/> class.
         /// </summary>
-        private Introspection_SchemaType()
+        public Introspection_SchemaType()
             : base(Constants.ReservedNames.SCHEMA_TYPE)
         {
             // "__Schema" type definition

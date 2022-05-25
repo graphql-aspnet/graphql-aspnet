@@ -89,14 +89,14 @@ namespace GraphQL.AspNet.Schemas
 
                 this.EnsureGraphType(typeof(string));
                 this.EnsureGraphType(typeof(bool));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_DirectiveLocationType.Instance, typeof(DirectiveLocation));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_DirectiveType.Instance, typeof(IntrospectedDirective));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_EnumValueType.Instance, typeof(IntrospectedEnumValue));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_FieldType.Instance, typeof(IntrospectedField));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_InputValueType.Instance, typeof(IntrospectedInputValueType));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_SchemaType.Instance, typeof(IntrospectedSchema));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_TypeKindType.Instance, typeof(TypeKind));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_TypeType.Instance, typeof(IntrospectedType));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_DirectiveLocationType(), typeof(DirectiveLocation));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_DirectiveType(), typeof(IntrospectedDirective));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_EnumValueType(), typeof(IntrospectedEnumValue));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_FieldType(), typeof(IntrospectedField));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_InputValueType(), typeof(IntrospectedInputValueType));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_SchemaType(), typeof(IntrospectedSchema));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_TypeKindType(), typeof(TypeKind));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_TypeType(), typeof(IntrospectedType));
             }
         }
 

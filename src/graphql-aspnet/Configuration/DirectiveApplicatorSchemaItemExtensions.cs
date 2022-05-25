@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// Determines whether the specified item is one related to introspection queries.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="item">The item to inspect.</param>
         /// <returns><c>true</c> if the specified item is internal; otherwise, <c>false</c>.</returns>
         public static bool IsIntrospectionItem(this ISchemaItem item)
         {
@@ -27,10 +27,10 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Determines whether the specified item is one owned by the graphql system.
-        /// (e.g. an item that starts with '__').
+        /// Determines whether the specified item is one owned by graphql.
+        /// (i.e. an item that starts with '__').
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="item">The item to inspect.</param>
         /// <returns><c>true</c> if the specified item is system level data; otherwise, <c>false</c>.</returns>
         public static bool IsSystemItem(this ISchemaItem item)
         {

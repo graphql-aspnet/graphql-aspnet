@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class LongScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static LongScalarType Instance { get; } = new LongScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="LongScalarType"/> class.
-        /// </summary>
-        static LongScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LongScalarType"/> class.
         /// </summary>
-        private LongScalarType()
+        public LongScalarType()
             : base(Constants.ScalarNames.LONG, typeof(long))
         {
             this.Description = $"A 64-bit integer. (Min: {long.MinValue}, Max: {long.MaxValue})";

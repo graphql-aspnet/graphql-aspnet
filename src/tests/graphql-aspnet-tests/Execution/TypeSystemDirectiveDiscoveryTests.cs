@@ -126,7 +126,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             using var restorePoint = new GraphQLProviderRestorePoint();
 
-            GraphQLProviders.ScalarProvider.RegisterCustomScalar(new MarkedScalarByAttribute());
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(MarkedScalarByAttribute));
 
             // the object has a property that returns the custom scalar
             // forcing the enclusion of the scalar and thus the directive on said scalar

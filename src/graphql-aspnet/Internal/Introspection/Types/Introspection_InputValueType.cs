@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Internal.Introspection.Model;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -24,22 +23,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_InputValueType : BaseIntrospectionObjectType
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_InputValueType Instance { get; } = new Introspection_InputValueType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_InputValueType"/> class.
-        /// </summary>
-        static Introspection_InputValueType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_InputValueType"/> class.
         /// </summary>
-        private Introspection_InputValueType()
+        public Introspection_InputValueType()
             : base(Constants.ReservedNames.INPUT_VALUE_TYPE)
         {
             // "__InputValue" type definition

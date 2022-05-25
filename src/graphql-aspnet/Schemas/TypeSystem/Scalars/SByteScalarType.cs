@@ -22,22 +22,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class SByteScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static SByteScalarType Instance { get; } = new SByteScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="SByteScalarType"/> class.
-        /// </summary>
-        static SByteScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SByteScalarType"/> class.
         /// </summary>
-        private SByteScalarType()
+        public SByteScalarType()
             : base(Constants.ScalarNames.SIGNED_BYTE, typeof(sbyte))
         {
             this.Description = $"A signed byte. (Min: {sbyte.MinValue}, Max: {sbyte.MaxValue})";
