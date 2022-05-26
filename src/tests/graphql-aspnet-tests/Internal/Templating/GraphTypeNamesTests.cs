@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Item_ScalarParsesToScalarName_Always()
         {
-            foreach (var scalarType in GraphQLProviders.ScalarProvider.AllScalarInstanceTypes)
+            foreach (var scalarType in GraphQLProviders.ScalarProvider.ScalarInstanceTypes)
             {
                 var scalar = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
                 var nameSet = new HashSet<string>();

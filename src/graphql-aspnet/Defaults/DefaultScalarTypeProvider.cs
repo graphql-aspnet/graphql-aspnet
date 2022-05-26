@@ -255,7 +255,7 @@ namespace GraphQL.AspNet.Defaults
 
             foreach (var type in graphType.OtherKnownTypes)
             {
-                var otherReference = this.FindReferenceByImplementationType(graphType.ObjectType);
+                var otherReference = this.FindReferenceByImplementationType(type);
                 if (otherReference != null)
                 {
                     throw new GraphTypeDeclarationException(
@@ -270,15 +270,16 @@ namespace GraphQL.AspNet.Defaults
                 _scalarsByConcreteType.Add(otherRef, newReference);
 
             _scalarsByName.Add(newReference.Name, newReference);
+            _scalarReferences.Add(newReference);
         }
 
         /// <summary>
-        /// Gets an enumerator of the known concrete type classes related to the scalars known to this provider.
+        /// Gets an enumeration of the known concrete type classes related to the scalars known to this provider.
         /// </summary>
         /// <value>The concrete types.</value>
         public IEnumerable<Type> ConcreteTypes => _scalarsByConcreteType.Keys;
 
         /// <inheritdoc />
-        public IEnumerable<Type> AllScalarInstanceTypes => _scalarReferences.Select(x => x.InstanceType);
+        public IEnumerable<Type> ScalarInstanceTypes => _scalarReferences.Select(x => x.InstanceType);
     }
 }

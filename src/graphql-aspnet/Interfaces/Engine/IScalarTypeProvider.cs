@@ -92,6 +92,6 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// implement <see cref="IScalarTypeProvider"/>).
         /// </summary>
         /// <value>An enumeration of all registered scalar instance types.</value>
-        IEnumerable<Type> AllScalarInstanceTypes { get; }
+        IEnumerable<Type> ScalarInstanceTypes { get; }
     }
 }
