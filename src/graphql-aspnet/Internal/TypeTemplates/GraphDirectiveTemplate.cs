@@ -104,6 +104,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     $"one '{typeof(DirectiveLocation)}' via the {typeof(DirectiveLocationsAttribute).FriendlyName()}.");
             }
 
+            if (this.AppliedDirectives.Any())
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive {this.InternalFullName} defines an {nameof(ApplyDirectiveAttribute)}. " +
+                    $"Directives cannot have applied directives.");
+            }
+
             this.Methods.ValidateOrThrow();
         }
 

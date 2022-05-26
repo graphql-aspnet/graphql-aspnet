@@ -42,6 +42,30 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
+        public void AppliedDirectives_OnDirective_ThrowsException()
+        {
+            var template = new GraphDirectiveTemplate(typeof(DirectiveWithDeclaredDirectives));
+            template.Parse();
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
+        public void AppliedDirectives_OnDirectiveMethod_ThrowsException()
+        {
+            var template = new GraphDirectiveTemplate(typeof(DirectiveWithDeclaredDirectiveOnMethod));
+            template.Parse();
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
+        }
+
+        [Test]
         public void InvalidDirective_NoLocationsDefined_ThrowsException()
         {
             var template = new GraphDirectiveTemplate(typeof(NoLocationsDirective));

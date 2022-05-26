@@ -15,6 +15,8 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     public enum GraphCollection
     {
+        // negative numbers represent internally defined collections
+        // (not part of  the graph schema)
         Introspection = -60,
         Schemas = -50,
         Directives = -40,

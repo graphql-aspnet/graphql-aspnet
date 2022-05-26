@@ -132,8 +132,15 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The graph method {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
+                    $"The directive method {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
                     "to the object graph.");
+            }
+
+            if (this.AppliedDirectives.Any())
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive method {this.InternalFullName} defines an {nameof(ApplyDirectiveAttribute)}. " +
+                    $"Directive methods cannot have applied directives.");
             }
 
             // is the method asyncronous? if so ensure that a Task<T> is returned

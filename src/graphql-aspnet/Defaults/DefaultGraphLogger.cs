@@ -281,6 +281,17 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
+        public virtual void TypeSystemDirectiveApplied<TSchema>(IDirective appliedDirective, ISchemaItem appliedTo)
+            where TSchema : class, ISchema
+        {
+            if (!this.IsEnabled(LogLevel.Debug))
+                return;
+
+            var entry = new TypeSystemDirectiveAppliedLogEntry<TSchema>(appliedDirective, appliedTo);
+            this.Log(LogLevel.Debug, entry);
+        }
+
+        /// <inheritdoc />
         public virtual bool IsEnabled(LogLevel logLevel)
         {
             return _logger.IsEnabled(logLevel);

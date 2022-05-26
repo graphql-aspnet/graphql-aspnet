@@ -55,7 +55,17 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         protected virtual void ParseTemplateDefinition()
         {
-            this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
+            this.AppliedDirectives = this.ParseAppliedDiretives();
+        }
+
+        /// <summary>
+        /// Inspects the attributes applied to this template for any directives that should
+        /// be applied to the created schema item.
+        /// </summary>
+        /// <returns>IEnumerable&lt;IAppliedDirectiveTemplate&gt;.</returns>
+        protected virtual IEnumerable<IAppliedDirectiveTemplate> ParseAppliedDiretives()
+        {
+            return this.ExtractAppliedDirectiveTemplates();
         }
 
         /// <inheritdoc />
