@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
     {
         public ScalarNoGraphName()
         {
-            this.Name = "";
+            this.Name = string.Empty;
         }
     }
 }

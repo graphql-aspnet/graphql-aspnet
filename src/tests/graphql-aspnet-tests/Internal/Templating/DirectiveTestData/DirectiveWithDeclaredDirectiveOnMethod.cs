@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-
     public class DirectiveWithDeclaredDirectiveOnMethod : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD)]
