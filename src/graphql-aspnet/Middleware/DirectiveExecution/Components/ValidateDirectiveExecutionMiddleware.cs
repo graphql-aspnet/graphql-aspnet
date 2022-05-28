@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this middleware component
     /// targets.</typeparam>
-    public class ValidateDirectiveExecutionMiddleware<TSchema> : IGraphDirectiveExecutionMiddleware
+    public class ValidateDirectiveExecutionMiddleware<TSchema> : IDirectiveExecutionMiddleware
         where TSchema : class, ISchema
     {
         /// <summary>

@@ -18,11 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public static class SchemaExtensions
     {
         /// <summary>
-        /// An enumeration containing all <see cref="ISchemaItem"/> instances known to this schema.
+        /// An enumeration containing all <see cref="ISchemaItem" /> instances known to this schema.
         /// </summary>
         /// <param name="schema">The schema.</param>
+        /// <param name="includeDirectives">if set to <c>true</c> <see cref="IDirective"/> schema items
+        /// will be included in the set.</param>
         /// <returns>IEnumerable&lt;ISchemaItem&gt;.</returns>
-        public static IEnumerable<ISchemaItem> AllSchemaItems(this ISchema schema)
+        public static IEnumerable<ISchemaItem> AllSchemaItems(this ISchema schema, bool includeDirectives = false)
         {
             // schema first
             yield return schema;
@@ -33,8 +35,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             // process each graph item except directives
             var graphTypesToProcess = schema.KnownTypes.Where(x =>
-                x.Kind != TypeKind.DIRECTIVE
-                && !(x is IGraphOperation));
+                (includeDirectives || x.Kind != TypeKind.DIRECTIVE)
+                && !(x is IGraphOperation)); // dont let operations get included twice
 
             foreach (var graphType in graphTypesToProcess)
             {

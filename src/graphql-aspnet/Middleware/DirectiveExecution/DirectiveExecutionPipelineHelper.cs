@@ -24,13 +24,13 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
     public class DirectiveExecutionPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> _pipelineBuilder;
+        private readonly ISchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> _pipelineBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveExecutionPipelineHelper{TSchema}"/> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public DirectiveExecutionPipelineHelper(ISchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> pipelineBuilder)
+        public DirectiveExecutionPipelineHelper(ISchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> pipelineBuilder)
         {
             _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }

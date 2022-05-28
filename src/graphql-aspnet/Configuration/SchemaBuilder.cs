@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Configuration
             this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(options, Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
             this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
             this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
-            this.DirectiveExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext>(options, Constants.Pipelines.DIRECTIVE_PIPELINE);
+            this.DirectiveExecutionPipeline = new SchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext>(options, Constants.Pipelines.DIRECTIVE_PIPELINE);
 
             this.Options = options;
         }
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Configuration
         public SchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> FieldAuthorizationPipeline { get; }
 
         /// <inheritdoc cref="ISchemaBuilder{TSchema}.DirectiveExecutionPipeline" />
-        public SchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
+        public SchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
 
         /// <inheritdoc />
         ISchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> ISchemaBuilder<TSchema>.FieldExecutionPipeline => this.FieldExecutionPipeline;
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Configuration
         ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> ISchemaBuilder<TSchema>.QueryExecutionPipeline => this.QueryExecutionPipeline;
 
         /// <inheritdoc />
-        ISchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> ISchemaBuilder<TSchema>.DirectiveExecutionPipeline => this.DirectiveExecutionPipeline;
+        ISchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> ISchemaBuilder<TSchema>.DirectiveExecutionPipeline => this.DirectiveExecutionPipeline;
 
         /// <summary>
         /// Gets the completed options used to configure this schema.

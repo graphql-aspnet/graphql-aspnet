@@ -39,7 +39,9 @@ namespace GraphQL.AspNet.Configuration
             // auto remove introspection data, system level items and any virtual items added to the graph
             list.Add(x => !x.IsIntrospectionItem());
             list.Add(x => !x.IsSystemItem());
-            list.Add(x => !x.IsVirtualItem());
+
+            // allow graph operations even through they are technically virtual
+            list.Add(x => !x.IsVirtualItem() || (x is IGraphOperation));
 
             _defaultFilters = list;
         }
@@ -47,7 +49,6 @@ namespace GraphQL.AspNet.Configuration
         private Type _directiveType;
         private string _directiveName;
         private Func<ISchemaItem, object[]> _argumentFunction;
-        private bool _includeDefaultFilters;
         private List<Func<ISchemaItem, bool>> _customFilters;
 
         /// <summary>
@@ -75,20 +76,14 @@ namespace GraphQL.AspNet.Configuration
         private DirectiveApplicator()
         {
             _customFilters = new List<Func<ISchemaItem, bool>>();
-            _includeDefaultFilters = true;
             this.WithArguments();
         }
 
         /// <inheritdoc />
         void ISchemaConfigurationExtension.Configure(ISchema schema)
         {
-            List<Func<ISchemaItem, bool>> allFilters;
-            if (_includeDefaultFilters)
-                allFilters = _defaultFilters.Concat(_customFilters).ToList();
-            else
-                allFilters = _customFilters.ToList();
-
-            foreach (var schemaItem in schema.AllSchemaItems())
+            var allFilters = _defaultFilters.Concat(_customFilters).ToList();
+            foreach (var schemaItem in schema.AllSchemaItems(includeDirectives: false))
             {
                 // ensure the current item matches all supplied filters
                 var shouldBeApplied = true;
@@ -176,7 +171,6 @@ namespace GraphQL.AspNet.Configuration
         public DirectiveApplicator Clear()
         {
             _customFilters.Clear();
-            _includeDefaultFilters = false;
             this.WithArguments();
             return this;
         }

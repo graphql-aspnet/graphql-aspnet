@@ -53,6 +53,6 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// data items for both the type system initial construction as well as during query execution.
         /// </summary>
         /// <value>The directive execution pipeline.</value>
-        ISchemaPipelineBuilder<TSchema, IGraphDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
+        ISchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
     }
 }

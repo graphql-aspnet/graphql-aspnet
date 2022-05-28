@@ -120,38 +120,5 @@ namespace GraphQL.AspNet.Tests.Configuration
                 }
             }
         }
-
-        [Test]
-        public void ClearRemovesDefaultFilters()
-        {
-            var schema = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
-                .Build()
-                .Schema;
-
-            var applicator = new DirectiveApplicator("testDirective");
-            applicator.ToItems(x => x is IGraphType);
-
-            ((ISchemaConfigurationExtension)applicator).Configure(schema);
-
-            // with teh default filter cleared introspection items etc would be
-            // matched resulting in a higher count of fields effected
-            applicator = new DirectiveApplicator("testDirective1");
-            applicator
-                .Clear()
-                .ToItems(x => x is IGraphType);
-
-            ((ISchemaConfigurationExtension)applicator).Configure(schema);
-
-            var itemsEffectedWithDefaultFilter = schema.AllSchemaItems()
-                .Where(x => x is IGraphType && x.AppliedDirectives.FirstOrDefault(y => y.DirectiveName == "testDirective") != null)
-                .Count();
-
-            var itemsEffectedWithOutDefaultFilter = schema.AllSchemaItems()
-                .Where(x => x is IGraphType && x.AppliedDirectives.FirstOrDefault(y => y.DirectiveName == "testDirective1") != null)
-                .Count();
-
-            Assert.IsTrue(itemsEffectedWithOutDefaultFilter > itemsEffectedWithDefaultFilter);
-        }
     }
 }

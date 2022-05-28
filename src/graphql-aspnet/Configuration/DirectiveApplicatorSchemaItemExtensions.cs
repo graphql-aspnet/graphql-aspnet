@@ -40,6 +40,16 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
+        /// Determines whether the specified item is an <see cref="IDirective"/>.
+        /// </summary>
+        /// <param name="item">The item to inspect.</param>
+        /// <returns><c>true</c> if the specified item is a directive; otherwise, <c>false</c>.</returns>
+        public static bool IsDirective(this ISchemaItem item)
+        {
+            return item != null && item is IDirective;
+        }
+
+        /// <summary>
         /// Determines whether the given graph item is a virtual item, or belongs to a vritual item,
         /// created by the library and not by the developer.
         /// </summary>

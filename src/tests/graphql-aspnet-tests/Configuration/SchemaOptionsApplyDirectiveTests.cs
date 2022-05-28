@@ -61,7 +61,6 @@ namespace GraphQL.AspNet.Tests.Configuration
                 {
                     // late bind the directive to the single OBJECT
                     options.ApplyDirective<CountableLateBoundDirective>()
-                        .Clear()
                         .ToItems(x => x is IGraphOperation go);
                 });
 
@@ -90,7 +89,6 @@ namespace GraphQL.AspNet.Tests.Configuration
                     // late bind the directive to the single OBJECT
                     options.AddController<MutationAndQueryController>();
                     options.ApplyDirective<CountableLateBoundDirective>()
-                        .Clear()
                         .ToItems(x => x is IGraphOperation go);
                 });
 
