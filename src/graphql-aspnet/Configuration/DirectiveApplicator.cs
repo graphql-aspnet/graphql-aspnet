@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Configuration
         /// </remarks>
         /// <param name="itemFilter">The item filter.</param>
         /// <returns>DirectiveApplicator.</returns>
-        public DirectiveApplicator Where(Func<ISchemaItem, bool> itemFilter)
+        public DirectiveApplicator ToItems(Func<ISchemaItem, bool> itemFilter)
         {
             Validation.ThrowIfNull(itemFilter, nameof(itemFilter));
             _customFilters.Add(itemFilter);

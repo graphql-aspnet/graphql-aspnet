@@ -39,8 +39,8 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SubscriptionEventName = eventName.ToString();
-            this.ServerId = server.Id;
+            this.SubscriptionEventName = eventName?.ToString();
+            this.ServerId = server?.Id;
         }
 
         /// <summary>

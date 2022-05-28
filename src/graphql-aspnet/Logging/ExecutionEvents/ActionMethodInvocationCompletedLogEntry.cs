@@ -31,12 +31,12 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public ActionMethodInvocationCompletedLogEntry(IGraphMethod method, IDataRequest request, object result)
             : base(LogEventIds.ControllerInvocationCompleted)
         {
-            this.PipelineRequestId = request.Id;
-            this.ControllerName = method.Parent.InternalFullName;
-            this.ActionName = method.InternalName;
-            this.FieldPath = method.Route.Path;
+            this.PipelineRequestId = request?.Id;
+            this.ControllerName = method?.Parent?.InternalFullName;
+            this.ActionName = method?.InternalName;
+            this.FieldPath = method?.Route?.Path;
             this.ResultTypeName = result?.GetType().FriendlyName(true);
-            _shortControllerName = method.Parent.InternalName;
+            _shortControllerName = method?.Parent?.InternalName;
         }
 
         /// <summary>

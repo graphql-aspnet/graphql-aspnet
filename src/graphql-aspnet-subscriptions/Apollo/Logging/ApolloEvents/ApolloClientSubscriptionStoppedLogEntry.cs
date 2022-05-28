@@ -24,11 +24,11 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         /// <param name="client">The client.</param>
         /// <param name="subscription">The subscription that was created.</param>
         public ApolloClientSubscriptionStoppedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
-            : base(ApolloLogEventIds.ClientSubscriptionStarted)
+            : base(ApolloLogEventIds.ClientSubscriptionStopped)
         {
-            this.ClientId = client.Id;
-            this.SubscriptionId = subscription.Id;
-            this.Route = subscription.Route.Path;
+            this.ClientId = client?.Id;
+            this.SubscriptionId = subscription?.Id;
+            this.Route = subscription?.Route?.Path;
         }
 
         /// <summary>

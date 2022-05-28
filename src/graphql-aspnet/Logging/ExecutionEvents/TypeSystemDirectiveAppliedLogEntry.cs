@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <param name="directiveApplied">The directive that was applied.</param>
         /// <param name="appliedTo">the schema item the directive was applied to.</param>
         public TypeSystemDirectiveAppliedLogEntry(IDirective directiveApplied, ISchemaItem appliedTo)
-            : base(LogEventIds.SchemaRouteRegistered)
+            : base(LogEventIds.TypeSystemDirectiveApplied)
         {
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.SchemaItemPath = appliedTo?.Route?.Path;
@@ -74,7 +74,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         {
             get => this.GetProperty<string>(LogPropertyNames.DIRECTIVE_INTERNAL_NAME);
             private set => this.SetProperty(LogPropertyNames.DIRECTIVE_INTERNAL_NAME, value);
-
         }
 
         /// <summary>

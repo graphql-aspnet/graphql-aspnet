@@ -171,13 +171,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // NOTE: Order matters, they can't be executed in parallel
             // https://spec.graphql.org/October2021/#sec-Language.Directives
             bool continueExecution = true;
-            object localDataTaret = dataTarget; // box the data target
+            object localDataTarget = dataTarget; // box the data target
             for (var i = 0; i < invocationContexts.Count; i++)
             {
                 var request = new GraphDirectiveRequest(
                     invocationContexts[i],
                     invocationPhase,
-                    localDataTaret,
+                    localDataTarget,
                     executionContext?.Request?.Items);
 
                 var directiveContext = new GraphDirectiveExecutionContext(
@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
                 executionContext.Messages.AddRange(directiveContext.Messages);
 
-                localDataTaret = request.DirectiveTarget;
+                localDataTarget = request.DirectiveTarget;
                 continueExecution = !directiveContext.IsCancelled;
 
                 // when one directive fails or cancels
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     break;
             }
 
-            return (continueExecution, localDataTaret);
+            return (continueExecution, localDataTarget);
         }
 
         /// <summary>

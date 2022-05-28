@@ -29,11 +29,11 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         public SubscriptionEventPublishedLogEntry(SubscriptionEvent eventPublished)
             : base(SubscriptionLogEventIds.GlobalEventPublished)
         {
-            _shortEventName = eventPublished.EventName;
-            this.SchemaType = eventPublished.SchemaTypeName;
-            this.DataType = eventPublished.DataTypeName;
-            this.SubscriptionEventId = eventPublished.Id;
-            this.SubscriptionEventName = eventPublished.EventName;
+            _shortEventName = eventPublished?.EventName;
+            this.SchemaType = eventPublished?.SchemaTypeName;
+            this.DataType = eventPublished?.DataTypeName;
+            this.SubscriptionEventId = eventPublished?.Id;
+            this.SubscriptionEventName = eventPublished?.EventName;
             this.MachineName = Environment.MachineName;
         }
 

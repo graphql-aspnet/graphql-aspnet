@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var applicator = new DirectiveApplicator("testDirective");
             applicator
                 .WithArguments(CreateArgs)
-                .Where(x => x is IGraphField);
+                .ToItems(x => x is IGraphField);
 
             ((ISchemaConfigurationExtension)applicator).Configure(schema);
 
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .WithArguments(CreateArgs)
                 .WithArguments(new object[0])
                 .WithArguments(CreateArgsOther)
-                .Where(x => x is IGraphField);
+                .ToItems(x => x is IGraphField);
 
             ((ISchemaConfigurationExtension)applicator).Configure(schema);
 
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var applicator = new DirectiveApplicator("testDirective");
             applicator
                 .WithArguments(argSet)
-                .Where(x => x is IGraphField);
+                .ToItems(x => x is IGraphField);
 
             ((ISchemaConfigurationExtension)applicator).Configure(schema);
 
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 .Schema;
 
             var applicator = new DirectiveApplicator("testDirective");
-            applicator.Where(x => x is IGraphType);
+            applicator.ToItems(x => x is IGraphType);
 
             ((ISchemaConfigurationExtension)applicator).Configure(schema);
 
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             applicator = new DirectiveApplicator("testDirective1");
             applicator
                 .Clear()
-                .Where(x => x is IGraphType);
+                .ToItems(x => x is IGraphType);
 
             ((ISchemaConfigurationExtension)applicator).Configure(schema);
 

@@ -29,13 +29,13 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public ActionMethodInvocationStartedLogEntry(IGraphMethod method, IDataRequest request)
             : base(LogEventIds.ControllerInvocationStarted)
         {
-            this.PipelineRequestId = request.Id;
-            this.ControllerName = method.Parent.InternalFullName;
-            this.ActionName = method.Name;
-            this.FieldPath = method.Route.Path;
-            this.SourceObjectType = method.ObjectType?.ToString();
-            this.IsAsync = method.IsAsyncField;
-            _shortControllerName = method.Parent.InternalName;
+            this.PipelineRequestId = request?.Id;
+            this.ControllerName = method?.Parent?.InternalFullName;
+            this.ActionName = method?.Name;
+            this.FieldPath = method?.Route?.Path;
+            this.SourceObjectType = method?.ObjectType?.ToString();
+            this.IsAsync = method?.IsAsyncField;
+            _shortControllerName = method?.Parent?.InternalName;
         }
 
         /// <summary>
@@ -96,9 +96,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// action.
         /// </summary>
         /// <value><c>true</c> if the action method is an async method; otherwise <c>false</c>.</value>
-        public bool IsAsync
+        public bool? IsAsync
         {
-            get => this.GetProperty<bool>(LogPropertyNames.ACTION_IS_ASYNC);
+            get => this.GetProperty<bool?>(LogPropertyNames.ACTION_IS_ASYNC);
             private set => this.SetProperty(LogPropertyNames.ACTION_IS_ASYNC, value);
         }
 

@@ -27,9 +27,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public FieldResolutionStartedLogEntry(FieldResolutionContext context)
             : base(LogEventIds.FieldResolutionStarted)
         {
-            this.PipelineRequestId = context.Request.Id;
-            this.FieldExecutionMode = context.Request.Field.Mode.ToString();
-            this.FieldPath = context.Request.Field.Route.Path;
+            this.PipelineRequestId = context?.Request?.Id;
+            this.FieldExecutionMode = context?.Request?.Field?.Mode.ToString();
+            this.FieldPath = context?.Request?.Field?.Route?.Path;
         }
 
         /// <summary>

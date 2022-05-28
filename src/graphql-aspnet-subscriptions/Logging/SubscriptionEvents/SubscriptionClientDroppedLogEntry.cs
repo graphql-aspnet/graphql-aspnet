@@ -29,9 +29,9 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         public SubscriptionClientDroppedLogEntry(ISubscriptionClientProxy client)
             : base(SubscriptionLogEventIds.SubscriptionClientDropped)
         {
-            _clientTypeShortName = client.GetType().FriendlyName();
-            this.ClientTypeName = client.GetType().FriendlyName(true);
-            this.ClientId = client.Id;
+            _clientTypeShortName = client?.GetType().FriendlyName();
+            this.ClientTypeName = client?.GetType().FriendlyName(true);
+            this.ClientId = client?.Id;
         }
 
         /// <summary>

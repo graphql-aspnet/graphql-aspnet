@@ -48,7 +48,13 @@ namespace GraphQL.AspNet.Directives
         /// </summary>
         /// <value>The directive phase.</value>
         [GraphSkip]
-        public DirectiveInvocationPhase DirectivePhase => _context?.Request?.DirectivePhase ?? DirectiveInvocationPhase.Unknown;
+        public DirectiveInvocationPhase DirectivePhase
+        {
+            get
+            {
+                return _context?.Request?.DirectivePhase ?? DirectiveInvocationPhase.Unknown;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the object that is the target of this directive. If altered
