@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     public sealed class DecimalScalarType : BaseScalarType
     {
         /// <summary>
-        /// Prevents a default instance of the <see cref="DecimalScalarType"/> class from being created.
+        /// Initializes a new instance of the <see cref="DecimalScalarType"/> class.
         /// </summary>
         public DecimalScalarType()
             : base(Constants.ScalarNames.DECIMAL, typeof(decimal))
