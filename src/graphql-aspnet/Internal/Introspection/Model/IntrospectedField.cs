@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A model object containing data for the __Field type of one field in a graph type.
     /// </summary>
     [DebuggerDisplay("field: {Name}")]
-    public class IntrospectedField : IntrospectedItem, ISchemaItem, IDeprecatable
+    public class IntrospectedField : IntrospectedItem, ISchemaItem
     {
         private readonly IGraphField _field;
 
@@ -35,8 +35,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         {
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedFieldOwner, nameof(introspectedFieldOwner));
             _field = Validation.ThrowIfNullOrReturn(field, nameof(field));
-            this.IsDeprecated = _field.IsDeprecated;
-            this.DeprecationReason = _field.DeprecationReason;
         }
 
         /// <inheritdoc />
@@ -67,10 +65,18 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <value>A collection of arguments assigned to this item.</value>
         public IReadOnlyList<IntrospectedInputValueType> Arguments { get; private set; }
 
-        /// <inheritdoc />
-        public bool IsDeprecated { get; set; }
+        /// <summary>
+        /// Gets a value indicating whether the field this introspection item represents
+        /// is deprecated.
+        /// </summary>
+        /// <value><c>true</c> if this instance is deprecated; otherwise, <c>false</c>.</value>
+        public bool IsDeprecated => _field.IsDeprecated;
 
-        /// <inheritdoc />
-        public string DeprecationReason { get; set; }
+        /// <summary>
+        /// Gets the reason, if any, why the field this introspection item represents
+        /// was deprecated.
+        /// </summary>
+        /// <value>The reason the target field was deprecated.</value>
+        public string DeprecationReason => _field.DeprecationReason;
     }
 }

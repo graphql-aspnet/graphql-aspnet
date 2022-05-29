@@ -82,6 +82,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                     _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
                     value.Description,
                     value.Route,
+                    value.Value,
+                    value.InternalName,
                     value.IsDeprecated,
                     value.DeprecationReason,
                     valueDirectives);

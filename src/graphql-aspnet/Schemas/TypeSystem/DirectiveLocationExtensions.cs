@@ -101,13 +101,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                     var operationType = Constants.ReservedNames.FindOperationTypeByKeyword(otn.OperationType.ToString());
                     switch (operationType)
                     {
-                        case GraphCollection.Query:
+                        case GraphOperationType.Query:
                             return DirectiveLocation.QUERY;
 
-                        case GraphCollection.Mutation:
+                        case GraphOperationType.Mutation:
                             return DirectiveLocation.MUTATION;
 
-                        case GraphCollection.Subscription:
+                        case GraphOperationType.Subscription:
                             return DirectiveLocation.SUBSCRIPTION;
                     }
 

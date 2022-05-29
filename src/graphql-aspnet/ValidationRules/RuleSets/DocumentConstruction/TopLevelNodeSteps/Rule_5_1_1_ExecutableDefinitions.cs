@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.TopLevelN
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
@@ -49,7 +50,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.TopLevelN
             {
                 var operationType = Constants.ReservedNames.FindOperationTypeByKeyword(otn.OperationType.ToString());
 
-                if (operationType == GraphCollection.Unknown)
+                if (operationType == GraphOperationType.Unknown)
                 {
                     this.ValidationError(
                         context,

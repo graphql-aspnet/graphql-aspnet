@@ -92,13 +92,14 @@ namespace GraphQL.AspNet
 
         /// <summary>
         /// Gets a collection of globally known directives that will be added to all schema's by default.
-        /// This is the @skip and @include directive's required by graphql.
+        /// This is the @skip, @include and @deprecated directives required by graphql.
         /// </summary>
         /// <value>The global directives.</value>
         public static IReadOnlyList<Type> GlobalDirectives { get; } = new List<Type>()
         {
             typeof(SkipDirective),
             typeof(IncludeDirective),
+            typeof(DeprecatedDirective),
         };
 
         /// <summary>
@@ -184,6 +185,7 @@ namespace GraphQL.AspNet
             // public directive names
             public const string SKIP_DIRECTIVE = "skip";
             public const string INCLUDE_DIRECTIVE = "include";
+            public const string DEPRECATED_DIRECTIVE = "deprecated";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
@@ -205,15 +207,15 @@ namespace GraphQL.AspNet
             public const string TYPE_FIELD = "__type";
             public const string TYPENAME_FIELD = "__typename";
 
-            private static readonly IReadOnlyDictionary<GraphCollection, string> GRAPH_OPERATION_TYPE_NAME_BY_TYPE;
-            private static readonly IReadOnlyDictionary<string, GraphCollection> GRAPH_OPERATION_TYPE_BY_KEYWORD;
+            private static readonly IReadOnlyDictionary<GraphOperationType, string> GRAPH_OPERATION_TYPE_NAME_BY_TYPE;
+            private static readonly IReadOnlyDictionary<string, GraphOperationType> GRAPH_OPERATION_TYPE_BY_KEYWORD;
 
             /// <summary>
             /// Inspects the known operation types for a name matching the provided value returning it when found.
             /// </summary>
             /// <param name="operationType">Type of the operation to retrieve the graph type name for.</param>
             /// <returns>GraphCollection.</returns>
-            public static string FindOperationTypeNameByType(GraphCollection operationType)
+            public static string FindOperationTypeNameByType(GraphOperationType operationType)
             {
                 if (GRAPH_OPERATION_TYPE_NAME_BY_TYPE.ContainsKey(operationType))
                     return GRAPH_OPERATION_TYPE_NAME_BY_TYPE[operationType];
@@ -226,15 +228,15 @@ namespace GraphQL.AspNet
             /// </summary>
             /// <param name="operationKeyword">The operation keyword as it exists in a query document (e.g. query, mutation).</param>
             /// <returns>GraphCollection.</returns>
-            public static GraphCollection FindOperationTypeByKeyword(string operationKeyword)
+            public static GraphOperationType FindOperationTypeByKeyword(string operationKeyword)
             {
                 if (string.IsNullOrEmpty(operationKeyword))
-                    return GraphCollection.Query;
+                    return GraphOperationType.Query;
 
                 if (GRAPH_OPERATION_TYPE_BY_KEYWORD.ContainsKey(operationKeyword))
                     return GRAPH_OPERATION_TYPE_BY_KEYWORD[operationKeyword];
 
-                return GraphCollection.Unknown;
+                return GraphOperationType.Unknown;
             }
 
             /// <summary>
@@ -242,16 +244,16 @@ namespace GraphQL.AspNet
             /// </summary>
             static ReservedNames()
             {
-                var dicOperationType = new Dictionary<string, GraphCollection>();
-                dicOperationType.Add(ParserConstants.Keywords.Query.ToString(), GraphCollection.Query);
-                dicOperationType.Add(ParserConstants.Keywords.Mutation.ToString(), GraphCollection.Mutation);
-                dicOperationType.Add(ParserConstants.Keywords.Subscription.ToString(), GraphCollection.Subscription);
+                var dicOperationType = new Dictionary<string, GraphOperationType>();
+                dicOperationType.Add(ParserConstants.Keywords.Query.ToString(), GraphOperationType.Query);
+                dicOperationType.Add(ParserConstants.Keywords.Mutation.ToString(), GraphOperationType.Mutation);
+                dicOperationType.Add(ParserConstants.Keywords.Subscription.ToString(), GraphOperationType.Subscription);
                 GRAPH_OPERATION_TYPE_BY_KEYWORD = dicOperationType;
 
-                var dicTypeToTypeName = new Dictionary<GraphCollection, string>();
-                dicTypeToTypeName.Add(GraphCollection.Query, QUERY_TYPE_NAME);
-                dicTypeToTypeName.Add(GraphCollection.Mutation, MUTATION_TYPE_NAME);
-                dicTypeToTypeName.Add(GraphCollection.Subscription, SUBSCRIPTION_TYPE_NAME);
+                var dicTypeToTypeName = new Dictionary<GraphOperationType, string>();
+                dicTypeToTypeName.Add(GraphOperationType.Query, QUERY_TYPE_NAME);
+                dicTypeToTypeName.Add(GraphOperationType.Mutation, MUTATION_TYPE_NAME);
+                dicTypeToTypeName.Add(GraphOperationType.Subscription, SUBSCRIPTION_TYPE_NAME);
                 GRAPH_OPERATION_TYPE_NAME_BY_TYPE = dicTypeToTypeName;
 
                 IntrospectableRouteNames = ImmutableHashSet.Create(

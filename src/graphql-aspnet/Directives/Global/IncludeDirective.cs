@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Directives.Global
         /// </summary>
         /// <param name="ifArgument">if set to <c>true</c> processing of the request, on this branch, will be allowed to continue.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
-        [DirectiveLocations(DirectiveLocation.AllExecutionLocations)]
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
         public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
         {
             return ifArgument ? this.Ok() : this.Cancel();

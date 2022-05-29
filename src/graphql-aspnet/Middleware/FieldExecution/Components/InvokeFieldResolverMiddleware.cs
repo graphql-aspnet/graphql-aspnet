@@ -116,7 +116,8 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     _schema,
                     context,
                     context.Request,
-                    executionArguments);
+                    executionArguments,
+                    context.User);
 
                 // Step 2: Resolve the field
                 context.Logger?.FieldResolutionStarted(resolutionContext);

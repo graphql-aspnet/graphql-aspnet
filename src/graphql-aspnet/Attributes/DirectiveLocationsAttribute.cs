@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Attributes
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// For a given directive, defines where in a query document the directive is allowed to appear.
+    /// For a given directive, defines where the directive is allowed to be applied.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class DirectiveLocationsAttribute : BaseGraphAttribute
@@ -21,15 +21,15 @@ namespace GraphQL.AspNet.Attributes
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
         /// </summary>
-        /// <param name="locations">The set of types within the type system that
-        /// this directive can target.</param>
+        /// <param name="locations">The bitwise set of locations where
+        /// this directive can be applied.</param>
         public DirectiveLocationsAttribute(DirectiveLocation locations)
         {
             this.Locations = locations;
         }
 
         /// <summary>
-        /// Gets the locations where this directive can be defined.
+        /// Gets the locations where this directive can be applied.
         /// </summary>
         /// <value>The locations.</value>
         public DirectiveLocation Locations { get; }

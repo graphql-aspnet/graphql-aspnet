@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
-    using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An interface representing a top level object graph type with in a schema
@@ -21,6 +21,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets the graph operation represented by this instance.
         /// </summary>
         /// <value>The type of the root.</value>
-        GraphCollection OperationType { get; }
+        GraphOperationType OperationType { get; }
     }
 }

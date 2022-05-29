@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using System.Linq;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Configuration.SchemaOptionsTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
@@ -74,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var operationType = ((IGraphOperation)item.Key).OperationType;
             var count = item.Value;
 
-            Assert.AreEqual(GraphCollection.Query, operationType);
+            Assert.AreEqual(GraphOperationType.Query, operationType);
             Assert.AreEqual(1, count);
         }
 
@@ -96,15 +97,15 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             serverBuilder.Build();
 
-            var foundOperations = new HashSet<GraphCollection>();
+            var foundOperations = new HashSet<GraphOperationType>();
             foreach (var item in directiveInstance.Invocations)
             {
                 foundOperations.Add(((IGraphOperation)item.Key).OperationType);
             }
 
             Assert.AreEqual(2, foundOperations.Count);
-            Assert.IsTrue(foundOperations.Contains(GraphCollection.Query));
-            Assert.IsTrue(foundOperations.Contains(GraphCollection.Mutation));
+            Assert.IsTrue(foundOperations.Contains(GraphOperationType.Query));
+            Assert.IsTrue(foundOperations.Contains(GraphOperationType.Mutation));
         }
     }
 }

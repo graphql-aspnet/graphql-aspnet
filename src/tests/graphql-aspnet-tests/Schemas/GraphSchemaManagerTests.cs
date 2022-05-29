@@ -72,15 +72,15 @@ namespace GraphQL.AspNet.Tests.Schemas
             var action = TemplateHelper.CreateFieldTemplate<SimpleMethodController>(nameof(SimpleMethodController.TestActionMethod));
 
             // query root exists, mutation does not (nothing was added to it)
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphCollection.Query));
-            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphCollection.Mutation));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Query));
+            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphOperationType.Mutation));
 
             // field for the controller exists
             var topFieldName = nameof(SimpleMethodController).Replace(Constants.CommonSuffix.CONTROLLER_SUFFIX, string.Empty);
-            Assert.IsTrue(schema.OperationTypes[GraphCollection.Query].Fields.ContainsKey(topFieldName));
+            Assert.IsTrue(schema.OperationTypes[GraphOperationType.Query].Fields.ContainsKey(topFieldName));
 
             // ensure the field on the query is the right name (or throw)
-            var topField = schema.OperationTypes[GraphCollection.Query][topFieldName];
+            var topField = schema.OperationTypes[GraphOperationType.Query][topFieldName];
             Assert.IsNotNull(topField);
 
             var type = schema.KnownTypes.FindGraphType(topField) as IObjectGraphType;
@@ -97,14 +97,14 @@ namespace GraphQL.AspNet.Tests.Schemas
             manager.EnsureGraphType<NestedQueryMethodController>();
 
             // query root exists, mutation does not (nothing was added to it)
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphCollection.Query));
-            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphCollection.Mutation));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Query));
+            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphOperationType.Mutation));
 
             // field for the controller exists
             var fieldName = "path0";
-            Assert.IsTrue(schema.OperationTypes[GraphCollection.Query].Fields.ContainsKey(fieldName));
+            Assert.IsTrue(schema.OperationTypes[GraphOperationType.Query].Fields.ContainsKey(fieldName));
 
-            var topField = schema.OperationTypes[GraphCollection.Query][fieldName];
+            var topField = schema.OperationTypes[GraphOperationType.Query][fieldName];
             var type = schema.KnownTypes.FindGraphType(topField) as IObjectGraphType;
             Assert.IsNotNull(type);
             Assert.AreEqual(2, type.Fields.Count); // declared field + __typename
@@ -151,8 +151,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // query root exists, mutation does not (nothing was added to it)
             Assert.AreEqual(1, schema.OperationTypes.Count);
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphCollection.Query));
-            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphCollection.Mutation));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Query));
+            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphOperationType.Mutation));
 
             Assert.AreEqual(7, schema.KnownTypes.Count);
 
@@ -190,8 +190,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // mutation root exists and query exists (it must by definition even if blank)
             Assert.AreEqual(2, schema.OperationTypes.Count);
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphCollection.Query));
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphCollection.Mutation));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Query));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Mutation));
 
             // 5 distinct scalars (int, uint, float, decimal, string)
             Assert.AreEqual(5, schema.KnownTypes.Count(x => x.Kind == TypeKind.SCALAR));
@@ -251,10 +251,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             // the controller segment: "Query_path0"
             // the method "myActionOperation" should register as a root query
             // The Query root itself contains the `__typename` metafield
-            Assert.AreEqual(3, schema.OperationTypes[GraphCollection.Query].Fields.Count);
-            var controllerQueryField = schema.OperationTypes[GraphCollection.Query]["path0"];
-            var methodAsQueryRootField = schema.OperationTypes[GraphCollection.Query]["myActionOperation"];
-            Assert.IsNotNull(schema.OperationTypes[GraphCollection.Query][Constants.ReservedNames.TYPENAME_FIELD]);
+            Assert.AreEqual(3, schema.OperationTypes[GraphOperationType.Query].Fields.Count);
+            var controllerQueryField = schema.OperationTypes[GraphOperationType.Query]["path0"];
+            var methodAsQueryRootField = schema.OperationTypes[GraphOperationType.Query]["myActionOperation"];
+            Assert.IsNotNull(schema.OperationTypes[GraphOperationType.Query][Constants.ReservedNames.TYPENAME_FIELD]);
 
             // deep inspection of the created controller-query-field
             Assert.IsNotNull(controllerQueryField);
@@ -289,8 +289,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // Mutation Inspection
             // ------------------------------
-            var controllerMutationField = schema.OperationTypes[GraphCollection.Mutation]["path0"];
-            var methodAsMutationTopLevelField = schema.OperationTypes[GraphCollection.Mutation]["SupeMutation"];
+            var controllerMutationField = schema.OperationTypes[GraphOperationType.Mutation]["path0"];
+            var methodAsMutationTopLevelField = schema.OperationTypes[GraphOperationType.Mutation]["SupeMutation"];
 
             // deep inspection of the created controller-mutation-field
             Assert.IsNotNull(controllerMutationField);

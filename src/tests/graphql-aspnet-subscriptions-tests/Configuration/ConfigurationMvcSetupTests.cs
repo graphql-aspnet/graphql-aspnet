@@ -19,6 +19,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Configuration.ConfigurationTestData;
@@ -154,7 +155,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure schema operation type is/was allowed to be injected to the schema
             var schema = sp.GetService(typeof(GraphSchema)) as ISchema;
             Assert.IsNotNull(schema);
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(AspNet.Execution.GraphCollection.Subscription));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Subscription));
 
             // ensure registered services for subscription server
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionServer<GraphSchema>)));
@@ -191,7 +192,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure schema operation type is/was allowed to be injected to the schema
             var schema = sp.GetService(typeof(GraphSchema)) as ISchema;
             Assert.IsNotNull(schema);
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(AspNet.Execution.GraphCollection.Subscription));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Subscription));
 
             // ensure registered services for subscription server
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventPublisher)));

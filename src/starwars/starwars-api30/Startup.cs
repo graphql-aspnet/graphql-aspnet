@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.StarWarsAPI3X
                  options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
 
                  var assembly = typeof(StarWarsDataRepository).Assembly;
-                 options.AddGraphAssembly(assembly);
+                 options.AddAssembly(assembly);
              })
              .AddSubscriptions(options =>
              {

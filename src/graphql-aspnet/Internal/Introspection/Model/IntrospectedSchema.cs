@@ -174,7 +174,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <param name="collection">The collection.</param>
         /// <returns>IntrospectedType.</returns>
-        private IntrospectedType FindOperationType(GraphCollection collection)
+        private IntrospectedType FindOperationType(GraphOperationType collection)
         {
             return this.FindIntrospectedType(Constants.ReservedNames.FindOperationTypeNameByType(collection));
         }
@@ -189,19 +189,19 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Gets the type data of the query operation type.
         /// </summary>
         /// <value>The type of the query.</value>
-        public IntrospectedType QueryType => this.FindOperationType(GraphCollection.Query);
+        public IntrospectedType QueryType => this.FindOperationType(GraphOperationType.Query);
 
         /// <summary>
         /// Gets the type data of the mutation operation type.
         /// </summary>
         /// <value>The type of the mutation.</value>
-        public IntrospectedType MutationType => this.FindOperationType(GraphCollection.Mutation);
+        public IntrospectedType MutationType => this.FindOperationType(GraphOperationType.Mutation);
 
         /// <summary>
         /// Gets the type data of the subscription type.
         /// </summary>
         /// <value>The type of the subscription.</value>
-        public IntrospectedType SubscriptionType => this.FindOperationType(GraphCollection.Subscription);
+        public IntrospectedType SubscriptionType => this.FindOperationType(GraphOperationType.Subscription);
 
         /// <summary>
         /// Gets the directives declared to be a part of this schema.

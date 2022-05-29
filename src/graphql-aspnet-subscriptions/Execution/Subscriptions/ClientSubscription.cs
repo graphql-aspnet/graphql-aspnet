@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A client subscription containing the details of what event is being listened for.
@@ -61,7 +62,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             //
             // However, ensure that the operation that will be executed
             // does in fact represent a subscription being harnesssed
-            if (this.QueryOperation.OperationType != GraphCollection.Subscription)
+            if (this.QueryOperation.OperationType != GraphOperationType.Subscription)
             {
                 this.Messages.Critical(
                         $"The chosen operation is not a subscription operation.",

@@ -27,6 +27,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="name">The value.</param>
         /// <param name="description">The description.</param>
         /// <param name="route">The route path that uniquely identifies this enum option.</param>
+        /// <param name="internalValue">The value of the enum as its declared in .NET.</param>
+        /// <param name="internalLabel">A string representation of label applied to the enum value in .NET.</param>
         /// <param name="isDeprecated">if set to <c>true</c> this option is considred deprecated and marked for removal.</param>
         /// <param name="deprecationReason">The deprecation reason, if any.</param>
         /// <param name="directives">The set of directives to execute
@@ -36,6 +38,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string name,
             string description,
             GraphFieldPath route,
+            object internalValue,
+            string internalLabel,
             bool isDeprecated = false,
             string deprecationReason = null,
             IAppliedDirectiveCollection directives = null)
@@ -47,6 +51,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.IsDeprecated = isDeprecated;
             this.DeprecationReason = deprecationReason?.Trim();
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
+            this.InternalValue = Validation.ThrowIfNullOrReturn(internalValue, nameof(internalValue));
+            this.InternalLabel = Validation.ThrowIfNullWhiteSpaceOrReturn(internalLabel, nameof(internalLabel));
         }
 
         /// <inheritdoc />
@@ -69,5 +75,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IEnumGraphType Parent { get; }
+
+        /// <inheritdoc />
+        public object InternalValue { get; }
+
+        /// <inheritdoc />
+        public string InternalLabel { get; }
     }
 }

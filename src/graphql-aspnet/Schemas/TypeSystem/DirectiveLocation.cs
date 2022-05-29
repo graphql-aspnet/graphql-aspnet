@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// The possible locations a directive is defined for.
+    /// The possible locations a directive can be applied.
     /// </summary>
     [Flags]
     [GraphType(Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM)]

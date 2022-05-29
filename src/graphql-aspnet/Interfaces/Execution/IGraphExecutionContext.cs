@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A base context defining a set of items supported by all middleware pipelines.
@@ -22,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     {
         /// <summary>
         /// Marks this context as being cancelled. This does not terminate a pipeline directly, rather it sets a
-        /// flag, <see cref="IsCancelled"/>, that each middleware component must choose to react to.
+        /// flag that each middleware component must choose to react to.
         /// </summary>
         void Cancel();
 

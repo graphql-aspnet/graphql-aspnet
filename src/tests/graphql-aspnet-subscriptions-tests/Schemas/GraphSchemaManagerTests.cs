@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
@@ -38,16 +39,16 @@ namespace GraphQL.Subscriptions.Tests.Schemas
             // query always exists
             // subscription root was found via the method parsed
             // mutation was not provided
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphCollection.Query));
-            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphCollection.Mutation));
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphCollection.Subscription));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Query));
+            Assert.IsFalse(schema.OperationTypes.ContainsKey(GraphOperationType.Mutation));
+            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Subscription));
 
             // field for the controller exists
             var topFieldName = nameof(SimpleMethodController).Replace(Constants.CommonSuffix.CONTROLLER_SUFFIX, string.Empty);
-            Assert.IsTrue(schema.OperationTypes[GraphCollection.Subscription].Fields.ContainsKey(topFieldName));
+            Assert.IsTrue(schema.OperationTypes[GraphOperationType.Subscription].Fields.ContainsKey(topFieldName));
 
             // ensure the field on the subscription operation  is the right name (i.e. the controller name)
-            var topField = schema.OperationTypes[GraphCollection.Subscription][topFieldName];
+            var topField = schema.OperationTypes[GraphOperationType.Subscription][topFieldName];
             Assert.IsNotNull(topField);
 
             var type = schema.KnownTypes.FindGraphType(topField) as IObjectGraphType;

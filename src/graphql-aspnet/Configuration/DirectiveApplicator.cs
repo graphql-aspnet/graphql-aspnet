@@ -39,6 +39,7 @@ namespace GraphQL.AspNet.Configuration
             // auto remove introspection data, system level items and any virtual items added to the graph
             list.Add(x => !x.IsIntrospectionItem());
             list.Add(x => !x.IsSystemItem());
+            list.Add(x => !x.IsDirective());
 
             // allow graph operations even through they are technically virtual
             list.Add(x => !x.IsVirtualItem() || (x is IGraphOperation));

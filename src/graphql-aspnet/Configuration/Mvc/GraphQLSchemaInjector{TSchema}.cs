@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             if (_options.AutoRegisterLocalGraphEntities)
             {
                 var assembly = Assembly.GetEntryAssembly();
-                _options.AddGraphAssembly(assembly);
+                _options.AddAssembly(assembly);
             }
 
             // ensure an http processor is set
@@ -267,7 +267,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // when assembling the schema instance and throw those at app start up
             // rather than when a query is inbound
             // (the schema is a singleton when added through the injector, but in case it was added
-            // elsehwere make a scoped provider instance to pull it through)
+            // elsewhere make a scoped provider instance to pull it through)
             using (var scope = serviceProvider.CreateScope())
             {
                 // create and setup the schema FIRST

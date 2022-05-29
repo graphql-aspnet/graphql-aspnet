@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.StarWarsAPI6X
                 options.ResponseOptions.ExposeMetrics = true;
 
                 var assembly = typeof(StarWarsDataRepository).Assembly;
-                options.AddGraphAssembly(assembly);
+                options.AddAssembly(assembly);
             })
              .AddSubscriptions(options =>
              {

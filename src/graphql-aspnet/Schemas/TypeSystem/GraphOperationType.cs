@@ -6,15 +6,17 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Execution
+
+namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     /// <summary>
-    /// A set of operation types supported by GraphQL.
+    /// An enumeration of the valid operations of GraphQL.
     /// </summary>
     public enum GraphOperationType
     {
-        Query = GraphCollection.Query,
-        Mutation = GraphCollection.Mutation,
-        Subscription = GraphCollection.Subscription,
+        Unknown = 0,
+        Query = 1,
+        Mutation = 2,
+        Subscription = 3,
     }
 }

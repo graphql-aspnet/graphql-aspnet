@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
@@ -28,7 +29,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return base.ShouldExecute(context) && context.FindContextItem<QueryOperation>().OperationType == GraphCollection.Subscription;
+            return base.ShouldExecute(context) && context.FindContextItem<QueryOperation>().OperationType == GraphOperationType.Subscription;
         }
 
         /// <summary>

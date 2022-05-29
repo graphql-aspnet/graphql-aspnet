@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Schemas
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             this.EnsureSchemaDependencies();
-            this.EnsureGraphOperationType(GraphCollection.Query);
+            this.EnsureGraphOperationType(GraphOperationType.Query);
         }
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace GraphQL.AspNet.Schemas
             if (this.Schema.Configuration.DeclarationOptions.DisableIntrospection)
                 return;
 
-            this.EnsureGraphOperationType(GraphCollection.Query);
-            var queryField = this.Schema.OperationTypes[GraphCollection.Query];
+            this.EnsureGraphOperationType(GraphOperationType.Query);
+            var queryField = this.Schema.OperationTypes[GraphOperationType.Query];
 
             // Note: introspection fields are defined by the graphql spec, no custom name or item formatting is allowed
             // for Type and field name formatting.
@@ -150,7 +150,8 @@ namespace GraphQL.AspNet.Schemas
         {
             if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
             {
-                this.EnsureGraphOperationType(action.Route.RootCollection);
+                var operation = action.Route.RootCollection.ToGraphOperationType();
+                this.EnsureGraphOperationType(operation);
                 var parentField = this.AddOrRetrieveControllerRoutePath(action);
                 this.AddActionAsField(parentField, action);
             }
@@ -168,8 +169,14 @@ namespace GraphQL.AspNet.Schemas
         /// type representing it also exists in the schema's type collection.
         /// </summary>
         /// <param name="operationType">Type of the operation.</param>
-        private void EnsureGraphOperationType(GraphCollection operationType)
+        private void EnsureGraphOperationType(GraphOperationType operationType)
         {
+            if (operationType == GraphOperationType.Unknown)
+            {
+                throw new ArgumentOutOfRangeException($"The operation type '{operationType}' is " +
+                    $"not supported by graphql.");
+            }
+
             if (!this.Schema.OperationTypes.ContainsKey(operationType))
             {
                 var operation = new GraphOperation(operationType);
@@ -190,7 +197,7 @@ namespace GraphQL.AspNet.Schemas
 
             // loop through all parent path parts of this action
             // creating virtual fields as necessary or using existing ones and adding on to them
-            IObjectGraphType parentType = this.Schema.OperationTypes[action.Route.RootCollection];
+            IObjectGraphType parentType = this.Schema.OperationTypes[action.Route.RootCollection.ToGraphOperationType()];
 
             for (var i = 0; i < pathSegments.Count; i++)
             {
@@ -431,8 +438,8 @@ namespace GraphQL.AspNet.Schemas
             if (this.Schema.Configuration.DeclarationOptions.DisableIntrospection)
                 return;
 
-            this.EnsureGraphOperationType(GraphCollection.Query);
-            var queryType = this.Schema.OperationTypes[GraphCollection.Query];
+            this.EnsureGraphOperationType(GraphOperationType.Query);
+            var queryType = this.Schema.OperationTypes[GraphOperationType.Query];
             if (!queryType.Fields.ContainsKey(Constants.ReservedNames.SCHEMA_FIELD))
                 return;
 

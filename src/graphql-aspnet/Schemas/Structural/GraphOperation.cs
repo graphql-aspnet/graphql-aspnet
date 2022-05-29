@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="directives">The directives to apply to this operation
         /// when its added to a schema.</param>
         public GraphOperation(
-            GraphCollection operationType,
+            GraphOperationType operationType,
             IAppliedDirectiveCollection directives = null)
             : base(
                   Constants.ReservedNames.FindOperationTypeNameByType(operationType),
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc />
-        public GraphCollection OperationType { get; }
+        public GraphOperationType OperationType { get; }
 
         /// <inheritdoc />
         public IGraphField Extend(IGraphField newField)

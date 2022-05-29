@@ -13,33 +13,38 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A model object containing data for the __EnumValue type of one enum value in an <see cref="IEnumGraphType"/>.
     /// </summary>
     [GraphType(Constants.ReservedNames.ENUM_VALUE_TYPE)]
     [DebuggerDisplay("Introspected Enum Value: {Name}")]
-    public class IntrospectedEnumValue : IntrospectedItem, IDeprecatable, ISchemaItem
+    public class IntrospectedEnumValue : IntrospectedItem, ISchemaItem
     {
-        private readonly IEnumValue _enumOption;
+        private readonly IEnumValue _enumValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedEnumValue" /> class.
         /// </summary>
-        /// <param name="enumOption">The enum option.</param>
-        public IntrospectedEnumValue(IEnumValue enumOption)
-            : base(enumOption)
+        /// <param name="enumValue">The enum option.</param>
+        public IntrospectedEnumValue(IEnumValue enumValue)
+            : base(enumValue)
         {
-            _enumOption = Validation.ThrowIfNullOrReturn(enumOption, nameof(enumOption));
-            this.IsDeprecated = _enumOption.IsDeprecated;
-            this.DeprecationReason = _enumOption.DeprecationReason;
+            _enumValue = Validation.ThrowIfNullOrReturn(enumValue, nameof(enumValue));
         }
 
-        /// <inheritdoc />
-        public bool IsDeprecated { get; set; }
+        /// <summary>
+        /// Gets a value indicating whether the enum value this introspection item represents
+        /// is deprecated.
+        /// </summary>
+        /// <value><c>true</c> if this instance is deprecated; otherwise, <c>false</c>.</value>
+        public bool IsDeprecated => _enumValue.IsDeprecated;
 
-        /// <inheritdoc />
-        public string DeprecationReason { get; set; }
+        /// <summary>
+        /// Gets the reason, if any, why the enum vlaue this introspection item represents
+        /// was deprecated.
+        /// </summary>
+        /// <value>The reason the target field was deprecated.</value>
+        public string DeprecationReason => _enumValue.DeprecationReason;
     }
 }

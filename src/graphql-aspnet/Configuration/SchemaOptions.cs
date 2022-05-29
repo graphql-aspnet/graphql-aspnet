@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -19,7 +18,6 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -73,14 +71,14 @@ namespace GraphQL.AspNet.Configuration
 
         /// <summary>
         /// Searches for and registers all publically accessible <see cref="GraphController" /> and  <see cref="GraphDirective"/>
-        /// found on the target <see cref="ISchema" /> assembly, injecting them into the schema and generating the
+        /// found on the assembly in which the current <see cref="ISchema" /> is declared, injecting them into the schema and generating the
         /// appropriate graph types.
         /// </summary>
         /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddSchemaAssembly()
         {
             var assemblyToCheck = _schemaType.Assembly;
-            return this.AddGraphAssembly(assemblyToCheck);
+            return this.AddAssembly(assemblyToCheck);
         }
 
         /// <summary>
@@ -89,7 +87,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <param name="assembly">The assembly to scan for items.</param>
         /// <returns>SchemaOptions.</returns>
-        public SchemaOptions AddGraphAssembly(Assembly assembly)
+        public SchemaOptions AddAssembly(Assembly assembly)
         {
             Validation.ThrowIfNull(assembly, nameof(assembly));
             var typesToAdd = assembly.LocateTypesInAssembly(Constants.AssemblyScanTypes);
@@ -134,7 +132,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Registers the directive type to the growing schema.
+        /// Registers the directive to the growing schema.
         /// </summary>
         /// <typeparam name="TDirective">The directive to add.</typeparam>
         /// <returns>SchemaOptions.</returns>

@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Variables;
 
     /// <summary>
@@ -108,7 +109,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 // those contexts that should be isolated execute first and all others
                 // run in paralell
                 IEnumerable<(IGraphFieldInvocationContext Context, bool ExecuteIsolated)> orderedContextList;
-                if (operation.OperationType == GraphCollection.Mutation)
+                if (operation.OperationType == GraphOperationType.Mutation)
                 {
                     // top level mutation operatons must be executed in sequential order
                     // due to potential side effects on the data
@@ -272,7 +273,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// </summary>
         /// <param name="operationType">Type of the operation.</param>
         /// <returns>System.Object.</returns>
-        private object GenerateRootSourceData(GraphCollection operationType)
+        private object GenerateRootSourceData(GraphOperationType operationType)
         {
             if (_schema.OperationTypes.TryGetValue(operationType, out var rootOperation))
             {

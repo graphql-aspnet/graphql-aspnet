@@ -19,5 +19,18 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The parent.</value>
         IEnumGraphType Parent { get; }
+
+        /// <summary>
+        /// Gets the declared numerical value of the enum.
+        /// </summary>
+        /// <value>The value of the neum.</value>
+        object InternalValue { get; }
+
+        /// <summary>
+        /// Gets the declared label applied to the enum value by .NET.
+        /// (e.g. 'Value1' for the enum value <c>MyEnum.Value1</c>).
+        /// </summary>
+        /// <value>The internal label.</value>
+        string InternalLabel { get; }
     }
 }

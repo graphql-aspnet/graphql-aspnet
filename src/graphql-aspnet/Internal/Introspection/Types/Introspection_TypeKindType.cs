@@ -47,6 +47,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                     name,
                     description,
                     this.Route.CreateChild(name),
+                    value,
+                    name,
                     false,
                     null);
 
