@@ -25,13 +25,14 @@ namespace GraphQL.AspNet.ValidationRules
         /// specification document link. If null the root of the document
         /// page is returned.</param>
         /// <returns>System.String.</returns>
-        public static string Create(string anchorTag)
+        public static string CreateFromAnchorTag(string anchorTag)
         {
             var builder = new StringBuilder();
             builder.Append(Constants.SPECIFICATION_URL);
 
             if (!string.IsNullOrWhiteSpace(anchorTag))
             {
+                anchorTag = anchorTag.Trim();
                 if (!anchorTag.StartsWith("#"))
                     builder.Append("#");
 

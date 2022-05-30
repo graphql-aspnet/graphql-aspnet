@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Configuration
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -107,13 +108,13 @@ namespace GraphQL.AspNet.Configuration
         {
             if (typeof(TItem) == typeof(GraphController))
             {
-                throw new InvalidOperationException(
+                throw new SchemaConfigurationException(
                     $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a controller.");
             }
 
             if (typeof(TItem) == typeof(GraphDirective))
             {
-                throw new InvalidOperationException(
+                throw new SchemaConfigurationException(
                     $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a directive.");
             }
 

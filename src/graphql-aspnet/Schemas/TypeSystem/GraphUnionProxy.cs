@@ -14,7 +14,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
-    /// <inheritdoc cref="IGraphUnionProxy" />
+    /// <summary>
+    /// An basic implementation of <see cref="IGraphUnionProxy"/> that can be
+    /// inherited from for easy development.
+    /// </summary>
     [DebuggerDisplay("UNION PROXY: {Name}")]
     public class GraphUnionProxy : IGraphUnionProxy
     {
@@ -34,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphUnionProxy"/> class.
         /// </summary>
-        /// <param name="unionName">Name of the union.</param>
+        /// <param name="unionName">Name of the union as it should appear in the schema.</param>
         /// <param name="typesToInclude">The types to include.</param>
         public GraphUnionProxy(string unionName, params Type[] typesToInclude)
             : this(unionName, typesToInclude as IEnumerable<Type>)

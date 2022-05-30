@@ -55,6 +55,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.Common
         protected abstract string RuleAnchorTag { get; }
 
         /// <inheritdoc />
-        public virtual string ReferenceUrl => ReferenceRule.Create(this.RuleAnchorTag);
+        public virtual string ReferenceUrl => ReferenceRule.CreateFromAnchorTag(this.RuleAnchorTag);
     }
 }

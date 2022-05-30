@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -71,8 +72,8 @@ namespace GraphQL.AspNet.Execution
                 var directivePipeline = scopedProvider.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphDirectiveExecutionContext>>();
                 if (directivePipeline == null)
                 {
-                    throw new GraphExecutionException($"Unable to construct the schema '{schema.Name}'. " +
-                          $"No valid directive processing pipeline was found.");
+                    throw new SchemaConfigurationException($"Unable to construct the schema '{schema.Name}'. " +
+                          $"No valid directive processing pipeline was found in the service provider.");
                 }
 
                 IDirective targetDirective = null;
@@ -89,7 +90,7 @@ namespace GraphQL.AspNet.Execution
                         $"The directive type named '{directiveName}' " +
                         $"does not represent a valid directive on the target schema. (Target: '{item.Route.Path}', Schema: {schema.Name})";
 
-                    throw new GraphTypeDeclarationException(failureMessage);
+                    throw new SchemaConfigurationException(failureMessage);
                 }
 
                 var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.Arguments);
@@ -174,7 +175,7 @@ namespace GraphQL.AspNet.Execution
                         }
                     }
 
-                    throw new GraphExecutionException(
+                    throw new SchemaConfigurationException(
                         $"An exception occured applying the type system directive '{targetDirective.Name}' to schema item '{item.Name}'. " +
                         $"See inner exception(s) for details.",
                         innerException: causalException);

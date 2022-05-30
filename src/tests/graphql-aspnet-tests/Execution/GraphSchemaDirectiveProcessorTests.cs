@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
@@ -151,7 +152,7 @@ namespace GraphQL.AspNet.Tests.Execution
             _typesToAdd.Add(typeof(ObjectTypeWithDirective));
             this.BuildInstance(false);
 
-            Assert.Throws<GraphExecutionException>(() =>
+            Assert.Throws<SchemaConfigurationException>(() =>
             {
                 _instance.ApplyDirectives(_schemaInstance);
             });
@@ -165,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Execution
             _typesToAdd.Add(typeof(ObjectTypeWithDirectiveAppliedByName));
             this.BuildInstance();
 
-            Assert.Throws<GraphTypeDeclarationException>(() =>
+            Assert.Throws<SchemaConfigurationException>(() =>
             {
                 _instance.ApplyDirectives(_schemaInstance);
             });
@@ -189,7 +190,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 _instance.ApplyDirectives(_schemaInstance);
             }
-            catch (GraphExecutionException ex)
+            catch (SchemaConfigurationException ex)
             {
                 // ensure that the default casual exception
                 // is attached to the thrown execution execption
@@ -223,7 +224,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 _instance.ApplyDirectives(_schemaInstance);
             }
-            catch (GraphExecutionException ex)
+            catch (SchemaConfigurationException ex)
             {
                 Assert.IsNotNull(ex.InnerException);
 
@@ -259,7 +260,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 _instance.ApplyDirectives(_schemaInstance);
             }
-            catch (GraphExecutionException ex)
+            catch (SchemaConfigurationException ex)
             {
                 Assert.AreEqual(expectedThrownException, ex.InnerException);
                 Assert.IsNull(ex.InnerException.InnerException);
@@ -286,7 +287,7 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 _instance.ApplyDirectives(_schemaInstance);
             }
-            catch (GraphExecutionException ex)
+            catch (SchemaConfigurationException ex)
             {
                 Assert.AreEqual(thrownException, ex.InnerException);
                 Assert.IsNull(ex.InnerException.InnerException);
