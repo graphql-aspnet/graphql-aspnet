@@ -12,8 +12,7 @@ namespace GraphQL.AspNet.Attributes
     using System;
 
     /// <summary>
-    /// A base class attribute from which ALL graphql attributes inherit. Serves common functionality if needed
-    /// as well as acts as a marker to determine if a class is decorated for graphql or not.
+    /// A base attribute from which ALL graphql attributes inherit.
     /// </summary>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
     public abstract class BaseGraphAttribute : Attribute

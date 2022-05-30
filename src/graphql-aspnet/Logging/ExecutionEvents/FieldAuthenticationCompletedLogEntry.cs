@@ -28,11 +28,11 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public FieldAuthenticationCompletedLogEntry(GraphFieldSecurityContext securityContext, IAuthenticationResult authResult)
             : base(LogEventIds.FieldAuthenticationCompleted)
         {
-            this.PipelineRequestId = securityContext?.Request.Id;
-            this.FieldPath = securityContext?.Request.Field.Route.Path;
+            this.PipelineRequestId = securityContext?.Request?.Id;
+            this.FieldPath = securityContext?.Request?.Field?.Route?.Path;
             this.Username = authResult?.User?.RetrieveUsername();
             this.AuthenticationScheme = authResult?.AuthenticationScheme;
-            this.AuthethenticationSuccess = authResult?.Suceeded ?? false;
+            this.AuthethenticationSuccess = authResult?.Suceeded;
             this.LogMessage = securityContext?.Result?.LogMessage;
         }
 
@@ -61,9 +61,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets a value indicating whether authentication was successful.
         /// </summary>
         /// <value><c>true</c> if [authethentication success]; otherwise, <c>false</c>.</value>
-        public bool AuthethenticationSuccess
+        public bool? AuthethenticationSuccess
         {
-            get => this.GetProperty<bool>(LogPropertyNames.AUTHENTICATION_SUCCESS);
+            get => this.GetProperty<bool?>(LogPropertyNames.AUTHENTICATION_SUCCESS);
             private set => this.SetProperty(LogPropertyNames.AUTHENTICATION_SUCCESS, value);
         }
 

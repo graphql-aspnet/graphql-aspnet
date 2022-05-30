@@ -52,26 +52,33 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 return null;
 
             var result = new GraphTypeCreationResult();
+
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
-
-            var fieldSet = new List<IGraphField>();
-            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
-            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
-            {
-                var fieldResult = fieldMaker.CreateField(fieldTemplate);
-                fieldSet.Add(fieldResult.Field);
-
-                result.MergeDependents(fieldResult);
-            }
+            var directives = template.CreateAppliedDirectives();
 
             var objectType = new ObjectGraphType(
                 formatter.FormatGraphTypeName(template.Name),
                 concreteType,
-                fieldSet)
+                template.Route,
+                directives)
             {
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            result.GraphType = objectType;
+            result.ConcreteType = concreteType;
+
+            // account for any potential type system directives
+            result.AddDependentRange(template.RetrieveRequiredTypes());
+
+            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
+            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
+            {
+                var fieldResult = fieldMaker.CreateField(fieldTemplate);
+                objectType.Extend(fieldResult.Field);
+                result.MergeDependents(fieldResult);
+            }
 
             // add in declared interfaces by name
             foreach (var iface in template.DeclaredInterfaces)
@@ -79,8 +86,6 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 objectType.InterfaceNames.Add(formatter.FormatGraphTypeName(GraphTypeNames.ParseName(iface, TypeKind.OBJECT)));
             }
 
-            result.GraphType = objectType;
-            result.ConcreteType = concreteType;
             return result;
         }
 

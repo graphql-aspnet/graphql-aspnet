@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,25 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type representing a <see cref="Uri"/>.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class UriScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static UriScalarType Instance { get; } = new UriScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="UriScalarType"/> class.
-        /// </summary>
-        static UriScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="UriScalarType"/> class.
         /// </summary>
-        private UriScalarType()
+        public UriScalarType()
             : base(Constants.ScalarNames.URI, typeof(Uri))
         {
             this.Description = "A uri pointing to a location on the web (a.k.a. URL).";
@@ -67,9 +56,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return ((Uri)item).ToString();
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

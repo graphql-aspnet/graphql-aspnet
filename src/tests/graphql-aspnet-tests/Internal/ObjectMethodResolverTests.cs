@@ -23,11 +23,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task NullSourceData_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveData),
                 null);
 
@@ -44,11 +44,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task SourceDataIsNotOfTheTemplate_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveData),
                 new object());
 
@@ -66,11 +66,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task MethodThrowsException_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodThrowException),
                 new object());
 
@@ -90,11 +90,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task KnownExecutionError_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodWithArgument),
                 new object());
 
@@ -117,11 +117,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task AsyncMethod_NullSourceData_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveDataAsync),
                 null);
 
@@ -138,11 +138,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task AsyncMethod_SourceDataIsNotOfTheTemplate_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodRetrieveDataAsync),
                 new object());
 
@@ -160,11 +160,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task AsyncMethod_MethodThrowsException_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodThrowExceptionAsync),
                 new object());
 
@@ -184,11 +184,11 @@ namespace GraphQL.AspNet.Tests.Internal
         [Test]
         public async Task AsyncMethod_KnownExecutionError_FailsRequest()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphType<ResolverObject>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<ResolverObject>(
+            var builder = server.CreateGraphTypeFieldContextBuilder<ResolverObject>(
                 nameof(ResolverObject.MethodWithArgumentAsync),
                 new object());
 

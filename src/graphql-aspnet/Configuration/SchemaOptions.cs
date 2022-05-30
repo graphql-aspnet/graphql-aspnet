@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Configuration
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
@@ -24,13 +25,14 @@ namespace GraphQL.AspNet.Configuration
     /// <summary>
     /// A complete set of configuration options to setup a schema.
     /// </summary>
-    public class SchemaOptions
+    public partial class SchemaOptions
     {
-        private readonly Dictionary<Type, IGraphQLServerExtension> _extensions;
-        private readonly HashSet<Type> _possibleTypes;
+        private readonly Dictionary<Type, IGraphQLServerExtension> _serverExtensions;
+        private readonly HashSet<SchemaTypeToRegister> _possibleTypes;
 
         private readonly Type _schemaType;
-        private readonly List<TypeToRegister> _registeredServices;
+        private readonly List<ServiceToRegister> _registeredServices;
+        private List<ISchemaConfigurationExtension> _configExtensions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaOptions" /> class.
@@ -42,9 +44,10 @@ namespace GraphQL.AspNet.Configuration
         {
             this.ServiceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _schemaType = Validation.ThrowIfNullOrReturn(schemaType, nameof(schemaType));
-            _possibleTypes = new HashSet<Type>();
-            _extensions = new Dictionary<Type, IGraphQLServerExtension>();
-            _registeredServices = new List<TypeToRegister>();
+            _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultComparer);
+            _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
+            _registeredServices = new List<ServiceToRegister>();
+            _configExtensions = new List<ISchemaConfigurationExtension>();
 
             this.DeclarationOptions = new SchemaDeclarationConfiguration();
             this.CacheOptions = new SchemaQueryPlanCacheConfiguration();
@@ -69,14 +72,14 @@ namespace GraphQL.AspNet.Configuration
 
         /// <summary>
         /// Searches for and registers all publically accessible <see cref="GraphController" /> and  <see cref="GraphDirective"/>
-        /// found on the target <see cref="ISchema" /> assembly, injecting them into the schema and generating the
+        /// found on the assembly in which the current <see cref="ISchema" /> is declared, injecting them into the schema and generating the
         /// appropriate graph types.
         /// </summary>
-        /// <returns>SchemaConfiguration&lt;TSchema&gt;.</returns>
+        /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddSchemaAssembly()
         {
             var assemblyToCheck = _schemaType.Assembly;
-            return this.AddGraphAssembly(assemblyToCheck);
+            return this.AddAssembly(assemblyToCheck);
         }
 
         /// <summary>
@@ -84,13 +87,13 @@ namespace GraphQL.AspNet.Configuration
         /// found on the supplied assembly, injecting them into the schema as graph types.
         /// </summary>
         /// <param name="assembly">The assembly to scan for items.</param>
-        /// <returns>SchemaConfiguration&lt;TSchema&gt;.</returns>
-        public SchemaOptions AddGraphAssembly(Assembly assembly)
+        /// <returns>SchemaOptions.</returns>
+        public SchemaOptions AddAssembly(Assembly assembly)
         {
             Validation.ThrowIfNull(assembly, nameof(assembly));
             var typesToAdd = assembly.LocateTypesInAssembly(Constants.AssemblyScanTypes);
             foreach (var type in typesToAdd)
-                this.AddGraphType(type);
+                this.AddType(type);
 
             return this;
         }
@@ -100,37 +103,75 @@ namespace GraphQL.AspNet.Configuration
         /// in the type system and queriable via introspection.
         /// </summary>
         /// <typeparam name="TItem">The type to add.</typeparam>
-        /// <returns>SchemaConfiguration&lt;TSchema&gt;.</returns>
+        /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddGraphType<TItem>()
         {
-            return this.AddGraphType(typeof(TItem));
+            if (typeof(TItem) == typeof(GraphController))
+            {
+                throw new SchemaConfigurationException(
+                    $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a controller.");
+            }
+
+            if (typeof(TItem) == typeof(GraphDirective))
+            {
+                throw new SchemaConfigurationException(
+                    $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a directive.");
+            }
+
+            return this.AddType(typeof(TItem));
         }
 
         /// <summary>
-        /// Registers the type to the schema when it is instaniated, it will be made available
-        /// in the type system and queriable via introspection.
+        /// Registers the controller to the growing schema.
+        /// </summary>
+        /// <typeparam name="TController">The controller to add.</typeparam>
+        /// <returns>SchemaOptions.</returns>
+        public SchemaOptions AddController<TController>()
+            where TController : GraphController
+        {
+            return this.AddType(typeof(TController));
+        }
+
+        /// <summary>
+        /// Registers the directive to the growing schema.
+        /// </summary>
+        /// <typeparam name="TDirective">The directive to add.</typeparam>
+        /// <returns>SchemaOptions.</returns>
+        public SchemaOptions AddDirective<TDirective>()
+            where TDirective : GraphDirective
+        {
+            return this.AddType(typeof(TDirective));
+        }
+
+        /// <summary>
+        /// Registers the given type to the schema. It will be made available
+        /// in the type system and queriable via introspection. This method can be used to register
+        /// graph types, controllers and directives.
         /// </summary>
         /// <param name="type">The type to add.</param>
-        /// <returns>SchemaConfiguration&lt;TSchema&gt;.</returns>
-        public SchemaOptions AddGraphType(Type type)
+        /// <returns>SchemaOptions.</returns>
+        public SchemaOptions AddType(Type type)
         {
             Validation.ThrowIfNull(type, nameof(type));
-            var newAdd = _possibleTypes.Add(type);
+            var newAdd = _possibleTypes.Add(new SchemaTypeToRegister(type));
             if (newAdd)
             {
                 if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
-                {
-                    var typeToRegister = new TypeToRegister(
-                        type,
-                        type,
-                        GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime,
-                        false);
-
-                    _registeredServices.Add(typeToRegister);
-                }
+                    this.RegisterTypeAsDependentService(type);
             }
 
             return this;
+        }
+
+        private void RegisterTypeAsDependentService(Type type)
+        {
+            var serviceToRegister = new ServiceToRegister(
+                type,
+                type,
+                GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime,
+                false);
+
+            _registeredServices.Add(serviceToRegister);
         }
 
         /// <summary>
@@ -144,7 +185,66 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(extension, nameof(extension));
 
             extension.Configure(this);
-            _extensions.Add(extension.GetType(), extension);
+            _serverExtensions.Add(extension.GetType(), extension);
+        }
+
+        /// <summary>
+        /// Adds an extension to allow processing of schema instance by an extenal object
+        /// before the schema is complete. The state of the schema is not garunteed
+        /// when then extension is executed. It is highly likely that the schema will undergo
+        /// further processing after the extension executes.
+        /// </summary>
+        /// <param name="extension">The extension to apply.</param>
+        public void AddConfigurationExtension(ISchemaConfigurationExtension extension)
+        {
+            Validation.ThrowIfNull(extension, nameof(extension));
+            _configExtensions.Add(extension);
+        }
+
+        /// <summary>
+        /// Begins the application of a directive of the given type to items in the target
+        /// schema.
+        /// </summary>
+        /// <typeparam name="TDirectiveType">The type of the directive to apply.</typeparam>
+        /// <returns>IDirectiveInjector.</returns>
+        public DirectiveApplicator ApplyDirective<TDirectiveType>()
+            where TDirectiveType : GraphDirective
+        {
+            return this.ApplyDirective(typeof(TDirectiveType));
+        }
+
+        /// <summary>
+        /// Begins the application of a directive of the given type to items in the target
+        /// schema. This type must inherit from <see cref="GraphDirective"/>.
+        /// </summary>
+        /// <param name="directiveType">The type of the directive to apply to schema items.</param>
+        /// <returns>IDirectiveInjector.</returns>
+        public DirectiveApplicator ApplyDirective(Type directiveType)
+        {
+            Validation.ThrowIfNull(directiveType, nameof(directiveType));
+            Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
+
+            this.AddType(directiveType);
+            var applicator = new DirectiveApplicator(directiveType);
+            this.AddConfigurationExtension(applicator);
+
+            return applicator;
+        }
+
+        /// <summary>
+        /// Begins the application of a directive with a given name to items in the target
+        /// schema. This name is case sensitive and must match the name of the directive
+        /// as it exists in the target schema.
+        /// </summary>
+        /// <param name="directiveName">Name of the directive.</param>
+        /// <returns>IDirectiveInjector.</returns>
+        public DirectiveApplicator ApplyDirective(string directiveName)
+        {
+            directiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
+            var applicator = new DirectiveApplicator(directiveName);
+            this.AddConfigurationExtension(applicator);
+
+            return applicator;
         }
 
         /// <summary>
@@ -164,10 +264,18 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Gets the registered schema types.
+        /// Gets the classes, enums, structs and other types that need to be
+        /// registered to the schema when its created.
         /// </summary>
         /// <value>The registered schema types.</value>
-        public IEnumerable<Type> RegisteredSchemaTypes => _possibleTypes;
+        public IEnumerable<SchemaTypeToRegister> SchemaTypesToRegister => _possibleTypes;
+
+        /// <summary>
+        /// Gets the configuration extensions that will be applied to the schema instance when its
+        /// created.
+        /// </summary>
+        /// <value>The configuration extensions.</value>
+        public IEnumerable<ISchemaConfigurationExtension> ConfigurationExtensions => _configExtensions;
 
         /// <summary>
         /// Gets or sets a value indicating whether any <see cref="GraphController"/>, <see cref="GraphDirective"/>  or
@@ -219,7 +327,7 @@ namespace GraphQL.AspNet.Configuration
         /// Gets the set of options extensions added to this schema configuration.
         /// </summary>
         /// <value>The extensions.</value>
-        public IReadOnlyDictionary<Type, IGraphQLServerExtension> Extensions => _extensions;
+        public IReadOnlyDictionary<Type, IGraphQLServerExtension> ServerExtensions => _serverExtensions;
 
         /// <summary>
         /// Gets the service collection which contains all the required entries for
@@ -227,5 +335,17 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The service collection.</value>
         public IServiceCollection ServiceCollection { get; }
+
+        /// <summary>
+        /// <para>Gets a value indicating to what depth any added graph type
+        /// will be inspected for dependent services. A deeper inspection
+        /// will traverse the type system deeper but may take longer to initialize.
+        /// </para>
+        /// <para>
+        /// Default = 3 .
+        /// </para>
+        /// </summary>
+        /// <value>The service introspection depth.</value>
+        public int ServiceIntrospectionDepth { get; }
     }
 }

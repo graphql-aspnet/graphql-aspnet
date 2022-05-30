@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A representation of a object field as it would be defined in the graph type system. Contains
     /// special logic for handling graph fields generating from object properties.
     /// </summary>
-    public class PropertyGraphField : MethodGraphField, ITypedItem
+    public class PropertyGraphField : MethodGraphField, ITypedSchemaItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGraphField" /> class.
@@ -34,6 +34,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="mode">The mode in which the runtime will process this field.</param>
         /// <param name="resolver">The resolver to be invoked to produce data when this field is called.</param>
         /// <param name="securityPolicies">The security policies that apply to this field.</param>
+        /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
         public PropertyGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
@@ -43,8 +44,9 @@ namespace GraphQL.AspNet.Schemas.Structural
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
             IGraphFieldResolver resolver = null,
-            IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null)
-            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies)
+            IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
+            IAppliedDirectiveCollection directives = null)
+            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
         {
             this.InternalName = declaredPropertyName;
         }

@@ -19,9 +19,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
         public SimpleScalarObjectGraphType()
             : base(nameof(SimpleObjectScalar), typeof(SimpleObjectScalar))
         {
+            this.Description = "Scalar from a object";
         }
-
-        public override string Description => "Scalar from a object";
 
         public override ScalarValueType ValueType => ScalarValueType.String;
 

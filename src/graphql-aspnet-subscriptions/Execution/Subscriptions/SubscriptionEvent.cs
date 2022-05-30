@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         public object Data { get; set; }
 
         /// <summary>
-        /// Gets or sets the fully qualified type name of the data object.
+        /// Gets or sets the fully qualified type name of the <see cref="Data"/> object.
         /// </summary>
         /// <value>The type.</value>
         public string DataTypeName { get; set; }

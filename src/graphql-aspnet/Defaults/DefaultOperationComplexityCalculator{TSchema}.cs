@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A calculator that can determine the estimated complexity for a given operation.
@@ -56,15 +57,15 @@ namespace GraphQL.AspNet.Defaults
 
             switch (operation.OperationType)
             {
-                case GraphCollection.Query:
+                case GraphOperationType.Query:
                     totalWeight *= QUERY_WEIGHT;
                     break;
 
-                case GraphCollection.Mutation:
+                case GraphOperationType.Mutation:
                     totalWeight *= MUTATION_WEIGHT;
                     break;
 
-                case GraphCollection.Subscription:
+                case GraphOperationType.Subscription:
                     totalWeight *= SUBSCIRPTION_WEIGHT;
                     break;
             }

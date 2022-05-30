@@ -12,6 +12,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
@@ -54,10 +56,16 @@ namespace GraphQL.AspNet.Configuration.Mvc
             if (_parsedTypes.Contains(type))
                 return;
 
+            _parsedTypes.Add(type);
+
+            // can't preparse scalars (no parsing nessceary)
             if (GraphQLProviders.ScalarProvider.IsScalar(type))
                 return;
 
-            _parsedTypes.Add(type);
+            // can't preparse union proxies (they aren't parsable graph types)
+            if (Validation.IsCastable<IGraphUnionProxy>(type))
+                return;
+
             var template = GraphQLProviders.TemplateProvider.ParseType(type);
 
             if (template is IGraphTypeFieldTemplateContainer fieldContainer)

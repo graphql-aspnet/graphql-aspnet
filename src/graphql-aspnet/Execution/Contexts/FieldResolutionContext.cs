@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Diagnostics;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A context passed to a field resolver to complete its resolution task and generate data for a field.
@@ -22,6 +23,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldResolutionContext" /> class.
         /// </summary>
+        /// <param name="targetSchema">The schema in scope for this resolution context.</param>
         /// <param name="parentContext">The parent context from which this field resolution context is created.</param>
         /// <param name="fieldRequest">The request to resolve a specific field.</param>
         /// <param name="arguments">The execution arguments that need to be passed to the field
@@ -29,11 +31,12 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="user">Optional. The user context that authenticated and authorized for this
         /// resolution context.</param>
         public FieldResolutionContext(
+            ISchema targetSchema,
             IGraphExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)
-            : base(parentContext, fieldRequest, arguments, user)
+            : base(targetSchema, parentContext, fieldRequest, arguments, user)
         {
         }
 

@@ -14,7 +14,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.ValueResolvers;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A representation of any given enumeration (fixed set of values) in the type system.
@@ -23,38 +26,57 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("ENUM {Name}")]
     public class EnumGraphType : IEnumGraphType
     {
-        private readonly Dictionary<string, IEnumOption> _options;
+        private readonly Dictionary<string, IEnumValue> _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
         /// <param name="name">The name to assign to this enumeration in the graph.</param>
         /// <param name="enumType">Type of the enum.</param>
-        public EnumGraphType(string name, Type enumType)
+        /// <param name="route">The route path that identifies this enum type.</param>
+        /// <param name="directives">The directives to apply to this enum type.</param>
+        public EnumGraphType(string name, Type enumType, GraphFieldPath route, IAppliedDirectiveCollection directives = null)
+            : this(name, enumType, route, new EnumLeafValueResolver(enumType), directives)
         {
-            this.Name = Validation.ThrowIfNullEmptyOrReturn(name, nameof(name));
-            this.ObjectType = Validation.ThrowIfNullOrReturn(enumType, nameof(enumType));
-            this.InternalName = this.ObjectType.FriendlyName();
-            this.Publish = true;
-            _options = new Dictionary<string, IEnumOption>();
         }
 
         /// <summary>
-        /// Adds the option.
+        /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
-        /// <param name="option">The option.</param>
-        public void AddOption(IEnumOption option)
+        /// <param name="name">The name to assign to this enumeration in the graph.</param>
+        /// <param name="enumType">Type of the enum.</param>
+        /// <param name="route">The route path that identifies this enum type.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="directives">The directives to apply to this enum type.</param>
+        public EnumGraphType(
+            string name,
+            Type enumType,
+            GraphFieldPath route,
+            ILeafValueResolver resolver,
+            IAppliedDirectiveCollection directives = null)
+        {
+            this.Name = Validation.ThrowIfNullEmptyOrReturn(name, nameof(name));
+            this.ObjectType = Validation.ThrowIfNullOrReturn(enumType, nameof(enumType));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.SourceResolver = Validation.ThrowIfNullOrReturn(resolver, nameof(resolver));
+
+            this.InternalName = this.ObjectType.FriendlyName();
+            this.Publish = true;
+
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
+
+            _options = new Dictionary<string, IEnumValue>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <inheritdoc />
+        public virtual void AddOption(IEnumValue option)
         {
             Validation.ThrowIfNull(option, nameof(option));
             _options.Add(option.Name, option);
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
-        public bool ValidateObject(object item)
+        /// <inheritdoc />
+        public virtual bool ValidateObject(object item)
         {
             if (item == null)
                 return true;
@@ -65,57 +87,50 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             return Enum.IsDefined(this.ObjectType, item);
         }
 
-        /// <summary>
-        /// Gets the values that can be handled by this enumeration.
-        /// </summary>
-        /// <value>The values.</value>
-        public IReadOnlyDictionary<string, IEnumOption> Values => _options;
+        /// <inheritdoc />
+        public virtual IEnumValue RemoveOption(string name)
+        {
+            if (_options.ContainsKey(name))
+            {
+                var removedOption = _options[name];
+                _options.Remove(name);
+                return removedOption;
+            }
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name { get; }
+            return null;
+        }
 
-        /// <summary>
-        /// Gets or sets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        public string Description { get; set; }
+        /// <inheritdoc />
+        public virtual IReadOnlyDictionary<string, IEnumValue> Values => _options;
 
-        /// <summary>
-        /// Gets the value indicating what type of graph type this instance is in the type system. (object, scalar etc.)
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
+        public virtual string Name { get; set; }
+
+        /// <inheritdoc />
+        public virtual string Description { get; set; }
+
+        /// <inheritdoc />
         public TypeKind Kind => TypeKind.ENUM;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphType" /> is published on an introspection request.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public virtual bool Publish { get; set; }
 
-        /// <summary>
-        /// Gets the type of the object this graph type was made from.
-        /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; }
+        /// <inheritdoc />
+        public virtual Type ObjectType { get; }
 
-        /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
-        /// is used in many exceptions and internal error messages.
-        /// </summary>
-        /// <value>The name of the internal.</value>
-        public string InternalName { get; }
+        /// <inheritdoc />
+        public virtual string InternalName { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
-        /// a user defined graph structure. When false, this graph types points to a concrete type
-        /// defined by a developer.
-        /// </summary>
-        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public virtual bool IsVirtual => false;
+
+        /// <inheritdoc />
+        public virtual ILeafValueResolver SourceResolver { get; set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

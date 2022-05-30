@@ -36,10 +36,10 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SchemaInstanceName = schemaInstance.Name;
-            this.SchemaGraphTypeCount = schemaInstance.KnownTypes.Count;
-            this.SchemaSupportedOperationTypes = schemaInstance
-                .OperationTypes
+            this.SchemaInstanceName = schemaInstance?.Name;
+            this.SchemaGraphTypeCount = schemaInstance?.KnownTypes?.Count;
+            this.SchemaSupportedOperationTypes = schemaInstance?
+                .OperationTypes?
                 .OrderBy(x => x.Key)
                 .Select(x => x.Key.ToString().ToLower())
                 .ToList();
@@ -47,10 +47,13 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             // sort introspected types to the top
             // then by kind
             // then by name
-            var orderedList = schemaInstance.KnownTypes
+            var orderedList = schemaInstance?.KnownTypes?
                 .OrderBy(x => x.Name.StartsWith("__") ? -1 : 1)
                 .ThenBy(x => x.Kind.ToString())
-                .ThenBy(x => x.Name);
+                .ThenBy(x => x.Name)
+                .ToList();
+
+            orderedList = orderedList ?? new List<IGraphType>();
 
             var graphTypeItems = new List<IGraphLogPropertyCollection>();
             foreach (var graphType in orderedList)
@@ -66,9 +69,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets a count of the number of <see cref="IGraphType"/> registered to the schema instance.
         /// </summary>
         /// <value>The graph type count.</value>
-        public int SchemaGraphTypeCount
+        public int? SchemaGraphTypeCount
         {
-            get => this.GetProperty<int>(LogPropertyNames.SCHEMA_GRAPH_TYPE_COUNT);
+            get => this.GetProperty<int?>(LogPropertyNames.SCHEMA_GRAPH_TYPE_COUNT);
             private set => this.SetProperty(LogPropertyNames.SCHEMA_GRAPH_TYPE_COUNT, value);
         }
 

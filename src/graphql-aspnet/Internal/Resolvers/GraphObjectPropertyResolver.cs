@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.Resolvers
 {
     using System;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -24,6 +25,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
     /// A resolver that extracts a property from an object and returns it as a field value.
     /// </summary>
     /// <seealso cref="IGraphFieldResolver" />
+    [DebuggerDisplay("Prop Resolver: {_graphMethod.Name}")]
     public class GraphObjectPropertyResolver : IGraphFieldResolver
     {
         private readonly IGraphMethod _graphMethod;

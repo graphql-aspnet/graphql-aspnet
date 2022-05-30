@@ -12,6 +12,7 @@ namespace GraphQL.AspNet
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
     using GraphQL.AspNet.Attributes;
@@ -22,6 +23,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A set of constants known to the graphql library.
@@ -90,13 +92,14 @@ namespace GraphQL.AspNet
 
         /// <summary>
         /// Gets a collection of globally known directives that will be added to all schema's by default.
-        /// This is the @skip and @include directive's required by graphql.
+        /// This is the @skip, @include and @deprecated directives required by graphql.
         /// </summary>
         /// <value>The global directives.</value>
         public static IReadOnlyList<Type> GlobalDirectives { get; } = new List<Type>()
         {
             typeof(SkipDirective),
             typeof(IncludeDirective),
+            typeof(DeprecatedDirective),
         };
 
         /// <summary>
@@ -179,11 +182,10 @@ namespace GraphQL.AspNet
             /// <value>A read only hashset of all the known reserved names.</value>
             public static IImmutableSet<string> IntrospectableRouteNames { get; }
 
-            // directives
+            // public directive names
             public const string SKIP_DIRECTIVE = "skip";
             public const string INCLUDE_DIRECTIVE = "include";
-            public const string DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME = "BeforeFieldResolution";
-            public const string DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME = "AfterFieldResolution";
+            public const string DEPRECATED_DIRECTIVE = "deprecated";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
@@ -205,15 +207,15 @@ namespace GraphQL.AspNet
             public const string TYPE_FIELD = "__type";
             public const string TYPENAME_FIELD = "__typename";
 
-            private static readonly IReadOnlyDictionary<GraphCollection, string> GRAPH_OPERATION_TYPE_NAME_BY_TYPE;
-            private static readonly IReadOnlyDictionary<string, GraphCollection> GRAPH_OPERATION_TYPE_BY_KEYWORD;
+            private static readonly IReadOnlyDictionary<GraphOperationType, string> GRAPH_OPERATION_TYPE_NAME_BY_TYPE;
+            private static readonly IReadOnlyDictionary<string, GraphOperationType> GRAPH_OPERATION_TYPE_BY_KEYWORD;
 
             /// <summary>
             /// Inspects the known operation types for a name matching the provided value returning it when found.
             /// </summary>
             /// <param name="operationType">Type of the operation to retrieve the graph type name for.</param>
             /// <returns>GraphCollection.</returns>
-            public static string FindOperationTypeNameByType(GraphCollection operationType)
+            public static string FindOperationTypeNameByType(GraphOperationType operationType)
             {
                 if (GRAPH_OPERATION_TYPE_NAME_BY_TYPE.ContainsKey(operationType))
                     return GRAPH_OPERATION_TYPE_NAME_BY_TYPE[operationType];
@@ -226,15 +228,15 @@ namespace GraphQL.AspNet
             /// </summary>
             /// <param name="operationKeyword">The operation keyword as it exists in a query document (e.g. query, mutation).</param>
             /// <returns>GraphCollection.</returns>
-            public static GraphCollection FindOperationTypeByKeyword(string operationKeyword)
+            public static GraphOperationType FindOperationTypeByKeyword(string operationKeyword)
             {
                 if (string.IsNullOrEmpty(operationKeyword))
-                    return GraphCollection.Query;
+                    return GraphOperationType.Query;
 
                 if (GRAPH_OPERATION_TYPE_BY_KEYWORD.ContainsKey(operationKeyword))
                     return GRAPH_OPERATION_TYPE_BY_KEYWORD[operationKeyword];
 
-                return GraphCollection.Unknown;
+                return GraphOperationType.Unknown;
             }
 
             /// <summary>
@@ -242,16 +244,16 @@ namespace GraphQL.AspNet
             /// </summary>
             static ReservedNames()
             {
-                var dicOperationType = new Dictionary<string, GraphCollection>();
-                dicOperationType.Add(ParserConstants.Keywords.Query.ToString(), GraphCollection.Query);
-                dicOperationType.Add(ParserConstants.Keywords.Mutation.ToString(), GraphCollection.Mutation);
-                dicOperationType.Add(ParserConstants.Keywords.Subscription.ToString(), GraphCollection.Subscription);
+                var dicOperationType = new Dictionary<string, GraphOperationType>();
+                dicOperationType.Add(ParserConstants.Keywords.Query.ToString(), GraphOperationType.Query);
+                dicOperationType.Add(ParserConstants.Keywords.Mutation.ToString(), GraphOperationType.Mutation);
+                dicOperationType.Add(ParserConstants.Keywords.Subscription.ToString(), GraphOperationType.Subscription);
                 GRAPH_OPERATION_TYPE_BY_KEYWORD = dicOperationType;
 
-                var dicTypeToTypeName = new Dictionary<GraphCollection, string>();
-                dicTypeToTypeName.Add(GraphCollection.Query, QUERY_TYPE_NAME);
-                dicTypeToTypeName.Add(GraphCollection.Mutation, MUTATION_TYPE_NAME);
-                dicTypeToTypeName.Add(GraphCollection.Subscription, SUBSCRIPTION_TYPE_NAME);
+                var dicTypeToTypeName = new Dictionary<GraphOperationType, string>();
+                dicTypeToTypeName.Add(GraphOperationType.Query, QUERY_TYPE_NAME);
+                dicTypeToTypeName.Add(GraphOperationType.Mutation, MUTATION_TYPE_NAME);
+                dicTypeToTypeName.Add(GraphOperationType.Subscription, SUBSCRIPTION_TYPE_NAME);
                 GRAPH_OPERATION_TYPE_NAME_BY_TYPE = dicTypeToTypeName;
 
                 IntrospectableRouteNames = ImmutableHashSet.Create(
@@ -356,6 +358,16 @@ namespace GraphQL.AspNet
             public const string TYPE_ROOT = DELIMITER_ROOT_START + "type" + DELIMITER_ROOT_END;
 
             /// <summary>
+            /// A phrase, used at the start of a route string, to indicate its part of the global scalar tree.
+            /// </summary>
+            public const string SCALAR_ROOT = DELIMITER_ROOT_START + "scalar" + DELIMITER_ROOT_END;
+
+            /// <summary>
+            /// A phrase, used at the start of a route string, to indicate that the object is a top level schema.
+            /// </summary>
+            public const string SCHEMA_ROOT = DELIMITER_ROOT_START + "schema" + DELIMITER_ROOT_END;
+
+            /// <summary>
             /// A phrase, used at the start of a route string, to indicate its part of the subscription root.
             /// </summary>
             public const string SUBSCRIPTION_ROOT = DELIMITER_ROOT_START + "subscription" + DELIMITER_ROOT_END;
@@ -369,6 +381,12 @@ namespace GraphQL.AspNet
             /// A phrase, used at the start of a route string, to indicate its part of the directive tree.
             /// </summary>
             public const string DIRECTIVE_ROOT = DELIMITER_ROOT_START + "directive" + DELIMITER_ROOT_END;
+
+            /// <summary>
+            /// A phrase, used at the start of a route string, to indicate its part of the introspection
+            /// item collection.
+            /// </summary>
+            public const string INTROSPECTION_ROOT = DELIMITER_ROOT_START + "introspection" + DELIMITER_ROOT_END;
 
             /// <summary>
             /// The phrase used to seperate individual elements of a route fragement.
@@ -446,6 +464,12 @@ namespace GraphQL.AspNet
             /// authorize a request to a field for the given context.
             /// </summary>
             public const string FIELD_AUTHORIZATION_PIPELINE = "Field Authorization Pipeline";
+
+            /// <summary>
+            /// the pipeline invoked to process any directive against a data target be that
+            /// during schema construction or during document execution.
+            /// </summary>
+            public const string DIRECTIVE_PIPELINE = "Directive Execution Pipeline";
         }
 
         /// <summary>
@@ -453,6 +477,6 @@ namespace GraphQL.AspNet
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.
         /// </summary>
-        public const string SPECIFICATION_URL = "http://spec.graphql.org/June2018/";
+        public const string SPECIFICATION_URL = "https://spec.graphql.org/June2018/";
     }
 }

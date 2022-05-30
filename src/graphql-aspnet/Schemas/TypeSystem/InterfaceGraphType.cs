@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Fields;
     using GraphQL.AspNet.Schemas.Structural;
@@ -24,78 +24,60 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public class InterfaceGraphType : IInterfaceGraphType
     {
         private readonly GraphFieldCollection _fieldSet;
-        private readonly Type _interfaceType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceGraphType" /> class.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="name">The name of the interface as it will appear in the schema.</param>
         /// <param name="concreteType">The concrete type representing this interface.</param>
-        /// <param name="fields">The fields that define the interface.</param>
-        public InterfaceGraphType(string name, Type concreteType, IEnumerable<IGraphField> fields)
+        /// <param name="route">The route path that identifies this interface.</param>
+        /// <param name="directives">The directives to apply to this type
+        /// when its added to a schema.</param>
+        public InterfaceGraphType(
+            string name,
+            Type concreteType,
+            GraphFieldPath route,
+            IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
+            this.InternalName = this.ObjectType.FriendlyName();
+
             _fieldSet = new GraphFieldCollection(this);
-            _interfaceType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
+
             this.Publish = true;
-            if (fields != null)
-            {
-                foreach (var field in fields)
-                    this.Extend(field);
-            }
 
             this.Extend(new Introspection_TypeNameMetaField(name));
+
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
         }
 
-        /// <summary>
-        /// Extends the specified new field.
-        /// </summary>
-        /// <param name="newField">The new field.</param>
-        public void Extend(IGraphField newField)
+        /// <inheritdoc />
+        public IGraphField Extend(IGraphField newField)
         {
-            _fieldSet.AddField(newField);
+            return _fieldSet.AddField(newField);
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool ValidateObject(object item)
         {
-            return item == null || Validation.IsCastable(item.GetType(), _interfaceType);
+            return item == null || Validation.IsCastable(item.GetType(), this.ObjectType);
         }
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name { get; }
+        /// <inheritdoc />
+        public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
+        /// <inheritdoc />
         public string Description { get; set; }
 
-        /// <summary>
-        /// Gets the value indicating what type of graph type this instance is in the type system. (object, scalar etc.)
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public TypeKind Kind => TypeKind.INTERFACE;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphType"/> is published on an introspection request.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool Publish { get; set; }
 
-        /// <summary>
-        /// Gets a collection of fields made available by this interface.
-        /// </summary>
-        /// <value>The fields.</value>
+        /// <inheritdoc />
         public IReadOnlyGraphFieldCollection Fields => _fieldSet;
 
         /// <summary>
@@ -105,12 +87,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <returns>IGraphTypeField.</returns>
         public IGraphField this[string fieldName] => this.Fields[fieldName];
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
-        /// a user defined graph structure. When false, this graph types points to a concrete type
-        /// defined by a developer.
-        /// </summary>
-        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public virtual bool IsVirtual => false;
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        public Type ObjectType { get; }
+
+        /// <inheritdoc />
+        public virtual string InternalName { get; }
     }
 }

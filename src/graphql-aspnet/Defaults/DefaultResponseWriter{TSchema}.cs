@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Defaults
     using System.IO;
     using System.Linq;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -49,15 +50,8 @@ namespace GraphQL.AspNet.Defaults
             };
         }
 
-        /// <summary>
-        /// Attempts to write the provided <see cref="IGraphOperationResult" /> to the stream. Generally this stream
-        /// will be the response stream for an HTTP request.
-        /// </summary>
-        /// <param name="streamToWriteTo">The stream to write to.</param>
-        /// <param name="resultToWrite">The result to write.</param>
-        /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
-        /// <returns>Task.</returns>
-        public async Task WriteAsync(Stream streamToWriteTo, IGraphOperationResult resultToWrite, GraphQLResponseOptions options = null)
+        /// <inheritdoc />
+        public virtual async Task WriteAsync(Stream streamToWriteTo, IGraphOperationResult resultToWrite, GraphQLResponseOptions options = null, CancellationToken cancelToken = default)
         {
             options = options ?? GraphQLResponseOptions.Default;
 
@@ -65,25 +59,20 @@ namespace GraphQL.AspNet.Defaults
             try
             {
                 writer = new Utf8JsonWriter(streamToWriteTo, _writerOptions);
-                this.WriteAsync(writer, resultToWrite, options);
+                this.Write(writer, resultToWrite, options);
             }
             finally
             {
                 if (writer != null)
                 {
-                    await writer.DisposeAsync();
+                    await writer.FlushAsync().ConfigureAwait(false);
+                    await writer.DisposeAsync().ConfigureAwait(false);
                 }
             }
         }
 
-        /// <summary>
-        /// Attempts to serialize the provided <see cref="IGraphOperationResult" /> directly to the
-        /// provided json writer.
-        /// </summary>
-        /// <param name="jsonWriter">The json writer.</param>
-        /// <param name="resultToWrite">The result to write.</param>
-        /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
-        public void WriteAsync(Utf8JsonWriter jsonWriter, IGraphOperationResult resultToWrite, GraphQLResponseOptions options = null)
+        /// <inheritdoc />
+        public virtual void Write(Utf8JsonWriter jsonWriter, IGraphOperationResult resultToWrite, GraphQLResponseOptions options = null)
         {
             this.WriteResult(jsonWriter, resultToWrite, options);
         }
@@ -95,7 +84,7 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="resultToWrite">The operation result to write.</param>
         /// <param name="options">A set options to customize how the response is serialized to the stream.</param>
-        private void WriteResult(Utf8JsonWriter writer, IGraphOperationResult resultToWrite, GraphQLResponseOptions options)
+        protected virtual void WriteResult(Utf8JsonWriter writer, IGraphOperationResult resultToWrite, GraphQLResponseOptions options)
         {
             writer.WriteStartObject();
 
@@ -129,7 +118,7 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         /// <param name="writer">The writer to stream to.</param>
         /// <param name="dataItem">The data item to serialize.</param>
-        private void WriteResponseItem(Utf8JsonWriter writer, IResponseItem dataItem)
+        protected virtual void WriteResponseItem(Utf8JsonWriter writer, IResponseItem dataItem)
         {
             if (dataItem == null)
             {

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,25 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type representing a standard guid.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class GuidScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static GuidScalarType Instance { get; } = new GuidScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="GuidScalarType"/> class.
-        /// </summary>
-        static GuidScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GuidScalarType"/> class.
         /// </summary>
-        private GuidScalarType()
+        public GuidScalarType()
             : base(Constants.ScalarNames.GUID, typeof(Guid))
         {
             this.Description = "A standard guid (e.g. '6dd43342-ffe6-4964-bb6f-e31c8e50ec86').";
@@ -59,9 +48,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return ((Guid)item).ToString();
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

@@ -60,6 +60,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IFieldInvocationContextCollection ChildContexts { get; }
 
         /// <summary>
+        /// Gets the schema from which this context is based.
+        /// </summary>
+        /// <value>The schema.</value>
+        ISchema Schema { get; }
+
+        /// <summary>
         /// Gets the origin location, in the source document, that coorisponds to this field context.
         /// </summary>
         /// <value>The location.</value>

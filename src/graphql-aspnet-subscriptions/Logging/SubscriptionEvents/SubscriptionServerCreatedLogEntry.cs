@@ -32,11 +32,11 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         public SubscriptionServerCreatedLogEntry(ISubscriptionServer<TSchema> server)
             : base(SubscriptionLogEventIds.SubscriptionServerCreated)
         {
-            _serverTypeShortName = server.GetType().FriendlyName();
+            _serverTypeShortName = server?.GetType().FriendlyName();
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.ServerTypeName = server.GetType().FriendlyName(true);
-            this.ServerId = server.Id;
+            this.ServerTypeName = server?.GetType().FriendlyName(true);
+            this.ServerId = server?.Id;
         }
 
         /// <summary>

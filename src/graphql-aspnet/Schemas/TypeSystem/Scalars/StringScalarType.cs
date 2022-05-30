@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,25 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type representing a UTF-8 encoded string of characters.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class StringScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static StringScalarType Instance { get; } = new StringScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="StringScalarType"/> class.
-        /// </summary>
-        static StringScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="StringScalarType"/> class.
         /// </summary>
-        private StringScalarType()
+        public StringScalarType()
             : base(Constants.ScalarNames.STRING, typeof(string))
         {
             this.Description = "A UTF-8 encoded string of characters.";
@@ -59,9 +48,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A model object containing data for the __Field type of one field in a graph type.
     /// </summary>
     [DebuggerDisplay("field: {Name}")]
-    public class IntrospectedField : IntrospectedItem, INamedItem, IDeprecatable
+    public class IntrospectedField : IntrospectedItem, ISchemaItem
     {
         private readonly IGraphField _field;
 
@@ -28,19 +28,16 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Initializes a new instance of the <see cref="IntrospectedField" /> class.
         /// </summary>
         /// <param name="field">The field itself.</param>
-        /// <param name="introspectedType">The introspected object representing the graph type returned
+        /// <param name="introspectedFieldOwner">The introspected object representing the graph type returned
         /// by this field.</param>
-        public IntrospectedField(IGraphField field, IntrospectedType introspectedType)
+        public IntrospectedField(IGraphField field, IntrospectedType introspectedFieldOwner)
+            : base(field)
         {
-            this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedType, nameof(introspectedType));
+            this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedFieldOwner, nameof(introspectedFieldOwner));
             _field = Validation.ThrowIfNullOrReturn(field, nameof(field));
         }
 
-        /// <summary>
-        /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
-        /// other references in this instance.
-        /// </summary>
-        /// <param name="schema">The schema.</param>
+        /// <inheritdoc />
         public override void Initialize(IntrospectedSchema schema)
         {
             var list = new List<IntrospectedInputValueType>();
@@ -63,36 +60,23 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public IntrospectedType IntrospectedGraphType { get; }
 
         /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name => _field.Name;
-
-        /// <summary>
         /// Gets a collection of arguments this instance can accept on a query.
         /// </summary>
         /// <value>A collection of arguments assigned to this item.</value>
         public IReadOnlyList<IntrospectedInputValueType> Arguments { get; private set; }
 
         /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
+        /// Gets a value indicating whether the field this introspection item represents
+        /// is deprecated.
         /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        public string Description => _field.Description;
-
-        /// <summary>
-        /// Gets a value indicating whether this action method is depreciated. The <see cref="DeprecationReason"/> will be displayed
-        /// on any itnrospection requests.
-        /// </summary>
-        /// <value><c>true</c> if this instance is depreciated; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if this instance is deprecated; otherwise, <c>false</c>.</value>
         public bool IsDeprecated => _field.IsDeprecated;
 
         /// <summary>
-        /// Gets the provided reason for this item being depreciated.
+        /// Gets the reason, if any, why the field this introspection item represents
+        /// was deprecated.
         /// </summary>
-        /// <value>The depreciation reason.</value>
+        /// <value>The reason the target field was deprecated.</value>
         public string DeprecationReason => _field.DeprecationReason;
     }
 }

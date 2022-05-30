@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Internal
             type = GraphValidation.EliminateWrappersFromCoreType(type);
             if (GraphQLProviders.ScalarProvider.IsScalar(type))
             {
-                typeName = GraphQLProviders.ScalarProvider.RetrieveScalar(type).Name;
+                typeName = GraphQLProviders.ScalarProvider.RetrieveScalarName(type);
             }
             else if (type.IsEnum)
             {

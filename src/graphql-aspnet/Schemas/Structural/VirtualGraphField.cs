@@ -46,18 +46,22 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Initializes a new instance of the <see cref="VirtualGraphField" /> class.
         /// </summary>
         /// <param name="fieldName">Name of the field in the object graph.</param>
-        /// <param name="path">The path segment this virtual field will represent.</param>
-        /// <param name="typeName">The type name to use for the virtual type generated from this route field.</param>
-        public VirtualGraphField(string fieldName, GraphFieldPath path, string typeName)
+        /// <param name="route">The path segment that represents this virtual field.</param>
+        /// <param name="parentTypeName">The type name to use for the virtual type that owns this field.</param>
+        public VirtualGraphField(
+            string fieldName,
+            GraphFieldPath route,
+            string parentTypeName)
         {
-            Validation.ThrowIfNull(path, nameof(path));
-            Validation.ThrowIfNullWhiteSpace(typeName, nameof(typeName));
-            this.Name = fieldName;
-            this.Route = Validation.ThrowIfNullOrReturn(path, nameof(path));
+            Validation.ThrowIfNull(route, nameof(route));
+            Validation.ThrowIfNullWhiteSpace(parentTypeName, nameof(parentTypeName));
 
-            this.AssociatedGraphType = new VirtualObjectGraphType(typeName);
-            this.TypeExpression = new GraphTypeExpression(typeName);
-            this.Arguments = new GraphFieldArgumentCollection();
+            this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+
+            this.AssociatedGraphType = new VirtualObjectGraphType(parentTypeName);
+            this.TypeExpression = new GraphTypeExpression(parentTypeName);
+            this.Arguments = new GraphFieldArgumentCollection(this);
             this.Resolver = new GraphRouteFieldResolver(new VirtualResolvedObject(this.TypeExpression.TypeName));
 
             // fields made from controller route parameters have no policies directly unto themselves
@@ -65,6 +69,23 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.SecurityGroups = Enumerable.Empty<AppliedSecurityPolicyGroup>();
             this.Complexity = 1;
             this.Mode = FieldResolutionMode.PerSourceItem;
+
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
+            this.Publish = true;
+            this.IsDeprecated = false;
+            this.DeprecationReason = null;
+        }
+
+        /// <inheritdoc />
+        public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null)
+        {
+            throw new NotSupportedException($"The resolver for '{typeof(VirtualGraphField).FriendlyName()}' cannot be altered.");
+        }
+
+        /// <inheritdoc />
+        public void AssignParent(IGraphType parent)
+        {
+            this.Parent = Parent;
         }
 
         /// <summary>
@@ -73,67 +94,29 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <value>The type of the associated graph.</value>
         public IObjectGraphType AssociatedGraphType { get; }
 
-        /// <summary>
-        /// Gets an object that will perform some operation against an execution
-        /// context to fulfill the requirements of this resolvable entity.
-        /// </summary>
-        /// <value>The resolver assigned to this instance.</value>
+        /// <inheritdoc />
         public IGraphFieldResolver Resolver { get; }
 
-        /// <summary>
-        /// Gets the resolution mode of this field which instructs the query plan executor on
-        /// how to process this field against its source data.
-        /// </summary>
-        /// <value>The mode.</value>
+        /// <inheritdoc />
         public FieldResolutionMode Mode { get; }
 
-        /// <summary>
-        /// Gets the name of this field as defined by the type declaration.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name { get; }
+        /// <inheritdoc />
+        public string Name { get; set; }
 
-        /// <summary>
-        /// Gets the route.
-        /// </summary>
-        /// <value>The route.</value>
+        /// <inheritdoc />
         public GraphFieldPath Route { get; }
 
-        /// <summary>
-        /// Updates the field resolver used by this graph field.
-        /// </summary>
-        /// <param name="newResolver">The new resolver this field should use.</param>
-        /// <param name="mode">The new resolution mode used by the runtime to invoke the resolver.</param>
-        public void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode mode)
-        {
-            throw new InvalidOperationException($"The resolver for '{typeof(VirtualGraphField).FriendlyName()}' cannot be altered.");
-        }
+        /// <inheritdoc />
+        public GraphTypeExpression TypeExpression { get; set; }
 
-        /// <summary>
-        /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
-        /// declaration used in schema definition language.)
-        /// </summary>
-        /// <value>The type expression.</value>
-        public GraphTypeExpression TypeExpression { get; }
+        /// <inheritdoc />
+        public IGraphArgumentCollection Arguments { get; }
 
-        /// <summary>
-        /// Gets the arguments this field can accept, if any.
-        /// </summary>
-        /// <value>The arguments.</value>
-        public IGraphFieldArgumentCollection Arguments { get; }
-
-        /// <summary>
-        /// Gets or sets the description of this type field.
-        /// </summary>
-        /// <value>The description.</value>
+        /// <inheritdoc />
         public string Description { get; set; }
 
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="IGraphField" /> is published
-        /// in the schema delivered to introspection requests.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
-        public bool Publish => true;
+        /// <inheritdoc />
+        public bool Publish { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this action method is depreciated. The <see cref="DepreciationReason" /> will be displayed
@@ -148,64 +131,31 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <value>The depreciation reason.</value>
         public string DepreciationReason { get; set; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is a leaf field; one capable of generating
-        /// a real data item vs. generating data to be used in down stream projections.
-        /// </summary>
-        /// <value><c>true</c> if this instance is a leaf field; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsLeaf => false;
 
-        /// <summary>
-        /// Gets a value indicating whether this item  is depreciated. The <see cref="DeprecationReason" /> will be displayed
-        /// on any itnrospection requests.
-        /// </summary>
-        /// <value><c>true</c> if this instance is depreciated; otherwise, <c>false</c>.</value>
-        public bool IsDeprecated => false;
+        /// <inheritdoc />
+        public bool IsDeprecated { get; set; }
 
-        /// <summary>
-        /// Gets the provided reason for this item being depreciated.
-        /// </summary>
-        /// <value>The depreciation reason.</value>
-        public string DeprecationReason => null;
+        /// <inheritdoc />
+        public string DeprecationReason { get; set; }
 
-        /// <summary>
-        /// Gets the security policies found via defined attributes on the item that need to be enforced.
-        /// </summary>
-        /// <value>The security policies.</value>
+        /// <inheritdoc />
         public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
 
-        /// <summary>
-        /// Gets  an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
-        /// See the documentation for an understanding of how query complexity is calculated.
-        /// </summary>
-        /// <value>The estimated complexity value for this field.</value>
-        public float? Complexity { get; }
+        /// <inheritdoc />
+        public float? Complexity { get; set; }
 
-        /// <summary>
-        /// Gets the source type this field was created from.
-        /// </summary>
-        /// <value>The field souce.</value>
+        /// <inheritdoc />
         public GraphFieldSource FieldSource => GraphFieldSource.Virtual;
 
-        /// <summary>
-        /// Gets a collection of concrete types (and their associated type kinds) that this graph type is dependent on if/when a resolution against a field
-        /// of this type occurs.
-        /// </summary>
-        /// <value>The dependent types.</value>
+        /// <inheritdoc />
         public IEnumerable<DependentType> DependentTypes => REQUIRED_TYPES;
 
-        /// <summary>
-        /// Gets A collection of pre-created, abstract graph (Unions and Interfaces) types that this graph type is dependent on if/when a resolution
-        /// against this type occurs.
-        /// </summary>
-        /// <value>The dependent graph types.</value>
+        /// <inheritdoc />
         public IEnumerable<IGraphType> AbstractGraphTypes => Enumerable.Empty<IGraphType>();
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
-        /// a user defined graph structure. When false, this field points to developer created code.
-        /// </summary>
-        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsVirtual => true;
 
         /// <inheritdoc />
@@ -213,5 +163,11 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public Type DeclaredReturnType => null;
+
+        /// <inheritdoc />
+        public ISchemaItem Parent { get; private set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
     }
 }

@@ -63,11 +63,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// When overridden in a child class, this metyhod builds the route that will be assigned to this method
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
+        /// <inheritdoc />
         protected override GraphFieldPath GenerateFieldPath()
         {
             // a standard graph object cannot contain any route pathing or nesting like controllers can
@@ -76,13 +72,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Types, graphName));
         }
 
-        /// <summary>
-        /// Determines whether the given container could be used as a graph field either because it is
-        /// explictly declared as such or that it conformed to the required parameters of being
-        /// a field.
-        /// </summary>
-        /// <param name="memberInfo">The member information to check.</param>
-        /// <returns><c>true</c> if the info represents a possible graph field; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         protected override bool CouldBeGraphField(MemberInfo memberInfo)
         {
             // methods can never be fields on input objects (only basic properties)
@@ -99,22 +89,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return base.CouldBeGraphField(memberInfo);
         }
 
-        /// <summary>
-        /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplateBase" />
-        /// to provide additional functionality or guarantee a certian type structure for all methods on this object template.
-        /// </summary>
-        /// <param name="methodInfo">The method information.</param>
-        /// <returns>IGraphFieldTemplate.</returns>
+        /// <inheritdoc />
         protected override IGraphTypeFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
         {
             // safety check to ensure no method fields are created for an input object
             return null;
         }
 
-        /// <summary>
-        /// Gets the kind of graph type that can be made from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.INPUT_OBJECT;
     }
 }

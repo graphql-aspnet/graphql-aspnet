@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.PlanGeneration.InputArguments
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -19,6 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     /// the marrying of the field's defined argument in the schema and the run time context of the argument value.
     /// </summary>
     [Serializable]
+    [DebuggerDisplay("{Name}")]
     public class InputArgument
     {
         /// <summary>
@@ -26,7 +28,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// </summary>
         /// <param name="argument">The field argument defined in a schema.</param>
         /// <param name="value">The value representing this field argument as its defined in a query document.</param>
-        public InputArgument(IGraphFieldArgument argument, IInputArgumentValue value)
+        public InputArgument(IGraphArgument argument, IInputArgumentValue value)
         {
             this.Argument = Validation.ThrowIfNullOrReturn(argument, nameof(argument));
             this.Value = Validation.ThrowIfNullOrReturn(value, nameof(value));
@@ -39,15 +41,18 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         public string Name => this.Argument.Name;
 
         /// <summary>
-        /// Gets the value.
+        /// Gets an object container that can resolve the value of this input argument
+        /// at runtime. This value container may itself hold a pre-resolved static value or a
+        /// reference to an input variable which it needs to extract from a variable collection.
         /// </summary>
         /// <value>The value.</value>
         public IInputArgumentValue Value { get; }
 
         /// <summary>
-        /// Gets or sets the argument.
+        /// Gets or sets the underlying field that represents
+        /// this argument on the target schema.
         /// </summary>
         /// <value>The argument.</value>
-        public IGraphFieldArgument Argument { get; set; }
+        public IGraphArgument Argument { get; set; }
     }
 }

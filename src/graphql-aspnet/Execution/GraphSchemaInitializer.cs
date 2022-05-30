@@ -9,23 +9,29 @@
 
 namespace GraphQL.AspNet.Execution
 {
+    using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Perform a set of standardized steps to setup and configure any graph schema according to the rules
     /// for document operation execution used by the various schema pipelines.
     /// </summary>
-    public class GraphSchemaInitializer
+    /// <typeparam name="TSchema">The type of the schema that the initializer
+    /// can work with.</typeparam>
+    public class GraphSchemaInitializer<TSchema>
+        where TSchema : class, ISchema
     {
         private readonly SchemaOptions _options;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaInitializer" /> class.
+        /// Initializes a new instance of the <see cref="GraphSchemaInitializer{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
         public GraphSchemaInitializer(SchemaOptions options)
@@ -41,7 +47,7 @@ namespace GraphQL.AspNet.Execution
         /// <para>* Register introspection meta-fields.</para>
         /// </summary>
         /// <param name="schema">The schema to initialize.</param>
-        public virtual void Initialize(ISchema schema)
+        public virtual void Initialize(TSchema schema)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             if (schema.IsInitialized)
@@ -59,16 +65,21 @@ namespace GraphQL.AspNet.Execution
                 manager.AddBuiltInDirectives();
 
                 // add any configured types to this instance
-                foreach (var type in _options.RegisteredSchemaTypes)
+                foreach (var registration in _options.SchemaTypesToRegister)
                 {
-                    var typeDeclaration = type.SingleAttributeOrDefault<GraphTypeAttribute>();
+                    var typeDeclaration = registration.Type.SingleAttributeOrDefault<GraphTypeAttribute>();
                     if (typeDeclaration != null && typeDeclaration.PreventAutoInclusion)
                         continue;
 
-                    manager.EnsureGraphType(type);
+                    manager.EnsureGraphType(registration.Type);
                 }
 
                 manager.BuildIntrospectionData();
+
+                // execute any assigned schema configuration extensions
+                foreach (var extension in _options.ConfigurationExtensions)
+                    extension.Configure(schema);
+
                 schema.IsInitialized = true;
             }
         }

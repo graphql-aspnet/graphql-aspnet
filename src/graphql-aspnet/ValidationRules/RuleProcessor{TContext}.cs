@@ -42,6 +42,19 @@ namespace GraphQL.AspNet.ValidationRules
         /// <summary>
         /// Executes the specified initial context.
         /// </summary>
+        /// <param name="initialContext">The initial, "Top level" context to execute against the rule
+        /// set this instance contains.</param>
+        /// <returns><c>true</c> if the context, at all levels, completed all steps successfully, <c>false</c> otherwise.</returns>
+        public bool Execute(TContext initialContext)
+        {
+            var list = new List<TContext>();
+            list.Add(initialContext);
+            return this.Execute(list);
+        }
+
+        /// <summary>
+        /// Executes the specified initial context.
+        /// </summary>
         /// <param name="initialContexts">The initial, "Top level" set of contexts to execute against the rule
         /// set this instance contains.</param>
         /// <returns><c>true</c> if all contexts at all levels completed all steps successfully, <c>false</c> otherwise.</returns>

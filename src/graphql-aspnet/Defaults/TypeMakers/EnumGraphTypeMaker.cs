@@ -48,34 +48,52 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 
             var requirements = template.DeclarationRequirements ?? _schema.Configuration.DeclarationOptions.FieldDeclarationRequirements;
 
+            // enum level directives
+            var enumDirectives = template.CreateAppliedDirectives();
+
             var graphType = new EnumGraphType(
                 _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatGraphTypeName(template.Name),
-                concreteType)
+                concreteType,
+                template.Route,
+                enumDirectives)
             {
                 Description = template.Description,
                 Publish = template.Publish,
             };
 
-            // clone each option using the formatter supplied by the schema configuration
-            var enumValuesToInclude = template.Values.Where(value => value.IsExplicitlyDeclared || requirements.AllowImplicitEnumValues());
-            foreach (var value in enumValuesToInclude)
-            {
-                var modifiedValue = new GraphEnumOption(
-                    concreteType,
-                    _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
-                    value.Description,
-                    value.IsExplicitlyDeclared,
-                    value.IsDeprecated,
-                    value.DeprecationReason);
-
-                graphType.AddOption(modifiedValue);
-            }
-
-            return new GraphTypeCreationResult()
+            var result = new GraphTypeCreationResult()
             {
                 GraphType = graphType,
                 ConcreteType = concreteType,
             };
+
+            // account for any potential type system directives
+            result.AddDependentRange(template.RetrieveRequiredTypes());
+
+            // create an enum option from each template
+            var enumValuesToInclude = template.Values.Where(value => requirements.AllowImplicitEnumValues() || value.IsExplicitDeclaration);
+            foreach (var value in enumValuesToInclude)
+            {
+                // enum option directives
+                var valueDirectives = value.CreateAppliedDirectives();
+
+                var valueOption = new GraphEnumValue(
+                    graphType,
+                    _schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(value.Name),
+                    value.Description,
+                    value.Route,
+                    value.Value,
+                    value.InternalName,
+                    value.IsDeprecated,
+                    value.DeprecationReason,
+                    valueDirectives);
+
+                graphType.AddOption(valueOption);
+
+                result.AddDependentRange(value.RetrieveRequiredTypes());
+            }
+
+            return result;
         }
     }
 }

@@ -11,34 +11,41 @@ namespace GraphQL.AspNet.Tests.Internal.ValueResolversTestData
 {
     using System;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Attributes;
 
     public class ResolverObject : IResolverInterface
     {
+        [GraphField]
         public string MethodRetrieveData()
         {
             return string.Empty;
         }
 
+        [GraphField]
         public string MethodWithArgument(int arg1)
         {
             return string.Empty;
         }
 
+        [GraphField]
         public string MethodThrowException()
         {
             throw new InvalidOperationException("resolver.method.throwException");
         }
 
+        [GraphField]
         public Task<string> MethodRetrieveDataAsync()
         {
             return Task.FromResult(string.Empty);
         }
 
+        [GraphField]
         public Task<string> MethodWithArgumentAsync(int arg1)
         {
             return Task.FromResult(string.Empty);
         }
 
+        [GraphField]
         public string MethodThrowExceptionAsync()
         {
             throw new InvalidOperationException("resolver.method.throwException");

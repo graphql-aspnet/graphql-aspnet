@@ -24,12 +24,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
     public interface IGraphTypeFieldTemplate : IGraphFieldBaseTemplate, ISecureItem, IDeprecatable
     {
         /// <summary>
-        /// Retrieves the concrete types that this instance may return or make use of in response to a field request.
-        /// </summary>
-        /// <returns>IEnumerable&lt;Type&gt;.</returns>
-        IEnumerable<DependentType> RetrieveRequiredTypes();
-
-        /// <summary>
         /// Creates a resolver capable of resolving this field.
         /// </summary>
         /// <returns>IGraphFieldResolver.</returns>

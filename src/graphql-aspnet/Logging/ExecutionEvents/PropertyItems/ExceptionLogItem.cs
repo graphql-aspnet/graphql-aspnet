@@ -24,10 +24,10 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
         /// <param name="exception">The exception.</param>
         public ExceptionLogItem(Exception exception)
         {
-            this.ExceptionMessage = exception.Message;
-            this.StackTrace = exception.StackTrace;
-            this.TypeName = exception.GetType().FriendlyName(true);
-            this.ShortTypeName = exception.GetType().FriendlyName();
+            this.ExceptionMessage = exception?.Message;
+            this.StackTrace = exception?.StackTrace;
+            this.TypeName = exception?.GetType().FriendlyName(true);
+            this.ShortTypeName = exception?.GetType().FriendlyName();
         }
 
         /// <summary>

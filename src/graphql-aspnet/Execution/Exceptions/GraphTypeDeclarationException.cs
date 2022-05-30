@@ -18,11 +18,12 @@ namespace GraphQL.AspNet.Execution.Exceptions
     public class GraphTypeDeclarationException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphTypeDeclarationException"/> class.
+        /// Initializes a new instance of the <see cref="GraphTypeDeclarationException" /> class.
         /// </summary>
         /// <param name="message">The message.</param>
-        public GraphTypeDeclarationException(string message)
-            : base(message)
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.</param>
+        public GraphTypeDeclarationException(string message, Exception innerException = null)
+            : this(message, null, innerException)
         {
         }
 
@@ -32,16 +33,17 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// <param name="message">The message.</param>
         /// <param name="failedType">The .net type that failed conversion to a
         /// graph type.</param>
-        public GraphTypeDeclarationException(string message, Type failedType)
-            : base(message)
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.</param>
+        public GraphTypeDeclarationException(string message, Type failedType, Exception innerException = null)
+            : base(message, innerException)
         {
-            this.FailedGraphType = failedType;
+            this.FailedObjectType = failedType;
         }
 
         /// <summary>
-        /// Gets the type that was being evaluated for conversion to a Graph Type.
+        /// Gets the concrete .NET type that was being evaluated for conversion to a Graph Type.
         /// </summary>
-        /// <value>The type of the failed graph.</value>
-        public Type FailedGraphType { get; }
+        /// <value>The type that was being evaluated.</value>
+        public Type FailedObjectType { get; }
     }
 }

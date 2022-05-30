@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         ISchemaExecutionConfiguration ExecutionOptions { get; }
 
         /// <summary>
-        /// Gets the options related to the formatting of a graphql respomnse before it is sent to the requestor.
+        /// Gets the options related to the formatting of a graphql response before it is sent to the requestor.
         /// </summary>
         /// <value>The schema reponse configuration options.</value>
         ISchemaResponseConfiguration ResponseOptions { get; }

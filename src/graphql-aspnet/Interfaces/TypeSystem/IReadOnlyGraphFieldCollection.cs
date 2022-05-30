@@ -17,6 +17,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IReadOnlyGraphFieldCollection : IEnumerable<IGraphField>
     {
         /// <summary>
+        /// Gets the <see cref="IGraphType"/> that owns this field collection.
+        /// </summary>
+        /// <value>The owner.</value>
+        IGraphType Owner { get; }
+
+        /// <summary>
         /// Attempts to find a field of the given name. Returns null if the field is not found.
         /// </summary>
         /// <param name="fieldName">The name of the field to find.</param>

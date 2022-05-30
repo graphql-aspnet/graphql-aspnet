@@ -93,6 +93,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _mockInvocationContext.Setup(x => x.Directives).Returns(new List<IDirectiveInvocationContext>());
             _mockInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
             _mockInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
+            _mockInvocationContext.Setup(x => x.Schema).Returns(_schema);
 
             this.GraphMethod = new Mock<IGraphMethod>();
             this.GraphMethod.Setup(x => x.Parent).Returns(graphMethod.Parent);
@@ -117,8 +118,8 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         {
             path = path ?? SourcePath.None;
             var item = new GraphDataItem(_mockInvocationContext.Object, sourceData, path);
-            var dataSource = new GraphFieldDataSource(sourceData, path, item);
-            _mockRequest.Setup(x => x.DataSource).Returns(dataSource);
+            var dataSource = new GraphDataContainer(sourceData, path, item);
+            _mockRequest.Setup(x => x.Data).Returns(dataSource);
             return this;
         }
 
@@ -214,9 +215,10 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 .InvocationContext
                 .Arguments
                 .Merge(context.VariableData)
-                .WithSourceData(context.Request.DataSource.Value);
+                .WithSourceData(context.Request.Data.Value);
 
             return new FieldResolutionContext(
+                _schema,
                 this.CreateFakeParentMiddlewareContext(),
                 this.FieldRequest,
                 executionArguments);
@@ -235,7 +237,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
-        /// Gets a mock reference to the method that will be resonsible for resolving the context in case any direct
+        /// Gets a mock reference to the root method that will be resonsible for resolving the context in case any direct
         /// invocation tests are needed. Otherwise, this property is not used in resolving a context put directly
         /// against the testserver.
         /// </summary>

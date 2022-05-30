@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A result indicating an ok return status and an object to be rendered to the graph.
@@ -33,14 +32,9 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             _result = objectToReturn;
         }
 
-        /// <summary>
-        /// Processes the provided resolution context against this action result instance to
-        /// generate the expected response in accordance with this instance's rule set.
-        /// </summary>
-        /// <param name="context">The context being processed.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         [DebuggerStepThrough]
-        public Task Complete(ResolutionContext context)
+        public Task Complete(BaseResolutionContext context)
         {
             if (context is FieldResolutionContext frc)
                 frc.Result = _result;

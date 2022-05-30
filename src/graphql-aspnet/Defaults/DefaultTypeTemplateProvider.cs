@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Defaults
             {
                 throw new GraphTypeDeclarationException(
                     $"The union proxy '{objectType.FriendlyName()}' cannot be directly parsed as a graph type. Double check " +
-                    "your field attribute declarations'.",
+                    "your field attribute declarations.",
                     objectType);
             }
 

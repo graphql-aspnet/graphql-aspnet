@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ActionTestData;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using Moq;
     using NUnit.Framework;
 
@@ -252,13 +253,24 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var types = action.RetrieveRequiredTypes();
             Assert.IsNotNull(types);
-            Assert.AreEqual(1, types.Count());
 
             Assert.IsTrue(types.Any(x => x.Type == typeof(string)));
 
             Assert.AreEqual(1, action.Arguments.Count);
             Assert.AreEqual(typeof(TwoPropertyObject[]), action.Arguments[0].DeclaredArgumentType);
             Assert.AreEqual(typeof(TwoPropertyObject), action.Arguments[0].ObjectType);
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var action = this.CreateActionTemplate<ActionMethodWithDirectiveController>(nameof(ActionMethodWithDirectiveController.Execute));
+
+            Assert.AreEqual(1, action.AppliedDirectives.Count());
+
+            var appliedDirective = action.AppliedDirectives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            Assert.AreEqual(new object[] { 202, "controller action arg" }, appliedDirective.Arguments);
         }
     }
 }

@@ -47,5 +47,12 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// </summary>
         /// <value>The query execution pipeline.</value>
         ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> QueryExecutionPipeline { get; }
+
+        /// <summary>
+        /// Gets the build useto construct the primary directive execution pipeline. This pipeline oversees the processing of directives against
+        /// data items for both the type system initial construction as well as during query execution.
+        /// </summary>
+        /// <value>The directive execution pipeline.</value>
+        ISchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
     }
 }

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Common.Extensions
     public static class EnumExtensions
     {
         /// <summary>
-        /// <para>Gets the flags that are set on the enum value. Composite flags (those "or-ed" together) are held
+        /// <para>Gets the flags that are set on the enum value. Composite flags (those "or'd" together) are held
         /// intact according to their definition in the enumeration definition.</para>
         /// </summary>
         /// <typeparam name="TEnum">The final enumeration type to cast the results to.</typeparam>

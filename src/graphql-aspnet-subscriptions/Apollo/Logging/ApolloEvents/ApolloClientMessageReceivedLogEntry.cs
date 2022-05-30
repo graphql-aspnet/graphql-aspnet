@@ -28,9 +28,9 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         public ApolloClientMessageReceivedLogEntry(ISubscriptionClientProxy client, ApolloMessage message)
             : base(ApolloLogEventIds.ClientMessageReceived)
         {
-            this.ClientId = client.Id;
-            this.MessageType = message.Type.ToString();
-            this.MessageId = message.Id;
+            this.ClientId = client?.Id;
+            this.MessageType = message?.Type.ToString();
+            this.MessageId = message?.Id;
         }
 
         /// <summary>

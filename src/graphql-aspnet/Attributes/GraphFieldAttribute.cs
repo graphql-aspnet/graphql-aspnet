@@ -130,7 +130,11 @@ namespace GraphQL.AspNet.Attributes
         /// <value>The options.</value>
         public TypeExpressions TypeExpression
         {
-            get => _typeModifiers ?? TypeExpressions.Auto;
+            get
+            {
+                return _typeModifiers ?? TypeExpressions.Auto;
+            }
+
             set
             {
                 if (value == TypeExpressions.Auto)

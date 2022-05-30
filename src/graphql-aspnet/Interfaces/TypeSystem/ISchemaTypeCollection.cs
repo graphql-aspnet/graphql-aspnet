@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
@@ -22,7 +23,8 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <summary>
         /// Registers the extension field to the <see cref="IObjectGraphType" /> corrisponding to the supplied
         /// concrete type. If a matching graph type cannot be found for the concrete type supplied, the field
-        /// is queued for when it is registered.
+        /// is queued for when it is registered. If no object graph type is ever registered to accept the
+        /// field, it is ignored.
         /// </summary>
         /// <param name="masterType">The master type that, once added to the schema, will trigger that addition of this field.</param>
         /// <param name="field">The field that will be added to the graph type associated with the master type.</param>
@@ -33,18 +35,21 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// and that the given type reference is assigned to it. An exception will be thrown if the type reference is already assigned
         /// to a different <see cref="IGraphType" />. No dependents or additional types will be added.
         /// </summary>
-        /// <param name="graphType">Type of the graph.</param>
+        /// <param name="graphType">The graph type to add to the schema.</param>
         /// <param name="associatedType">The concrete type to associate to the graph type.</param>
         /// <returns><c>true</c> if type had to be added, <c>false</c> if it already existed in the collection.</returns>
         bool EnsureGraphType(IGraphType graphType, Type associatedType = null);
 
         /// <summary>
-        /// Attempts to expand the given graph into the object graph
-        /// types it represents. If the given graph type is not one that can be expanded an empty list is returned. Object
-        /// graph types will be returned untouched as part of an enumeration.
+        /// Attempts to expand the given graph type into the object graph
+        /// type(s) it represents. If the given graph type is not one that can be expanded an empty list is returned.
         /// </summary>
         /// <param name="graphType">The graph type to expand.</param>
         /// <returns>An enumeration of graph types.</returns>
+        /// <remarks>
+        /// This method is typically used to inspect which types are registered as implenting a given
+        /// INTERFACE or are part of a given UNION.
+        /// </remarks>
         IEnumerable<IObjectGraphType> ExpandAbstractType(IGraphType graphType);
 
         /// <summary>
@@ -57,7 +62,8 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IGraphType FindGraphType(Type concreteType, TypeKind kind);
 
         /// <summary>
-        /// Attempts to find an <see cref="IGraphType" /> with the given name. Returns null
+        /// Attempts to find an <see cref="IGraphType" /> with the given name. This name is case sensitive and
+        /// should match the format rules for this schema. Returns null
         /// if no <see cref="IGraphType" /> is found.
         /// </summary>
         /// <param name="graphTypeName">The name of the type in the object graph.</param>
@@ -95,31 +101,48 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IEnumerable<Type> FindConcreteTypes(params IGraphType[] graphTypes);
 
         /// <summary>
-        /// Executes an analysis operation to attempt to find all known concrete <see cref="Type"/>
-        /// for the given <paramref name="targetGraphType"/> that <paramref name="typeToCheck"/>
-        /// could masquerade as for the <paramref name="targetGraphType"/>.
-        /// In most cases this will be one system <see cref="Type"/> but could be more in the case of abstact types
-        /// such as <see cref="TypeKind.UNION"/> or <see cref="TypeKind.INTERFACE"/>.
+        /// Executes an analysis operation to attempt to find all known concrete <see cref="Type" />
+        /// for the given <paramref name="targetGraphType" /> that <paramref name="typeToCheck" />
+        /// could masquerade as for the <paramref name="targetGraphType" />.
+        /// In most cases this will be one system <see cref="Type" /> but could be more in the case of abstact types
+        /// such as <see cref="TypeKind.UNION" /> or <see cref="TypeKind.INTERFACE" />.
         /// </summary>
-        /// <param name="targetGraphType">The graph type to which <paramref name="typeToCheck"/> was supplied for.</param>
-        /// <param name="typeToCheck">The type wishing to be used as the <paramref name="targetGraphType"/>.</param>
-        /// <returns>IEnumerable&lt;Type&gt;.</returns>
+        /// <param name="targetGraphType">The graph type to which <paramref name="typeToCheck" /> was supplied for.</param>
+        /// <param name="typeToCheck">The type wishing to be used as the <paramref name="targetGraphType" />.</param>
+        /// <returns>SchemaConcreteTypeAnalysisResult.</returns>
         SchemaConcreteTypeAnalysisResult AnalyzeRuntimeConcreteType(IGraphType targetGraphType, Type typeToCheck);
+
+        /// <summary>
+        /// Attempts to find a single directive within this schema by its name. This name is case sensitive and
+        /// should match the format rules for this schema. Returns null if the directive is not found.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>IDirectiveGraphType.</returns>
+        IDirective FindDirective(string name);
 
         /// <summary>
         /// Attempts to find a single directive within this schema by its name. Returns null
         /// if the directive is not found.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="directiveType">The registered type of the directive to search for.</param>
         /// <returns>IDirectiveGraphType.</returns>
-        IDirectiveGraphType FindDirective(string name);
+        IDirective FindDirective(Type directiveType);
+
+        /// <summary>
+        /// Attempts to find a single directive within this schema by its name. Returns null
+        /// if the directive is not found.
+        /// </summary>
+        /// <typeparam name="TDirective">The type of the directive to fetch.</typeparam>
+        /// <returns>IDirectiveGraphType.</returns>
+        IDirective FindDirective<TDirective>()
+            where TDirective : GraphDirective;
 
         /// <summary>
         /// Retrieves the collection of graph types that implement the provided named interface,
         /// if any.
         /// </summary>
         /// <param name="interfaceType">The interface type type to look for.</param>
-        /// <returns>IEnumerable&lt;IGraphType&gt;.</returns>
+        /// <returns>IEnumerable&lt;IObjectGraphType&gt;.</returns>
         IEnumerable<IObjectGraphType> FindGraphTypesByInterface(IInterfaceGraphType interfaceType);
 
         /// <summary>

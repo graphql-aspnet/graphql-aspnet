@@ -10,7 +10,8 @@
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// A declaration of a union in the graph schema.
@@ -18,21 +19,22 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IUnionGraphType : IGraphType
     {
         /// <summary>
-        /// Gets the possible concrete types this union could be.
+        /// Gets the complete list of possible concrete types contained in this union.
         /// </summary>
         /// <value>The possible graph type names.</value>
-        IEnumerable<Type> PossibleConcreteTypes { get; }
+        IImmutableSet<Type> PossibleConcreteTypes { get; }
 
         /// <summary>
-        /// Gets the possible graph type names this union could be.
+        /// Gets the complete list possible graph type names contained in this union.
         /// </summary>
         /// <value>The possible graph type names.</value>
-        IEnumerable<string> PossibleGraphTypeNames { get; }
+        IImmutableSet<string> PossibleGraphTypeNames { get; }
 
         /// <summary>
-        /// Gets the proxy object that was defined at design type which created this union type.
+        /// Gets or sets the mapper that can determine which unioned type a value from a resolved field
+        /// should be interpreted as.
         /// </summary>
-        /// <value>The proxy.</value>
-        IGraphUnionProxy Proxy { get; }
+        /// <value>The type mapper.</value>
+        IUnionTypeMapper TypeMapper { get; set; }
     }
 }

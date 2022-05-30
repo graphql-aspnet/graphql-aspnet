@@ -27,16 +27,16 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
         /// <param name="concreteType">The associated .NET concrete type, if any.</param>
         public SchemaGraphTypeLogItem(IGraphType graphType, Type concreteType = null)
         {
-            this.GraphTypeName = graphType.Name;
-            this.GraphTypeKind = graphType.Kind.ToString();
+            this.GraphTypeName = graphType?.Name;
+            this.GraphTypeKind = graphType?.Kind.ToString();
             this.GraphTypeType = concreteType?.FriendlyName(true);
 
             if (graphType is IGraphFieldContainer fieldContainer)
             {
-                this.GraphFieldCount = fieldContainer.Fields.Count;
+                this.GraphFieldCount = fieldContainer.Fields?.Count;
             }
 
-            this.IsPublished = graphType.Publish;
+            this.IsPublished = graphType?.Publish;
         }
 
         /// <summary>
@@ -76,9 +76,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
         /// support fields (such as scalars) this property is not included.
         /// </summary>
         /// <value>The number of fields registered to the graph type.</value>
-        public int GraphFieldCount
+        public int? GraphFieldCount
         {
-            get => this.GetProperty<int>(LogPropertyNames.GRAPH_TYPE_FIELD_COUNT);
+            get => this.GetProperty<int?>(LogPropertyNames.GRAPH_TYPE_FIELD_COUNT);
             set => this.SetProperty(LogPropertyNames.GRAPH_TYPE_FIELD_COUNT, value);
         }
 
@@ -86,9 +86,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
         /// Gets or sets a value indicating whether the graph type is published on introspection queries.
         /// </summary>
         /// <value><c>true if the graph type is published</c>; otherwise <c>false</c>.</value>
-        public bool IsPublished
+        public bool? IsPublished
         {
-            get => this.GetProperty<bool>(LogPropertyNames.GRAPH_TYPE_IS_PUBLISHED);
+            get => this.GetProperty<bool?>(LogPropertyNames.GRAPH_TYPE_IS_PUBLISHED);
             set => this.SetProperty(LogPropertyNames.GRAPH_TYPE_IS_PUBLISHED, value);
         }
     }

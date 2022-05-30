@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,25 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type representing a 32-bit, unsigned integer.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class UIntScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static UIntScalarType Instance { get; } = new UIntScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="UIntScalarType"/> class.
-        /// </summary>
-        static UIntScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="UIntScalarType"/> class.
         /// </summary>
-        private UIntScalarType()
+        public UIntScalarType()
             : base(Constants.ScalarNames.UINT, typeof(uint))
         {
             this.Description = $"A 32-bit, unsigned integer. (Min: {uint.MinValue}, Max: {uint.MaxValue})";
@@ -56,9 +45,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

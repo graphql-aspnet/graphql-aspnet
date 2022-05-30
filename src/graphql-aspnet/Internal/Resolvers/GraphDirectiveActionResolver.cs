@@ -13,13 +13,14 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// The default resolver for processing directive requests.
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet.Internal.Resolvers
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
         public async Task Resolve(DirectiveResolutionContext context, CancellationToken cancelToken = default)
         {
-            var action = _directiveTemplate.FindMethod(context.Request.LifeCycle);
+            var action = _directiveTemplate.FindMethod(context.Request.InvocationContext.Location);
 
             // if no action is found skip processing of this directive
             if (action == null)
@@ -64,9 +65,24 @@ namespace GraphQL.AspNet.Internal.Resolvers
 
                 if (directive == null)
                 {
+                    // attempt to just "create" a directive if it has no constructor parameters
+                    try
+                    {
+                        directive = InstanceFactory.CreateInstance(_directiveTemplate.ObjectType) as GraphDirective;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // unable to create the instance with a parameterless constructor
+                    }
+                }
+
+                if (directive == null)
+                {
                     result = new RouteNotFoundGraphActionResult(
                         $"The directive '{_directiveTemplate.InternalFullName}' " +
-                        "was not found in the scoped service provider.");
+                        "was not found in the scoped service provider. Any directives that have constructor parameters " +
+                        $"must also be registered to the service provider; Try using '{nameof(SchemaOptions.AddGraphType)}' " +
+                        $"with the type of your directive at startup.");
                 }
                 else
                 {

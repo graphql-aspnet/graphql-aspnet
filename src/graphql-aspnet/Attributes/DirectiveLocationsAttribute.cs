@@ -10,27 +10,28 @@
 namespace GraphQL.AspNet.Attributes
 {
     using System;
-    using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// For a given directive, defines where in a query document the directive is allowed to appear.
+    /// For a given directive, defines where the directive is allowed to be applied.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class DirectiveLocationsAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class DirectiveLocationsAttribute : BaseGraphAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveLocationsAttribute"/> class.
         /// </summary>
-        /// <param name="locations">The set of locations in a query document where the directive can be defined.</param>
-        public DirectiveLocationsAttribute(ExecutableDirectiveLocation locations)
+        /// <param name="locations">The bitwise set of locations where
+        /// this directive can be applied.</param>
+        public DirectiveLocationsAttribute(DirectiveLocation locations)
         {
             this.Locations = locations;
         }
 
         /// <summary>
-        /// Gets the locations where this directive can be defined.
+        /// Gets the locations where this directive can be applied.
         /// </summary>
         /// <value>The locations.</value>
-        public ExecutableDirectiveLocation Locations { get; }
+        public DirectiveLocation Locations { get; }
     }
 }

@@ -43,13 +43,8 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             _modelState = modelState;
         }
 
-        /// <summary>
-        /// Processes the provided resolution context against this action result instance to
-        /// generate the expected response in accordance with this instance's rule set.
-        /// </summary>
-        /// <param name="resolutionContext">The resolution context.</param>
-        /// <returns>Task.</returns>
-        public Task Complete(ResolutionContext resolutionContext)
+        /// <inheritdoc />
+        public Task Complete(BaseResolutionContext resolutionContext)
         {
             if (_modelState != null)
             {
@@ -86,7 +81,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="entry">The entry to extract messages from.</param>
-        private void GenerateErrorMessages(ResolutionContext context, InputModelStateEntry entry)
+        private void GenerateErrorMessages(BaseResolutionContext context, InputModelStateEntry entry)
         {
             foreach (var error in entry.Errors)
             {

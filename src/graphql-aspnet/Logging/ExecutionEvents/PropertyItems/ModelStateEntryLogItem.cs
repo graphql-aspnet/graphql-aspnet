@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
 {
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Logging.Common;
@@ -25,14 +26,13 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
         /// <param name="modelStateItem">The model state item.</param>
         public ModelStateEntryLogItem(InputModelStateEntry modelStateItem)
         {
-            this.Name = modelStateItem.Name;
-            this.ValidationState = modelStateItem.ValidationState.ToString();
+            this.Name = modelStateItem?.Name;
+            this.ValidationState = modelStateItem?.ValidationState.ToString();
 
-            if (modelStateItem.Errors != null && modelStateItem.Errors.Count > 0)
+            if (modelStateItem?.Errors != null && modelStateItem.Errors.Count > 0)
             {
                 var errors = new List<IGraphLogPropertyCollection>();
-
-                foreach (var error in modelStateItem.Errors)
+                foreach (var error in modelStateItem.Errors.Where(x => x != null))
                 {
                     errors.Add(new ModelStateErrorLogItem(error));
                 }

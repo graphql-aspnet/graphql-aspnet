@@ -9,7 +9,13 @@
 
 namespace GraphQL.AspNet.Defaults
 {
+    using System;
+    using System.Reflection;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -20,23 +26,13 @@ namespace GraphQL.AspNet.Defaults
     /// </summary>
     public class DefaultGraphTypeMakerProvider : IGraphTypeMakerProvider
     {
-        /// <summary>
-        /// Creates "maker" that can generate graph fields.
-        /// </summary>
-        /// <param name="schema">The schema to which the created fields should belong.</param>
-        /// <returns>IGraphFieldMaker.</returns>
+        /// <inheritdoc />
         public virtual IGraphFieldMaker CreateFieldMaker(ISchema schema)
         {
             return new GraphFieldMaker(schema);
         }
 
-        /// <summary>
-        /// Creates an appropriate graph type maker for the given concrete type.
-        /// </summary>
-        /// <param name="schema">The schema for which the maker should generate graph types for.</param>
-        /// <param name="kind">The kind of graph type to create. If null, the factory will attempt to deteremine the
-        /// most correct maker to use.</param>
-        /// <returns>IGraphTypeMaker.</returns>
+        /// <inheritdoc />
         public virtual IGraphTypeMaker CreateTypeMaker(ISchema schema, TypeKind kind)
         {
             if (schema == null)
@@ -62,10 +58,39 @@ namespace GraphQL.AspNet.Defaults
                 case TypeKind.INPUT_OBJECT:
                     return new InputObjectGraphTypeMaker(schema);
 
-                // note: unions cannot currently be made via the type maker stack
+                    // note: unions cannot currently be made via the type maker stack
             }
 
             return null;
+        }
+
+        /// <inheritdoc />
+        public IUnionGraphTypeMaker CreateUnionMaker(ISchema schema)
+        {
+            return new UnionGraphTypeMaker(schema);
+        }
+
+        /// <inheritdoc />
+        public IGraphUnionProxy CreateUnionProxyFromType(Type proxyType)
+        {
+            if (proxyType == null)
+                return null;
+
+            IGraphUnionProxy proxy = null;
+            if (Validation.IsCastable<IGraphUnionProxy>(proxyType))
+            {
+                var paramlessConstructor = proxyType.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
+                if (paramlessConstructor == null)
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The union proxy type '{proxyType.FriendlyName()}' could not be instantiated. " +
+                        "All union proxy types must declare a parameterless constructor.");
+                }
+
+                proxy = InstanceFactory.CreateInstance(proxyType) as IGraphUnionProxy;
+            }
+
+            return proxy;
         }
     }
 }

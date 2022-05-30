@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// <para>1) If the type to locate is a class or interface the inspected type will be returned if it implements or inherits from the provided type.</para>
         /// <para>2) If the type to locate is an <see cref="Attribute"/> the inspected type will be returned if it implements the provided <see cref="Attribute"/> type.</para>
         /// </summary>
-        /// <param name="assembly">The assembly.</param>
+        /// <param name="assembly">The assembly to inspect.</param>
         /// <param name="typesToLocate">A collection of types to use to locate any types in the assembly.</param>
         /// <returns>IReadOnlyList&lt;Type&gt;.</returns>
         public static IEnumerable<Type> LocateTypesInAssembly(this Assembly assembly, params Type[] typesToLocate)

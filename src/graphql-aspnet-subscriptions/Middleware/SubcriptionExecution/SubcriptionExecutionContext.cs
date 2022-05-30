@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A wrapper on <see cref="GraphQueryExecutionContext"/> to provide property access
@@ -54,7 +55,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
         {
             get
             {
-                return (this.QueryOperation != null && this.QueryOperation.OperationType == GraphCollection.Subscription)
+                return (this.QueryOperation != null && this.QueryOperation.OperationType == GraphOperationType.Subscription)
                     || this.Items.ContainsKey(SubscriptionConstants.Execution.CREATED_SUBSCRIPTION);
             }
         }

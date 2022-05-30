@@ -20,84 +20,80 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A field argument not based on a <see cref="ParameterInfo"/> reference from a method or property.
     /// </summary>
     [DebuggerDisplay("Virtual Argument: {Name}")]
-    public class VirtualGraphFieldArgument : IGraphFieldArgument
+    public class VirtualGraphFieldArgument : IGraphArgument
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualGraphFieldArgument" /> class.
         /// </summary>
+        /// <param name="parent">The parent graph type that owns this virutal field.</param>
         /// <param name="name">The name of this field in the object graph.</param>
         /// <param name="internalName">The name of this field as it exists in the .NET code.</param>
         /// <param name="typeExpression">The graph type expression representing this field.</param>
+        /// <param name="route">The route path for this argument.</param>
         /// <param name="concreteType">The concrete graph type in the server code that this argument is mapped to.</param>
-        /// <param name="argModifiers">The argument modifiers.</param>
+        /// <param name="hasDefaultValue">if set to <c>true</c> indicates that this
+        /// argument has a default value, even if its null.</param>
         /// <param name="defaultValue">The default value.</param>
+        /// <param name="argModifiers">The argument modifiers.</param>
         public VirtualGraphFieldArgument(
+            ISchemaItem parent,
             string name,
             string internalName,
             GraphTypeExpression typeExpression,
+            GraphFieldPath route,
             Type concreteType,
-            GraphArgumentModifiers argModifiers = GraphArgumentModifiers.None,
-            object defaultValue = null)
+            bool hasDefaultValue,
+            object defaultValue = null,
+            GraphArgumentModifiers argModifiers = GraphArgumentModifiers.None)
         {
+            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ParameterName = this.Name;
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ArgumentModifiers = argModifiers;
+            this.HasDefaultValue = hasDefaultValue;
             this.DefaultValue = defaultValue;
+
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
         }
 
-        /// <summary>
-        /// Gets the type of the object this graph type was made from.
-        /// </summary>
-        /// <value>The type of the object.</value>
+        /// <inheritdoc />
         public Type ObjectType { get; }
 
-        /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
-        /// is used in many exceptions and internal error messages.
-        /// </summary>
-        /// <value>The name of the internal.</value>
+        /// <inheritdoc />
         public string InternalName { get; }
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name { get; }
+        /// <inheritdoc />
+        public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
+        /// <inheritdoc />
         public string Description { get; set; }
 
-        /// <summary>
-        /// Gets a default value to use for any instances of this argument when one is not explicitly provided.
-        /// </summary>
-        /// <value>The boxed, default value, if any.</value>
+        /// <inheritdoc />
         public object DefaultValue { get; }
 
-        /// <summary>
-        /// Gets the argument modifiers that modify how this argument is interpreted by the runtime.
-        /// </summary>
-        /// <value>The argument modifiers.</value>
+        /// <inheritdoc />
         public GraphArgumentModifiers ArgumentModifiers { get; }
 
-        /// <summary>
-        /// Gets the type expression that represents the data of this argument (i.e. the '[SomeType!]'
-        /// declaration used in schema definition language.)
-        /// </summary>
-        /// <value>The type expression.</value>
+        /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }
 
-        /// <summary>
-        /// Gets the name of the parameter as it was defined on a concrete method.
-        /// </summary>
-        /// <value>The name of the parameter.</value>
+        /// <inheritdoc />
         public string ParameterName { get; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public bool HasDefaultValue { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        public ISchemaItem Parent { get; }
     }
 }

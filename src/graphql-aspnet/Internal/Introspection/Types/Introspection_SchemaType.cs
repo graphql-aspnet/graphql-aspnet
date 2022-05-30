@@ -25,22 +25,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
     internal class Introspection_SchemaType : BaseIntrospectionObjectType
     {
         /// <summary>
-        /// Gets the instance of this meta-type.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static Introspection_SchemaType Instance { get; } = new Introspection_SchemaType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="Introspection_SchemaType"/> class.
-        /// </summary>
-        static Introspection_SchemaType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_SchemaType"/> class.
         /// </summary>
-        private Introspection_SchemaType()
+        public Introspection_SchemaType()
             : base(Constants.ReservedNames.SCHEMA_TYPE)
         {
             // "__Schema" type definition
@@ -78,7 +65,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                 "directives",
                 new GraphTypeExpression(Constants.ReservedNames.DIRECTIVE_TYPE, GraphTypeExpression.RequiredListRequiredItem),
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "directives"),
-                (its) => its.Directives.Where(x => x.Publish).AsCompletedTask(),
+                (its) => its.DeclaredDirectives.Where(x => x.Publish).AsCompletedTask(),
                 "A complete collection of the directives supported by this schema.");
         }
     }

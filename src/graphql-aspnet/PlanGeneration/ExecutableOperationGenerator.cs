@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.PlanGeneration
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -121,6 +122,7 @@ namespace GraphQL.AspNet.PlanGeneration
             var targetField = sourceGraphType.Fields[fieldSelection.Field.Name];
 
             var fieldContext = new FieldInvocationContext(
+                _schema,
                 concreteType,
                 fieldSelection.Alias.ToString(),
                 targetField,
@@ -136,8 +138,11 @@ namespace GraphQL.AspNet.PlanGeneration
 
             // if the field declares itself as being specifically for a single concrete type
             // enforce that restriction (all user created POCO data types will, most virtual controller based types will not)
-            if (sourceGraphType is ITypedItem typedType)
-                fieldContext.Restrict(typedType.ObjectType);
+            if (sourceGraphType is ITypedSchemaItem typedType)
+            {
+                if (!(typedType is IInternalSchemaItem))
+                    fieldContext.Restrict(typedType.ObjectType);
+            }
 
             if (fieldSelection.FieldSelectionSet != null && fieldSelection.FieldSelectionSet.Count > 0)
             {
@@ -181,7 +186,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <param name="querySuppliedArguments">The supplied argument collection parsed from the user query document.</param>
         /// <returns>Task&lt;IInputArgumentCollection&gt;.</returns>
         private IInputArgumentCollection CreateArgumentList(
-            IGraphFieldArgumentContainer argumentContainer,
+            IGraphArgumentContainer argumentContainer,
             IQueryInputArgumentCollection querySuppliedArguments)
         {
             var collection = new InputArgumentCollection();
@@ -209,9 +214,9 @@ namespace GraphQL.AspNet.PlanGeneration
 
             foreach (var directive in queryDirectives)
             {
-                var directiveContext = new GraphDirectiveExecutionContext(
-                    directive.Location,
+                var directiveContext = new DirectiveInvocationContext(
                     directive.Directive,
+                    directive.Location,
                     directive.Node.Location.AsOrigin());
 
                 // gather arguments

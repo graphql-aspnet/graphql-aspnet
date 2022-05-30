@@ -258,6 +258,21 @@ namespace GraphQL.AspNet.Logging
         public const string SCHEMA_ROUTE_PATH = "route";
 
         /// <summary>
+        /// The unique path identifying the item, within the schema, the directive was applied to.
+        /// </summary>
+        public const string SCHEMA_ITEM_PATH = "itemPath";
+
+        /// <summary>
+        /// The name of the directive in scope, as named by the target schema.
+        /// </summary>
+        public const string DIRECTIVE_NAME = "directiveName";
+
+        /// <summary>
+        /// The internal name (full class name) of the in scope directive.
+        /// </summary>
+        public const string DIRECTIVE_INTERNAL_NAME = "directiveInternalName";
+
+        /// <summary>
         /// The name of the graph type item, as its declared in its schema.
         /// </summary>
         public const string GRAPH_TYPE_NAME = "typeName";

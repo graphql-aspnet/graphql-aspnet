@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
             if (queryDirective == null)
                 return false;
 
-            var location = node.ParentNode?.DirectiveLocation();
+            var location = node.ParentNode?.AsDirectiveLocation();
             if (!location.HasValue || !queryDirective.Directive.Locations.HasFlag(location))
             {
                 var locationName = location.HasValue ? location.Value.ToString() : "unknown";

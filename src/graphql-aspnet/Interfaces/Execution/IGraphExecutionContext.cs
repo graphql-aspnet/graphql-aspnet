@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
-    using System.Security.Claims;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
@@ -22,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     {
         /// <summary>
         /// Marks this context as being cancelled. This does not terminate a pipeline directly, rather it sets a
-        /// flag, <see cref="IsCancelled"/>, that each middleware component must choose to react to.
+        /// flag that each middleware component must choose to react to.
         /// </summary>
         void Cancel();
 
@@ -31,7 +30,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// state. Each pipeline component must choose to react to the cancelation state or not. The final data result
         /// of the pipeline, however; will not be rendered to the requestor.
         /// </summary>
-        /// <value><c>true</c> if cancel; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if execution of the context has been canceled; otherwise, <c>false</c>.</value>
         bool IsCancelled { get; }
 
         /// <summary>

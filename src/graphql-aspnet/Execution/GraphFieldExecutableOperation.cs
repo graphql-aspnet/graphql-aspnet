@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A container representing the conversion of an operation on a query document into a runnable collection of
@@ -58,7 +59,7 @@ namespace GraphQL.AspNet.Execution
         /// Gets the type of the operation (mutation, query etc.)
         /// </summary>
         /// <value>The type of the operation.</value>
-        public GraphCollection OperationType { get; }
+        public GraphOperationType OperationType { get; }
 
         /// <summary>
         /// Gets the name of the operation as it was defined in the query document. May be null or empty if

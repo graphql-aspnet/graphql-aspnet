@@ -32,19 +32,12 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldInvocationContextCollection" /> class.
         /// </summary>
-        /// <param name="data">A set of contexts to prepopulate this instance with.</param>
-        public FieldInvocationContextCollection(IEnumerable<IGraphFieldInvocationContext> data = null)
+        public FieldInvocationContextCollection()
         {
             _uniqueContexts = new HashSet<Tuple<string, string, string, Type>>();
             _contexts = new List<IGraphFieldInvocationContext>();
             _secureContexts = new List<IGraphFieldInvocationContext>();
             _acceptableTypes = new HashSet<Type>();
-
-            if (data != null)
-            {
-                foreach (var item in data)
-                    this.Add(item);
-            }
         }
 
         /// <summary>
@@ -121,12 +114,5 @@ namespace GraphQL.AspNet.Execution
         {
             return this.GetEnumerator();
         }
-
-        /// <summary>
-        /// Gets a pre-filtered set of the invocation contexts in this collection
-        /// that have security requrirements attached to them.
-        /// </summary>
-        /// <value>The secure contexts.</value>
-        public IEnumerable<IGraphFieldInvocationContext> SecureContexts => _secureContexts;
     }
 }

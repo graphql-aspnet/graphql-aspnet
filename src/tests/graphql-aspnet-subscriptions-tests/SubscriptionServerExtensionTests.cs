@@ -109,12 +109,12 @@ namespace GraphQL.Subscriptions.Tests
                           It.IsAny<string>()),
               Times.Exactly(1));
 
-            // four components in the sub swaped field pipeline
+            // original three components in the sub swaped field pipeline
             fieldPipeline.Verify(x => x.Clear());
             fieldPipeline.Verify(
                 x =>
                     x.AddMiddleware<IGraphMiddlewareComponent<GraphFieldExecutionContext>>(It.IsAny<ServiceLifetime>(), It.IsAny<string>()),
-                Times.Exactly(4));
+                Times.Exactly(3));
 
             // ensure field authroization component was NOT added
             // to the field pipeline

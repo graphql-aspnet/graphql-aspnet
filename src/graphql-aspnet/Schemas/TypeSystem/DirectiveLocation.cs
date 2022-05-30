@@ -8,14 +8,16 @@
 // *************************************************************
 
 // ReSharper disable InconsistentNaming
+#pragma warning disable SA1134 // Attributes should not share line
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// The possible locations a directive is defined for.
+    /// The possible locations a directive can be applied.
     /// </summary>
     [Flags]
     [GraphType(Constants.ReservedNames.DIRECTIVE_LOCATION_ENUM)]
@@ -24,23 +26,44 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     {
         [GraphSkip]
         NONE = 0,
-        QUERY = 1,
-        MUTATION = 2,
-        SUBSCRIPTION = 4,
-        FIELD = 8,
-        FRAGMENT_DEFINITION = 16,
-        FRAGMENT_SPREAD = 32,
-        INLINE_FRAGMENT = 64,
-        SCHEMA = 128,
-        SCALAR = 256,
-        OBJECT = 512,
-        FIELD_DEFINITION = 1024,
-        ARGUMENT_DEFINITION = 2048,
-        INTERFACE = 4096,
-        UNION = 8192,
-        ENUM = 16384,
-        ENUM_VALUE = 32768,
-        INPUT_OBJECT = 65536,
-        INPUT_FIELD_DEFINITION = 131072,
+
+        // Execution Phase Locations
+        QUERY = 1 << 0,
+        MUTATION = 1 << 1,
+        SUBSCRIPTION = 1 << 2,
+        FIELD = 1 << 3,
+        FRAGMENT_DEFINITION = 1 << 4,
+        FRAGMENT_SPREAD = 1 << 5,
+        INLINE_FRAGMENT = 1 << 6,
+
+        // Type System Locations
+        SCHEMA = 1 << 8,
+        SCALAR = 1 << 9,
+        OBJECT = 1 << 10,
+        FIELD_DEFINITION = 1 << 11,
+        ARGUMENT_DEFINITION = 1 << 12,
+        INTERFACE = 1 << 13,
+        UNION = 1 << 14,
+        ENUM = 1 << 15,
+        ENUM_VALUE = 1 << 16,
+        INPUT_OBJECT = 1 << 17,
+        INPUT_FIELD_DEFINITION = 1 << 18,
+
+        /// <summary>
+        /// All locations that target an executable query document.
+        /// </summary>
+        [GraphSkip]
+        AllExecutionLocations = QUERY | MUTATION | SUBSCRIPTION |
+            FIELD | FRAGMENT_DEFINITION | FRAGMENT_SPREAD |
+            INLINE_FRAGMENT,
+
+        /// <summary>
+        /// All locations that target <see cref="ISchemaItem"/> instances.
+        /// </summary>
+        [GraphSkip]
+        AllTypeSystemLocations = SCHEMA | SCALAR |
+            OBJECT | FIELD_DEFINITION |
+            ARGUMENT_DEFINITION | INTERFACE |
+            UNION | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION,
     }
 }

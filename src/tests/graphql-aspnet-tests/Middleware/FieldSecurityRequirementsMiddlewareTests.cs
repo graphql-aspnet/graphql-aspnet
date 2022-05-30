@@ -49,20 +49,12 @@ namespace GraphQL.AspNet.Tests.Middleware
             return Task.CompletedTask;
         }
 
-        private void SetupFieldForControllerMethod<TController>(string methodName)
+        private void ExtractPoliciesAndSetupFieldForTest<TController>(string methodName)
         {
-            this.SetupFieldForControllerMethod(typeof(TController), methodName);
+            this.ExtractPoliciesAndSetupFieldForTest(typeof(TController), methodName);
         }
 
-        private void SetupFieldMock(List<AppliedSecurityPolicyGroup> securityGroups)
-        {
-            var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(securityGroups);
-            field.Setup(x => x.Route).Returns(new GraphFieldPath(AspNet.Execution.GraphCollection.Query, "some", "path"));
-            _field = field.Object;
-        }
-
-        private void SetupFieldForControllerMethod(Type controllerType, string methodName)
+        private void ExtractPoliciesAndSetupFieldForTest(Type controllerType, string methodName)
         {
             var method = controllerType.GetMethod(methodName);
             if (method == null)
@@ -76,6 +68,14 @@ namespace GraphQL.AspNet.Tests.Middleware
             list.Add(methodGroup);
 
             this.SetupFieldMock(list);
+        }
+
+        private void SetupFieldMock(List<AppliedSecurityPolicyGroup> securityGroups)
+        {
+            var field = new Mock<IGraphField>();
+            field.Setup(x => x.SecurityGroups).Returns(securityGroups);
+            field.Setup(x => x.Route).Returns(new GraphFieldPath(AspNet.Execution.GraphCollection.Query, "some", "path"));
+            _field = field.Object;
         }
 
         private async Task<GraphFieldSecurityContext> ExecuteTest()
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task SimpleAuthorizeOnMethod_BasicPropertyCheck()
         {
-            this.SetupFieldForControllerMethod<NothingOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.AuthorizeOnMethod));
 
             var result = await this.ExecuteTest();
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [TestCase(typeof(AuthorizeAndAnonOnClass), nameof(AuthorizeAndAnonOnClass.NothingOnMethod), true)]
         public async Task AllowAnonymousChecks(Type controller, string methodName, bool shouldAllowAnonymous)
         {
-            this.SetupFieldForControllerMethod(controller, methodName);
+            this.ExtractPoliciesAndSetupFieldForTest(controller, methodName);
 
             var result = await this.ExecuteTest();
 
@@ -154,7 +154,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [TestCase(nameof(SchemeOnClass.NoSchemesOnMethod), "scheme1, scheme2, scheme3")]
         public async Task WhenClassAndMethodSchemesDiffer_OnlyTheSubsetIsTaken(string methodName, string expectedSchemes)
         {
-            this.SetupFieldForControllerMethod<SchemeOnClass>(methodName);
+            this.ExtractPoliciesAndSetupFieldForTest<SchemeOnClass>(methodName);
 
             var result = await this.ExecuteTest();
 
@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WhenNoSchemeMatchesAllGroups_ErrorResultIsSet()
         {
-            this.SetupFieldForControllerMethod<SchemeOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<SchemeOnClass>(
                 nameof(SchemeOnClass.DifferentSchemeOnMethod));
 
             var result = await this.ExecuteTest();
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WhenPolicyNotFound_ErrorResultIsSet()
         {
-            this.SetupFieldForControllerMethod<NothingOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.PolicyOnMethod));
 
             // no policy defined
@@ -209,7 +209,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WhenPolicyDefined_ButProviderNotAssigned_ErrorResultIsSet()
         {
-            this.SetupFieldForControllerMethod<NothingOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.PolicyOnMethod));
 
             // no policy provider "found" in DI container
@@ -227,7 +227,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task CustomDefaultPolicyIsEnforced_WhenNoPolicyNameDefined()
         {
-            this.SetupFieldForControllerMethod<NothingOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.AuthorizeOnMethod));
 
             var schemes = new List<string>();
@@ -258,7 +258,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task RoleGroups_OnClassAndMethod_AreAddedCorrectly()
         {
-            this.SetupFieldForControllerMethod<RolesOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<RolesOnClass>(
                 nameof(RolesOnClass.RolesOnMethod));
 
             var result = await this.ExecuteTest();
@@ -285,7 +285,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task RoleGroups_OnClass_AreAddedCorrectly()
         {
-            this.SetupFieldForControllerMethod<RolesOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<RolesOnClass>(
                 nameof(RolesOnClass.NoRolesOnMethod));
 
             var result = await this.ExecuteTest();
@@ -307,7 +307,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task RoleGroups_OnMethod_AreAddedCorrectly()
         {
-            this.SetupFieldForControllerMethod<NothingOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.RolesOnMethod));
 
             var result = await this.ExecuteTest();
@@ -329,7 +329,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task NamedPolicyWithSchemes_SchemesAreExtracted()
         {
-            this.SetupFieldForControllerMethod<NothingOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.PolicyOnMethod));
 
             var policy1 = new AuthorizationPolicyBuilder()
@@ -358,7 +358,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WhenNoSecurityGroupsDefined_AutoDenyIsSet()
         {
-            this.SetupFieldForControllerMethod<NothingOnClass>(
+            this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.AuthorizeOnMethod));
 
             this.SetupFieldMock(null);

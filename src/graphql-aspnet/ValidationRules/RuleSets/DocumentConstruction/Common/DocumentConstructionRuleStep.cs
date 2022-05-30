@@ -58,6 +58,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common
         /// Gets a url pointing to the rule definition in the graphql specification, if any.
         /// </summary>
         /// <value>The rule URL.</value>
-        public virtual string ReferenceUrl => ReferenceRule.Create(this.RuleAnchorTag);
+        public virtual string ReferenceUrl => ReferenceRule.CreateFromAnchorTag(this.RuleAnchorTag);
     }
 }

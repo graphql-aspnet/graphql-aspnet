@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Logging
                 var concreteType = server.Schema.KnownTypes.FindConcreteType(type);
                 Assert.AreEqual(concreteType?.FriendlyName(true), logGraphType.GraphTypeType);
 
-                var totalFields = type is IGraphFieldContainer fc ? fc.Fields.Count : 0;
+                int? totalFields = type is IGraphFieldContainer fc ? fc.Fields.Count : null;
                 Assert.AreEqual(totalFields, logGraphType.GraphFieldCount);
             }
         }
@@ -226,13 +226,12 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void FieldResolutionStartedLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                              .AddGraphType<LogTestController>()
                              .Build();
 
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
 
             var entry = new FieldResolutionStartedLogEntry(resolutionContext);
@@ -247,13 +246,12 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void FieldResolutionCompletedLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                              .AddGraphType<LogTestController>()
                              .Build();
 
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
             var fieldRequest = package.FieldRequest;
 
@@ -272,15 +270,14 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void FieldAuthorizationStartedLogEntry()
         {
-            var builder = new TestServerBuilder()
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                             .AddGraphType<LogTestController>();
 
             builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
 
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
 
             var authContext = package.CreateSecurityContext();
@@ -298,15 +295,14 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void FieldAuthorizationCompletedLogEntry()
         {
-            var builder = new TestServerBuilder()
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>();
 
             builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
 
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
@@ -326,15 +322,14 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void FieldAuthenticationStartedLogEntry()
         {
-            var builder = new TestServerBuilder()
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                             .AddGraphType<LogTestController>();
 
             builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
 
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
 
             var authContext = package.CreateSecurityContext();
@@ -351,7 +346,7 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void FieldAuthenticationCompletedLogEntry()
         {
-            var builder = new TestServerBuilder()
+            var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>();
             builder.UserContext.Authenticate("bob-smith");
             var server = builder.Build();
@@ -366,9 +361,8 @@ namespace GraphQL.AspNet.Tests.Logging
             authResult.Setup(x => x.AuthenticationScheme).Returns("testScheme");
             authResult.Setup(x => x.Suceeded).Returns(true);
 
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
 
             var fieldRequest = package.FieldRequest;
             var authContext = package.CreateSecurityContext();
@@ -391,13 +385,12 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ActionMethodInvocationStartedLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>()
                                          .Build();
             var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
 
             var entry = new ActionMethodInvocationStartedLogEntry(graphMethod, fieldRequest);
@@ -415,14 +408,13 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ActionMethodInvocationCompletedLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>()
                                          .Build();
 
             var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var resolutionContext = package.CreateResolutionContext();
             var fieldRequest = package.FieldRequest;
 
@@ -442,14 +434,13 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ActionMethodInvocationExceptionLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>()
                                          .Build();
 
             var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var fieldRequest = package.FieldRequest;
 
             var result = new object();
@@ -474,13 +465,12 @@ namespace GraphQL.AspNet.Tests.Logging
         [Test]
         public void ActionMethodUnhandledExceptionLogEntry()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                                          .AddGraphType<LogTestController>()
                                          .Build();
 
-            var package = server.CreateFieldContextBuilder<LogTestController>(
-                nameof(LogTestController.ExecuteField2),
-                new object());
+            var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
+                nameof(LogTestController.ExecuteField2));
             var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
             var fieldRequest = package.FieldRequest;
 
@@ -500,6 +490,26 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(exception.Message, exceptionEntry.ExceptionMessage);
             Assert.AreEqual(exception.StackTrace, exceptionEntry.StackTrace);
             Assert.AreEqual(exception.GetType().FriendlyName(true), exceptionEntry.TypeName);
+        }
+
+        [Test]
+        public void TypeSystemDirectiveAppliedLogEntry()
+        {
+            var directive = new Mock<IDirective>();
+            directive.Setup(x => x.Name).Returns("The Directive");
+            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
+
+            var item = new Mock<ISchemaItem>();
+            item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.GraphFieldPath(GraphCollection.Types, "path1"));
+
+            var exception = new Exception("inner error");
+            var entry = new TypeSystemDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
+
+            Assert.AreEqual(LogEventIds.TypeSystemDirectiveApplied.Id, entry.EventId);
+            Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
+            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
+            Assert.AreEqual(item.Object.Route.Path, entry.SchemaItemPath);
+            Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
         }
     }
 }

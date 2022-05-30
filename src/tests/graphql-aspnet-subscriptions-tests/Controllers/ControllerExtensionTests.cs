@@ -27,13 +27,12 @@ namespace GraphQL.Subscriptions.Tests.Controllers
         [Test]
         public async Task PublishSubEvent_PublishesEventWithCorrectData()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEvent),
-                new object());
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -66,13 +65,12 @@ namespace GraphQL.Subscriptions.Tests.Controllers
         [Test]
         public async Task PublishSubEvent_NoDataYieldsNoEvent()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEventNoData),
-                new object());
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.MutationRaisesSubEventNoData));
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -96,13 +94,12 @@ namespace GraphQL.Subscriptions.Tests.Controllers
         [Test]
         public async Task PublishSubEvent_ExistingEventCollectionisAppendedTo()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEvent),
-                new object());
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -124,13 +121,12 @@ namespace GraphQL.Subscriptions.Tests.Controllers
         [Test]
         public async Task PublishSubEvent_UnusableListForSubscriptionEvents_ThrowsException()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaisesSubEvent),
-                new object());
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.MutationRaisesSubEvent));
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);
@@ -153,13 +149,12 @@ namespace GraphQL.Subscriptions.Tests.Controllers
         [Test]
         public async Task PublishSubEvent_NoEventNameFailsTheResolver_BubblesExceptionUp()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.MutationRaiseSubEventWithNoEventName),
-                new object());
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.MutationRaiseSubEventWithNoEventName));
 
             var arg1Value = "random string";
             fieldContextBuilder.AddInputArgument("arg1", arg1Value);

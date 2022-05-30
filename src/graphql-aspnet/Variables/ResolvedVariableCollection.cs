@@ -11,12 +11,14 @@ namespace GraphQL.AspNet.Variables
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>
     /// A collection of variables that have been resolved and contextualized in terms
     /// of a specific query operation they are targeting.
     /// </summary>
+    [DebuggerDisplay("Count = {Count}")]
     public class ResolvedVariableCollection : IResolvedVariableCollection
     {
         /// <summary>

@@ -10,32 +10,22 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type representing a single unsigned byte.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class ByteScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static ByteScalarType Instance { get; } = new ByteScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="ByteScalarType"/> class.
-        /// </summary>
-        static ByteScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ByteScalarType"/> class.
         /// </summary>
-        private ByteScalarType()
+        public ByteScalarType()
             : base(Constants.ScalarNames.BYTE, typeof(byte))
         {
             this.Description = $"A unsigned byte. (Min: {byte.MinValue}, Max: {byte.MaxValue})";
@@ -56,9 +46,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

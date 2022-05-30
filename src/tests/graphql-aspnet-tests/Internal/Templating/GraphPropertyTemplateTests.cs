@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData;
     using Moq;
     using NUnit.Framework;
@@ -209,6 +210,31 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             Assert.AreEqual(expectedTypeExpression, template.TypeExpression);
             Assert.AreEqual(typeof(KeyValuePair<string, string>[]), template.DeclaredReturnType);
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var expectedTypeExpression = new GraphTypeExpression(
+                typeof(KeyValuePair<string, string>).FriendlyGraphTypeName(),
+                MetaGraphTypes.IsList,
+                MetaGraphTypes.IsNotNull); // structs can't be null
+
+            var parent = obj.Object;
+            var propInfo = typeof(PropertyClassWithDirective).GetProperty(nameof(PropertyClassWithDirective.Prop1));
+
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            template.Parse();
+            template.ValidateOrThrow();
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
+
+            var appliedDirective = template.AppliedDirectives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            Assert.AreEqual(new object[] { 55, "property arg" }, appliedDirective.Arguments);
         }
     }
 }

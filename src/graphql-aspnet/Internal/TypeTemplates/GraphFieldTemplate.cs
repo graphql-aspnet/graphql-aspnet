@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
@@ -53,7 +54,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
-            _fieldDeclaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            base.ParseTemplateDefinition();
+
+            _fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
 
             // ------------------------------------
             // Common Metadata
@@ -61,8 +64,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Route = this.GenerateFieldPath();
             this.Mode = _fieldDeclaration?.ExecutionMode ?? FieldResolutionMode.PerSourceItem;
             this.Complexity = _fieldDeclaration?.Complexity;
-            this.Description = this.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
-            var deprecated = this.SingleAttributeOfTypeOrDefault<DeprecatedAttribute>();
+            this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
+            var deprecated = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DeprecatedAttribute>();
             if (deprecated != null)
             {
                 this.IsDeprecated = true;
@@ -87,7 +90,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
                 // the possible types attribte is optional but expects that the concrete types are added
                 // to the schema else where lest a runtime exception occurs of a missing graph type.
-                var typesAttrib = this.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
+                var typesAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<PossibleTypesAttribute>();
                 if (typesAttrib != null)
                 {
                     foreach (var type in typesAttrib.PossibleTypes)
@@ -283,19 +286,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             foreach (var argument in this.Arguments)
                 argument.ValidateOrThrow();
 
-            // specific validation for those arguments destinated to be input arguments
-            // that exist on the object graph
-            // (inputArguments does not contain any args defined as source data args)
-            foreach (var inputArgument in this.InputArguments)
-            {
-                if (inputArgument.ObjectType.IsInterface)
-                {
-                    throw new GraphTypeDeclarationException(
-                        $"The field '{this.InternalFullName}' declares an input argument '{inputArgument.Name}' of type  '{inputArgument.ObjectType.FriendlyName()}' " +
-                        $"which is an interface. Interfaces cannot be used as input arguments to a field.");
-                }
-            }
-
             if (this.Complexity.HasValue && this.Complexity < 0)
             {
                 throw new GraphTypeDeclarationException(
@@ -305,6 +295,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             this.ValidateBatchMethodSignatureOrThrow();
         }
+
+        /// <summary>
+        /// When overridden in a child class, this method builds the unique field path that will be assigned to this instance
+        /// using the implementation rules of the concrete type.
+        /// </summary>
+        /// <returns>GraphRoutePath.</returns>
+        protected abstract GraphFieldPath GenerateFieldPath();
 
         /// <summary>
         /// Type extensions used as batch methods required a speceial input and output signature for the runtime
@@ -367,11 +364,25 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public abstract IGraphFieldResolver CreateResolver();
 
         /// <inheritdoc />
-        public virtual IEnumerable<DependentType> RetrieveRequiredTypes()
+        public override IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            // a base field knows, at most, about the return object type it is dependent on
-            return this.PossibleTypes?.Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)))
-                                ?? Enumerable.Empty<DependentType>();
+            var list = new List<DependentType>();
+            list.AddRange(base.RetrieveRequiredTypes());
+
+            if (this.PossibleTypes != null)
+            {
+                var dependentTypes = this.PossibleTypes
+                    .Select(x => new DependentType(x, GraphValidation.ResolveTypeKind(x, this.OwnerTypeKind)));
+                list.AddRange(dependentTypes);
+            }
+
+            if (this.Arguments != null)
+            {
+                foreach (var arg in this.Arguments)
+                    list.AddRange(arg.RetrieveRequiredTypes());
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -379,7 +390,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         private void BuildUnionProxyInstance()
         {
-            var fieldAttribute = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            var fieldAttribute = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
             if (fieldAttribute == null)
                 return;
 
@@ -388,21 +399,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (fieldAttribute.Types.Count == 1)
             {
                 var proxyType = fieldAttribute.Types.FirstOrDefault();
-
-                // declaring a proxy type overrides all other declarations for a union
-                // use it regardless of any names or other types that may be supplied
-                if (proxyType != null && Validation.IsCastable<IGraphUnionProxy>(proxyType))
-                {
-                    var paramlessConstructor = proxyType.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
-                    if (paramlessConstructor == null)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            $"The union proxy type '{proxyType.FriendlyName()}' could not be instantiated. " +
-                            "All union proxies must declare a parameterless constructor.");
-                    }
-
-                    proxy = InstanceFactory.CreateInstance(proxyType) as IGraphUnionProxy;
-                }
+                if (proxyType != null)
+                    proxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(proxyType);
             }
 
             // when no proxy type is declared attempt to construct the proxy from types supplied
@@ -443,25 +441,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public FieldResolutionMode Mode { get; protected set; }
 
         /// <inheritdoc />
-        public abstract IReadOnlyList<IGraphFieldArgumentTemplate> Arguments { get; }
-
-        /// <summary>
-        /// Gets the subset of  <see cref="Arguments"/> defined to be "input parameters" to the field.
-        /// This list may be different than <see cref="Arguments"/> in some cases where one field argument
-        /// is used as a source data input value and is not designated to be part of a graph
-        /// structure.
-        /// </summary>
-        /// <value>The input arguments.</value>
-        public virtual IReadOnlyList<IGraphFieldArgumentTemplate> InputArguments => this.Arguments;
+        public abstract IReadOnlyList<IGraphArgumentTemplate> Arguments { get; }
 
         /// <inheritdoc />
         public virtual AppliedSecurityPolicyGroup SecurityPolicies => _securityPolicies;
 
         /// <inheritdoc />
-        public bool IsDeprecated { get; private set; }
+        public bool IsDeprecated { get; set; }
 
         /// <inheritdoc />
-        public string DeprecationReason { get; private set; }
+        public string DeprecationReason { get; set; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; protected set; }
@@ -482,6 +471,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
 
         /// <inheritdoc />
-        public float? Complexity { get; private set; }
+        public float? Complexity { get; set; }
     }
 }

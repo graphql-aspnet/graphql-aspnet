@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
-    using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class TestDirectiveMethodTemplateContainer : GraphDirective
     {
@@ -22,19 +22,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
             return Task.FromResult(null as object);
         }
 
-        public Task<object> AfterFieldResolution()
+        [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
+        public Task<object> IncorrrectReturnType(object source)
         {
             return Task.FromResult(null as object);
-        }
-
-        public Task<IGraphActionResult> NotADirectiveMethod()
-        {
-            return Task.FromResult(null as IGraphActionResult);
-        }
-
-        public Task<IGraphActionResult> BeforeFieldResolution()
-        {
-            return Task.FromResult(null as IGraphActionResult);
         }
     }
 }

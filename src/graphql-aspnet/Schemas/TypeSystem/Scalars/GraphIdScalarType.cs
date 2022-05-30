@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,25 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// This servers implementation of the required "ID" scalar type of graphql. Maps to the concrete C# object type of <see cref="GraphId"/>.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class GraphIdScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static GraphIdScalarType Instance { get; } = new GraphIdScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="GraphIdScalarType"/> class.
-        /// </summary>
-        static GraphIdScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GraphIdScalarType"/> class.
         /// </summary>
-        private GraphIdScalarType()
+        public GraphIdScalarType()
             : base(Constants.ScalarNames.ID, typeof(GraphId))
         {
             this.Description = "The id scalar type represents a unique identifier in graphql.";
@@ -61,9 +50,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             return ((GraphId)item).Value;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,25 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type reprsenting a 64-bit integer.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class LongScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static LongScalarType Instance { get; } = new LongScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="LongScalarType"/> class.
-        /// </summary>
-        static LongScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LongScalarType"/> class.
         /// </summary>
-        private LongScalarType()
+        public LongScalarType()
             : base(Constants.ScalarNames.LONG, typeof(long))
         {
             this.Description = $"A 64-bit integer. (Min: {long.MinValue}, Max: {long.MaxValue})";
@@ -56,9 +45,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

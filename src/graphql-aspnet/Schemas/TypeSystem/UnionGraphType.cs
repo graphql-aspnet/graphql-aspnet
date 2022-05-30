@@ -10,11 +10,13 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A graph type representing a UNION.
@@ -24,30 +26,37 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public class UnionGraphType : IUnionGraphType
     {
         // with methods for inspection
-        private readonly HashSet<Type> _types;
-        private readonly List<string> _names;
+        private IImmutableSet<Type> _types;
+
+        private IImmutableSet<string> _names;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnionGraphType" /> class.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="unionProxy">The proxy object which defined
-        /// the union type at design t.</param>
-        public UnionGraphType(string name, IGraphUnionProxy unionProxy)
+        /// <param name="name">The name of the union as it appears in the target schema (case sensitive).</param>
+        /// <param name="typeResolver">The type resolver used to match field resolve values with
+        /// expected graph types in this union.</param>
+        /// <param name="route">The unique route of this item.</param>
+        /// <param name="directives">The collection of directives
+        /// to execute against this union when it is added to a schema.</param>
+        public UnionGraphType(
+            string name,
+            IUnionTypeMapper typeResolver,
+            GraphFieldPath route,
+            IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
-            this.Proxy = Validation.ThrowIfNullOrReturn(unionProxy, nameof(unionProxy));
-            _types = new HashSet<Type>();
-            _names = new List<string>();
+            this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
+            this.TypeMapper = typeResolver;
             this.Publish = true;
+            this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
+
+            _types = ImmutableHashSet.Create<Type>();
+            _names = ImmutableHashSet.Create<string>();
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
-        public bool ValidateObject(object item)
+        /// <inheritdoc />
+        public virtual bool ValidateObject(object item)
         {
             if (item == null || _types.Contains(item.GetType()))
                 return true;
@@ -59,67 +68,45 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <summary>
         /// Adds a possible graph type to the union instance.
         /// </summary>
-        /// <param name="name">The name, as it should appear in the target schema.</param>
+        /// <param name="graphTypeName">The name of the graph type as it exists in the target schema (case sensitive).</param>
         /// <param name="concreteType">The concrete type representing the graph type.</param>
-        public void AddPossibleGraphType(string name, Type concreteType)
+        public virtual void AddPossibleGraphType(string graphTypeName, Type concreteType)
         {
-            Validation.ThrowIfNullWhiteSpace(name, nameof(name));
+            Validation.ThrowIfNullWhiteSpace(graphTypeName, nameof(graphTypeName));
             Validation.ThrowIfNull(concreteType, nameof(concreteType));
 
-            _types.Add(concreteType);
-            _names.Add(name);
+            _types = _types.Add(concreteType);
+            _names = _names.Add(graphTypeName);
         }
 
-        /// <summary>
-        /// Gets the possible graph types this union could be.
-        /// </summary>
-        /// <value>The possible graph type names.</value>
-        public IEnumerable<Type> PossibleConcreteTypes => _types;
+        /// <inheritdoc />
+        public virtual IImmutableSet<Type> PossibleConcreteTypes => _types;
 
-        /// <summary>
-        /// Gets the possible graph type names this union could be.
-        /// </summary>
-        /// <value>The possible graph type names.</value>
-        public IEnumerable<string> PossibleGraphTypeNames => _names;
+        /// <inheritdoc />
+        public virtual IImmutableSet<string> PossibleGraphTypeNames => _names;
 
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name { get; }
+        /// <inheritdoc />
+        public virtual string Name { get; set; }
 
-        /// <summary>
-        /// Gets the proxy object that was defined at design type which created this union type.
-        /// </summary>
-        /// <value>The proxy.</value>
-        public IGraphUnionProxy Proxy { get; }
+        /// <inheritdoc />
+        public virtual string Description { get; set; }
 
-        /// <summary>
-        /// Gets or sets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Gets the value indicating what type of graph type this instance is in the type system. (object, scalar etc.)
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public TypeKind Kind => TypeKind.UNION;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphType" /> is published on an introspection request.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool Publish { get; set; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate
-        /// a user defined graph structure. When false, this graph types points to a concrete type
-        /// defined by a developer.
-        /// </summary>
-        /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
-        public virtual bool IsVirtual => false;
+        /// <inheritdoc />
+        public bool IsVirtual => false;
+
+        /// <inheritdoc />
+        public IUnionTypeMapper TypeMapper { get; set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

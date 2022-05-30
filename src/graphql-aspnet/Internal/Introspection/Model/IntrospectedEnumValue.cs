@@ -19,44 +19,32 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// </summary>
     [GraphType(Constants.ReservedNames.ENUM_VALUE_TYPE)]
     [DebuggerDisplay("Introspected Enum Value: {Name}")]
-    public class IntrospectedEnumValue : IDeprecatable, INamedItem
+    public class IntrospectedEnumValue : IntrospectedItem, ISchemaItem
     {
-        private readonly IEnumOption _enumOption;
+        private readonly IEnumValue _enumValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedEnumValue" /> class.
         /// </summary>
-        /// <param name="enumOption">The enum option.</param>
-        public IntrospectedEnumValue(IEnumOption enumOption)
+        /// <param name="enumValue">The enum option.</param>
+        public IntrospectedEnumValue(IEnumValue enumValue)
+            : base(enumValue)
         {
-            _enumOption = Validation.ThrowIfNullOrReturn(enumOption, nameof(enumOption));
+            _enumValue = Validation.ThrowIfNullOrReturn(enumValue, nameof(enumValue));
         }
 
         /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
+        /// Gets a value indicating whether the enum value this introspection item represents
+        /// is deprecated.
         /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name => _enumOption.Name;
+        /// <value><c>true</c> if this instance is deprecated; otherwise, <c>false</c>.</value>
+        public bool IsDeprecated => _enumValue.IsDeprecated;
 
         /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
+        /// Gets the reason, if any, why the enum vlaue this introspection item represents
+        /// was deprecated.
         /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        public string Description => _enumOption.Description;
-
-        /// <summary>
-        /// Gets a value indicating whether this item is depreciated. The <see cref="DeprecationReason" /> will be displayed
-        /// on any itnrospection requests.
-        /// </summary>
-        /// <value><c>true</c> if this instance is depreciated; otherwise, <c>false</c>.</value>
-        public bool IsDeprecated => _enumOption.IsDeprecated;
-
-        /// <summary>
-        /// Gets the provided reason for this item being depreciated.
-        /// </summary>
-        /// <value>The depreciation reason.</value>
-        public string DeprecationReason => _enumOption.DeprecationReason;
+        /// <value>The reason the target field was deprecated.</value>
+        public string DeprecationReason => _enumValue.DeprecationReason;
     }
 }

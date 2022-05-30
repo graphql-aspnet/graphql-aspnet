@@ -27,9 +27,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public RequestCompletedLogEntry(GraphQueryExecutionContext context)
             : base(LogEventIds.RequestCompleted)
         {
-            this.OperationRequestId = context.OperationRequest.Id;
-            this.ResultHasErrors = context.Messages.Severity.IsCritical();
-            this.ResultHasData = context.Result?.Data != null;
+            this.OperationRequestId = context?.OperationRequest?.Id;
+            this.ResultHasErrors = context?.Messages?.Severity.IsCritical();
+            this.ResultHasData = context?.Result == null ? null : context.Result.Data != null;
         }
 
         /// <summary>
@@ -47,9 +47,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// contains some errors.
         /// </summary>
         /// <value><c>true</c> if operation result contains errors; otherwise, <c>false</c>.</value>
-        public bool ResultHasErrors
+        public bool? ResultHasErrors
         {
-            get => this.GetProperty<bool>(LogPropertyNames.OPERATION_RESULT_HAS_ERRORS);
+            get => this.GetProperty<bool?>(LogPropertyNames.OPERATION_RESULT_HAS_ERRORS);
             private set => this.SetProperty(LogPropertyNames.OPERATION_RESULT_HAS_ERRORS, value);
         }
 
@@ -58,9 +58,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// contains a data segment.
         /// </summary>
         /// <value><c>true</c> if operation result contains some data; otherwise, <c>false</c>.</value>
-        public bool ResultHasData
+        public bool? ResultHasData
         {
-            get => this.GetProperty<bool>(LogPropertyNames.OPERATION_RESULT_HAS_DATA);
+            get => this.GetProperty<bool?>(LogPropertyNames.OPERATION_RESULT_HAS_DATA);
             private set => this.SetProperty(LogPropertyNames.OPERATION_RESULT_HAS_DATA, value);
         }
 

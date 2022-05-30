@@ -11,7 +11,9 @@ namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
     using System.Reflection;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
     using NUnit.Framework;
 
@@ -111,16 +113,15 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCaseSource(nameof(SCALAR_RESOLVER_TEST_DATA))]
         public void ScalarResolver(Type scalarType, string testValue, object expectedResolvedValue, bool shouldThrow)
         {
-            var prop = scalarType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            var instance = prop.GetValue(null, null) as BaseScalarType;
+            var instance = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
 
             if (shouldThrow)
             {
-                Assert.Throws<UnresolvedValueException>(() => instance.Resolve(testValue.AsSpan()));
+                Assert.Throws<UnresolvedValueException>(() => instance.SourceResolver.Resolve(testValue.AsSpan()));
             }
             else
             {
-                var data = instance.Resolve(testValue.AsSpan());
+                var data = instance.SourceResolver.Resolve(testValue.AsSpan());
 
                 if (data is DateTime dt)
                     data = dt.ToUniversalTime();
@@ -168,10 +169,9 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCaseSource(nameof(SCALAR_SERIALIZER_TEST_DATA))]
         public void ScalarSerializer(Type scalarType, object validTestValue, object expectedOutput)
         {
-            var prop = scalarType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            var instance = prop.GetValue(null, null) as BaseScalarType;
+            var instance = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
 
-            var data = instance.Serialize(validTestValue);
+            var data = instance.Serializer.Serialize(validTestValue);
             Assert.AreEqual(expectedOutput, data);
         }
     }
