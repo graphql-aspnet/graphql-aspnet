@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Web
 {
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -80,28 +81,29 @@ namespace GraphQL.AspNet.Web
         /// </summary>
         /// <param name="context">The context in which the result is executed. The context information includes
         /// information about the action that was executed and request information.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the asynchronous execute operation.</returns>
-        public async Task WriteResultAsync(HttpContext context)
+        public async Task WriteResultAsync(HttpContext context, CancellationToken cancelToken = default)
         {
             if (_documentWriter == null)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 if (_options.ExposeExceptions)
-                   await context.Response.WriteAsync(NO_WRITER_WITH_DETAIL).ConfigureAwait(false);
+                   await context.Response.WriteAsync(NO_WRITER_WITH_DETAIL, cancelToken).ConfigureAwait(false);
                 else
-                    await context.Response.WriteAsync(NO_WRITER_NO_DETAIL).ConfigureAwait(false);
+                    await context.Response.WriteAsync(NO_WRITER_NO_DETAIL, cancelToken).ConfigureAwait(false);
             }
             else if (_result == null)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 if (_options.ExposeExceptions)
-                    await context.Response.WriteAsync(NO_RESULT_WITH_DETAIL).ConfigureAwait(false);
+                    await context.Response.WriteAsync(NO_RESULT_WITH_DETAIL, cancelToken).ConfigureAwait(false);
                 else
-                    await context.Response.WriteAsync(NO_RESULT_NO_DETAIL).ConfigureAwait(false);
+                    await context.Response.WriteAsync(NO_RESULT_NO_DETAIL, cancelToken).ConfigureAwait(false);
             }
             else
             {
-                await _documentWriter.WriteAsync(context.Response.Body, _result, _options).ConfigureAwait(false);
+                await _documentWriter.WriteAsync(context.Response.Body, _result, _options, cancelToken: cancelToken).ConfigureAwait(false);
             }
         }
     }

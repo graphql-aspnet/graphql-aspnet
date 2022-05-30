@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
             if (!result.Status.IsAuthorized())
             {
-                context.ResolvedSourceItems.AddRange(context.Request.DataSource.Items);
+                context.ResolvedSourceItems.AddRange(context.Request.Data.Items);
                 context.ResolvedSourceItems.ForEach(x => x.Fail());
             }
 

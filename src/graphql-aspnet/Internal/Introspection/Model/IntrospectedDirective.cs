@@ -26,7 +26,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Initializes a new instance of the <see cref="IntrospectedDirective" /> class.
         /// </summary>
         /// <param name="directiveType">Type of the directive.</param>
-        public IntrospectedDirective(IDirectiveGraphType directiveType)
+        public IntrospectedDirective(IDirective directiveType)
+            : base(directiveType)
         {
             this.GraphType = directiveType;
         }
@@ -39,7 +40,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public override void Initialize(IntrospectedSchema schema)
         {
             var list = new List<IntrospectedInputValueType>();
-            foreach (var arg in this.GraphType.Arguments)
+            var directiveArguments = this.GraphType.Arguments.Where(x => !x.ArgumentModifiers.IsInternalParameter());
+            foreach (var arg in directiveArguments)
             {
                 var introspectedType = schema.FindIntrospectedType(arg.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, arg.TypeExpression);
@@ -56,21 +58,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Gets the type of the graph.
         /// </summary>
         /// <value>The type of the graph.</value>
-        protected IDirectiveGraphType GraphType { get; }
-
-        /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
-        /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        public string Name => this.GraphType.Name;
-
-        /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        public string Description => this.GraphType.Description;
+        protected IDirective GraphType { get; }
 
         /// <summary>
         /// Gets a collection of arguments this instance can accept on a query.

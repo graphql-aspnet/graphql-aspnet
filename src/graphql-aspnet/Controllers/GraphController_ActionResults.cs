@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Controllers
     public abstract partial class GraphController
     {
         /// <summary>
-        /// Returns an action with the given object as the result provided to graphQL as the resolved object for the field query.
+        /// Returns an action with the given object as the resolved object for the field resolution.
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an action with a null value as the the result provided to graphQL as the resolved object for the field query.
+        /// Returns an action with a <c>null</c> value as the resolved object for the field resolution.
         /// </summary>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok()
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an error indicating that an issue occured.
+        /// Returns an error indicating that the given issue occured.
         /// </summary>
         /// <param name="message">The human-friendly error message to assign ot the reported error in the graph result.</param>
         /// <param name="code">The error code to assign to the reported error in the graph result.</param>
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an error indicating that an issue occured.
+        /// Returns an error indicating that the given issue occured.
         /// </summary>
         /// <param name="severity">The severity of the message.</param>
         /// <param name="message">The human-friendly error message to assign ot the reported error in the graph result.</param>
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an error indicating that an issue occured.
+        /// Returns an error indicating that the given issue occured.
         /// </summary>
         /// <param name="message">A custom generated message.</param>
         /// <returns>IGraphActionResult.</returns>

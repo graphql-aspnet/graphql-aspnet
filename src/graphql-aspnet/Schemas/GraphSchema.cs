@@ -11,11 +11,15 @@ namespace GraphQL.AspNet.Schemas
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
     /// <summary>
@@ -31,46 +35,56 @@ namespace GraphQL.AspNet.Schemas
         public const string DEFAULT_NAME = "-Default-";
 
         /// <summary>
+        /// The human-friendly named assigned to the default graph schema type (this schema type).
+        /// </summary>
+        public const string DEFAULT_DESCRIPTION = "-Default Schema-";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchema"/> class.
         /// </summary>
         public GraphSchema()
         {
-            this.OperationTypes = new Dictionary<GraphCollection, IGraphOperation>();
+            this.OperationTypes = new Dictionary<GraphOperationType, IGraphOperation>();
             this.KnownTypes = new SchemaTypeCollection();
             this.Configuration = new SchemaConfiguration();
+            this.AppliedDirectives = new AppliedDirectiveCollection(this);
+
+            var graphName = this.GetType().FriendlyGraphTypeName();
+            if (!GraphValidation.IsValidGraphName(graphName))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The object {this.GetType().FriendlyName()} cannot be used as a " +
+                    $"schema due to its name. Ensure all proposed schema types have no " +
+                    $"special characters (such as carrots for generics) and does not start with an underscore.");
+            }
+
+            this.Route = new GraphFieldPath(GraphCollection.Schemas, graphName);
+            this.Name = DEFAULT_NAME;
+            this.Description = DEFAULT_DESCRIPTION;
         }
 
-        /// <summary>
-        /// Gets the root operation types supported by this schema. (query, mutation etc.)
-        /// </summary>
-        /// <value>The root operation types.</value>
-        public IDictionary<GraphCollection, IGraphOperation> OperationTypes { get; }
+        /// <inheritdoc />
+        public IDictionary<GraphOperationType, IGraphOperation> OperationTypes { get; }
 
-        /// <summary>
-        /// Gets a collection of known graph object/scalar types available to this schema. Serves as the basis for the type
-        /// system delivered on introspection requests as well as input value translation. <see cref="IGraphType"/> discovered
-        /// as part of a <see cref="GraphController"/> registration are automatically included in this collection.
-        /// </summary>
-        /// <value>A collection of types, keyed on name, of the types registered and allowed on this schema.</value>
+        /// <inheritdoc />
         public ISchemaTypeCollection KnownTypes { get; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is fully setup and usable. This value is used to determine
-        /// if the runtime needs to parse and add controller fields to this schema instance.
-        /// </summary>
-        /// <value><c>true</c> if this instance is initialized; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsInitialized { get; set; }
 
-        /// <summary>
-        /// Gets the a common, friendly name for the schema. This name may appear in error messages.
-        /// </summary>
-        /// <value>The name.</value>
-        public virtual string Name => DEFAULT_NAME;
-
-        /// <summary>
-        /// Gets the configuration options that governs the handling of this schema by graphql.
-        /// </summary>
-        /// <value>The configuration.</value>
+        /// <inheritdoc />
         public ISchemaConfiguration Configuration { get; }
+
+        /// <inheritdoc />
+        public virtual string Name { get; set; }
+
+        /// <inheritdoc />
+        public virtual string Description { get; set; }
+
+        /// <inheritdoc />
+        public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; }
     }
 }

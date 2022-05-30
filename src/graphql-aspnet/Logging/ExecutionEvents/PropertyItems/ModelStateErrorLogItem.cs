@@ -25,8 +25,8 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
         /// <param name="modelError">The model error.</param>
         public ModelStateErrorLogItem(InputModelError modelError)
         {
-            this.ErrorMessage = modelError.ErrorMessage;
-            this.Exception = modelError.Exception != null ? new ExceptionLogItem(modelError.Exception) : null;
+            this.ErrorMessage = modelError?.ErrorMessage;
+            this.Exception = modelError?.Exception != null ? new ExceptionLogItem(modelError.Exception) : null;
         }
 
         /// <summary>

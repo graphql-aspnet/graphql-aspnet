@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -32,13 +33,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         {
         }
 
-        /// <summary>
-        /// Instantiates the graph field according to the data provided.
-        /// </summary>
-        /// <param name="formatter">The formatter.</param>
-        /// <param name="template">The template.</param>
-        /// <param name="securityGroups">The security groups.</param>
-        /// <returns>MethodGraphField.</returns>
+        /// <inheritdoc />
         protected override MethodGraphField InstantiateField(
             GraphNameFormatter formatter,
             IGraphTypeFieldTemplate template,
@@ -49,6 +44,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 && subTemplate.FieldSource == GraphFieldSource.Action
                 && subTemplate.Route.RootCollection == GraphCollection.Subscription)
             {
+                var directives = template.CreateAppliedDirectives();
+
                 return new SubscriptionMethodGraphField(
                     formatter.FormatFieldName(template.Name),
                     template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
@@ -58,7 +55,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                     template.Mode,
                     template.CreateResolver(),
                     securityGroups,
-                    subTemplate.EventName);
+                    subTemplate.EventName,
+                    directives);
             }
 
             return base.InstantiateField(formatter, template, securityGroups);

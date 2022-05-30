@@ -335,7 +335,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 {
                     var child = sourceItem.AddChildField(childInvocationContext);
 
-                    var dataSource = new GraphFieldDataSource(sourceItem.ResultData, child.Origin.Path, child);
+                    var dataSource = new GraphDataContainer(sourceItem.ResultData, child.Origin.Path, child);
                     var request = new GraphFieldRequest(
                         parentContext.Request.OperationRequest,
                         childInvocationContext,
@@ -382,7 +382,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     sourceItemList.Add(childField);
                 }
 
-                var dataSource = new GraphFieldDataSource(
+                var dataSource = new GraphDataContainer(
                     sourceDataList,
                     fieldPath,
                     sourceItemList);

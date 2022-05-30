@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using System;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A "maker" capable of producing a qualified <see cref="IScalarGraphType"/> from its related template.
@@ -26,14 +27,23 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// <returns>GraphTypeCreationResult.</returns>
         public GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
-            var scalarType = GraphQLProviders.ScalarProvider.RetrieveScalar(concreteType);
+            var scalarType = GraphQLProviders.ScalarProvider.CreateScalar(concreteType);
             if (scalarType != null)
             {
-                return new GraphTypeCreationResult()
+                var result = new GraphTypeCreationResult()
                 {
                     GraphType = scalarType,
                     ConcreteType = concreteType,
                 };
+
+                // add any known diretives as dependents
+                foreach (var directiveToApply in scalarType.AppliedDirectives)
+                {
+                    if (directiveToApply.DirectiveType != null)
+                        result.AddDependent(directiveToApply.DirectiveType, TypeKind.DIRECTIVE);
+                }
+
+                return result;
             }
 
             return null;

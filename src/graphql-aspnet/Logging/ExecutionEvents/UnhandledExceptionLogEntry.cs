@@ -28,10 +28,10 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public UnhandledExceptionLogEntry(Exception exception)
             : base(LogEventIds.UnhandledException)
         {
-            this.ExceptionMessage = exception.Message;
-            this.StackTrace = exception.StackTrace;
-            this.TypeName = exception.GetType().FriendlyName(true);
-            _shortTypeName = exception.GetType().FriendlyName();
+            this.ExceptionMessage = exception?.Message;
+            this.StackTrace = exception?.StackTrace;
+            this.TypeName = exception?.GetType().FriendlyName(true);
+            _shortTypeName = exception?.GetType().FriendlyName();
         }
 
         /// <summary>

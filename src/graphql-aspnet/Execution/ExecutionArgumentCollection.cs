@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="argDefinition">The argument definition.</param>
         /// <returns>System.Object.</returns>
-        private object ResolveParameterFromArgumentTemplate(IGraphFieldArgumentTemplate argDefinition)
+        private object ResolveParameterFromArgumentTemplate(IGraphArgumentTemplate argDefinition)
         {
             if (argDefinition == null)
                 return null;

@@ -14,16 +14,16 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IDeprecatable
     {
         /// <summary>
-        /// Gets a value indicating whether this item  is depreciated. The <see cref="DeprecationReason"/> will be displayed
+        /// Gets or sets a value indicating whether this item  is depreciated. The <see cref="DeprecationReason"/> will be displayed
         /// on any itnrospection requests.
         /// </summary>
         /// <value><c>true</c> if this instance is depreciated; otherwise, <c>false</c>.</value>
-        bool IsDeprecated { get; }
+        bool IsDeprecated { get; set; }
 
         /// <summary>
-        /// Gets the provided reason for this item being depreciated.
+        /// Gets or sets the provided reason for this item being depreciated.
         /// </summary>
         /// <value>The depreciation reason.</value>
-        string DeprecationReason { get; }
+        string DeprecationReason { get; set; }
     }
 }

@@ -35,12 +35,12 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         public ApolloServerEventMonitorEndedLogEntry(
             ApolloSubscriptionServer<TSchema> server,
             SubscriptionEventName eventName)
-            : base(ApolloLogEventIds.ServerSubscriptionEventMonitorStarted)
+            : base(ApolloLogEventIds.ServerSubscriptionEventMonitorStopped)
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SubscriptionEventName = eventName.ToString();
-            this.ServerId = server.Id;
+            this.SubscriptionEventName = eventName?.ToString();
+            this.ServerId = server?.Id;
         }
 
         /// <summary>

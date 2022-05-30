@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
         {
         }
 
-        public override Type ResolveType(Type runtimeObjectType)
+        public override Type MapType(Type runtimeObjectType)
         {
             // return a type that isn't part of the union
             TotalCallCount += 1;

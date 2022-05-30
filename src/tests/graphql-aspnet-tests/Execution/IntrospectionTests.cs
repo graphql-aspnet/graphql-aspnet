@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -43,8 +44,8 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(schema.QueryType);
             Assert.IsNull(schema.MutationType);
             Assert.IsNull(schema.SubscriptionType);
-            Assert.IsNotNull(schema.Directives);
-            Assert.AreEqual(2, schema.Directives.Count()); // skip , include
+            Assert.IsNotNull(schema.DeclaredDirectives);
+            Assert.AreEqual(3, schema.DeclaredDirectives.Count()); // skip , include, deprecated
         }
 
         [Test]
@@ -113,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = serverBuilder.Build();
 
             var schema = new IntrospectedSchema(server.Schema);
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = new IntrospectedType(scalar);
             spected.Initialize(schema);
@@ -140,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -168,7 +169,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -190,7 +191,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -218,7 +219,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -242,7 +243,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var schema = new IntrospectedSchema(server.Schema);
             schema.Rebuild();
 
-            var scalar = GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(string));
+            var scalar = schema.Schema.KnownTypes.FindGraphType(typeof(string));
 
             var spected = schema.FindIntrospectedType(scalar);
 
@@ -1122,6 +1123,111 @@ namespace GraphQL.AspNet.Tests.Execution
                                 }
                            }
                        } ";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task DeprecatedLateBoundEnumValue_ReturnsTrueDeprecationFlag()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IntrospectableEnum>();
+                o.ApplyDirective("deprecated")
+                .ToItems(schemaItem =>
+                      schemaItem != null
+                        && schemaItem is IEnumValue ev
+                        && ev.Parent.ObjectType == typeof(IntrospectableEnum)
+                        && Convert.ToInt32(ev.InternalValue) == (int)IntrospectableEnum.Value2);
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""IntrospectableEnum"")
+                              {
+                                kind
+                                  name
+                                  enumValues (includeDeprecated: true) { name isDeprecated }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                            ""data"": {
+                                ""__type"": {
+                                    ""kind"": ""ENUM"",
+                                    ""name"": ""IntrospectableEnum"",
+                                    ""enumValues"": [
+                                        {
+                                            ""name"" : ""VALUE1"",
+                                            ""isDeprecated"" : false
+                                        },
+                                        {
+                                            ""name"" : ""VALUE2"",
+                                            ""isDeprecated"" : true
+                                        }
+                                    ]
+                                }
+                            }
+                        }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task DeprecatedLateBoundField_ReturnsTrueDeprecationFlag()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<TwoPropertyObject>();
+                o.ApplyDirective("deprecated")
+                .ToItems(schemaItem =>
+                      schemaItem != null
+                        && schemaItem is IGraphField gf
+                        && gf.Parent is IObjectGraphType ogt
+                        && ogt.ObjectType == typeof(TwoPropertyObject)
+                        && gf.Name == "property2");
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""TwoPropertyObject"")
+                              {
+                                kind
+                                  name
+                                  fields (includeDeprecated: true) { name isDeprecated }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                            ""data"": {
+                                ""__type"": {
+                                    ""kind"": ""OBJECT"",
+                                    ""name"": ""TwoPropertyObject"",
+                                    ""fields"": [
+                                        {
+                                            ""name"" : ""property1"",
+                                            ""isDeprecated"" : false
+                                        },
+                                        {
+                                            ""name"" : ""property2"",
+                                            ""isDeprecated"" : true
+                                        }
+                                    ]
+                                }
+                            }
+                        }";
 
             CommonAssertions.AreEqualJsonStrings(output, response);
         }

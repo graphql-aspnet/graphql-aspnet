@@ -10,11 +10,13 @@
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A pairing of a generated graph type with the concrete type its associcated with.
     /// </summary>
+    [DebuggerDisplay("Type: {GraphType.Name}")]
     public class GraphTypeCreationResult : BaseItemDependencyCollection
     {
         /// <summary>

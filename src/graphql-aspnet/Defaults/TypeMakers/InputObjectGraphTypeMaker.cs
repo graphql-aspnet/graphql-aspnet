@@ -47,24 +47,30 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var formatter = _schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphTypeCreationResult();
 
-            var fieldSet = new List<IGraphField>();
-            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
-            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
-            {
-                var fieldResult = fieldMaker.CreateField(fieldTemplate);
-                fieldSet.Add(fieldResult.Field);
-
-                result.MergeDependents(fieldResult);
-            }
+            // gather directives
+            var directives = template.CreateAppliedDirectives();
 
             var inputObjectType = new InputObjectGraphType(
                 formatter.FormatGraphTypeName(template.Name),
                 concreteType,
-                fieldSet)
+                template.Route,
+                directives)
             {
                 Description = template.Description,
                 Publish = template.Publish,
             };
+
+            // account for any potential type system directives
+            result.AddDependentRange(template.RetrieveRequiredTypes());
+
+            var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
+            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
+            {
+                var fieldResult = fieldMaker.CreateField(fieldTemplate);
+                inputObjectType.AddField(fieldResult.Field);
+
+                result.MergeDependents(fieldResult);
+            }
 
             result.GraphType = inputObjectType;
             result.ConcreteType = concreteType;

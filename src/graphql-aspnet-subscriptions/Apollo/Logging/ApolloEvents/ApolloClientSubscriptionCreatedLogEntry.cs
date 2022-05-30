@@ -27,9 +27,9 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         public ApolloClientSubscriptionCreatedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
             : base(ApolloLogEventIds.ClientSubscriptionStarted)
         {
-            this.ClientId = client.Id;
-            this.SubscriptionId = subscription.Id;
-            this.Route = subscription.Route.Path;
+            this.ClientId = client?.Id;
+            this.SubscriptionId = subscription?.Id;
+            this.Route = subscription?.Route?.Path;
         }
 
         /// <summary>

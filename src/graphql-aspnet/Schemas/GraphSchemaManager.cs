@@ -11,9 +11,11 @@ namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -44,7 +46,24 @@ namespace GraphQL.AspNet.Schemas
         {
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
-            this.EnsureGraphOperationType(GraphCollection.Query);
+            this.EnsureSchemaDependencies();
+            this.EnsureGraphOperationType(GraphOperationType.Query);
+        }
+
+        /// <summary>
+        /// Inspects the schema instance for any necessary dependencies
+        /// and adds them to itself (e.g. schema declared directives).
+        /// </summary>
+        private void EnsureSchemaDependencies()
+        {
+            this.Schema.EnsureAppliedDirectives();
+
+            foreach (var appliedDirective in this.Schema.AppliedDirectives.Where(x => x.DirectiveType != null))
+            {
+                this.EnsureGraphType(
+                    appliedDirective.DirectiveType,
+                    TypeKind.DIRECTIVE);
+            }
         }
 
         /// <summary>
@@ -56,8 +75,8 @@ namespace GraphQL.AspNet.Schemas
             if (this.Schema.Configuration.DeclarationOptions.DisableIntrospection)
                 return;
 
-            this.EnsureGraphOperationType(GraphCollection.Query);
-            var queryField = this.Schema.OperationTypes[GraphCollection.Query];
+            this.EnsureGraphOperationType(GraphOperationType.Query);
+            var queryField = this.Schema.OperationTypes[GraphOperationType.Query];
 
             // Note: introspection fields are defined by the graphql spec, no custom name or item formatting is allowed
             // for Type and field name formatting.
@@ -70,14 +89,14 @@ namespace GraphQL.AspNet.Schemas
 
                 this.EnsureGraphType(typeof(string));
                 this.EnsureGraphType(typeof(bool));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_DirectiveLocationType.Instance, typeof(DirectiveLocation));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_DirectiveType.Instance, typeof(IntrospectedDirective));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_EnumValueType.Instance, typeof(IntrospectedEnumValue));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_FieldType.Instance, typeof(IntrospectedField));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_InputValueType.Instance, typeof(IntrospectedInputValueType));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_SchemaType.Instance, typeof(IntrospectedSchema));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_TypeKindType.Instance, typeof(TypeKind));
-                this.Schema.KnownTypes.EnsureGraphType(Introspection_TypeType.Instance, typeof(IntrospectedType));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_DirectiveLocationType(), typeof(DirectiveLocation));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_DirectiveType(), typeof(IntrospectedDirective));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_EnumValueType(), typeof(IntrospectedEnumValue));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_FieldType(), typeof(IntrospectedField));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_InputValueType(), typeof(IntrospectedInputValueType));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_SchemaType(), typeof(IntrospectedSchema));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_TypeKindType(), typeof(TypeKind));
+                this.Schema.KnownTypes.EnsureGraphType(new Introspection_TypeType(), typeof(IntrospectedType));
             }
         }
 
@@ -131,7 +150,8 @@ namespace GraphQL.AspNet.Schemas
         {
             if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
             {
-                this.EnsureGraphOperationType(action.Route.RootCollection);
+                var operation = action.Route.RootCollection.ToGraphOperationType();
+                this.EnsureGraphOperationType(operation);
                 var parentField = this.AddOrRetrieveControllerRoutePath(action);
                 this.AddActionAsField(parentField, action);
             }
@@ -149,12 +169,17 @@ namespace GraphQL.AspNet.Schemas
         /// type representing it also exists in the schema's type collection.
         /// </summary>
         /// <param name="operationType">Type of the operation.</param>
-        private void EnsureGraphOperationType(GraphCollection operationType)
+        private void EnsureGraphOperationType(GraphOperationType operationType)
         {
+            if (operationType == GraphOperationType.Unknown)
+            {
+                throw new ArgumentOutOfRangeException($"The operation type '{operationType}' is " +
+                    $"not supported by graphql.");
+            }
+
             if (!this.Schema.OperationTypes.ContainsKey(operationType))
             {
-                var name = _formatter.FormatGraphTypeName(operationType.ToString());
-                var operation = new GraphOperation(operationType, name);
+                var operation = new GraphOperation(operationType);
                 this.Schema.KnownTypes.EnsureGraphType(operation);
                 this.Schema.OperationTypes.Add(operation.OperationType, operation);
             }
@@ -172,7 +197,7 @@ namespace GraphQL.AspNet.Schemas
 
             // loop through all parent path parts of this action
             // creating virtual fields as necessary or using existing ones and adding on to them
-            IObjectGraphType parentType = this.Schema.OperationTypes[action.Route.RootCollection];
+            IObjectGraphType parentType = this.Schema.OperationTypes[action.Route.RootCollection.ToGraphOperationType()];
 
             for (var i = 0; i < pathSegments.Count; i++)
             {
@@ -330,7 +355,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <typeparam name="TItem">The type of the item to add to the schema.</typeparam>
         /// <param name="kind">The kind of graph type to create from the supplied concrete type.</param>
-        public void EnsureGraphType<TItem>(TypeKind kind)
+        public void EnsureGraphType<TItem>(TypeKind? kind = null)
         {
             this.EnsureGraphType(typeof(TItem), kind);
         }
@@ -344,6 +369,7 @@ namespace GraphQL.AspNet.Schemas
         /// attempt to auto assign a type of scalar, enum or object as necessary.</param>
         public void EnsureGraphType(Type type, TypeKind? kind = null)
         {
+            Validation.ThrowIfNull(type, nameof(type));
             if (Validation.IsCastable<GraphController>(type))
             {
                 if (GraphQLProviders.TemplateProvider.ParseType(type) is IGraphControllerTemplate controllerDefinition)
@@ -359,15 +385,30 @@ namespace GraphQL.AspNet.Schemas
             if (this.Schema.KnownTypes.Contains(type, actualKind))
                 return;
 
+            GraphTypeCreationResult makerResult = null;
             var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(this.Schema, actualKind);
             if (maker != null)
             {
-                var result = maker.CreateGraphType(type);
-                if (result != null)
+                // if a maker can be assigned for this graph type
+                // create the graph type directly
+                makerResult = maker.CreateGraphType(type);
+            }
+            else if (Validation.IsCastable<IGraphUnionProxy>(type))
+            {
+                // if this type represents a well-known union proxy try and add in the union proxy
+                // directly
+                var unionProxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(type);
+                if (unionProxy != null)
                 {
-                    this.Schema.KnownTypes.EnsureGraphType(result.GraphType, result.ConcreteType);
-                    this.EnsureDependents(result);
+                    var unionMaker = GraphQLProviders.GraphTypeMakerProvider.CreateUnionMaker(this.Schema);
+                    makerResult = unionMaker.CreateUnionFromProxy(unionProxy);
                 }
+            }
+
+            if (makerResult != null)
+            {
+                this.Schema.KnownTypes.EnsureGraphType(makerResult.GraphType, makerResult.ConcreteType);
+                this.EnsureDependents(makerResult);
             }
         }
 
@@ -397,8 +438,8 @@ namespace GraphQL.AspNet.Schemas
             if (this.Schema.Configuration.DeclarationOptions.DisableIntrospection)
                 return;
 
-            this.EnsureGraphOperationType(GraphCollection.Query);
-            var queryType = this.Schema.OperationTypes[GraphCollection.Query];
+            this.EnsureGraphOperationType(GraphOperationType.Query);
+            var queryType = this.Schema.OperationTypes[GraphOperationType.Query];
             if (!queryType.Fields.ContainsKey(Constants.ReservedNames.SCHEMA_FIELD))
                 return;
 

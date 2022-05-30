@@ -11,103 +11,55 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Execution.FieldResolution;
 
     /// <summary>
     /// A request, resolved by a <see cref="GraphDirective"/> to perform some augmented
     /// or conditional processing on a segment of a query document.
     /// </summary>
-    [DebuggerDisplay("@{Directive.Name}  (LifeCylce = {LifeCycle})")]
+    [DebuggerDisplay("@{InvocationContext.Directive.Name}  (Phase = {DirectivePhase})")]
     public class GraphDirectiveRequest : IGraphDirectiveRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveRequest" /> class.
         /// </summary>
-        /// <param name="targetDirective">The target directive.</param>
-        /// <param name="location">The location.</param>
-        /// <param name="origin">The origin.</param>
-        /// <param name="requestMetaData">The request meta data.</param>
+        /// <param name="invocationContext">The context detailing the specifics
+        /// of what directive needs to be processed to fulfill this request.</param>
+        /// <param name="invocationPhase">The invocation current phase that the <paramref name="invocationContext"/>
+        /// is being processed through.</param>
+        /// <param name="targetData">The real data object that is the target of this request.</param>
+        /// <param name="requestMetaData">A set of meta data items to carry with this request.</param>
         public GraphDirectiveRequest(
-            IDirectiveGraphType targetDirective,
-            DirectiveLocation location,
-            SourceOrigin origin,
+            IDirectiveInvocationContext invocationContext,
+            DirectiveInvocationPhase invocationPhase,
+            object targetData,
             MetaDataCollection requestMetaData = null)
         {
             this.Id = Guid.NewGuid().ToString("N");
-            this.Directive = Validation.ThrowIfNullOrReturn(targetDirective, nameof(targetDirective));
-            this.LifeCycle = DirectiveLifeCycle.BeforeResolution;
-            this.DirectiveLocation = location;
-            this.Origin = origin ?? SourceOrigin.None;
+            this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
             this.Items = requestMetaData ?? new MetaDataCollection();
+            this.DirectivePhase = invocationPhase;
+            this.DirectiveTarget = targetData;
         }
 
-        /// <summary>
-        /// Clones this request for the given lifecycle location.
-        /// </summary>
-        /// <param name="lifecycle">The lifecycle point at which the directive request should be pointed.</param>
-        /// <param name="dataSource">The data source being passed to the field this directive is attached to, if any.</param>
-        /// <returns>GraphDirectiveRequest.</returns>
-        public IGraphDirectiveRequest ForLifeCycle(
-            DirectiveLifeCycle lifecycle,
-            GraphFieldDataSource dataSource)
-        {
-            var request = new GraphDirectiveRequest(
-                this.Directive,
-                this.DirectiveLocation,
-                this.Origin,
-                this.Items);
-
-            request.Id = this.Id;
-            request.LifeCycle = lifecycle;
-            request.DataSource = dataSource;
-            return request;
-        }
-
-        /// <summary>
-        /// Gets a globally unique identifier assigned to this request when it was created.
-        /// </summary>
-        /// <value>The identifier.</value>
+        /// <inheritdoc />
         public string Id { get; private set; }
 
-        /// <summary>
-        /// Gets the life cycle method being invoked.
-        /// </summary>
-        /// <value>The life cycle.</value>
-        public DirectiveLifeCycle LifeCycle { get; private set; }
-
-        /// <summary>
-        /// Gets the source data, if any, that was made available to this request.
-        /// </summary>
-        /// <value>The source data.</value>
-        public GraphFieldDataSource DataSource { get; private set; }
-
-        /// <summary>
-        /// Gets the directive being executed.
-        /// </summary>
-        /// <value>The directive.</value>
-        public IDirectiveGraphType Directive { get;  }
-
-        /// <summary>
-        /// Gets the origin point in the source text where this request was generated.
-        /// </summary>
-        /// <value>The origin.</value>
-        public SourceOrigin Origin { get; }
-
-        /// <summary>
-        /// Gets any additional metadata or items assigned to this request.
-        /// </summary>
-        /// <value>The metadata.</value>
+        /// <inheritdoc />
         public MetaDataCollection Items { get; }
 
-        /// <summary>
-        /// Gets the <see cref="DirectiveLocation" /> where the directive was declared in the source document.
-        /// </summary>
-        /// <value>The location.</value>
-        public DirectiveLocation DirectiveLocation { get; }
+        /// <inheritdoc />
+        public IDirectiveInvocationContext InvocationContext { get; }
+
+        /// <inheritdoc />
+        public object DirectiveTarget { get; set; }
+
+        /// <inheritdoc />
+        public DirectiveInvocationPhase DirectivePhase { get; }
+
+        /// <inheritdoc />
+        public SourceOrigin Origin => this.InvocationContext?.Origin ?? SourceOrigin.None;
     }
 }

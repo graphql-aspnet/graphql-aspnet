@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -46,16 +47,16 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public override async Task SubmitGraphQLQuery(GraphQueryData queryData)
+        public override async Task SubmitGraphQLQuery(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
             if (this.User?.Identity == null || !this.User.Identity.IsAuthenticated)
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED).ConfigureAwait(false);
+                await this.WriteStatusCodeResponse(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED, cancelToken).ConfigureAwait(false);
                 return;
             }
 
             await base
-                .SubmitGraphQLQuery(queryData)
+                .SubmitGraphQLQuery(queryData, cancelToken)
                 .ConfigureAwait(false);
         }
     }

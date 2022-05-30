@@ -18,22 +18,23 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Controllers.ActionResults.ActuionResultTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class ActionResultTests
     {
-        private FieldResolutionContext CreateResolutionContext(object sourceData = null)
+        private FieldResolutionContext CreateResolutionContext()
         {
             var server = new TestServerBuilder()
                 .AddGraphType<ActionableController>()
                 .Build();
 
-            var builder = server
-                .CreateFieldContextBuilder<ActionableController>(nameof(ActionableController.DoStuff), sourceData);
+            var builder = server.CreateGraphTypeFieldContextBuilder<ActionableController>(
+                nameof(ActionableController.DoStuff));
             return builder.CreateResolutionContext();
         }
 
@@ -43,7 +44,9 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
             var server = new TestServerBuilder().Build();
             var methodTemplate = TemplateHelper.CreateFieldTemplate<ActionableController>(nameof(ActionableController.DoStuff));
             var argTemplate = methodTemplate.Arguments[0];
-            var fieldArg = new GraphArgumentMaker(server.Schema).CreateArgument(argTemplate).Argument;
+
+            var mockedOwner = new Mock<ISchemaItem>();
+            var fieldArg = new GraphArgumentMaker(server.Schema).CreateArgument(mockedOwner.Object, argTemplate).Argument;
 
             // name is marked required, will fail
             var dataItem = new ActionableModelItem()

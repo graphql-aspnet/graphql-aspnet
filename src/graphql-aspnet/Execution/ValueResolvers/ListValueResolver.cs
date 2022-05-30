@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// <summary>
     /// A higher order resolver that coerces the provided source data into a list of items of the provided singular value resolver.
     /// </summary>
-    public class ListValueResolver : BaseValueResolver, IInputValueResolver
+    public class ListValueResolver : IInputValueResolver
     {
         private readonly IInputValueResolver _itemResolver;
         private readonly Type _listItemType;
@@ -37,35 +37,27 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
             _listItemType = Validation.ThrowIfNullOrReturn(listItemType, nameof(listItemType));
         }
 
-        /// <summary>
-        /// Creates a copy of this value resolver injecting it with a specific collection
-        /// of variables that can be used during resoltuion. Any previously wrapped variable sets
-        /// should be discarded.
-        /// </summary>
-        /// <param name="variableData">The variable data.</param>
-        /// <returns>IInputValueResolver.</returns>
-        public override IInputValueResolver WithVariables(IResolvedVariableCollection variableData)
+        /// <inheritdoc />
+        public object Resolve(IResolvableItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
-            var resolver = new ListValueResolver(_listItemType, _itemResolver);
-            resolver.VariableCollection = variableData;
-            return resolver;
-        }
+            if (resolvableItem is IResolvablePointer pointer)
+            {
+                IResolvedVariable variable = null;
+                var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
+                if (variableFound)
+                    return variable.Value;
 
-        /// <summary>
-        /// Resolves the provided query input value to the .NET object rendered by this resolver.
-        /// This input value is garunteed to not be a variable reference.
-        /// </summary>
-        /// <param name="resolvableItem">The resolvable item.</param>
-        /// <returns>System.Object.</returns>
-        protected override object ResolveFromItem(IResolvableItem resolvableItem)
-        {
+                resolvableItem = pointer.DefaultItem;
+            }
+
             if (resolvableItem is IResolvableList resolvableList)
             {
                 var listType = typeof(List<>).MakeGenericType(_listItemType);
                 var listInstance = InstanceFactory.CreateInstance(listType) as IList;
                 foreach (var item in resolvableList.ListItems)
                 {
-                    listInstance.Add(_itemResolver.WithVariables(this.VariableCollection).Resolve(item));
+                    var itemInstance = _itemResolver.Resolve(item, variableData);
+                    listInstance.Add(itemInstance);
                 }
 
                 return listInstance;

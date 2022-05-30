@@ -40,10 +40,10 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
             : base(ApolloLogEventIds.ClientSubscriptionEventRecieved)
         {
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SubscriptionRoute = fieldPath.Path;
-            this.SubscriptionCount = subscriptionsToReceive.Count;
-            this.SubscriptionIds = subscriptionsToReceive.Select(x => x.Id).ToList();
-            this.ClientId = client.Id;
+            this.SubscriptionRoute = fieldPath?.Path;
+            this.SubscriptionCount = subscriptionsToReceive?.Count;
+            this.SubscriptionIds = subscriptionsToReceive?.Select(x => x.Id).ToList();
+            this.ClientId = client?.Id;
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         /// Gets the number of subscriptions on this client that set to receive this event.
         /// </summary>
         /// <value>The subscription count.</value>
-        public int SubscriptionCount
+        public int? SubscriptionCount
         {
-            get => this.GetProperty<int>(ApolloLogPropertyNames.SUBSCRIPTION_COUNT);
+            get => this.GetProperty<int?>(ApolloLogPropertyNames.SUBSCRIPTION_COUNT);
             private set => this.SetProperty(ApolloLogPropertyNames.SUBSCRIPTION_COUNT, value);
         }
 

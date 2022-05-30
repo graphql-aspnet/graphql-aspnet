@@ -35,9 +35,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.PipelineName = pipelineInstance.Name;
-            this.MiddlewareCount = pipelineInstance.MiddlewareComponentNames.Count;
-            this.MiddlewareComponents = pipelineInstance.MiddlewareComponentNames.ToList();
+            this.PipelineName = pipelineInstance?.Name;
+            this.MiddlewareCount = pipelineInstance?.MiddlewareComponentNames?.Count;
+            this.MiddlewareComponents = pipelineInstance?.MiddlewareComponentNames?.ToList();
         }
 
         /// <summary>
@@ -64,9 +64,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets the number of middleware components registered to the pipeline instance.
         /// </summary>
         /// <value>The middleware count.</value>
-        public int MiddlewareCount
+        public int? MiddlewareCount
         {
-            get => this.GetProperty<int>(LogPropertyNames.SCHEMA_PIPELINE_MIDDLEWARE_COUNT);
+            get => this.GetProperty<int?>(LogPropertyNames.SCHEMA_PIPELINE_MIDDLEWARE_COUNT);
             private set => this.SetProperty(LogPropertyNames.SCHEMA_PIPELINE_MIDDLEWARE_COUNT, value);
         }
 

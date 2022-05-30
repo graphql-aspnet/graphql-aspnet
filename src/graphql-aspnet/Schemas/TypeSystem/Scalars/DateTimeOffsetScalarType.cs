@@ -10,33 +10,23 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type represneting a .NET <see cref="DateTimeOffset"/> that does include a time component.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class DateTimeOffsetScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static DateTimeOffsetScalarType Instance { get; } = new DateTimeOffsetScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="DateTimeOffsetScalarType"/> class.
-        /// </summary>
-        static DateTimeOffsetScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeOffsetScalarType"/> class.
         /// </summary>
-        private DateTimeOffsetScalarType()
+        public DateTimeOffsetScalarType()
             : base(Constants.ScalarNames.DATETIMEOFFSET, typeof(DateTimeOffset))
         {
             this.Description = "A point in time relative to Coordinated Universal Time (UTC).";
@@ -65,9 +55,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

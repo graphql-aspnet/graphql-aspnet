@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using System.Linq;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.EnumTestData;
     using NUnit.Framework;
 
@@ -219,6 +220,40 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // 0 => 255
             Assert.AreEqual(256, template.Values.Count);
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var template = new EnumGraphTypeTemplate(typeof(EnumWithDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
+
+            var appliedDirective = template.AppliedDirectives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            Assert.AreEqual(new object[] { 5, "bob" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void Parse_EnumOption_AssignedDirective_IsTemplatized()
+        {
+            var template = new EnumGraphTypeTemplate(typeof(EnumWithDirectiveOnOption));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(0, template.AppliedDirectives.Count());
+
+            var optionTemplate = template.Values.FirstOrDefault(x => x.Name == "Value1");
+            Assert.AreEqual(0, optionTemplate.AppliedDirectives.Count());
+
+            optionTemplate = template.Values.FirstOrDefault(x => x.Name == "Value2");
+            Assert.AreEqual(1, optionTemplate.AppliedDirectives.Count());
+
+            var appliedDirective = optionTemplate.AppliedDirectives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            Assert.AreEqual(new object[] { 88, "enum option arg" }, appliedDirective.Arguments);
         }
     }
 }

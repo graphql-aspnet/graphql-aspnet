@@ -38,17 +38,17 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             InputModelStateDictionary modelState)
             : base(LogEventIds.ControllerModelValidated)
         {
-            this.PipelineRequestId = request.Id;
-            this.ControllerName = method.Parent.ObjectType?.FriendlyName(true) ?? method.Parent.Name;
-            this.ActionName = method.Name;
-            this.FieldPath = method.Route.Path;
-            this.ModelDataIsValid = modelState.IsValid;
-            _shortControllerName = method.Parent.ObjectType?.FriendlyName() ?? method.Parent.Name;
+            this.PipelineRequestId = request?.Id;
+            this.ControllerName = method?.Parent?.ObjectType?.FriendlyName(true) ?? method?.Parent?.Name;
+            this.ActionName = method?.Name;
+            this.FieldPath = method?.Route?.Path;
+            this.ModelDataIsValid = modelState?.IsValid;
+            _shortControllerName = method?.Parent?.ObjectType?.FriendlyName() ?? method?.Parent?.Name;
             this.ModelItems = null;
-            if (modelState.Values != null && modelState.Values.Any())
+            if (modelState?.Values != null && modelState.Values.Any())
             {
                 var entries = new List<IGraphLogPropertyCollection>();
-                foreach (var item in modelState.Values)
+                foreach (var item in modelState.Values.Where(x => x != null))
                 {
                     if (item.ValidationState == InputModelValidationState.Invalid)
                     {
@@ -106,9 +106,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// when its passed to the method for execution.
         /// </summary>
         /// <value><c>true</c> if the model data is valid; otherwise <c>false</c>.</value>
-        public bool ModelDataIsValid
+        public bool? ModelDataIsValid
         {
-            get => this.GetProperty<bool>(LogPropertyNames.ACTION_MODEL_DATA_IS_VALID);
+            get => this.GetProperty<bool?>(LogPropertyNames.ACTION_MODEL_DATA_IS_VALID);
             private set => this.SetProperty(LogPropertyNames.ACTION_MODEL_DATA_IS_VALID, value);
         }
 

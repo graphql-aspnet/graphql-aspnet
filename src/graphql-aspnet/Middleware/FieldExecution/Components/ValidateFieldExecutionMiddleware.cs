@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // ensure that the data items on teh request match the field they are being executed against
             var field = context.Field;
             var expectedFieldGraphType = _schema.KnownTypes.FindGraphType(field);
-            var dataSource = context.Request.DataSource;
+            var dataSource = context.Request.Data;
 
             // ensure the source item(s) being supplied
             // matches the expected source of the field being resolved

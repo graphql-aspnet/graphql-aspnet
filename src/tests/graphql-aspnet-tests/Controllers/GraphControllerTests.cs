@@ -23,13 +23,12 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public async Task MethodInvocation_EnsureInternalPropertiesAreSet()
         {
-            var server = new TestServerBuilder()
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
                 .Build();
 
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.AsyncActionMethod),
-                new object());
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.AsyncActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
@@ -53,10 +52,12 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public async Task MethodInvocation_SyncMethodReturnsObjectNotTask()
         {
-            var tester = new TestServerBuilder().Build();
-            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.SyncronousActionMethod),
-                new object());
+            var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphController<InvokableController>()
+                .Build();
+
+            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
             var controller = new InvokableController();
@@ -70,10 +71,11 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public async Task MethodInvocation_UnawaitableAsyncMethodFlag_ResultsInInternalError()
         {
-            var tester = new TestServerBuilder().Build();
-            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.SyncronousActionMethod),
-                new object());
+            var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphController<InvokableController>()
+                .Build();
+            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
             fieldContextBuilder.GraphMethod.Setup(x => x.IsAsyncField).Returns(true);
@@ -90,10 +92,11 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public async Task MethodInvocation_MissingMethodInfo_ReturnsInternalServerError()
         {
-            var tester = new TestServerBuilder().Build();
-            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.SyncronousActionMethod),
-                new object());
+            var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphController<InvokableController>()
+                .Build();
+            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.SyncronousActionMethod));
             fieldContextBuilder.AddInputArgument("arg1", "random string");
             fieldContextBuilder.GraphMethod.Setup(x => x.Method).Returns<MethodInfo>(null);
 
@@ -109,10 +112,12 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public void MethodInvocation_UserCodeExceptionIsAllowedToThrow()
         {
-            var tester = new TestServerBuilder().Build();
-            var fieldContextBuilder = tester.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.AsyncActionMethodToCauseException),
-                new object());
+            var tester = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphController<InvokableController>()
+                .Build();
+            var fieldContextBuilder = tester.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.AsyncActionMethodToCauseException));
+
             fieldContextBuilder.AddInputArgument("arg1", "random string");
 
             var controller = new InvokableController();
@@ -123,10 +128,11 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public async Task NotFoundResult_ViaCustomErrorMessage()
         {
-            var server = new TestServerBuilder().Build();
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.CreateNotFoundResult),
-                new object());
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphController<InvokableController>()
+                .Build();
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.CreateNotFoundResult));
 
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
@@ -141,10 +147,12 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public async Task ErrorResult()
         {
-            var server = new TestServerBuilder().Build();
-            var fieldContextBuilder = server.CreateFieldContextBuilder<InvokableController>(
-                nameof(InvokableController.ErrorResult),
-                new object());
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphType<InvokableController>()
+                .Build();
+
+            var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
+                nameof(InvokableController.ErrorResult));
 
             var controller = new InvokableController();
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();

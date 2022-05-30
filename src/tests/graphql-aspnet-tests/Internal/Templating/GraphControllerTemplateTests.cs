@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.Templating.ControllerTestData;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -26,25 +27,31 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_GraphRootController_UsesEmptyRoutePath()
         {
-            var template = GraphQLProviders.TemplateProvider.ParseType<DeclaredGraphRootController>() as GraphControllerTemplate;
-            Assert.IsNotNull(template);
+            var template = new GraphControllerTemplate(typeof(DeclaredGraphRootController));
+            template.Parse();
+            template.ValidateOrThrow();
+
             Assert.AreEqual(GraphFieldPath.Empty, template.Route);
         }
 
         [Test]
         public void Parse_MismatchedRouteFragmentConfiguration_ThrowsException()
         {
+            var template = new GraphControllerTemplate(typeof(InvalidRouteController));
+            template.Parse();
+
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                GraphQLProviders.TemplateProvider.ParseType<InvalidRouteController>();
+                template.ValidateOrThrow();
             });
         }
 
         [Test]
         public void Parse_OverloadedMethodsOnDifferentRoots_ParsesCorrectly()
         {
-            var template = GraphQLProviders.TemplateProvider.ParseType<TwoMethodsDifferentRootsController>() as GraphControllerTemplate;
-            Assert.IsNotNull(template);
+            var template = new GraphControllerTemplate(typeof(TwoMethodsDifferentRootsController));
+            template.Parse();
+            template.ValidateOrThrow();
 
             Assert.AreEqual(3, template.FieldTemplates.Count());
             Assert.AreEqual(2, template.Actions.Count());
@@ -61,8 +68,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 "String",
                 MetaGraphTypes.IsList);
 
-            var template = GraphQLProviders.TemplateProvider.ParseType<ArrayReturnController>() as GraphControllerTemplate;
-            Assert.IsNotNull(template);
+            var template = new GraphControllerTemplate(typeof(ArrayReturnController));
+            template.Parse();
+            template.ValidateOrThrow();
 
             Assert.AreEqual(1, template.Actions.Count());
 
@@ -78,7 +86,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 "Input_" + typeof(TwoPropertyObject).FriendlyName(),
                 MetaGraphTypes.IsList);
 
-            var template = GraphQLProviders.TemplateProvider.ParseType<ArrayInputParamController>() as GraphControllerTemplate;
+            var template = new GraphControllerTemplate(typeof(ArrayInputParamController));
+            template.Parse();
+            template.ValidateOrThrow();
 
             Assert.AreEqual(1, template.Actions.Count());
 
@@ -86,6 +96,20 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(string), action.DeclaredReturnType);
             Assert.AreEqual(1, action.Arguments.Count);
             Assert.AreEqual(expectedTypeExpression, action.Arguments[0].TypeExpression);
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var template = new GraphControllerTemplate(typeof(ControllerWithDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
+
+            var appliedDirective = template.AppliedDirectives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            Assert.AreEqual(new object[] { 101, "controller arg" }, appliedDirective.Arguments);
         }
     }
 }

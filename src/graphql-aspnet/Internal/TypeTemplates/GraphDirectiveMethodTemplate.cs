@@ -6,6 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
@@ -19,7 +20,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -29,51 +29,46 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A single directive method within a declared directive.
+    /// A base template for all directive methods that can be declared.
     /// </summary>
-    [DebuggerDisplay("Directive Method: {InternalName}")]
+    [DebuggerDisplay("{InternalName} (Type: {Parent.InternalName})")]
     public class GraphDirectiveMethodTemplate : IGraphFieldBaseTemplate, IGraphMethod
     {
-        private readonly List<GraphFieldArgumentTemplate> _arguments;
+        private readonly List<GraphArgumentTemplate> _arguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveMethodTemplate"/> class.
         /// </summary>
         /// <param name="parent">The owner of this method.</param>
         /// <param name="method">The method information.</param>
-        public GraphDirectiveMethodTemplate(IGraphTypeTemplate parent, MethodInfo method)
+        internal GraphDirectiveMethodTemplate(IGraphTypeTemplate parent, MethodInfo method)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
-            _arguments = new List<GraphFieldArgumentTemplate>();
+            _arguments = new List<GraphArgumentTemplate>();
         }
 
         /// <summary>
-        /// Parses the primary metadata about the method.
+        /// Parses this template to extract required meta data about the directive method.
         /// </summary>
-        public void Parse()
+        public virtual void Parse()
         {
-            DirectiveLifeCycle lifeCycle;
-            switch (this.Method.Name)
-            {
-                case Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME:
-                    lifeCycle = DirectiveLifeCycle.BeforeResolution;
-                    break;
-
-                case Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME:
-                    lifeCycle = DirectiveLifeCycle.AfterResolution;
-                    break;
-
-                default:
-                    return;
-            }
-
-            this.IsValidDirectiveMethod = (this.Method.ReturnType == typeof(IGraphActionResult) || this.Method.ReturnType == typeof(Task<IGraphActionResult>)) &&
-                                          !this.Method.IsGenericMethod;
+            this.DeclaredType = this.Method.ReturnType;
+            this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredType);
+            this.TypeExpression = new GraphTypeExpression(this.ObjectType.FriendlyName());
 
             this.Description = this.Method.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-            this.DeclaredType = this.Method.ReturnType;
             this.IsAsyncField = Validation.IsCastable<Task>(this.Method.ReturnType);
+            this.AppliedDirectives = this.ExtractAppliedDirectiveTemplates();
+
+            // deteremine all the directive locations where this method should be invoked
+            var locations = DirectiveLocation.NONE;
+            foreach (var attrib in this.Method.AttributesOfType<DirectiveLocationsAttribute>())
+            {
+                locations = locations | attrib.Locations;
+            }
+
+            this.Locations = locations;
 
             // is the method asyncronous? if so ensure that a Task<T> is returned
             // and not an empty task
@@ -85,85 +80,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.DeclaredType = genericArgs[0];
             }
 
-            this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredType);
-            this.LifeCycle = lifeCycle;
-            this.Route = this.GenerateRoute();
-            this.TypeExpression = new GraphTypeExpression(this.ObjectType.FriendlyName());
-
-            // parse all input parameters into the method
-            foreach (var parameter in this.Method.GetParameters())
-            {
-                var argTemplate = new GraphFieldArgumentTemplate(this, parameter);
-                argTemplate.Parse();
-                _arguments.Add(argTemplate);
-            }
-
-            this.MethodSignature = this.GenerateMethodSignatureString();
-
             this.ExpectedReturnType = GraphValidation.EliminateWrappersFromCoreType(
                 this.DeclaredType,
                 false,
                 true,
                 false);
-        }
 
-        /// <summary>
-        /// Generates the route.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        private GraphFieldPath GenerateRoute()
-        {
-            return new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.LifeCycle.ToString()));
-        }
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.Name));
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
-        public void ValidateOrThrow()
-        {
-            // ensure skip isnt set
-            if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
+            // parse all input parameters into the method
+            foreach (var parameter in this.Method.GetParameters())
             {
-                throw new GraphTypeDeclarationException(
-                    $"The graph method {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
-                    "to the object graph.");
+                var argTemplate = new GraphArgumentTemplate(this, parameter);
+                argTemplate.Parse();
+                _arguments.Add(argTemplate);
             }
 
-            // is the method asyncronous? if so ensure that a Task<T> is returned
-            // and not an empty task
-            if (this.IsAsyncField)
-            {
-                // if the return is just Task (not Task<T>) then error out
-                var genericArgs = this.Method.ReturnType.GetGenericArguments();
-                if (genericArgs.Length != 1)
-                {
-                    throw new GraphTypeDeclarationException(
-                        $"The directive method '{this.InternalFullName}' defines a return type of'{typeof(Task).Name}' but " +
-                        "defines no contained return type for the resultant model object yielding a void return after " +
-                        "completion of the task. All graph methods must return a single model object. Consider using " +
-                        $"'{typeof(Task<>).Name}' instead for asyncronous methods");
-                }
-            }
-
-            if (!this.IsValidDirectiveMethod)
-            {
-                throw new GraphTypeDeclarationException(
-                    $"The directive method '{this.InternalFullName}' has an invalid signature and cannot be used as a directive " +
-                    $"method. All Directive methods must not contain generic parameters and must return a '{typeof(IGraphActionResult).FriendlyName()}' or " +
-                    $"'{typeof(Task<IGraphActionResult>).FriendlyName()}' to be invoked properly.");
-            }
-
-            if (this.ExpectedReturnType == null)
-            {
-                throw new GraphTypeDeclarationException(
-                   $"The directive method '{this.InternalFullName}' has no valid {nameof(ExpectedReturnType)}. An expected " +
-                   "return type must be assigned from the declared return type.");
-            }
-
-            foreach (var argument in _arguments)
-                argument.ValidateOrThrow();
+            this.MethodSignature = this.GenerateMethodSignatureString();
         }
 
         /// <summary>
@@ -189,149 +122,149 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
-        /// Gets the life cycle method hook this instance is representing.
+        /// When overridden in a child class, allows the template to perform some final validation checks
+        /// on the integrity of itself. An exception should be thrown to stop the template from being
+        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
         /// </summary>
-        /// <value>The life cycle method.</value>
-        public DirectiveLifeCycle LifeCycle { get; private set; }
+        public virtual void ValidateOrThrow()
+        {
+            // ensure skip isnt set
+            if (this.Method.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive method {this.InternalFullName} defines a {nameof(GraphSkipAttribute)}. It cannot be parsed or added " +
+                    "to the object graph.");
+            }
+
+            if (this.AppliedDirectives.Any())
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive method {this.InternalFullName} defines an {nameof(ApplyDirectiveAttribute)}. " +
+                    $"Directive methods cannot have applied directives.");
+            }
+
+            // is the method asyncronous? if so ensure that a Task<T> is returned
+            // and not an empty task
+            if (this.IsAsyncField)
+            {
+                // if the return is just Task (not Task<T>) then error out
+                var genericArgs = this.Method.ReturnType.GetGenericArguments();
+                if (genericArgs.Length != 1)
+                {
+                    throw new GraphTypeDeclarationException(
+                        $"The directive method '{this.InternalFullName}' defines a return type of'{typeof(Task).Name}' but " +
+                        "defines no contained return type for the resultant model object yielding a void return after " +
+                        "completion of the task. All graph methods must return a single model object. Consider using " +
+                        $"'{typeof(Task<>).Name}' instead for asyncronous methods");
+                }
+            }
+
+            if (this.ExpectedReturnType != typeof(IGraphActionResult))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive method '{this.InternalFullName}' does not return a {nameof(IGraphActionResult)}. " +
+                    $"All directive methods must return a {nameof(IGraphActionResult)} or {typeof(Task<IGraphActionResult>).FriendlyName()}");
+            }
+
+            foreach (var argument in _arguments)
+                argument.ValidateOrThrow();
+
+            foreach (var directive in this.AppliedDirectives)
+                directive.ValidateOrThrow();
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<DependentType> RetrieveRequiredTypes()
+        {
+            var list = new List<DependentType>();
+            foreach (var argument in this.Arguments)
+                list.AddRange(argument.RetrieveRequiredTypes());
+
+            if (this.AppliedDirectives != null)
+            {
+                var dependentTypes = this.AppliedDirectives
+                    .Where(x => x.DirectiveType != null)
+                    .Select(x => new DependentType(x.DirectiveType, TypeKind.DIRECTIVE));
+                list.AddRange(dependentTypes);
+            }
+
+            return list;
+        }
 
         /// <summary>
-        /// Gets the concrete type this template represents.
+        /// Gets the bitwise flags of locations that this method is defined
+        /// to handle.
         /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; private set; }
+        /// <value>The locations.</value>
+        public DirectiveLocation Locations { get; private set; }
+
+        /// <inheritdoc />
+        public MetaGraphTypes[] TypeWrappers => null; // not used by directives
 
         /// <summary>
-        /// Gets declared type of item minus any asyncronous wrappers (i.e. the T in Task{T}).
+        /// Gets declared return type of the method minus any asyncronous wrappers (i.e. the T in Task{T}).
         /// </summary>
         /// <value>The type of the declared.</value>
         public Type DeclaredType { get; private set; }
 
-        /// <summary>
-        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
-        /// represents the implementation return type as opposed to the expected graph type.
-        /// </summary>
-        /// <value>The type of the return.</value>
-        public Type ExpectedReturnType { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is asynchronous method.
-        /// </summary>
-        /// <value><c>true</c> if this instance is asynchronous method; otherwise, <c>false</c>.</value>
-        public bool IsAsyncField { get; private set; }
-
-        /// <summary>
-        /// Gets the name of the item on the object graph as it is conveyed in an introspection request.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name => this.Method.Name;
-
-        /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        public string Description { get; private set; }
-
-        /// <summary>
-        /// Gets a the canonical path on the graph where this item sits.
-        /// </summary>
-        /// <value>The route.</value>
-        public GraphFieldPath Route { get; private set; }
-
-        /// <summary>
-        /// Gets a list of parameters, in the order they are declared
-        /// that are part of this method.
-        /// </summary>
-        /// <value>The parameters.</value>
-        public IReadOnlyList<IGraphFieldArgumentTemplate> Arguments => _arguments;
-
-        /// <summary>
-        /// Gets the parent directive template this instance belongs to.
-        /// </summary>
-        /// <value>The parent.</value>
-        public IGraphTypeTemplate Parent { get; }
-
-        /// <summary>
-        /// Gets the type of the source object.
-        /// </summary>
-        /// <value>The type of the source object.</value>
-        public Type SourceObjectType => this.Parent?.ObjectType;
-
-        /// <summary>
-        /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
-        /// declaration used in schema definition language.)
-        /// </summary>
-        /// <value>The type expression.</value>
+        /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; private set; }
 
         /// <summary>
-        /// Gets the source type this field was created from.
-        /// </summary>
-        /// <value>The field souce.</value>
-        public GraphFieldSource FieldSource => GraphFieldSource.Method;
-
-        /// <summary>
-        /// Gets the method information this instance describes.
-        /// </summary>
-        /// <value>The method.</value>
-        public MethodInfo Method { get; }
-
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
-        public string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Method.Name}";
-
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
-        public string InternalName => this.Method.Name;
-
-        /// <summary>
-        /// Gets a value indicating whether this instance was explictly declared as a graph item via acceptable attribution or
-        /// if it was parsed as a matter of completeness.
-        /// </summary>
-        /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
-        public bool IsExplicitDeclaration => true;
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is valid directive method.
-        /// </summary>
-        /// <value><c>true</c> if this instance is valid directive method; otherwise, <c>false</c>.</value>
-        public bool IsValidDirectiveMethod { get; private set; }
-
-        /// <summary>
-        /// Gets the human readable method signature identifying this method.
+        /// Gets the defining method signature of this template, its return type and expected parameters. (e.g. <c>string (int var1)</c>).
         /// </summary>
         /// <value>The method signature.</value>
         public string MethodSignature { get; private set; }
 
-        /// <summary>
-        /// Determines whether the provided method info is properly attributed to act as a directive processing method.
-        /// </summary>
-        /// <param name="methodInfo">The method information.</param>
-        /// <returns><c>true</c> if the method can be a directive method; otherwise, <c>false</c>.</returns>
-        public static bool IsDirectiveMethod(MethodInfo methodInfo)
-        {
-            return methodInfo != null &&
-                   methodInfo.SingleAttributeOrDefault<GraphSkipAttribute>() == null &&
-                   (methodInfo.Name == Constants.ReservedNames.DIRECTIVE_BEFORE_RESOLUTION_METHOD_NAME ||
-                    methodInfo.Name == Constants.ReservedNames.DIRECTIVE_AFTER_RESOLUTION_METHOD_NAME);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has a defined default value.
-        /// </summary>
-        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool HasDefaultValue => false;
 
-        /// <summary>
-        /// Gets the actual type wrappers used to generate a type expression for this field.
-        /// This list represents the type requirements  of the field.
-        /// </summary>
-        /// <value>The custom wrappers.</value>
-        public MetaGraphTypes[] TypeWrappers => null;
+        /// <inheritdoc />
+        public string Description { get; private set; }
+
+        /// <inheritdoc />
+        public GraphFieldPath Route { get; private set; }
+
+        /// <inheritdoc />
+        public IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;
+
+        /// <inheritdoc />
+        public Type ExpectedReturnType { get; protected set; }
+
+        /// <inheritdoc />
+        public bool IsAsyncField { get; protected set; }
+
+        /// <inheritdoc />
+        public Type ObjectType { get; protected set; }
+
+        /// <inheritdoc />
+        public bool IsExplicitDeclaration => true;
+
+        /// <inheritdoc />
+        public string Name => this.Method.Name;
+
+        /// <inheritdoc />
+        public Type SourceObjectType => this.Parent?.ObjectType;
+
+        /// <inheritdoc />
+        public IGraphTypeTemplate Parent { get; }
+
+        /// <inheritdoc />
+        public MethodInfo Method { get; }
+
+        /// <inheritdoc />
+        public GraphFieldSource FieldSource => GraphFieldSource.Method;
+
+        /// <inheritdoc />
+        public string InternalFullName => $"{this.Parent?.InternalFullName}.{this.Method.Name}";
+
+        /// <inheritdoc />
+        public string InternalName => this.Method.Name;
+
+        /// <inheritdoc />
+        public ICustomAttributeProvider AttributeProvider => this.Method;
+
+        /// <inheritdoc />
+        public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
     }
 }

@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var argSet = new ExecutionArgumentCollection();
 
-            var mockFieldArg = new Mock<IGraphFieldArgument>();
+            var mockFieldArg = new Mock<IGraphArgument>();
             mockFieldArg.Setup(x => x.ParameterName).Returns(key);
 
             argSet.Add(new ExecutionArgument(mockFieldArg.Object, value));

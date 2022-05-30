@@ -180,5 +180,15 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="queryContext">The query context.</param>
         void RequestCompleted(GraphQueryExecutionContext queryContext);
+
+        /// <summary>
+        /// Recorded when, during schema generation, a type system directive is successfully applied
+        /// to a targeted schema item.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of the schema the on which the directive was applied.</typeparam>
+        /// <param name="appliedDirective">The directive that has been applied.</param>
+        /// <param name="appliedTo">The schema item the directive was applied to.</param>
+        void TypeSystemDirectiveApplied<TSchema>(IDirective appliedDirective, ISchemaItem appliedTo)
+            where TSchema : class, ISchema;
     }
 }

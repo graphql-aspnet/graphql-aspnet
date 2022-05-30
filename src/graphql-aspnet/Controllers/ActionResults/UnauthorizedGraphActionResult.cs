@@ -34,13 +34,8 @@ namespace GraphQL.AspNet.Controllers.ActionResults
             _errorCode = errorCode ?? Constants.ErrorCodes.ACCESS_DENIED;
         }
 
-        /// <summary>
-        /// Processes the provided resolution context against this action result instance to
-        /// generate the expected response in accordance with this instance's rule set.
-        /// </summary>
-        /// <param name="context">The context being processed.</param>
-        /// <returns>Task.</returns>
-        public Task Complete(ResolutionContext context)
+        /// <inheritdoc />
+        public Task Complete(BaseResolutionContext context)
         {
             context.Messages.Critical(
                    _errorMessage,

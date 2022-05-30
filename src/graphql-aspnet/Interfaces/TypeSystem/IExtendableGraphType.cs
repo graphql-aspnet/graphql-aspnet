@@ -15,10 +15,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IExtendableGraphType : IGraphType
     {
         /// <summary>
-        /// Extends this graph type by adding a new field to its collection. An exception may be thrown if
+        /// Extends this graph type by adding a new field. An exception may be thrown if
         /// a field with the same name already exists.
         /// </summary>
-        /// <param name="newField">The new field.</param>
-        void Extend(IGraphField newField);
+        /// <param name="newField">The new field to add.</param>
+        /// <returns>The newly added field.</returns>
+        IGraphField Extend(IGraphField newField);
     }
 }

@@ -78,9 +78,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.ObjectType = objectType;
         }
 
-        /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
-        /// </summary>
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             base.ParseTemplateDefinition();
@@ -89,7 +87,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // Common Metadata
             // ------------------------------------
             this.Route = this.GenerateFieldPath();
-            this.Description = this.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
+            this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
             // ------------------------------------
             // Security Policies
@@ -214,7 +212,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
-        protected override GraphFieldPath GenerateFieldPath()
+        protected virtual GraphFieldPath GenerateFieldPath()
         {
             // a standard graph object cannot contain any route pathing or nesting like controllers can
             // before creating hte route, ensure that the declared name, by itself, is valid for graphql
@@ -222,11 +220,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Types, graphName));
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
@@ -283,10 +277,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new PropertyGraphFieldTemplate(this, prop, this.Kind);
         }
 
-        /// <summary>
-        /// Gets the security policies found via defined attributes on the item that need to be enforced.
-        /// </summary>
-        /// <value>The security policies.</value>
+        /// <inheritdoc />
         public override AppliedSecurityPolicyGroup SecurityPolicies => _securityPolicies;
 
         /// <summary>
@@ -295,16 +286,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The methods.</value>
         public IReadOnlyDictionary<string, IGraphTypeFieldTemplate> FieldTemplates => _fields;
 
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalFullName => this.ObjectType?.FriendlyName(true);
 
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalName => this.ObjectType?.FriendlyName();
 
         /// <summary>

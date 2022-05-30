@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// A collection of <see cref="IGraphField"/> owned by a <see cref="IGraphType"/>.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class GraphFieldCollection : IReadOnlyGraphFieldCollection
+    public class GraphFieldCollection : IGraphFieldCollection
     {
         private readonly IGraphType _owner;
         private readonly Dictionary<string, IGraphField> _fields;
@@ -40,11 +40,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             _fields = new Dictionary<string, IGraphField>(StringComparer.Ordinal);
         }
 
-        /// <summary>
-        /// Adds the <see cref="IGraphField" /> to the collection.
-        /// </summary>
-        /// <param name="field">The field to add.</param>
-        /// <returns>IGraphTypeField.</returns>
+        /// <inheritdoc />
         public IGraphField AddField(IGraphField field)
         {
             Validation.ThrowIfNull(field, nameof(field));
@@ -59,6 +55,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                     "INTERFACE extension with the same field name.");
             }
 
+            field.AssignParent(_owner);
             _fields.Add(field.Name, field);
             return field;
         }
@@ -68,13 +65,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <typeparam name="TSource">The expected type of the source data supplied to the resolver.</typeparam>
         /// <typeparam name="TReturn">The expected type of data to be returned from this field.</typeparam>
-        /// <param name="fieldName">Name of the field.</param>
+        /// <param name="fieldName">The formatted name of the field as it will appear in the object graph.</param>
         /// <param name="typeExpression">The item representing how this field returns a graph type.</param>
-        /// <param name="route">The formal route that identifies this field in the object graph.</param>
+        /// <param name="route">The formal route that uniquely identifies this field in the object graph.</param>
         /// <param name="resolver">The resolver used to fulfil requests to this field.</param>
         /// <param name="description">The description to assign to the field.</param>
         /// <returns>IGraphTypeField.</returns>
-        public IGraphField AddField<TSource, TReturn>(
+        internal IGraphField AddField<TSource, TReturn>(
             string fieldName,
             GraphTypeExpression typeExpression,
             GraphFieldPath route,
@@ -91,6 +88,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                 FieldResolutionMode.PerSourceItem,
                 new GraphDataValueResolver<TSource, TReturn>(resolver));
             field.Description = description;
+
             return this.AddField(field);
         }
 
@@ -119,6 +117,9 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public int Count => _fields.Count;
+
+        /// <inheritdoc />
+        public IGraphType Owner => _owner;
 
         /// <inheritdoc />
         public IEnumerator<IGraphField> GetEnumerator()

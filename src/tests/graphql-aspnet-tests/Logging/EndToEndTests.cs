@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var startupEvents = new Dictionary<EventId, int>();
             startupEvents.Add(LogEventIds.SchemaInstanceCreated, 1);
-            startupEvents.Add(LogEventIds.SchemaPipelineInstanceCreated, 3);
+            startupEvents.Add(LogEventIds.SchemaPipelineInstanceCreated, 4);
 
             // can't test schema route regstered due to
             // not mocking IAppBuilder

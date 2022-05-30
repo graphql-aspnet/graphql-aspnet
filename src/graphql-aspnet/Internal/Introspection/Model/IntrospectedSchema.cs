@@ -13,18 +13,21 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A model object containing data for the __schema meta field.
     /// </summary>
     [DebuggerDisplay("Introspected Schema: {Name}")]
-    public class IntrospectedSchema
+    public class IntrospectedSchema : IntrospectedItem, ISchemaItem
     {
         private readonly ISchema _schema;
         private OrderedDictionary<string, IntrospectedType> _typeList;
@@ -35,6 +38,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <param name="schema">The schema.</param>
         public IntrospectedSchema(ISchema schema)
+            : base(schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _typeList = new OrderedDictionary<string, IntrospectedType>();
@@ -56,7 +60,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         {
             _directiveList?.Clear();
             _directiveList = new List<IntrospectedDirective>();
-            foreach (var directiveType in _schema.KnownTypes.OfType<IDirectiveGraphType>().Where(x => x.Publish))
+            foreach (var directiveType in _schema.KnownTypes.OfType<IDirective>().Where(x => x.Publish))
             {
                 var directive = new IntrospectedDirective(directiveType);
                 directive.Initialize(this);
@@ -78,7 +82,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             // because of the hierarchtical nature introspected types
             // may need to store a reference to a type (becaues a field returns it) but it has to exist
             // in the collection first
-            foreach (var graphType in _schema.KnownTypes.OfTypeButNotType<IGraphType, IDirectiveGraphType>())
+            foreach (var graphType in _schema.KnownTypes.OfTypeButNotType<IGraphType, IDirective>())
                 this.CreateAndStoreIntrospectedType(graphType);
 
             // initialize each type creatd
@@ -88,7 +92,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
 
         /// <summary>
         /// Attempts to find a single introspected object representing the given graph type. If not found
-        /// it will attempt to create it. This method does not support directives. Use the <see cref="Directives"/>
+        /// it will attempt to create it. This method does not support directives. Use the <see cref="DeclaredDirectives"/>
         /// properties to find directives.
         /// </summary>
         /// <param name="graphType">Type of the graph.</param>
@@ -108,6 +112,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
                 case IUnionGraphType _:
                     creator = (gt) => new IntrospectedType(gt);
                     break;
+
                 default:
                     throw new GraphExecutionException($"Invalid graph type. '{graphType.Kind}' is not supported by introspection.");
             }
@@ -169,7 +174,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <param name="collection">The collection.</param>
         /// <returns>IntrospectedType.</returns>
-        private IntrospectedType FindOperationType(GraphCollection collection)
+        private IntrospectedType FindOperationType(GraphOperationType collection)
         {
             return this.FindIntrospectedType(Constants.ReservedNames.FindOperationTypeNameByType(collection));
         }
@@ -184,31 +189,26 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Gets the type data of the query operation type.
         /// </summary>
         /// <value>The type of the query.</value>
-        public IntrospectedType QueryType => this.FindOperationType(GraphCollection.Query);
+        public IntrospectedType QueryType => this.FindOperationType(GraphOperationType.Query);
 
         /// <summary>
         /// Gets the type data of the mutation operation type.
         /// </summary>
         /// <value>The type of the mutation.</value>
-        public IntrospectedType MutationType => this.FindOperationType(GraphCollection.Mutation);
+        public IntrospectedType MutationType => this.FindOperationType(GraphOperationType.Mutation);
 
         /// <summary>
         /// Gets the type data of the subscription type.
         /// </summary>
         /// <value>The type of the subscription.</value>
-        public IntrospectedType SubscriptionType => this.FindOperationType(GraphCollection.Subscription);
+        public IntrospectedType SubscriptionType => this.FindOperationType(GraphOperationType.Subscription);
 
         /// <summary>
-        /// Gets the directives known to this schema.
+        /// Gets the directives declared to be a part of this schema.
         /// </summary>
         /// <value>The directives.</value>
-        public IEnumerable<IntrospectedDirective> Directives => _directiveList;
-
-        /// <summary>
-        /// Gets the name of the schema this introspection object is hosting.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name => _schema?.Name;
+        [GraphField("Directives")]
+        public IEnumerable<IntrospectedDirective> DeclaredDirectives => _directiveList;
 
         /// <summary>
         /// Gets the core schema represented by this introspected entity.

@@ -37,12 +37,12 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
             IReadOnlyList<ApolloClientProxy<TSchema>> clientsToReceive)
             : base(ApolloLogEventIds.ServerSubcriptionEventReceived)
         {
-            this.SchemaTypeName = eventRecieved.SchemaTypeName;
-            this.SubscriptionEventName = eventRecieved.EventName;
-            this.SubscriptionEventId = eventRecieved.Id;
-            this.ClientCount = clientsToReceive.Count;
-            this.ServerId = server.Id;
-            this.ClientIds = clientsToReceive.Select(x => x.Id).ToList();
+            this.SchemaTypeName = eventRecieved?.SchemaTypeName;
+            this.SubscriptionEventName = eventRecieved?.EventName;
+            this.SubscriptionEventId = eventRecieved?.Id;
+            this.ClientCount = clientsToReceive?.Count;
+            this.ServerId = server?.Id;
+            this.ClientIds = clientsToReceive?.Select(x => x.Id).ToList();
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         /// Apollo server component.
         /// </summary>
         /// <value>The name of the schema type.</value>
-        public int ClientCount
+        public int? ClientCount
         {
-            get => this.GetProperty<int>(ApolloLogPropertyNames.CLIENT_COUNT);
+            get => this.GetProperty<int?>(ApolloLogPropertyNames.CLIENT_COUNT);
             private set => this.SetProperty(ApolloLogPropertyNames.CLIENT_COUNT, value);
         }
 

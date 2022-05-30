@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         protected override void ParseTemplateDefinition()
         {
-            var fieldDeclaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            var fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
             if (fieldDeclaration is SubscriptionAttribute sa)
                 EventName = sa.EventName;
             else if (fieldDeclaration is SubscriptionRootAttribute sra)
@@ -113,22 +113,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             base.ValidateOrThrow();
         }
 
-        /// <summary>
-        /// Creates graph field argument for this template given the parameter info supplied.
-        /// </summary>
-        /// <param name="paramInfo">The parameter information.</param>
-        /// <returns>IGraphFieldArgumentTemplate.</returns>
-        protected override GraphFieldArgumentTemplate CreateGraphFieldArgument(ParameterInfo paramInfo)
+        /// <inheritdoc/>
+        protected override GraphArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
         {
             if (this.Route.RootCollection == Execution.GraphCollection.Subscription)
             {
-                return new GraphSubscriptionFieldArgumentTemplate(
+                return new GraphSubscriptionInputArgumentTemplate(
                     this,
                     paramInfo,
                     _explicitlyDeclaredSubscriptionSourceType != null);
             }
 
-            return base.CreateGraphFieldArgument(paramInfo);
+            return base.CreateInputArgument(paramInfo);
         }
 
         /// <summary>

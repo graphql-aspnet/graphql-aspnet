@@ -11,17 +11,19 @@ namespace GraphQL.AspNet.Execution.Contexts
 {
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A base set of options used by all resolution-scoped contexts in the library.
     /// </summary>
     /// <typeparam name="TRequest">The type of the t request.</typeparam>
-    public abstract class BaseResolutionContext<TRequest> : ResolutionContext
+    public abstract class BaseResolutionContext<TRequest> : BaseResolutionContext
         where TRequest : class, IDataRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseResolutionContext{TRequest}"/> class.
+        /// Initializes a new instance of the <see cref="BaseResolutionContext{TRequest}" /> class.
         /// </summary>
+        /// <param name="targetSchema">The schema in scope for this resolution context.</param>
         /// <param name="parentContext">The parent context from which this resolution context should
         /// extract is base data values.</param>
         /// <param name="request">The resolution request to carry with the context.</param>
@@ -29,11 +31,12 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="user">Optional. The user context that authenticated and authorized for this
         /// resolution context.</param>
         protected BaseResolutionContext(
+            ISchema targetSchema,
             IGraphExecutionContext parentContext,
             TRequest request,
             IExecutionArgumentCollection arguments,
             ClaimsPrincipal user = null)
-            : base(parentContext, request, arguments, user)
+            : base(targetSchema, parentContext, request, arguments, user)
         {
         }
 

@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.ParameterTestData;
     using Moq;
     using NUnit.Framework;
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     [TestFixture]
     public class GraphParameterTemplateTests
     {
-        private GraphFieldArgumentTemplate ExtractParameterTemplate(string paramName, out ParameterInfo paramInfo)
+        private GraphArgumentTemplate ExtractParameterTemplate(string paramName, out ParameterInfo paramInfo)
         {
             paramInfo = typeof(ParameterTestClass)
                 .GetMethod(nameof(ParameterTestClass.TestMethod))
@@ -44,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 nameof(ParameterTestClass.TestMethod)));
             mockMethod.Setup(x => x.Route).Returns(route);
 
-            var argTemplate = new GraphFieldArgumentTemplate(mockMethod.Object, paramInfo);
+            var argTemplate = new GraphArgumentTemplate(mockMethod.Object, paramInfo);
             argTemplate.Parse();
             argTemplate.ValidateOrThrow();
 
@@ -223,6 +224,17 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(Person[][][][][][][][][][][][][][][][][][][]), template.Parameter.ParameterType);
             Assert.AreEqual("[[[[[[[[[[[[[[[[[[[Input_Person]]]]]]]]]]]]]]]]]]]", template.TypeExpression.ToString());
             Assert.AreEqual(null, template.DefaultValue);
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var template = this.ExtractParameterTemplate("paramDirective", out var paramInfo);
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
+
+            var appliedDirective = template.AppliedDirectives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            Assert.AreEqual(new object[] { 77, "param arg" }, appliedDirective.Arguments);
         }
     }
 }

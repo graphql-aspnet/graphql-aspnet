@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Logging
 {
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -151,5 +152,11 @@ namespace GraphQL.AspNet.Logging
         /// generated to be sent to a client.
         /// </summary>
         public static EventId RequestCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 700, "GraphQL Request Completed");
+
+        /// <summary>
+        /// A log entry indicating that a directive was applied to a specific <see cref="ISchemaItem"/>
+        /// during schema generation.
+        /// </summary>
+        public static EventId TypeSystemDirectiveApplied = new EventId(ROOT_EXECUTION_EVENT_ID + 810, "GraphQL Type System Directive Applied");
     }
 }

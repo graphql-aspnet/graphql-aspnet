@@ -28,9 +28,8 @@ namespace GraphQL.AspNet.Tests.Execution
                 .AddGraphType<SimpleExecutionController>()
                 .Build();
 
-            var builder = server.CreateFieldContextBuilder<SimpleExecutionController>(
-                nameof(SimpleExecutionController.SimpleQueryMethod),
-                new object());
+            var builder = server.CreateGraphTypeFieldContextBuilder<SimpleExecutionController>(
+                nameof(SimpleExecutionController.SimpleQueryMethod));
             builder.AddInputArgument("arg1", "my value");
             builder.AddInputArgument("arg2", 15L);
 
@@ -122,7 +121,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task DirectiveExecution_MaintainsRequestMetaDataCollection_CallsDirectiveCorrectly()
+        public async Task DirectiveExecution_MaintainsRequestMetaDataCollectionAcrossPhases_CallsDirectiveCorrectly()
         {
             var server = new TestServerBuilder()
             .AddGraphType<SimpleExecutionController>()

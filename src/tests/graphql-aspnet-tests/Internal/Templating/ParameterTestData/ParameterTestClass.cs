@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ParameterTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
 
     public class ParameterTestClass
     {
@@ -35,6 +36,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ParameterTestData
             [FromGraphQL(TypeExpressions.IsNotNullList)] IEnumerable<int> enumerableWithNonNullableArg, // int cant be null
             [FromGraphQL(TypeExpressions.IsNotNull | TypeExpressions.IsNotNullList)] IEnumerable<int> enumerableIntArgWithAttribForbidsNullItems,
             Person[] arrayOfObjects,
+            [ApplyDirective(typeof(DirectiveWithArgs), 77, "param arg")] int paramDirective,
             IEnumerable<Person>[] arrayOfEnumerableOfObject,
             IEnumerable<Person[]> enumerableOfArrayOfObjects,
             IEnumerable<Person[]>[] arrayOfEnumerableOfArrayOfObjects,

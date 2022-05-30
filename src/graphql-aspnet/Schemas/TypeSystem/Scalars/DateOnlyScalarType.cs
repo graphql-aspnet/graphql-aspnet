@@ -11,33 +11,23 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A graph type reprsenting a calendar date that does include a time component.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class DateOnlyScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static DateOnlyScalarType Instance { get; } = new DateOnlyScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="DateOnlyScalarType"/> class.
-        /// </summary>
-        static DateOnlyScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DateOnlyScalarType"/> class.
         /// </summary>
-        private DateOnlyScalarType()
+        public DateOnlyScalarType()
             : base(Constants.ScalarNames.DATEONLY, typeof(DateOnly))
         {
             this.Description = "A calendar date that does not include a time component.";
@@ -63,9 +53,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

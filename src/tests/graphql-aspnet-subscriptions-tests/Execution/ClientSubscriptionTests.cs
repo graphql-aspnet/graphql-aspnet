@@ -18,6 +18,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
@@ -75,7 +76,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var fakePlan = new Mock<IGraphQueryPlan>();
             var fakeOp = new Mock<IGraphFieldExecutableOperation>();
 
-            fakeOp.Setup(x => x.OperationType).Returns(GraphCollection.Query);
+            fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Query);
 
             (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
 
@@ -108,7 +109,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var fakeFieldContexts = new Mock<IFieldInvocationContextCollection>();
             fakeFieldContexts.Setup(x => x[It.IsAny<int>()]).Returns(fakeFieldContext.Object);
 
-            fakeOp.Setup(x => x.OperationType).Returns(GraphCollection.Subscription);
+            fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Subscription);
             fakeOp.Setup(x => x.FieldContexts).Returns(fakeFieldContexts.Object);
 
             (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();

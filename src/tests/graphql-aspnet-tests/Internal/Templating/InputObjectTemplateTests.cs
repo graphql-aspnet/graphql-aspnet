@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using NUnit.Framework;
 
@@ -289,6 +290,20 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
                 template.Parse();
                 template.ValidateOrThrow();
             });
+        }
+
+        [Test]
+        public void Parse_AssignedDirective_IsTemplatized()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputObjectWithDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.AppliedDirectives.Count());
+
+            var appliedDirective = template.AppliedDirectives.First();
+            Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
+            Assert.AreEqual(new object[] { 33, "input object arg" }, appliedDirective.Arguments);
         }
     }
 }

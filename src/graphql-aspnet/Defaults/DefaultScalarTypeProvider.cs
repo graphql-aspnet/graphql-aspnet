@@ -12,8 +12,10 @@ namespace GraphQL.AspNet.Defaults
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -27,48 +29,44 @@ namespace GraphQL.AspNet.Defaults
     /// </summary>
     public class DefaultScalarTypeProvider : IScalarTypeProvider
     {
-        private readonly IDictionary<Type, IScalarGraphType> _scalarsByType;
-        private readonly IDictionary<string, IScalarGraphType> _scalarsByName;
-        private readonly IDictionary<string, Type> _scalarsTypesByName;
+        private readonly List<ScalarReference> _scalarReferences;
+        private readonly IDictionary<Type, ScalarReference> _scalarsByConcreteType;
+        private readonly IDictionary<string, ScalarReference> _scalarsByName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultScalarTypeProvider"/> class.
         /// </summary>
         public DefaultScalarTypeProvider()
         {
-            _scalarsByType = new Dictionary<Type, IScalarGraphType>();
-            _scalarsByName = new Dictionary<string, IScalarGraphType>();
-            _scalarsTypesByName = new Dictionary<string, Type>();
+            _scalarReferences = new List<ScalarReference>();
+            _scalarsByConcreteType = new Dictionary<Type, ScalarReference>();
+            _scalarsByName = new Dictionary<string, ScalarReference>();
 
-            this.AddScalar(IntScalarType.Instance);
-            this.AddScalar(LongScalarType.Instance);
-            this.AddScalar(UIntScalarType.Instance);
-            this.AddScalar(ULongScalarType.Instance);
-            this.AddScalar(FloatScalarType.Instance);
-            this.AddScalar(DoubleScalarType.Instance);
-            this.AddScalar(DecimalScalarType.Instance);
-            this.AddScalar(BooleanScalarType.Instance);
-            this.AddScalar(StringScalarType.Instance);
-            this.AddScalar(DateTimeScalarType.Instance);
-            this.AddScalar(DateTimeOffsetScalarType.Instance);
-            this.AddScalar(ByteScalarType.Instance);
-            this.AddScalar(SByteScalarType.Instance);
-            this.AddScalar(GuidScalarType.Instance);
-            this.AddScalar(UriScalarType.Instance);
-            this.AddScalar(GraphIdScalarType.Instance);
+            this.RegisterScalar(typeof(IntScalarType));
+            this.RegisterScalar(typeof(LongScalarType));
+            this.RegisterScalar(typeof(UIntScalarType));
+            this.RegisterScalar(typeof(ULongScalarType));
+            this.RegisterScalar(typeof(FloatScalarType));
+            this.RegisterScalar(typeof(DoubleScalarType));
+            this.RegisterScalar(typeof(DecimalScalarType));
+            this.RegisterScalar(typeof(BooleanScalarType));
+            this.RegisterScalar(typeof(StringScalarType));
+            this.RegisterScalar(typeof(DateTimeScalarType));
+            this.RegisterScalar(typeof(DateTimeOffsetScalarType));
+            this.RegisterScalar(typeof(ByteScalarType));
+            this.RegisterScalar(typeof(SByteScalarType));
+            this.RegisterScalar(typeof(GuidScalarType));
+            this.RegisterScalar(typeof(UriScalarType));
+            this.RegisterScalar(typeof(GraphIdScalarType));
 
 #if NET6_0_OR_GREATER
-            this.AddScalar(DateOnlyScalarType.Instance);
-            this.AddScalar(TimeOnlyScalarType.Instance);
+            this.RegisterScalar(typeof(DateOnlyScalarType));
+            this.RegisterScalar(typeof(TimeOnlyScalarType));
 #endif
         }
 
-        /// <summary>
-        /// Determines whether the specified type is considered a leaf type in the graph system (Scalars and enumerations).
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if the specified type is leaf; otherwise, <c>false</c>.</returns>
-        public bool IsLeaf(Type type)
+        /// <inheritdoc />
+        public virtual bool IsLeaf(Type type)
         {
             if (type == null)
                 return false;
@@ -76,84 +74,118 @@ namespace GraphQL.AspNet.Defaults
             if (type.IsEnum)
                 return true;
 
-            return _scalarsByType.ContainsKey(type);
+            return _scalarsByConcreteType.ContainsKey(type);
         }
 
-        /// <summary>
-        /// Converts the given scalar reference to its formal reference type removing any
-        /// nullability modifications that may be applied (e.g. converts 'int?' to 'int'). If the supplied
-        /// type is already a a formal reference or is not a valid scalar type it is returned unchanged.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>Type.</returns>
-        public Type EnsureBuiltInTypeReference(Type type)
+        /// <inheritdoc />
+        public virtual Type EnsureBuiltInTypeReference(Type type)
         {
-            if (type != null && _scalarsByType.ContainsKey(type))
+            if (this.IsScalar(type))
             {
-                return _scalarsTypesByName[_scalarsByType[type].Name];
+                return _scalarsByConcreteType[type].PrimaryType;
             }
 
             return type;
         }
 
-        /// <summary>
-        /// Determines whether the specified concrete type is a known scalar.
-        /// </summary>
-        /// <param name="concreteType">Type of the concrete.</param>
-        /// <returns><c>true</c> if the specified concrete type is a scalar; otherwise, <c>false</c>.</returns>
-        public bool IsScalar(Type concreteType)
+        /// <inheritdoc />
+        public virtual bool IsScalar(Type concreteType)
         {
-            return concreteType != null && _scalarsByType.ContainsKey(concreteType);
+            return concreteType != null && _scalarsByConcreteType.ContainsKey(concreteType);
+        }
+
+        /// <inheritdoc />
+        public virtual bool IsScalar(string scalarName)
+        {
+            return scalarName != null && _scalarsByName.ContainsKey(scalarName);
+        }
+
+        /// <inheritdoc />
+        public virtual Type RetrieveConcreteType(string scalarName)
+        {
+            if (this.IsScalar(scalarName))
+                return _scalarsByName[scalarName].PrimaryType;
+            return null;
+        }
+
+        /// <inheritdoc />
+        public virtual string RetrieveScalarName(Type concreteType)
+        {
+            if (this.IsScalar(concreteType))
+                return _scalarsByConcreteType[concreteType].Name;
+
+            return null;
+        }
+
+        /// <inheritdoc />
+        public virtual IScalarGraphType CreateScalar(string scalarName)
+        {
+            if (this.IsScalar(scalarName))
+                return this.CreateScalarFromInstanceType(_scalarsByName[scalarName].InstanceType);
+
+            return null;
+        }
+
+        /// <inheritdoc />
+        public virtual IScalarGraphType CreateScalar(Type concreteType)
+        {
+            if (this.IsScalar(concreteType))
+            {
+                var primaryInstanceType = this.EnsureBuiltInTypeReference(concreteType);
+                return this.CreateScalarFromInstanceType(_scalarsByConcreteType[primaryInstanceType].InstanceType);
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// Determines whether the specified name represents a known scalar.
+        /// Creates a new instance of the scalar from its formal type declaration.
         /// </summary>
-        /// <param name="scalarName">Name of the scalar.</param>
-        /// <returns><c>true</c> if the specified name is a scalar; otherwise, <c>false</c>.</returns>
-        public bool IsScalar(string scalarName)
+        /// <param name="scalarType">Type of the scalar.</param>
+        /// <returns>IScalarGraphType.</returns>
+        protected virtual IScalarGraphType CreateScalarFromInstanceType(Type scalarType)
         {
-            return _scalarsByName.ContainsKey(scalarName);
+            return InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
+        }
+
+        private ScalarReference FindReferenceByImplementationType(Type type)
+        {
+            var primaryType = this.EnsureBuiltInTypeReference(type);
+            if (this.IsScalar(primaryType))
+                return _scalarsByConcreteType[primaryType];
+
+            return null;
+        }
+
+        /// <inheritdoc />
+        public virtual void RegisterCustomScalar(Type scalarType)
+        {
+            this.RegisterScalar(scalarType);
         }
 
         /// <summary>
-        /// Retrieves the mapped concrete type assigned to the given scalar name.
+        /// Internal logic that must be excuted to register a scalar, regardless of what
+        /// any subclass may do.
         /// </summary>
-        /// <param name="scalarName">Name of the scalar.</param>
-        /// <returns>Type.</returns>
-        public Type RetrieveConcreteType(string scalarName)
+        /// <param name="scalarType">Type of the scalar.</param>
+        private void RegisterScalar(Type scalarType)
         {
-            return _scalarsTypesByName[scalarName];
-        }
+            Validation.ThrowIfNull(scalarType, nameof(scalarType));
 
-        /// <summary>
-        /// Retrieves the scalar by its defined graph type name.
-        /// </summary>
-        /// <param name="scalarName">Name of the scalar.</param>
-        /// <returns>IScalarType.</returns>
-        public IScalarGraphType RetrieveScalar(string scalarName)
-        {
-            return _scalarsByName[scalarName];
-        }
+            if (!Validation.IsCastable<IScalarGraphType>(scalarType))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The scalar must implement the interface '{typeof(IScalarGraphType).FriendlyName()}'.");
+            }
 
-        /// <summary>
-        /// Retrieves the scalar by an assigned concrete type.
-        /// </summary>
-        /// <param name="concreteType">Type of the concrete.</param>
-        /// <returns>IScalarType.</returns>
-        public IScalarGraphType RetrieveScalar(Type concreteType)
-        {
-            return _scalarsByType[concreteType];
-        }
+            var paramlessConstructor = scalarType.GetConstructor(new Type[0]);
+            if (paramlessConstructor == null)
+            {
+                throw new GraphTypeDeclarationException(
+                    "The scalar must declare a public, parameterless constructor.");
+            }
 
-        /// <summary>
-        /// Adds a new scalar type to the global collection of recognized scalar values. These graph types are used as
-        /// singleton instances across all schema's and all querys.
-        /// </summary>
-        /// <param name="graphType">The scalar type to register.</param>
-        public void RegisterCustomScalar(IScalarGraphType graphType)
-        {
-            Validation.ThrowIfNull(graphType, nameof(graphType));
+            var graphType = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
             if (string.IsNullOrWhiteSpace(graphType.Name))
             {
                 throw new GraphTypeDeclarationException(
@@ -196,7 +228,14 @@ namespace GraphQL.AspNet.Defaults
             {
                 throw new GraphTypeDeclarationException(
                     $"Custom scalars must supply a value for '{nameof(graphType.OtherKnownTypes)}', it cannot be null. " +
-                    "Use an empty list if there are no other known types.");
+                    $"Use '{nameof(TypeCollection)}.{nameof(TypeCollection.Empty)}' if there are no other known types.");
+            }
+
+            if (graphType.AppliedDirectives == null || graphType.AppliedDirectives.Parent != graphType)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"Custom scalars must supply a value for '{nameof(graphType.AppliedDirectives)}', it cannot be null. " +
+                    $"The '{nameof(IAppliedDirectiveCollection.Parent)}' property of the directive collection must also be set to the scalar itself.");
             }
 
             var isAScalarAlready = this.IsScalar(graphType.Name);
@@ -206,68 +245,41 @@ namespace GraphQL.AspNet.Defaults
                     $"A scalar named '{graphType.Name}' already exists in this graphql instance.");
             }
 
-            isAScalarAlready = this.IsScalar(graphType.ObjectType);
-            if (isAScalarAlready)
+            var reference = this.FindReferenceByImplementationType(graphType.ObjectType);
+            if (reference != null)
             {
-                var scalar = this.RetrieveScalar(graphType.ObjectType);
                 throw new GraphTypeDeclarationException(
                     $"The scalar's primary object type of '{graphType.ObjectType.FriendlyName()}' is " +
-                    $"already reserved by the scalar '{scalar.Name}'. Scalar object types must be unique.");
+                    $"already reserved by the scalar '{reference.Name}'. Scalar object types must be unique.");
             }
 
             foreach (var type in graphType.OtherKnownTypes)
             {
-                isAScalarAlready = this.IsScalar(type);
-                if (isAScalarAlready)
+                var otherReference = this.FindReferenceByImplementationType(type);
+                if (otherReference != null)
                 {
-                    var scalar = this.RetrieveScalar(type);
                     throw new GraphTypeDeclarationException(
                         $"The scalar's other known type of '{type.FriendlyName()}' is " +
-                        $"already reserved by the scalar '{scalar.Name}'. Scalar object types must be unique.");
+                        $"already reserved by the scalar '{otherReference.Name}'. Scalar object types must be unique.");
                 }
             }
 
-            this.AddScalar(graphType);
+            var newReference = ScalarReference.Create(graphType, scalarType);
+            _scalarsByConcreteType.Add(newReference.PrimaryType, newReference);
+            foreach (var otherRef in newReference.OtherKnownTypes)
+                _scalarsByConcreteType.Add(otherRef, newReference);
+
+            _scalarsByName.Add(newReference.Name, newReference);
+            _scalarReferences.Add(newReference);
         }
 
         /// <summary>
-        /// Private method to inject the scalar into the required local dictionaries.
-        /// </summary>
-        /// <param name="graphType">The scalar type to add.</param>
-        private void AddScalar(IScalarGraphType graphType)
-        {
-            _scalarsByType.Add(graphType.ObjectType, graphType);
-            _scalarsTypesByName.Add(graphType.Name, graphType.ObjectType);
-            _scalarsByName.Add(graphType.Name, graphType);
-            if (graphType.OtherKnownTypes != null && graphType.OtherKnownTypes.Count > 0)
-            {
-                foreach (var otherType in graphType.OtherKnownTypes)
-                    _scalarsByType.Add(otherType, graphType);
-            }
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<IScalarGraphType> GetEnumerator()
-        {
-            return _scalarsByName.Values.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets an enumerator of the known concrete type classes related to the scalars known to this provider.
+        /// Gets an enumeration of the known concrete type classes related to the scalars known to this provider.
         /// </summary>
         /// <value>The concrete types.</value>
-        public IEnumerable<Type> ConcreteTypes => _scalarsByType.Keys;
+        public IEnumerable<Type> ConcreteTypes => _scalarsByConcreteType.Keys;
+
+        /// <inheritdoc />
+        public IEnumerable<Type> ScalarInstanceTypes => _scalarReferences.Select(x => x.InstanceType);
     }
 }

@@ -38,8 +38,17 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var testServer = new TestServerBuilder().Build();
 
-            var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
-            return maker.CreateGraphType(type).GraphType;
+            switch (kind)
+            {
+                case TypeKind.UNION:
+                    var proxy = GraphQLProviders.GraphTypeMakerProvider.CreateUnionProxyFromType(type);
+                    var unionMaker = GraphQLProviders.GraphTypeMakerProvider.CreateUnionMaker(testServer.Schema);
+                    return unionMaker.CreateUnionFromProxy(proxy).GraphType;
+
+                default:
+                    var maker = GraphQLProviders.GraphTypeMakerProvider.CreateTypeMaker(testServer.Schema, kind);
+                    return maker.CreateGraphType(type).GraphType;
+            }
         }
 
         private IGraphField MakeGraphField(IGraphTypeFieldTemplate fieldTemplate)
@@ -81,9 +90,12 @@ namespace GraphQL.AspNet.Tests.Schemas
             collection.EnsureGraphType(scalar);
             collection.EnsureGraphType(scalar);
 
+            var scalarByType = collection.FindGraphType(typeof(int));
+            var scalarByName = collection.FindGraphType(Constants.ScalarNames.INT);
+
             Assert.AreEqual(1, collection.Count);
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int))));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
+            Assert.IsNotNull(scalarByType);
+            Assert.IsNotNull(scalarByName);
             Assert.IsTrue(collection.Contains(typeof(int)));
         }
 
@@ -98,18 +110,24 @@ namespace GraphQL.AspNet.Tests.Schemas
             scalar = this.MakeGraphType(typeof(long), TypeKind.SCALAR) as IScalarGraphType;
             collection.EnsureGraphType(scalar);
 
+            var intScalarByType = collection.FindGraphType(typeof(int));
+            var intScalarByName = collection.FindGraphType(Constants.ScalarNames.INT);
+
+            var longScalarByType = collection.FindGraphType(typeof(long));
+            var longScalarByName = collection.FindGraphType(Constants.ScalarNames.LONG);
+
             Assert.AreEqual(2, collection.Count);
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(int))));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.INT)));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(typeof(long))));
-            Assert.IsTrue(collection.Contains(GraphQLProviders.ScalarProvider.RetrieveScalar(Constants.ScalarNames.LONG)));
+            Assert.IsNotNull(intScalarByType);
+            Assert.IsNotNull(intScalarByName);
+            Assert.IsNotNull(longScalarByType);
+            Assert.IsNotNull(longScalarByName);
         }
 
         [Test]
         public void EnsureGraphType_Directive_OfCorrectKind_WorksAsIntended()
         {
             var collection = new SchemaTypeCollection();
-            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirectiveGraphType;
+            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirective;
 
             collection.EnsureGraphType(graphType, typeof(SimpleDirective));
             Assert.AreEqual(1, collection.Count);
@@ -119,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void EnsureGraphType_Directive_OfIncorrectConcreteType_ThrowsException()
         {
             var collection = new SchemaTypeCollection();
-            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirectiveGraphType;
+            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirective;
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -131,7 +149,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         public void EnsureGraphType_Directive_FromConcreteType_ThrowsException()
         {
             var collection = new SchemaTypeCollection();
-            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirectiveGraphType;
+            var graphType = this.MakeGraphType(typeof(SimpleDirective), TypeKind.DIRECTIVE) as IDirective;
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -275,8 +293,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new PersonUnionData(), TypeKind.OBJECT);
+            var unionType = this.MakeGraphType(typeof(PersonUnionData), TypeKind.UNION) as IUnionGraphType;
             var personType = this.MakeGraphType(typeof(PersonData), TypeKind.OBJECT) as IObjectGraphType;
             var employeeType = this.MakeGraphType(typeof(EmployeeData), TypeKind.OBJECT) as IObjectGraphType;
 
@@ -299,8 +316,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new ValidUnionForAnalysis(), TypeKind.OBJECT);
+            var unionType = this.MakeGraphType(typeof(ValidUnionForAnalysis), TypeKind.UNION) as IUnionGraphType;
             var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
             var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
 
@@ -324,8 +340,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var server = new TestServerBuilder().Build();
             var collection = new SchemaTypeCollection();
 
-            var unionTypeMaker = new UnionGraphTypeMaker(server.Schema);
-            var unionType = unionTypeMaker.CreateGraphType(new InvalidUnionForAnalysis(), TypeKind.OBJECT);
+            var unionType = this.MakeGraphType(typeof(InvalidUnionForAnalysis), TypeKind.UNION) as IUnionGraphType;
             var addressType = this.MakeGraphType(typeof(AddressData), TypeKind.OBJECT) as IObjectGraphType;
             var countryType = this.MakeGraphType(typeof(CountryData), TypeKind.OBJECT) as IObjectGraphType;
 

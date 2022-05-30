@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
+    using System;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -28,10 +29,24 @@ namespace GraphQL.AspNet.Interfaces.Engine
         IGraphTypeMaker CreateTypeMaker(ISchema schema, TypeKind kind);
 
         /// <summary>
-        /// Creates "maker" that can generate graph fields.
+        /// Creates a "maker" that can generate graph fields.
         /// </summary>
         /// <param name="schema">The schema to which the created fields should belong.</param>
         /// <returns>IGraphFieldMaker.</returns>
         IGraphFieldMaker CreateFieldMaker(ISchema schema);
+
+        /// <summary>
+        /// Creates a "maker" that can generate unions for the target schema.
+        /// </summary>
+        /// <param name="schema">The schema to generate unions for.</param>
+        /// <returns>IUnionGraphTypeMaker.</returns>
+        IUnionGraphTypeMaker CreateUnionMaker(ISchema schema);
+
+        /// <summary>
+        /// Attempts to create a union proxy from the given proxy type definition.
+        /// </summary>
+        /// <param name="proxyType">The type definition of the union proxy to create.</param>
+        /// <returns>IGraphUnionProxy.</returns>
+        IGraphUnionProxy CreateUnionProxyFromType(Type proxyType);
     }
 }

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,25 +18,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type reprsenting a 64-bit, unsigned integer.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class ULongScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static ULongScalarType Instance { get; } = new ULongScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="ULongScalarType"/> class.
-        /// </summary>
-        static ULongScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ULongScalarType"/> class.
         /// </summary>
-        private ULongScalarType()
+        public ULongScalarType()
             : base(Constants.ScalarNames.ULONG, typeof(ulong))
         {
             this.Description = $"A 64-bit, unsigned integer. (Min: {ulong.MinValue}, Max: {ulong.MaxValue})";
@@ -56,9 +45,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

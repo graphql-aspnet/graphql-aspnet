@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
@@ -103,6 +104,10 @@ namespace GraphQL.AspNet.Schemas.Structural
                         _rootCollection = GraphCollection.Mutation;
                         break;
 
+                    case RouteConstants.SCALAR_ROOT:
+                        _rootCollection = GraphCollection.Scalars;
+                        break;
+
                     case RouteConstants.TYPE_ROOT:
                         _rootCollection = GraphCollection.Types;
                         break;
@@ -117,6 +122,14 @@ namespace GraphQL.AspNet.Schemas.Structural
 
                     case RouteConstants.SUBSCRIPTION_ROOT:
                         _rootCollection = GraphCollection.Subscription;
+                        break;
+
+                    case RouteConstants.INTROSPECTION_ROOT:
+                        _rootCollection = GraphCollection.Introspection;
+                        break;
+
+                    case RouteConstants.SCHEMA_ROOT:
+                        _rootCollection = GraphCollection.Schemas;
                         break;
                 }
 
@@ -352,6 +365,37 @@ namespace GraphQL.AspNet.Schemas.Structural
         public GraphFieldPath Clone()
         {
             return new GraphFieldPath(this.Path);
+        }
+
+        /// <summary>
+        /// Clones this instance to a new path and adds the additional segments
+        /// to said path.
+        /// </summary>
+        /// <param name="pathSegments">The path segments to append
+        /// to the current path.</param>
+        /// <returns>GraphFieldPath.</returns>
+        public virtual GraphFieldPath CreateChild(params string[] pathSegments)
+        {
+            var list = new List<string>();
+            list.Add(this.Path);
+            list.AddRange(pathSegments);
+            return new GraphFieldPath(GraphFieldPath.Join(list.ToArray()));
+        }
+
+        /// <summary>
+        /// Clones this instance to a new path and adds the additional segments
+        /// to the front of said path making the path a "child" of the provided
+        /// segments.
+        /// </summary>
+        /// <param name="pathSegments">The path segments to prepend
+        /// to the current path.</param>
+        /// <returns>GraphFieldPath.</returns>
+        public GraphFieldPath ReParent(params string[] pathSegments)
+        {
+            var list = new List<string>();
+            list.AddRange(pathSegments);
+            list.Add(this.Path);
+            return new GraphFieldPath(GraphFieldPath.Join(list.ToArray()));
         }
 
         /// <summary>

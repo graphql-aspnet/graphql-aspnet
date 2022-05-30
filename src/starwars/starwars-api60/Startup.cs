@@ -77,8 +77,11 @@ namespace GraphQL.AspNet.StarWarsAPI6X
                 options.ResponseOptions.ExposeExceptions = true;
                 options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
 
+                options.ExecutionOptions.EnableMetrics = true;
+                options.ResponseOptions.ExposeMetrics = true;
+
                 var assembly = typeof(StarWarsDataRepository).Assembly;
-                options.AddGraphAssembly(assembly);
+                options.AddAssembly(assembly);
             })
              .AddSubscriptions(options =>
              {

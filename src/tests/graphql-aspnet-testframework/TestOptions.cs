@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
         /// <summary>
         /// All Graph Types, Fields and Enum Values are registered to the schema as they are declared
-        /// in the source code.  This enables the use of "nameof()" to avoid some magic strings in test code.
+        /// in the source code.  This allows use of "nameof()" to avoid some magic strings in test code.
         /// </summary>
         UseCodeDeclaredNames = 4,
     }

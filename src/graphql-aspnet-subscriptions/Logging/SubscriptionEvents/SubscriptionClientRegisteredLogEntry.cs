@@ -35,13 +35,13 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
             ISubscriptionClientProxy client)
             : base(SubscriptionLogEventIds.SubscriptionClientRegistered)
         {
-            _clientTypeShortName = client.GetType().FriendlyName();
+            _clientTypeShortName = client?.GetType().FriendlyName();
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.ClientTypeName = client.GetType().FriendlyName(true);
-            this.ServerTypeName = server.GetType().FriendlyName(true);
-            this.ClientId = client.Id;
-            this.ServerId = server.Id;
+            this.ClientTypeName = client?.GetType().FriendlyName(true);
+            this.ServerTypeName = server?.GetType().FriendlyName(true);
+            this.ClientId = client?.Id;
+            this.ServerId = server?.Id;
         }
 
         /// <summary>

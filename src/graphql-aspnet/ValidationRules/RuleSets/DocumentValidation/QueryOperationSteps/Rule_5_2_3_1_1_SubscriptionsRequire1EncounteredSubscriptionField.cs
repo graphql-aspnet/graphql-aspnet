@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context) &&
-                   context.ActivePart is QueryOperation operation && operation.OperationType == GraphCollection.Subscription;
+                   context.ActivePart is QueryOperation operation && operation.OperationType == GraphOperationType.Subscription;
         }
 
         /// <summary>

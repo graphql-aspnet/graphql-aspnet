@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
     using System;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -41,6 +42,14 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// <param name="type">The type to inject.</param>
         /// <returns>TestServerBuilder.</returns>
         ITestServerBuilder<TSchema> AddGraphType(Type type);
+
+        /// <summary>
+        /// Helpful overload for direct access to inject a directive into the server.
+        /// </summary>
+        /// <typeparam name="TType">The concrete type to parse when creating a graph type.</typeparam>
+        /// <returns>TestServerBuilder.</returns>
+        ITestServerBuilder<TSchema> AddDirective<TType>()
+            where TType : GraphDirective;
 
         /// <summary>
         /// Adds the graph controller to the server and renders it and its dependents into the target schema.

@@ -6,26 +6,25 @@
 // --
 // License:  MIT
 // *************************************************************
-
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     /// <summary>
-    /// An interface to denote that the object has a clearly defined name.
+    /// An item that has a name.
     /// </summary>
     public interface INamedItem
     {
         /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
+        /// Gets or sets the formal name of this item as it exists in the schema.
         /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        string Name { get; }
+        /// <value>The publically referenced name of this entity in the graph.</value>
+        string Name { get; set; }
 
         /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
+        /// Gets or sets the human-readable description distributed with this item
+        /// when requested. The description should accurately describe the contents of this entity
         /// to consumers.
         /// </summary>
         /// <value>The publically referenced description of this field in the type system.</value>
-        string Description { get; }
+        string Description { get; set; }
     }
 }

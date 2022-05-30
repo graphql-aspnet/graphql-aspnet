@@ -9,18 +9,25 @@
 
 namespace GraphQL.AspNet.Execution
 {
+    using GraphQL.AspNet.Schemas.TypeSystem;
+
     /// <summary>
     /// An enumeration depicting the various collections of items supported by
     /// graphql.
     /// </summary>
     public enum GraphCollection
     {
-        Directives = -3,
-        Enums = -2,
-        Types = -1,
-        Unknown = 0,
-        Query = 1,
-        Mutation = 2,
-        Subscription = 3,
+        // negative numbers represent internally defined collections
+        // (not part of  the graph schema)
+        Introspection = -60,
+        Schemas = -50,
+        Directives = -40,
+        Scalars = -30,
+        Enums = -20,
+        Types = -10,
+        Unknown = GraphOperationType.Unknown,
+        Query = GraphOperationType.Query,
+        Mutation = GraphOperationType.Mutation,
+        Subscription = GraphOperationType.Subscription,
     }
 }

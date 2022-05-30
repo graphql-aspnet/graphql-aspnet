@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     /// if necessary.
     /// </summary>
     [DebuggerDisplay("Input Object: {_objectType.Name}")]
-    public class InputObjectResolver : BaseValueResolver
+    public class InputObjectResolver : IInputValueResolver
     {
         private readonly IInputObjectGraphType _graphType;
         private readonly Type _objectType;
@@ -68,28 +68,19 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
             _fieldResolvers.Add(fieldName, resolver);
         }
 
-        /// <summary>
-        /// Creates a copy of this value resolver injecting it with a specific collection
-        /// of variables that can be used during resoltuion. Any previously wrapped variable sets
-        /// should be discarded.
-        /// </summary>
-        /// <param name="variableData">The variable data.</param>
-        /// <returns>IInputValueResolver.</returns>
-        public override IInputValueResolver WithVariables(IResolvedVariableCollection variableData)
+        /// <inheritdoc />
+        public object Resolve(IResolvableItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
-            var resolver = new InputObjectResolver(this);
-            resolver.VariableCollection = variableData;
-            return resolver;
-        }
+            if (resolvableItem is IResolvablePointer pointer)
+            {
+                IResolvedVariable variable = null;
+                var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
+                if (variableFound)
+                    return variable.Value;
 
-        /// <summary>
-        /// Resolves the provided query input value to the .NET object rendered by this resolver.
-        /// This input value is garunteed to not be a variable reference.
-        /// </summary>
-        /// <param name="resolvableItem">The resolvable item.</param>
-        /// <returns>System.Object.</returns>
-        protected override object ResolveFromItem(IResolvableItem resolvableItem)
-        {
+                resolvableItem = pointer.DefaultItem;
+            }
+
             if (!(resolvableItem is IResolvableFieldSet fieldSEt))
                 return null;
 
@@ -99,7 +90,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 var argResolver = _fieldResolvers.ContainsKey(argument.Key) ? _fieldResolvers[argument.Key] : null;
 
                 PropertySetterInvoker propSetter = null;
-                var field = _graphType.Fields.FindField(argument.Key) as ITypedItem;
+                var field = _graphType.Fields.FindField(argument.Key) as ITypedSchemaItem;
                 if (field != null)
                 {
                     propSetter = _propSetters.ContainsKey(field.InternalName) ? _propSetters[field.InternalName] : null;
@@ -108,10 +99,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 if (argResolver == null || propSetter == null)
                     continue;
 
-                var resolvedValue = argResolver
-                    .WithVariables(this.VariableCollection)
-                    .Resolve(argument.Value);
-
+                var resolvedValue = argResolver.Resolve(argument.Value, variableData);
                 propSetter(ref instance, resolvedValue);
             }
 

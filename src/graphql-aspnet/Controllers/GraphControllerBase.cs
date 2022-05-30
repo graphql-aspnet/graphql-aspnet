@@ -18,13 +18,12 @@ namespace GraphQL.AspNet.Controllers
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Middleware.FieldExecution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -32,10 +31,11 @@ namespace GraphQL.AspNet.Controllers
     /// </summary>
     /// <typeparam name="TRequest">The type of the request this controller item is expected to process.</typeparam>
     public abstract class GraphControllerBase<TRequest>
-        where TRequest : class, IInvocationRequest
+        where TRequest : class, IDataRequest
     {
         private IGraphMethod _action;
         private IGraphEventLogger _logger;
+        private ISchema _schema;
 
         private BaseResolutionContext<TRequest> _resolutionContext;
 
@@ -43,17 +43,18 @@ namespace GraphQL.AspNet.Controllers
         /// Invoke the specified action method as an asynchronous operation.
         /// </summary>
         /// <param name="actionToInvoke">The action to invoke.</param>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The invocation context to process.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
-        public async Task<object> InvokeActionAsync(
+        internal async virtual Task<object> InvokeActionAsync(
             IGraphMethod actionToInvoke,
             BaseResolutionContext<TRequest> context)
         {
             // deconstruct the context for processing
             _action = actionToInvoke;
 
-            var fieldRequest = context.Request;
+            var fieldRequest = context?.Request;
+            _schema = context?.Schema;
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
             _resolutionContext = context;
             _logger = context?.Logger;
@@ -99,8 +100,9 @@ namespace GraphQL.AspNet.Controllers
                     else
                     {
                         // given all the checking and parsing this should be imnpossible, but just in case
-                        invokeReturn = new InternalServerErrorGraphActionResult($"The action '{_action.Route.Path}' is defined " +
-                                                        $"as asyncronous but it did not return a {typeof(Task)}.");
+                        invokeReturn = new InternalServerErrorGraphActionResult(
+                            $"The action '{_action.Route.Path}' is defined " +
+                            $"as asyncronous but it did not return a {typeof(Task)}.");
                     }
                 }
 
@@ -197,12 +199,20 @@ namespace GraphQL.AspNet.Controllers
         /// Gets the resolved <see cref="ClaimsPrincipal"/> that was passed recieved on the request.
         /// </summary>
         /// <value>The user.</value>
-        protected ClaimsPrincipal User => _resolutionContext.User;
+        [GraphSkip]
+        public ClaimsPrincipal User => _resolutionContext.User;
+
+        /// <summary>
+        /// Gets the schema in scope for the currently executed operation.
+        /// </summary>
+        /// <value>The schema.</value>
+        public ISchema Schema => _schema;
 
         /// <summary>
         /// Gets the scoped <see cref="IServiceProvider"/> supplied to the original controller action that is being invoked.
         /// </summary>
         /// <value>The request services.</value>
+        [GraphSkip]
         protected IServiceProvider RequestServices => _resolutionContext.ServiceProvider;
 
         /// <summary>
@@ -210,6 +220,7 @@ namespace GraphQL.AspNet.Controllers
         /// if this controller was not invoked from an ASP.NET pipeline.
         /// </summary>
         /// <value>The HTTP context.</value>
+        [GraphSkip]
         public HttpContext HttpContext { get; private set; }
     }
 }

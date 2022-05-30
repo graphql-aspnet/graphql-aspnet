@@ -11,19 +11,19 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A representation of a graphql schema that can have a query document executed against it and have a result generated.
     /// </summary>
-    public interface ISchema
+    public interface ISchema : ISchemaItem
     {
         /// <summary>
         /// Gets the named operation types supported by this schema.
         /// </summary>
         /// <value>The root operations.</value>
-        IDictionary<GraphCollection, IGraphOperation> OperationTypes { get; }
+        IDictionary<GraphOperationType, IGraphOperation> OperationTypes { get; }
 
         /// <summary>
         /// Gets a collection of known graph object/scalar types available to this schema. Serves as the basis for the type
@@ -45,11 +45,5 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value><c>true</c> if this instance is initialized; otherwise, <c>false</c>.</value>
         bool IsInitialized { get; set; }
-
-        /// <summary>
-        /// Gets the a common, friendly name for the schema. This name may appear in error messages.
-        /// </summary>
-        /// <value>The name.</value>
-        string Name { get; }
     }
 }

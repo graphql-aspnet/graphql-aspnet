@@ -26,11 +26,11 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public FieldResolutionCompletedLogEntry(FieldResolutionContext context)
             : base(LogEventIds.FieldResolutionCompleted)
         {
-            this.PipelineRequestId = context.Request.Id;
-            this.FieldPath = context.Request.InvocationContext.Field.Route.Path;
-            this.TypeExpression = context.Request.InvocationContext.Field.TypeExpression.ToString();
-            this.HasData = context.Result != null;
-            this.ResultIsValid = context.Messages.IsSucessful;
+            this.PipelineRequestId = context?.Request?.Id;
+            this.FieldPath = context?.Request?.InvocationContext?.Field?.Route?.Path;
+            this.TypeExpression = context?.Request?.InvocationContext?.Field?.TypeExpression?.ToString();
+            this.HasData = context == null ? null : context.Result != null;
+            this.ResultIsValid = context?.Messages?.IsSucessful;
         }
 
         /// <summary>
@@ -69,9 +69,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets a value indicating whether data was generated and attached to the response.
         /// </summary>
         /// <value><c>true</c> if response data was generated; otherwise <c>false</c>.</value>
-        public bool HasData
+        public bool? HasData
         {
-            get => this.GetProperty<bool>(LogPropertyNames.FIELD_DATA_RETURNED);
+            get => this.GetProperty<bool?>(LogPropertyNames.FIELD_DATA_RETURNED);
             private set => this.SetProperty(LogPropertyNames.FIELD_DATA_RETURNED, value);
         }
 
@@ -79,9 +79,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// Gets a value indicating whether the result that was returned was valid and expected.
         /// </summary>
         /// <value><c>true</c> if response data was valid; otherwise <c>false</c>.</value>
-        public bool ResultIsValid
+        public bool? ResultIsValid
         {
-            get => this.GetProperty<bool>(LogPropertyNames.FIELD_RESULT_IS_VALID);
+            get => this.GetProperty<bool?>(LogPropertyNames.FIELD_RESULT_IS_VALID);
             private set => this.SetProperty(LogPropertyNames.FIELD_RESULT_IS_VALID, value);
         }
 

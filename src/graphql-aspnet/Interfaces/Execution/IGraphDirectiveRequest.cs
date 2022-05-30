@@ -10,43 +10,33 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Directives;
-    using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A request, resolved by a <see cref="IDirectiveGraphType"/> to perform some augmented
-    /// or conditional processing on a segment of a query document.
+    /// A request to perform some augmented or conditional processing
+    /// on a segment of a query document or schema item.
     /// </summary>
-    public interface IGraphDirectiveRequest : IInvocationRequest
+    public interface IGraphDirectiveRequest : IDataRequest
     {
         /// <summary>
-        /// Clones this request for the given lifecycle location.
+        /// Gets the invocation context containing the specific details
+        /// of the directive to be processed against the <see cref="DirectiveTarget"/>.
         /// </summary>
-        /// <param name="lifecycle">The lifecycle point at which the directive request should be pointed.</param>
-        /// <param name="dataSource">The data source being passed to the field this directive is attached to, if any.</param>
-        /// <returns>GraphDirectiveRequest.</returns>
-        IGraphDirectiveRequest ForLifeCycle(
-            DirectiveLifeCycle lifecycle,
-            GraphFieldDataSource dataSource);
+        /// <value>The invocation context.</value>
+        IDirectiveInvocationContext InvocationContext { get; }
 
         /// <summary>
-        /// Gets the directive being executed.
+        /// Gets or sets the target object this directive is being executed for. This is
+        /// usually the result of a field resolution during execution or a <see cref="ISchemaItem"/>
+        /// during schema generation and setup.
         /// </summary>
-        /// <value>The directive.</value>
-        IDirectiveGraphType Directive { get; }
+        /// <value>The directive target.</value>
+        object DirectiveTarget { get; set; }
 
         /// <summary>
-        /// Gets the life cycle method being invoked.
+        /// Gets a value indicating the directive execution phase this request is scoped under.
         /// </summary>
-        /// <value>The life cycle.</value>
-        DirectiveLifeCycle LifeCycle { get; }
-
-        /// <summary>
-        /// Gets the <see cref="DirectiveLocation"/> where the directive was declared in the source document.
-        /// </summary>
-        /// <value>The location.</value>
-        DirectiveLocation DirectiveLocation { get; }
+        /// <value>The directive phase.</value>
+        DirectiveInvocationPhase DirectivePhase { get; }
     }
 }

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="argument">The argument.</param>
         /// <param name="value">The value.</param>
-        public ExecutionArgument(IGraphFieldArgument argument, object value)
+        public ExecutionArgument(IGraphArgument argument, object value)
         {
             this.Argument = Validation.ThrowIfNullOrReturn(argument, nameof(argument));
             this.Value = value;
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Execution
         /// Gets the argument reference this execution value represents.
         /// </summary>
         /// <value>The argument.</value>
-        public IGraphFieldArgument Argument { get; }
+        public IGraphArgument Argument { get; }
 
         /// <summary>
         /// Gets the physical value being used for this argument.

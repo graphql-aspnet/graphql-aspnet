@@ -19,9 +19,8 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
         public SimpleScalarStructGraphType()
             : base(nameof(SimpleScalarStruct), typeof(SimpleScalarStruct))
         {
+            this.Description = "Scalar from a struct";
         }
-
-        public override string Description => "Scalar from a struct";
 
         public override ScalarValueType ValueType => ScalarValueType.String;
 

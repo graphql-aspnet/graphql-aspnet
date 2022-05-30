@@ -27,9 +27,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public FieldAuthorizationStartedLogEntry(GraphFieldSecurityContext context)
             : base(LogEventIds.FieldAuthorizationStarted)
         {
-            this.PipelineRequestId = context.Request.Id;
-            this.FieldPath = context.Field.Route.Path;
-            this.Username = context.AuthenticatedUser?.RetrieveUsername();
+            this.PipelineRequestId = context?.Request?.Id;
+            this.FieldPath = context?.Field?.Route?.Path;
+            this.Username = context?.AuthenticatedUser?.RetrieveUsername();
         }
 
         /// <summary>

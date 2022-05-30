@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override void ValidateOrThrow()
         {
             // cant use type naming on controllers (they arent real types and arent included directly in the object graph)
-            if (this.SingleAttributeOfTypeOrDefault<GraphTypeAttribute>() != null)
+            if (this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphTypeAttribute>() != null)
             {
                 throw new GraphTypeDeclarationException(
                     $"The graph controller '{this.ObjectType.FriendlyName()}' defines a {typeof(GraphTypeAttribute).FriendlyName()} but should not. This attribute" +
@@ -86,8 +86,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             // ensure that root and a route path aren't defined (its one or the other)
-            var skipControllerLevelField = this.SingleAttributeOrDefault<GraphRootAttribute>();
-            var graphRoute = this.SingleAttributeOrDefault<GraphRouteAttribute>();
+            var skipControllerLevelField = this.AttributeProvider.SingleAttributeOrDefault<GraphRootAttribute>();
+            var graphRoute = this.AttributeProvider.SingleAttributeOrDefault<GraphRouteAttribute>();
             if (skipControllerLevelField != null && graphRoute != null)
             {
                 throw new GraphTypeDeclarationException(

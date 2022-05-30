@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
+    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// Describes an directive on a <see cref="ISchema"/>, that can be registered
+    /// Describes a directive on a <see cref="ISchema"/>, that can be registered
     /// and executed via an instruction from a query document.
     /// </summary>
     [DebuggerDisplay("Directive Template: {InternalName}")]
@@ -48,57 +49,50 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.ObjectType = graphDirectiveType;
         }
 
-        /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
-        /// </summary>
+        /// <inheritdoc />
+        public override IEnumerable<DependentType> RetrieveRequiredTypes()
+        {
+            var list = new List<DependentType>();
+            list.AddRange(this.Methods.RetrieveRequiredTypes());
+
+            return list;
+        }
+
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             base.ParseTemplateDefinition();
 
-            this.Description = this.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-            this.Route = this.GenerateFieldPath();
+            this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
 
-            var executableLocations = this.SingleAttributeOrDefault<DirectiveLocationsAttribute>()?.Locations ?? ExecutableDirectiveLocation.AllFieldSelections;
-            this.Locations = (DirectiveLocation)executableLocations;
+            var routeName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
+            this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, routeName));
+
+            var phases = DirectiveInvocationPhase.DefaultPhases;
+            var phaseAttrib = this.AttributeProvider.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
+            if (phaseAttrib != null)
+                phases = phaseAttrib.Phases;
+
+            this.InvocationPhases = phases;
 
             foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                if (!GraphDirectiveMethodTemplate.IsDirectiveMethod(methodInfo))
-                    continue;
-
-                var methodTemplate = new GraphDirectiveMethodTemplate(this, methodInfo);
-                methodTemplate.Parse();
-                this.Methods.RegisterMethod(methodTemplate);
+                if (methodInfo.FirstAttributeOfTypeOrDefault<DirectiveLocationsAttribute>() != null)
+                {
+                    var methodTemplate = new GraphDirectiveMethodTemplate(this, methodInfo);
+                    methodTemplate.Parse();
+                    this.Methods.RegisterMethod(methodTemplate);
+                }
             }
         }
 
-        /// <summary>
-        /// When overridden in a child class, this method builds the unique graph route that will be assigned to this instance
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
-        protected override GraphFieldPath GenerateFieldPath()
+        /// <inheritdoc />
+        public IGraphMethod FindMethod(DirectiveLocation location)
         {
-            var name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
-            return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, name));
+            return this.Methods.FindMethod(location);
         }
 
-        /// <summary>
-        /// Attempts to find a declared graph method that can handle processing of the life cycle and location
-        /// requested of the directive.
-        /// </summary>
-        /// <param name="lifeCycle">The life cycle.</param>
-        /// <returns>IGraphMethod.</returns>
-        public IGraphMethod FindMethod(DirectiveLifeCycle lifeCycle)
-        {
-            return this.Methods.FindMethod(lifeCycle);
-        }
-
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
@@ -106,17 +100,21 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.Locations == DirectiveLocation.NONE)
             {
                 throw new GraphTypeDeclarationException(
-                    $"The directive '{this.InternalFullName}' defines no locations to which it can be applied. You must specify at least" +
-                    $"one '{typeof(ExecutableDirectiveLocation)}' or remove the {typeof(DirectiveLocationsAttribute).FriendlyName()} attribute.");
+                    $"The directive '{this.InternalFullName}' defines no locations to which it can be applied. You must specify at least " +
+                    $"one '{typeof(DirectiveLocation)}' via the {typeof(DirectiveLocationsAttribute).FriendlyName()}.");
+            }
+
+            if (this.AppliedDirectives.Any())
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The directive {this.InternalFullName} defines an {nameof(ApplyDirectiveAttribute)}. " +
+                    $"Directives cannot have applied directives.");
             }
 
             this.Methods.ValidateOrThrow();
         }
 
-        /// <summary>
-        /// Creates a resolver capable of completing a resolution of this directive.
-        /// </summary>
-        /// <returns>IGraphFieldResolver.</returns>
+        /// <inheritdoc />
         public IGraphDirectiveResolver CreateResolver()
         {
             return new GraphDirectiveActionResolver(this);
@@ -128,11 +126,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The methods.</value>
         public GraphDirectiveMethodTemplateContainer Methods { get; }
 
-        /// <summary>
-        /// Gets the locations where this directive has been defined for usage.
-        /// </summary>
-        /// <value>The locations.</value>
-        public DirectiveLocation Locations { get; private set; }
+        /// <inheritdoc />
+        public DirectiveLocation Locations => this.Methods.Locations;
 
         /// <summary>
         /// Gets declared type of item minus any asyncronous wrappers (i.e. the T in Task{T}).
@@ -140,41 +135,25 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The type of the declared.</value>
         public Type DeclaredType => this.ObjectType;
 
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalFullName => this.ObjectType?.FriendlyName(true);
 
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalName => this.ObjectType?.FriendlyName();
 
-        /// <summary>
-        /// Gets a value indicating whether this instance was explictly declared as a graph item via acceptable attribution or
-        /// if it was parsed as a matter of completeness.
-        /// </summary>
-        /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public override bool IsExplicitDeclaration => true;
 
-        /// <summary>
-        /// Gets the security policies found via defined attributes on the item that need to be enforced.
-        /// </summary>
-        /// <value>The security policies.</value>
+        /// <inheritdoc />
         public override AppliedSecurityPolicyGroup SecurityPolicies { get; } = AppliedSecurityPolicyGroup.Empty;
 
-        /// <summary>
-        /// Gets the kind of graph type that can be made from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.DIRECTIVE;
 
-        /// <summary>
-        /// Gets the argument collection this directive contains.
-        /// </summary>
-        /// <value>The arguments.</value>
-        public IEnumerable<IGraphFieldArgumentTemplate> Arguments => this.Methods.Arguments;
+        /// <inheritdoc />
+        public IEnumerable<IGraphArgumentTemplate> Arguments => this.Methods.Arguments;
+
+        /// <inheritdoc />
+        public DirectiveInvocationPhase InvocationPhases { get; private set;  }
     }
 }

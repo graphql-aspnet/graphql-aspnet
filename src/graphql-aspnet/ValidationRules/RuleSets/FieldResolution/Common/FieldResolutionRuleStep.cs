@@ -41,16 +41,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common
             context.Messages.Add(graphMessage);
         }
 
-        /// <summary>
-        /// Gets the error code to associate with the broken rule.
-        /// </summary>
-        /// <value>The error code.</value>
+        /// <inheritdoc />
         public virtual string ErrorCode => Constants.ErrorCodes.EXECUTION_ERROR;
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public abstract string RuleNumber { get; }
 
         /// <summary>
@@ -61,10 +55,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common
         /// <value>The rule anchor tag.</value>
         protected abstract string RuleAnchorTag { get; }
 
-        /// <summary>
-        /// Gets a url pointing to the rule definition in the graphql specification, if any.
-        /// </summary>
-        /// <value>The rule URL.</value>
-        public virtual string ReferenceUrl => ReferenceRule.Create(this.RuleAnchorTag);
+        /// <inheritdoc />
+        public virtual string ReferenceUrl => ReferenceRule.CreateFromAnchorTag(this.RuleAnchorTag);
     }
 }

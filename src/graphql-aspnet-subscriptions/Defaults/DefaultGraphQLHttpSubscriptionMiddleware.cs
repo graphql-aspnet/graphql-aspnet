@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Defaults
     /// <summary>
     /// A default implementation of the logic for handling a subscription request over a websocket.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this processor is built for.</typeparam>
+    /// <typeparam name="TSchema">The type of the schema this middleware component is built for.</typeparam>
     public class DefaultGraphQLHttpSubscriptionMiddleware<TSchema>
         where TSchema : class, ISchema
     {
@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Defaults
         public virtual async Task InvokeAsync(HttpContext context)
         {
             // immediate bypass if not aimed at this schema subscription route
-            var isListeningToPath = string.Compare(
+            var isListeningToPath = context?.Request?.Path == null || string.Compare(
                 context.Request.Path,
                 _routePath,
                 CultureInfo.InvariantCulture,

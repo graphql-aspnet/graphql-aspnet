@@ -20,15 +20,15 @@ namespace GraphQL.AspNet.ValidationRules.Interfaces
         /// if it cannot process it.
         /// </summary>
         /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if this instance can validate the specified context; otherwise, <c>false</c>.</returns>
         bool ShouldExecute(TContext context);
 
         /// <summary>
         /// Executes the step the against specified TContext performing any logic or mutations according
         /// to its internal logic.
         /// </summary>
-        /// <param name="context">The validation context encapsulating an item that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
+        /// <param name="context">The context encapsulating an item that needs to be processed.</param>
+        /// <returns><c>true</c> if the execution completed successfully otherwise false, <c>false</c> otherwise.</returns>
         bool Execute(TContext context);
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.ValidationRules.Interfaces
         /// if/when a situation in a parent disqualifies all other items in a processing tree. This step is always executed
         /// even if the primary execution is skipped or fails.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The context to inspect.</param>
         /// <returns><c>true</c> if child rulesets should be executed, <c>false</c> otherwise.</returns>
         bool ShouldAllowChildContextsToExecute(TContext context);
     }

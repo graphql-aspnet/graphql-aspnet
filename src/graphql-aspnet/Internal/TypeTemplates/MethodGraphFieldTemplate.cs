@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // for methods delcared as fields on POCOs (not controller actions)
             // force them to use [GraphField] or throw an exception
             // do not allow [Query] [Mutation] etc. and keep those reserved for controllers
-            var declaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.GetType();
+            var declaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.GetType();
             if (declaration != null && declaration != typeof(GraphFieldAttribute))
             {
                 throw new GraphTypeDeclarationException(

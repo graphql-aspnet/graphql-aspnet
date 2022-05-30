@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A parsed operation from a query document that contains the resolvers and argument references that
@@ -30,7 +31,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the type of the operation (mutation, query etc.)
         /// </summary>
         /// <value>The type of the operation.</value>
-        GraphCollection OperationType { get; }
+        GraphOperationType OperationType { get; }
 
         /// <summary>
         /// Gets the name of the operation as it was defined in the query document. May be null or empty if

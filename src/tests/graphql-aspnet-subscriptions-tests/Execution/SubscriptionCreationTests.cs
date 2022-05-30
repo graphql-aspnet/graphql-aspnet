@@ -11,6 +11,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.SubscriptionQueryExecutionData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
@@ -45,7 +46,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             Assert.AreEqual(id, createdSub.Id);
             Assert.AreEqual(0, createdSub.Messages.Count);
             Assert.AreEqual(subClient, createdSub.Client);
-            Assert.AreEqual(GraphCollection.Subscription, createdSub.QueryOperation.OperationType);
+            Assert.AreEqual(GraphOperationType.Subscription, createdSub.QueryOperation.OperationType);
             Assert.IsNull(context.Result);
         }
 

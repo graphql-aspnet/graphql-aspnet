@@ -10,11 +10,11 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A represention of a graphql object in the schema. This object defines all the exposed
@@ -28,40 +28,42 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the graph type.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="graphFields">The initial set of graph fields to add to this instance.</param>
-        public InputObjectGraphType(string name, Type objectType, IEnumerable<IGraphField> graphFields)
-            : base(name, graphFields)
+        /// <param name="route">The route path that identifies this object in the schema.</param>
+        /// <param name="directives">The directives to apply to this input
+        /// object when its added to a schema.</param>
+        public InputObjectGraphType(
+            string name,
+            Type objectType,
+            GraphFieldPath route,
+            IAppliedDirectiveCollection directives = null)
+            : base(name, route, directives)
         {
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.InternalName = this.ObjectType.FriendlyName();
         }
 
-        /// <summary>
-        /// Determines whether the provided item is of a concrete type represented by this graph type.
-        /// </summary>
-        /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item is of the correct type; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public override bool ValidateObject(object item)
         {
             return item == null || item.GetType() == this.ObjectType;
         }
 
         /// <summary>
-        /// Gets the value indicating what type of graph type this instance is in the type system. (object, scalar etc.)
+        /// Attempts to add the field to the collection tracked by this graph type.
         /// </summary>
-        /// <value>The kind.</value>
+        /// <param name="field">The field.</param>
+        public void AddField(IGraphField field)
+        {
+            this.GraphFieldCollection.AddField(field);
+        }
+
+        /// <inheritdoc />
         public override TypeKind Kind => TypeKind.INPUT_OBJECT;
 
-        /// <summary>
-        /// Gets the type of the object.
-        /// </summary>
-        /// <value>The type of the object.</value>
+        /// <inheritdoc />
         public Type ObjectType { get; }
 
-        /// <summary>
-        /// Gets the name of the internal.
-        /// </summary>
-        /// <value>The name of the internal.</value>
+        /// <inheritdoc />
         public string InternalName { get; }
     }
 }

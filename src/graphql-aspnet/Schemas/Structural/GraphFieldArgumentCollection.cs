@@ -14,32 +14,33 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// A collection of allowed arguments defined for a <see cref="IGraphField"/> or <see cref="IDirectiveGraphType"/>.
+    /// A collection of allowed arguments defined for a <see cref="IGraphField"/> or <see cref="IDirective"/>.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class GraphFieldArgumentCollection : IGraphFieldArgumentCollection
+    public class GraphFieldArgumentCollection : IGraphArgumentCollection
     {
-        private readonly Dictionary<string, IGraphFieldArgument> _arguments;
-        private IGraphFieldArgument _sourceArgument;
+        private readonly ISchemaItem _owner;
+        private readonly OrderedDictionary<string, IGraphArgument> _arguments;
+        private IGraphArgument _sourceArgument;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldArgumentCollection"/> class.
+        /// Initializes a new instance of the <see cref="GraphFieldArgumentCollection" /> class.
         /// </summary>
-        public GraphFieldArgumentCollection()
+        /// <param name="owner">The owner, usually a field, that owns this
+        /// argument collection.</param>
+        public GraphFieldArgumentCollection(ISchemaItem owner)
         {
-            _arguments = new Dictionary<string, IGraphFieldArgument>(StringComparer.Ordinal);
+            _owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
+            _arguments = new OrderedDictionary<string, IGraphArgument>(StringComparer.Ordinal);
         }
 
-        /// <summary>
-        /// Adds the <see cref="IGraphFieldArgument" /> to the collection.
-        /// </summary>
-        /// <param name="argument">The argument to add.</param>
-        /// <returns>IArgument.</returns>
-        public IGraphFieldArgument AddArgument(IGraphFieldArgument argument)
+        /// <inheritdoc />
+        public IGraphArgument AddArgument(IGraphArgument argument)
         {
             Validation.ThrowIfNull(argument, nameof(argument));
             _arguments.Add(argument.Name, argument);
@@ -57,17 +58,20 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="typeExpression">The type expression representing how this value is represented in this graph schema.</param>
         /// <param name="concreteType">The concrete type this field is on the server.</param>
         /// <returns>IGraphFieldArgument.</returns>
-        public IGraphFieldArgument AddArgument(
+        public IGraphArgument AddArgument(
             string name,
             string internalName,
             GraphTypeExpression typeExpression,
             Type concreteType)
         {
             var argument = new VirtualGraphFieldArgument(
+                _owner,
                 name,
                 internalName,
                 typeExpression,
-                concreteType);
+                _owner.Route.CreateChild(name),
+                concreteType,
+                false);
 
             return this.AddArgument(argument);
         }
@@ -82,7 +86,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="defaultValue">The default value to set for the argument. If null, indicates
         /// the argument supplies null as the default value.</param>
         /// <returns>IGraphFieldArgument.</returns>
-        public IGraphFieldArgument AddArgument(
+        public IGraphArgument AddArgument(
             string name,
             string internalName,
             GraphTypeExpression typeExpression,
@@ -90,67 +94,56 @@ namespace GraphQL.AspNet.Schemas.Structural
             object defaultValue)
         {
             var argument = new VirtualGraphFieldArgument(
+                _owner,
                 name,
                 internalName,
                 typeExpression,
+                _owner.Route.CreateChild(name),
                 concreteType,
-                GraphArgumentModifiers.None,
-                defaultValue);
+                true,
+                defaultValue,
+                GraphArgumentModifiers.None);
 
             return this.AddArgument(argument);
         }
 
-        /// <summary>
-        /// Determines whether this collection contains a <see cref="IGraphFieldArgument" />. Argument
-        /// names are case sensitive and should match the public name supplied for introspection
-        /// requests...NOT the internal concrete parameter name if the argument is bound to a method parameter.
-        /// </summary>
-        /// <param name="argumentName">Name of the argument.</param>
-        /// <returns><c>true</c> if this collection contains the type name; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool ContainsKey(string argumentName)
         {
+            if (argumentName == null)
+                return false;
+
             return _arguments.ContainsKey(argumentName);
         }
 
-        /// <summary>
-        /// Gets the <see cref="IGraphFieldArgument" /> with the specified name.
-        /// </summary>
-        /// <param name="argumentName">Name of the argument to return.</param>
-        /// <returns>IGraphType.</returns>
-        public IGraphFieldArgument this[string argumentName]
+        /// <inheritdoc />
+        public IGraphArgument FindArgument(string argumentName)
         {
-            get
-            {
-                return _arguments[argumentName];
-            }
+            if (this.ContainsKey(argumentName))
+                return this[argumentName];
+
+            return null;
         }
 
-        /// <summary>
-        /// Gets the total number of <see cref="IGraphFieldArgument"/> in this collection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
+        public IGraphArgument this[string argumentName] => _arguments[argumentName];
+
+        /// <inheritdoc />
+        public IGraphArgument this[int index] => _arguments.GetItem(index).Value;
+
+        /// <inheritdoc />
         public int Count => _arguments.Count;
 
-        /// <summary>
-        /// Gets the singular argument that is to receive the source data reference value for this field's
-        /// resolution.
-        /// </summary>
-        /// <value>The source data argument.</value>
-        public IGraphFieldArgument SourceDataArgument => _sourceArgument;
+        /// <inheritdoc />
+        public IGraphArgument SourceDataArgument => _sourceArgument;
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<IGraphFieldArgument> GetEnumerator()
+        /// <inheritdoc />
+        public IEnumerator<IGraphArgument> GetEnumerator()
         {
             return _arguments.Values.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

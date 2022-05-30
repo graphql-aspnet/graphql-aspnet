@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A graph type representing an interface in the type system.
     /// </summary>
-    public interface IInterfaceGraphType : IGraphFieldContainer, IExtendableGraphType
+    public interface IInterfaceGraphType : IGraphFieldContainer, IExtendableGraphType, ITypedSchemaItem
     {
     }
 }

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Diagnostics;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             // Various meta data fields about the method
             // -------------------------------------------
-            var graphMethodAttrib = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            var graphMethodAttrib = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
             var fieldType = graphMethodAttrib?.FieldType ?? GraphCollection.Unknown;
 
             var routeFragment = graphMethodAttrib?.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
@@ -72,7 +73,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // for action methods on controllers
             // force them to use [Query], [Mutation] etc.
             // throw an exception if an attempt to use [GraphField] is made as its reserved for POCO classes
-            var declaration = this.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.GetType();
+            var declaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>()?.GetType();
             if (declaration != null && declaration == typeof(GraphFieldAttribute))
             {
                 throw new GraphTypeDeclarationException(

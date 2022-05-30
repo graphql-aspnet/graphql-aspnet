@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using System.Globalization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -18,25 +19,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type representing a 128-bit, floating-point value.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class DecimalScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static DecimalScalarType Instance { get; } = new DecimalScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="DecimalScalarType"/> class.
-        /// </summary>
-        static DecimalScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DecimalScalarType"/> class.
         /// </summary>
-        private DecimalScalarType()
+        public DecimalScalarType()
             : base(Constants.ScalarNames.DECIMAL, typeof(decimal))
         {
             this.Description = "A 128-bit, floating point value that offers greater local " +
@@ -59,9 +48,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

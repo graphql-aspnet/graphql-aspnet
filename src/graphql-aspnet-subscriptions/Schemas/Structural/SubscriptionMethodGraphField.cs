@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -31,6 +32,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="resolver">The resolver.</param>
         /// <param name="securityPolicies">The security policies.</param>
         /// <param name="eventName">Alterante name of the event that has been assigned to this field.</param>
+        /// <param name="directives">The directives to be applied to this field when its added to a schema.</param>
         public SubscriptionMethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
@@ -40,8 +42,9 @@ namespace GraphQL.AspNet.Schemas.Structural
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,
             Interfaces.Execution.IGraphFieldResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityPolicies = null,
-            string eventName = null)
-            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies)
+            string eventName = null,
+            IAppliedDirectiveCollection directives = null)
+            : base(fieldName, typeExpression, route, objectType, declaredReturnType, mode, resolver, securityPolicies, directives)
         {
             this.EventName = eventName;
         }

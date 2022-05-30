@@ -15,28 +15,34 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
     /// <summary>
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
     /// accepted arguments, any nullable or list modifiers and publication and depreciation information.
     /// </summary>
-    public interface IGraphField : IDeprecatable, IGraphFieldArgumentContainer
+    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISchemaItem
     {
+        /// <summary>
+        /// Updates the known graph type this field belongs to.
+        /// </summary>
+        /// <param name="parent">The new parent.</param>
+        void AssignParent(IGraphType parent);
+
         /// <summary>
         /// Updates the field resolver used by this graph field.
         /// </summary>
         /// <param name="newResolver">The new resolver this field should use.</param>
-        /// <param name="mode">The new resolution mode used by the runtime to invoke the resolver.</param>
-        void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode mode);
+        /// <param name="mode">The new resolution mode used by the runtime to invoke the resolver.
+        /// When null, the current resolution mode of this field is retained.</param>
+        void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null);
 
         /// <summary>
-        /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
+        /// Gets or sets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
         /// declaration used in schema definition language.)
         /// </summary>
         /// <value>The type expression.</value>
-        GraphTypeExpression TypeExpression { get; }
+        GraphTypeExpression TypeExpression { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is a leaf field; one capable of generating
@@ -46,8 +52,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         bool IsLeaf { get; }
 
         /// <summary>
-        /// Gets an object that will perform some operation against an execution
+        /// <para>Gets an object that will perform some operation against an execution
         /// context to fulfill the requirements of this resolvable entity.
+        /// </para>
+        /// <remarks>
+        /// Call <see cref="UpdateResolver"/> to change.
+        /// </remarks>
         /// </summary>
         /// <value>The resolver assigned to this instance.</value>
         IGraphFieldResolver Resolver { get; }
@@ -60,24 +70,18 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         FieldResolutionMode Mode { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="IGraphField" /> is published
+        /// Gets or sets a value indicating whether this <see cref="IGraphField" /> is published
         /// in the schema delivered to introspection requests.
         /// </summary>
         /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
-        bool Publish { get; }
+        bool Publish { get; set; }
 
         /// <summary>
-        /// Gets the route assigned to this field in the object graph.
-        /// </summary>
-        /// <value>The route.</value>
-        GraphFieldPath Route { get; }
-
-        /// <summary>
-        /// Gets an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
+        /// Gets or sets an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
         /// See the documentation for an understanding of how query complexity is calculated.
         /// </summary>
         /// <value>The estimated complexity value for this field.</value>
-        float? Complexity { get; }
+        float? Complexity { get; set; }
 
         /// <summary>
         /// Gets the source type this field was created from.
@@ -111,6 +115,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets .NET type of the method or property that generated this field as it was declared in code.
         /// </summary>
         /// <value>The type of the declared return.</value>
-        public Type DeclaredReturnType { get;  }
+        public Type DeclaredReturnType { get; }
+
+        /// <summary>
+        /// Gets the parent item that owns this field.
+        /// </summary>
+        /// <value>The parent.</value>
+        ISchemaItem Parent { get; }
     }
 }

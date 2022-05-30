@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
+    using System.Diagnostics;
     using System.Globalization;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -18,25 +19,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// <summary>
     /// A graph type representing a 64-bit, floating-point value.
     /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class DoubleScalarType : BaseScalarType
     {
         /// <summary>
-        /// Gets the single instance of this scalar to use across all schemas.
-        /// </summary>
-        /// <value>The instance.</value>
-        public static DoubleScalarType Instance { get; } = new DoubleScalarType();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="DoubleScalarType"/> class.
-        /// </summary>
-        static DoubleScalarType()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DoubleScalarType"/> class.
         /// </summary>
-        private DoubleScalarType()
+        public DoubleScalarType()
             : base(Constants.ScalarNames.DOUBLE, typeof(double))
         {
             this.Description = $"A 64-bit, floating-point value. (Min: {double.MinValue}, Max: {double.MaxValue})";
@@ -57,9 +46,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             return item;
         }
-
-        /// <inheritdoc />
-        public override string Description { get; }
 
         /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }

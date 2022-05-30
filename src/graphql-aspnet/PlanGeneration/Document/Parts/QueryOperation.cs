@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An wrapper for a <see cref="OperationTypeNode"/> to track additional details needed during the validation
@@ -31,7 +32,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <param name="node">The node.</param>
         /// <param name="operationType">Type of the operation being represented.</param>
         /// <param name="operationGraphType">The graph type representing the operation type.</param>
-        public QueryOperation(OperationTypeNode node, GraphCollection operationType, IObjectGraphType operationGraphType)
+        public QueryOperation(
+            OperationTypeNode node,
+            GraphOperationType operationType,
+            IObjectGraphType operationGraphType)
         {
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.OperationType = operationType;
@@ -72,7 +76,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// Gets the type of the operation that was parsed.
         /// </summary>
         /// <value>The type of the operation.</value>
-        public GraphCollection OperationType { get; }
+        public GraphOperationType OperationType { get; }
 
         /// <summary>
         /// Gets the set of nodes requested from this operation.

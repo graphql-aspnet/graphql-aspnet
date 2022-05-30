@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-    <LangVersion>8</LangVersion>
+    <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603;IDE0019;IDE0017;RCS1146;RCS1194;</NoWarn>
     <RootNamespace>GraphQL.AspNet</RootNamespace>
     <AssemblyName>GraphQL.AspNet</AssemblyName>
@@ -25,12 +25,12 @@
     <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-<ItemGroup>
-  <None Include="..\icon.png">
-    <Pack>True</Pack>
-    <PackagePath></PackagePath>
-  </None>
-</ItemGroup>
+    <ItemGroup>
+      <None Include="..\icon.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\styles.ruleset</CodeAnalysisRuleSet>
@@ -41,11 +41,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />

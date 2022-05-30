@@ -10,14 +10,26 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// An interface describing an arbitrary <see cref="Type"/> that will be injected into
     /// an object graph. This is the base interface that will universially capture all template types.
     /// </summary>
-    public interface IGraphItemTemplate
+    public interface IGraphItemTemplate : INamedTemplateItem
     {
+        /// <summary>
+        /// Retrieves the concrete types that this template
+        /// may need to fullfil a request made against any created
+        /// entites.
+        /// </summary>
+        /// <returns>IEnumerable&lt;Type&gt;.</returns>
+        IEnumerable<DependentType> RetrieveRequiredTypes();
+
         /// <summary>
         /// When overridden in a child class, allows the template to perform some final validation checks
         /// on the integrity of itself. An exception should be thrown to stop the template from being
@@ -31,18 +43,11 @@ namespace GraphQL.AspNet.Internal.Interfaces
         void Parse();
 
         /// <summary>
-        /// Gets the formal name of this item as it exists in the object graph.
+        /// Gets the attribute provider that supplies the various configuration
+        /// attributes to this template.
         /// </summary>
-        /// <value>The publically referenced name of this field in the graph.</value>
-        string Name { get; }
-
-        /// <summary>
-        /// Gets the human-readable description distributed with this field
-        /// when requested. The description should accurately describe the contents of this field
-        /// to consumers.
-        /// </summary>
-        /// <value>The publically referenced description of this field in the type system.</value>
-        string Description { get; }
+        /// <value>The attribute provider.</value>
+        ICustomAttributeProvider AttributeProvider { get; }
 
         /// <summary>
         /// Gets a the canonical path on the graph where this item sits.
@@ -75,5 +80,11 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <value><c>true</c> if this instance is explictly declared; otherwise, <c>false</c>.</value>
         bool IsExplicitDeclaration { get; }
+
+        /// <summary>
+        /// Gets the set of directives declared on this graph item.
+        /// </summary>
+        /// <value>The directives.</value>
+        IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; }
     }
 }
