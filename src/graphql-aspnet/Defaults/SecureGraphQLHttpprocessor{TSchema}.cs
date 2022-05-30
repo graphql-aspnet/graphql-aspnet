@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Defaults
         {
             if (this.User?.Identity == null || !this.User.Identity.IsAuthenticated)
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED).ConfigureAwait(false);
+                await this.WriteStatusCodeResponse(HttpStatusCode.Unauthorized, ERROR_UNAUTHORIZED, cancelToken).ConfigureAwait(false);
                 return;
             }
 

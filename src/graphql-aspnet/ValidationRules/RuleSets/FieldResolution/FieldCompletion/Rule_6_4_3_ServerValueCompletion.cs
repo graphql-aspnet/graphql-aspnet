@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletion
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
@@ -17,6 +18,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
     using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common;
 
     /// <summary>

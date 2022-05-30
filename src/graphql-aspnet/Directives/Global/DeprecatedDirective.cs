@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Directives.Global
             {
                 throw new GraphTypeDeclarationException(
                     $"Invalid schema item. The directive @{Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME} must target " +
-                    $"an object that implements {typeof(ISchemaItem).FriendlyName()}. (Current Target: {item?.GetType().FriendlyName()})");
+                    $"an object that implements {typeof(ISchemaItem).FriendlyName()}. (Current Target: {this.DirectiveTarget?.GetType().FriendlyName()})");
             }
 
             if (reason == null)
@@ -47,15 +47,10 @@ namespace GraphQL.AspNet.Directives.Global
                     $"A non-null reason must be provided with @{Constants.ReservedNames.DEPRECATED_ARGUMENT_NAME}. (Target: {item.Route.Path})");
             }
 
-            if (this.DirectiveTarget is IGraphField field)
+            if (this.DirectiveTarget is IDeprecatable deprecatable)
             {
-                field.IsDeprecated = true;
-                field.DeprecationReason = reason;
-            }
-            else if (this.DirectiveTarget is IEnumValue enumValue)
-            {
-                enumValue.IsDeprecated = true;
-                enumValue.DeprecationReason = reason;
+                deprecatable.IsDeprecated = true;
+                deprecatable.DeprecationReason = reason;
             }
 
             return this.Ok();

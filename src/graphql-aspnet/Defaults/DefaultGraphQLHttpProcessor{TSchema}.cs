@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Defaults
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
             if (!string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase))
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_USE_POST).ConfigureAwait(false);
+                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_USE_POST, cancelToken).ConfigureAwait(false);
                 return;
             }
 
@@ -125,7 +125,7 @@ namespace GraphQL.AspNet.Defaults
             // ensure data was received
             if (queryData == null || string.IsNullOrWhiteSpace(queryData.Query))
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_NO_QUERY_PROVIDED).ConfigureAwait(false);
+                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_NO_QUERY_PROVIDED, cancelToken).ConfigureAwait(false);
                 return;
             }
 
@@ -150,14 +150,14 @@ namespace GraphQL.AspNet.Defaults
                 // *******************************
                 var request = _runtime.CreateRequest(queryData);
                 if (request == null)
-                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
+                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
 
                 // repackage the runtime request to carry the
                 // HttpContext along. It's not used or needed by the runtime
                 // but its useful within controller action method invocations
                 this.GraphQLRequest = this.PackageOperationRequest(request);
                 if (this.GraphQLRequest == null)
-                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED).ConfigureAwait(false);
+                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
 
                 var securityContext = this.CreateUserSecurityContext();
 
@@ -201,11 +201,11 @@ namespace GraphQL.AspNet.Defaults
                         }
                     }
 
-                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE).ConfigureAwait(false);
+                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_INTERNAL_SERVER_ISSUE, cancelToken).ConfigureAwait(false);
                 }
                 else
                 {
-                    await this.WriteResponse(exceptionResult).ConfigureAwait(false);
+                    await this.WriteResponse(exceptionResult, cancelToken).ConfigureAwait(false);
                 }
             }
         }
@@ -232,22 +232,23 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// writes a response to the <see cref="Response" /> stream with the given status code
+        /// writes directly to the <see cref="HttpResponse" /> stream with the given status code
         /// and message.
         /// </summary>
         /// <param name="statusCode">The status code to deliver on the response.</param>
         /// <param name="message">The message to deliver with the given code.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected async Task WriteStatusCodeResponse(HttpStatusCode statusCode, string message)
+        protected async Task WriteStatusCodeResponse(HttpStatusCode statusCode, string message, CancellationToken cancelToken = default)
         {
             this.Response.StatusCode = (int)statusCode;
-            await this.Response.WriteAsync(message).ConfigureAwait(false);
+            await this.Response.WriteAsync(message, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Writes the given response directly to the output stream.
+        /// Writes the given operation result directly to the output stream.
         /// </summary>
-        /// <param name="result">The result.</param>
+        /// <param name="result">The operation result to write.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
         protected virtual async Task WriteResponse(IGraphOperationResult result, CancellationToken cancelToken = default)

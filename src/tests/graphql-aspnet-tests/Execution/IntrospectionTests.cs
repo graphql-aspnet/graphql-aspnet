@@ -1140,7 +1140,6 @@ namespace GraphQL.AspNet.Tests.Execution
                         && schemaItem is IEnumValue ev
                         && ev.Parent.ObjectType == typeof(IntrospectableEnum)
                         && Convert.ToInt32(ev.InternalValue) == (int)IntrospectableEnum.Value2);
-
             })
             .Build();
 
@@ -1194,7 +1193,6 @@ namespace GraphQL.AspNet.Tests.Execution
                         && gf.Parent is IObjectGraphType ogt
                         && ogt.ObjectType == typeof(TwoPropertyObject)
                         && gf.Name == "property2");
-
             })
             .Build();
 
