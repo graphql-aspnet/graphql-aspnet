@@ -16,8 +16,10 @@ namespace GraphQL.AspNet.Tests.Execution.UnionTypeExecutionTestData
     public class PersonOrTeacher : GraphUnionProxy
     {
         public PersonOrTeacher()
-            : base(typeof(Person), typeof(Teacher))
+            : base()
         {
+            this.AddType(typeof(Person));
+            this.AddType(typeof(Teacher));
         }
 
         public override Type MapType(Type runtimeObjectType)

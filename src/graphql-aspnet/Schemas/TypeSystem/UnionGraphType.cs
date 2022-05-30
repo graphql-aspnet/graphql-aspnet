@@ -48,7 +48,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.TypeMapper = typeResolver;
-
             this.Publish = true;
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 

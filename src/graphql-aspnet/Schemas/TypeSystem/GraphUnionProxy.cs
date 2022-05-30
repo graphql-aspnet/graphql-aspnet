@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// An basic implementation of <see cref="IGraphUnionProxy"/> that can be
@@ -28,7 +29,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="typesToInclude">The types to include.</param>
         public GraphUnionProxy(string unionName, IEnumerable<Type> typesToInclude)
         {
-            this.Name = unionName?.Trim() ?? this.GetType().Name;
+            this.Name = unionName?.Trim();
+
+            if (string.IsNullOrWhiteSpace(this.Name))
+                this.Name = this.GetType().FriendlyGraphTypeName();
+
             this.Description = null;
             this.Types = new HashSet<Type>(typesToInclude);
             this.Publish = true;
@@ -51,6 +56,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         protected GraphUnionProxy(params Type[] typesToInclude)
             : this(null, typesToInclude as IEnumerable<Type>)
         {
+        }
+
+        /// <summary>
+        /// Add an approved type to the union.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> to add to the union's list of types.</param>
+        protected void AddType(Type type)
+        {
+            if (this.Types != null && type != null)
+                this.Types.Add(type);
         }
 
         /// <inheritdoc />
