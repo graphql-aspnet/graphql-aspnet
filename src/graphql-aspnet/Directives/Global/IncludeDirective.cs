@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <summary>
     /// <para>A directive, applicable to a field, that defines additional logic to determine if
     /// the field should be included or not.</para>
-    /// <para>Spec: https://graphql.github.io/graphql-spec/June2018/#sec--include .</para>
+    /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--include .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.INCLUDE_DIRECTIVE)]
     [DirectiveInvocation(DirectiveInvocationPhase.BeforeFieldResolution)]
@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Directives.Global
         /// to determine if execution should continue in the location this directive was found.
         /// </summary>
         /// <param name="ifArgument">if set to <c>true</c> processing of the request, on this branch, will be allowed to continue.</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
         public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
         {

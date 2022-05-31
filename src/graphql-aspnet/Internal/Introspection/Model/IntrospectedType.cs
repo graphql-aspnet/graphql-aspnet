@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -78,6 +79,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.EnumValues = null;
             this.InputFields = null;
             this.OfType = null;
+            this.SpecifiedByUrl = null;
         }
 
         /// <summary>
@@ -92,6 +94,20 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.LoadEnumValues();
             this.LoadInputValues(schema);
             this.LoadPossibleTypes(schema);
+            this.LoadUrl(schema);
+        }
+
+        /// <summary>
+        /// Loads the specifiedByUrl into this instance for any <see cref="IGraphType"/>
+        /// that supports it.
+        /// </summary>
+        /// <param name="schema">The schema.</param>
+        private void LoadUrl(IntrospectedSchema schema)
+        {
+            if (this.GraphType is IScalarGraphType scalar)
+                this.SpecifiedByUrl = scalar.SpecifiedByUrl;
+            else
+                this.SpecifiedByUrl = null;
         }
 
         /// <summary>
@@ -275,7 +291,14 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <summary>
         /// Gets the underlying type of each element in the list type (null if not a list type).
         /// </summary>
-        /// <value>The type of the of.</value>
+        /// <value>The typeOf type on which this type is based.</value>
         public IntrospectedType OfType { get; }
+
+        /// <summary>
+        /// Gets a url pointing to a specification that provides details about a
+        /// custom scalar otherwise null.
+        /// </summary>
+        /// <value>The specified by URL.</value>
+        public string SpecifiedByUrl { get; private set; }
     }
 }

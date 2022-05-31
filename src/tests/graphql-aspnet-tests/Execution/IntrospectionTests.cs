@@ -45,7 +45,9 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNull(schema.MutationType);
             Assert.IsNull(schema.SubscriptionType);
             Assert.IsNotNull(schema.DeclaredDirectives);
-            Assert.AreEqual(3, schema.DeclaredDirectives.Count()); // skip , include, deprecated
+
+            // skip , include, deprecated, specifiedBy
+            Assert.AreEqual(4, schema.DeclaredDirectives.Count());
         }
 
         [Test]

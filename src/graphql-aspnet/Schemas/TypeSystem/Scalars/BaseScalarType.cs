@@ -32,10 +32,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// <param name="primaryType">The primary datatype that represents this scalar.</param>
         /// <param name="directives">The directives to apply to this scalar
         /// when its added to a schema.</param>
+        /// <param name="specifiedByUrl">An optional url pointing to the specification of this
+        /// scalar type.</param>
         protected BaseScalarType(
             string name,
             Type primaryType,
-            IAppliedDirectiveCollection directives = null)
+            IAppliedDirectiveCollection directives = null,
+            string specifiedByUrl = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Route = new GraphFieldPath(GraphCollection.Scalars, this.Name);
@@ -45,6 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.SourceResolver = this;
             this.Serializer = this;
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
+            this.SpecifiedByUrl = specifiedByUrl?.Trim();
 
             // since scalars are special
             // we can't do any validation here on directives declared on the scalar
@@ -120,5 +124,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
         /// <inheritdoc />
         public GraphFieldPath Route { get; }
+
+        /// <inheritdoc />
+        public string SpecifiedByUrl { get; set; }
     }
 }

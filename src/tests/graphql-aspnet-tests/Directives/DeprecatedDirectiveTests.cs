@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Directives
         }
 
         [Test]
-        public async Task WhenSchemaItemIsNotAFieldOrEnum_ItsIgnored()
+        public async Task WhenSchemaItemIsNotAFieldOrEnum_SchemaFails()
         {
             _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
             _reason = "because reason";
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Tests.Directives
 
             var context = await this.ExecuteRequest();
 
-            Assert.IsTrue(context.Messages.IsSucessful);
+            Assert.IsFalse(context.Messages.IsSucessful);
         }
 
         [Test]

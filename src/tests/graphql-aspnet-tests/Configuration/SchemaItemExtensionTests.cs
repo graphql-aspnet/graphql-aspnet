@@ -182,10 +182,11 @@ namespace GraphQL.AspNet.Tests.Configuration
             }
 
             // skip and include
-            Assert.AreEqual(3, foundItems.Count);
+            Assert.AreEqual(4, foundItems.Count);
             Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.INCLUDE_DIRECTIVE));
             Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.SKIP_DIRECTIVE));
             Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.DEPRECATED_DIRECTIVE));
+            Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.SPECIFIED_BY_DIRECTIVE));
         }
 
         [Test]

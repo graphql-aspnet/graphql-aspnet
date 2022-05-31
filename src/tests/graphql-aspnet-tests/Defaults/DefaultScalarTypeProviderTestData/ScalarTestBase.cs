@@ -32,6 +32,7 @@ namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
             this.Name = "MyScalar";
             this.Description = "my description";
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
+            this.SpecifiedByUrl = null;
 
             this.SourceResolver = new Mock<ILeafValueResolver>().Object;
             this.Serializer = new Mock<IScalarValueSerializer>().Object;
@@ -62,6 +63,8 @@ namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public string SpecifiedByUrl { get; set; }
 
         public bool ValidateObject(object item)
         {

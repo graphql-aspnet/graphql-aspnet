@@ -100,6 +100,7 @@ namespace GraphQL.AspNet
             typeof(SkipDirective),
             typeof(IncludeDirective),
             typeof(DeprecatedDirective),
+            typeof(SpecifiedByDirective),
         };
 
         /// <summary>
@@ -186,6 +187,7 @@ namespace GraphQL.AspNet
             public const string SKIP_DIRECTIVE = "skip";
             public const string INCLUDE_DIRECTIVE = "include";
             public const string DEPRECATED_DIRECTIVE = "deprecated";
+            public const string SPECIFIED_BY_DIRECTIVE = "specifiedBy";
 
             // type names for top level operation types
             public const string QUERY_TYPE_NAME = "Query";
