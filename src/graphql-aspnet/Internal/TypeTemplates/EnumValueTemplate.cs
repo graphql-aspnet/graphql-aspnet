@@ -22,14 +22,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A class used to templatize a single option (a label) within an
     /// <see cref="EnumGraphTypeTemplate"/>.
     /// </summary>
-    public class EnumOptionTemplate : BaseItemTemplate, IEnumOptionTemplate
+    public class EnumValueTemplate : BaseItemTemplate, IEnumValueTemplate
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EnumOptionTemplate" /> class.
+        /// Initializes a new instance of the <see cref="EnumValueTemplate" /> class.
         /// </summary>
         /// <param name="parentTemplate">The parent template.</param>
         /// <param name="enumFieldInfo">The enum field information.</param>
-        public EnumOptionTemplate(IEnumGraphTypeTemplate parentTemplate, FieldInfo enumFieldInfo)
+        public EnumValueTemplate(IEnumGraphTypeTemplate parentTemplate, FieldInfo enumFieldInfo)
             : base(enumFieldInfo)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parentTemplate, nameof(parentTemplate));
@@ -59,10 +59,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             valueName = valueName.Replace(Constants.Routing.ENUM_VALUE_META_NAME, this.FieldInfo.Name);
             this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, valueName));
-
-            var deprecated = this.FieldInfo.SingleAttributeOrDefault<DeprecatedAttribute>();
-            this.IsDeprecated = deprecated != null;
-            this.DeprecationReason = deprecated?.Reason;
         }
 
         /// <inheritdoc />
@@ -94,11 +90,5 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public override string InternalName => this.FieldInfo.Name;
-
-        /// <inheritdoc />
-        public bool IsDeprecated { get; set; }
-
-        /// <inheritdoc />
-        public string DeprecationReason { get; set; }
     }
 }

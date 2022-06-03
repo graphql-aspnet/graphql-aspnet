@@ -74,12 +74,11 @@ namespace GraphQL.AspNet.Execution
                     manager.EnsureGraphType(registration.Type);
                 }
 
-                manager.BuildIntrospectionData();
-
                 // execute any assigned schema configuration extensions
                 foreach (var extension in _options.ConfigurationExtensions)
                     extension.Configure(schema);
 
+                manager.RebuildIntrospectionData();
                 schema.IsInitialized = true;
             }
         }

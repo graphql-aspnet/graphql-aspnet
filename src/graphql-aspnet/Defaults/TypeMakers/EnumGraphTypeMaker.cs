@@ -84,8 +84,6 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                     value.Route,
                     value.Value,
                     value.InternalName,
-                    value.IsDeprecated,
-                    value.DeprecationReason,
                     valueDirectives);
 
                 graphType.AddOption(valueOption);

@@ -56,9 +56,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
-
-            Assert.IsTrue(template.IsDeprecated);
-            Assert.AreEqual("A Reason", template.DeprecationReason);
         }
 
         [Test]

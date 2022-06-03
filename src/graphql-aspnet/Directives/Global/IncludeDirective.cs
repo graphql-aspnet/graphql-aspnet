@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--include .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.INCLUDE_DIRECTIVE)]
-    [DirectiveInvocation(DirectiveInvocationPhase.BeforeFieldResolution)]
+    [DirectiveInvocationPhase(DirectiveInvocationPhase.BeforeFieldResolution)]
     public sealed class IncludeDirective : GraphDirective
     {
         /// <summary>

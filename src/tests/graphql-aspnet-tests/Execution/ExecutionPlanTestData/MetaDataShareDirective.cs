@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    [DirectiveInvocation(DirectiveInvocationPhase.BeforeFieldResolution | DirectiveInvocationPhase.AfterFieldResolution)]
+    [DirectiveInvocationPhase(DirectiveInvocationPhase.BeforeFieldResolution | DirectiveInvocationPhase.AfterFieldResolution)]
     public class MetaDataShareDirective : GraphDirective
     {
         public static bool FoundInAfterCompletion;

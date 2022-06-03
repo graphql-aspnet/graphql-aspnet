@@ -173,7 +173,7 @@ namespace GraphQL.AspNet.Common.Extensions
                 return null;
 
             var attribs = type.GetCustomAttributes(typeof(TAttribute), inherit)
-                .Where(x => x.GetType() == typeof(TAttribute))
+                .Where(x => Validation.IsCastable(x.GetType(), typeof(TAttribute)))
                 .Cast<TAttribute>();
 
             return attribs;

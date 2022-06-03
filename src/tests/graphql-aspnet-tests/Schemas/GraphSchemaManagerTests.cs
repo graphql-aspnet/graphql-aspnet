@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
+    using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]
@@ -236,11 +237,15 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void KitchenSinkController_SchemaInjection_FullFieldStructureAndTypeCheck()
         {
-            var schema = new GraphSchema() as ISchema;
-            schema.SetNoAlterationConfiguration();
-            var manager = new GraphSchemaManager(schema);
+            var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
+                .AddGraphQL(o =>
+                {
+                    o.DeclarationOptions.DisableIntrospection = true;
+                    o.AddGraphType<KitchenSinkController>();
+                })
+                .Build();
 
-            manager.EnsureGraphType<KitchenSinkController>();
+            var schema = server.Schema;
 
             // mutation and query
             Assert.AreEqual(2, schema.OperationTypes.Count);
@@ -345,12 +350,14 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // Type Checks
             // -----------------------------------------------------
-            // scalars (2): string, int (from TwoPropertyObject)
+            // scalars (2): string, int (from TwoPropertyObject & deprecatedDirective)
             // scalars (2): float, datetime (from TwoPropertyObjectV2)
             // scalars (2): ulong, long (from method declarations)
             // scalars (1): decimal (from CompletePropertyObject)
+            // scalars (1): bool (from @include and @skip directives)
             // the nullable<T> types resolve to their non-nullable scalar in the type list
-            Assert.AreEqual(7, schema.KnownTypes.Count(x => x.Kind == TypeKind.SCALAR));
+            var scalars = schema.KnownTypes.Where(x => x.Kind == TypeKind.SCALAR).ToList();
+            Assert.AreEqual(8, schema.KnownTypes.Count(x => x.Kind == TypeKind.SCALAR));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(string)));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(int)));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(ulong)));

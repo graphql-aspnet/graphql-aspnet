@@ -37,5 +37,10 @@ namespace GraphQL.AspNet.Tests.Framework
         /// in the source code.  This allows use of "nameof()" to avoid some magic strings in test code.
         /// </summary>
         UseCodeDeclaredNames = 4,
+
+        /// <summary>
+        /// Causes Introspection data not to be added to the schema
+        /// </summary>
+        SkipIntrospectionData = 8,
     }
 }

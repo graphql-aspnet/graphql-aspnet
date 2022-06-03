@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Directives.Global
     /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--skip .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.SKIP_DIRECTIVE)]
-    [DirectiveInvocation(DirectiveInvocationPhase.BeforeFieldResolution)]
+    [DirectiveInvocationPhase(DirectiveInvocationPhase.BeforeFieldResolution)]
     public sealed class SkipDirective : GraphDirective
     {
         /// <summary>

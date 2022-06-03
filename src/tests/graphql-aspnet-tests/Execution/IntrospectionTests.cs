@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Model;
@@ -294,13 +295,9 @@ namespace GraphQL.AspNet.Tests.Execution
 
             Assert.AreEqual(expected1.Name, val1.Name);
             Assert.AreEqual(expected1.Description, val1.Description);
-            Assert.AreEqual(expected1.IsDeprecated, val1.IsDeprecated);
-            Assert.AreEqual(expected1.DeprecationReason, val1.DeprecationReason);
 
             Assert.AreEqual(expected2.Name, val2.Name);
             Assert.AreEqual(expected2.Description, val2.Description);
-            Assert.AreEqual(expected2.IsDeprecated, val2.IsDeprecated);
-            Assert.AreEqual(expected2.DeprecationReason, val2.DeprecationReason);
 
             Assert.IsNull(spected.Fields);
             Assert.IsNull(spected.Interfaces);
@@ -344,8 +341,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(field0.Name, expected0.Name);
             Assert.AreEqual(nameof(TwoPropertyObject), field0.IntrospectedGraphType.Name);
             Assert.AreEqual(field0.Description, expected0.Description);
-            Assert.AreEqual(field0.IsDeprecated, expected0.IsDeprecated);
-            Assert.AreEqual(field0.DeprecationReason, expected0.DeprecationReason);
             Assert.AreEqual(2, field0.Arguments.Count);
 
             var arg1 = field0.Arguments[0];
@@ -367,8 +362,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(field1.Name, expected1.Name);
             Assert.AreEqual(nameof(TwoPropertyObjectV2), field1.IntrospectedGraphType.Name);
             Assert.AreEqual(field1.Description, expected1.Description);
-            Assert.AreEqual(field1.IsDeprecated, expected1.IsDeprecated);
-            Assert.AreEqual(field1.DeprecationReason, expected1.DeprecationReason);
             Assert.AreEqual(0, field1.Arguments.Count);
 
             Assert.IsNotNull(field2);
@@ -377,8 +370,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(TypeKind.SCALAR, field2.IntrospectedGraphType.OfType.Kind);
             Assert.AreEqual(Constants.ScalarNames.LONG, field2.IntrospectedGraphType.OfType.Name);
             Assert.AreEqual(field2.Description, expected2.Description);
-            Assert.AreEqual(field2.IsDeprecated, expected2.IsDeprecated);
-            Assert.AreEqual(field2.DeprecationReason, expected2.DeprecationReason);
             Assert.AreEqual(0, field2.Arguments.Count);
 
             // the not null wrapper should all be null
@@ -493,6 +484,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                     name
                                     description
                                     kind
+                                    specifiedByURL
                                     fields{
                                         name
                                         description
@@ -514,6 +506,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                         ""name"": ""SodaCan"",
                                         ""description"": null,
                                         ""kind"": ""OBJECT"",
+                                        ""specifiedByURL"": null,
                                         ""fields"": [
                                         {
                                             ""name"": ""brand"",
@@ -1227,6 +1220,131 @@ namespace GraphQL.AspNet.Tests.Execution
                                             ""isDeprecated"" : true
                                         }
                                     ]
+                                }
+                            }
+                        }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task SpecifiedByLateBound_PopulateSpecifiedByURL()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<TwoPropertyObject>();
+                o.ApplyDirective("specifiedBy")
+                .WithArguments("http://somesite")
+                .ToItems(schemaItem =>
+                      schemaItem != null
+                        && schemaItem.Name == Constants.ScalarNames.STRING);
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""String"")
+                              {
+                                kind
+                                name
+                                specifiedByURL
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                            ""data"": {
+                                ""__type"": {
+                                    ""kind"": ""SCALAR"",
+                                    ""name"": ""String"",
+                                    ""specifiedByURL"": ""http://somesite""
+                                }
+                            }
+                        }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task SpecifiedByEarlyBound_PopulateSpecifiedByURL()
+        {
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            GraphQLProviders.ScalarProvider = new DefaultScalarTypeProvider();
+            GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(CustomSpecifiedScalar));
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<ObjectWithCustomScalar>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""MyCustomScalar"")
+                              {
+                                kind
+                                name
+                                specifiedByURL
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                            ""data"": {
+                                ""__type"": {
+                                    ""kind"": ""SCALAR"",
+                                    ""name"": ""MyCustomScalar"",
+                                    ""specifiedByURL"": ""http://someSiteViaAttribute""
+                                }
+                            }
+                        }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task SpecifiedByUrl_OnNonScalarType_ReturnsNull()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<TwoPropertyObject>();
+                o.ApplyDirective("specifiedBy")
+                .WithArguments("http://somesite")
+                .ToItems(schemaItem =>
+                      schemaItem != null
+                        && schemaItem.Name == Constants.ScalarNames.STRING);
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""TwoPropertyObject"")
+                              {
+                                kind
+                                name
+                                specifiedByURL
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                            ""data"": {
+                                ""__type"": {
+                                    ""kind"": ""OBJECT"",
+                                    ""name"": ""TwoPropertyObject"",
+                                    ""specifiedByURL"": null
                                 }
                             }
                         }";

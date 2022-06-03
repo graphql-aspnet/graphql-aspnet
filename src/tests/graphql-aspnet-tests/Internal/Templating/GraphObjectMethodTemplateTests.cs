@@ -60,7 +60,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(methodInfo, template.Method);
             Assert.AreEqual(parent, template.Parent);
             Assert.AreEqual(0, template.TypeExpression.Wrappers.Length);
-            Assert.IsFalse(template.IsDeprecated);
         }
 
         [Test]
@@ -82,22 +81,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DescriptiionMethod));
             Assert.AreEqual("A Valid Description", template.Description);
-        }
-
-        [Test]
-        public void DepreciatedAttribute_SetsDataCorrectly()
-        {
-            var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DepreciatedMethodWithReason));
-            Assert.AreEqual("A Dep reason", template.DeprecationReason);
-            Assert.IsTrue(template.IsDeprecated);
-        }
-
-        [Test]
-        public void DepreciatedAttribute_NoReason_SetsDataCorrectly()
-        {
-            var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DepreciatedMethodWithNoReason));
-            Assert.AreEqual(null, template.DeprecationReason);
-            Assert.IsTrue(template.IsDeprecated);
         }
 
         [Test]

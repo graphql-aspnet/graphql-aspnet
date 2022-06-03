@@ -63,7 +63,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(0, action.Arguments.Count);
             Assert.IsFalse(action.Route.IsTopLevelField);
             Assert.IsFalse(action.IsAsyncField);
-            Assert.IsFalse(action.IsDeprecated);
         }
 
         [Test]

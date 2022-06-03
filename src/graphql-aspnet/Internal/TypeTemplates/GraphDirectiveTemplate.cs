@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, routeName));
 
             var phases = DirectiveInvocationPhase.DefaultPhases;
-            var phaseAttrib = this.AttributeProvider.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
+            var phaseAttrib = this.AttributeProvider.SingleAttributeOrDefault<DirectiveInvocationPhaseAttribute>();
             if (phaseAttrib != null)
                 phases = phaseAttrib.Phases;
 

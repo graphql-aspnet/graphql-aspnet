@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Directives
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;
@@ -32,24 +33,17 @@ namespace GraphQL.AspNet.Tests.Directives
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
-    using GraphQL.AspNet.Configuration;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class DeprecatedDirectiveTests
+    public class SpecifiedByDirectiveTests
     {
-        public enum TestEnum
-        {
-            Value1,
-            Value2,
-        }
-
         private ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext> _pipeline;
 
         private IDirective _directive;
         private Mock<IInputArgumentCollection> _argCollection;
         private Mock<IInputArgumentValue> _argValue;
-        private string _reason = null;
+        private string _url = null;
         private GraphOperationRequest _parentRequest;
         private DirectiveInvocationContext _invocationContext;
         private DirectiveLocation _directiveLocation;
@@ -60,18 +54,18 @@ namespace GraphQL.AspNet.Tests.Directives
         private InputArgument _arg;
         private Mock<IGraphEventLogger> _logger;
 
-        public DeprecatedDirectiveTests()
+        public SpecifiedByDirectiveTests()
         {
             var server = new TestServerBuilder()
-                .AddDirective<DeprecatedDirective>()
+                .AddDirective<SpecifiedByDirective>()
                 .AddGraphType<TwoPropertyObject>()
-                .AddGraphType<TestEnum>()
                 .Build();
 
+            _directiveLocation = DirectiveLocation.SCALAR;
             _provider = server.ServiceProvider;
             _scopedProvider = _provider.CreateScope();
             _schema = server.Schema;
-            _directive = server.Schema.KnownTypes.FindDirective<DeprecatedDirective>();
+            _directive = server.Schema.KnownTypes.FindDirective<SpecifiedByDirective>();
             _pipeline = server.ServiceProvider
                 .GetService<ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext>>();
 
@@ -79,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Directives
 
             _argValue = new Mock<IInputArgumentValue>();
             _argValue.Setup(x => x.Resolve(It.IsAny<IResolvedVariableCollection>()))
-                .Returns(() => _reason);
+                .Returns(() => _url);
 
             _arg = new InputArgument(
                 _directive.Arguments[0],
@@ -98,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Directives
         private async Task<GraphDirectiveExecutionContext> ExecuteRequest()
         {
             var executionArgs = new ExecutionArgumentCollection();
-            executionArgs.Add(new ExecutionArgument(_directive.Arguments[0], _reason));
+            executionArgs.Add(new ExecutionArgument(_directive.Arguments[0], _url));
 
             _argCollection.Setup(x => x.Merge(It.IsAny<IResolvedVariableCollection>()))
                 .Returns(executionArgs);
@@ -132,8 +126,7 @@ namespace GraphQL.AspNet.Tests.Directives
         [Test]
         public async Task NoDirectiveTarget_ThrowsException()
         {
-            _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
-            _reason = "A valid Reason";
+            _url = "http://somesite";
             _directiveTarget = null;
 
             var context = await this.ExecuteRequest();
@@ -145,11 +138,24 @@ namespace GraphQL.AspNet.Tests.Directives
         }
 
         [Test]
-        public async Task NoReasonGiven_ThrowsException()
+        public async Task WhenInvalidLocation_ThrowsException()
         {
-            _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
-            _reason = null;
-            _directiveTarget = _schema.AllSchemaItems().First(x => x.IsField<TwoPropertyObject>("property1"));
+            _directiveLocation = DirectiveLocation.FIELD;
+            _url = "http://somesite";
+            _directiveTarget = _schema.AllSchemaItems().Single(x => x.Name == Constants.ScalarNames.STRING);
+
+            var context = await this.ExecuteRequest();
+
+            Assert.AreEqual(GraphMessageSeverity.Critical, context.Messages.Severity);
+            Assert.AreEqual(1, context.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.EXECUTION_ERROR, context.Messages[0].Code);
+        }
+
+        [Test]
+        public async Task NoUrlGiven_ThrowsException()
+        {
+            _url = null;
+            _directiveTarget = _schema.AllSchemaItems().Single(x => x.Name == Constants.ScalarNames.STRING);
 
             var context = await this.ExecuteRequest();
 
@@ -160,10 +166,9 @@ namespace GraphQL.AspNet.Tests.Directives
         }
 
         [Test]
-        public async Task WhenSchemaItemIsNotAFieldOrEnum_SchemaFails()
+        public async Task WhenSchemaItemIsNotASclar_SchemaFails()
         {
-            _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
-            _reason = "because reason";
+            _url = "http://somesite";
             _directiveTarget = _schema.AllSchemaItems().First(x => x.IsObjectGraphType<TwoPropertyObject>());
 
             var context = await this.ExecuteRequest();
@@ -172,35 +177,17 @@ namespace GraphQL.AspNet.Tests.Directives
         }
 
         [Test]
-        public async Task WhenSchemaItemIsEnumValue_ItsDeprecated()
+        public async Task WhenSchemaItemIsAScalar_UrlIsApplied()
         {
-            _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
-            _reason = "because reason";
-            _directiveTarget = _schema.AllSchemaItems().First(x => x.IsEnumValue<TestEnum>(TestEnum.Value2));
+            _url = "http://someUrl";
+            _directiveTarget = _schema.AllSchemaItems().Single(x => x.Name == Constants.ScalarNames.STRING);
 
             var context = await this.ExecuteRequest();
 
             Assert.IsTrue(context.Messages.IsSucessful);
 
-            var item = _directiveTarget as IEnumValue;
-            Assert.IsTrue(item.IsDeprecated);
-            Assert.AreEqual(_reason, item.DeprecationReason);
-        }
-
-        [Test]
-        public async Task WhenSchemaItemIsField_ItsDeprecated()
-        {
-            _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
-            _reason = "because reason";
-            _directiveTarget = _schema.AllSchemaItems().First(x => x.IsField<TwoPropertyObject>("property1"));
-
-            var context = await this.ExecuteRequest();
-
-            Assert.IsTrue(context.Messages.IsSucessful);
-
-            var item = _directiveTarget as IGraphField;
-            Assert.IsTrue(item.IsDeprecated);
-            Assert.AreEqual(_reason, item.DeprecationReason);
+            var item = _directiveTarget as IScalarGraphType;
+            Assert.AreEqual("http://someUrl", item.SpecifiedByUrl);
         }
     }
 }

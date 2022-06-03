@@ -62,7 +62,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(0, template.TypeExpression.Wrappers.Length);
             Assert.IsFalse(template.Route.IsTopLevelField);
             Assert.IsFalse(template.IsAsyncField);
-            Assert.IsFalse(template.IsDeprecated);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
             // first arg should be declared for the source data
@@ -111,7 +110,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(0, template.TypeExpression.Wrappers.Length);
             Assert.IsFalse(template.Route.IsTopLevelField);
             Assert.IsFalse(template.IsAsyncField);
-            Assert.IsFalse(template.IsDeprecated);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
             // first arg should be declared for the source data
@@ -160,7 +158,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(0, template.TypeExpression.Wrappers.Length);
             Assert.IsFalse(template.Route.IsTopLevelField);
             Assert.IsFalse(template.IsAsyncField);
-            Assert.IsFalse(template.IsDeprecated);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, template.Mode);
 
             // first arg should be declared for the source data

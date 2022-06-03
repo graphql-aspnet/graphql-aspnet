@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -53,8 +54,15 @@ namespace GraphQL.AspNet.Execution
         public void ApplyDirectives(TSchema schema)
         {
             // all schema items
+            var anyDirectivesApplied = false;
             foreach (var item in schema.AllSchemaItems())
-                this.ApplyDirectivesToItem(schema, item);
+                anyDirectivesApplied = this.ApplyDirectivesToItem(schema, item) || anyDirectivesApplied;
+
+            if (anyDirectivesApplied)
+            {
+                var manager = new GraphSchemaManager(schema);
+                manager.RebuildIntrospectionData();
+            }
         }
 
         /// <summary>
@@ -62,7 +70,7 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="item">The item.</param>
-        private void ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
+        private bool ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
         {
             var fullRouteName = item.Name;
             foreach (var appliedDirective in item.AppliedDirectives)
@@ -184,6 +192,8 @@ namespace GraphQL.AspNet.Execution
                 var eventLogger = scopedProvider.ServiceProvider.GetService<IGraphEventLogger>();
                 eventLogger?.TypeSystemDirectiveApplied<TSchema>(targetDirective, item);
             }
+
+            return item.AppliedDirectives.Count > 0;
         }
 
         private IInputArgumentCollection GatherInputArguments(IDirective targetDirective, object[] arguments)

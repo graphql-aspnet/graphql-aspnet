@@ -431,9 +431,10 @@ namespace GraphQL.AspNet.Schemas
 
         /// <summary>
         /// Clears, builds and caches the introspection metadata to describe this schema. If introspection
-        /// fields have not been added to the schema this method does nothing.
+        /// fields have not been added to the schema this method does nothing. No changes to the schema
+        /// items themselves happens during this method.
         /// </summary>
-        public void BuildIntrospectionData()
+        public void RebuildIntrospectionData()
         {
             if (this.Schema.Configuration.DeclarationOptions.DisableIntrospection)
                 return;

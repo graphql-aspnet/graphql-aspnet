@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     [DebuggerDisplay("Enum Template: {InternalName}")]
     public class EnumGraphTypeTemplate : BaseGraphTypeTemplate, IEnumGraphTypeTemplate
     {
-        private readonly List<EnumOptionTemplate> _values;
+        private readonly List<EnumValueTemplate> _values;
         private Dictionary<string, IList<string>> _valuesTolabels;
         private string _name;
 
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             Validation.ThrowIfNull(enumType, nameof(enumType));
             this.ObjectType = enumType;
 
-            _values = new List<EnumOptionTemplate>();
+            _values = new List<EnumValueTemplate>();
             _valuesTolabels = new Dictionary<string, IList<string>>();
         }
 
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 if (fi.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
                     continue;
 
-                var optionTemplate = new EnumOptionTemplate(this, fi);
+                var optionTemplate = new EnumValueTemplate(this, fi);
                 optionTemplate.Parse();
 
                 // we must have unique labels to values
@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the collected set of enumeration values that this template parsed.
         /// </summary>
         /// <value>The values.</value>
-        public IReadOnlyList<IEnumOptionTemplate> Values => _values;
+        public IReadOnlyList<IEnumValueTemplate> Values => _values;
 
         /// <summary>
         /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
