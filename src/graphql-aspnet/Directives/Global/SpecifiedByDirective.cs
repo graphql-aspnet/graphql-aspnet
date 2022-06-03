@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Directives.Global
         /// <param name="url">The URL pointing to the specification for the custom scalar.</param>
         /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.SCALAR)]
-        public IGraphActionResult Execute([FromGraphQL("url")] string url)
+        public IGraphActionResult Execute([FromGraphQL("url", TypeExpression = TypeExpressions.IsNotNull)] string url)
         {
             url = url?.Trim();
             var scalarItem = this.DirectiveTarget as IScalarGraphType;

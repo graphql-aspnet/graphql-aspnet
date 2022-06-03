@@ -38,11 +38,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [Test]
-        public void AddIntrospectionFields_AllFieldsAdded()
+        public void RebuildIntrospectionData_AllDefaultFieldsAdded()
         {
             var schema = new GraphSchema() as ISchema;
             var manager = new GraphSchemaManager(schema);
-            manager.AddIntrospectionFields();
+            manager.RebuildIntrospectionData();
 
             Assert.AreEqual(2, schema.KnownTypes.Count(x => x.Kind == TypeKind.SCALAR));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING));

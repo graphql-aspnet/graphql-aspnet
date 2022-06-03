@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
@@ -26,7 +25,6 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
-    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -35,7 +33,7 @@ namespace GraphQL.AspNet.Execution
     /// respective schema items.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to work with.</typeparam>
-    public class GraphSchemaDirectiveProcessor<TSchema> : IGraphSchemaDirectiveProcessor<TSchema>
+    internal sealed class GraphSchemaDirectiveProcessor<TSchema>
         where TSchema : class, ISchema
     {
         private readonly IServiceProvider _serviceProvider;
@@ -50,19 +48,18 @@ namespace GraphQL.AspNet.Execution
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Scans the target schema looking for any type system directives that should
+        /// be applied to any schema items. Those directives are executed against their targets
+        /// using standard directive pipeline.
+        /// </summary>
+        /// <param name="schema">The schema to apply directives too.</param>
         public void ApplyDirectives(TSchema schema)
         {
             // all schema items
             var anyDirectivesApplied = false;
             foreach (var item in schema.AllSchemaItems())
                 anyDirectivesApplied = this.ApplyDirectivesToItem(schema, item) || anyDirectivesApplied;
-
-            if (anyDirectivesApplied)
-            {
-                var manager = new GraphSchemaManager(schema);
-                manager.RebuildIntrospectionData();
-            }
         }
 
         /// <summary>

@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             // invocation of hte directive will set the passed in values
             // to the object
-            var component = new InvokeDirectiveResolverMiddleware<GraphSchema>(server.Schema);
+            var component = new InvokeDirectiveResolverMiddleware<GraphSchema>();
             await component.InvokeAsync(context, this.EmptyNextDelegate);
 
             Assert.AreEqual("testValue", testObject.Property1);

@@ -70,11 +70,8 @@ namespace GraphQL.AspNet.Schemas
         /// Adds the internal introspection fields to the query operation type if and only if the contained schema allows
         /// it through its internal configuration. This method is idempotent.
         /// </summary>
-        public void AddIntrospectionFields()
+        private void AddIntrospectionFields()
         {
-            if (this.Schema.Configuration.DeclarationOptions.DisableIntrospection)
-                return;
-
             this.EnsureGraphOperationType(GraphOperationType.Query);
             var queryField = this.Schema.OperationTypes[GraphOperationType.Query];
 
@@ -440,6 +437,8 @@ namespace GraphQL.AspNet.Schemas
                 return;
 
             this.EnsureGraphOperationType(GraphOperationType.Query);
+            this.AddIntrospectionFields();
+
             var queryType = this.Schema.OperationTypes[GraphOperationType.Query];
             if (!queryType.Fields.ContainsKey(Constants.ReservedNames.SCHEMA_FIELD))
                 return;
