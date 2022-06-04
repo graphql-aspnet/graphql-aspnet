@@ -14,10 +14,8 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Perform a set of standardized steps to setup and configure any graph schema according to the rules
@@ -29,14 +27,18 @@ namespace GraphQL.AspNet.Execution
         where TSchema : class, ISchema
     {
         private readonly SchemaOptions _options;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaInitializer{TSchema}" /> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public GraphSchemaInitializer(SchemaOptions options)
+        /// <param name="serviceProvider">The service provider from which to draw componentry for
+        /// initailization.</param>
+        public GraphSchemaInitializer(SchemaOptions options, IServiceProvider serviceProvider)
         {
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
+            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
         /// <summary>
@@ -61,7 +63,6 @@ namespace GraphQL.AspNet.Execution
                 schema.Configuration.Merge(_options.CreateConfiguration());
 
                 var manager = new GraphSchemaManager(schema);
-                manager.AddIntrospectionFields();
                 manager.AddBuiltInDirectives();
 
                 // add any configured types to this instance
@@ -74,12 +75,18 @@ namespace GraphQL.AspNet.Execution
                     manager.EnsureGraphType(registration.Type);
                 }
 
-                manager.BuildIntrospectionData();
-
                 // execute any assigned schema configuration extensions
+                //
+                // this includes any late bound directives added to the type
+                // system via .ApplyDirective()
                 foreach (var extension in _options.ConfigurationExtensions)
                     extension.Configure(schema);
 
+                // apply all queued type system directives
+                var processor = new SchemaDirectiveProcessor<TSchema>(_serviceProvider);
+                processor.ApplyDirectives(schema);
+
+                manager.RebuildIntrospectionData();
                 schema.IsInitialized = true;
             }
         }

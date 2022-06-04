@@ -24,17 +24,6 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     public class InvokeDirectiveResolverMiddleware<TSchema> : IDirectiveExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly TSchema _schema;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InvokeDirectiveResolverMiddleware{TSchema}"/> class.
-        /// </summary>
-        /// <param name="schema">The schema instance to reference.</param>
-        public InvokeDirectiveResolverMiddleware(TSchema schema)
-        {
-            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-        }
-
         /// <inheritdoc />
         public async Task InvokeAsync(GraphDirectiveExecutionContext context, GraphMiddlewareInvocationDelegate<GraphDirectiveExecutionContext> next, CancellationToken cancelToken = default)
         {
@@ -50,7 +39,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
                     .Merge(context.VariableData);
 
                 var resolutionContext = new DirectiveResolutionContext(
-                    _schema,
+                    context.Schema,
                     context,
                     context.Request,
                     executionArgs,

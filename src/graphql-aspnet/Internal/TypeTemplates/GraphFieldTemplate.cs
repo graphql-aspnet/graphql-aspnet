@@ -65,12 +65,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Mode = _fieldDeclaration?.ExecutionMode ?? FieldResolutionMode.PerSourceItem;
             this.Complexity = _fieldDeclaration?.Complexity;
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
-            var deprecated = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DeprecatedAttribute>();
-            if (deprecated != null)
-            {
-                this.IsDeprecated = true;
-                this.DeprecationReason = deprecated.Reason?.Trim();
-            }
 
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
             var typeExpression = GraphValidation.GenerateTypeExpression(this.DeclaredReturnType, this);
@@ -445,12 +439,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public virtual AppliedSecurityPolicyGroup SecurityPolicies => _securityPolicies;
-
-        /// <inheritdoc />
-        public bool IsDeprecated { get; set; }
-
-        /// <inheritdoc />
-        public string DeprecationReason { get; set; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; protected set; }

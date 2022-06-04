@@ -8,7 +8,6 @@ GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/a
 
 | Recent Builds |                                                                                                                                                                                                                                                                    |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Development   | [![Develop Branch Build Status](https://dev.azure.com/graphqlaspnet/GraphQL%20ASP.NET/_apis/build/status/CI%20%26%20Deployment%20Build?branchName=develop)](https://dev.azure.com/graphqlaspnet/GraphQL%20ASP.NET/_build/latest?definitionId=4&branchName=develop) |
 | Master        | [![Master Branch Build Status](https://dev.azure.com/graphqlaspnet/GraphQL%20ASP.NET/_apis/build/status/CI%20%26%20Deployment%20Build?branchName=master)](https://dev.azure.com/graphqlaspnet/GraphQL%20ASP.NET/_build/latest?definitionId=4&branchName=master)    |
 
 #### Example Usage:

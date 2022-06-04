@@ -182,10 +182,11 @@ namespace GraphQL.AspNet.Tests.Configuration
             }
 
             // skip and include
-            Assert.AreEqual(3, foundItems.Count);
+            Assert.AreEqual(4, foundItems.Count);
             Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.INCLUDE_DIRECTIVE));
             Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.SKIP_DIRECTIVE));
             Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.DEPRECATED_DIRECTIVE));
+            Assert.IsTrue(foundItems.Any(x => x.Name == Constants.ReservedNames.SPECIFIED_BY_DIRECTIVE));
         }
 
         [Test]
@@ -200,6 +201,28 @@ namespace GraphQL.AspNet.Tests.Configuration
         {
             var schema = new Mock<ISchema>();
             Assert.IsFalse(schema.Object.IsVirtualItem());
+        }
+
+        [Test]
+        public void IGraphArugment()
+        {
+            var server = new TestServerBuilder()
+            .AddGraphQL(o =>
+            {
+                o.AddGraphType<MethodObject>();
+            })
+            .Build();
+
+            var foundItems = new List<ISchemaItem>();
+
+            foreach (var item in server.Schema.AllSchemaItems(true))
+            {
+                if (item.IsArgument<MethodObject>("name", "whichName"))
+                    foundItems.Add(item);
+            }
+
+            Assert.AreEqual(1, foundItems.Count);
+            Assert.IsTrue(foundItems.Any(x => x.Name == "whichName"));
         }
     }
 }

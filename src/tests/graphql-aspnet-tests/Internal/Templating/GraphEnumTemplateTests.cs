@@ -56,27 +56,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void Parse_DeprecatedValue_ParsesCorrectly()
-        {
-            var template = new EnumGraphTypeTemplate(typeof(DeprecatedValueEnum));
-            template.Parse();
-            template.ValidateOrThrow();
-
-            Assert.AreEqual(2, template.Values.Count());
-
-            var val1 = template.Values.FirstOrDefault(x => x.Name == nameof(DeprecatedValueEnum.Value1));
-            var val2 = template.Values.FirstOrDefault(x => x.Name == nameof(DeprecatedValueEnum.Value2));
-
-            Assert.IsNotNull(val1);
-            Assert.IsFalse(val1.IsDeprecated);
-            Assert.IsNull(val1.DeprecationReason);
-
-            Assert.IsNotNull(val2);
-            Assert.IsTrue(val2.IsDeprecated);
-            Assert.AreEqual("Because", val2.DeprecationReason);
-        }
-
-        [Test]
         public void Parse_EnumWithDescriptionOnValues_ParsesCorrectly()
         {
             var template = new EnumGraphTypeTemplate(typeof(EnumWithDescriptionOnValues));

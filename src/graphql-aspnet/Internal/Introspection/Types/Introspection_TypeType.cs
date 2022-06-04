@@ -126,6 +126,15 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                 (gt) => Task.FromResult(gt?.OfType),
                 $"For {TypeKind.NON_NULL.ToString()} and {TypeKind.LIST.ToString()} meta types, declare the underlying type that is " +
                 "wrapped by this type; otherwise null.");
+
+            // specifiedByURL
+            this.GraphFieldCollection.AddField<IntrospectedType, string>(
+                "specifiedByURL",
+                new GraphTypeExpression(Constants.ScalarNames.STRING),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "specifiedByURL"),
+                (gt) => Task.FromResult(gt?.SpecifiedByUrl),
+                "A string, in the form of a URL, pointing to a specification " +
+                "if the graph type is a scalar, otherwise null.");
         }
     }
 }

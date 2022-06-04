@@ -14,13 +14,13 @@ namespace GraphQL.AspNet.Attributes
     /// An attribute applied to a directive to instruct the runtime on when
     /// it should be invoked.
     /// </summary>
-    public class DirectiveInvocationAttribute : BaseGraphAttribute
+    public class DirectiveInvocationPhaseAttribute : BaseGraphAttribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveInvocationAttribute"/> class.
+        /// Initializes a new instance of the <see cref="DirectiveInvocationPhaseAttribute"/> class.
         /// </summary>
         /// <param name="phases">The phases under which the directive should be invoked.</param>
-        public DirectiveInvocationAttribute(DirectiveInvocationPhase phases)
+        public DirectiveInvocationPhaseAttribute(DirectiveInvocationPhase phases)
         {
             this.Phases = phases;
         }

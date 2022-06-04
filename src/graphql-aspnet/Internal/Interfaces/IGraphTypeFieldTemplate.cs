@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// A base template definition for the metadata about a graph field belonging to a real type (as opposed to a virutal
     /// type).
     /// </summary>
-    public interface IGraphTypeFieldTemplate : IGraphFieldBaseTemplate, ISecureItem, IDeprecatable
+    public interface IGraphTypeFieldTemplate : IGraphFieldBaseTemplate, ISecureItem
     {
         /// <summary>
         /// Creates a resolver capable of resolving this field.

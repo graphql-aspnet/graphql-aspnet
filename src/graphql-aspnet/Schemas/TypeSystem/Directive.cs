@@ -33,6 +33,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="phases">The phases under which this directive will be invoked.</param>
         /// <param name="directiveType">The concrete type of the directive.</param>
         /// <param name="route">The route path that identifies this directive.</param>
+        /// <param name="isRepeatable">if set to <c>true</c> the directive is repeatable
+        /// at a target location.</param>
         /// <param name="resolver">The resolver used to process this instance.</param>
         public Directive(
             string name,
@@ -40,6 +42,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             DirectiveInvocationPhase phases,
             Type directiveType,
             GraphFieldPath route,
+            bool isRepeatable = false,
             IGraphDirectiveResolver resolver = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
@@ -53,6 +56,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.InternalName = this.ObjectType.FriendlyName();
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
+            this.IsRepeatable = isRepeatable;
         }
 
         /// <inheritdoc />
@@ -99,5 +103,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public string InternalName { get; }
+
+        /// <inheritdoc />
+        public bool IsRepeatable { get; set; }
     }
 }

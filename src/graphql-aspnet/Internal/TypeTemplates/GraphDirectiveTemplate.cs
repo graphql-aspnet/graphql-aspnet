@@ -64,12 +64,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             base.ParseTemplateDefinition();
 
             this.Description = this.AttributeProvider.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
+            this.IsRepeatable = this.AttributeProvider.SingleAttributeOrDefault<RepeatableAttribute>() != null;
 
             var routeName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
             this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, routeName));
 
             var phases = DirectiveInvocationPhase.DefaultPhases;
-            var phaseAttrib = this.AttributeProvider.SingleAttributeOrDefault<DirectiveInvocationAttribute>();
+            var phaseAttrib = this.AttributeProvider.SingleAttributeOrDefault<DirectiveInvocationPhaseAttribute>();
             if (phaseAttrib != null)
                 phases = phaseAttrib.Phases;
 
@@ -155,5 +156,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public DirectiveInvocationPhase InvocationPhases { get; private set;  }
+
+        /// <inheritdoc />
+        public bool IsRepeatable { get; private set;  }
     }
 }

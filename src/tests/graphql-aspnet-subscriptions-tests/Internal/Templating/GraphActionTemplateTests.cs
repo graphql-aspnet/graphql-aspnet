@@ -61,7 +61,6 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
             Assert.AreEqual(1, action.Arguments.Count);
             Assert.IsFalse(action.Route.IsTopLevelField);
             Assert.IsFalse(action.IsAsyncField);
-            Assert.IsFalse(action.IsDeprecated);
 
             Assert.IsNull(action.EventName);
         }

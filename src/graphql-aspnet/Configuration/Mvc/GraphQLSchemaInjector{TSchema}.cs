@@ -123,13 +123,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // register the schema
             _options.ServiceCollection.TryAddSingleton(this.BuildNewSchemaInstance);
 
-            // register the default directive processor for the schema
-            _options.ServiceCollection.TryAddTransient<IGraphSchemaDirectiveProcessor<TSchema>>(
-                (sp) =>
-                {
-                    return new GraphSchemaDirectiveProcessor<TSchema>(sp);
-                });
-
             // setup default middleware for each required pipeline
             var queryPipelineHelper = new QueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
             queryPipelineHelper.AddDefaultMiddlewareComponents(_options);
@@ -191,7 +184,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         private TSchema BuildNewSchemaInstance(IServiceProvider serviceProvider)
         {
             var schemaInstance = GraphSchemaBuilder.BuildSchema<TSchema>(serviceProvider);
-            var initializer = new GraphSchemaInitializer<TSchema>(_options);
+            var initializer = new GraphSchemaInitializer<TSchema>(_options, serviceProvider);
             initializer.Initialize(schemaInstance);
 
             serviceProvider.WriteLogEntry(
@@ -245,9 +238,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
         /// Invoke the schema, performing final setup and configuration.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="invokeAdditionalOptions">if set to <c>true</c> any configured, additional
-        /// schema options on this instance are invoked with just the service provider.</param>
-        private void UseSchema(IServiceProvider serviceProvider, bool invokeAdditionalOptions)
+        /// <param name="invokeServerExtensions">if set to <c>true</c> any configured
+        /// server options on this instance are invoked with just the service provider.</param>
+        private void UseSchema(IServiceProvider serviceProvider, bool invokeServerExtensions)
         {
             // pre-parse any types known to this schema
             var preCacher = new SchemaPreCacher();
@@ -256,7 +249,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // only when the service provider is used for final configuration do we
             // invoke extensions with just the service provider
             // (mostly just for test harnessing, but may be used by developers as well)
-            if (invokeAdditionalOptions)
+            if (invokeServerExtensions)
             {
                 foreach (var additionalOptions in _options.ServerExtensions)
                     additionalOptions.Value.UseExtension(serviceProvider: serviceProvider);
@@ -266,16 +259,13 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // this will surface any runtime validation errors that may occur
             // when assembling the schema instance and throw those at app start up
             // rather than when a query is inbound
-            // (the schema is a singleton when added through the injector, but in case it was added
-            // elsewhere make a scoped provider instance to pull it through)
+            //
+            // The schema is a singleton when added through the injector so this should be the only
+            // build operation, but in case it was added by a user with a different scope
+            // make a scoped provider instance to pull it through
             using (var scope = serviceProvider.CreateScope())
             {
-                // create and setup the schema FIRST
                 var schemaInstance = scope.ServiceProvider.GetRequiredService<TSchema>();
-
-                // apply type system directives
-                var directiveProcessor = scope.ServiceProvider.GetRequiredService<IGraphSchemaDirectiveProcessor<TSchema>>();
-                directiveProcessor.ApplyDirectives(schemaInstance);
             }
         }
 

@@ -16,10 +16,10 @@ namespace GraphQL.AspNet.Directives.Global
     /// <summary>
     /// <para>A directive, applicable to a field, that defines additional logic to determine if
     /// the field should be skipped or not.</para>
-    /// <para>Spec: https://graphql.github.io/graphql-spec/June2018/#sec--skip .</para>
+    /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--skip .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.SKIP_DIRECTIVE)]
-    [DirectiveInvocation(DirectiveInvocationPhase.BeforeFieldResolution)]
+    [DirectiveInvocationPhase(DirectiveInvocationPhase.BeforeFieldResolution)]
     public sealed class SkipDirective : GraphDirective
     {
         /// <summary>
@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Directives.Global
         /// to determine if execution should continue in the location this directive was found.
         /// </summary>
         /// <param name="ifArgument">if set to <c>true</c> processing of the request, on this branch, will stop.</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        /// <returns>IGraphActionResult.</returns>
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
         public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
         {

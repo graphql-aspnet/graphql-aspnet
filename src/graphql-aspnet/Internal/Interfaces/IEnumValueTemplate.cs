@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// An interface describing an ENUM_OPTION templated
     /// from an <see cref="System.Enum"/> value label.
     /// </summary>
-    public interface IEnumOptionTemplate : IGraphItemTemplate, IDeprecatable
+    public interface IEnumValueTemplate : IGraphItemTemplate
     {
         /// <summary>
         /// Gets the parent enum template that contains this option.

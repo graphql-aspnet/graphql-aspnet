@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
             {
                 this.ValidationError(
                     context,
-                    $"The directive '{queryDirective.Name}' is already defined in this location. Directives must be unique per " +
+                    $"The directive '{queryDirective.Name}' is already defined in this location in the query document. Directives must be unique per " +
                     "instantiated location (e.g. once per field, once per input argument etc.).");
 
                 return false;

@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public IntrospectedDirective(IDirective directiveType)
             : base(directiveType)
         {
-            this.GraphType = directiveType;
+            this.Directive = directiveType;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         public override void Initialize(IntrospectedSchema schema)
         {
             var list = new List<IntrospectedInputValueType>();
-            var directiveArguments = this.GraphType.Arguments.Where(x => !x.ArgumentModifiers.IsInternalParameter());
+            var directiveArguments = this.Directive.Arguments.Where(x => !x.ArgumentModifiers.IsInternalParameter());
             foreach (var arg in directiveArguments)
             {
                 var introspectedType = schema.FindIntrospectedType(arg.TypeExpression.TypeName);
@@ -50,24 +50,25 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             }
 
             this.Arguments = list;
-            this.Locations = this.GraphType.Locations.GetIndividualFlags<DirectiveLocation>().ToList();
-            this.Publish = this.GraphType.Publish;
+            this.Locations = this.Directive.Locations.GetIndividualFlags<DirectiveLocation>().ToList();
+            this.Publish = this.Directive.Publish;
+            this.IsRepeatable = this.Directive.IsRepeatable;
         }
 
         /// <summary>
-        /// Gets the type of the graph.
+        /// Gets the directive being introspected.
         /// </summary>
-        /// <value>The type of the graph.</value>
-        protected IDirective GraphType { get; }
+        /// <value>The directive.</value>
+        protected IDirective Directive { get; }
 
         /// <summary>
-        /// Gets a collection of arguments this instance can accept on a query.
+        /// Gets a collection of arguments this directive can accept on a query.
         /// </summary>
         /// <value>A collection of arguments assigned to this item.</value>
         public IReadOnlyList<IntrospectedInputValueType> Arguments { get; private set; }
 
         /// <summary>
-        /// Gets the locations this directive can be defined.
+        /// Gets the locations the target directive can be defined.
         /// </summary>
         /// <value>The locations.</value>
         public IReadOnlyList<DirectiveLocation> Locations { get; private set; }
@@ -78,5 +79,11 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <value><c>true</c> if published; otherwise, <c>false</c>.</value>
         public bool Publish { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the target directive is repeatable at a target location.
+        /// </summary>
+        /// <value><c>true</c> if this directive is repeatable; otherwise, <c>false</c>.</value>
+        public bool IsRepeatable { get; private set; }
     }
 }

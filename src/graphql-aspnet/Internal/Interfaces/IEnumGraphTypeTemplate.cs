@@ -21,6 +21,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the collected set of enumeration values that this template parsed.
         /// </summary>
         /// <value>The values.</value>
-        IReadOnlyList<IEnumOptionTemplate> Values { get; }
+        IReadOnlyList<IEnumValueTemplate> Values { get; }
     }
 }

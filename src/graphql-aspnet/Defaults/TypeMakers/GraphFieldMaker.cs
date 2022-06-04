@@ -52,8 +52,6 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             MethodGraphField field = this.InstantiateField(formatter, template, securityGroups);
 
             field.Description = template.Description;
-            field.IsDeprecated = template.IsDeprecated;
-            field.DeprecationReason = template.DeprecationReason;
             field.Complexity = template.Complexity;
             field.FieldSource = template.FieldSource;
 

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Parsing.Lexing.Tokens;
 
     /// <summary>
     /// A class representing the application of a <see cref="GraphDirective"/>
@@ -47,6 +48,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public AppliedDirective(string directiveName, params object[] arguments)
         {
             this.DirectiveName = Validation.ThrowIfNullWhiteSpaceOrReturn(directiveName, nameof(directiveName));
+            if (this.DirectiveName.StartsWith(TokenTypeNames.STRING_AT_SYMBOL))
+                this.DirectiveName = this.DirectiveName.Substring(1);
+
             this.Arguments = arguments;
         }
 

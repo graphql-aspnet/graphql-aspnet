@@ -17,7 +17,8 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface ISchemaItem : INamedItem
     {
         /// <summary>
-        /// Gets the route assigned to this field in the object graph.
+        /// Gets the unique route string assigned to this item
+        /// in the object graph.
         /// </summary>
         /// <value>The route.</value>
         GraphFieldPath Route { get; }

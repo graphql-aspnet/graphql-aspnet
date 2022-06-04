@@ -176,7 +176,7 @@ namespace GraphQL.AspNet.Configuration
            bool graphTypeNameIsCaseSensitive = true)
         {
             return schemaItem != null
-                && schemaItem is IObjectGraphType gt
+                && schemaItem is IGraphType gt
                 && string.Compare(gt.Name, graphTypeName, !graphTypeNameIsCaseSensitive) == 0;
         }
 
@@ -195,6 +195,42 @@ namespace GraphQL.AspNet.Configuration
                 && schemaItem is IEnumValue ev
                 && ev.Parent.ObjectType == typeof(TEnum)
                 && Enum.Equals(ev.InternalValue, enumValue);
+        }
+
+        /// <summary>
+        /// Determines whether the schema item is an argument,
+        /// on a field, declared on <typeparamref name="TType"/>.
+        /// </summary>
+        /// <typeparam name="TType">The .NET class that represents
+        /// the owning object of this argument.</typeparam>
+        /// <param name="schemaItem">The schema item to inspect. </param>
+        /// <param name="fieldName">The name of the field on <typeparamref name="TType"/>
+        /// where the argument is declared.</param>
+        /// <param name="argumentName">The name of the argument as
+        /// its declared in the graph.</param>
+        /// <param name="fieldNameIsCaseSensitive">
+        /// if set to <c>true</c> the field name must match the name in the graph exactly.</param>
+        /// <param name="argumentNameIsCaseSensitive">if set to <c>true</c>
+        /// the argument name must match the name in the graph exactly.</param>
+        /// <param name="parentTypeKind">The kind of object represented by <typeparamref name="TType"/>.</param>
+        /// <returns><c>true</c> if the specified schema item is a matching argument; otherwise, <c>false</c>.</returns>
+        public static bool IsArgument<TType>(
+            this ISchemaItem schemaItem,
+            string fieldName,
+            string argumentName,
+            bool fieldNameIsCaseSensitive = true,
+            bool argumentNameIsCaseSensitive = true,
+            TypeKind parentTypeKind = TypeKind.OBJECT)
+        {
+            return schemaItem != null
+                && schemaItem is IGraphArgument ga
+                && string.Compare(ga.Name, argumentName, !argumentNameIsCaseSensitive) == 0
+                && ga.Parent is IGraphField gf
+                && string.Compare(gf.Name, fieldName, !fieldNameIsCaseSensitive) == 0
+                && gf.Parent is IGraphType gt
+                && gt.Kind == parentTypeKind
+                && gt is ITypedSchemaItem tsi
+                && tsi.ObjectType == typeof(TType);
         }
 
         /// <summary>

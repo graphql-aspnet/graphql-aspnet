@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Tests.Directives
         public enum TestEnum
         {
             Value1,
-            Value2
+            Value2,
         }
 
         private ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext> _pipeline;
@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Directives
         }
 
         [Test]
-        public async Task WhenSchemaItemIsNotAFieldOrEnum_ItsIgnored()
+        public async Task WhenSchemaItemIsNotAFieldOrEnum_SchemaFails()
         {
             _directiveLocation = DirectiveLocation.FIELD_DEFINITION;
             _reason = "because reason";
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Tests.Directives
 
             var context = await this.ExecuteRequest();
 
-            Assert.IsTrue(context.Messages.IsSucessful);
+            Assert.IsFalse(context.Messages.IsSucessful);
         }
 
         [Test]

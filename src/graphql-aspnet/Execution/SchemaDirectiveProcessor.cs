@@ -10,12 +10,12 @@
 namespace GraphQL.AspNet.Execution
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
@@ -34,27 +34,33 @@ namespace GraphQL.AspNet.Execution
     /// respective schema items.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to work with.</typeparam>
-    public class GraphSchemaDirectiveProcessor<TSchema> : IGraphSchemaDirectiveProcessor<TSchema>
+    internal sealed class SchemaDirectiveProcessor<TSchema>
         where TSchema : class, ISchema
     {
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaDirectiveProcessor{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="SchemaDirectiveProcessor{TSchema}" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider used to instantiate
         /// and apply type system directives.</param>
-        public GraphSchemaDirectiveProcessor(IServiceProvider serviceProvider)
+        public SchemaDirectiveProcessor(IServiceProvider serviceProvider)
         {
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Scans the target schema looking for any type system directives that should
+        /// be applied to any schema items. Those directives are executed against their targets
+        /// using standard directive pipeline.
+        /// </summary>
+        /// <param name="schema">The schema to apply directives too.</param>
         public void ApplyDirectives(TSchema schema)
         {
             // all schema items
+            var anyDirectivesApplied = false;
             foreach (var item in schema.AllSchemaItems())
-                this.ApplyDirectivesToItem(schema, item);
+                anyDirectivesApplied = this.ApplyDirectivesToItem(schema, item) || anyDirectivesApplied;
         }
 
         /// <summary>
@@ -62,9 +68,10 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="item">The item.</param>
-        private void ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
+        private bool ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
         {
             var fullRouteName = item.Name;
+            var invokedDirectives = new HashSet<IDirective>();
             foreach (var appliedDirective in item.AppliedDirectives)
             {
                 var scopedProvider = _serviceProvider.CreateScope();
@@ -92,6 +99,20 @@ namespace GraphQL.AspNet.Execution
 
                     throw new SchemaConfigurationException(failureMessage);
                 }
+
+                // ensure that repeated directives on the type system
+                // are in fact repeatable
+                if (invokedDirectives.Contains(targetDirective))
+                {
+                    if (!targetDirective.IsRepeatable)
+                    {
+                        throw new SchemaConfigurationException(
+                            $"Unable to construct the schema '{schema.Name}'. " +
+                            $"The non-repeatable directive @{targetDirective.Name} is repeated on the schema item '{item.Name}'. (Target: '{item.Route.Path}', Schema: {schema.Name})");
+                    }
+                }
+
+                invokedDirectives.Add(targetDirective);
 
                 var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.Arguments);
 
@@ -184,6 +205,8 @@ namespace GraphQL.AspNet.Execution
                 var eventLogger = scopedProvider.ServiceProvider.GetService<IGraphEventLogger>();
                 eventLogger?.TypeSystemDirectiveApplied<TSchema>(targetDirective, item);
             }
+
+            return item.AppliedDirectives.Count > 0;
         }
 
         private IInputArgumentCollection GatherInputArguments(IDirective targetDirective, object[] arguments)

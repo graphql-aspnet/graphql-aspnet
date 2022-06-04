@@ -48,5 +48,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The serializer.</value>
         IScalarValueSerializer Serializer { get; set; }
+
+        /// <summary>
+        /// Gets or sets a URL pointing to a specification detailing the behavior
+        /// of this scalar.
+        /// </summary>
+        /// <value>The specified by URL.</value>
+        string SpecifiedByUrl { get; set; }
     }
 }

@@ -6,13 +6,10 @@
 // --
 // License:  MIT
 // *************************************************************
-
-namespace GraphQL.AspNet.Tests.Configuration
+namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
 {
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class SchemaBuilderTests
+    public class ObjectWithCustomScalar
     {
+        public CustomSpecifiedScalarObjectItem Scalar { get; set; }
     }
 }
