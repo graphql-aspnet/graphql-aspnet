@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphTypeExtensionMethodTemplateTests
+    public class GraphTypeExtensionFieldTemplateTests
     {
-        private GraphTypeExtensionFieldTemplate CreateExtensionTemplate<TControllerType>(string actionName)
+        private AspNet.Internal.TypeTemplates.GraphTypeExtensionFieldTemplate CreateExtensionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController
         {
             var mockController = new Mock<IGraphControllerTemplate>();
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
 
             var methodInfo = typeof(TControllerType).GetMethod(actionName);
-            var template = new GraphTypeExtensionFieldTemplate(mockController.Object, methodInfo);
+            var template = new AspNet.Internal.TypeTemplates.GraphTypeExtensionFieldTemplate(mockController.Object, methodInfo);
             template.Parse();
             template.ValidateOrThrow();
 

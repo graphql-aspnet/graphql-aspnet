@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             // add in declared interfaces by name
             foreach (var iface in template.DeclaredInterfaces)
             {
-                objectType.InterfaceNames.Add(formatter.FormatGraphTypeName(GraphTypeNames.ParseName(iface, TypeKind.OBJECT)));
+                objectType.InterfaceNames.Add(formatter.FormatGraphTypeName(GraphTypeNames.ParseName(iface, TypeKind.INTERFACE)));
             }
 
             return result;

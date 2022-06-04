@@ -54,20 +54,26 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             Validation.ThrowIfNullOrReturn(field, nameof(field));
 
             var graphType = _concreteTypes.FindGraphType(masterType);
-            if (graphType != null)
+            if (graphType == null)
             {
+                // target of the type extension doesn't exist
+                // queue for later incase the target shows up
+                _typeQueue.EnQueueField(masterType, field);
+            }
+            else
+            {
+                // target of the field does exist
+                // ensure the type can take it and hand it to the
+                // tracker
                 if (!(graphType is IExtendableGraphType))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"Fatal error. The graph type '{graphType.Name}' of type '{graphType.Kind.ToString()}' does not implement '{typeof(IExtendableGraphType).FriendlyName()}' " +
+                        $"Fatal error. The graph type '{graphType.Name}' (Kind: '{graphType.Kind}') does not implement '{typeof(IExtendableGraphType).FriendlyName()}' " +
                         $"and cannot be extended with the new field '{field.Name}'.");
                 }
 
                 _extendableGraphTypeTracker.AddFieldExtension(graphType, field);
-                return;
             }
-
-            _typeQueue.EnQueueField(masterType, field);
         }
 
         /// <inheritdoc />
@@ -85,7 +91,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             _concreteTypes.EnsureRelationship(graphType, associatedType);
             _extendableGraphTypeTracker.MonitorGraphType(graphType);
 
-            // dequeue and add any extension fields if present
+            // if any fields destined for the given type were queued
+            // they can now be safely included
             if (associatedType != null)
             {
                 var unregisteredFields = _typeQueue.DequeueFields(associatedType);

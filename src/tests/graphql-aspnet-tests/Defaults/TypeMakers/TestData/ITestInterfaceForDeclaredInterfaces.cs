@@ -6,13 +6,10 @@
 // --
 // License:  MIT
 // *************************************************************
-
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 {
-    /// <summary>
-    /// A graph type representing an interface in the type system.
-    /// </summary>
-    public interface IInterfaceGraphType : IGraphFieldContainer, IExtendableGraphType, IInterfaceContainer, ITypedSchemaItem
+    public interface ITestInterfaceForDeclaredInterfaces : ITestInterface1, ITestInterface2
     {
+        public double Field3 { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -32,12 +33,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Inspects the given type and, in accordance with the rules of this maker, will
-        /// generate a complete set of necessary graph types required to support it.
-        /// </summary>
-        /// <param name="concreteType">The concrete type to incorporate into the schema.</param>
-        /// <returns>GraphTypeCreationResult.</returns>
+        /// <inheritdoc />
         public GraphTypeCreationResult CreateGraphType(Type concreteType)
         {
             if (concreteType == null)
@@ -72,6 +68,12 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 interfaceType.Extend(fieldResult.Field);
 
                 result.MergeDependents(fieldResult);
+            }
+
+            // add in declared interfaces by name
+            foreach (var iface in template.DeclaredInterfaces)
+            {
+                interfaceType.InterfaceNames.Add(formatter.FormatGraphTypeName(GraphTypeNames.ParseName(iface, TypeKind.INTERFACE)));
             }
 
             result.GraphType = interfaceType;

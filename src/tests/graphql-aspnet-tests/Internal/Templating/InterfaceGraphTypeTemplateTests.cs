@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphInterfaceTemplateTests
+    public class InterfaceGraphTypeTemplateTests
     {
         [Test]
         public void Parse_FromInterface_GeneralPropertySettings_SetCorrectly()
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
-                var template = new InterfaceGraphTypeTemplate(typeof(GraphInterfaceTemplateTests));
+                var template = new InterfaceGraphTypeTemplate(typeof(InterfaceGraphTypeTemplateTests));
             });
         }
 
@@ -54,6 +54,25 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 8, "big face" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void Parse_ImplementedInterfaces_AreCaptured()
+        {
+            var template = new InterfaceGraphTypeTemplate(typeof(ITestableInterfaceImplementation));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.IsNotNull(template);
+            Assert.AreEqual("[type]/ITestableInterfaceImplementation", template.Route.Path);
+            Assert.AreEqual(typeof(ITestableInterfaceImplementation), template.ObjectType);
+            Assert.AreEqual(5, template.DeclaredInterfaces.Count());
+
+            Assert.IsTrue(template.DeclaredInterfaces.Contains(typeof(IInterface1)));
+            Assert.IsTrue(template.DeclaredInterfaces.Contains(typeof(IInterface2)));
+            Assert.IsTrue(template.DeclaredInterfaces.Contains(typeof(IInterface3)));
+            Assert.IsTrue(template.DeclaredInterfaces.Contains(typeof(INestedInterface1)));
+            Assert.IsTrue(template.DeclaredInterfaces.Contains(typeof(INestedInterface2)));
         }
     }
 }

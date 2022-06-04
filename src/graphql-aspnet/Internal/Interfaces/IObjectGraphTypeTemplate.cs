@@ -15,12 +15,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// <summary>
     /// An interface describing qualified Graph object.
     /// </summary>
-    public interface IObjectGraphTypeTemplate : IGraphTypeTemplate, IGraphTypeFieldTemplateContainer
+    public interface IObjectGraphTypeTemplate : IGraphTypeTemplate, IGraphTypeFieldTemplateContainer, IInterfaceContainerTemplate
     {
-        /// <summary>
-        /// Gets the set of interfaces that were declared on the type.
-        /// </summary>
-        /// <value>The declared interfaces.</value>
-        IEnumerable<Type> DeclaredInterfaces { get; }
     }
 }

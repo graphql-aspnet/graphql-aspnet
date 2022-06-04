@@ -59,6 +59,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.PossibleTypes = null;
             this.EnumValues = null;
             this.InputFields = null;
+            this.SpecifiedByUrl = null;
         }
 
         /// <summary>
@@ -169,7 +170,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <param name="schema">The schema.</param>
         private void LoadInterfaces(IntrospectedSchema schema)
         {
-            if (this.GraphType is IGraphInterfaceContainer interfaceContainer)
+            if (this.GraphType is IInterfaceContainer interfaceContainer)
             {
                 // populate the interfaces for this object type, if any are defined and exist
                 var interfaceList = new List<IntrospectedType>();

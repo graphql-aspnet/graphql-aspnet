@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
     public class InterfaceTypeMakerTests : GraphTypeMakerTestBase
     {
         [Test]
-        public void Parse_FromInterface_CreateGraphType_PropertyCheck()
+        public void CreateGraphType_PropertyCheck()
         {
             var server = new TestServerBuilder().Build();
             var template = TemplateHelper.CreateInterfaceTemplate<ISimpleInterface>();
@@ -51,6 +51,25 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 58, "interface arg" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void CreateGraphType_DeclaredInterfacesAreCaptured()
+        {
+            var result = this.MakeGraphType(typeof(ITestInterfaceForDeclaredInterfaces), TypeKind.INTERFACE);
+            var interfaceType = result.GraphType as IInterfaceGraphType;
+
+            Assert.IsNotNull(interfaceType);
+
+            // __typename and Field3
+            // only those declared on the interface, not those inherited
+            Assert.AreEqual(2, interfaceType.Fields.Count());
+
+            // should reference the two additional interfaces
+            // ITestInterface1 ITestInterface2
+            Assert.AreEqual(2, interfaceType.InterfaceNames.Count());
+            Assert.IsTrue(interfaceType.InterfaceNames.Any(x => x == "ITestInterface1"));
+            Assert.IsTrue(interfaceType.InterfaceNames.Any(x => x == "ITestInterface2"));
         }
     }
 }

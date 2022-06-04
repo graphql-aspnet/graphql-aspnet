@@ -15,11 +15,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A collection responsible for ensuring continutiy between interface graph types and the object types that
-    /// implement them in the graph. If an interface is extended by user code any graph types made from concrete types
+    /// <para>A entity responsible for ensuring continuity between interface graph types
+    /// and the object types that implement them in the graph.
+    /// If an interface is extended by user code any graph types made from concrete types
     /// that implement that interface are also extended.
+    /// </para>
+    /// <para>
+    /// (Oct 2021) Similarly, if an interface implements a newly added interface then the
+    /// fields on the interface's graph type are extended to include those of the
+    /// newly added interface.
+    /// </para>
     /// </summary>
-    internal class ExtendedGraphTypeTracker
+    internal sealed class ExtendedGraphTypeTracker
     {
         // a collection of extendable types that implement an interface not yet known to this instance
         // if an interface is later added these types will be automatically assigned to it for extendability
@@ -72,6 +79,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 this.AddInterfaceField(interfaceType, newField);
             else if (graphType is IExtendableGraphType extendableType)
                 extendableType.Extend(newField);
+        }
+
+        /// <summary>
+        /// Adds the supplied graph type to the collection and begins tracking it for changes and applies any
+        /// changes that may effect it. Non-extendable graph types are safely filtered out and ignored.
+        /// </summary>
+        /// <param name="graphType">The graph type to begin watching.</param>
+        public void MonitorGraphType(IGraphType graphType)
+        {
+            if (_allKnownTypes.Contains(graphType))
+                return;
+
+            if (graphType is IInterfaceGraphType interfaceType)
+                this.EnsureInterfaceIsTracked(interfaceType);
+            else if (graphType is IObjectGraphType objType)
+                this.EnsureObjectTypeIsTracked(objType);
         }
 
         /// <summary>
@@ -149,20 +172,5 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 objectGraphType.Extend(field);
         }
 
-        /// <summary>
-        /// Adds the supplied graph type to the collection and begins tracking it for changes and applies any
-        /// changes that may effect it. Non-extendable graph types are safely filtered out and ignored.
-        /// </summary>
-        /// <param name="graphType">The graph type to begin watching.</param>
-        public void MonitorGraphType(IGraphType graphType)
-        {
-            if (_allKnownTypes.Contains(graphType))
-                return;
-
-            if (graphType is IInterfaceGraphType interfaceType)
-                this.EnsureInterfaceIsTracked(interfaceType);
-            else if (graphType is IObjectGraphType objType)
-                this.EnsureObjectTypeIsTracked(objType);
-        }
     }
 }
