@@ -202,5 +202,27 @@ namespace GraphQL.AspNet.Tests.Configuration
             var schema = new Mock<ISchema>();
             Assert.IsFalse(schema.Object.IsVirtualItem());
         }
+
+        [Test]
+        public void IGraphArugment()
+        {
+            var server = new TestServerBuilder()
+            .AddGraphQL(o =>
+            {
+                o.AddGraphType<MethodObject>();
+            })
+            .Build();
+
+            var foundItems = new List<ISchemaItem>();
+
+            foreach (var item in server.Schema.AllSchemaItems(true))
+            {
+                if (item.IsArgument<MethodObject>("name", "whichName"))
+                    foundItems.Add(item);
+            }
+
+            Assert.AreEqual(1, foundItems.Count);
+            Assert.IsTrue(foundItems.Any(x => x.Name == "whichName"));
+        }
     }
 }
