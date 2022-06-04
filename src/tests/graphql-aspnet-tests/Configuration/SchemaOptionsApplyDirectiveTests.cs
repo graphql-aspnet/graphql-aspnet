@@ -11,11 +11,15 @@ namespace GraphQL.AspNet.Tests.Configuration
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Configuration.Exceptions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Configuration.SchemaOptionsTestData;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
@@ -106,6 +110,48 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.AreEqual(2, foundOperations.Count);
             Assert.IsTrue(foundOperations.Contains(GraphOperationType.Query));
             Assert.IsTrue(foundOperations.Contains(GraphOperationType.Mutation));
+        }
+
+        [Test]
+        public void ApplyDirective_WithAtSymbol_ExecutesAsExpected()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<TwoPropertyObject>();
+                o.ApplyDirective("@specifiedBy")
+                .WithArguments("http://somesite")
+                .ToItems(schemaItem =>
+                      schemaItem != null
+                        && schemaItem.Name == Constants.ScalarNames.STRING);
+            })
+            .Build();
+
+            var item = server.Schema.KnownTypes.FindGraphType(typeof(string)) as IScalarGraphType;
+
+            Assert.AreEqual("http://somesite", item.SpecifiedByUrl);
+        }
+
+        [Test]
+        public void ApplyDirective_WithDoubleAtSymbol_ThrowsException()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<TwoPropertyObject>();
+
+                // unknown directive '@specifiedBy'
+                o.ApplyDirective("@@specifiedBy")
+                .WithArguments("http://somesite")
+                .ToItems(schemaItem =>
+                      schemaItem != null
+                        && schemaItem.Name == Constants.ScalarNames.STRING);
+            });
+
+            Assert.Throws<SchemaConfigurationException>(() =>
+            {
+                var result = server.Build();
+            });
         }
     }
 }

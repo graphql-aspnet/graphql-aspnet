@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Model;
@@ -1134,7 +1135,7 @@ namespace GraphQL.AspNet.Tests.Execution
                       schemaItem != null
                         && schemaItem is IEnumValue ev
                         && ev.Parent.ObjectType == typeof(IntrospectableEnum)
-                        && Convert.ToInt32(ev.InternalValue) == (int)IntrospectableEnum.Value2);
+                        && Convert.ToInt32(ev.InternalValue) == (int)IntrospectableEnum.Value1);
             })
             .Build();
 
@@ -1160,7 +1161,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                     ""enumValues"": [
                                         {
                                             ""name"" : ""VALUE1"",
-                                            ""isDeprecated"" : false
+                                            ""isDeprecated"" : true
                                         },
                                         {
                                             ""name"" : ""VALUE2"",
@@ -1235,6 +1236,48 @@ namespace GraphQL.AspNet.Tests.Execution
             {
                 o.AddGraphType<TwoPropertyObject>();
                 o.ApplyDirective("specifiedBy")
+                .WithArguments("http://somesite")
+                .ToItems(schemaItem =>
+                      schemaItem != null
+                        && schemaItem.Name == Constants.ScalarNames.STRING);
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""String"")
+                              {
+                                kind
+                                name
+                                specifiedByURL
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                            ""data"": {
+                                ""__type"": {
+                                    ""kind"": ""SCALAR"",
+                                    ""name"": ""String"",
+                                    ""specifiedByURL"": ""http://somesite""
+                                }
+                            }
+                        }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task SpecifiedByLateBound_WithAtSymbol_PopulateSpecifiedByURL()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<TwoPropertyObject>();
+                o.ApplyDirective("@specifiedBy")
                 .WithArguments("http://somesite")
                 .ToItems(schemaItem =>
                       schemaItem != null
@@ -1348,6 +1391,67 @@ namespace GraphQL.AspNet.Tests.Execution
                                 }
                             }
                         }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task RepeatableDirective_SetsRepeatableFlag()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddDirective<ARepeatableDirective>();
+                o.AddDirective<NonRepeatableDirective>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __schema
+                              {
+                                directives {
+                                    name
+                                    isRepeatable
+                                }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                            ""data"": {
+                                ""__schema"": {
+                                ""directives"" : [
+                                    {
+                                      ""name"": ""nonRepeatable"",
+                                      ""isRepeatable"": false
+                                    },
+                                    {
+                                      ""name"": ""aRepeatable"",
+                                      ""isRepeatable"": true
+                                    },
+                                    {
+                                      ""name"": ""deprecated"",
+                                      ""isRepeatable"": false
+                                    },
+                                    {
+                                      ""name"": ""specifiedBy"",
+                                      ""isRepeatable"": false
+                                    },
+                                    {
+                                      ""name"": ""include"",
+                                      ""isRepeatable"": false
+                                    },
+                                    {
+                                      ""name"": ""skip"",
+                                      ""isRepeatable"": false
+                                    }
+                               ]
+                            }
+                        }}";
 
             CommonAssertions.AreEqualJsonStrings(output, response);
         }

@@ -9,11 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
-    using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
@@ -39,6 +36,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("[directive]/SimpleExecutable", template.Route.Path);
             Assert.AreEqual(DirectiveLocation.FIELD, template.Locations);
             Assert.IsNotNull(template.Methods.FindMethod(DirectiveLocation.FIELD));
+            Assert.IsFalse(template.IsRepeatable);
         }
 
         [Test]
@@ -97,6 +95,16 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.AreEqual(expectedLocations, template.Locations);
+        }
+
+        [Test]
+        public void RepeatableAttribute_SetsRepeatableProperty()
+        {
+            var template = new GraphDirectiveTemplate(typeof(RepeatableDirective));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.IsTrue(template.IsRepeatable);
         }
     }
 }

@@ -67,6 +67,15 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
                 new IntrospectedRoutePath(GraphCollection.Types, this.Name, "args"),
                 (directive) => directive.Arguments.AsCompletedTask(),
                 "A collection of input values provided to the directive in order to properly invoke it.");
+
+            this.GraphFieldCollection.AddField<IntrospectedDirective, bool>(
+                "isRepeatable",
+                new GraphTypeExpression(
+                    Constants.ScalarNames.BOOLEAN,
+                    GraphTypeExpression.RequiredSingleItem),
+                new IntrospectedRoutePath(GraphCollection.Types, this.Name, "isRepeatable"),
+                (directive) => directive.IsRepeatable.AsCompletedTask(),
+                "A value indicating if the directive is repeatable on its target entity.");
         }
     }
 }

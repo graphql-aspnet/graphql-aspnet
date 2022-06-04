@@ -53,5 +53,36 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual("secondArg", arg1.Name);
             Assert.AreEqual(typeof(TwoPropertyObject), arg1.ObjectType);
         }
+
+        [Test]
+        public void Directive_RepeatableAttributeIsSetWhenPresent()
+        {
+            var builder = new TestServerBuilder();
+            var server = builder.Build();
+            var typeMaker = new DefaultGraphTypeMakerProvider()
+                                .CreateTypeMaker(server.Schema, TypeKind.DIRECTIVE);
+
+            var directive = typeMaker.CreateGraphType(typeof(RepeatableDirective)).GraphType as IDirective;
+
+            Assert.IsTrue(directive.IsRepeatable);
+            Assert.AreEqual("repeatable", directive.Name);
+            Assert.AreEqual(TypeKind.DIRECTIVE, directive.Kind);
+            Assert.IsTrue(directive.Publish);
+            Assert.AreEqual(DirectiveInvocationPhase.DefaultPhases, directive.InvocationPhases);
+            Assert.AreEqual(DirectiveLocation.SCALAR, directive.Locations);
+
+            Assert.AreEqual(2, directive.Arguments.Count);
+
+            var arg0 = directive.Arguments.FirstOrDefault();
+            var arg1 = directive.Arguments.Skip(1).FirstOrDefault();
+
+            Assert.IsNotNull(arg0);
+            Assert.AreEqual("firstArg", arg0.Name);
+            Assert.AreEqual(typeof(int), arg0.ObjectType);
+
+            Assert.IsNotNull(arg1);
+            Assert.AreEqual("secondArg", arg1.Name);
+            Assert.AreEqual(typeof(TwoPropertyObject), arg1.ObjectType);
+        }
     }
 }

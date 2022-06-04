@@ -36,5 +36,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The invocation phases.</value>
         DirectiveInvocationPhase InvocationPhases { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this directive is repeatable at a given
+        /// target location.
+        /// </summary>
+        /// <value><c>true</c> if this directive is repeatable; otherwise, <c>false</c>.</value>
+        bool IsRepeatable { get; set; }
     }
 }

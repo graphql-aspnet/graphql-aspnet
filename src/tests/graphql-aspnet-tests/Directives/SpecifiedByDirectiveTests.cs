@@ -155,14 +155,16 @@ namespace GraphQL.AspNet.Tests.Directives
         public async Task NoUrlGiven_ThrowsException()
         {
             _url = null;
+            _directiveLocation = DirectiveLocation.SCALAR;
             _directiveTarget = _schema.AllSchemaItems().Single(x => x.Name == Constants.ScalarNames.STRING);
 
             var context = await this.ExecuteRequest();
 
             Assert.AreEqual(GraphMessageSeverity.Critical, context.Messages.Severity);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.IsNotNull(context.Messages[0].Exception);
-            Assert.AreEqual(typeof(GraphTypeDeclarationException), context.Messages[0].Exception.GetType());
+
+            // rule 5.7 deals with input parameter validation
+            Assert.IsNotNull("5.7", context.Messages[0].MetaData["Rule"].ToString());
         }
 
         [Test]

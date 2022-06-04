@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using GraphQL.AspNet.Common;
@@ -33,17 +34,17 @@ namespace GraphQL.AspNet.Execution
     /// respective schema items.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to work with.</typeparam>
-    internal sealed class GraphSchemaDirectiveProcessor<TSchema>
+    internal sealed class SchemaDirectiveProcessor<TSchema>
         where TSchema : class, ISchema
     {
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphSchemaDirectiveProcessor{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="SchemaDirectiveProcessor{TSchema}" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider used to instantiate
         /// and apply type system directives.</param>
-        public GraphSchemaDirectiveProcessor(IServiceProvider serviceProvider)
+        public SchemaDirectiveProcessor(IServiceProvider serviceProvider)
         {
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
@@ -70,6 +71,7 @@ namespace GraphQL.AspNet.Execution
         private bool ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
         {
             var fullRouteName = item.Name;
+            var invokedDirectives = new HashSet<IDirective>();
             foreach (var appliedDirective in item.AppliedDirectives)
             {
                 var scopedProvider = _serviceProvider.CreateScope();
@@ -97,6 +99,20 @@ namespace GraphQL.AspNet.Execution
 
                     throw new SchemaConfigurationException(failureMessage);
                 }
+
+                // ensure that repeated directives on the type system
+                // are in fact repeatable
+                if (invokedDirectives.Contains(targetDirective))
+                {
+                    if (!targetDirective.IsRepeatable)
+                    {
+                        throw new SchemaConfigurationException(
+                            $"Unable to construct the schema '{schema.Name}'. " +
+                            $"The non-repeatable directive @{targetDirective.Name} is repeated on the schema item '{item.Name}'. (Target: '{item.Route.Path}', Schema: {schema.Name})");
+                    }
+                }
+
+                invokedDirectives.Add(targetDirective);
 
                 var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.Arguments);
 

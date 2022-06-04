@@ -34,7 +34,6 @@ namespace GraphQL.AspNet.Directives.Global
         [DirectiveLocations(DirectiveLocation.SCALAR)]
         public IGraphActionResult Execute([FromGraphQL("url", TypeExpression = TypeExpressions.IsNotNull)] string url)
         {
-            url = url?.Trim();
             var scalarItem = this.DirectiveTarget as IScalarGraphType;
 
             if (scalarItem == null)
@@ -55,6 +54,7 @@ namespace GraphQL.AspNet.Directives.Global
                     $"a {TypeKind.SCALAR}. (Current Target: {currentTarget})");
             }
 
+            url = url?.Trim();
             if (url == null)
             {
                 throw new GraphTypeDeclarationException(

@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.DirectiveName != null)
             {
                 this.DirectiveName = this.DirectiveName.Trim();
-                while (this.DirectiveName.StartsWith(TokenTypeNames.STRING_AT_SYMBOL))
+                if (this.DirectiveName.StartsWith(TokenTypeNames.STRING_AT_SYMBOL))
                     this.DirectiveName = this.DirectiveName.Substring(1);
             }
         }
