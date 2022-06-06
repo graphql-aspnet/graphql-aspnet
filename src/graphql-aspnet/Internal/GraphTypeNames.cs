@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Internal
                 else
                 {
                     typeName = GraphTypeNames.ParseName(type, TypeKind.OBJECT);
-                    typeName = $"Input_{typeName}";
+                    typeName = $"{Constants.CommonPrefix.INPUT_OBJECT_NAME_PREFIX}{typeName}";
                 }
             }
             else

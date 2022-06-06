@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// Marks a graph type as being extendable such that additional fields can be added to it after its been created.
     /// </summary>
-    public interface IExtendableGraphType : IGraphType
+    public interface IExtendableGraphType : IGraphType, IGraphFieldContainer
     {
         /// <summary>
         /// Extends this graph type by adding a new field. An exception may be thrown if

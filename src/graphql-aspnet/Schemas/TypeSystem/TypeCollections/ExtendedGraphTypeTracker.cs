@@ -28,13 +28,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     /// </summary>
     internal sealed class ExtendedGraphTypeTracker
     {
-        // a collection of extendable types that implement an interface not yet known to this instance
-        // if an interface is later added these types will be automatically assigned to it for extendability
-        private readonly ConcurrentDictionary<string, HashSet<IObjectGraphType>> _queuedTypesByInterfaceName;
-
         private readonly ConcurrentDictionary<string, IInterfaceGraphType> _interfacesByName;
-        private readonly ConcurrentDictionary<IInterfaceGraphType, HashSet<IObjectGraphType>> _graphTypesByInterface;
-        private readonly ConcurrentDictionary<IInterfaceGraphType, HashSet<IGraphField>> _fieldsByInterface;
+        private readonly ConcurrentDictionary<string, HashSet<IGraphType>> _graphTypesByInterfaceName;
         private readonly HashSet<IGraphType> _allKnownTypes;
 
         /// <summary>
@@ -43,9 +38,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         public ExtendedGraphTypeTracker()
         {
             _interfacesByName = new ConcurrentDictionary<string, IInterfaceGraphType>();
-            _graphTypesByInterface = new ConcurrentDictionary<IInterfaceGraphType, HashSet<IObjectGraphType>>();
-            _fieldsByInterface = new ConcurrentDictionary<IInterfaceGraphType, HashSet<IGraphField>>();
-            _queuedTypesByInterfaceName = new ConcurrentDictionary<string, HashSet<IObjectGraphType>>();
+            _graphTypesByInterfaceName = new ConcurrentDictionary<string, HashSet<IGraphType>>();
             _allKnownTypes = new HashSet<IGraphType>(GraphTypeEqualityComparer.Instance);
         }
 
@@ -54,15 +47,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// </summary>
         /// <param name="interfaceName">Name of the interface.</param>
         /// <returns>IEnumerable&lt;IGraphType&gt;.</returns>
-        public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(string interfaceName)
+        public IEnumerable<IGraphType> FindGraphTypesByInterface(string interfaceName)
         {
-            if (!string.IsNullOrWhiteSpace(interfaceName) &&
-                _interfacesByName.TryGetValue(interfaceName, out var interfaceType))
-            {
-                return _graphTypesByInterface[interfaceType];
-            }
+            if (!string.IsNullOrWhiteSpace(interfaceName) && _graphTypesByInterfaceName.ContainsKey(interfaceName))
+                return _graphTypesByInterfaceName[interfaceName];
 
-            return Enumerable.Empty<IObjectGraphType>();
+            return Enumerable.Empty<IGraphType>();
         }
 
         /// <summary>
@@ -75,102 +65,86 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// <param name="newField">The new field to add.</param>
         public void AddFieldExtension(IGraphType graphType, IGraphField newField)
         {
-            if (graphType is IInterfaceGraphType interfaceType)
-                this.AddInterfaceField(interfaceType, newField);
-            else if (graphType is IExtendableGraphType extendableType)
-                extendableType.Extend(newField);
+            this.MonitorGraphTypeInternal(graphType);
+
+            if (graphType is IExtendableGraphType extendableType)
+                this.ApplyField(extendableType, newField);
+
+            this.Syncronize(graphType);
+        }
+
+        private void ApplyField(IExtendableGraphType graphType, IGraphField field)
+        {
+            var fieldClone = field.Clone(graphType);
+            graphType.Extend(fieldClone);
         }
 
         /// <summary>
         /// Adds the supplied graph type to the collection and begins tracking it for changes and applies any
-        /// changes that may effect it. Non-extendable graph types are safely filtered out and ignored.
+        /// changes that may affect it. Non-extendable graph types are safely filtered out and ignored.
         /// </summary>
         /// <param name="graphType">The graph type to begin watching.</param>
         public void MonitorGraphType(IGraphType graphType)
         {
-            if (_allKnownTypes.Contains(graphType))
-                return;
-
-            if (graphType is IInterfaceGraphType interfaceType)
-                this.EnsureInterfaceIsTracked(interfaceType);
-            else if (graphType is IObjectGraphType objType)
-                this.EnsureObjectTypeIsTracked(objType);
+            this.MonitorGraphTypeInternal(graphType);
+            this.Syncronize(graphType);
         }
 
-        /// <summary>
-        /// Adds the new field to the interface and to any object types associated with the interface.
-        /// </summary>
-        /// <param name="interfaceType">Type of the interface.</param>
-        /// <param name="newField">The new field.</param>
-        private void AddInterfaceField(IInterfaceGraphType interfaceType, IGraphField newField)
+        private void MonitorGraphTypeInternal(IGraphType graphType)
         {
-            this.EnsureInterfaceIsTracked(interfaceType);
-
-            interfaceType.Extend(newField);
-            foreach (var objectType in _graphTypesByInterface[interfaceType])
+            if (!_allKnownTypes.Contains(graphType))
             {
-                objectType.Extend(newField);
-            }
-        }
+                _allKnownTypes.Add(graphType);
 
-        /// <summary>
-        /// Ensures the interface is known to this instance and is primed to accept fields and apply
-        /// them to other graph types appropriately.
-        /// </summary>
-        /// <param name="interfaceType">The interface to include in this tracker.</param>
-        private void EnsureInterfaceIsTracked(IInterfaceGraphType interfaceType)
-        {
-            _allKnownTypes.Add(interfaceType);
-            _fieldsByInterface.TryAdd(interfaceType, new HashSet<IGraphField>());
-            _interfacesByName.TryAdd(interfaceType.Name, interfaceType);
-            _graphTypesByInterface.TryAdd(interfaceType, new HashSet<IObjectGraphType>());
+                if (graphType is IInterfaceGraphType ifaceType)
+                    _interfacesByName.TryAdd(ifaceType.Name, ifaceType);
 
-            // if any extendable types are queued for this new interface
-            // ensure they are converted to being tracked
-            if (_queuedTypesByInterfaceName.TryRemove(interfaceType.Name, out var objectGraphTypes))
-            {
-                foreach (var type in objectGraphTypes)
+                if (graphType is IInterfaceContainer ifaceContainer)
                 {
-                    _graphTypesByInterface[interfaceType].Add(type);
+                    foreach (var ifaceName in ifaceContainer.InterfaceNames)
+                    {
+                        _graphTypesByInterfaceName.TryAdd(ifaceName, new HashSet<IGraphType>());
+                        _graphTypesByInterfaceName[ifaceName].Add(graphType);
+                    }
                 }
             }
         }
 
-        /// <summary>
-        /// Ensures the object graph type is tracked against all its implemented interfaces and queued
-        /// to be added to the interfaces it declares that are not known to this instance.
-        /// </summary>
-        /// <param name="objectGraphType">The object graph type to watch.</param>
-        private void EnsureObjectTypeIsTracked(IObjectGraphType objectGraphType)
+        private void Syncronize(IGraphType newlyAddedType)
         {
-            _allKnownTypes.Add(objectGraphType);
-            foreach (var interfaceName in objectGraphType.InterfaceNames)
+            // if the type implements interfaces
+            // sync those interfaces already known into the type
+            if (newlyAddedType is IInterfaceContainer iic)
             {
-                if (_interfacesByName.TryGetValue(interfaceName, out var interfaceType))
+                foreach (var interfaceName in iic.InterfaceNames)
                 {
-                    _graphTypesByInterface[interfaceType].Add(objectGraphType);
-                    this.ApplyAllFields(interfaceType, objectGraphType);
+                    if (_interfacesByName.ContainsKey(interfaceName))
+                        this.ApplyInterface(newlyAddedType, _interfacesByName[interfaceName]);
                 }
-                else
-                {
-                    if (!_queuedTypesByInterfaceName.TryGetValue(interfaceName, out var _))
-                        _queuedTypesByInterfaceName.TryAdd(interfaceName, new HashSet<IObjectGraphType>());
+            }
 
-                    _queuedTypesByInterfaceName[interfaceName].Add(objectGraphType);
+            // if the type is an interface
+            // sync it into any known types
+            if (newlyAddedType is IInterfaceGraphType igt)
+            {
+                if (_graphTypesByInterfaceName.ContainsKey(igt.Name))
+                {
+                    foreach (var type in _graphTypesByInterfaceName[igt.Name])
+                        this.ApplyInterface(type, igt);
                 }
             }
         }
 
-        /// <summary>
-        /// Applies all fields known extension fields for the interface to the given object graph type.
-        /// </summary>
-        /// <param name="interfaceType">The interface type to search for associated fields.</param>
-        /// <param name="objectGraphType">The object graph type to recieve new fields.</param>
-        private void ApplyAllFields(IInterfaceGraphType interfaceType, IObjectGraphType objectGraphType)
+        private void ApplyInterface(IGraphType graphType, IInterfaceGraphType interfaceGraphType)
         {
-            foreach (var field in _fieldsByInterface[interfaceType])
-                objectGraphType.Extend(field);
+            if (graphType is IExtendableGraphType egt)
+            {
+                foreach (var field in interfaceGraphType.Fields)
+                {
+                    if (!egt.Fields.ContainsKey(field.Name))
+                        this.ApplyField(egt, field);
+                }
+            }
         }
-
     }
 }

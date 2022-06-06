@@ -114,13 +114,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             switch (graphType)
             {
                 case IInterfaceGraphType igt:
-                    return this.FindGraphTypesByInterface(igt);
+                    return this.FindObjectTypesByInterface(igt)
+                        .OfType<IObjectGraphType>();
 
                 case IUnionGraphType ugt:
                     return ugt.PossibleGraphTypeNames
                         .Select(this.FindGraphType)
-                        .Where(x => x != null)
                         .OfType<IObjectGraphType>();
+
                 case IObjectGraphType ogt:
                     return ogt.AsEnumerable();
 
@@ -226,16 +227,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         }
 
         /// <inheritdoc />
-        public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(IInterfaceGraphType interfaceType)
+        public IEnumerable<IGraphType> FindObjectTypesByInterface(IInterfaceGraphType interfaceType)
         {
             if (interfaceType == null)
                 return Enumerable.Empty<IObjectGraphType>();
             else
-                return this.FindGraphTypesByInterface(interfaceType.Name);
+                return this.FindObjectTypesByInterface(interfaceType.Name);
         }
 
         /// <inheritdoc />
-        public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(string interfaceName)
+        public IEnumerable<IGraphType> FindObjectTypesByInterface(string interfaceName)
         {
             return _extendableGraphTypeTracker.FindGraphTypesByInterface(interfaceName);
         }

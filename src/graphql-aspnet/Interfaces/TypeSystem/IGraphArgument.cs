@@ -18,6 +18,13 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IGraphArgument : ITypedSchemaItem, ISchemaItem
     {
         /// <summary>
+        /// Clones this instance to a new argument.
+        /// </summary>
+        /// <param name="parent">The parent item to assign the newly cloned argument to.</param>
+        /// <returns>IGraphField.</returns>
+        IGraphArgument Clone(ISchemaItem parent);
+
+        /// <summary>
         /// Gets a default value to use for any instances of this argument when one is not explicitly provided.
         /// The default can be <c>null</c>. Inspect <see cref="HasDefaultValue"/>
         /// to determine if a default value is present.

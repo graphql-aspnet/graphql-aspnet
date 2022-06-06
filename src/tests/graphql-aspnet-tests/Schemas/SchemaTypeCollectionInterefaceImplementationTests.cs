@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             int positionToAddIPastry,
             int positionToAddIDonut)
         {
-            for (var i = 1; i <= 3; i++)
+            for (var i = 1; i <= 2; i++)
             {
                 if (positionToAddIPastry == i)
                     _collection.EnsureGraphType(_ipastry, typeof(IPastry));
@@ -169,7 +169,19 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [TestCase(1, 2, 3, 4, 5, 6)]
+        [TestCase(1, 6, 5, 3, 4, 2)]
+        [TestCase(1, 5, 6, 4, 3, 2)]
+        [TestCase(2, 3, 1, 4, 5, 6)]
+        [TestCase(2, 5, 6, 3, 4, 1)]
+        [TestCase(2, 5, 3, 4, 6, 1)]
+        [TestCase(3, 4, 2, 6, 5, 1)]
+        [TestCase(3, 4, 1, 2, 6, 5)]
+        [TestCase(4, 2, 3, 6, 1, 5)]
+        [TestCase(4, 5, 6, 3, 2, 1)]
+        [TestCase(5, 1, 4, 2, 6, 3)]
+        [TestCase(5, 4, 1, 2, 3, 6)]
         [TestCase(6, 5, 4, 3, 2, 1)]
+        [TestCase(6, 5, 2, 3, 4, 1)]
         public void InterfaceExtensionWithConcreteObject_Scenarios(
             int positionToAddIPastry,
             int positionToAddIDonut,
@@ -226,9 +238,22 @@ namespace GraphQL.AspNet.Tests.Schemas
         }
 
         [TestCase(1, 2, 3, 4, 5, 6, 7)]
+        [TestCase(1, 2, 3, 5, 4, 6, 7)]
+        [TestCase(1, 2, 3, 5, 4, 7, 6)]
+        [TestCase(1, 4, 3, 5, 2, 7, 6)]
+        [TestCase(1, 5, 6, 4, 2, 7, 3)]
         [TestCase(2, 1, 3, 4, 5, 6, 7)]
+        [TestCase(2, 3, 4, 6, 1, 5, 7)]
         [TestCase(3, 4, 1, 2, 5, 6, 7)]
+        [TestCase(3, 5, 4, 1, 2, 6, 7)]
+        [TestCase(4, 2, 3, 5, 1, 7, 6)]
+        [TestCase(4, 1, 2, 5, 3, 6, 7)]
+        [TestCase(5, 2, 3, 1, 4, 7, 6)]
+        [TestCase(5, 3, 4, 1, 2, 7, 6)]
+        [TestCase(6, 5, 1, 4, 7, 2, 3)]
+        [TestCase(6, 5, 4, 7, 1, 3, 2)]
         [TestCase(7, 6, 5, 4, 3, 2, 1)]
+        [TestCase(7, 2, 5, 3, 4, 6, 1)]
         public void InterfaceAndObjectTypeExtensions_Scenarios(
             int positionToAddIPastry,
             int positionToAddIDonut,

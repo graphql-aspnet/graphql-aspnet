@@ -88,6 +88,12 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.Parent = Parent;
         }
 
+        /// <inheritdoc />
+        public IGraphField Clone(IGraphType parent)
+        {
+            throw new NotImplementedException("Virtual Fields cannot be cloned.");
+        }
+
         /// <summary>
         /// Gets the tracked copy of the graph type that represents this virtual field.
         /// </summary>

@@ -14,10 +14,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface INamedItem
     {
         /// <summary>
-        /// Gets or sets the formal name of this item as it exists in the schema.
+        /// Gets the formal name of this item as it exists in the schema. This value is
+        /// deteremined by the item from which it was templated and cannot be changed.
         /// </summary>
         /// <value>The publically referenced name of this entity in the graph.</value>
-        string Name { get; set; }
+        string Name { get; }
 
         /// <summary>
         /// Gets or sets the human-readable description distributed with this item

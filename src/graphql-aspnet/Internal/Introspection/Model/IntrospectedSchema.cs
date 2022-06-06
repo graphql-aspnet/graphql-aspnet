@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// <returns>IEnumerable&lt;IIntrospectedType&gt;.</returns>
         public IEnumerable<IntrospectedType> FindIntrospectedTypesByInterface(string interfaceName)
         {
-            foreach (var graphType in _schema.KnownTypes.FindGraphTypesByInterface(interfaceName))
+            foreach (var graphType in _schema.KnownTypes.FindObjectTypesByInterface(interfaceName))
             {
                 yield return this.FindIntrospectedType(graphType);
             }

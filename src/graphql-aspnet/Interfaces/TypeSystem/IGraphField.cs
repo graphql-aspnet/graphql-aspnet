@@ -38,6 +38,13 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null);
 
         /// <summary>
+        /// Clones this instance to a new field.
+        /// </summary>
+        /// <param name="parent">The parent item that will own this new field.</param>
+        /// <returns>IGraphField.</returns>
+        IGraphField Clone(IGraphType parent);
+
+        /// <summary>
         /// Gets or sets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
         /// declaration used in schema definition language.)
         /// </summary>

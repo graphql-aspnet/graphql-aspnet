@@ -138,20 +138,20 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
             where TDirective : GraphDirective;
 
         /// <summary>
-        /// Retrieves the collection of graph types that implement the provided named interface,
+        /// Retrieves the collection of types that implement the provided named interface,
         /// if any.
         /// </summary>
         /// <param name="interfaceType">The interface type type to look for.</param>
         /// <returns>IEnumerable&lt;IObjectGraphType&gt;.</returns>
-        IEnumerable<IObjectGraphType> FindGraphTypesByInterface(IInterfaceGraphType interfaceType);
+        IEnumerable<IGraphType> FindObjectTypesByInterface(IInterfaceGraphType interfaceType);
 
         /// <summary>
-        /// Retrieves the collection of graph types that implement the provided named interface
+        /// Retrieves the collection of types that implement the provided named interface
         /// if any.
         /// </summary>
         /// <param name="interfaceName">Name of the interface.</param>
         /// <returns>IEnumerable&lt;IGraphType&gt;.</returns>
-        IEnumerable<IObjectGraphType> FindGraphTypesByInterface(string interfaceName);
+        IEnumerable<IGraphType> FindObjectTypesByInterface(string interfaceName);
 
         /// <summary>
         /// Determines whether the specified graph type name exists in this collection.

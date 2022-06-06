@@ -120,6 +120,18 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// A collection of common prefixes that are semantically handled in naming.
+        /// </summary>
+        public static class CommonPrefix
+        {
+            /// <summary>
+            /// The prefix applied, by default, to any class used as an INPUT_OBJECT
+            /// </summary>
+            public const string INPUT_OBJECT_NAME_PREFIX = "Input_";
+        }
+
+
+        /// <summary>
         /// Common error codes used in graph resolution errors.
         /// </summary>
         public static class ErrorCodes
