@@ -73,12 +73,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             this.Syncronize(graphType);
         }
 
-        private void ApplyField(IExtendableGraphType graphType, IGraphField field)
-        {
-            var fieldClone = field.Clone(graphType);
-            graphType.Extend(fieldClone);
-        }
-
         /// <summary>
         /// Adds the supplied graph type to the collection and begins tracking it for changes and applies any
         /// changes that may affect it. Non-extendable graph types are safely filtered out and ignored.
@@ -103,8 +97,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 {
                     foreach (var ifaceName in ifaceContainer.InterfaceNames)
                     {
-                        _graphTypesByInterfaceName.TryAdd(ifaceName, new HashSet<IGraphType>());
-                        _graphTypesByInterfaceName[ifaceName].Add(graphType);
+                        if (!string.IsNullOrWhiteSpace(ifaceName))
+                        {
+                            _graphTypesByInterfaceName.TryAdd(ifaceName, new HashSet<IGraphType>());
+                            _graphTypesByInterfaceName[ifaceName].Add(graphType);
+                        }
                     }
                 }
             }
@@ -113,7 +110,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         private void Syncronize(IGraphType newlyAddedType)
         {
             // if the type implements interfaces
-            // sync those interfaces already known into the type
+            // sync those interfaces already seen into the type
             if (newlyAddedType is IInterfaceContainer iic)
             {
                 foreach (var interfaceName in iic.InterfaceNames)
@@ -123,8 +120,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                 }
             }
 
-            // if the type is an interface
-            // sync it into any known types
+            // if the type is an interface sync it into any known types
+            // that would implement it
             if (newlyAddedType is IInterfaceGraphType igt)
             {
                 if (_graphTypesByInterfaceName.ContainsKey(igt.Name))
@@ -145,6 +142,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                         this.ApplyField(egt, field);
                 }
             }
+        }
+
+        private void ApplyField(IExtendableGraphType graphType, IGraphField field)
+        {
+            var fieldClone = field.Clone(graphType);
+            graphType.Extend(fieldClone);
         }
     }
 }

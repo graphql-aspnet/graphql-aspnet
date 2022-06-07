@@ -195,5 +195,132 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task FieldOnBaseInterface_IsAvailalbleOnSubInterfaceWhenBothAreIncluded()
+        {
+            var serverBuilder = new TestServerBuilder()
+            .AddGraphType<IBox>()
+            .AddGraphType<ISquare>()
+            .AddGraphType<Box>()
+            .AddGraphController<BoxController>();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Critical;
+            });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"
+                                {
+                                    retrieveBoxInterface {
+                                        width
+                                        height
+                                        length
+                                    }
+                                }");
+
+            // oct2021 spec change
+            // retrieveBoxInterface returns an IBox. IBox does NOT declare width and hieght
+            // but they are declared on ISquare. Since IBox implements ISquare and both are
+            // on the schema IBox should be updated to incldue the two missing
+            // properties and they should be navigable and produce values
+            var result = await server.RenderResult(builder);
+
+            var expectedOutput = @"
+                        {
+                          ""data"": {
+                                    ""retrieveBoxInterface"": {
+                                        ""width"": ""width2"",
+                                        ""height"" : ""height2"",
+                                        ""length"" : ""length2"",
+                                    }
+                                }
+                            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+
+        [Test]
+        public async Task FieldOnBaseInterface_IsNOTAvailalbleOnSubInterface_WhenBaseIsNotInclude()
+        {
+            var serverBuilder = new TestServerBuilder()
+            .AddGraphType<IBox>()
+            .AddGraphType<Box>()
+            .AddGraphController<BoxNoSquareController>();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Critical;
+            });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"
+                                {
+                                    retrieveBoxInterface {
+                                        width
+                                        height
+                                        length
+                                    }
+                                }");
+
+            // oct2021 spec change
+            // IBox implements ISquare but since ISquare is not included in the graph
+            // its fields should not be available to IBox
+            // this should result in an invalid document when querying for width and height
+            // by box
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(2, result.Messages.Count);
+            Assert.AreEqual("5.3.1", result.Messages[0].MetaData["Rule"].ToString());
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+            Assert.IsTrue(result.Messages[0].Message.Contains("width"));
+
+            Assert.AreEqual("5.3.1", result.Messages[1].MetaData["Rule"].ToString());
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[1].Code);
+            Assert.IsTrue(result.Messages[1].Message.Contains("length"));
+        }
+
+        [Test]
+        public async Task TypeExtensionOnBaseInterface_IsSeenByAllImplementors()
+        {
+            var serverBuilder = new TestServerBuilder()
+            .AddGraphType<IBox>()
+            .AddGraphType<ISquare>()
+            .AddGraphType<Box>()
+            .AddGraphController<BoxController>();
+
+            serverBuilder.AddGraphQL(o =>
+            {
+                o.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Critical;
+            });
+
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"
+                                {
+                                    retrieveBoxInterface {
+                                        width
+                                        height
+                                        length
+                                        area
+                                        corners
+                                    }
+                                }");
+
+            // oct2021 spec change
+            // corners is a type extension on box not on IBox
+            // this query should result in an error
+            // as the corners field should not be applied to IBox
+            // even thtough Box implements it
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual("5.3.1", result.Messages[0].MetaData["Rule"].ToString());
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+        }
     }
 }

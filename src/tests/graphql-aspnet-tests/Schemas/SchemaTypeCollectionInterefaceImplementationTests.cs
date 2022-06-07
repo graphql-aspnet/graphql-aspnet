@@ -121,14 +121,14 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // Donut Fields: __typeName, Flavor, Name
             Assert.AreEqual(3, _idonut.Fields.Count);
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "flavor"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_idonut.Fields["flavor"]);
+            Assert.IsNotNull(_idonut.Fields["name"]);
+            Assert.IsNotNull(_idonut.Fields["__typename"]);
 
             // Pastry Fields: __typename, Name
             Assert.AreEqual(2, _ipastry.Fields.Count);
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_ipastry.Fields["name"]);
+            Assert.IsNotNull(_ipastry.Fields["__typename"]);
         }
 
         [TestCase(1, 2, 3)]
@@ -156,16 +156,16 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // __typeName, Flavor, Name, hasSugar
             Assert.AreEqual(4, _idonut.Fields.Count);
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "flavor"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_idonut.Fields["flavor"]);
+            Assert.IsNotNull(_idonut.Fields["name"]);
+            Assert.IsNotNull(_idonut.Fields["hasSugar"]);
+            Assert.IsNotNull(_idonut.Fields["__typename"]);
 
             // __typename, Name, hasSugar
             Assert.AreEqual(3, _ipastry.Fields.Count);
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_ipastry.Fields["name"]);
+            Assert.IsNotNull(_ipastry.Fields["hasSugar"]);
+            Assert.IsNotNull(_ipastry.Fields["__typename"]);
         }
 
         [TestCase(1, 2, 3, 4, 5, 6)]
@@ -210,31 +210,31 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // IDonut: __typeName, Flavor, Name, hasSugar, hasGlaze
             Assert.AreEqual(5, _idonut.Fields.Count);
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "flavor"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "hasGlaze"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_idonut.Fields["flavor"]);
+            Assert.IsNotNull(_idonut.Fields["name"]);
+            Assert.IsNotNull(_idonut.Fields["hasSugar"]);
+            Assert.IsNotNull(_idonut.Fields["hasGlaze"]);
+            Assert.IsNotNull(_idonut.Fields["__typename"]);
 
             // Donut: __typeName, Flavor, Name, hasSugar, hasGlaze
             Assert.AreEqual(5, _donut.Fields.Count);
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "flavor"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "hasGlaze"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_donut.Fields["flavor"]);
+            Assert.IsNotNull(_donut.Fields["name"]);
+            Assert.IsNotNull(_donut.Fields["hasSugar"]);
+            Assert.IsNotNull(_donut.Fields["hasGlaze"]);
+            Assert.IsNotNull(_donut.Fields["__typename"]);
 
             // IPastry: __typename, Name, hasSugar
             Assert.AreEqual(3, _ipastry.Fields.Count);
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_ipastry.Fields["name"]);
+            Assert.IsNotNull(_ipastry.Fields["hasSugar"]);
+            Assert.IsNotNull(_ipastry.Fields["__typename"]);
 
             // Pastry: __typename, Name, hasSugar
             Assert.AreEqual(3, _pastry.Fields.Count);
-            Assert.IsNotNull(_pastry.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_pastry.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_pastry.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_pastry.Fields["name"]);
+            Assert.IsNotNull(_pastry.Fields["hasSugar"]);
+            Assert.IsNotNull(_pastry.Fields["__typename"]);
         }
 
         [TestCase(1, 2, 3, 4, 5, 6, 7)]
@@ -283,32 +283,32 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // IDonut: __typeName, Flavor, Name, hasSugar, hasGlaze
             Assert.AreEqual(5, _idonut.Fields.Count);
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "flavor"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "hasGlaze"));
-            Assert.IsNotNull(_idonut.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_idonut.Fields["flavor"]);
+            Assert.IsNotNull(_idonut.Fields["name"]);
+            Assert.IsNotNull(_idonut.Fields["hasSugar"]);
+            Assert.IsNotNull(_idonut.Fields["hasGlaze"]);
+            Assert.IsNotNull(_idonut.Fields["__typename"]);
 
             // Donut: __typeName, Flavor, Name, hasSugar, hasGlaze, hasDoubleGlaze
             Assert.AreEqual(6, _donut.Fields.Count);
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "flavor"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "hasGlaze"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "hasDoubleGlaze"));
-            Assert.IsNotNull(_donut.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_donut.Fields["flavor"]);
+            Assert.IsNotNull(_donut.Fields["name"]);
+            Assert.IsNotNull(_donut.Fields["hasSugar"]);
+            Assert.IsNotNull(_donut.Fields["hasGlaze"]);
+            Assert.IsNotNull(_donut.Fields["hasDoubleGlaze"]);
+            Assert.IsNotNull(_donut.Fields["__typename"]);
 
             // IPastry: __typename, Name, hasSugar
             Assert.AreEqual(3, _ipastry.Fields.Count);
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_ipastry.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_ipastry.Fields["name"]);
+            Assert.IsNotNull(_ipastry.Fields["hasSugar"]);
+            Assert.IsNotNull(_ipastry.Fields["__typename"]);
 
             // Pastry: __typename, Name, hasSugar
             Assert.AreEqual(3, _pastry.Fields.Count);
-            Assert.IsNotNull(_pastry.Fields.FirstOrDefault(x => x.Name == "name"));
-            Assert.IsNotNull(_pastry.Fields.FirstOrDefault(x => x.Name == "hasSugar"));
-            Assert.IsNotNull(_pastry.Fields.FirstOrDefault(x => x.Name == "__typename"));
+            Assert.IsNotNull(_pastry.Fields["name"]);
+            Assert.IsNotNull(_pastry.Fields["hasSugar"]);
+            Assert.IsNotNull(_pastry.Fields["__typename"]);
         }
     }
 }

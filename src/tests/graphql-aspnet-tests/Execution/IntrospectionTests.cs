@@ -1455,5 +1455,289 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(output, response);
         }
+
+        [Test]
+        public async Task WhenAnInterfaceImplementsAnotherInteface_ItsIndicatedOnIntrospectionData()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceA>();
+                o.AddGraphType<IInterfaceB>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""IInterfaceB"")
+                              {
+                                kind
+                                name
+                                fields (includeDeprecated: true) {
+                                   name
+                                }
+                                interfaces {
+                                    name
+                                    kind
+                                }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                          ""data"": {
+                            ""__type"": {
+                                        ""kind"": ""INTERFACE"",
+                              ""name"": ""IInterfaceB"",
+                              ""fields"": [
+                                {
+                                    ""name"": ""interfaceBField""
+                                },
+                                {
+                                    ""name"": ""interfaceAField""
+                                }
+                              ],
+                              ""interfaces"": [
+                                {
+                                  ""name"": ""IInterfaceA"",
+                                  ""kind"": ""INTERFACE""
+                                }
+                              ]
+                            }
+                         }
+                      }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task WhenAnInterfaceIsImplementedOnAnotherInteface_ItsFieldsDoNotChange()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceA>();
+                o.AddGraphType<IInterfaceB>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""IInterfaceA"")
+                              {
+                                kind
+                                name
+                                fields (includeDeprecated: true) {
+                                   name
+                                }
+                                interfaces {
+                                    name
+                                    kind
+                                }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                          ""data"": {
+                            ""__type"": {
+                                        ""kind"": ""INTERFACE"",
+                              ""name"": ""IInterfaceA"",
+                              ""fields"": [
+                                {
+                                    ""name"": ""interfaceAField""
+                                }
+                              ],
+                              ""interfaces"": []
+                            }
+                         }
+                      }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task WhenAnInterfaceIsImplementsAnotherInteface_ButThatInterfaceIsntIncluded_ItsFieldsAreNotAdded()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceB>();
+            })
+            .Build();
+
+            // interfaceA isnt added those fields shouldnt be shown on B
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""IInterfaceB"")
+                              {
+                                kind
+                                name
+                                fields (includeDeprecated: true) {
+                                   name
+                                }
+                                interfaces {
+                                    name
+                                    kind
+                                }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                          ""data"": {
+                            ""__type"": {
+                                        ""kind"": ""INTERFACE"",
+                              ""name"": ""IInterfaceB"",
+                              ""fields"": [
+                                {
+                                    ""name"": ""interfaceBField""
+                                }
+                              ],
+                              ""interfaces"": []
+                            }
+                         }
+                      }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task WhenAnExtensionExtendsAnInterface_InterfacesAndObjectsThatImplementItAreAlsoExtended()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceA>();
+                o.AddGraphType<IInterfaceB>();
+                o.AddGraphType<ObjectC>();
+                o.AddController<IInterfaceAController>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                {
+                    interfaceA: __type(name: ""IInterfaceA"")
+                    {
+                        kind
+                        name
+                        fields (includeDeprecated: true) {
+                            name
+                        }
+                        interfaces {
+                            name
+                            kind
+                        }
+                    }
+
+                    interfaceB: __type(name: ""IInterfaceB"")
+                    {
+                        kind
+                        name
+                        fields (includeDeprecated: true) {
+                            name
+                        }
+                        interfaces {
+                            name
+                            kind
+                        }
+                    }
+
+                    objectC: __type(name: ""ObjectC"")
+                    {
+                        kind
+                        name
+                        fields (includeDeprecated: true) {
+                            name
+                        }
+                        interfaces {
+                            name
+                            kind
+                        }
+                    }
+                }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                {
+                  ""data"": {
+                    ""interfaceA"": {
+                      ""kind"": ""INTERFACE"",
+                      ""name"": ""IInterfaceA"",
+                      ""fields"": [
+                        {
+                            ""name"": ""interfaceAField""
+                        },
+                        {
+                            ""name"": ""extendedFieldA""
+                        }
+                      ],
+                      ""interfaces"": []
+                    },
+                    ""interfaceB"": {
+                      ""kind"": ""INTERFACE"",
+                      ""name"": ""IInterfaceB"",
+                      ""fields"": [
+                        {
+                            ""name"": ""interfaceBField""
+                        },
+                        {
+                            ""name"": ""interfaceAField""
+                        },
+                        {
+                            ""name"": ""extendedFieldA""
+                        }
+                      ],
+                      ""interfaces"": [
+                        {
+                          ""name"": ""IInterfaceA"",
+                          ""kind"": ""INTERFACE""
+                        }
+                      ]
+                    },
+                    ""objectC"": {
+                      ""kind"": ""OBJECT"",
+                      ""name"": ""ObjectC"",
+                      ""fields"": [
+                        {
+                                    ""name"": ""objectCField""
+                        },
+                        {
+                                    ""name"": ""interfaceBField""
+                        },
+                        {
+                                    ""name"": ""interfaceAField""
+                        },
+                        {
+                                    ""name"": ""extendedFieldA""
+                        }
+                      ],
+                      ""interfaces"": [
+                        {
+                          ""name"": ""IInterfaceB"",
+                          ""kind"": ""INTERFACE""
+                        },
+                        {
+                          ""name"": ""IInterfaceA"",
+                          ""kind"": ""INTERFACE""
+                        }
+                      ]
+                    }
+                }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
     }
 }
