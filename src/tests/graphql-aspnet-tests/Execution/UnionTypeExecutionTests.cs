@@ -23,8 +23,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenTeacherReturned_TeacherFieldsResolved()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<Person>()
-                .AddGraphType<Teacher>()
+                .AddType<Person>()
+                .AddType<Teacher>()
                 .AddGraphController<SchoolController>()
                 .Build();
 
@@ -63,8 +63,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenUnknownTypeReturned_PersonFieldsResolved()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<Person>()
-                .AddGraphType<Teacher>()
+                .AddType<Person>()
+                .AddType<Teacher>()
                 .AddGraphController<SchoolController>()
                 .Build();
 
@@ -107,8 +107,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenPersonTypeReturned_PersonFieldsResolved()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<Person>()
-                .AddGraphType<Teacher>()
+                .AddType<Person>()
+                .AddType<Teacher>()
                 .AddGraphController<SchoolController>()
                 .Build();
 
@@ -156,8 +156,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenUnmatchedTypeReturnsUnHandlableType_QueryFails()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<Person>()
-                .AddGraphType<Teacher>()
+                .AddType<Person>()
+                .AddType<Teacher>()
                 .AddGraphController<SchoolController>()
                 .Build();
 
@@ -198,8 +198,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenUnmatchedTypeReturnsNull_QueryFails()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<Person>()
-                .AddGraphType<Teacher>()
+                .AddType<Person>()
+                .AddType<Teacher>()
                 .AddGraphController<SchoolController>()
                 .Build();
 
@@ -239,8 +239,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenTypeMapperThrowsException_ExceptionIsAllowedToBubble()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<Person>()
-                .AddGraphType<Teacher>()
+                .AddType<Person>()
+                .AddType<Teacher>()
                 .AddGraphController<SchoolController>()
                 .Build();
 

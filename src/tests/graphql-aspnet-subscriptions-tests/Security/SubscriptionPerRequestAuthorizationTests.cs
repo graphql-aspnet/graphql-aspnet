@@ -24,7 +24,7 @@ namespace GraphQL.Subscriptions.Tests.Security
         {
             var builder = new TestServerBuilder()
                .AddSubscriptionServer()
-                .AddGraphType<SecureSubscriptionWidgetController>();
+                .AddType<SecureSubscriptionWidgetController>();
 
             // define the policy (declared on the controller)
             // to require "role1"  but assign the user "role4"
@@ -55,7 +55,7 @@ namespace GraphQL.Subscriptions.Tests.Security
         {
             var builder = new TestServerBuilder()
                .AddSubscriptionServer()
-                .AddGraphType<SecureSubscriptionWidgetController>();
+                .AddType<SecureSubscriptionWidgetController>();
 
             // define the policy (declared on the controller)
             // to require "role1"  but assign the user "role4"

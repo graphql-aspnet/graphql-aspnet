@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleScalarValueVariable_IsUsedInsteadOfDefault()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputValueController>()
+                .AddType<InputValueController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleComplexValueVariable_IsUsedInsteadOfDefault()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputValueController>()
+                .AddType<InputValueController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task NestedScalarVariable_IsUsedInsteadOfDefault()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputValueController>()
+                .AddType<InputValueController>()
                 .AddGraphQL(o =>
                 {
                     o.ResponseOptions.ExposeExceptions = true;

@@ -23,7 +23,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task ExecutionOfAQueryPlan_WithValidDefaultObject_forSubscription_YieldsResult()
         {
             var server = new TestServerBuilder()
-                        .AddGraphType<SubQueryController>()
+                        .AddType<SubQueryController>()
                         .AddSubscriptionServer()
                         .Build();
 

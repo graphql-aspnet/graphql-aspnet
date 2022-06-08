@@ -1,4 +1,4 @@
-﻿namespace GraphQL.AspNet.Tests.Execution.InterfaceExtensionTestData
+﻿namespace GraphQL.AspNet.Tests.Execution.InheritanceTestData
 {
     using System;
     using System.Collections.Generic;

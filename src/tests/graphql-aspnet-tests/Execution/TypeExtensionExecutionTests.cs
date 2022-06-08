@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Execution
             batchService.Setup(x => x.CallCount).Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
-            .AddGraphType<BatchObjectController>();
+            .AddType<BatchObjectController>();
 
             serverBuilder.AddSingleton(batchService.Object);
             var server = serverBuilder.Build();
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.Tests.Execution
             batchService.Setup(x => x.CallCount).Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<BatchObjectController>();
+                .AddType<BatchObjectController>();
             serverBuilder.AddSingleton(batchService.Object);
             var server = serverBuilder.Build();
 
@@ -185,7 +185,7 @@ namespace GraphQL.AspNet.Tests.Execution
             batchService.Setup(x => x.CallCount).Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
-            .AddGraphType<BatchStructController>();
+            .AddType<BatchStructController>();
 
             serverBuilder.AddSingleton(batchService.Object);
             var server = serverBuilder.Build();
@@ -257,7 +257,7 @@ namespace GraphQL.AspNet.Tests.Execution
             batchService.Setup(x => x.CallCount).Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<BatchStructController>();
+                .AddType<BatchStructController>();
             serverBuilder.AddSingleton(batchService.Object);
             var server = serverBuilder.Build();
 
@@ -313,7 +313,7 @@ namespace GraphQL.AspNet.Tests.Execution
             batchService.Setup(x => x.CallCount).Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<BatchInterfaceController>()
+                .AddType<BatchInterfaceController>()
                 .AddGraphQL(o =>
                 {
                     o.ResponseOptions.ExposeExceptions = true;
@@ -386,7 +386,7 @@ namespace GraphQL.AspNet.Tests.Execution
             batchService.Setup(x => x.CallCount).Returns(counter);
 
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<BatchInterfaceController>();
+                .AddType<BatchInterfaceController>();
             serverBuilder.AddSingleton(batchService.Object);
             var server = serverBuilder.Build();
 

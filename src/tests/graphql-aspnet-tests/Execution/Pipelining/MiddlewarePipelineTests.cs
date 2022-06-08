@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         public async Task SingularPipelineInvokesComponentsInOrder()
         {
             var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MiddlewareController>();
+                .AddType<MiddlewareController>();
 
             // setup a mock pipeline to verify that each middleware piece called into the service
             // and that hte order of the invocation was in the order the pipeline was declared
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         public void NoFoundMiddlewareComponent_ThrowsException()
         {
             var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MiddlewareController>();
+                .AddType<MiddlewareController>();
 
             var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
 
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         public async Task MiddlewareComponentThrowsExceptions_MiddlewareInvokerShouldUnwrapAndThrowTheException()
         {
             var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MiddlewareController>();
+                .AddType<MiddlewareController>();
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
             var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         public async Task SingletonMiddlewareComponent_IsNeverInstantiatedMoreThanOnce()
         {
             var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MiddlewareController>();
+                .AddType<MiddlewareController>();
 
             var idsCalled = new List<string>();
             var middlewareService = new Mock<IMiddlewareTestService>();
@@ -217,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
         public async Task SingletonMiddlewareWithUserProvidedInstance_NeverAttemptsToCreateAnInstance()
         {
             var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MiddlewareController>();
+                .AddType<MiddlewareController>();
 
             var idsCalled = new List<string>();
             var middlewareService = new Mock<IMiddlewareTestService>();

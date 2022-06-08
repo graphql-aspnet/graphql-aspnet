@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void FoundArgument_GeneratesResult()
         {
-            var server = new TestServerBuilder().AddGraphType<InputController>().Build();
+            var server = new TestServerBuilder().AddType<InputController>().Build();
 
             var parser = new GraphQLParser();
             var syntaxTree = parser.ParseQueryDocument("query TestQuery{  input {  fetchString(arg1: 5, arg2: 10) } }".AsMemory());
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void NotFoundArgument_GeneratesResultWithDefaultValue()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputController>()
+                .AddType<InputController>()
                 .Build();
 
             var parser = new GraphQLParser();
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void FailureToResolve_YieldErrorMessage()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputController>()
+                .AddType<InputController>()
                 .Build();
 
             var parser = new GraphQLParser();
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ExpectedNonDeferredList_DoesNotDefer()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputController>()
+                .AddType<InputController>()
                 .Build();
 
             var parser = new GraphQLParser();
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ExpectedDeferredList_DoesDefer()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputController>()
+                .AddType<InputController>()
                 .Build();
 
             var parser = new GraphQLParser();
@@ -189,7 +189,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ExpectedNonDeferredComplexObject_DoesNotDefer()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputController>()
+                .AddType<InputController>()
                 .Build();
 
             var parser = new GraphQLParser();
@@ -234,7 +234,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ExpectedDeferredComplexObject_DoesDefer()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputController>()
+                .AddType<InputController>()
                 .Build();
 
             var parser = new GraphQLParser();

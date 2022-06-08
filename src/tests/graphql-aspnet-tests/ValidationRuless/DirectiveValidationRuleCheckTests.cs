@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void UnknownLocation_FailsValidation()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ObjectTypeDirective>()
+                .AddType<ObjectTypeDirective>()
                 .Build();
 
             var obj = new Mock<IObjectGraphType>();
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void UnknownPhase_FailsValidation()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ObjectTypeDirective>()
+                .AddType<ObjectTypeDirective>()
                 .Build();
             var obj = new Mock<IObjectGraphType>();
 
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void LocationMisMatch_FailsValidation()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ObjectTypeDirective>()
+                .AddType<ObjectTypeDirective>()
                 .Build();
             var obj = new Mock<IObjectGraphType>();
 
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void NotADirective_FailsValidation()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
             var obj = new Mock<IObjectGraphType>();
 
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void ValidateRequest_PassedValidation()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ObjectTypeDirectiveWithParams>()
+                .AddType<ObjectTypeDirectiveWithParams>()
                 .Build();
             var obj = new Mock<IObjectGraphType>();
 
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void IncorrectNumberOfArguments_FailsValidation()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ObjectTypeDirectiveWithParams>()
+                .AddType<ObjectTypeDirectiveWithParams>()
                 .Build();
 
             var obj = new Mock<IObjectGraphType>();
@@ -168,7 +168,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void InvalidArgument_FailsValidation()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ObjectTypeDirectiveWithParams>()
+                .AddType<ObjectTypeDirectiveWithParams>()
                 .Build();
 
             var obj = new Mock<IObjectGraphType>();

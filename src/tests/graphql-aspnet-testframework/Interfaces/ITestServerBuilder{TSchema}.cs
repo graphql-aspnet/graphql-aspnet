@@ -34,14 +34,14 @@ namespace GraphQL.AspNet.Tests.Framework.Interfaces
         /// </summary>
         /// <typeparam name="TType">The concrete type to parse when creating a graph type.</typeparam>
         /// <returns>TestServerBuilder.</returns>
-        ITestServerBuilder<TSchema> AddGraphType<TType>();
+        ITestServerBuilder<TSchema> AddType<TType>();
 
         /// <summary>
         /// Helpful overload for direct access to inject a graph type into the server.
         /// </summary>
         /// <param name="type">The type to inject.</param>
         /// <returns>TestServerBuilder.</returns>
-        ITestServerBuilder<TSchema> AddGraphType(Type type);
+        ITestServerBuilder<TSchema> AddType(Type type);
 
         /// <summary>
         /// Helpful overload for direct access to inject a directive into the server.

@@ -6,24 +6,14 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.InterfaceExtensionTestData
+
+namespace GraphQL.AspNet.Tests.Execution.InheritanceTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
 
-    public class BoxController : GraphController
+    public class BoxNoSquareController : GraphController
     {
-        [QueryRoot]
-        public ISquare RetrieveSquareInterface()
-        {
-            return new Box()
-            {
-                Height = "height1",
-                Width = "width1",
-                Length = "length1",
-            };
-        }
-
         [QueryRoot]
         public IBox RetrieveBoxInterface()
         {
@@ -44,18 +34,6 @@ namespace GraphQL.AspNet.Tests.Execution.InterfaceExtensionTestData
                 Width = "width3",
                 Length = "length3",
             };
-        }
-
-        [TypeExtension(typeof(ISquare), "area")]
-        public string SquareExtension(ISquare square)
-        {
-            return square.Length + "|" + square.Width;
-        }
-
-        [TypeExtension(typeof(Box), "corners")]
-        public string SquareExtension(Box box)
-        {
-            return box.Length + "|6";
         }
     }
 }

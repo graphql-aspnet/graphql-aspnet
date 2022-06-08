@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution
         private IGraphQueryPlan CreatePlan(string queryText)
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>()
+                .AddType<SimpleExecutionController>()
                 .Build();
 
             var task = server.CreateQueryPlan(queryText);

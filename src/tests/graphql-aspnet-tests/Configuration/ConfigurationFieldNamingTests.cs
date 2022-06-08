@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public async Task ProductionDefaults_NoChanges()
         {
             var builder = new TestServerBuilder();
-            var server = builder.AddGraphType<FanController>()
+            var server = builder.AddType<FanController>()
                 .Build();
             var queryBuilder = server.CreateQueryContextBuilder();
             queryBuilder.AddQueryText("{ retrieveFan(name: \"bob\"){ id, name, fanSpeed} }");
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public async Task ProductionDefaults_UpperCaseFieldNames()
         {
             var builder = new TestServerBuilder()
-                            .AddGraphType<FanController>();
+                            .AddType<FanController>();
 
             builder.AddGraphQL(o =>
             {
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public async Task ProductionDefaults_LowerCaseEnumValues()
         {
             var builder = new TestServerBuilder()
-                        .AddGraphType<FanController>();
+                        .AddType<FanController>();
 
             builder.AddGraphQL(o =>
             {
@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public async Task ProductionDefaults_CamelCasedTypeNames()
         {
             var builder = new TestServerBuilder()
-                        .AddGraphType<FanController>();
+                        .AddType<FanController>();
 
             builder.AddGraphQL(o =>
             {

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleFieldResolution_ViaPipeline_YieldsCorrectResult()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>()
+                .AddType<SimpleExecutionController>()
                 .Build();
 
             var builder = server.CreateGraphTypeFieldContextBuilder<SimpleExecutionController>(
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleFieldResolution_NoSuppliedVariables_ResolvePathThroughController_CallsResolutions_Correctly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>()
+                .AddType<SimpleExecutionController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task TypeNameMetaField_OnObject_returnsValue()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>()
+                .AddType<SimpleExecutionController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -105,8 +105,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SimpleResolution_WithDirective_CallsDirectiveCorrectly()
         {
             var server = new TestServerBuilder()
-                   .AddGraphType<SimpleExecutionController>()
-                   .AddGraphType<CallTestDirective>()
+                   .AddType<SimpleExecutionController>()
+                   .AddType<CallTestDirective>()
                    .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -124,8 +124,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task DirectiveExecution_MaintainsRequestMetaDataCollectionAcrossPhases_CallsDirectiveCorrectly()
         {
             var server = new TestServerBuilder()
-            .AddGraphType<SimpleExecutionController>()
-                .AddGraphType<MetaDataShareDirective>()
+            .AddType<SimpleExecutionController>()
+                .AddType<MetaDataShareDirective>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenNoLeafValuesAreRequested_ItemIsReturnedAsNullAndPropegated()
         {
             var server = new TestServerBuilder()
-                        .AddGraphType<SimpleExecutionController>()
+                        .AddType<SimpleExecutionController>()
                         .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task IteratingACollection_CallsResolutions_Correctly()
         {
             var server = new TestServerBuilder()
-                        .AddGraphType<SimpleExecutionController>()
+                        .AddType<SimpleExecutionController>()
                         .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task RunnerTimeout_ErrorMessagesAreSetCorrect()
         {
             var serverBuilder = new TestServerBuilder()
-                        .AddGraphType<SimpleExecutionController>();
+                        .AddType<SimpleExecutionController>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -216,7 +216,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task UnhandledException_InUserCode_OnActionMethod_ResultsInErrorMessageOnResponse()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<SimpleExecutionController>()
+                    .AddType<SimpleExecutionController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -241,7 +241,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task UnhandledException_InUserCode_OnDirectGraphMethodCall_ResultsInMessageOnResponse()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>()
+                .AddType<SimpleExecutionController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -263,8 +263,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SkipDirective_ResponseAppropriately(bool skipValue, string expectedJson)
         {
             var server = new TestServerBuilder()
-            .AddGraphType<SimpleExecutionController>()
-                .AddGraphType<SkipDirective>()
+            .AddType<SimpleExecutionController>()
+                .AddType<SkipDirective>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -285,8 +285,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task IncludeDirective_ResponseAppropriately(bool includeValue, string expectedJson)
         {
             var server = new TestServerBuilder()
-             .AddGraphType<SimpleExecutionController>()
-                 .AddGraphType<IncludeDirective>()
+             .AddType<SimpleExecutionController>()
+                 .AddType<IncludeDirective>()
                  .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -306,7 +306,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ObjectMethodAsField_Syncronously_ResolvesCorrectly()
         {
             var server = new TestServerBuilder()
-                        .AddGraphType<ObjectMethodController>()
+                        .AddType<ObjectMethodController>()
                         .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -334,7 +334,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ObjectMethodAsField_Asyncronously_ResolvesCorrectly()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ObjectMethodController>()
+                    .AddType<ObjectMethodController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -361,7 +361,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task CustomScalar_BecomesValidCoreScalarValue()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<GraphIdController>()
+                    .AddType<GraphIdController>()
                     .Build();
 
             // retrieveid returns a "GraphId"
@@ -389,7 +389,7 @@ namespace GraphQL.AspNet.Tests.Execution
             // ensure the data items are properly projected into a list
             // when rendered
             var server = new TestServerBuilder()
-                    .AddGraphType<ListController>()
+                    .AddType<ListController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -416,7 +416,7 @@ namespace GraphQL.AspNet.Tests.Execution
             // ensure the data items are properly projected into a list
             // when rendered
             var server = new TestServerBuilder()
-                    .AddGraphType<ListController>()
+                    .AddType<ListController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -439,7 +439,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ListOfEnums_WithAnUnlabeledValue_Fails()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ListController>()
+                    .AddType<ListController>()
                     .Build();
 
             // controller returns a list of {Value1, -3}
@@ -457,7 +457,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task InputComplexObjects_WithNoRequiredFields_Succeeds()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ComplexInputObjectController>()
+                    .AddType<ComplexInputObjectController>()
                     .Build();
 
             // controller accepts a complex input object with no required fields (just string values).
@@ -487,7 +487,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task InputWithNullableComplexChildObject_HasUndefinedForChildObject_YieldsNullChildObject()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ComplexInputObjectController>()
+                    .AddType<ComplexInputObjectController>()
                     .Build();
 
             // parentObj has a property called  'child' that is not passed on the query
@@ -521,7 +521,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task InputWithNullableComplexChildObject_HasNullPassedForChildObject_YieldsNullChildObject()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ComplexInputObjectController>()
+                    .AddType<ComplexInputObjectController>()
                     .Build();
 
             // parentObj has a property called  'child' that is not passed on the query
@@ -555,7 +555,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task InputWithNullableComplexChildObject_WhenChildObjectDefinedWithNoFieldsForChildObject_HasChildWithNullFields()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ComplexInputObjectController>()
+                    .AddType<ComplexInputObjectController>()
                     .Build();
 
             // child is passed as an empty object and has no required fields. All fields of child
@@ -590,7 +590,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task InputWithNonNullableComplexChildObject_HasUndefinedForChildObject_YieldsError()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ComplexInputObjectController>()
+                    .AddType<ComplexInputObjectController>()
                     .Build();
 
             // parentObj has a property called  'child' that is not passed on the query
@@ -616,7 +616,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task InputWithNonNullableComplexChildObject_HasNullForChildObject_YieldsError()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ComplexInputObjectController>()
+                    .AddType<ComplexInputObjectController>()
                     .Build();
 
             // parentObj has a property called  'child' that is passed as null on the query
@@ -642,7 +642,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task InputWithNonNullableComplexChildObject_HasEmptyForChildObject_YieldsSuccess()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ComplexInputObjectController>()
+                    .AddType<ComplexInputObjectController>()
                     .Build();
 
             // parentObj has a property called  'child' that is passed as empty on the query
@@ -677,7 +677,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ControllerReturnsAnarrayForAnEnumerableDeclarartion_YieldsCorrectResult()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ArrayAsEnumerableController>()
+                    .AddType<ArrayAsEnumerableController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -712,7 +712,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ControllerReturnsAnArrayForAnArrayThroughGraphActionDeclarartion_YieldsCorrectResult()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ArrayThroughGraphActionAsEnumerableController>()
+                    .AddType<ArrayThroughGraphActionAsEnumerableController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -747,7 +747,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ControllerReturnsAnArrayForAnArrayDeclaration_YieldsCorrectResult()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ArrayThroughArrayDeclarationController>()
+                    .AddType<ArrayThroughArrayDeclarationController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -782,7 +782,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task FlatArray_AsProperty_ResolvesDataCorrectly()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ArrayOnReturnObjectPropertyController>()
+                    .AddType<ArrayOnReturnObjectPropertyController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -825,7 +825,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task FlatArray_AsObjectMethod_ResolvesDataCorrectly()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ArrayOnReturnObjectMethodController>()
+                    .AddType<ArrayOnReturnObjectMethodController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -866,7 +866,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task FlatArray_OfScalars_ResolvesDataCorrectly()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<ArrayScalarController>()
+                    .AddType<ArrayScalarController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -889,7 +889,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task KeyValuePair_ResolvesDataCorrectly()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<KeyValuePairController>()
+                    .AddType<KeyValuePairController>()
                     .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -918,7 +918,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task TypeExtension_OnValueType_ResolvesDataCorrectly()
         {
             var server = new TestServerBuilder()
-         .AddGraphType<TypeExtensionKeyValuePairController>()
+         .AddType<TypeExtensionKeyValuePairController>()
          .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -948,7 +948,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task TypeExtension_OnGeneralObject_ResolvesDataCorrectly()
         {
             var server = new TestServerBuilder()
-         .AddGraphType<TypeExtensionOnTwoPropertyObjectController>()
+         .AddType<TypeExtensionOnTwoPropertyObjectController>()
          .Build();
 
             var builder = server.CreateQueryContextBuilder()

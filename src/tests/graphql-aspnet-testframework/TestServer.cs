@@ -386,7 +386,7 @@ namespace GraphQL.AspNet.Tests.Framework
             origin = origin ?? SourceOrigin.None;
 
             var server = new TestServerBuilder()
-                .AddGraphType<TDirective>()
+                .AddType<TDirective>()
                 .Build();
 
             var targetDirective = server.Schema.KnownTypes.FindDirective(typeof(TDirective));

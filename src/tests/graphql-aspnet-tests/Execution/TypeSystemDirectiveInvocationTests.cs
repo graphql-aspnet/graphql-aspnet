@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task AppliedDirective_IsSeenInExecutedQuery()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SarcasticObject>()
+                .AddType<SarcasticObject>()
                 .AddDirective<ToSarcasticCaseDirective>()
                 .AddGraphController<SarcasticController>()
                 .Build();
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void DirectiveIsInvokedExactlyOnceDuringConstruction()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<ObjectForDirectiveInvocation>()
+                .AddType<ObjectForDirectiveInvocation>()
                 .Build();
 
             Assert.AreEqual(1, ObjectDirectiveToInvoke.TotalInvocations);
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void ParameterizedDirective_RecievedExpectedParameterValue()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<ParameterizedObjectForDirectiveInvocation>()
+                .AddType<ParameterizedObjectForDirectiveInvocation>()
                 .Build();
 
             Assert.AreEqual(1, ParameterizedObjectDirectiveToInvoke.TotalInvocations);
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Execution
             try
             {
                 var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                    .AddGraphType<IncorrectParameterizedObjectForDirectiveInvocation>()
+                    .AddType<IncorrectParameterizedObjectForDirectiveInvocation>()
                     .Build();
             }
             catch (SchemaConfigurationException)

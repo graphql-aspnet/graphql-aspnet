@@ -6,14 +6,10 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.InterfaceExtensionTestData
+namespace GraphQL.AspNet.Tests.Execution.InheritanceTestData
 {
-    public class Box : IBox
+    public class BigBox : Box
     {
-        public string Height { get; set; }
-
-        public string Length { get; set; }
-
-        public string Width { get; set; }
+        public int SuperWidth { get; set; }
     }
 }

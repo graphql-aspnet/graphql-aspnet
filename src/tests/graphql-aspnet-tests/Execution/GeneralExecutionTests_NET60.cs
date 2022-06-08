@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task DateOnly_AsObject_RenderedCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<DateTimeController>()
+                .AddType<DateTimeController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task DateOnly_AsInputObject_FromString_RenderedCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<DateTimeController>()
+                .AddType<DateTimeController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task DateOnly_AsInputObject_FromNumber_RenderedCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<DateTimeController>()
+                .AddType<DateTimeController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task DateOnly_AsInputObject_FromStringVariable_RenderedCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<DateTimeController>()
+                .AddType<DateTimeController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task DateOnly_AsInputObject_FromNumberVariable_RenderedCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<DateTimeController>()
+                .AddType<DateTimeController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task TimeOnly_AsInputObject_FromString_RenderedCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<DateTimeController>()
+                .AddType<DateTimeController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task TimeOnly_AsInputObject_FromStringVariable_RenderedCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<DateTimeController>()
+                .AddType<DateTimeController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()

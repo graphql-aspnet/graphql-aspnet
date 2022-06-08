@@ -53,9 +53,9 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
             using var restorePoint = new GraphQLProviderRestorePoint();
 
             var server = new TestServerBuilder()
-                .AddGraphType<PeopleMoverController>()
-                .AddGraphType<AllowDirective>()
-                .AddGraphType<RestrictDirective>()
+                .AddType<PeopleMoverController>()
+                .AddType<AllowDirective>()
+                .AddType<RestrictDirective>()
                 .AddSubscriptionServer()
                 .Build();
 

@@ -6,10 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.InterfaceExtensionTestData
+
+namespace GraphQL.AspNet.Tests.Execution.InheritanceTestData
 {
-    public interface IBox : ISquare
+    public class Box2 : IBox
     {
         public string Height { get; set; }
+
+        public string Length { get; set; }
+
+        public string Width { get; set; }
     }
 }

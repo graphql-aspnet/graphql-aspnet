@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
         private FieldResolutionContext CreateResolutionContext()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ActionableController>()
+                .AddType<ActionableController>()
                 .Build();
 
             var builder = server.CreateGraphTypeFieldContextBuilder<ActionableController>(

@@ -148,7 +148,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public async Task ErrorResult()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<InvokableController>()
+                .AddType<InvokableController>()
                 .Build();
 
             var fieldContextBuilder = server.CreateGraphTypeFieldContextBuilder<InvokableController>(
