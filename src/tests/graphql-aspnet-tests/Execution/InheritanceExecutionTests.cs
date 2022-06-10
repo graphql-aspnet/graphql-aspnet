@@ -145,7 +145,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
         }
 
-
         [Test]
         public async Task TypeExtensionToObject_IsNOTSeenByInterfaces_ButIsAvailableToFragment()
         {
