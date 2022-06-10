@@ -40,7 +40,8 @@ namespace GraphQL.AspNet.Tests.Execution.InheritanceTestData
         [QueryRoot]
         public List<IBox> RetrieveDoubleBoxInterface()
         {
-            return new List<IBox>() {
+            return new List<IBox>()
+            {
                 new Box()
                 {
                     Height = "box1Height",

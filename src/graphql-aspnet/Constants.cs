@@ -125,11 +125,10 @@ namespace GraphQL.AspNet
         public static class CommonPrefix
         {
             /// <summary>
-            /// The prefix applied, by default, to any class used as an INPUT_OBJECT
+            /// The prefix applied, by default, to any class used as an INPUT_OBJECT.
             /// </summary>
             public const string INPUT_OBJECT_NAME_PREFIX = "Input_";
         }
-
 
         /// <summary>
         /// Common error codes used in graph resolution errors.
