@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         FRAGMENT_DEFINITION = 1 << 4,
         FRAGMENT_SPREAD = 1 << 5,
         INLINE_FRAGMENT = 1 << 6,
+        VARIABLE_DEFINITION = 1 << 7,
 
         // Type System Locations
         SCHEMA = 1 << 8,
@@ -55,7 +56,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         [GraphSkip]
         AllExecutionLocations = QUERY | MUTATION | SUBSCRIPTION |
             FIELD | FRAGMENT_DEFINITION | FRAGMENT_SPREAD |
-            INLINE_FRAGMENT,
+            INLINE_FRAGMENT | VARIABLE_DEFINITION,
 
         /// <summary>
         /// All locations that target <see cref="ISchemaItem"/> instances.

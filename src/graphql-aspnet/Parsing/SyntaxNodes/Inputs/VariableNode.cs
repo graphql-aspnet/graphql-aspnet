@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         /// <returns><c>true</c> if this instance can have the node as a child; otherwise, <c>false</c>.</returns>
         protected override bool CanHaveChild(SyntaxNode childNode)
         {
-            return childNode is InputValueNode;
+            return childNode is InputValueNode || childNode is DirectiveNode;
         }
 
         /// <summary>
