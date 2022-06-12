@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests;
+    using GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Lexing
+namespace GraphQL.AspNet.Tests.Parsing
 {
     using System;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;

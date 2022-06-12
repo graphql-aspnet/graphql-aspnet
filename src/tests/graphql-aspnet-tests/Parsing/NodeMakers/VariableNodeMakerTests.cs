@@ -7,13 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Lexing.NodeMakers
+namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.NodeMakers;
+    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using NUnit.Framework;
@@ -123,6 +124,93 @@ namespace GraphQL.AspNet.Tests.Lexing.NodeMakers
             var defaultValue = node.Children.FirstOrDefault<InputValueNode>() as EnumValueNode;
             Assert.IsNotNull(defaultValue);
             Assert.AreEqual("JEDI", defaultValue.Value.ToString());
+        }
+
+        [Test]
+        public void VariableNode_WithDirective_AssignsDirectiveNode()
+        {
+            var text = @"$episode: Episode @myDirective";
+            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            stream.Prime();
+
+            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            Assert.IsNotNull(node);
+            Assert.AreEqual("episode", node.Name.ToString());
+            Assert.AreEqual("Episode", node.TypeExpression.ToString());
+
+            // has directive child
+            var directiveNode = node.Children.FirstOrDefault<DirectiveNode>();
+            Assert.IsNotNull(directiveNode);
+            Assert.AreEqual("myDirective", directiveNode.DirectiveName.ToString());
+        }
+
+        [Test]
+        public void VariableNode_WithDirectiveAndParams_AssignsDirectiveNode()
+        {
+            var text = @"$episode: Episode @myDirective(param1: ""value1"")";
+            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            stream.Prime();
+
+            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            Assert.IsNotNull(node);
+            Assert.AreEqual("episode", node.Name.ToString());
+            Assert.AreEqual("Episode", node.TypeExpression.ToString());
+
+            // has directive child
+            var directiveNode = node.Children.FirstOrDefault<DirectiveNode>();
+            Assert.IsNotNull(directiveNode);
+            Assert.AreEqual("myDirective", directiveNode.DirectiveName.ToString());
+
+            var inputCollection = directiveNode.Children[0] as InputItemCollectionNode;
+            Assert.IsNotNull(inputCollection);
+            Assert.AreEqual(1, inputCollection.Children.Count);
+
+            var child = inputCollection.Children[0] as InputItemNode;
+            Assert.IsNotNull(child);
+            Assert.AreEqual("param1", child.InputName.ToString());
+            Assert.AreEqual(1, child.Children.Count);
+
+            var value = child.Children[0] as ScalarValueNode;
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ScalarValueType.String, value.ValueType);
+            Assert.AreEqual("\"value1\"", value.Value.ToString());
+        }
+
+        [Test]
+        public void VariableNode_WithDefaultValue_DirectiveAndParams_AssignsDirectiveNode()
+        {
+            var text = @"$episode: Episode = JEDI @myDirective(param1: ""value1"")";
+            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            stream.Prime();
+
+            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            Assert.IsNotNull(node);
+            Assert.AreEqual("episode", node.Name.ToString());
+            Assert.AreEqual("Episode", node.TypeExpression.ToString());
+
+            // default value child
+            var defaultValue = node.Children.FirstOrDefault<InputValueNode>() as EnumValueNode;
+            Assert.IsNotNull(defaultValue);
+            Assert.AreEqual("JEDI", defaultValue.Value.ToString());
+
+            // has directive child
+            var directiveNode = node.Children.FirstOrDefault<DirectiveNode>();
+            Assert.IsNotNull(directiveNode);
+            Assert.AreEqual("myDirective", directiveNode.DirectiveName.ToString());
+
+            var inputCollection = directiveNode.Children[0] as InputItemCollectionNode;
+            Assert.IsNotNull(inputCollection);
+            Assert.AreEqual(1, inputCollection.Children.Count);
+
+            var child = inputCollection.Children[0] as InputItemNode;
+            Assert.IsNotNull(child);
+            Assert.AreEqual("param1", child.InputName.ToString());
+            Assert.AreEqual(1, child.Children.Count);
+
+            var value = child.Children[0] as ScalarValueNode;
+            Assert.IsNotNull(value);
+            Assert.AreEqual(ScalarValueType.String, value.ValueType);
+            Assert.AreEqual("\"value1\"", value.Value.ToString());
         }
     }
 }

@@ -8,9 +8,7 @@
 // *************************************************************
 
 // ReSharper disable All
-// ReSharper disable All
-// ReSharper disable All
-namespace GraphQL.AspNet.Tests.Lexing
+namespace GraphQL.AspNet.Tests.Parsing
 {
     using System;
     using System.Linq;
@@ -138,7 +136,7 @@ namespace GraphQL.AspNet.Tests.Lexing
         [TestCase("\"\"\"\"", 0, 0, 1, 0)] // mismatched delimiters BLOCK and SINGLE
         [TestCase("\"", 0, 0, 1, 0)] // not long enough
         [TestCase("a\nab\"abc123423", 0, 0, 1, 0)] // no opening delimiter
-        [TestCase("a\nab\"abc123423", 4,  4, 2, 2)] // unterminated from a line
+        [TestCase("a\nab\"abc123423", 4, 4, 2, 2)] // unterminated from a line
         [TestCase("\"abc123423", 0, 0, 1, 0)] // unterminated
         [TestCase(@"""bo\w\tb""", 0, 3, 1, 3)] // contains escaped char '\w'
         [TestCase(@"""bo\uQ23Aqeqwe""", 0, 3, 1, 3)] // contains invalid unicode escaped char '\uQ'

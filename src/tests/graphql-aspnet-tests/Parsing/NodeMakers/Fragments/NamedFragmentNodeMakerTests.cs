@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Lexing.NodeMakers.Fragments
+namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 {
     using System;
     using GraphQL.AspNet.Parsing.Lexing;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Lexing.NodeMakers
+namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
     using GraphQL.AspNet.Parsing.Lexing;
@@ -44,6 +44,7 @@ namespace GraphQL.AspNet.Tests.Lexing.NodeMakers
 
             var child = inputCollection.Children[0] as InputItemNode;
             Assert.IsNotNull(child);
+            Assert.AreEqual("if", child.InputName.ToString());
             Assert.AreEqual(1, child.Children.Count);
 
             var value = child.Children[0] as ScalarValueNode;

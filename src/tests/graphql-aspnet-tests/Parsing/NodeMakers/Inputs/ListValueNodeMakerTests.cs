@@ -8,7 +8,7 @@
 // *************************************************************
 
 // ReSharper disable All
-namespace GraphQL.AspNet.Tests.Lexing.NodeMakers.Inputs
+namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
     using System.Linq;

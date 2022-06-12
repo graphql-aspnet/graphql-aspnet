@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Lexing.NodeMakers
+namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
     using System.Linq;
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Lexing.NodeMakers
 
             Assert.Throws<GraphQLSyntaxException>(() =>
             {
-               FieldNodeMaker.Instance.MakeNode(stream);
+                FieldNodeMaker.Instance.MakeNode(stream);
             });
         }
 

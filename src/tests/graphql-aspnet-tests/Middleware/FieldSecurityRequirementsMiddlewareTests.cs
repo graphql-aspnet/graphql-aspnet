@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData;
+    using GraphQL.AspNet.Tests.Middleware.FieldSecurityMiddlewareTestData;
     using Microsoft.AspNetCore.Authorization;
     using Moq;
     using NUnit.Framework;

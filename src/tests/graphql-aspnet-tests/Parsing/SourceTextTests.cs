@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Lexing
+namespace GraphQL.AspNet.Tests.Parsing
 {
     using System;
     using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.Lexing.Source.SourceRules;
-    using GraphQL.AspNet.Tests.Lexing.Helpers;
+    using GraphQL.AspNet.Tests.Parsing.Helpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Lexing
         [TestCase("12345", -5, "12345")]
         [TestCase("12345", -6, "12345")]
         [TestCase("12345", -500, "12345")]
-        public void SourceText_Peek_FromEndOfBlock(string text,  int count, string expectedText)
+        public void SourceText_Peek_FromEndOfBlock(string text, int count, string expectedText)
         {
             // seek back two from the '3' => '12'
             var source = new SourceText(text.AsMemory());
