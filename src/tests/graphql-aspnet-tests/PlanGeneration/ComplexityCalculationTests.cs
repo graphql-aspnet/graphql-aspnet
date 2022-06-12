@@ -21,10 +21,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         private TestServer<GraphSchema> MakeServer(int? allowedMaxDepth = null, float? allowedMaxComplexity = null)
         {
             var builder = new TestServerBuilder()
-                .AddGraphType<ComplexityTestObject>()
-                .AddGraphType<NestedComplexityTestObject>()
-                .AddGraphType<TripleNestedComplexityObject>()
-                .AddGraphType<ComplexityTestController>();
+                .AddType<ComplexityTestObject>()
+                .AddType<NestedComplexityTestObject>()
+                .AddType<TripleNestedComplexityObject>()
+                .AddType<ComplexityTestController>();
 
             builder.AddGraphQL(o =>
             {

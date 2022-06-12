@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphPropertyTemplateTests
+    public class PropertyGraphFieldTemplateTests
     {
         [Test]
         public void Parse_DescriptionAttribute_SetsValue()

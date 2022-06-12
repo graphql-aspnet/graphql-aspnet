@@ -84,9 +84,9 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public async Task Rule_6_4_3_EnsureCorrectErrorIsGenerated(string expectedRuleError, string queryText)
         {
             var server = new TestServerBuilder()
-                .AddGraphType<PeopleMoverController>()
-                .AddGraphType<AllowDirective>()
-                .AddGraphType<RestrictDirective>()
+                .AddType<PeopleMoverController>()
+                .AddType<AllowDirective>()
+                .AddType<RestrictDirective>()
                 .Build();
 
             var queryBuilder = server.CreateQueryContextBuilder();
@@ -118,9 +118,9 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public async Task Rule_6_4_4_ErrorPropegation_InvalidatesParentObjects()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<PeopleMoverController>()
-                .AddGraphType<AllowDirective>()
-                .AddGraphType<RestrictDirective>()
+                .AddType<PeopleMoverController>()
+                .AddType<AllowDirective>()
+                .AddType<RestrictDirective>()
                 .Build();
 
             // allElevatorsWithANull is defined to be a list of elevators (type expression:  [Elevator!])
@@ -155,9 +155,9 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public async Task Rule_6_4_4_ErrorPropegation_InvalidatesParentObjects_MultiRootFields()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<PeopleMoverController>()
-                .AddGraphType<AllowDirective>()
-                .AddGraphType<RestrictDirective>()
+                .AddType<PeopleMoverController>()
+                .AddType<AllowDirective>()
+                .AddType<RestrictDirective>()
                 .Build();
 
             // field "invalidMovers" will result in a null field because of an error caused by

@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void IntrospectedSchema_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder();
-            serverBuilder.AddGraphType<string>();
+            serverBuilder.AddType<string>();
 
             var server = serverBuilder.Build();
 
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void IntrospectedInputValueType_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<SodaCanBuildingController>();
+                .AddType<SodaCanBuildingController>();
 
             var server = serverBuilder.Build();
             var schema = new IntrospectedSchema(server.Schema);
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void IntrospectedScalar_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder();
-            serverBuilder.AddGraphType<string>();
+            serverBuilder.AddType<string>();
             var server = serverBuilder.Build();
 
             var schema = new IntrospectedSchema(server.Schema);
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void Introspected_NotNullType_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<string>()
+            var server = serverBuilder.AddType<string>()
                 .Build();
 
             var schema = new IntrospectedSchema(server.Schema);
@@ -167,7 +167,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void Introspected_NotNullType_WhenSuppliedANotNullType_ThrowsException()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<string>()
+            var server = serverBuilder.AddType<string>()
                 .Build();
 
             var schema = new IntrospectedSchema(server.Schema);
@@ -189,7 +189,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void Introspected_ListType_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<string>()
+            var server = serverBuilder.AddType<string>()
                 .Build();
 
             var schema = new IntrospectedSchema(server.Schema);
@@ -217,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void Introspected_ListType_NotNullList_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<string>()
+            var server = serverBuilder.AddType<string>()
                 .Build();
 
             var schema = new IntrospectedSchema(server.Schema);
@@ -241,7 +241,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void Introspected_ListType_NotNullType_NotNullList_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<string>()
+            var server = serverBuilder.AddType<string>()
                 .Build();
 
             var schema = new IntrospectedSchema(server.Schema);
@@ -269,7 +269,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             var server = serverBuilder
-                .AddGraphType<IntrospectableEnum>()
+                .AddType<IntrospectableEnum>()
                 .Build();
 
             var template = TemplateHelper.CreateEnumTemplate<IntrospectableEnum>();
@@ -312,7 +312,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
             var server = serverBuilder
-                .AddGraphType<IntrospectableObject>()
+                .AddType<IntrospectableObject>()
                 .Build();
 
             var template = TemplateHelper.CreateObjectTemplate<IntrospectableObject>();
@@ -396,7 +396,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void IntrospectedUnion_PropertyCheck()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaFountainController>()
+            var server = serverBuilder.AddType<SodaFountainController>()
                 .Build();
 
             var proxy = new SodaTypeUnionProxy();
@@ -424,7 +424,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void IntrospectedVirtualType_HasATypeNameMetaField()
         {
             var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<SodaCanBuildingController>();
+                .AddType<SodaCanBuildingController>();
 
             var server = serverBuilder.Build();
             var schema = new IntrospectedSchema(server.Schema);
@@ -440,7 +440,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Schema_QueryAndMutationTypeNames_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaCanController>()
+            var server = serverBuilder.AddType<SodaCanController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -473,7 +473,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleType_NameAndFields_ObjectType_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaCanController>()
+            var server = serverBuilder.AddType<SodaCanController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -541,7 +541,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleType_InputScalarsOnFields_ObjectType_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaCanController>()
+            var server = serverBuilder.AddType<SodaCanController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -616,7 +616,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleType_InputObjectOnFields_ObjectType_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaBottleController>().Build();
+            var server = serverBuilder.AddType<SodaBottleController>().Build();
             var builder = server.CreateQueryContextBuilder();
 
             // need to resolve type field now
@@ -691,7 +691,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var serverBuilder = new TestServerBuilder();
 
             // contains an enum CapacityType on SodaCanBuildingData
-            var server = serverBuilder.AddGraphType<SodaCanBuildingController>()
+            var server = serverBuilder.AddType<SodaCanBuildingController>()
                 .AddSchemaBuilderAction(o =>
                 {
                     o.Options.ResponseOptions.ExposeExceptions = true;
@@ -749,7 +749,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var serverBuilder = new TestServerBuilder();
 
             // contains an enum CapacityType on SodaCanBuildingData
-            var server = serverBuilder.AddGraphType<SodaCanBuildingController>().Build();
+            var server = serverBuilder.AddType<SodaCanBuildingController>().Build();
             var builder = server.CreateQueryContextBuilder();
 
             // need to resolve type field now
@@ -781,8 +781,8 @@ namespace GraphQL.AspNet.Tests.Execution
             var serverBuilder = new TestServerBuilder();
 
             // contains an enum CapacityType on SodaCanBuildingData
-            var server = serverBuilder.AddGraphType<SodaCan2>()
-                .AddGraphType<ICan>()
+            var server = serverBuilder.AddType<SodaCan2>()
+                .AddType<ICan>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -819,8 +819,8 @@ namespace GraphQL.AspNet.Tests.Execution
             var serverBuilder = new TestServerBuilder();
 
             // contains an enum CapacityType on SodaCanBuildingData
-            var server = serverBuilder.AddGraphType<SodaCan2>()
-                .AddGraphType<ICan>()
+            var server = serverBuilder.AddType<SodaCan2>()
+                .AddType<ICan>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -855,7 +855,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleType_WrappedTypeOnField_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<VendingMachineController>().Build();
+            var server = serverBuilder.AddType<VendingMachineController>().Build();
             var builder = server.CreateQueryContextBuilder();
 
             // need to resolve type field now
@@ -908,7 +908,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Schema_TypeNameAndKind_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaCanController>().Build();
+            var server = serverBuilder.AddType<SodaCanController>().Build();
             var builder = server.CreateQueryContextBuilder();
 
             builder.AddQueryText(@"{
@@ -951,7 +951,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Schema_TypeNameAndKind_ThroughAFragment_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaCanController>().Build();
+            var server = serverBuilder.AddType<SodaCanController>().Build();
             var builder = server.CreateQueryContextBuilder();
 
             builder.AddQueryText(@"
@@ -1001,7 +1001,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Schema_EnumValues_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<IntrospectableEnum>()
+            var server = serverBuilder.AddType<IntrospectableEnum>()
                 .Build();
             var builder = server.CreateQueryContextBuilder();
 
@@ -1041,7 +1041,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task Schema_FieldYieldsAUnion_ReturnsValidData()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaFountainController>().Build();
+            var server = serverBuilder.AddType<SodaFountainController>().Build();
             var builder = server.CreateQueryContextBuilder();
 
             builder.AddQueryText(@"{
@@ -1086,7 +1086,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task SingleType_FieldYieldsAUnion_UnionDeliversPossibleTypes()
         {
             var serverBuilder = new TestServerBuilder();
-            var server = serverBuilder.AddGraphType<SodaFountainController>().Build();
+            var server = serverBuilder.AddType<SodaFountainController>().Build();
             var builder = server.CreateQueryContextBuilder();
 
             builder.AddQueryText(@"
@@ -1452,6 +1452,290 @@ namespace GraphQL.AspNet.Tests.Execution
                                ]
                             }
                         }}";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task WhenAnInterfaceImplementsAnotherInteface_ItsIndicatedOnIntrospectionData()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceA>();
+                o.AddGraphType<IInterfaceB>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""IInterfaceB"")
+                              {
+                                kind
+                                name
+                                fields (includeDeprecated: true) {
+                                   name
+                                }
+                                interfaces {
+                                    name
+                                    kind
+                                }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                          ""data"": {
+                            ""__type"": {
+                                        ""kind"": ""INTERFACE"",
+                              ""name"": ""IInterfaceB"",
+                              ""fields"": [
+                                {
+                                    ""name"": ""interfaceBField""
+                                },
+                                {
+                                    ""name"": ""interfaceAField""
+                                }
+                              ],
+                              ""interfaces"": [
+                                {
+                                  ""name"": ""IInterfaceA"",
+                                  ""kind"": ""INTERFACE""
+                                }
+                              ]
+                            }
+                         }
+                      }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task WhenAnInterfaceIsImplementedOnAnotherInteface_ItsFieldsDoNotChange()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceA>();
+                o.AddGraphType<IInterfaceB>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""IInterfaceA"")
+                              {
+                                kind
+                                name
+                                fields (includeDeprecated: true) {
+                                   name
+                                }
+                                interfaces {
+                                    name
+                                    kind
+                                }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                          ""data"": {
+                            ""__type"": {
+                                        ""kind"": ""INTERFACE"",
+                              ""name"": ""IInterfaceA"",
+                              ""fields"": [
+                                {
+                                    ""name"": ""interfaceAField""
+                                }
+                              ],
+                              ""interfaces"": []
+                            }
+                         }
+                      }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task WhenAnInterfaceIsImplementsAnotherInteface_ButThatInterfaceIsntIncluded_ItsFieldsAreNotAdded()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceB>();
+            })
+            .Build();
+
+            // interfaceA isnt added those fields shouldnt be shown on B
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                            {
+                               __type(name: ""IInterfaceB"")
+                              {
+                                kind
+                                name
+                                fields (includeDeprecated: true) {
+                                   name
+                                }
+                                interfaces {
+                                    name
+                                    kind
+                                }
+                              }
+                            }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                        {
+                          ""data"": {
+                            ""__type"": {
+                                        ""kind"": ""INTERFACE"",
+                              ""name"": ""IInterfaceB"",
+                              ""fields"": [
+                                {
+                                    ""name"": ""interfaceBField""
+                                }
+                              ],
+                              ""interfaces"": []
+                            }
+                         }
+                      }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task WhenAnExtensionExtendsAnInterface_InterfacesAndObjectsThatImplementItAreAlsoExtended()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<IInterfaceA>();
+                o.AddGraphType<IInterfaceB>();
+                o.AddGraphType<ObjectC>();
+                o.AddController<IInterfaceAController>();
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                {
+                    interfaceA: __type(name: ""IInterfaceA"")
+                    {
+                        kind
+                        name
+                        fields (includeDeprecated: true) {
+                            name
+                        }
+                        interfaces {
+                            name
+                            kind
+                        }
+                    }
+
+                    interfaceB: __type(name: ""IInterfaceB"")
+                    {
+                        kind
+                        name
+                        fields (includeDeprecated: true) {
+                            name
+                        }
+                        interfaces {
+                            name
+                            kind
+                        }
+                    }
+
+                    objectC: __type(name: ""ObjectC"")
+                    {
+                        kind
+                        name
+                        fields (includeDeprecated: true) {
+                            name
+                        }
+                        interfaces {
+                            name
+                            kind
+                        }
+                    }
+                }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+                {
+                  ""data"": {
+                    ""interfaceA"": {
+                      ""kind"": ""INTERFACE"",
+                      ""name"": ""IInterfaceA"",
+                      ""fields"": [
+                        {
+                            ""name"": ""interfaceAField""
+                        },
+                        {
+                            ""name"": ""extendedFieldA""
+                        }
+                      ],
+                      ""interfaces"": []
+                    },
+                    ""interfaceB"": {
+                      ""kind"": ""INTERFACE"",
+                      ""name"": ""IInterfaceB"",
+                      ""fields"": [
+                        {
+                            ""name"": ""interfaceBField""
+                        },
+                        {
+                            ""name"": ""interfaceAField""
+                        },
+                        {
+                            ""name"": ""extendedFieldA""
+                        }
+                      ],
+                      ""interfaces"": [
+                        {
+                          ""name"": ""IInterfaceA"",
+                          ""kind"": ""INTERFACE""
+                        }
+                      ]
+                    },
+                    ""objectC"": {
+                      ""kind"": ""OBJECT"",
+                      ""name"": ""ObjectC"",
+                      ""fields"": [
+                        {
+                                    ""name"": ""objectCField""
+                        },
+                        {
+                                    ""name"": ""interfaceBField""
+                        },
+                        {
+                                    ""name"": ""interfaceAField""
+                        },
+                        {
+                                    ""name"": ""extendedFieldA""
+                        }
+                      ],
+                      ""interfaces"": [
+                        {
+                          ""name"": ""IInterfaceB"",
+                          ""kind"": ""INTERFACE""
+                        },
+                        {
+                          ""name"": ""IInterfaceA"",
+                          ""kind"": ""INTERFACE""
+                        }
+                      ]
+                    }
+                }
+            }";
 
             CommonAssertions.AreEqualJsonStrings(output, response);
         }

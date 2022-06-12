@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task SingleField_NoExtras_ValidateFields()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             var parser = new GraphQLParser();
             var syntaxTree = parser.ParseQueryDocument("query {  simple {  simpleQueryMethod { property1} } }".AsMemory());
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task SingleField_WithDirective_ValidateFields()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             var parser = new GraphQLParser();
             var syntaxTree = parser.ParseQueryDocument("query {  simple @skip(if: true) {  simpleQueryMethod { property1} } }".AsMemory());
@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public async Task MultiOperationDocument_SelectsCorrectOperationInPlan()
         {
             var server = new TestServerBuilder()
-            .AddGraphType<SimplePlanGenerationController>()
+            .AddType<SimplePlanGenerationController>()
                 .Build();
 
             var str = @"
@@ -165,7 +165,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public async Task SingleField_WithAcceptableArgumentsOnMethod_ValidateFields()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimplePlanGenerationController>()
+                .AddType<SimplePlanGenerationController>()
                 .Build();
 
             var parser = new GraphQLParser();
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task SingleField_WithVariables_UsingDefaults_WithAcceptableArgumentsOnMethod_VariableValueIsAssigned()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             var parser = new GraphQLParser();
             var syntaxTree = parser.ParseQueryDocument(@"query($var1 : Long = 22)
@@ -226,7 +226,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task SingleField_WhenInputArgumentPassesNull_WhenAcceptable_GeneratesArgumentAsNull()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             var parser = new GraphQLParser();
             var syntaxTree = parser.ParseQueryDocument(@"query {
@@ -259,7 +259,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task SingleField_WithVariables_UsingDefaultValues_NestedInInputObjects_YieldsCorrectInputObject()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             // arg1 represents a TWoPropertyObjectV2 with a prop1 type of float
             var parser = new GraphQLParser();
@@ -296,7 +296,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task SingleField_WithFragment_ValidateFields()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             var query = @"
                         query {
@@ -368,10 +368,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public async Task SingleField_WithFragment_AndMultiLevelDirectives_ValidateDirectiveAssociations()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimplePlanGenerationController>()
-                .AddGraphType<Sample1Directive>()
-                .AddGraphType<Sample2Directive>()
-                .AddGraphType<Sample3Directive>()
+                .AddType<SimplePlanGenerationController>()
+                .AddType<Sample1Directive>()
+                .AddType<Sample2Directive>()
+                .AddType<Sample3Directive>()
                 .Build();
 
             var query = @"
@@ -432,7 +432,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task MultipleTypeRestrictedFragments_GeneratesCorrectFieldContexts()
         {
-            var server = new TestServerBuilder().AddGraphType<FragmentProcessingController>().Build();
+            var server = new TestServerBuilder().AddType<FragmentProcessingController>().Build();
 
             var query = @"
                         query {
@@ -479,7 +479,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public async Task MultipleTypeRestrictedFragments_GeneratesCorrectFieldContexts_WithDuplciatedFieldNamesOnFragments()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<FragmentProcessingController>()
+                .AddType<FragmentProcessingController>()
                 .Build();
 
             var query = @"
@@ -526,7 +526,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task WhenTheSameFieldIsReferencedMoreThanOnce_ForAGivenType_FieldsAreMerged_Correctly()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             // Property 1 is referenced in the query and in the fragment such that when spread prop1 would be included twice
             // at the same level
@@ -570,7 +570,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task Union_TypeName_AsAFieldSelectionDirectlyOnAUnion_ProducesTypeNameFieldForAllMembersOfTheUnion()
         {
-            var server = new TestServerBuilder().AddGraphType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             // unionQuery returns a union graphtype of TwoPropObject and TwoPropObjectV2
             // specific fields for V1 are requested but V2 should be included with __typename as well
@@ -616,8 +616,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public async Task Union_WhenAnInterfaceIsSpreadInAUnion_ShouldReturnTheInterfaceFields_ForEachMemberOfTheUnionThatImplementsTheInterface()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimplePlanGenerationController>()
-                .AddGraphType<ITwoPropertyObject>()
+                .AddType<SimplePlanGenerationController>()
+                .AddType<ITwoPropertyObject>()
                 .Build();
 
             // unionQuery returns a union graphtype of (TwoPropObject | TwoPropObjectV2)

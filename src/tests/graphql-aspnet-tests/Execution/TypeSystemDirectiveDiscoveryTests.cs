@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.Throws<SchemaConfigurationException>(() =>
             {
                 var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                    .AddGraphType<TestPersonWithResolverExtensionDirectiveByName>()
+                    .AddType<TestPersonWithResolverExtensionDirectiveByName>()
                     .Build();
             });
         }
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void ObjectFieldLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestObjectWithAddFieldDirectiveByType>()
+                .AddType<TestObjectWithAddFieldDirectiveByType>()
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective("AddField");
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void InputObjectLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<InputObjectDirectiveTestController>() // controller has a field with an input object that declares the directive
+                .AddType<InputObjectDirectiveTestController>() // controller has a field with an input object that declares the directive
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(InputObjectMarkerDirective));
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void InputObjectFieldLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<InputObjectFieldDirectiveTestController>() // controller has a field with an input object that declares the directive
+                .AddType<InputObjectFieldDirectiveTestController>() // controller has a field with an input object that declares the directive
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(InputObjectFieldMarkerDirective));
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void ArgumentDefinitionLevelDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<ArgumentMarkedDirectiveTestController>() // input arg on controller method has a directive assigned
+                .AddType<ArgumentMarkedDirectiveTestController>() // input arg on controller method has a directive assigned
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(ArgumentMarkerDirective));
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void EnumDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MarkedEnum>() // input arg on controller method has a directive assigned
+                .AddType<MarkedEnum>() // input arg on controller method has a directive assigned
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(EnumMarkerDirective));
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void EnumValueDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MarkedEnumValue>() // input arg on controller method has a directive assigned
+                .AddType<MarkedEnumValue>() // input arg on controller method has a directive assigned
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(EnumValueMarkerDirective));
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void InterfaceDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<IMarkedInterface>()
+                .AddType<IMarkedInterface>()
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(InterfaceMarkerDirective));
@@ -115,7 +115,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public void UnionDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<MarkedUnion>()
+                .AddType<MarkedUnion>()
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(UnionMarkerDirective));
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.Tests.Execution
             // the object has a property that returns the custom scalar
             // forcing the enclusion of the scalar and thus the directive on said scalar
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<ObjectWithMarkedScalar>()
+                .AddType<ObjectWithMarkedScalar>()
                 .Build();
 
             var type = server.Schema.KnownTypes.FindDirective(typeof(ScalarMarkerDirective));

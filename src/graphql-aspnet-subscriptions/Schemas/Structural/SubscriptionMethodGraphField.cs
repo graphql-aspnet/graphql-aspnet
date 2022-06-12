@@ -49,6 +49,22 @@ namespace GraphQL.AspNet.Schemas.Structural
             this.EventName = eventName;
         }
 
+        /// <inheritdoc />
+        protected override IGraphField CreateNewInstance(IGraphType parent)
+        {
+            return new SubscriptionMethodGraphField(
+                this.Name,
+                this.TypeExpression,
+                parent.Route.CreateChild(this.Name),
+                this.ObjectType,
+                this.DeclaredReturnType,
+                this.Mode,
+                this.Resolver,
+                this.SecurityGroups,
+                this.EventName,
+                this.AppliedDirectives);
+        }
+
         /// <summary>
         /// Gets the alternate event name used to identify this subscription field via internal eventing.
         /// </summary>

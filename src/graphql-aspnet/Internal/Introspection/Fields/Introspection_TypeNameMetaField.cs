@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Internal.Introspection.Fields
 {
+    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -42,6 +43,12 @@ namespace GraphQL.AspNet.Internal.Introspection.Fields
         {
             Validation.ThrowIfNull(graphTypeName, nameof(graphTypeName));
             this.UpdateResolver(new GraphDataValueResolver<object, string>((obj) => graphTypeName.AsCompletedTask()), FieldResolutionMode.PerSourceItem);
+        }
+
+        /// <inheritdoc />
+        public override IGraphField Clone(IGraphType parent)
+        {
+            throw new NotImplementedException("Introspection related fields cannot be cloned.");
         }
 
         /// <summary>

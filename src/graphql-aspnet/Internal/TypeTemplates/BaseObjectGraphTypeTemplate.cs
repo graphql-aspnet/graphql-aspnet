@@ -299,9 +299,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         protected virtual HashSet<GraphCollection> AllowedGraphCollectionTypes { get; } = new HashSet<GraphCollection>() { GraphCollection.Types };
 
         /// <summary>
-        /// Gets the collection of interfaces this type implements.
+        /// Gets the declared interfaces on this item.
         /// </summary>
-        /// <value>The interfaces.</value>
+        /// <value>The declared interfaces.</value>
         public IEnumerable<Type> DeclaredInterfaces => _interfaces;
 
 #if DEBUG

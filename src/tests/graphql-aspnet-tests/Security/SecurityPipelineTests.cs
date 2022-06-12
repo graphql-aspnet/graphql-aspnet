@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task RolePolicy_UserNotInRole_Fails()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
 
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task RolePolicy_UserInRole_Success()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequiresRole1", "role1");
 
@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task MultiPolicyCheck_UserPassesAll_Success()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequireRole6", "role6");
             builder.Authorization.AddClaimPolicy("RequireClaim7", "testClaim7", "testClaim7Value");
@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task MultiPolicyCheck_UserPassesOnly1_Fail()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddRolePolicy("RequireRole6", "role6");
             builder.Authorization.AddClaimPolicy("RequireClaim7", "testClaim7", "testClaim7Value");
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task DirectRoleCheck_UserDoesNotHaveRole_Fails()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.UserContext.Authenticate();
             builder.UserContext.AddUserRole("role1");
@@ -163,7 +163,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task DirectRoleCheck_UserHasRole_Succeeds()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.UserContext.Authenticate();
             builder.UserContext.AddUserRole("role5");
@@ -183,7 +183,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task ClaimsPolicy_UserDoesntHaveClaim_Fails()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
 
@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task ClaimsPolicy_UserDoesHaveClaim_Success()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
 
@@ -225,7 +225,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task ClaimsPolicy_UserDoesHaveClaim_ButWrongValue_Fail()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim6", "testClaim6", "testClaim6Value");
 
@@ -247,7 +247,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             // do not register the user account on the test builder
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
             builder.Authorization.AddRolePolicy("TestPolicy", "role1");
             var server = builder.Build();
 
@@ -267,7 +267,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             // do not register the auth service on the builder
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
             builder.Authorization.DisableAuthorization();
             builder.Authorization.AddRolePolicy("TestPolicy", "role1");
 
@@ -290,7 +290,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             // do not register the auth service on the builder
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
             builder.Authorization.DisableAuthorization();
 
             // user not in any declared role
@@ -315,7 +315,7 @@ namespace GraphQL.AspNet.Tests.Security
         {
             // do not register the auth service on the builder
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             var server = builder.Build();
 
@@ -335,7 +335,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task AllowAnon_WhenUserDoesntPassChecks_Success()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             builder.Authorization.AddClaimPolicy("RequiresTestClaim7", "testClaim7", "testClaim7Value");
 
@@ -356,7 +356,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task MultiSecurityGroup_PassesOuter_FailsInner_Fails()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             // controller policy
             builder.Authorization.AddClaimPolicy("RequiresPolicy5", "testClaim5", "testClaim5Value");
@@ -386,7 +386,7 @@ namespace GraphQL.AspNet.Tests.Security
         public async Task MultiSecurityGroup_PassesOuter_PassesInner_Success()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<Controller_NoPolicies>();
+                .AddType<Controller_NoPolicies>();
 
             // controller policy
             builder.Authorization.AddClaimPolicy("RequiresPolicy5", "testClaim5", "testClaim5Value");

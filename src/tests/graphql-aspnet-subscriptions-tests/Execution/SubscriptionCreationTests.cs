@@ -24,7 +24,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task SubscriptionExecution_YieldsSubscriptionOnContext()
         {
             var server = new TestServerBuilder()
-                        .AddGraphType<SubQueryController>()
+                        .AddType<SubQueryController>()
                         .AddSubscriptionServer()
                         .Build();
 
@@ -54,7 +54,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task SubscriptionExecution_InvalidField_YieldsMessages()
         {
             var server = new TestServerBuilder()
-                        .AddGraphType<SubQueryController>()
+                        .AddType<SubQueryController>()
                         .AddSubscriptionServer()
                         .Build();
 
@@ -75,7 +75,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task SubscriptionExecution_WhenNotASubscription_BypassesCreation()
         {
             var server = new TestServerBuilder()
-                        .AddGraphType<SubQueryController>()
+                        .AddType<SubQueryController>()
                         .AddSubscriptionServer()
                         .Build();
 

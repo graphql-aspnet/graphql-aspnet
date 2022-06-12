@@ -104,13 +104,13 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddGraphType<TType>()
+        public ITestServerBuilder<TSchema> AddType<TType>()
         {
-            return this.AddGraphType(typeof(TType));
+            return this.AddType(typeof(TType));
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddGraphType(Type type)
+        public ITestServerBuilder<TSchema> AddType(Type type)
         {
             _additionalTypes.Add(type);
             return this;
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Framework
         public ITestServerBuilder<TSchema> AddGraphController<TController>()
             where TController : GraphController
         {
-            this.AddGraphType(typeof(TController));
+            this.AddType(typeof(TController));
             return this;
         }
 
@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.Tests.Framework
         public ITestServerBuilder<TSchema> AddDirective<TDirective>()
             where TDirective : GraphDirective
         {
-            this.AddGraphType(typeof(TDirective));
+            this.AddType(typeof(TDirective));
             return this;
         }
 

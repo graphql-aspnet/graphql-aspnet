@@ -52,6 +52,26 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
+        /// Creates a new instance of a graph field from this type.
+        /// </summary>
+        /// <param name="parent">The item to assign as the parent of the new field.</param>
+        /// <returns>IGraphField.</returns>
+        protected override IGraphField CreateNewInstance(IGraphType parent)
+        {
+            return new PropertyGraphField(
+                this.Name,
+                this.TypeExpression,
+                parent.Route.CreateChild(this.Name),
+                this.InternalName,
+                this.ObjectType,
+                this.DeclaredReturnType,
+                this.Mode,
+                this.Resolver,
+                this.SecurityGroups,
+                this.AppliedDirectives);
+        }
+
+        /// <summary>
         /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
         /// is used in many exceptions and internal error messages.
         /// </summary>

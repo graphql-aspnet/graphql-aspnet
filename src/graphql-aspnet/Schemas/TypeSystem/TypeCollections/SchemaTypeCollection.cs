@@ -54,20 +54,26 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             Validation.ThrowIfNullOrReturn(field, nameof(field));
 
             var graphType = _concreteTypes.FindGraphType(masterType);
-            if (graphType != null)
+            if (graphType == null)
             {
+                // target of the type extension doesn't exist
+                // queue for later incase the target shows up
+                _typeQueue.EnQueueField(masterType, field);
+            }
+            else
+            {
+                // target of the field does exist
+                // ensure the type can take it and hand it to the
+                // tracker
                 if (!(graphType is IExtendableGraphType))
                 {
                     throw new GraphTypeDeclarationException(
-                        $"Fatal error. The graph type '{graphType.Name}' of type '{graphType.Kind.ToString()}' does not implement '{typeof(IExtendableGraphType).FriendlyName()}' " +
+                        $"Fatal error. The graph type '{graphType.Name}' (Kind: '{graphType.Kind}') does not implement '{typeof(IExtendableGraphType).FriendlyName()}' " +
                         $"and cannot be extended with the new field '{field.Name}'.");
                 }
 
                 _extendableGraphTypeTracker.AddFieldExtension(graphType, field);
-                return;
             }
-
-            _typeQueue.EnQueueField(masterType, field);
         }
 
         /// <inheritdoc />
@@ -85,7 +91,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             _concreteTypes.EnsureRelationship(graphType, associatedType);
             _extendableGraphTypeTracker.MonitorGraphType(graphType);
 
-            // dequeue and add any extension fields if present
+            // if any fields destined for the given type were queued
+            // they can now be safely included
             if (associatedType != null)
             {
                 var unregisteredFields = _typeQueue.DequeueFields(associatedType);
@@ -107,13 +114,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             switch (graphType)
             {
                 case IInterfaceGraphType igt:
-                    return this.FindGraphTypesByInterface(igt);
+                    return this.FindObjectTypesByInterface(igt)
+                        .OfType<IObjectGraphType>();
 
                 case IUnionGraphType ugt:
                     return ugt.PossibleGraphTypeNames
                         .Select(this.FindGraphType)
-                        .Where(x => x != null)
                         .OfType<IObjectGraphType>();
+
                 case IObjectGraphType ogt:
                     return ogt.AsEnumerable();
 
@@ -219,16 +227,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         }
 
         /// <inheritdoc />
-        public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(IInterfaceGraphType interfaceType)
+        public IEnumerable<IGraphType> FindObjectTypesByInterface(IInterfaceGraphType interfaceType)
         {
             if (interfaceType == null)
                 return Enumerable.Empty<IObjectGraphType>();
             else
-                return this.FindGraphTypesByInterface(interfaceType.Name);
+                return this.FindObjectTypesByInterface(interfaceType.Name);
         }
 
         /// <inheritdoc />
-        public IEnumerable<IObjectGraphType> FindGraphTypesByInterface(string interfaceName)
+        public IEnumerable<IGraphType> FindObjectTypesByInterface(string interfaceName)
         {
             return _extendableGraphTypeTracker.FindGraphTypesByInterface(interfaceName);
         }

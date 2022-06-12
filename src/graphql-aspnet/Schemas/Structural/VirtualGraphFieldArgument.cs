@@ -61,6 +61,12 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc />
+        public IGraphArgument Clone(ISchemaItem parent)
+        {
+            throw new NotImplementedException("Virtual graph arguments cannot be cloned");
+        }
+
+        /// <inheritdoc />
         public Type ObjectType { get; }
 
         /// <inheritdoc />

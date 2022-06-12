@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         private (IGraphQLHttpProcessor<GraphSchema> Processor, HttpContext Context) CreateQueryArtifacts(GraphQueryData data = null)
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames);
-            builder.AddGraphType<CandyController>();
+            builder.AddType<CandyController>();
             var server = builder.Build();
 
             return (server.CreateHttpQueryProcessor(), server.CreateHttpContext(data));

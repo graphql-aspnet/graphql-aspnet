@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         public void NullRequest_YieldsResponseIndicatingNull()
         {
             var server = new TestServerBuilder()
-              .AddGraphType<SimpleExecutionController>()
+              .AddType<SimpleExecutionController>()
               .Build();
 
             // standard pipeline should throuhg a GraphExecutionException from
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             var cacheInstance = new MemoryCache(nameof(WithAttachedQueryCache_RendersPlanToCache));
             var cache = new DefaultQueryPlanCacheProvider(cacheInstance);
             var builder = new TestServerBuilder()
-              .AddGraphType<SimpleExecutionController>();
+              .AddType<SimpleExecutionController>();
             builder.AddSingleton<IGraphQueryPlanCacheProvider>(cache);
             builder.AddSingleton<IGraphQueryPlanCacheKeyManager>(keyManager);
 
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task ExceptionThrownByChildFieldExecution_IsCapturedByParent()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>()
+                .AddType<SimpleExecutionController>()
                 .AddSchemaBuilderAction(a =>
                 {
                     a.FieldExecutionPipeline.AddMiddleware(new ForceExceptionForProperty1Middlware());

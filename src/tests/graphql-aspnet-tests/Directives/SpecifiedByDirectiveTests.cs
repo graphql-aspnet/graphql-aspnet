@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Directives
         {
             var server = new TestServerBuilder()
                 .AddDirective<SpecifiedByDirective>()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             _directiveLocation = DirectiveLocation.SCALAR;

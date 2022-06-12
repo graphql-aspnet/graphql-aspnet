@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Logging
             logInstance = new TestLogger();
 
             var builder = new TestServerBuilder();
-            builder.AddGraphType<LogTestController>();
+            builder.AddType<LogTestController>();
             builder.AddGraphQLLocalQueryCache();
             builder.Logging.AddLoggerProvider(new TestLoggingProvider(logInstance));
             builder.Logging.SetMinimumLogLevel(LogLevel.Trace);

@@ -43,10 +43,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             foreach (var scalarConcreteType in defaultScalars.ConcreteTypes)
             {
-                builder.AddGraphType(scalarConcreteType);
+                builder.AddType(scalarConcreteType);
             }
 
-            builder.AddGraphType(typeof(TestEnum));
+            builder.AddType(typeof(TestEnum));
             return builder.Build().Schema;
         }
 

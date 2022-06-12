@@ -24,9 +24,9 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var server = new TestServerBuilder()
 
-                .AddGraphType<ConcreteObjectA>()
-                .AddGraphType<ConcreteObjectB>()
-                .AddGraphType<InterfaceExtensionController>()
+                .AddType<ConcreteObjectA>()
+                .AddType<ConcreteObjectB>()
+                .AddType<InterfaceExtensionController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -76,9 +76,9 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task FieldOnConcreteTypes_ButNotOnSharedInterface_WhenInterfaceIsReturned_IsDenied()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<ConcreteObjectA>()
-                .AddGraphType<ConcreteObjectB>()
-                .AddGraphType<InterfaceExtensionController>()
+                .AddType<ConcreteObjectA>()
+                .AddType<ConcreteObjectB>()
+                .AddType<InterfaceExtensionController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -101,9 +101,9 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenAnObjectReturnedImplmentsTheInterface_ButIsntInTheSchema_DenyIt()
         {
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<ConcreteObjectA>()
-                .AddGraphType<ConcreteObjectB>()
-                .AddGraphType<InterfaceExtensionController>();
+                .AddType<ConcreteObjectA>()
+                .AddType<ConcreteObjectB>()
+                .AddType<InterfaceExtensionController>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -137,9 +137,9 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task FieldOnConcreteTypes_ButNotOnSharedInterface_WhenInterfaceIsReturned_ButTypeConditionedFragmentsAreUsed_IsAllowed()
         {
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<ConcreteObjectA>()
-                .AddGraphType<ConcreteObjectB>()
-                .AddGraphType<InterfaceExtensionController>();
+                .AddType<ConcreteObjectA>()
+                .AddType<ConcreteObjectB>()
+                .AddType<InterfaceExtensionController>();
 
             serverBuilder.AddGraphQL(o =>
             {

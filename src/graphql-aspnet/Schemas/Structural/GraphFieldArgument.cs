@@ -71,6 +71,25 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc />
+        public IGraphArgument Clone(ISchemaItem parent)
+        {
+            Validation.ThrowIfNull(parent, nameof(parent));
+            return new GraphFieldArgument(
+                parent,
+                this.Name,
+                this.TypeExpression,
+                parent.Route.CreateChild(this.Name),
+                this.ArgumentModifiers,
+                this.ParameterName,
+                this.InternalName,
+                this.ObjectType,
+                this.HasDefaultValue,
+                this.DefaultValue,
+                this.Description,
+                this.AppliedDirectives);
+        }
+
+        /// <inheritdoc />
         public string Name { get; set; }
 
         /// <inheritdoc />

@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var fixedDate = DateTimeOffset.UtcNow.UtcDateTime;
 
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>();
+                .AddType<SimpleExecutionController>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var fixedDate = DateTimeOffset.UtcNow.UtcDateTime;
 
             var builder = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>();
+                .AddType<SimpleExecutionController>();
 
             builder.AddGraphQL(o =>
             {
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var fixedDate = DateTimeOffset.UtcNow.UtcDateTime;
 
             var builder = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>();
+                .AddType<SimpleExecutionController>();
 
             builder.AddGraphQL(o =>
             {
@@ -189,7 +189,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var fixedDate = DateTimeOffset.UtcNow.UtcDateTime;
 
             var builder = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>();
+                .AddType<SimpleExecutionController>();
 
             builder.AddGraphQL(o =>
             {
@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var fixedDate = DateTimeOffset.UtcNow.UtcDateTime;
 
             var builder = new TestServerBuilder()
-                .AddGraphType<SimpleExecutionController>();
+                .AddType<SimpleExecutionController>();
 
             builder.AddGraphQL(o =>
             {

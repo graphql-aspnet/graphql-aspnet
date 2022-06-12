@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Variables
         public async Task<IResolvedVariableCollection> CreateResolvedVariableCollection(string queryText,  string jsonDoc)
         {
             var server = new TestServerBuilder()
-                .AddGraphType<VariableTestController>()
+                .AddType<VariableTestController>()
                 .Build();
 
             var plan = await server.CreateQueryPlan(queryText);

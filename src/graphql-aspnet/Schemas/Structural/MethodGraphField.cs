@@ -82,7 +82,40 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <inheritdoc/>
         public void AssignParent(IGraphType parent)
         {
+            Validation.ThrowIfNull(parent, nameof(parent));
             this.Parent = parent;
+        }
+
+        /// <inheritdoc/>
+        public virtual IGraphField Clone(IGraphType parent)
+        {
+            Validation.ThrowIfNull(parent, nameof(parent));
+            var newField = this.CreateNewInstance(parent);
+            newField.AssignParent(parent);
+
+            foreach (var argument in this.Arguments)
+                newField.Arguments.AddArgument(argument.Clone(newField));
+
+            return newField;
+        }
+
+        /// <summary>
+        /// Creates a new instance of a graph field from this type.
+        /// </summary>
+        /// <param name="parent">The item to assign as the parent of the new field.</param>
+        /// <returns>IGraphField.</returns>
+        protected virtual IGraphField CreateNewInstance(IGraphType parent)
+        {
+            return new MethodGraphField(
+                this.Name,
+                this.TypeExpression,
+                parent.Route.CreateChild(this.Name),
+                this.ObjectType,
+                this.DeclaredReturnType,
+                this.Mode,
+                this.Resolver,
+                this.SecurityGroups,
+                this.AppliedDirectives);
         }
 
         /// <inheritdoc/>

@@ -33,12 +33,12 @@ namespace GraphQL.AspNet.Tests.Configuration
             }
 
             var schema = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build()
                 .Schema;
 
             var schema1 = new TestServerBuilder()
-                 .AddGraphType<TwoPropertyObject>()
+                 .AddType<TwoPropertyObject>()
                  .Build()
                  .Schema;
 
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             }
 
             var schema = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build()
                 .Schema;
 
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var argSet = new object[] { 1, 2, "bob" };
 
             var schema = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build()
                 .Schema;
 

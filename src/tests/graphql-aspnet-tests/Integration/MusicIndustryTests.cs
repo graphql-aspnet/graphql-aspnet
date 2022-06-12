@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Integration
             var builder = new TestServerBuilder();
             builder.AddScoped<IMusicService, MusicService>();
             builder.AddSingleton<IMusicRepository, MusicRepository>();
-            builder.AddGraphType<MusicController>();
+            builder.AddType<MusicController>();
             builder.AddGraphQL(o =>
             {
                 o.ExecutionOptions.DebugMode = true;

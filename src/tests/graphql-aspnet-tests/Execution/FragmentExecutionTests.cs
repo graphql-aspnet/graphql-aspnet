@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task BasicBranch_ViaNamedFragments_RendersCorrectly()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<FragmentProcessingController>()
+                    .AddType<FragmentProcessingController>()
                     .Build();
             var builder = server.CreateQueryContextBuilder();
             builder.AddQueryText(@"
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Execution
             // before testing ensure the inheritance chain hasnt been altered
             Assert.IsTrue(Validation.IsCastable<FragmentDataA>(typeof(FragmentDataC)));
             var server = new TestServerBuilder()
-                .AddGraphType<FragmentProcessingController>()
+                .AddType<FragmentProcessingController>()
                 .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -144,8 +144,8 @@ namespace GraphQL.AspNet.Tests.Execution
             // All Three implement interface graph type FragmentDataItem and should include any fields in the "sampleFrag" fragment
             // which is typed to the interface
             var server = new TestServerBuilder()
-                    .AddGraphType<FragmentProcessingController>()
-                    .AddGraphType<IFragmentDataItem>()
+                    .AddType<FragmentProcessingController>()
+                    .AddType<IFragmentDataItem>()
                     .AddSchemaBuilderAction(o =>
                     {
                         o.Options.ResponseOptions.ExposeExceptions = true;

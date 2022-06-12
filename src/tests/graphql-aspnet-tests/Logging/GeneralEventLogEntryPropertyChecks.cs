@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void SchemaInstanceCreatedLogEntry()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<LogTestController>()
+                .AddType<LogTestController>()
                 .Build();
 
             var entry = new SchemaInstanceCreatedLogEntry<GraphSchema>(server.Schema);
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void SchemaPipelineRegisteredLogEntry()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<LogTestController>()
+                .AddType<LogTestController>()
                 .Build();
 
             var pipeline = server.ServiceProvider.GetService<ISchemaPipeline<GraphSchema, GraphFieldExecutionContext>>();
@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void RequestReceivedLogEntry()
         {
             var serverBuilder = new TestServerBuilder()
-                            .AddGraphType<LogTestController>();
+                            .AddType<LogTestController>();
             serverBuilder.UserContext.Authenticate("fakeUserName");
             var server = serverBuilder.Build();
 
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void RequestCompletedLogEntry()
         {
             var server = new TestServerBuilder()
-                            .AddGraphType<LogTestController>()
+                            .AddType<LogTestController>()
                             .Build();
 
             var builder = server.CreateQueryContextBuilder();
@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public async Task QueryPlanCacheAddLogEntry()
         {
             var server = new TestServerBuilder()
-                            .AddGraphType<LogTestController>()
+                            .AddType<LogTestController>()
                             .Build();
             var queryPlan = await server.CreateQueryPlan("query Operation1{ field1 } query Operation2 { fieldException }");
 
@@ -207,7 +207,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public async Task QueryPlanGeneratedLogEntry()
         {
             var server = new TestServerBuilder()
-                            .AddGraphType<LogTestController>()
+                            .AddType<LogTestController>()
                             .Build();
             var queryPlan = await server.CreateQueryPlan("query Operation1{ field1 } query Operation2 { fieldException }");
 
@@ -227,7 +227,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void FieldResolutionStartedLogEntry()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                             .AddGraphType<LogTestController>()
+                             .AddType<LogTestController>()
                              .Build();
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
@@ -247,7 +247,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void FieldResolutionCompletedLogEntry()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                             .AddGraphType<LogTestController>()
+                             .AddType<LogTestController>()
                              .Build();
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
@@ -271,7 +271,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void FieldAuthorizationStartedLogEntry()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                            .AddGraphType<LogTestController>();
+                            .AddType<LogTestController>();
 
             builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
@@ -296,7 +296,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void FieldAuthorizationCompletedLogEntry()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                                         .AddGraphType<LogTestController>();
+                                         .AddType<LogTestController>();
 
             builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
@@ -323,7 +323,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void FieldAuthenticationStartedLogEntry()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                            .AddGraphType<LogTestController>();
+                            .AddType<LogTestController>();
 
             builder.UserContext.Authenticate("bobSmith");
             var server = builder.Build();
@@ -347,7 +347,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void FieldAuthenticationCompletedLogEntry()
         {
             var builder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                                         .AddGraphType<LogTestController>();
+                                         .AddType<LogTestController>();
             builder.UserContext.Authenticate("bob-smith");
             var server = builder.Build();
 
@@ -386,7 +386,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void ActionMethodInvocationStartedLogEntry()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                                         .AddGraphType<LogTestController>()
+                                         .AddType<LogTestController>()
                                          .Build();
             var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(
@@ -409,7 +409,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void ActionMethodInvocationCompletedLogEntry()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                                         .AddGraphType<LogTestController>()
+                                         .AddType<LogTestController>()
                                          .Build();
 
             var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
@@ -435,7 +435,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void ActionMethodInvocationExceptionLogEntry()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                                         .AddGraphType<LogTestController>()
+                                         .AddType<LogTestController>()
                                          .Build();
 
             var graphMethod = TemplateHelper.CreateActionMethodTemplate<LogTestController>(nameof(LogTestController.ExecuteField2)) as IGraphMethod;
@@ -466,7 +466,7 @@ namespace GraphQL.AspNet.Tests.Logging
         public void ActionMethodUnhandledExceptionLogEntry()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                                         .AddGraphType<LogTestController>()
+                                         .AddType<LogTestController>()
                                          .Build();
 
             var package = server.CreateGraphTypeFieldContextBuilder<LogTestController>(

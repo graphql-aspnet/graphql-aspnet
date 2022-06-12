@@ -34,8 +34,8 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task ValidationMiddlewareForwardsRequestToRuleSet()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
-              .AddGraphType<PipelineTestDirective>()
+                .AddType<TwoPropertyObject>()
+              .AddType<PipelineTestDirective>()
               .Build();
 
             var context = server.CreateDirectiveExecutionContext<PipelineTestDirective>(
@@ -57,8 +57,8 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task InvocationMiddlewareCallsResolver()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
-              .AddGraphType<PipelineTestDirective>()
+                .AddType<TwoPropertyObject>()
+              .AddType<PipelineTestDirective>()
               .Build();
 
             var testObject = new TwoPropertyObject();

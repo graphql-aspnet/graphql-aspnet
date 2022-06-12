@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ExtendedTypeOfToAKnownGraphType_ShouldBeProcessed()
         {
             var server = new TestServerBuilder()
-                    .AddGraphType<MixedReturnTypeController>()
+                    .AddType<MixedReturnTypeController>()
                     .Build();
 
             // controller returns a MixedReturnTypeB, but is declared in the schema as MixedReturnTypeA
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             MixedTypeUnion.TotalCallCount = 0;
             var server = new TestServerBuilder()
-                     .AddGraphType<MixedReturnTypeController>()
+                     .AddType<MixedReturnTypeController>()
                      .AddSchemaBuilderAction(a =>
                      {
                          a.Options.ResponseOptions.ExposeExceptions = true;
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             MixedTypeUnionNullReturn.TotalCallCount = 0;
             var server = new TestServerBuilder()
-                     .AddGraphType<MixedReturnTypeController>()
+                     .AddType<MixedReturnTypeController>()
                      .AddSchemaBuilderAction(a =>
                      {
                          a.Options.ResponseOptions.ExposeExceptions = true;
@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             MixedTypeUnionSourceReturn.TotalCallCount = 0;
             var server = new TestServerBuilder()
-                     .AddGraphType<MixedReturnTypeController>()
+                     .AddType<MixedReturnTypeController>()
                      .AddSchemaBuilderAction(a =>
                      {
                          a.Options.ResponseOptions.ExposeExceptions = true;
@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Execution
             // blog controller returns a BlogProxy and PostProxy
             // for the root object and child object set
             var server = new TestServerBuilder()
-                    .AddGraphType<BlogProxyController>()
+                    .AddType<BlogProxyController>()
                     .AddSchemaBuilderAction(a =>
                     {
                         a.Options.ResponseOptions.ExposeExceptions = true;

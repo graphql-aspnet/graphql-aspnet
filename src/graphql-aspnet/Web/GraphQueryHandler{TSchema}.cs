@@ -10,7 +10,9 @@
 namespace GraphQL.AspNet.Web
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
@@ -30,9 +32,12 @@ namespace GraphQL.AspNet.Web
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        private Task Invoke(HttpContext context)
+        protected Task Invoke(HttpContext context)
         {
-            var processor = context.RequestServices.GetService(typeof(IGraphQLHttpProcessor<TSchema>))
+            Validation.ThrowIfNull(context, nameof(context));
+            Validation.ThrowIfNull(context?.RequestServices, nameof(HttpContext.RequestServices));
+
+            var processor = context?.RequestServices?.GetService(typeof(IGraphQLHttpProcessor<TSchema>))
                 as IGraphQLHttpProcessor<TSchema>;
 
             if (processor == null)

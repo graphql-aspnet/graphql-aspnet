@@ -12,18 +12,17 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using System;
     using System.Linq;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.EnumTestData;
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphEnumTemplateTests
+    public class EnumGraphTypeTemplateTests
     {
         [Test]
         public void Parse_SimpleEnum_AllDefault_ParsesCorrectly()
         {
-            var template = new EnumGraphTypeTemplate(typeof(SimpleEnum));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(SimpleEnum));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -38,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithDescription_ParsesCorrectly()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithDescription));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithDescription));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -48,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithGraphName_ParsesCorrectly()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithGraphName));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithGraphName));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -58,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithDescriptionOnValues_ParsesCorrectly()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithDescriptionOnValues));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithDescriptionOnValues));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -71,7 +70,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithInvalidValueName_ThrowsException()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithInvalidValueName));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithInvalidValueName));
             template.Parse();
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -83,7 +82,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithValueWithGraphName_ParsesCorrectly()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithValueWithGraphName));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithValueWithGraphName));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -95,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithValueWithGraphName_ButGraphNameIsInvalid_ThrowsException()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithValueWithGraphNameButGraphNameIsInvalid));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithValueWithGraphNameButGraphNameIsInvalid));
             template.Parse();
             Assert.Throws<GraphTypeDeclarationException>(() =>
             {
@@ -106,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithNonIntBase_ParsesCorrectly()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumFromUInt));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumFromUInt));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -119,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithDuplciateValues_ThrowsException()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithDuplicateValues));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithDuplicateValues));
             template.Parse();
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -131,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumWithDuplciateValuesFromComposite_ThrowsException()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithDuplicateValuesFromComposite));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithDuplicateValuesFromComposite));
             template.Parse();
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -146,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [TestCase(typeof(EnumFromLong))]
         public void Parse_EnsureEnumsOfSignedValues(Type type)
         {
-            var template = new EnumGraphTypeTemplate(type);
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(type);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -165,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [TestCase(typeof(EnumFromULong))]
         public void Parse_EnsureEnumsOfUnSignedValues(Type type)
         {
-            var template = new EnumGraphTypeTemplate(type);
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(type);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -180,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             // the enum defines EVERY value for its key space
             // ensure it parses
-            var template = new EnumGraphTypeTemplate(typeof(EnumCompleteSByte));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumCompleteSByte));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -193,7 +192,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         {
             // the enum defines EVERY value for its key space
             // ensure it parses
-            var template = new EnumGraphTypeTemplate(typeof(EnumCompleteByte));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumCompleteByte));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -204,7 +203,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_AssignedDirective_IsTemplatized()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithDirective));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithDirective));
             template.Parse();
             template.ValidateOrThrow();
 
@@ -218,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_EnumOption_AssignedDirective_IsTemplatized()
         {
-            var template = new EnumGraphTypeTemplate(typeof(EnumWithDirectiveOnOption));
+            var template = new AspNet.Internal.TypeTemplates.EnumGraphTypeTemplate(typeof(EnumWithDirectiveOnOption));
             template.Parse();
             template.ValidateOrThrow();
 

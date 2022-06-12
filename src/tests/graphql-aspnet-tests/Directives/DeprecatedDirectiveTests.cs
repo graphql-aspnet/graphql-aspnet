@@ -64,8 +64,8 @@ namespace GraphQL.AspNet.Tests.Directives
         {
             var server = new TestServerBuilder()
                 .AddDirective<DeprecatedDirective>()
-                .AddGraphType<TwoPropertyObject>()
-                .AddGraphType<TestEnum>()
+                .AddType<TwoPropertyObject>()
+                .AddType<TestEnum>()
                 .Build();
 
             _provider = server.ServiceProvider;

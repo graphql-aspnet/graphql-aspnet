@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var directiveInstance = new CountableLateBoundDirective();
 
             var serverBuilder = new TestServerBuilder()
-                .AddGraphType<ObjectForLateBoundDirective>()
+                .AddType<ObjectForLateBoundDirective>()
                 .AddGraphQL(options =>
                 {
                     // late bind the directive to the single OBJECT

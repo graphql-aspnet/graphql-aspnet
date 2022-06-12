@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsField_ByType()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsField_ByName()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsObjectGraphType()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsObjectGraphType_ByName()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsGraphType()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsGraphType_ByName()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsGraphType_ForUnmatchedKind()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -152,7 +152,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsEnumValue()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<EnumForSelecting>()
+                .AddType<EnumForSelecting>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();
@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         public void IsDirective()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TwoPropertyObject>()
+                .AddType<TwoPropertyObject>()
                 .Build();
 
             var foundItems = new List<ISchemaItem>();

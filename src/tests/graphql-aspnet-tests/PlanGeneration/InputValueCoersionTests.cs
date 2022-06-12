@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void SingleValueProvidedForAList_IsCoercible()
         {
             var server = new TestServerBuilder()
-                .AddGraphType<InputCoersionValidatorController>()
+                .AddType<InputCoersionValidatorController>()
                 .Build();
 
             // arg1 accepts [int] (an array of ints), single value should be coercable into a list

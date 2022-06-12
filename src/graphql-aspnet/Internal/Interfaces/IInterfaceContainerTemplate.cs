@@ -6,19 +6,21 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Internal.Interfaces
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
-    /// A representation of an object that can have a collection of unique interfaces, organized by their name.
+    /// An interface that declares a template for a given graph type
+    /// manages applied interfaces.
     /// </summary>
-    public interface IGraphInterfaceContainer
+    public interface IInterfaceContainerTemplate
     {
         /// <summary>
-        /// Gets the internal collection of interfaces this object graph type implements.
+        /// Gets the set of interfaces that were declared on the type.
         /// </summary>
-        /// <value>The interfaces.</value>
-        HashSet<string> InterfaceNames { get; }
+        /// <value>The declared interfaces.</value>
+        IEnumerable<Type> DeclaredInterfaces { get; }
     }
 }

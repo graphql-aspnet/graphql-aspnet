@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -43,6 +44,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             this.InternalName = this.ObjectType.FriendlyName();
+            this.InterfaceNames = new HashSet<string>();
 
             _fieldSet = new GraphFieldCollection(this);
 
@@ -101,5 +103,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public virtual string InternalName { get; }
+
+        /// <inheritdoc />
+        public HashSet<string> InterfaceNames { get; }
     }
 }

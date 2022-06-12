@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task StandardExcution_EnsureResultsMakeSense()
         {
             var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
-            serverBuilder.AddGraphType<SimpleExecutionController>();
+            serverBuilder.AddType<SimpleExecutionController>();
             var server = serverBuilder.Build();
 
             var builder = server.CreateQueryContextBuilder()
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task StandardExcution_OutputTest()
         {
             var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
-            serverBuilder.AddGraphType<SimpleExecutionController>();
+            serverBuilder.AddType<SimpleExecutionController>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -197,7 +197,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var counter = new Dictionary<string, int>();
 
             var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
-            serverBuilder.AddGraphType<BatchObjectController>();
+            serverBuilder.AddType<BatchObjectController>();
 
             serverBuilder.AddGraphQL(o =>
             {
@@ -341,7 +341,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var counter = new Dictionary<string, int>();
 
             var serverBuilder = new TestServerBuilder(TestOptions.IncludeMetrics);
-            serverBuilder.AddGraphType<BatchObjectController>();
+            serverBuilder.AddType<BatchObjectController>();
 
             serverBuilder.AddGraphQL(o =>
             {

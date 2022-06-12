@@ -26,8 +26,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         private IGraphQueryDocument CreateDocument(string text, out ISchema schema)
         {
             var server = new TestServerBuilder()
-                .AddGraphType<TestUserController>()
-                .AddGraphType<FieldLevelDirective>()
+                .AddType<TestUserController>()
+                .AddType<FieldLevelDirective>()
                 .Build();
 
             schema = server.Schema;

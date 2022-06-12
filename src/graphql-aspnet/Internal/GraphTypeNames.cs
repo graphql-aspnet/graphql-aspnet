@@ -81,9 +81,11 @@ namespace GraphQL.AspNet.Internal
         }
 
         /// <summary>
-        /// Parses the name of the type as it would exist in the object graph and returns the name.
+        /// Parses the name of the type as it would exist in the object graph
+        /// and returns the name. Schema name formatting rules are not applied during
+        /// this method.
         /// </summary>
-        /// <param name="type">The concrete type to parse.</param>
+        /// <param name="type">The concrete type to parse a name from.</param>
         /// <param name="kind">The kind of graph type being created.</param>
         /// <returns>System.String.</returns>
         public static string ParseName(Type type, TypeKind kind)
@@ -116,7 +118,7 @@ namespace GraphQL.AspNet.Internal
                 else
                 {
                     typeName = GraphTypeNames.ParseName(type, TypeKind.OBJECT);
-                    typeName = $"Input_{typeName}";
+                    typeName = $"{Constants.CommonPrefix.INPUT_OBJECT_NAME_PREFIX}{typeName}";
                 }
             }
             else

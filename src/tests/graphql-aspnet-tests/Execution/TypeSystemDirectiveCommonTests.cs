@@ -21,8 +21,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ExtendAResolver_DirectiveDeclaredByType()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestPersonWithResolverExtensionDirectiveByType>()
-                .AddGraphType<ToUpperDirective>()
+                .AddType<TestPersonWithResolverExtensionDirectiveByType>()
+                .AddType<ToUpperDirective>()
                 .Build();
 
             var person = new TestPersonWithResolverExtensionDirectiveByType()
@@ -45,8 +45,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ExtendAResolver_DirectiveDeclaredByName()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestPersonWithResolverExtensionDirectiveByName>()
-                .AddGraphType<ToUpperDirective>()
+                .AddType<TestPersonWithResolverExtensionDirectiveByName>()
+                .AddType<ToUpperDirective>()
                 .Build();
 
             var person = new TestPersonWithResolverExtensionDirectiveByName()
@@ -71,8 +71,8 @@ namespace GraphQL.AspNet.Tests.Execution
             // TestPerson references a "ToUpper" directive
             // CustomNamedToUpperDirective has its name explicitly set to "ToUpper"
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestPersonWithResolverExtensionDirectiveByName>()
-                .AddGraphType<CustomNamedToUpperDirective>()
+                .AddType<TestPersonWithResolverExtensionDirectiveByName>()
+                .AddType<CustomNamedToUpperDirective>()
                 .Build();
 
             var person = new TestPersonWithResolverExtensionDirectiveByName()
@@ -95,8 +95,8 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task ExtendAnObjectType_AddField_DirectiveDeclaredByType()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
-                .AddGraphType<TestObjectWithAddFieldDirectiveByType>()
-                .AddGraphType<AddFieldDirective>()
+                .AddType<TestObjectWithAddFieldDirectiveByType>()
+                .AddType<AddFieldDirective>()
                 .Build();
 
             var obj = new TestObjectWithAddFieldDirectiveByType()

@@ -176,9 +176,9 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
         public void ExecuteRule_EnsureCorrectErrorIsGenerated(string expectedRuleError, string queryText)
         {
             var server = new TestServerBuilder()
-                .AddGraphType<PeopleMoverController>()
-                .AddGraphType<AllowDirective>()
-                .AddGraphType<RestrictDirective>()
+                .AddType<PeopleMoverController>()
+                .AddType<AllowDirective>()
+                .AddType<RestrictDirective>()
                 .Build();
 
             // parse the query
