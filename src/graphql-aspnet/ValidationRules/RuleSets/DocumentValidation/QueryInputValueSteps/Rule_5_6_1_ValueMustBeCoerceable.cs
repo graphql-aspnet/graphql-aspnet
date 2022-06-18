@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return context.ActivePart is IAssignableValueDocumentPart ivdp 
+            return context.ActivePart is IAssignableValueDocumentPart ivdp
                 && !(ivdp.Value is DocumentVariableReferenceInputValue);
         }
 
@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
                 {
                     case TypeKind.SCALAR:
                         var scalarType = queryArg.GraphType as IScalarGraphType;
-                        var scalarValue = valueToEvaluate as DocumentScalarSuppliedValue;
+                        var scalarValue = valueToEvaluate as IScalarSuppliedValue;
                         if (scalarType == null ||
                             scalarValue == null ||
                             !scalarType.ValueType.HasFlag(scalarValue.ValueType))

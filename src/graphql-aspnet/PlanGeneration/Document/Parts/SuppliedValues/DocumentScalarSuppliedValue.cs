@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value representing a single scalar value of data.
     /// </summary>
     [DebuggerDisplay("Scalar: {Value.ToString()} (Type: {ValueType})")]
-    public class DocumentScalarSuppliedValue : DocumentSuppliedValue, IResolvableValue
+    public class DocumentScalarSuppliedValue : DocumentSuppliedValue, IScalarSuppliedValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue" /> class.
@@ -46,22 +46,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             this.ValueType = valueType;
         }
 
-        /// <summary>
-        /// Gets the type of the value as it was read on the query document.
-        /// </summary>
-        /// <value>The type of the value.</value>
+        /// <inheritdoc />
         public ScalarValueType ValueType { get; }
 
-        /// <summary>
-        /// Gets the value literal of the data passed to the input value.
-        /// </summary>
-        /// <value>The value.</value>
+        /// <inheritdoc />
         public ReadOnlyMemory<char> Value { get; }
 
-        /// <summary>
-        /// Gets the value to be used to resolve to some .NET type.
-        /// </summary>
-        /// <value>The resolvable value.</value>
+        /// <inheritdoc />
         public ReadOnlySpan<char> ResolvableValue => this.Value.Span;
     }
 }

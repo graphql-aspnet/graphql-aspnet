@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.PlanGeneration
 {
     using System.Linq;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -147,20 +148,20 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var complexArg2 = complexValue.Arguments["name"];
             var complexArg3 = complexValue.Arguments["location"];
 
-            var value = complexArg1.Value as DocumentScalarSuppliedValue;
+            var value = complexArg1.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.Number, value.ValueType);
             Assert.AreEqual("1234", value.Value.ToString());
 
-            value = complexArg2.Value as DocumentScalarSuppliedValue;
+            value = complexArg2.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.String, value.ValueType);
             Assert.AreEqual("\"Jane\"", value.Value.ToString());
 
-            value = complexArg3.Value as DocumentScalarSuppliedValue;
+            value = complexArg3.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.String, value.ValueType);
             Assert.AreEqual("\"Outside\"", value.Value.ToString());
 
             var arg2 = field.Arguments["arg2"];
-            value = arg2.Value as DocumentScalarSuppliedValue;
+            value = arg2.Value as IScalarSuppliedValue;
             Assert.AreEqual("5", value.Value.ToString());
         }
 
@@ -210,26 +211,26 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var childUserName = childUser.Arguments["name"];
             var childUserLocation = childUser.Arguments["location"];
 
-            var value = childUserbirthDay.Value as DocumentScalarSuppliedValue;
+            var value = childUserbirthDay.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.Number, value.ValueType);
             Assert.AreEqual("1234", value.Value.ToString());
 
-            value = childUserName.Value as DocumentScalarSuppliedValue;
+            value = childUserName.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.String, value.ValueType);
             Assert.AreEqual("\"Jane\"", value.Value.ToString());
 
-            value = childUserLocation.Value as DocumentScalarSuppliedValue;
+            value = childUserLocation.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.String, value.ValueType);
             Assert.AreEqual("\"Outside\"", value.Value.ToString());
 
-            value = houseArgId.Value as DocumentScalarSuppliedValue;
+            value = houseArgId.Value as IScalarSuppliedValue;
             Assert.AreEqual("15", value.Value.ToString());
 
-            value = houseArgName.Value as DocumentScalarSuppliedValue;
+            value = houseArgName.Value as IScalarSuppliedValue;
             Assert.AreEqual("\"BobHouse\"", value.Value.ToString());
 
             var arg2 = field.Arguments["arg2"];
-            value = arg2.Value as DocumentScalarSuppliedValue;
+            value = arg2.Value as IScalarSuppliedValue;
             Assert.AreEqual("5", value.Value.ToString());
         }
 
@@ -264,13 +265,13 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
             Assert.AreEqual(4, arg1Value.ListItems.Count);
 
-            Assert.IsTrue(arg1Value.ListItems[0] is DocumentScalarSuppliedValue scalar && scalar.Value.ToString() == "5");
-            Assert.IsTrue(arg1Value.ListItems[1] is DocumentScalarSuppliedValue scalar1 && scalar1.Value.ToString() == "15");
-            Assert.IsTrue(arg1Value.ListItems[2] is DocumentScalarSuppliedValue scalar2 && scalar2.Value.ToString() == "18");
-            Assert.IsTrue(arg1Value.ListItems[3] is DocumentScalarSuppliedValue scalar3 && scalar3.Value.ToString() == "95");
+            Assert.IsTrue(arg1Value.ListItems[0] is IScalarSuppliedValue scalar && scalar.Value.ToString() == "5");
+            Assert.IsTrue(arg1Value.ListItems[1] is IScalarSuppliedValue scalar1 && scalar1.Value.ToString() == "15");
+            Assert.IsTrue(arg1Value.ListItems[2] is IScalarSuppliedValue scalar2 && scalar2.Value.ToString() == "18");
+            Assert.IsTrue(arg1Value.ListItems[3] is IScalarSuppliedValue scalar3 && scalar3.Value.ToString() == "95");
 
             var arg2 = field.Arguments["arg2"];
-            var value = arg2.Value as DocumentScalarSuppliedValue;
+            var value = arg2.Value as IScalarSuppliedValue;
             Assert.AreEqual("5", value.Value.ToString());
         }
 
@@ -310,20 +311,20 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(listItem1);
             Assert.AreEqual(2, listItem1.ListItems.Count);
             Assert.AreEqual(arg1Value.Owner, listItem1.Owner);
-            Assert.IsTrue(listItem1.ListItems[0] is DocumentScalarSuppliedValue svn1A && svn1A.Value.ToString() == "1");
-            Assert.IsTrue(listItem1.ListItems[1] is DocumentScalarSuppliedValue svn1B && svn1B.Value.ToString() == "5");
+            Assert.IsTrue(listItem1.ListItems[0] is IScalarSuppliedValue svn1A && svn1A.Value.ToString() == "1");
+            Assert.IsTrue(listItem1.ListItems[1] is IScalarSuppliedValue svn1B && svn1B.Value.ToString() == "5");
 
             Assert.IsNotNull(listItem2);
             Assert.AreEqual(2, listItem2.ListItems.Count);
             Assert.AreEqual(arg1Value.Owner, listItem2.Owner);
-            Assert.IsTrue(listItem2.ListItems[0] is DocumentScalarSuppliedValue svn2A && svn2A.Value.ToString() == "10");
-            Assert.IsTrue(listItem2.ListItems[1] is DocumentScalarSuppliedValue svn2B && svn2B.Value.ToString() == "15");
+            Assert.IsTrue(listItem2.ListItems[0] is IScalarSuppliedValue svn2A && svn2A.Value.ToString() == "10");
+            Assert.IsTrue(listItem2.ListItems[1] is IScalarSuppliedValue svn2B && svn2B.Value.ToString() == "15");
 
             Assert.IsNotNull(listItem3);
             Assert.AreEqual(2, listItem3.ListItems.Count);
             Assert.AreEqual(arg1Value.Owner, listItem3.Owner);
-            Assert.IsTrue(listItem3.ListItems[0] is DocumentScalarSuppliedValue svn3A && svn3A.Value.ToString() == "20");
-            Assert.IsTrue(listItem3.ListItems[1] is DocumentScalarSuppliedValue svn3B && svn3B.Value.ToString() == "30");
+            Assert.IsTrue(listItem3.ListItems[0] is IScalarSuppliedValue svn3A && svn3A.Value.ToString() == "20");
+            Assert.IsTrue(listItem3.ListItems[1] is IScalarSuppliedValue svn3B && svn3B.Value.ToString() == "30");
         }
 
         [Test]
@@ -366,7 +367,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(user2);
 
             var arg2 = field.Arguments["arg2"];
-            var value = arg2.Value as DocumentScalarSuppliedValue;
+            var value = arg2.Value as IScalarSuppliedValue;
             Assert.AreEqual("5", value.Value.ToString());
         }
 
@@ -441,14 +442,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(listItem1);
             Assert.AreEqual(2, listItem1.ListItems.Count);
             Assert.AreEqual(arg1Value.Owner, listItem1.Owner);
-            Assert.IsTrue(listItem1.ListItems[0] is DocumentScalarSuppliedValue svn1A && svn1A.Value.ToString() == "1");
-            Assert.IsTrue(listItem1.ListItems[1] is DocumentScalarSuppliedValue svn1B && svn1B.Value.ToString() == "5");
+            Assert.IsTrue(listItem1.ListItems[0] is IScalarSuppliedValue svn1A && svn1A.Value.ToString() == "1");
+            Assert.IsTrue(listItem1.ListItems[1] is IScalarSuppliedValue svn1B && svn1B.Value.ToString() == "5");
 
             Assert.IsNotNull(listItem2);
             Assert.AreEqual(2, listItem2.ListItems.Count);
             Assert.AreEqual(arg1Value.Owner, listItem2.Owner);
             Assert.IsTrue(listItem2.ListItems[0] is DocumentVariableReferenceInputValue qiv && qiv.VariableName == "var1");
-            Assert.IsTrue(listItem2.ListItems[1] is DocumentScalarSuppliedValue svn3B && svn3B.Value.ToString() == "15");
+            Assert.IsTrue(listItem2.ListItems[1] is IScalarSuppliedValue svn3B && svn3B.Value.ToString() == "15");
         }
 
         [Test]

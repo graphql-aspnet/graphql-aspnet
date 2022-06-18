@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.PlanGeneration
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.Tests.Framework;
@@ -45,7 +46,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             // value will not be a list at this stage, thats later
             // rules should be enforced such that this is acceptable for a list
             var arg1 = field.Arguments["arg1"];
-            var scalarValue = arg1.Value as DocumentScalarSuppliedValue;
+            var scalarValue = arg1.Value as IScalarSuppliedValue;
             Assert.IsNotNull(scalarValue);
             Assert.IsTrue(scalarValue.ValueNode is ScalarValueNode);
             Assert.AreEqual("5", scalarValue.Value.ToString());
