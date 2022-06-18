@@ -19,6 +19,13 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Adds the argument to the collection of arguments on this instance.
         /// </summary>
         /// <param name="argument">The argument.</param>
-        void AddArgument(QueryInputArgument argument);
+        internal void AddArgument(IQueryArgumentDocumentPart argument);
+
+        /// <summary>
+        /// Gets a collection of input arguments arguments that have been declared in the query document that should be
+        /// applied to this field.
+        /// </summary>
+        /// <value>The arguments.</value>
+        IQueryInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

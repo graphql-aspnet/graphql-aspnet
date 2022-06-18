@@ -19,12 +19,12 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
     /// All required input arguments for all fields/directives must be supplied on the document or declare a default
     /// value in the target schema.
     /// </summary>
-    internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective : DocumentPartValidationRuleStep<QueryDirective>
+    internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective : DocumentPartValidationRuleStep<DocumentDirective>
     {
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var queryDirective = (QueryDirective)context.ActivePart;
+            var queryDirective = (DocumentDirective)context.ActivePart;
             var directiveIsValid = true;
 
             // inspect all declared arguments from the schema

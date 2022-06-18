@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.ValidationRules.Interfaces;
 
     /// <summary>
@@ -27,9 +27,9 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     internal class DocumentConstructionContext : DocumentGenerationContext<SyntaxNode>, IContextGenerator<DocumentConstructionContext>
     {
         private List<SyntaxNode> _childNodes;
-        private FieldSelectionSet _selectionSet;
+        private IFieldSelectionSetDocumentPart _selectionSet;
         private IDocumentPart _activePart;
-        private QueryOperation _operation;
+        private IQueryOperationDocumentPart _operation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentConstructionContext" /> class.
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// and scopes are reset under this operation.
         /// </summary>
         /// <param name="operation">The operation.</param>
-        private void BeginNewOperation(QueryOperation operation)
+        private void BeginNewOperation(IQueryOperationDocumentPart operation)
         {
             this.DocumentContext.Operations.AddOperation(operation);
             _operation = operation;
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// </summary>
         public void BeginNewFieldSelectionSet()
         {
-            if (!(_activePart is FieldSelection fs))
+            if (!(_activePart is DocumentFieldSelection fs))
                 throw new InvalidOperationException("No field currently in scope, cannot append a new selection set.");
             _selectionSet = fs.CreateFieldSelectionSet();
             this.BeginNewDocumentScope();
@@ -102,39 +102,39 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         {
             switch (docPart)
             {
-                case QueryOperation qo:
+                case IQueryOperationDocumentPart qo:
                     this.AddOrUpdateContextItem(qo);
                     this.BeginNewOperation(qo);
                     _activePart = qo;
                     break;
 
-                case QueryVariable qv:
+                case IQueryVariableDocumentPart qv:
                     this.AddOrUpdateContextItem(qv);
                     var variables = _operation?.CreateVariableCollection();
                     variables?.AddVariable(qv);
                     _activePart = qv;
                     break;
 
-                case QueryFragment qf:
+                case IFragmentDocumentPart qf:
                     this.AddOrUpdateContextItem(qf);
                     this.BeginNewDocumentScope();
                     break;
 
-                case FieldSelection fs:
+                case IFieldSelectionDocumentPart fs:
                     this.AddOrUpdateContextItem(fs);
                     _selectionSet.AddFieldSelection(fs);
                     this.DocumentScope = new DocumentScope(this.DocumentScope, fs);
                     _activePart = fs;
                     break;
 
-                case QueryDirective qd:
+                case IDirectiveDocumentPart qd:
                     // directives never alter the current scope, they just work within it
                     this.AddOrUpdateContextItem(qd);
                     this.DocumentScope.InsertDirective(qd);
                     _activePart = qd;
                     break;
 
-                case QueryInputArgument qa:
+                case IQueryArgumentDocumentPart qa:
                     if (_activePart is IQueryArgumentContainerDocumentPart argContainer)
                         argContainer.AddArgument(qa);
 
@@ -144,13 +144,13 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                     _activePart = qa;
                     break;
 
-                case QueryInputValue qiv:
-                    if (_activePart is IInputValueDocumentPart qia)
+                case ISuppliedValueDocumentPart qiv:
+                    if (_activePart is IAssignableValueDocumentPart qia)
                         qia.AssignValue(qiv);
-                    else if (_activePart is QueryInputValue partQiv)
+                    else if (_activePart is ISuppliedValueDocumentPart partQiv)
                         partQiv.AddChild(qiv);
 
-                    this.AddOrUpdateContextItem(qiv, typeof(QueryInputValue));
+                    this.AddOrUpdateContextItem(qiv, typeof(DocumentSuppliedValue));
                     _activePart = qiv;
                     break;
 
@@ -226,7 +226,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// are placed; irrespective of the current document scope of this context.
         /// </summary>
         /// <value>The selection set.</value>
-        public FieldSelectionSet SelectionSet => _selectionSet;
+        public IFieldSelectionSetDocumentPart SelectionSet => _selectionSet;
 
         /// <summary>
         /// Gets the parent context that created this child context, if any. Root contexts will

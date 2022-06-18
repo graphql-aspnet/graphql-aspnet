@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
     /// <summary>
     /// A rule to validate that a subscription operation has 1 and only 1 root level field declaration.
     /// </summary>
-    internal class Rule_5_2_3_1_SubscriptionsRequire1RootField : DocumentConstructionRuleStep<OperationTypeNode, QueryOperation>
+    internal class Rule_5_2_3_1_SubscriptionsRequire1RootField : DocumentConstructionRuleStep<OperationTypeNode, DocumentQueryOperation>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return base.ShouldExecute(context) && context.FindContextItem<QueryOperation>().OperationType == GraphOperationType.Subscription;
+            return base.ShouldExecute(context) && context.FindContextItem<DocumentQueryOperation>().OperationType == GraphOperationType.Subscription;
         }
 
         /// <summary>

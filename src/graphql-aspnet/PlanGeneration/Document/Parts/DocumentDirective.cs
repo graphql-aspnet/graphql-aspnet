@@ -21,65 +21,44 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// An instance of a referenced directive in a query document.
     /// </summary>
     [DebuggerDisplay("Directive {Directive.Name}")]
-    public class QueryDirective : IQueryArgumentContainerDocumentPart, IDocumentPart
+    public class DocumentDirective : IDirectiveDocumentPart
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryDirective" /> class.
+        /// Initializes a new instance of the <see cref="DocumentDirective" /> class.
         /// </summary>
         /// <param name="node">The node denoting the directive.</param>
         /// <param name="directive">The directive pulled from the target schema.</param>
         /// <param name="location">The location in the source document where this directive instance was seen.</param>
-        public QueryDirective(DirectiveNode node, IDirective directive, DirectiveLocation location)
+        public DocumentDirective(DirectiveNode node, IDirective directive, DirectiveLocation location)
         {
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.Directive = Validation.ThrowIfNullOrReturn(directive, nameof(directive));
             this.Location = location;
-            this.Arguments = new QueryInputArgumentCollection();
+            this.Arguments = new DocumentInputArgumentCollection();
         }
 
-        /// <summary>
-        /// Adds the argument to the collection of arguments on this instance.
-        /// </summary>
-        /// <param name="argument">The argument.</param>
-        public void AddArgument(QueryInputArgument argument)
+        /// <inheritdoc />
+        public void AddArgument(IQueryArgumentDocumentPart argument)
         {
             this.Arguments.AddArgument(argument);
         }
 
-        /// <summary>
-        /// Gets the node that generated this query directive instance.
-        /// </summary>
-        /// <value>The node.</value>
+        /// <inheritdoc />
         public DirectiveNode Node { get; }
 
-        /// <summary>
-        /// Gets the actual directive from the graph schema this instance is referencing.
-        /// </summary>
-        /// <value>The directive.</value>
+        /// <inheritdoc />
         public IDirective Directive { get; }
 
-        /// <summary>
-        /// Gets the location in the source document where this directive was seen.
-        /// </summary>
-        /// <value>The location.</value>
+        /// <inheritdoc />
         public DirectiveLocation Location { get; }
 
-        /// <summary>
-        /// Gets the name of the directive as it exists on the schema.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public string Name => this.Directive.Name;
 
-        /// <summary>
-        /// Gets a collection of arguments that were defined on the node to be passed to the directive.
-        /// </summary>
-        /// <value>The argments.</value>
-        public QueryInputArgumentCollection Arguments { get; }
+        /// <inheritdoc />
+        public IQueryInputArgumentCollectionDocumentPart Arguments { get; }
 
-        /// <summary>
-        /// Gets the child parts declared in this instance.
-        /// </summary>
-        /// <value>The children.</value>
+        /// <inheritdoc />
         public IEnumerable<IDocumentPart> Children
         {
             get

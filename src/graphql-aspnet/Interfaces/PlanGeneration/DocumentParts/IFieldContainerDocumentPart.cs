@@ -9,23 +9,23 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
-
     /// <summary>
     /// Represents a document part that can contain child fields.
     /// </summary>
     public interface IFieldContainerDocumentPart : IDocumentPart
     {
         /// <summary>
-        /// Creates the field selection set to return from the operation type.
+        /// Creates this field's child selection set. Prior to calling this method this instance
+        /// can never have children.
         /// </summary>
         /// <returns>FieldSelectionSet.</returns>
-        FieldSelectionSet CreateFieldSelectionSet();
+        internal IFieldSelectionSetDocumentPart CreateFieldSelectionSet();
 
         /// <summary>
-        /// Gets the set of nodes requested from this operation.
+        /// Gets the set of nodes requested from this operation. This value is null
+        /// until <see cref="CreateFieldSelectionSet()"/> is called.
         /// </summary>
         /// <value>The complete collection of nodes.</value>
-        FieldSelectionSet FieldSelectionSet { get; }
+        IFieldSelectionSetDocumentPart FieldSelectionSet { get; }
     }
 }

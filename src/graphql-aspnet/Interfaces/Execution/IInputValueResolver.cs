@@ -11,11 +11,10 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
 
     /// <summary>
     /// An internal input argument data resolver that converts parted document parts, derived from
-    /// <see cref="QueryInputValue" />, into valid .NET objects of an appropriate type.
+    /// <see cref="DocumentSuppliedValue" />, into valid .NET objects of an appropriate type.
     /// </summary>
     public interface IInputValueResolver
     {

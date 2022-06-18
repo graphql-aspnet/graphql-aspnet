@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
         /// <returns><c>True</c> if a cyclic path was detected; otherwise, false.</returns>
         private bool DoesNodeFormAFragmentCycle(
             SyntaxNode node,
-            QueryFragmentCollection allKnownNamedFragments,
+            DocumentFragmentCollection allKnownNamedFragments,
             Stack<ReadOnlyMemory<char>> fragmentsUsed)
         {
             if (node is FragmentSpreadNode fsn)

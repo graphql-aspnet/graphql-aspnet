@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFrag
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Generates a <see cref="QueryFragment"/> out of the active named fragment node and injects it as the active
+    /// Generates a <see cref="DocumentFragment"/> out of the active named fragment node and injects it as the active
     /// item on the node context as well as adding it to the general document context.
     /// </summary>
     internal class NamedFragment_CreateFragmentOnDocument : DocumentConstructionStep<NamedFragmentNode>
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFrag
         {
             var node = (NamedFragmentNode)context.ActiveNode;
 
-            var fragment = new QueryFragment(node);
+            var fragment = new DocumentFragment(node);
             context.AddDocumentPart(fragment);
             context.DocumentContext.Fragments.AddFragment(fragment);
 

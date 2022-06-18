@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputA
 {
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
@@ -23,14 +23,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputA
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return context.ActivePart is QueryInputArgument arg && arg.Value is QueryVariableReferenceInputValue;
+            return context.ActivePart is DocumentInputArgument arg && arg.Value is DocumentVariableReferenceInputValue;
         }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var argument = context.ActivePart as QueryInputArgument;
-            var qvr = argument.Value as QueryVariableReferenceInputValue;
+            var argument = context.ActivePart as DocumentInputArgument;
+            var qvr = argument.Value as DocumentVariableReferenceInputValue;
 
             // ensure the type expressions are compatible at the location used
             if (!qvr.Variable.TypeExpression.Equals(argument.TypeExpression))

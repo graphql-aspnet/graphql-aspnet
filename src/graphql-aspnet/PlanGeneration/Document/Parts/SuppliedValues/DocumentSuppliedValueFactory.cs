@@ -7,16 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
     /// A factory to generate appropriate query input values for a parsed document.
     /// </summary>
-    public static class QueryInputValueFactory
+    internal static class DocumentSuppliedValueFactory
     {
         /// <summary>
         /// Converts a node read on a query document into a value representation that can be resolved
@@ -24,7 +25,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// </summary>
         /// <param name="valueNode">The value node.</param>
         /// <returns>IQueryInputValue.</returns>
-        public static QueryInputValue CreateInputValue(InputValueNode valueNode)
+        public static ISuppliedValueDocumentPart CreateInputValue(InputValueNode valueNode)
         {
             if (valueNode == null)
                 return null;
@@ -32,28 +33,28 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
             switch (valueNode)
             {
                 case ListValueNode lvn:
-                    return new QueryListInputValue(lvn);
+                    return new DocumentListSuppliedValue(lvn);
 
                 case NullValueNode nvn:
-                    return new QueryNullInputValue(nvn);
+                    return new DocumentNullSuppliedValue(nvn);
 
                 case ComplexValueNode cvn:
-                    return new QueryComplexInputValue(cvn);
+                    return new DocumentComplexSuppliedValue(cvn);
 
                 case ScalarValueNode svn:
-                    return new QueryScalarInputValue(svn);
+                    return new DocumentScalarSuppliedValue(svn);
 
                 case EnumValueNode evn:
-                    return new QueryEnumInputValue(evn);
+                    return new DocumentEnumSuppliedValue(evn);
 
                 case VariableValueNode vvn:
-                    return new QueryVariableReferenceInputValue(vvn);
+                    return new DocumentVariableReferenceInputValue(vvn);
 
                 default:
                     throw new ArgumentOutOfRangeException(
                         nameof(valueNode),
                         $"Unknown type '{valueNode?.GetType().FriendlyName()}'. " +
-                        $"Factory is unable to generate a '{nameof(QueryInputValue)}' to fulfill the request.");
+                        $"Factory is unable to generate a '{nameof(ISuppliedValueDocumentPart)}' to fulfill the request.");
             }
         }
     }

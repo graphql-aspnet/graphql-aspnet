@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -19,25 +19,22 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
     /// An input value representing a complex input object read from a user's query document.
     /// </summary>
     [DebuggerDisplay("ComplexInputValue (Arguments = {Arguments.Count})")]
-    public class QueryComplexInputValue : QueryInputValue, IQueryArgumentContainerDocumentPart, IResolvableFieldSet
+    public class DocumentComplexSuppliedValue : DocumentSuppliedValue, IQueryArgumentContainerDocumentPart, IResolvableFieldSet
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryComplexInputValue" /> class.
+        /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue" /> class.
         /// </summary>
         /// <param name="node">The node that represents this input value in the user query document.</param>
-        public QueryComplexInputValue(SyntaxNode node)
+        public DocumentComplexSuppliedValue(SyntaxNode node)
             : base(node)
         {
-            this.Arguments = new QueryInputArgumentCollection();
+            this.Arguments = new DocumentInputArgumentCollection();
         }
 
-        /// <summary>
-        /// Adds the argument to the collection of arguments on this instance.
-        /// </summary>
-        /// <param name="child">The child.</param>
+        /// <inheritdoc />
         public override void AddChild(IDocumentPart child)
         {
-            if (child is QueryInputArgument qa)
+            if (child is IQueryArgumentDocumentPart qa)
             {
                 this.AddArgument(qa);
             }
@@ -51,7 +48,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// Adds the argument to the collection of arguments on this instance.
         /// </summary>
         /// <param name="argument">The argument.</param>
-        public void AddArgument(QueryInputArgument argument)
+        public void AddArgument(IQueryArgumentDocumentPart argument)
         {
             this.Arguments.AddArgument(argument);
         }
@@ -92,7 +89,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// applied to this field.
         /// </summary>
         /// <value>The arguments.</value>
-        public IQueryInputArgumentCollection Arguments { get; }
+        public IQueryInputArgumentCollectionDocumentPart Arguments { get; }
 
         /// <summary>
         /// Gets the child parts declared in this instance.

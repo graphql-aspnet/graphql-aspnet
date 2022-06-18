@@ -15,9 +15,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
 
     /// <summary>
     /// Ensures that the value of an input argument passed on the query document can be converted into the type required by the argument definition on the schema.
@@ -27,17 +27,17 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return context.ActivePart is IInputValueDocumentPart ivdp && !(ivdp.Value is QueryVariableReferenceInputValue);
+            return context.ActivePart is IAssignableValueDocumentPart ivdp && !(ivdp.Value is DocumentVariableReferenceInputValue);
         }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var ivdp = context.ActivePart as IInputValueDocumentPart;
+            var ivdp = context.ActivePart as IAssignableValueDocumentPart;
             var value = ivdp.Value;
 
             // variables do not have to supply a default value
-            if (value == null && ivdp is QueryVariable)
+            if (value == null && ivdp is DocumentVariable)
                 return true;
 
             if (!this.EvaluateContextData(value))
@@ -59,14 +59,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if the data is valid for this rule, <c>false</c> otherwise.</returns>
-        private bool EvaluateContextData(QueryInputValue value)
+        private bool EvaluateContextData(ISuppliedValueDocumentPart value)
         {
             if (value == null)
                 return false;
 
-            var queryArg = value.OwnerArgument;
-            var valueTypeExpression = value.OwnerArgument.TypeExpression.Clone();
-            var valueSet = new List<QueryInputValue>();
+            var queryArg = value.Owner;
+            var valueTypeExpression = value.Owner.TypeExpression.Clone();
+            var valueSet = new List<ISuppliedValueDocumentPart>();
             valueSet.Add(value);
 
             // walk all type expression wrappers (IsList and IsNotNull)
@@ -75,13 +75,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
             // such as when a type expression is a list of lists (e.g. [[Int]])
             while (valueTypeExpression.Wrappers.Any())
             {
-                var nextValueSet = new List<QueryInputValue>();
+                var nextValueSet = new List<ISuppliedValueDocumentPart>();
                 foreach (var item in valueSet)
                 {
                     // ensure a variable reference is of the correct type expression
                     // for this level
                     // then elimnate it
-                    if (item is QueryVariableReferenceInputValue qvr)
+                    if (item is DocumentVariableReferenceInputValue qvr)
                     {
                         var typeExpression = qvr.Variable.TypeExpression;
                         if (!typeExpression.Equals(valueTypeExpression))
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
                     switch (valueTypeExpression.Wrappers[0])
                     {
                         case MetaGraphTypes.IsNotNull:
-                            if (item is QueryNullInputValue)
+                            if (item is DocumentNullSuppliedValue)
                                 return false;
                             else
                                 nextValueSet.Add(item);
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
                             break;
 
                         case MetaGraphTypes.IsList:
-                            if (!(item is QueryListInputValue qliv))
+                            if (!(item is DocumentListSuppliedValue qliv))
                             {
                                 if (!this.EnsureSingleValueChain(item))
                                     return false;
@@ -127,14 +127,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
             // Null values are valid for all types at this stage
             foreach (var valueToEvaluate in valueSet)
             {
-                if (valueToEvaluate is QueryNullInputValue)
+                if (valueToEvaluate is DocumentNullSuppliedValue)
                     continue;
 
                 switch (queryArg.GraphType.Kind)
                 {
                     case TypeKind.SCALAR:
                         var scalarType = queryArg.GraphType as IScalarGraphType;
-                        var scalarValue = valueToEvaluate as QueryScalarInputValue;
+                        var scalarValue = valueToEvaluate as DocumentScalarSuppliedValue;
                         if (scalarType == null ||
                             scalarValue == null ||
                             !scalarType.ValueType.HasFlag(scalarValue.ValueType))
@@ -146,7 +146,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
 
                     case TypeKind.ENUM:
                         var enumType = queryArg.GraphType as IEnumGraphType;
-                        var enumValue = valueToEvaluate as QueryEnumInputValue;
+                        var enumValue = valueToEvaluate as DocumentEnumSuppliedValue;
 
                         if (enumType == null || enumValue == null)
                             return false;
@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
 
                     case TypeKind.INPUT_OBJECT:
                         var inputGraphType = queryArg.GraphType as IInputObjectGraphType;
-                        var complexValue = valueToEvaluate as QueryComplexInputValue;
+                        var complexValue = valueToEvaluate as DocumentComplexSuppliedValue;
 
                         if (inputGraphType == null || complexValue == null)
                             return false;
@@ -180,15 +180,15 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         /// <param name="value">The value.</param>
         /// <returns>
         ///   <c>true</c> if the context chain represents one single value, <c>false</c> otherwise.</returns>
-        private bool EnsureSingleValueChain(QueryInputValue value)
+        private bool EnsureSingleValueChain(ISuppliedValueDocumentPart value)
         {
-            var valueToCheck = value.OwnerValue;
+            var valueToCheck = value.ParentValue;
             while (valueToCheck != null)
             {
-                if (valueToCheck is QueryListInputValue qliv && qliv.ListItems.Count > 1)
+                if (valueToCheck is DocumentListSuppliedValue qliv && qliv.ListItems.Count > 1)
                     return false;
 
-                valueToCheck = valueToCheck.OwnerValue;
+                valueToCheck = valueToCheck.ParentValue;
             }
 
             return true;

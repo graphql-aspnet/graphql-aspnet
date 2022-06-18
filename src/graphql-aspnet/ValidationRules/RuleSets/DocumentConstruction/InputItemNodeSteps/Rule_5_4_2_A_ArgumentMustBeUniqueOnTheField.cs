@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     /// A rule that ensures that for any given input node, the name of the node is unique among the defined set of inputs
     /// on the target field in the user's query document.
     /// </summary>
-    internal class Rule_5_4_2_A_ArgumentMustBeUniqueOnTheField : DocumentConstructionRuleStep<InputItemNode, FieldSelection>
+    internal class Rule_5_4_2_A_ArgumentMustBeUniqueOnTheField : DocumentConstructionRuleStep<InputItemNode, DocumentFieldSelection>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var fieldSelection = context.FindContextItem<FieldSelection>();
+            var fieldSelection = context.FindContextItem<DocumentFieldSelection>();
 
             if (fieldSelection.Arguments.ContainsKey(node.InputName))
             {

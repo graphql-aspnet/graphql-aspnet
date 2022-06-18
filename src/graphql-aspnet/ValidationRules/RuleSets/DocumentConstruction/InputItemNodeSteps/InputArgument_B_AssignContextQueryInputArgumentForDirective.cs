@@ -16,10 +16,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Assigns a <see cref="QueryInputArgument"/> to the current node context for the active node.
+    /// Assigns a <see cref="DocumentInputArgument"/> to the current node context for the active node.
     /// </summary>
     internal class InputArgument_B_AssignContextQueryInputArgumentForDirective
-        : DocumentConstructionStep<InputItemNode, QueryDirective>
+        : DocumentConstructionStep<InputItemNode, DocumentDirective>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -40,11 +40,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var queryDirective = context.FindContextItem<QueryDirective>();
+            var queryDirective = context.FindContextItem<DocumentDirective>();
 
             var fieldArg = queryDirective.Directive.Arguments[node.InputName.ToString()];
             var graphType = context.DocumentContext.Schema.KnownTypes.FindGraphType(fieldArg.TypeExpression.TypeName);
-            var argument = new QueryInputArgument(node, graphType, fieldArg.TypeExpression);
+            var argument = new DocumentInputArgument(node, graphType, fieldArg.TypeExpression);
             context.AddDocumentPart(argument);
 
             return true;

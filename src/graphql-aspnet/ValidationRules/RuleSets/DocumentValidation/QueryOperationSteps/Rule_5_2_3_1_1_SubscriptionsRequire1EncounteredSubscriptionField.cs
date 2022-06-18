@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperationSteps
 {
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -19,7 +20,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
     /// An extension on 5.2.3.1 to ensure that the virtual fields registered by controllers and routes
     /// can exist along side the first "top-level" encountered subscription field.
     /// </summary>
-    internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField : DocumentPartValidationRuleStep<QueryOperation>
+    internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField : DocumentPartValidationRuleStep<DocumentQueryOperation>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -30,7 +31,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context) &&
-                   context.ActivePart is QueryOperation operation && operation.OperationType == GraphOperationType.Subscription;
+                   context.ActivePart is IQueryOperationDocumentPart operation && operation.OperationType == GraphOperationType.Subscription;
         }
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         public override bool Execute(DocumentValidationContext context)
         {
             // due to the use of virtual fields used by controllers to make a dynamic schema,
-            // this rule extend rule 5.2.3.1 to include the top-level operation and each virtual child field
+            // this rule extends rule 5.2.3.1 to include the top-level operation and each virtual child field
             // has 1 and only 1 child field declaration up to and including a subscription action being located.
             // that is to say the nested fieldsets must not branch until AFTER a subscription field is encountered
             // as its this field that is registered as the subscription, not the virtual field paths
@@ -104,7 +105,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                 }
             */
 
-            var operation = context.ActivePart as QueryOperation;
+            var operation = context.ActivePart as IQueryOperationDocumentPart;
             var fieldCollection = operation?.FieldSelectionSet;
 
             while (fieldCollection != null && fieldCollection.Count == 1)
@@ -122,7 +123,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                 context,
                 operation.Node,
                 "Invalid Subscription. Expected exactly 1 child field, " +
-                $"recieved {fieldCollection?.Count ?? 0} child fields at {fieldCollection?.RootPath.DotString() ?? "-null-"}.");
+                $"recieved {fieldCollection?.Count ?? 0} child fields at {fieldCollection?.Path.DotString() ?? "-null-"}.");
             return false;
         }
 

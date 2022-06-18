@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -19,29 +19,25 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
     /// A representation of a list of other input values for a single argument.
     /// </summary>
     [DebuggerDisplay("ListValue (Count = {ListItems.Count})")]
-    public class QueryListInputValue : QueryInputValue, IResolvableList
+    public class DocumentListSuppliedValue : DocumentSuppliedValue, IResolvableList
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryListInputValue" /> class.
+        /// Initializes a new instance of the <see cref="DocumentListSuppliedValue" /> class.
         /// </summary>
         /// <param name="node">The node that represents this input value in the user query document.</param>
-        public QueryListInputValue(SyntaxNode node)
+        public DocumentListSuppliedValue(SyntaxNode node)
             : base(node)
         {
-            this.ListItems = new List<QueryInputValue>();
+            this.ListItems = new List<ISuppliedValueDocumentPart>();
         }
-
-        /// <summary>
-        /// Adds the argument to the collection of arguments on this instance.
-        /// </summary>
-        /// <param name="child">The child.</param>
+        /// <inheritdoc />
         public override void AddChild(IDocumentPart child)
         {
-            if (child is QueryInputValue qiv)
+            if (child is ISuppliedValueDocumentPart suppliedValue)
             {
-                this.ListItems.Add(qiv);
-                qiv.AssignParent(this.OwnerArgument);
-                qiv.OwnerValue = this;
+                this.ListItems.Add(suppliedValue);
+                suppliedValue.ParentValue =this;
+                suppliedValue.Owner = this.Owner;
             }
             else
             {
@@ -59,7 +55,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// Gets the list items contained in this value.
         /// </summary>
         /// <value>The list items.</value>
-        public IList<QueryInputValue> ListItems { get; }
+        public IList<ISuppliedValueDocumentPart> ListItems { get; }
 
         /// <summary>
         /// Gets the child parts declared in this instance.

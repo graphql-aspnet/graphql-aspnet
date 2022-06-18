@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
@@ -28,7 +27,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (FragmentSpreadNode)context.ActiveNode;
-            QueryFragment fragment = context.DocumentContext.Fragments.FindFragment(node.PointsToFragmentName.ToString());
+            var fragment = context.DocumentContext.Fragments.FindFragment(node.PointsToFragmentName.ToString());
             context.AddDocumentPart(fragment);
 
             fragment.MarkAsReferenced();

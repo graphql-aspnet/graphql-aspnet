@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A collection of arguments parsed from a user's query document for a given field or directive.
     /// </summary>
-    public interface IQueryInputArgumentCollection : IReadOnlyDictionary<string, QueryInputArgument>
+    public interface IQueryInputArgumentCollectionDocumentPart : IReadOnlyDictionary<string, IQueryArgumentDocumentPart>, IDocumentPart
     {
         /// <summary>
         /// Determines whether the specified input name exists on this collection.
@@ -28,22 +28,22 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Adds the input argument to the collection.
         /// </summary>
         /// <param name="argument">The argument.</param>
-        void AddArgument(QueryInputArgument argument);
+        internal void AddArgument(IQueryArgumentDocumentPart argument);
 
         /// <summary>
-        /// Inspects the collection of arguments for an argument with the provided input name.
+        /// Searches for an argument with the provided name.
         /// Returns the argument if its found otherwise null.
         /// </summary>
-        /// <param name="inputName">The name of the argument to look for.</param>
+        /// <param name="name">The name of the argument to look for.</param>
         /// <returns>The found argument or null.</returns>
-        QueryInputArgument FindArgumentByName(ReadOnlyMemory<char> inputName);
+        IQueryArgumentDocumentPart FindArgumentByName(ReadOnlyMemory<char> name);
 
         /// <summary>
-        /// Inspects the collection of arguments for an argument with the provided input name.
+        /// Searches for an argument with the provided name.
         /// Returns the argument if its found otherwise null.
         /// </summary>
-        /// <param name="inputName">The name of the argument to look for.</param>
+        /// <param name="name">The name of the argument to look for.</param>
         /// <returns>The found argument or null.</returns>
-        QueryInputArgument FindArgumentByName(string inputName);
+        IQueryArgumentDocumentPart FindArgumentByName(string name);
     }
 }

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Assigns the active directive node to be the active <see cref="QueryDirective"/> on the context.
+    /// Assigns the active directive node to be the active <see cref="DocumentDirective"/> on the context.
     /// </summary>
     internal class QueryDirective_CreateDirectiveOnContext : DocumentConstructionStep<DirectiveNode>
     {
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
                 return false;
 
             var location = node.ParentNode?.AsDirectiveLocation() ?? DirectiveLocation.NONE;
-            var queryDirective = new QueryDirective(node, directive, location);
+            var queryDirective = new DocumentDirective(node, directive, location);
             context.AddDocumentPart(queryDirective);
             return true;
         }

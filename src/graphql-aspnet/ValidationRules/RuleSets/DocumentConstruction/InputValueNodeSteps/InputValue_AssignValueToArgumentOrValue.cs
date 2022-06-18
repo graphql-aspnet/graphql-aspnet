@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return context.ActiveNode is InputValueNode && (context.Contains<QueryVariable>() || context.Contains<QueryInputArgument>());
+            return context.ActiveNode is InputValueNode && (context.Contains<DocumentVariable>() || context.Contains<DocumentInputArgument>());
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
             // make a value container for the active value
             // then add it to the context.
             var node = (InputValueNode)context.ActiveNode;
-            var queryValue = QueryInputValueFactory.CreateInputValue(node);
+            var queryValue = DocumentSuppliedValueFactory.CreateInputValue(node);
             context.AddDocumentPart(queryValue);
             return true;
         }

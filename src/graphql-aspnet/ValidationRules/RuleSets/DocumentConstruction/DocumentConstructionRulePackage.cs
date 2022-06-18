@@ -319,7 +319,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 
         /// <summary>
         /// Adds a collection of steps that are common between inlined fragments and named fragments that operate
-        /// against a <see cref="QueryFragment"/> placed onto the active context.
+        /// against a <see cref="DocumentFragment"/> placed onto the active context.
         /// </summary>
         /// <param name="steps">The step collection to populate.</param>
         private void AddQueryFragmentSteps(IList<IRuleStep<DocumentConstructionContext>> steps)

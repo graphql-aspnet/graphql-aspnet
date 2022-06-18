@@ -18,8 +18,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Creates a new <see cref="FieldSelection"/> on the active <see cref="FieldSelectionSet"/> and sets it as the
-    /// active <see cref="FieldSelection"/> on the current context.
+    /// Creates a new <see cref="DocumentFieldSelection"/> on the active <see cref="DocumentFieldSelectionSet"/> and sets it as the
+    /// active <see cref="DocumentFieldSelection"/> on the current context.
     /// </summary>
     internal class FieldSelection_CreateFieldOnContext : DocumentConstructionStep<FieldNode>
     {
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
                 throw new InvalidOperationException($"A field named '{node.FieldName.ToString()}' was expected but was not valid in context.");
             }
 
-            var fieldSelection = new FieldSelection(node, field, graphType);
+            var fieldSelection = new DocumentFieldSelection(node, field, graphType);
             context.AddDocumentPart(fieldSelection);
             return true;
         }

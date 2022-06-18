@@ -7,10 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
@@ -18,13 +19,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
     /// An input value that is a pointer to a variable defined in the operation that contains it.
     /// </summary>
     [DebuggerDisplay("Variable Ref: {VariableName}")]
-    public class QueryVariableReferenceInputValue : QueryInputValue, IResolvablePointer
+    public class DocumentVariableReferenceInputValue : DocumentSuppliedValue, IResolvablePointer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryVariableReferenceInputValue"/> class.
+        /// Initializes a new instance of the <see cref="DocumentVariableReferenceInputValue"/> class.
         /// </summary>
         /// <param name="node">The node that represents this input value in the user query document.</param>
-        public QueryVariableReferenceInputValue(VariableValueNode node)
+        public DocumentVariableReferenceInputValue(VariableValueNode node)
             : base(node)
         {
             this.VariableName = node.Value.ToString();
@@ -34,7 +35,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// Attaches a variable found within an operation to this input value to carry for future operations.
         /// </summary>
         /// <param name="variable">The variable.</param>
-        public void AssignVariableReference(QueryVariable variable)
+        public void AssignVariableReference(IQueryVariableDocumentPart variable)
         {
             this.Variable = Validation.ThrowIfNullOrReturn(variable, nameof(variable));
         }
@@ -49,7 +50,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         /// Gets a reference to the variable instance in the operation that this value points to.
         /// </summary>
         /// <value>The variable.</value>
-        public QueryVariable Variable { get; private set; }
+        public IQueryVariableDocumentPart Variable { get; private set; }
 
         /// <inheritdoc />
         public string PointsTo => this.Variable.Name;

@@ -33,8 +33,8 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         {
             this.Schema = schema;
             this.Messages = new GraphMessageCollection();
-            this.Fragments = new QueryFragmentCollection();
-            this.Operations = new QueryOperationCollection();
+            this.Fragments = new DocumentFragmentCollection();
+            this.Operations = new DocumentOperationCollection();
         }
 
         /// <summary>
@@ -87,13 +87,13 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// Gets a collection of all the named fragments declared on the document.
         /// </summary>
         /// <value>The fragments.</value>
-        public QueryFragmentCollection Fragments { get; }
+        public DocumentFragmentCollection Fragments { get; }
 
         /// <summary>
         /// Gets a collection of all the defined operations declared on the document.
         /// </summary>
         /// <value>The operations.</value>
-        public QueryOperationCollection Operations { get; }
+        public DocumentOperationCollection Operations { get; }
 
         /// <summary>
         /// Gets the child parts declared in this instance.

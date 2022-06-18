@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Generates the <see cref="QueryOperation"/> to representing the operation node.
+    /// Generates the <see cref="DocumentQueryOperation"/> to representing the operation node.
     /// </summary>
     internal class Rule_5_2_OperationTypeMustBeDefinedOnTheSchema : DocumentConstructionRuleStep<OperationTypeNode>
     {

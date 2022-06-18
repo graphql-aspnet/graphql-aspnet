@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
 
     /// <summary>
     /// Ensures that any input objects supply all the required fields of their argument definition in the target schema.
@@ -25,17 +25,17 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return context.ActivePart is IInputValueDocumentPart ivdp &&
-                ivdp.Value is QueryComplexInputValue;
+            return context.ActivePart is IAssignableValueDocumentPart ivdp &&
+                ivdp.Value is DocumentComplexSuppliedValue;
         }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var ivdp = context.ActivePart as IInputValueDocumentPart;
+            var ivdp = context.ActivePart as IAssignableValueDocumentPart;
             var graphType = ivdp.GraphType as IInputObjectGraphType;
             var requiredFields = graphType?.Fields.Where(x => x.TypeExpression.IsRequired).ToList();
-            var complexValue = ivdp.Value as QueryComplexInputValue;
+            var complexValue = ivdp.Value as DocumentComplexSuppliedValue;
             if (complexValue == null || requiredFields == null)
             {
                 this.ValidationError(

@@ -14,13 +14,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// Ensures that there are no duplicate fields provided on a complex input object.
     /// </summary>
-    internal class Rule_5_6_3_InputObjectFieldNamesMustBeUnique : DocumentConstructionRuleStep<InputItemNode, QueryInputArgument>
+    internal class Rule_5_6_3_InputObjectFieldNamesMustBeUnique : DocumentConstructionRuleStep<InputItemNode, DocumentInputArgument>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the input argument if it cannot
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         {
             return base.ShouldExecute(context) &&
                    context.ActiveNode.ParentNode?.ParentNode is ComplexValueNode &&
-                   context.FindContextItem<QueryInputValue>() is QueryComplexInputValue;
+                   context.FindContextItem<DocumentSuppliedValue>() is DocumentComplexSuppliedValue;
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var argument = context.FindContextItem<QueryInputArgument>();
-            var complexValue = context.FindContextItem<QueryInputValue>() as QueryComplexInputValue;
+            var argument = context.FindContextItem<DocumentInputArgument>();
+            var complexValue = context.FindContextItem<DocumentSuppliedValue>() as DocumentComplexSuppliedValue;
 
             if (complexValue.Arguments.ContainsKey(node.InputName.ToString()))
             {

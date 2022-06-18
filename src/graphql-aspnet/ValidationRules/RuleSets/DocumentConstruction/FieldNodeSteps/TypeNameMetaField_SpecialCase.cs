@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
                     continue;
                 }
 
-                var fieldSelection = new FieldSelection(node, field, graphType);
+                var fieldSelection = new DocumentFieldSelection(node, field, graphType);
                 context.AddDocumentPart(fieldSelection);
             }
 

@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Execution
         /// Initializes a new instance of the <see cref="GraphFieldExecutableOperation" /> class.
         /// </summary>
         /// <param name="operation">The reference operation to use when constructing this container.</param>
-        public GraphFieldExecutableOperation(QueryOperation operation)
+        public GraphFieldExecutableOperation(IQueryOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
 
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Execution
             this.OperationType = operation.OperationType;
             this.FieldContexts = new FieldInvocationContextCollection();
             this.Messages = new GraphMessageCollection();
-            this.DeclaredVariables = new QueryVariableCollection();
+            this.DeclaredVariables = new DocumentVariableCollection();
 
             if (operation.Variables != null)
             {
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Execution
         /// executed.
         /// </summary>
         /// <value>The declared variables.</value>
-        public IQueryVariableCollection DeclaredVariables { get; }
+        public IQueryVariableCollectionDocumentPart DeclaredVariables { get; }
 
         /// <summary>
         /// Gets a collection of the field contexts present in this operation, regardless of level, that have some

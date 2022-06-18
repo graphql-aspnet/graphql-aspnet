@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFrag
     /// <summary>
     /// An inlined fragmented spread's target type must exist within the target schema.
     /// </summary>
-    internal class Rule_5_5_1_2_FragmentGraphTypeMustExistInTheSchema : DocumentConstructionRuleStep<QueryFragment>
+    internal class Rule_5_5_1_2_FragmentGraphTypeMustExistInTheSchema : DocumentConstructionRuleStep<DocumentFragment>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFrag
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentConstructionContext context)
         {
-            var fragment = context.FindContextItem<QueryFragment>();
+            var fragment = context.FindContextItem<DocumentFragment>();
 
             // allow inline fragments to not have a target graph type (they inherit their parent's type)
             if (fragment.TargetGraphTypeName == string.Empty)

@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     /// Ensures that any field parsed from an object literal actual exists on the INPUT_OBJECT and that no extra fields are
     /// provided.
     /// </summary>
-    internal class Rule_5_6_2_InputObjectFieldsMustExistOnTargetGraphType : DocumentConstructionRuleStep<InputItemNode, QueryInputArgument>
+    internal class Rule_5_6_2_InputObjectFieldsMustExistOnTargetGraphType : DocumentConstructionRuleStep<InputItemNode, DocumentInputArgument>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the input argument if it cannot
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var argument = context.FindContextItem<QueryInputArgument>();
+            var argument = context.FindContextItem<DocumentInputArgument>();
 
             // represents a field on a complex object argument
             // ensures that the field exists in the graphtype of the argument

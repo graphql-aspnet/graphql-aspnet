@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
@@ -49,7 +50,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (FieldNode)context.ActiveNode;
-            var newField = context.FindContextItem<FieldSelection>();
+            var newField = context.FindContextItem<DocumentFieldSelection>();
 
             // do a fast lookup before enumerating the field selection to determine
             // if there would even be a name collision.
@@ -96,7 +97,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         /// <param name="existingField">The existing field already commited to the active selection set.</param>
         /// <param name="newField">The new field having the same return name (field alias) as the already commited field. </param>
         /// <returns><c>true</c> if the field shape is identical; otherwise <c>false</c>.</returns>
-        private bool AreSameShape(FieldSelection existingField, FieldSelection newField)
+        private bool AreSameShape(IFieldSelectionDocumentPart existingField, IFieldSelectionDocumentPart newField)
         {
             // one field could be referencing through an interface
             // and another through a concrete type so we cant check the IGraphField references.
@@ -173,7 +174,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         /// <param name="existingField">The field that has already been added to the field selection set.</param>
         /// <param name="newField">The new field that is being requested to be added to the field selection set.</param>
         /// <returns><c>true</c> if the fields can coexist in the same field selection set; otherwise, <c>false</c>.</returns>
-        private bool CanCoExist(ISchema targetSchema, FieldSelectionSet selectionSet, FieldSelection existingField, FieldSelection newField)
+        private bool CanCoExist(ISchema targetSchema, IFieldSelectionSetDocumentPart selectionSet, IFieldSelectionDocumentPart existingField, IFieldSelectionDocumentPart newField)
         {
             var inContextGraphType = existingField.TargetGraphType ?? selectionSet.GraphType;
             var newFieldGraphType = newField.TargetGraphType ?? selectionSet.GraphType;

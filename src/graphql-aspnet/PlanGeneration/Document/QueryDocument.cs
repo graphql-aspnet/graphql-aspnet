@@ -27,10 +27,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         /// <param name="messages">The messages to preload to the document.</param>
         /// <param name="operations">the operations to preload to the document.</param>
         /// <param name="maxDepth">The maximum depth achived by the document.</param>
-        public QueryDocument(IGraphMessageCollection messages = null, IEnumerable<QueryOperation> operations = null, int maxDepth = 0)
+        public QueryDocument(
+            IGraphMessageCollection messages = null,
+            IEnumerable<IQueryOperationDocumentPart> operations = null,
+            int maxDepth = 0)
         {
             this.MaxDepth = maxDepth;
-            this.Operations = new QueryOperationCollection();
+            this.Operations = new DocumentOperationCollection();
             this.Messages = new GraphMessageCollection();
 
             this.Operations.AddRange(operations);
@@ -41,7 +44,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         /// Gets the set of operations parsed from a user's query text.
         /// </summary>
         /// <value>The operations.</value>
-        public IQueryOperationCollection Operations { get; }
+        public IQueryOperationCollectionDocumentPart Operations { get; }
 
         /// <summary>
         /// Gets the messages generated during the validation run, if any.

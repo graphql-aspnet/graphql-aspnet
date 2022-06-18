@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
 
     /// <summary>
     /// A represenetation of an argument to an execution context that has yet to be fully realized
@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     [DebuggerDisplay("{_coreValue.OwnerArgument.Name}")]
     public class DeferredInputArgumentValue : IInputArgumentValue
     {
-        private readonly QueryInputValue _coreValue;
+        private readonly ISuppliedValueDocumentPart _coreValue;
         private readonly IInputValueResolver _resolver;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// <param name="valueResolver">The resolver to use when rendering out a variable value for this
         /// argument.</param>
         public DeferredInputArgumentValue(
-            QueryInputValue coreValue,
+            ISuppliedValueDocumentPart coreValue,
             IInputValueResolver valueResolver)
         {
             _coreValue = Validation.ThrowIfNullOrReturn(coreValue, nameof(coreValue));

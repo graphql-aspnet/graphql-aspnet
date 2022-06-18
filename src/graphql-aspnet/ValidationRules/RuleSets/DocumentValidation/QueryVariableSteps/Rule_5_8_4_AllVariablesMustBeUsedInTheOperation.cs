@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryVariab
     /// <summary>
     /// Ensures that any declared variable was referenced in the operation.
     /// </summary>
-    internal class Rule_5_8_4_AllVariablesMustBeUsedInTheOperation : DocumentPartValidationRuleStep<QueryVariable>
+    internal class Rule_5_8_4_AllVariablesMustBeUsedInTheOperation : DocumentPartValidationRuleStep<DocumentVariable>
     {
         /// <summary>
         /// Validates the completed document context to ensure it is "correct" against the specification before generating
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryVariab
         /// <returns><c>true</c> if the rule passes, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentValidationContext context)
         {
-            var variable = (QueryVariable)context.ActivePart;
+            var variable = (DocumentVariable)context.ActivePart;
             if (!variable.IsReferenced)
             {
                 this.ValidationError(

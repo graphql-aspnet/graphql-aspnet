@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFrag
     /// named fragment does not have a type restriction fail the fragment but do so silently. Rule 5.5.1.2 will
     /// handle error messages on mismatched graph types.
     /// </summary>
-    internal class QueryFragment_AssignGraphType : DocumentConstructionStep<QueryFragment>
+    internal class QueryFragment_AssignGraphType : DocumentConstructionStep<DocumentFragment>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFrag
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentConstructionContext context)
         {
-            var queryFragment = context.FindContextItem<QueryFragment>();
+            var queryFragment = context.FindContextItem<DocumentFragment>();
 
             // ensure that the named fragment's target type (if there is one) exists in the schema nad assign it to the query
             // fragment object if it doesnt exist mark this fragment as failed

@@ -25,9 +25,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new QueryInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection();
 
-            var arg = new QueryInputArgument(
+            var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
                 new Mock<IGraphType>().Object,
                 new AspNet.Schemas.GraphTypeExpression("bob"));
@@ -43,9 +43,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new QueryInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection();
 
-            var arg = new QueryInputArgument(
+            var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
                 new Mock<IGraphType>().Object,
                 new AspNet.Schemas.GraphTypeExpression("bob"));
@@ -61,9 +61,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new QueryInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection();
 
-            var arg = new QueryInputArgument(
+            var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
                 new Mock<IGraphType>().Object,
                 new AspNet.Schemas.GraphTypeExpression("bob"));
@@ -80,9 +80,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var name = "thename".AsMemory();
             var othername = "theothername".AsMemory();
 
-            var colllection = new QueryInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection();
 
-            var arg = new QueryInputArgument(
+            var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
                 new Mock<IGraphType>().Object,
                 new AspNet.Schemas.GraphTypeExpression("bob"));
@@ -98,9 +98,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new QueryInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection();
 
-            var arg = new QueryInputArgument(
+            var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
                 new Mock<IGraphType>().Object,
                 new AspNet.Schemas.GraphTypeExpression("bob"));
@@ -117,9 +117,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new QueryInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection();
 
-            var arg = new QueryInputArgument(
+            var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
                 new Mock<IGraphType>().Object,
                 new GraphTypeExpression("bob"));

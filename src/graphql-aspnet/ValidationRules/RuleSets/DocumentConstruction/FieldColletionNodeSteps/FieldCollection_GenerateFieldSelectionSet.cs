@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldColl
 
     /// <summary>
     /// For <see cref="OperationTypeNode"/> and <see cref="FieldNode"/> that have a set of requested child fields, generates
-    /// a new <see cref="FieldSelectionSet"/> and sets it as the active <see cref="FieldSelectionSet"/> on the current context.
+    /// a new <see cref="DocumentFieldSelectionSet"/> and sets it as the active <see cref="DocumentFieldSelectionSet"/> on the current context.
     /// </summary>
     internal class FieldCollection_GenerateFieldSelectionSet : DocumentConstructionStep<FieldCollectionNode>
     {

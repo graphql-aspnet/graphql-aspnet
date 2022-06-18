@@ -10,16 +10,16 @@
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Common.Source;
 
     /// <summary>
-    /// A general interface describing part of a query document and the "child" items it may contain. Makes for easy
-    /// iteration through a constructed document in a similar fashion to walking a <see cref="ISyntaxTree"/>.
+    /// A general interface describing part of a query document and the document parts it may contain.
     /// </summary>
     public interface IDocumentPart
     {
         /// <summary>
-        /// Gets the child parts declared in this instance.
+        /// Gets the child parts declared on this instance, if any. Child parts may include
+        /// child fields, input arguments, variable collections, assigned directives etc.
         /// </summary>
         /// <value>The children.</value>
         IEnumerable<IDocumentPart> Children { get; }

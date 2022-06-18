@@ -15,11 +15,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Assigns a <see cref="QueryInputArgument"/> to the current node context for the active node.
+    /// Assigns a <see cref="DocumentInputArgument"/> to the current node context for the active node.
     /// </summary>
     internal class InputArgument_C_AssignContextQueryInputArgumentForInputObject
         : DocumentConstructionStep<InputItemNode>
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
             return base.ShouldExecute(context) && context.ActiveNode.ParentNode?.ParentNode is ComplexValueNode &&
-                context.FindContextItem<QueryInputValue>() is QueryComplexInputValue;
+                context.FindContextItem<DocumentSuppliedValue>() is DocumentComplexSuppliedValue;
         }
 
         /// <summary>
@@ -62,13 +62,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
             //      adding childArg1 or childArg2 to arg1
             //      adding subChildArg1 or subChildArg2 to childArg1
             var node = (InputItemNode)context.ActiveNode;
-            var inputObject = context.FindContextItem<QueryInputValue>() as QueryComplexInputValue;
+            var inputObject = context.FindContextItem<DocumentSuppliedValue>() as DocumentComplexSuppliedValue;
 
-            var ownerGraphType = inputObject.OwnerArgument.GraphType as IInputObjectGraphType;
+            var ownerGraphType = inputObject.Owner.GraphType as IInputObjectGraphType;
             var field = ownerGraphType.Fields[node.InputName.ToString()];
             var graphType = context.DocumentContext.Schema.KnownTypes.FindGraphType(field);
 
-            var argument = new QueryInputArgument(node, graphType, field.TypeExpression);
+            var argument = new DocumentInputArgument(node, graphType, field.TypeExpression);
             context.AddDocumentPart(argument);
             return true;
         }

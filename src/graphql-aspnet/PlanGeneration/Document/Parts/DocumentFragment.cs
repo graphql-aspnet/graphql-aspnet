@@ -23,13 +23,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A fragment that was parsed out of a submitted query document.
     /// </summary>
     [DebuggerDisplay("Named Fragment: {Name}")]
-    internal class QueryFragment : IDocumentPart
+    internal class DocumentFragment : IFragmentDocumentPart, IDocumentPart
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryFragment" /> class.
+        /// Initializes a new instance of the <see cref="DocumentFragment" /> class.
         /// </summary>
         /// <param name="fragmentNode">The fragment node.</param>
-        public QueryFragment(NamedFragmentNode fragmentNode)
+        public DocumentFragment(NamedFragmentNode fragmentNode)
         {
             this.Node = Validation.ThrowIfNullOrReturn(fragmentNode, nameof(fragmentNode));
             this.Name = fragmentNode.FragmentName.ToString();
@@ -41,10 +41,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryFragment" /> class.
+        /// Initializes a new instance of the <see cref="DocumentFragment" /> class.
         /// </summary>
         /// <param name="inlineFragmentNode">The inline fragment node.</param>
-        public QueryFragment(FragmentNode inlineFragmentNode)
+        public DocumentFragment(FragmentNode inlineFragmentNode)
         {
             this.Node = Validation.ThrowIfNullOrReturn(inlineFragmentNode, nameof(inlineFragmentNode));
             this.Name = string.Empty;
@@ -81,47 +81,25 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.IsReferenced = true;
         }
 
-        /// <summary>
-        /// Gets the unique name of this reference in the collection.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        /// Gets the node this reference points to.
-        /// </summary>
-        /// <value>The node.</value>
+        /// <inheritdoc />
         public FragmentNode Node { get; }
 
-        /// <summary>
-        /// Gets or sets the graphtype this named fragment is restricted to when set. If null, there are no restrictions to
-        /// where this named fragment can be used.
-        /// </summary>
-        /// <value>The type of the graph.</value>
+        /// <inheritdoc />
         public IGraphType GraphType { get; set; }
 
-        /// <summary>
-        /// Gets a collection of named fragments to be spread within this fragment.
-        /// </summary>
-        /// <value>The set of named fragments referenced by this instance.</value>
+        /// <inheritdoc />
         public CharMemoryHashSet ReferencedNamedFragments { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is referenced by an operation in the query document.
-        /// </summary>
-        /// <value><c>true</c> if this instance is referenced; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsReferenced { get; private set; }
 
-        /// <summary>
-        /// Gets the child parts declared in this instance.
-        /// </summary>
-        /// <value>The children.</value>
+        /// <inheritdoc />
         public IEnumerable<IDocumentPart> Children => Enumerable.Empty<IDocumentPart>();
 
-        /// <summary>
-        /// Gets the name of the target graph type if any.
-        /// </summary>
-        /// <value>The name of the target graph type.</value>
+        /// <inheritdoc />
         public string TargetGraphTypeName { get; }
     }
 }

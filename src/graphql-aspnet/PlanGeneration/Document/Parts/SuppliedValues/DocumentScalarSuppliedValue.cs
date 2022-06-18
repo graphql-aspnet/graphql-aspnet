@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using System.Diagnostics;
@@ -19,13 +19,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
     /// An input value representing a single scalar value of data.
     /// </summary>
     [DebuggerDisplay("Scalar: {Value.ToString()} (Type: {ValueType})")]
-    public class QueryScalarInputValue : QueryInputValue, IResolvableValue
+    public class DocumentScalarSuppliedValue : DocumentSuppliedValue, IResolvableValue
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryScalarInputValue" /> class.
+        /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue" /> class.
         /// </summary>
         /// <param name="value">The value parsed from a query document.</param>
-        public QueryScalarInputValue(ScalarValueNode value)
+        public DocumentScalarSuppliedValue(ScalarValueNode value)
             : base(value)
         {
             this.ValueType = value.ValueType;
@@ -33,13 +33,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryScalarInputValue"/> class.
+        /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue"/> class.
         /// </summary>
         /// <param name="node">The node that represents a location in the document where this scalar should be
         /// present.</param>
         /// <param name="value">The value of the scalar value.</param>
         /// <param name="valueType">The type of scalar value being represented.</param>
-        public QueryScalarInputValue(SyntaxNode node, string value, ScalarValueType valueType)
+        public DocumentScalarSuppliedValue(SyntaxNode node, string value, ScalarValueType valueType)
              : base(node)
         {
             this.Value = value?.AsMemory() ?? ReadOnlyMemory<char>.Empty;

@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                     node = maker.MakeNode(tokenStream) as InputValueNode;
             }
 
-            var inputValue = QueryInputValueFactory.CreateInputValue(node);
+            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(node);
             var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
             var resolver = generator.CreateResolver(typeExpression);
             var result = resolver.Resolve(inputValue);
@@ -205,7 +205,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                     node = maker.MakeNode(tokenStream) as InputValueNode;
             }
 
-            var inputValue = QueryInputValueFactory.CreateInputValue(node);
+            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(node);
             var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
             var resolver = generator.CreateResolver(typeExpression);
 
@@ -218,9 +218,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void BasicListValueResolver()
         {
-            var sourceList = new QueryListInputValue(new FakeSyntaxNode());
-            sourceList.ListItems.Add(new QueryScalarInputValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
-            sourceList.ListItems.Add(new QueryScalarInputValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
+            var sourceList = new DocumentListSuppliedValue(new FakeSyntaxNode());
+            sourceList.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
+            sourceList.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
 
             var typeExpression = GraphTypeExpression.FromDeclaration("[Int]");
             var generator = new InputResolverMethodGenerator(this.CreateSchema());
@@ -234,15 +234,15 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void ListOfListValueResolver()
         {
-            var innerList1 = new QueryListInputValue(new FakeSyntaxNode());
-            innerList1.ListItems.Add(new QueryScalarInputValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
-            innerList1.ListItems.Add(new QueryScalarInputValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
+            var innerList1 = new DocumentListSuppliedValue(new FakeSyntaxNode());
+            innerList1.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
+            innerList1.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
 
-            var innerList2 = new QueryListInputValue(new FakeSyntaxNode());
-            innerList2.ListItems.Add(new QueryScalarInputValue(new FakeSyntaxNode(), "30", ScalarValueType.Number));
-            innerList2.ListItems.Add(new QueryScalarInputValue(new FakeSyntaxNode(), "40", ScalarValueType.Number));
+            var innerList2 = new DocumentListSuppliedValue(new FakeSyntaxNode());
+            innerList2.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "30", ScalarValueType.Number));
+            innerList2.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "40", ScalarValueType.Number));
 
-            var outerList = new QueryListInputValue(new FakeSyntaxNode());
+            var outerList = new DocumentListSuppliedValue(new FakeSyntaxNode());
             outerList.ListItems.Add(innerList1);
             outerList.ListItems.Add(innerList2);
 

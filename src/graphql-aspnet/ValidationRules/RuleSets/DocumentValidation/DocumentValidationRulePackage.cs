@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_2_2_1_LoneAnonymousOperation());
             steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
 
-            _stepCollection.Add(typeof(QueryOperation), steps);
+            _stepCollection.Add(typeof(DocumentQueryOperation), steps);
         }
 
         private void BuildFragmentSteps()
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             // 1. All named fragments must be used at least once
             steps.Add(new Rule_5_5_1_4_AllDeclaredFragmentsMustBeUsed());
 
-            _stepCollection.Add(typeof(QueryFragment), steps);
+            _stepCollection.Add(typeof(DocumentFragment), steps);
         }
 
         private void BuildFieldSelectionSteps()
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             // 1. All required, schema defined input arguments are supplied in the document
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
 
-            _stepCollection.Add(typeof(FieldSelection), steps);
+            _stepCollection.Add(typeof(DocumentFieldSelection), steps);
         }
 
         private void BuildQueryDirectiveSteps()
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             // 1. All required, schema defined input arguments are supplied in the document
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
 
-            _stepCollection.Add(typeof(QueryDirective), steps);
+            _stepCollection.Add(typeof(DocumentDirective), steps);
         }
 
         private void BuildQueryInputArgumentSteps()
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
             steps.Add(new Rule_5_8_5_VariableValueMustBeUsableInContext());
 
-            _stepCollection.Add(typeof(QueryInputArgument), steps);
+            _stepCollection.Add(typeof(DocumentInputArgument), steps);
         }
 
         private void BuildQueryVariableSteps()
@@ -132,7 +132,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
             steps.Add(new Rule_5_8_4_AllVariablesMustBeUsedInTheOperation());
 
-            _stepCollection.Add(typeof(QueryVariable), steps);
+            _stepCollection.Add(typeof(DocumentVariable), steps);
         }
     }
 }

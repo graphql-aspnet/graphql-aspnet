@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
@@ -16,13 +16,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
     /// <summary>
     /// An input value representing that nothing/null was used as a supplied parameter for an input argument.
     /// </summary>
-    public class QueryNullInputValue : QueryInputValue, IResolvableValue
+    public class DocumentNullSuppliedValue : DocumentSuppliedValue, IResolvableValue
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryNullInputValue" /> class.
+        /// Initializes a new instance of the <see cref="DocumentNullSuppliedValue" /> class.
         /// </summary>
         /// <param name="node">The node that represents this input value in the user query document.</param>
-        public QueryNullInputValue(SyntaxNode node)
+        public DocumentNullSuppliedValue(SyntaxNode node)
             : base(node)
         {
         }

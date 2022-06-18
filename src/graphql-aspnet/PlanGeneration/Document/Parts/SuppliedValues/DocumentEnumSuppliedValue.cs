@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -17,25 +17,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues
     /// <summary>
     /// An input value representing a single enumeration value of data.
     /// </summary>
-    public class QueryEnumInputValue : QueryInputValue, IResolvableValue
+    public class DocumentEnumSuppliedValue : DocumentSuppliedValue, IResolvableValue
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryEnumInputValue" /> class.
+        /// Initializes a new instance of the <see cref="DocumentEnumSuppliedValue" /> class.
         /// </summary>
         /// <param name="value">The value parsed from a query document.</param>
-        public QueryEnumInputValue(EnumValueNode value)
+        public DocumentEnumSuppliedValue(EnumValueNode value)
             : base(value)
         {
             this.Value = value.Value;
-        }
-
-        /// <summary>
-        /// Adds the argument to the collection of arguments on this instance.
-        /// </summary>
-        /// <param name="child">The child.</param>
-        public override void AddChild(IDocumentPart child)
-        {
-            throw new InvalidOperationException($"{nameof(QueryEnumInputValue)} cannot contain children of type '{child?.GetType()}'");
         }
 
         /// <summary>

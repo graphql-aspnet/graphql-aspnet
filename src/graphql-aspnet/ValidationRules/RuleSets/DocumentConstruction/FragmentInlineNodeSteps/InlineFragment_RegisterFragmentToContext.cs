@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentI
         public override bool Execute(DocumentConstructionContext context)
         {
             var fragmentNode = (FragmentNode)context.ActiveNode;
-            var queryFragment = new QueryFragment(fragmentNode);
+            var queryFragment = new DocumentFragment(fragmentNode);
             context.AddDocumentPart(queryFragment);
             return true;
         }

@@ -15,11 +15,13 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// </summary>
     public interface ITargetedDocumentPart : IDocumentPart
     {
+#pragma warning disable SA1623 // Property summary documentation should match accessors
         /// <summary>
-        /// Gets or sets the specific target type of the field, if any. Usually set as a result of
+        /// Gets the specific target type of the field, if any. Usually set as a result of
         /// spreading a fragment into a selection set.
         /// </summary>
         /// <value>A single graph type to restrict this field to. May be null.</value>
-        IGraphType TargetGraphType { get; set; }
+        IGraphType TargetGraphType { get; internal set; }
+#pragma warning restore SA1623 // Property summary documentation should match accessors
     }
 }

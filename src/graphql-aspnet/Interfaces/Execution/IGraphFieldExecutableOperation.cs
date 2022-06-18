@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// executed.
         /// </summary>
         /// <value>The declared variables.</value>
-        IQueryVariableCollection DeclaredVariables { get; }
+        IQueryVariableCollectionDocumentPart DeclaredVariables { get; }
 
         /// <summary>
         /// Gets a collection of the field contexts present in this operation, regardless of level, that have some

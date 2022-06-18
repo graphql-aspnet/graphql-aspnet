@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
     /// <summary>
     /// Ensures that the item the directive is acting on/against is valid for the directive as its defined in the target schema.
     /// </summary>
-    internal class Rule_5_7_2_DirectiveMustBeUsedInValidLocation : DocumentConstructionRuleStep<DirectiveNode, QueryDirective>
+    internal class Rule_5_7_2_DirectiveMustBeUsedInValidLocation : DocumentConstructionRuleStep<DirectiveNode, DocumentDirective>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (DirectiveNode)context.ActiveNode;
-            var queryDirective = context.FindContextItem<QueryDirective>();
+            var queryDirective = context.FindContextItem<DocumentDirective>();
 
             if (queryDirective == null)
                 return false;

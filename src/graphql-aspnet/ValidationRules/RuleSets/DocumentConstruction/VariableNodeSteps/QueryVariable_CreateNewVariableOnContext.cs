@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (VariableNode)context.ActiveNode;
-            var queryVariable = new QueryVariable(node);
+            var queryVariable = new DocumentVariable(node);
             context.AddDocumentPart(queryVariable);
 
             return true;

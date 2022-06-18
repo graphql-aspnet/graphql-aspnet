@@ -14,19 +14,19 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// An interface representing a collection of operations read from a user's query document.
     /// </summary>
-    public interface IQueryOperationCollection : IReadOnlyDictionary<string, QueryOperation>
+    public interface IQueryOperationCollectionDocumentPart : IReadOnlyDictionary<string, IQueryOperationDocumentPart>
     {
         /// <summary>
         /// Adds the operation.
         /// </summary>
         /// <param name="operation">The operation.</param>
-        void AddOperation(QueryOperation operation);
+        internal void AddOperation(IQueryOperationDocumentPart operation);
 
         /// <summary>
-        /// Adds the set of <see cref="QueryOperation"/> to this collection, keyed by the name
+        /// Adds the set of <see cref="DocumentQueryOperation"/> to this collection, keyed by the name
         /// provided in the user query document.
         /// </summary>
         /// <param name="operations">The set of operations to add.</param>
-        void AddRange(IEnumerable<QueryOperation> operations);
+        internal void AddRange(IEnumerable<IQueryOperationDocumentPart> operations);
     }
 }

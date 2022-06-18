@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
     /// A set of fields currently "in scope" that can be acted on as a group.
@@ -23,7 +22,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     {
         private readonly DocumentScope _parentScope;
         private readonly List<IDocumentPart> _parts;
-        private readonly List<QueryDirective> _directives;
+        private readonly List<IDirectiveDocumentPart> _directives;
         private readonly int _scopeRank;
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             _parentScope = parentScope;
             _scopeRank = (_parentScope?._scopeRank ?? 0) + 5;
             _parts = new List<IDocumentPart>();
-            _directives = new List<QueryDirective>();
+            _directives = new List<IDirectiveDocumentPart>();
             if (part != null)
                 this.AddNewPart(part);
         }
@@ -69,7 +68,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// Directives are propagated to parent scopres.
         /// </summary>
         /// <param name="queryDirective">The query directive.</param>
-        public void InsertDirective(QueryDirective queryDirective)
+        public void InsertDirective(IDirectiveDocumentPart queryDirective)
         {
             _directives.Add(queryDirective);
             foreach (var part in _parts.OfType<IDirectiveContainerDocumentPart>())
@@ -96,19 +95,13 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// <value>The type of the target graph.</value>
         public IGraphType TargetGraphType { get; private set; }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         public IEnumerator<IDocumentPart> GetEnumerator()
         {
             return _parts.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
@@ -118,6 +111,6 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// Gets the directives currently attached to this field scope.
         /// </summary>
         /// <value>The directives.</value>
-        public IReadOnlyList<QueryDirective> Directives => _directives;
+        public IReadOnlyList<IDirectiveDocumentPart> Directives => _directives;
     }
 }
