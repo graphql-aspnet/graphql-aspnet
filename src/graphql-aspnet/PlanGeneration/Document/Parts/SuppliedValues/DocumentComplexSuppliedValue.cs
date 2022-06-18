@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value representing a complex input object read from a user's query document.
     /// </summary>
     [DebuggerDisplay("ComplexInputValue (Arguments = {Arguments.Count})")]
-    public class DocumentComplexSuppliedValue : DocumentSuppliedValue, IQueryArgumentContainerDocumentPart, IResolvableFieldSet
+    public class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue" /> class.
@@ -44,21 +44,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             }
         }
 
-        /// <summary>
-        /// Adds the argument to the collection of arguments on this instance.
-        /// </summary>
-        /// <param name="argument">The argument.</param>
+        /// <inheritdoc />
         public void AddArgument(IQueryArgumentDocumentPart argument)
         {
             this.Arguments.AddArgument(argument);
         }
 
-        /// <summary>
-        /// Attempts to retrieve a field by its name.
-        /// </summary>
-        /// <param name="fieldName">Name of the field.</param>
-        /// <param name="field">The field that was found, if any.</param>
-        /// <returns><c>true</c> if the field was found and successfully returned, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public bool TryGetField(string fieldName, out IResolvableItem field)
         {
             field = null;
@@ -69,32 +61,24 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             return found;
         }
 
-        /// <summary>
-        /// Gets the collection of fields defined on this instance.
-        /// </summary>
-        /// <value>The fields.</value>
+        /// <inheritdoc />
         public IEnumerable<KeyValuePair<string, IResolvableItem>> Fields
         {
             get
             {
                 foreach (var argument in this.Arguments.Values)
                 {
-                    yield return new KeyValuePair<string, IResolvableItem>(argument.Name, argument.Value);
+                    yield return new KeyValuePair<string, IResolvableItem>(
+                        argument.Name,
+                        argument.Value);
                 }
             }
         }
 
-        /// <summary>
-        /// Gets a collection of input arguments arguments that have been declared in the query document that should be
-        /// applied to this field.
-        /// </summary>
-        /// <value>The arguments.</value>
+        /// <inheritdoc />
         public IQueryInputArgumentCollectionDocumentPart Arguments { get; }
 
-        /// <summary>
-        /// Gets the child parts declared in this instance.
-        /// </summary>
-        /// <value>The children.</value>
+        /// <inheritdoc />
         public override IEnumerable<IDocumentPart> Children
         {
             get

@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var graphArg = schema.KnownTypes.FindGraphType(typeof(TestUser), TypeKind.INPUT_OBJECT);
             var arg1 = field.Arguments["arg1"];
 
-            var complexValue = arg1.Value as DocumentComplexSuppliedValue;
+            var complexValue = arg1.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(complexValue);
             Assert.IsTrue(complexValue.ValueNode is ComplexValueNode);
             Assert.AreEqual(3, complexValue.Arguments.Count);
@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var userGraphType = schema.KnownTypes.FindGraphType(typeof(TestUser), TypeKind.INPUT_OBJECT);
             var arg1 = field.Arguments["arg1"];
 
-            var arg1Value = arg1.Value as DocumentComplexSuppliedValue;
+            var arg1Value = arg1.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
             Assert.IsTrue(arg1Value.ValueNode is ComplexValueNode);
             Assert.AreEqual(3, arg1Value.Arguments.Count);
@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var houseArgId = arg1Value.Arguments["id"];
             var houseArgName = arg1Value.Arguments["houseName"];
 
-            var childUser = houseArgUser.Value as DocumentComplexSuppliedValue;
+            var childUser = houseArgUser.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(childUser);
             Assert.AreEqual(userGraphType, childUser.Owner.GraphType);
             var childUserbirthDay = childUser.Arguments["birthDay"];
@@ -359,8 +359,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
             Assert.AreEqual(2, arg1Value.ListItems.Count);
 
-            var user1 = arg1Value.ListItems[0] as DocumentComplexSuppliedValue;
-            var user2 = arg1Value.ListItems[1] as DocumentComplexSuppliedValue;
+            var user1 = arg1Value.ListItems[0] as IComplexSuppliedValueDocumentPart;
+            var user2 = arg1Value.ListItems[1] as IComplexSuppliedValueDocumentPart;
 
             Assert.IsNotNull(user1);
 
@@ -499,7 +499,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.AreEqual("Input_TestUser", var1.TypeExpression.ToString());
             Assert.AreEqual(graphType, var1.GraphType);
 
-            var defaultValue = var1.Value as DocumentComplexSuppliedValue;
+            var defaultValue = var1.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(defaultValue);
             Assert.AreEqual(3, defaultValue.Arguments.Count);
         }

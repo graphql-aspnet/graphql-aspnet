@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         {
             return base.ShouldExecute(context) &&
                    context.ActiveNode.ParentNode?.ParentNode is ComplexValueNode &&
-                   context.FindContextItem<ISuppliedValueDocumentPart>() is DocumentComplexSuppliedValue;
+                   context.FindContextItem<ISuppliedValueDocumentPart>() is IComplexSuppliedValueDocumentPart;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         {
             var node = (InputItemNode)context.ActiveNode;
             var argument = context.FindContextItem<IQueryArgumentDocumentPart>();
-            var complexValue = context.FindContextItem<ISuppliedValueDocumentPart>() as DocumentComplexSuppliedValue;
+            var complexValue = context.FindContextItem<ISuppliedValueDocumentPart>() as IComplexSuppliedValueDocumentPart;
 
             if (complexValue.Arguments.ContainsKey(node.InputName.ToString()))
             {

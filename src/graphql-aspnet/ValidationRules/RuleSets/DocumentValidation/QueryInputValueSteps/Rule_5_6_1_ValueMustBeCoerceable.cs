@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
 
                     case TypeKind.INPUT_OBJECT:
                         var inputGraphType = queryArg.GraphType as IInputObjectGraphType;
-                        var complexValue = valueToEvaluate as DocumentComplexSuppliedValue;
+                        var complexValue = valueToEvaluate as IComplexSuppliedValueDocumentPart;
 
                         if (inputGraphType == null || complexValue == null)
                             return false;

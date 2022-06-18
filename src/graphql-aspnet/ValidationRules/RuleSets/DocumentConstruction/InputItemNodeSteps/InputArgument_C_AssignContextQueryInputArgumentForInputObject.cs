@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
             return base.ShouldExecute(context) && context.ActiveNode.ParentNode?.ParentNode is ComplexValueNode &&
-                context.FindContextItem<ISuppliedValueDocumentPart>() is DocumentComplexSuppliedValue;
+                context.FindContextItem<ISuppliedValueDocumentPart>() is IComplexSuppliedValueDocumentPart;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
             //      adding childArg1 or childArg2 to arg1
             //      adding subChildArg1 or subChildArg2 to childArg1
             var node = (InputItemNode)context.ActiveNode;
-            var inputObject = context.FindContextItem<ISuppliedValueDocumentPart>() as DocumentComplexSuppliedValue;
+            var inputObject = context.FindContextItem<ISuppliedValueDocumentPart>() as IComplexSuppliedValueDocumentPart;
 
             var ownerGraphType = inputObject.Owner.GraphType as IInputObjectGraphType;
             var field = ownerGraphType.Fields[node.InputName.ToString()];

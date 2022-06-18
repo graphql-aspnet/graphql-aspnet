@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
 
                     break;
 
-                case DocumentComplexSuppliedValue civ:
+                case IComplexSuppliedValueDocumentPart civ:
                     foreach (var argument in civ.Arguments.Values)
                     {
                         if (this.ShouldDeferResolution(argument.Value))

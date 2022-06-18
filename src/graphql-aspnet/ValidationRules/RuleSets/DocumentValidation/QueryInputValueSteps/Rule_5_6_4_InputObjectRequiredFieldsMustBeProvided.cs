@@ -20,13 +20,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
     /// <summary>
     /// Ensures that any input objects supply all the required fields of their argument definition in the target schema.
     /// </summary>
-    internal class Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided : DocumentPartValidationRuleStep
+    internal class Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided
+        : DocumentPartValidationRuleStep
     {
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return context.ActivePart is IAssignableValueDocumentPart ivdp &&
-                ivdp.Value is DocumentComplexSuppliedValue;
+                ivdp.Value is IComplexSuppliedValueDocumentPart;
         }
 
         /// <inheritdoc />
@@ -35,7 +36,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
             var ivdp = context.ActivePart as IAssignableValueDocumentPart;
             var graphType = ivdp.GraphType as IInputObjectGraphType;
             var requiredFields = graphType?.Fields.Where(x => x.TypeExpression.IsRequired).ToList();
-            var complexValue = ivdp.Value as DocumentComplexSuppliedValue;
+            var complexValue = ivdp.Value as IComplexSuppliedValueDocumentPart;
             if (complexValue == null || requiredFields == null)
             {
                 this.ValidationError(
