@@ -87,13 +87,13 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// Gets a collection of all the named fragments declared on the document.
         /// </summary>
         /// <value>The fragments.</value>
-        public DocumentFragmentCollection Fragments { get; }
+        public IFragmentCollectionDocumentPart Fragments { get; }
 
         /// <summary>
         /// Gets a collection of all the defined operations declared on the document.
         /// </summary>
         /// <value>The operations.</value>
-        public DocumentOperationCollection Operations { get; }
+        public IQueryOperationCollectionDocumentPart Operations { get; }
 
         /// <summary>
         /// Gets the child parts declared in this instance.

@@ -9,14 +9,14 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldColletionNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// For <see cref="OperationTypeNode"/> and <see cref="FieldNode"/> that have a set of requested child fields, generates
-    /// a new <see cref="DocumentFieldSelectionSet"/> and sets it as the active <see cref="DocumentFieldSelectionSet"/> on the current context.
+    /// a new <see cref="IFieldSelectionSetDocumentPart"/> and sets it as active on the current context.
     /// </summary>
     internal class FieldCollection_GenerateFieldSelectionSet : DocumentConstructionStep<FieldCollectionNode>
     {
