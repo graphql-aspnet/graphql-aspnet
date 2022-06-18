@@ -11,13 +11,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
     /// An input value representing a single enumeration value of data.
     /// </summary>
-    public class DocumentEnumSuppliedValue : DocumentSuppliedValue, IResolvableValue
+    public class DocumentEnumSuppliedValue : DocumentSuppliedValue, IEnumSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentEnumSuppliedValue" /> class.
@@ -29,16 +28,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             this.Value = value.Value;
         }
 
-        /// <summary>
-        /// Gets the value literal of the data passed to the input value.
-        /// </summary>
-        /// <value>The value.</value>
+        /// <inheritdoc />
         public ReadOnlyMemory<char> Value { get; }
 
-        /// <summary>
-        /// Gets the value to be used to resolve to some .NET type.
-        /// </summary>
-        /// <value>The resolvable value.</value>
+        /// <inheritdoc />
         public ReadOnlySpan<char> ResolvableValue => this.Value.Span;
     }
 }

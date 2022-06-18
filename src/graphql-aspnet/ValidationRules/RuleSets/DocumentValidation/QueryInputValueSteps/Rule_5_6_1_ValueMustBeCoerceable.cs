@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
 
                     case TypeKind.ENUM:
                         var enumType = queryArg.GraphType as IEnumGraphType;
-                        var enumValue = valueToEvaluate as DocumentEnumSuppliedValue;
+                        var enumValue = valueToEvaluate as IEnumSuppliedValueDocumentPart;
 
                         if (enumType == null || enumValue == null)
                             return false;
