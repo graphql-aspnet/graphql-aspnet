@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return base.ShouldExecute(context) && context.FindContextItem<ISuppliedValueDocumentPart>() is DocumentVariableReferenceInputValue;
+            return base.ShouldExecute(context) && context.FindContextItem<ISuppliedValueDocumentPart>() is IVariableReferenceDocumentPart;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         {
             var node = (VariableValueNode)context.ActiveNode;
             var queryOperation = context.FindContextItem<IQueryOperationDocumentPart>();
-            var queryValue = context.FindContextItem<ISuppliedValueDocumentPart>() as DocumentVariableReferenceInputValue;
+            var queryValue = context.FindContextItem<ISuppliedValueDocumentPart>() as IVariableReferenceDocumentPart;
 
             var variable = queryOperation.Variables[node.Value.ToString()];
             variable.MarkAsReferenced();

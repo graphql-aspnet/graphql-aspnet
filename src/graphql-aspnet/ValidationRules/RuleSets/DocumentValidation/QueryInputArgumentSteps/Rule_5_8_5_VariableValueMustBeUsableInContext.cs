@@ -25,14 +25,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputA
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return context.ActivePart is IQueryArgumentDocumentPart arg
-                && arg.Value is DocumentVariableReferenceInputValue;
+                && arg.Value is IVariableReferenceDocumentPart;
         }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
             var argument = context.ActivePart as IQueryArgumentDocumentPart;
-            var qvr = argument.Value as DocumentVariableReferenceInputValue;
+            var qvr = argument.Value as IVariableReferenceDocumentPart;
 
             // ensure the type expressions are compatible at the location used
             if (!qvr.Variable.TypeExpression.Equals(argument.TypeExpression))

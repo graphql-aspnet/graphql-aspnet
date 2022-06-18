@@ -397,7 +397,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1 = field.Arguments["id"];
 
-            var arg1Value = arg1.Value as DocumentVariableReferenceInputValue;
+            var arg1Value = arg1.Value as IVariableReferenceDocumentPart;
             Assert.IsNotNull(arg1Value);
             Assert.IsTrue(arg1Value.ValueNode is VariableValueNode);
             Assert.AreEqual("var1", arg1Value.VariableName);
@@ -448,7 +448,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(listItem2);
             Assert.AreEqual(2, listItem2.ListItems.Count);
             Assert.AreEqual(arg1Value.Owner, listItem2.Owner);
-            Assert.IsTrue(listItem2.ListItems[0] is DocumentVariableReferenceInputValue qiv && qiv.VariableName == "var1");
+            Assert.IsTrue(listItem2.ListItems[0] is IVariableReferenceDocumentPart qiv && qiv.VariableName == "var1");
             Assert.IsTrue(listItem2.ListItems[1] is IScalarSuppliedValue svn3B && svn3B.Value.ToString() == "15");
         }
 

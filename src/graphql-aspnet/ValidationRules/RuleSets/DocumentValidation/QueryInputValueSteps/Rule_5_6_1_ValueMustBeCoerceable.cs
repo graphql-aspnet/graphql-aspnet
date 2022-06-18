@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return context.ActivePart is IAssignableValueDocumentPart ivdp
-                && !(ivdp.Value is DocumentVariableReferenceInputValue);
+                && !(ivdp.Value is IVariableReferenceDocumentPart);
         }
 
         /// <inheritdoc />
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
                     // ensure a variable reference is of the correct type expression
                     // for this level
                     // then elimnate it
-                    if (item is DocumentVariableReferenceInputValue qvr)
+                    if (item is IVariableReferenceDocumentPart qvr)
                     {
                         var typeExpression = qvr.Variable.TypeExpression;
                         if (!typeExpression.Equals(valueTypeExpression))

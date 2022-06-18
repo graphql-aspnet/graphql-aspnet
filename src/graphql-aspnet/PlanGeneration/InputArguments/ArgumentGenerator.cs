@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         {
             switch (value)
             {
-                case DocumentVariableReferenceInputValue _:
+                case IVariableReferenceDocumentPart _:
                     return true;
 
                 case DocumentListSuppliedValue liv:

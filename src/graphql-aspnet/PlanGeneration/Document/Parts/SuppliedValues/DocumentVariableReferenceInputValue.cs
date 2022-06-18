@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value that is a pointer to a variable defined in the operation that contains it.
     /// </summary>
     [DebuggerDisplay("Variable Ref: {VariableName}")]
-    public class DocumentVariableReferenceInputValue : DocumentSuppliedValue, IResolvablePointer
+    public class DocumentVariableReferenceInputValue : DocumentSuppliedValue, IVariableReferenceDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariableReferenceInputValue"/> class.
@@ -31,25 +31,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             this.VariableName = node.Value.ToString();
         }
 
-        /// <summary>
-        /// Attaches a variable found within an operation to this input value to carry for future operations.
-        /// </summary>
-        /// <param name="variable">The variable.</param>
+        /// <inheritdoc />
         public void AssignVariableReference(IQueryVariableDocumentPart variable)
         {
             this.Variable = Validation.ThrowIfNullOrReturn(variable, nameof(variable));
         }
 
-        /// <summary>
-        /// Gets the name of the variable this instance references.
-        /// </summary>
-        /// <value>The name of the variable.</value>
+        /// <inheritdoc />
         public string VariableName { get; }
 
-        /// <summary>
-        /// Gets a reference to the variable instance in the operation that this value points to.
-        /// </summary>
-        /// <value>The variable.</value>
+        /// <inheritdoc />
         public IQueryVariableDocumentPart Variable { get; private set; }
 
         /// <inheritdoc />
