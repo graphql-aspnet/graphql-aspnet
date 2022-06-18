@@ -85,5 +85,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 return _variables.Values;
             }
         }
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.VariableCollection;
     }
 }

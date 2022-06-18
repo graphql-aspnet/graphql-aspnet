@@ -97,5 +97,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public virtual IFieldSelectionDocumentPart this[int index] => _fields[index];
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.FieldSelectionSet;
     }
 }

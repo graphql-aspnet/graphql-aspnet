@@ -97,5 +97,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IEnumerable<IDocumentPart> Children => _arguments.Values;
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.InputArgumentCollection;
     }
 }

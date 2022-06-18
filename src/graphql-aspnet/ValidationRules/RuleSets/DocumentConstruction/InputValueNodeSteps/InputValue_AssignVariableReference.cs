@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValueNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
@@ -19,7 +20,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
     /// Assigns a <see cref="DocumentInputArgument"/> to the current node context for the active node.
     /// </summary>
     internal class InputValue_AssignVariableReference
-        : DocumentConstructionRuleStep<VariableValueNode, DocumentQueryOperation>
+        : DocumentConstructionRuleStep<VariableValueNode, IQueryOperationDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return base.ShouldExecute(context) && context.FindContextItem<DocumentSuppliedValue>() is DocumentVariableReferenceInputValue;
+            return base.ShouldExecute(context) && context.FindContextItem<ISuppliedValueDocumentPart>() is DocumentVariableReferenceInputValue;
         }
 
         /// <summary>
@@ -41,8 +42,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (VariableValueNode)context.ActiveNode;
-            var queryOperation = context.FindContextItem<DocumentQueryOperation>();
-            var queryValue = context.FindContextItem<DocumentSuppliedValue>() as DocumentVariableReferenceInputValue;
+            var queryOperation = context.FindContextItem<IQueryOperationDocumentPart>();
+            var queryValue = context.FindContextItem<ISuppliedValueDocumentPart>() as DocumentVariableReferenceInputValue;
 
             var variable = queryOperation.Variables[node.Value.ToString()];
             variable.MarkAsReferenced();

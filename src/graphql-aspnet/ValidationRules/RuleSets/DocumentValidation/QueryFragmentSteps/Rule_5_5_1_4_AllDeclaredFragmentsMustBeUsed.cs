@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragmentSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
@@ -17,12 +18,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragme
     /// Ensures that any declared fragment on the document context is used/spread at least once
     /// in the supplied operations.
     /// </summary>
-    internal class Rule_5_5_1_4_AllDeclaredFragmentsMustBeUsed : DocumentPartValidationRuleStep<DocumentFragment>
+    internal class Rule_5_5_1_4_AllDeclaredFragmentsMustBeUsed
+        : DocumentPartValidationRuleStep<IFragmentDocumentPart>
     {
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var fragment = (DocumentFragment)context.ActivePart;
+            var fragment = (IFragmentDocumentPart)context.ActivePart;
             if (!fragment.IsReferenced)
             {
                 this.ValidationError(

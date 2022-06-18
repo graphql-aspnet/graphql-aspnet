@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     /// <summary>
     /// A context allowing the sharing of data between validation rules against a cohesive data set.
     /// </summary>
-    internal class DocumentContext : IDocumentPart
+    internal class DocumentContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentContext" /> class.

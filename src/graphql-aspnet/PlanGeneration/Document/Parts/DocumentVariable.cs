@@ -83,6 +83,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IEnumerable<IDocumentPart> Children => Enumerable.Empty<IDocumentPart>();
 
         /// <inheritdoc />
-        public string InputType => "variable";
+        public string InputType => this.PartType.ToString();
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.Variable;
     }
 }

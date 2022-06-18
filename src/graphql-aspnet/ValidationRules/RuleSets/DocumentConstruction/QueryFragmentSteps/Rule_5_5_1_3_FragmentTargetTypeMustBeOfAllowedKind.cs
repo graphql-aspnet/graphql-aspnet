@@ -15,12 +15,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFrag
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
     /// <summary>
     /// Ensures that for those fragments that do declare a target graph type that that graph type is
     /// of the kinds allowed by the specificiation (INTERFACE, UNION, OBJECT).
     /// </summary>
-    internal class Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind : DocumentConstructionRuleStep<DocumentFragment>
+    internal class Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind
+        : DocumentConstructionRuleStep<IFragmentDocumentPart>
     {
         private static readonly HashSet<TypeKind> ALLOWED_TYPE_KINDS;
         private static readonly string ALLOWED_TYPE_KIND_STRING;
@@ -38,7 +40,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFrag
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentConstructionContext context)
         {
-            var fragmnet = context.FindContextItem<DocumentFragment>();
+            var fragmnet = context.FindContextItem<IFragmentDocumentPart>();
 
             if (string.IsNullOrEmpty(fragmnet.TargetGraphTypeName))
                 return true;

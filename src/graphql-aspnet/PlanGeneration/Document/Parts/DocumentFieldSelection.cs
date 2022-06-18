@@ -138,5 +138,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                     yield return this.FieldSelectionSet;
             }
         }
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.FieldSelection;
     }
 }

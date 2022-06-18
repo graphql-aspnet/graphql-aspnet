@@ -9,15 +9,17 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Generates the <see cref="DocumentQueryOperation"/> to representing the operation node.
+    /// A rule to ensure the operation type defined on the document is one thats handlable
+    /// by the schema.
     /// </summary>
-    internal class Rule_5_2_OperationTypeMustBeDefinedOnTheSchema : DocumentConstructionRuleStep<OperationTypeNode>
+    internal class Rule_5_2_OperationTypeMustBeDefinedOnTheSchema
+        : DocumentConstructionRuleStep<OperationTypeNode>
     {
         /// <summary>
         /// Determines where this context is in a state such that it should continue processing its children. Returning

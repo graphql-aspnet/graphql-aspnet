@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 {
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
@@ -317,11 +318,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
             _stepCollection.Add(typeof(NamedFragmentNode), steps);
         }
 
-        /// <summary>
-        /// Adds a collection of steps that are common between inlined fragments and named fragments that operate
-        /// against a <see cref="DocumentFragment"/> placed onto the active context.
-        /// </summary>
-        /// <param name="steps">The step collection to populate.</param>
         private void AddQueryFragmentSteps(IList<IRuleStep<DocumentConstructionContext>> steps)
         {
             // 1. Ensure that the type on the fragment (if declared) exists in the target schema

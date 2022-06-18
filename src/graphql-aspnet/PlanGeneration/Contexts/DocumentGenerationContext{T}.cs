@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -50,9 +51,25 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// skipped.
         /// </summary>
         /// <param name="item">The item in question.</param>
-        protected void AddOrUpdateContextItem(IDocumentPart item)
+        protected void AddOrUpdateContextItem(object item)
         {
-            this.AddOrUpdateContextItem(item, item?.GetType());
+            Validation.ThrowIfNull(item, nameof(item));
+            Validation.ThrowIfNotCastable<IDocumentPart>(item.GetType(), nameof(item));
+
+            this.AddOrUpdateContextItem(item as IDocumentPart, item?.GetType());
+        }
+
+        /// <summary>
+        /// Adds the new context item to the current instance. If an item of the given type already exists on
+        /// this context, it is replaced with this new item. When a null vaue is supplied it is automatically
+        /// skipped.
+        /// </summary>
+        /// <typeparam name="TDocumentPart">The specific type the document part should be added as.</typeparam>
+        /// <param name="item">The item to manage.</param>
+        protected void AddOrUpdateContextItemByType<TDocumentPart>(TDocumentPart item)
+            where TDocumentPart : IDocumentPart
+        {
+            this.AddOrUpdateContextItem(item, typeof(TDocumentPart));
         }
 
         /// <summary>
@@ -94,15 +111,15 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// <summary>
         /// Determines whether this instance contains a context item of the given type.
         /// </summary>
-        /// <typeparam name="TContextitem">The type of the item to inspect for.</typeparam>
+        /// <typeparam name="TContextItem">The type of the item to inspect for.</typeparam>
         /// <returns><c>true</c> if an item of the given type exists in this context; otherwise, <c>false</c>.</returns>
-        public virtual bool Contains<TContextitem>()
-            where TContextitem : class
+        public virtual bool Contains<TContextItem>()
+            where TContextItem : class
         {
-            if (_itemType == typeof(TContextitem))
-                return this.Item is TContextitem;
+            if (Validation.IsCastable<TContextItem>(_itemType))
+                return this.Item is TContextItem;
 
-            return this.ContextItems.ContainsKey(typeof(TContextitem));
+            return this.ContextItems.ContainsKey(typeof(TContextItem));
         }
 
         /// <summary>

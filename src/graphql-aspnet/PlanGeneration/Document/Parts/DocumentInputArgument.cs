@@ -84,6 +84,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public string InputType => "argument";
+        public string InputType => this.PartType.ToString();
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.InputArgument;
     }
 }

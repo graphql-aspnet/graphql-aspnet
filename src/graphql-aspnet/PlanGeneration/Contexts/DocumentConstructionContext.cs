@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// </summary>
         public void BeginNewFieldSelectionSet()
         {
-            if (!(_activePart is DocumentFieldSelection fs))
+            if (!(_activePart is IFieldSelectionDocumentPart fs))
                 throw new InvalidOperationException("No field currently in scope, cannot append a new selection set.");
             _selectionSet = fs.CreateFieldSelectionSet();
             this.BeginNewDocumentScope();
@@ -103,20 +103,20 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             switch (docPart)
             {
                 case IQueryOperationDocumentPart qo:
-                    this.AddOrUpdateContextItem(qo);
+                    this.AddOrUpdateContextItemByType(qo);
                     this.BeginNewOperation(qo);
                     _activePart = qo;
                     break;
 
                 case IQueryVariableDocumentPart qv:
-                    this.AddOrUpdateContextItem(qv);
+                    this.AddOrUpdateContextItemByType(qv);
                     var variables = _operation?.CreateVariableCollection();
                     variables?.AddVariable(qv);
                     _activePart = qv;
                     break;
 
                 case IFragmentDocumentPart qf:
-                    this.AddOrUpdateContextItem(qf);
+                    this.AddOrUpdateContextItemByType(qf);
                     this.BeginNewDocumentScope();
                     break;
 
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                     else if (_activePart is ISuppliedValueDocumentPart partQiv)
                         partQiv.AddChild(qiv);
 
-                    this.AddOrUpdateContextItem(qiv, typeof(DocumentSuppliedValue));
+                    this.AddOrUpdateContextItemByType<ISuppliedValueDocumentPart>(qiv);
                     _activePart = qiv;
                     break;
 

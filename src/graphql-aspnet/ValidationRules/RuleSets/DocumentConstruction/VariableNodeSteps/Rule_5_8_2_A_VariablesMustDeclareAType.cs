@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
@@ -17,7 +18,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
     /// <summary>
     /// A rule that dictates each variables core type must be a SCALAR, ENUM or INPUT_OBJECT.
     /// </summary>
-    internal class Rule_5_8_2_A_VariablesMustDeclareAType : DocumentConstructionRuleStep<DocumentVariable>
+    internal class Rule_5_8_2_A_VariablesMustDeclareAType
+        : DocumentConstructionRuleStep<IQueryVariableDocumentPart>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -26,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentConstructionContext context)
         {
-            var queryVariable = context.FindContextItem<DocumentVariable>();
+            var queryVariable = context.FindContextItem<IQueryVariableDocumentPart>();
             if (!queryVariable.TypeExpression.IsValid)
             {
                 this.ValidationError(

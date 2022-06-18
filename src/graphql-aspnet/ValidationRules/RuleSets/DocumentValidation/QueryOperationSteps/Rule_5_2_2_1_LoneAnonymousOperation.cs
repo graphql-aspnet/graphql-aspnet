@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperationSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
@@ -18,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
     /// <para>(5.2.2.1) Validate that when an anon operation is included it exists by itself.</para>
     /// <para>Reference: https://graphql.github.io/graphql-spec/June2018/#sec-Operation-Name-Uniqueness" .</para>
     /// </summary>
-    internal class Rule_5_2_2_1_LoneAnonymousOperation : DocumentPartValidationRuleStep<DocumentQueryOperation>
+    internal class Rule_5_2_2_1_LoneAnonymousOperation : DocumentPartValidationRuleStep<IQueryOperationDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context) &&
-                   context.ActivePart is DocumentQueryOperation operation && operation.Name == string.Empty;
+                   context.ActivePart is IQueryOperationDocumentPart operation && operation.Name == string.Empty;
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         public override bool Execute(DocumentValidationContext context)
         {
             // anonymous operations will all present as ReadOnlyMemory<char>.Empty
-            var operation = (DocumentQueryOperation)context.ActivePart;
+            var operation = (IQueryOperationDocumentPart)context.ActivePart;
 
             if (context.DocumentContext.Operations.Count > 1)
             {

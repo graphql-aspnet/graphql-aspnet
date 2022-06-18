@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.PlanGeneration.Document;
 
     /// <summary>
     /// A general interface describing part of a query document and the document parts it may contain.
@@ -23,5 +24,11 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The children.</value>
         IEnumerable<IDocumentPart> Children { get; }
+
+        /// <summary>
+        /// Gets the type of this document part.
+        /// </summary>
+        /// <value>The type of the part.</value>
+        DocumentPartType PartType { get; }
     }
 }

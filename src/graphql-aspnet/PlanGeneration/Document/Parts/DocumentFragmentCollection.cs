@@ -81,5 +81,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IFragmentDocumentPart this[string key] => _fragments[key];
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.FragmentCollection;
     }
 }

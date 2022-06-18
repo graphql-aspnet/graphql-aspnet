@@ -67,5 +67,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                     yield return argument;
             }
         }
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.Directive;
     }
 }

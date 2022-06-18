@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
@@ -81,5 +82,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             return this.GetEnumerator();
         }
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.OperationCollection;
+
+        /// <inheritdoc />
+        public IEnumerable<IDocumentPart> Children => _operations.Values;
     }
 }

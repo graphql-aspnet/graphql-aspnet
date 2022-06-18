@@ -101,5 +101,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public string TargetGraphTypeName { get; }
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.Fragment;
     }
 }

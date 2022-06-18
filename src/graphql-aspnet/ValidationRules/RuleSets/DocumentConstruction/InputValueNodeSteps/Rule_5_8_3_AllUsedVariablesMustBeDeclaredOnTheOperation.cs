@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValueNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
@@ -18,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
     /// Any input argument referencing a variable must have that variable declared on the local operation.
     /// </summary>
     internal class Rule_5_8_3_AllUsedVariablesMustBeDeclaredOnTheOperation
-        : DocumentConstructionRuleStep<VariableValueNode, DocumentQueryOperation>
+        : DocumentConstructionRuleStep<VariableValueNode, IQueryOperationDocumentPart>
     {
         /// <summary>
         /// Validates the completed document context to ensure it is "correct" against the specification before generating
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (VariableValueNode)context.ActiveNode;
-            var queryOperation = context.FindContextItem<DocumentQueryOperation>();
+            var queryOperation = context.FindContextItem<IQueryOperationDocumentPart>();
 
             var variableName = node.Value.ToString();
             if (queryOperation.Variables == null || !queryOperation.Variables.ContainsKey(variableName))

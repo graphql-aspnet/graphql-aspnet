@@ -9,10 +9,8 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperationSteps
 {
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
@@ -20,7 +18,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
     /// An extension on 5.2.3.1 to ensure that the virtual fields registered by controllers and routes
     /// can exist along side the first "top-level" encountered subscription field.
     /// </summary>
-    internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField : DocumentPartValidationRuleStep<DocumentQueryOperation>
+    internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField
+        : DocumentPartValidationRuleStep<IQueryOperationDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -30,8 +29,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) &&
-                   context.ActivePart is IQueryOperationDocumentPart operation && operation.OperationType == GraphOperationType.Subscription;
+            return base.ShouldExecute(context)
+                && context.ActivePart is IQueryOperationDocumentPart operation
+                && operation.OperationType == GraphOperationType.Subscription;
         }
 
         /// <summary>
@@ -62,11 +62,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                     }
                 }
 
-
                 subscription {
                     subscriptionAction { }
                 }
-
 
                 -----------------------------------------------------
                 Invalid:
@@ -100,6 +98,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                             }
                         }
                         subscriptionActionField2 { }  // split pathing allows for two possible subscription fields
+
                                                       //(must encounter only 1)
                     }
                 }

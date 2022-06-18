@@ -27,7 +27,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return context.ActivePart is IAssignableValueDocumentPart ivdp && !(ivdp.Value is DocumentVariableReferenceInputValue);
+            return context.ActivePart is IAssignableValueDocumentPart ivdp 
+                && !(ivdp.Value is DocumentVariableReferenceInputValue);
         }
 
         /// <inheritdoc />
@@ -37,7 +38,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
             var value = ivdp.Value;
 
             // variables do not have to supply a default value
-            if (value == null && ivdp is DocumentVariable)
+            if (value == null && ivdp is IQueryVariableDocumentPart)
                 return true;
 
             if (!this.EvaluateContextData(value))
