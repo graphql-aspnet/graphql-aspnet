@@ -11,7 +11,11 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.ValidationRules.Interfaces;
 
     /// <summary>
@@ -54,9 +58,21 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                     ParentContext = this,
                 };
 
-                // set the part of THIS context as something in scope on the child if its not the same type (shouldnt be)
+                // set the part of THIS context as something in scope on the child
+                // if its not the same type (shouldnt be)
                 if (this.ActivePart.GetType() != docPart.GetType())
-                    newContext.AddOrUpdateContextItem(this.ActivePart);
+                {
+                    var expectedType = this.ActivePart.PartType.RelatedInterface();
+                    if (!Validation.IsCastable(this.ActivePart.GetType(), expectedType))
+                    {
+                        throw new GraphExecutionException(
+                            $"The active document part (Type: {this.ActivePart.PartType}) does not implement " +
+                            $"interface '{expectedType.FriendlyName()}'. All document parts of type {this.ActivePart.PartType} must " +
+                            $"implement this interface.");
+                    }
+
+                    newContext.AddOrUpdateContextItem(this.ActivePart, expectedType);
+                }
 
                 yield return newContext;
             }

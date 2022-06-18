@@ -50,23 +50,9 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// this context, it is replaced with this new item. When a null vaue is supplied it is automatically
         /// skipped.
         /// </summary>
-        /// <param name="item">The item in question.</param>
-        protected void AddOrUpdateContextItem(object item)
-        {
-            Validation.ThrowIfNull(item, nameof(item));
-            Validation.ThrowIfNotCastable<IDocumentPart>(item.GetType(), nameof(item));
-
-            this.AddOrUpdateContextItem(item as IDocumentPart, item?.GetType());
-        }
-
-        /// <summary>
-        /// Adds the new context item to the current instance. If an item of the given type already exists on
-        /// this context, it is replaced with this new item. When a null vaue is supplied it is automatically
-        /// skipped.
-        /// </summary>
         /// <typeparam name="TDocumentPart">The specific type the document part should be added as.</typeparam>
         /// <param name="item">The item to manage.</param>
-        protected void AddOrUpdateContextItemByType<TDocumentPart>(TDocumentPart item)
+        protected void AddOrUpdateContextItem<TDocumentPart>(TDocumentPart item)
             where TDocumentPart : IDocumentPart
         {
             this.AddOrUpdateContextItem(item, typeof(TDocumentPart));

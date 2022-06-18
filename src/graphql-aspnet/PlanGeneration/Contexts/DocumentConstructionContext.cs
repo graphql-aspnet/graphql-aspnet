@@ -103,25 +103,25 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             switch (docPart)
             {
                 case IQueryOperationDocumentPart qo:
-                    this.AddOrUpdateContextItemByType(qo);
+                    this.AddOrUpdateContextItem(qo);
                     this.BeginNewOperation(qo);
                     _activePart = qo;
                     break;
 
                 case IQueryVariableDocumentPart qv:
-                    this.AddOrUpdateContextItemByType(qv);
+                    this.AddOrUpdateContextItem(qv);
                     var variables = _operation?.CreateVariableCollection();
                     variables?.AddVariable(qv);
                     _activePart = qv;
                     break;
 
                 case IFragmentDocumentPart qf:
-                    this.AddOrUpdateContextItemByType(qf);
+                    this.AddOrUpdateContextItem(qf);
                     this.BeginNewDocumentScope();
                     break;
 
                 case IFieldSelectionDocumentPart fs:
-                    this.AddOrUpdateContextItemByType(fs);
+                    this.AddOrUpdateContextItem(fs);
                     _selectionSet.AddFieldSelection(fs);
                     this.DocumentScope = new DocumentScope(this.DocumentScope, fs);
                     _activePart = fs;
@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 
                 case IDirectiveDocumentPart qd:
                     // directives never alter the current scope, they just work within it
-                    this.AddOrUpdateContextItemByType(qd);
+                    this.AddOrUpdateContextItem(qd);
                     this.DocumentScope.InsertDirective(qd);
                     _activePart = qd;
                     break;
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                         argContainer.AddArgument(qa);
 
                     // query arguments never retain parent scopes; they are considered independent
-                    this.AddOrUpdateContextItemByType(qa);
+                    this.AddOrUpdateContextItem(qa);
                     this.DocumentScope = new DocumentScope(part: qa);
                     _activePart = qa;
                     break;
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                     else if (_activePart is ISuppliedValueDocumentPart partQiv)
                         partQiv.AddChild(qiv);
 
-                    this.AddOrUpdateContextItemByType<ISuppliedValueDocumentPart>(qiv);
+                    this.AddOrUpdateContextItem<ISuppliedValueDocumentPart>(qiv);
                     _activePart = qiv;
                     break;
 
