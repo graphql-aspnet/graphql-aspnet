@@ -129,7 +129,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 
                 case IDirectiveDocumentPart qd:
                     // directives never alter the current scope, they just work within it
-                    this.AddOrUpdateContextItem(qd);
+                    this.AddOrUpdateContextItemByType(qd);
                     this.DocumentScope.InsertDirective(qd);
                     _activePart = qd;
                     break;

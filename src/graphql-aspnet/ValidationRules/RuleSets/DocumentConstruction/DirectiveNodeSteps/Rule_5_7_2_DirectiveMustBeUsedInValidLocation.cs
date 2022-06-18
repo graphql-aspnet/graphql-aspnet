@@ -11,16 +11,17 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
 {
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// Ensures that the item the directive is acting on/against is valid for the directive as its defined in the target schema.
     /// </summary>
-    internal class Rule_5_7_2_DirectiveMustBeUsedInValidLocation : DocumentConstructionRuleStep<DirectiveNode, DocumentDirective>
+    internal class Rule_5_7_2_DirectiveMustBeUsedInValidLocation
+        : DocumentConstructionRuleStep<DirectiveNode, IDirectiveDocumentPart>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -30,7 +31,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (DirectiveNode)context.ActiveNode;
-            var queryDirective = context.FindContextItem<DocumentDirective>();
+            var queryDirective = context.FindContextItem<IDirectiveDocumentPart>();
 
             if (queryDirective == null)
                 return false;

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Contexts;
@@ -19,7 +20,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     /// A rule that ensures that for any given input node, the name of the node exists as a valid named argument
     /// on the target directive.
     /// </summary>
-    internal class Rule_5_4_1_B_ArgumentMustBeDefinedOnTheDirective : DocumentConstructionRuleStep<InputItemNode, DocumentDirective>
+    internal class Rule_5_4_1_B_ArgumentMustBeDefinedOnTheDirective
+        : DocumentConstructionRuleStep<InputItemNode, IDirectiveDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -40,7 +42,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var queryDirective = context.FindContextItem<DocumentDirective>();
+            var queryDirective = context.FindContextItem<IDirectiveDocumentPart>();
 
             if (!queryDirective.Directive.Arguments.ContainsKey(node.InputName.ToString()))
             {

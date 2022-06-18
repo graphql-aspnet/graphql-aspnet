@@ -10,15 +10,16 @@
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.DirectiveNodeSteps
 {
     using System.Linq;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// Ensures that for hte location where this directive exists no other directive was parsed with the same name.
     /// </summary>
-    internal class Rule_5_7_3_DirectiveIsDefinedNoMoreThanOncePerLocation : DocumentConstructionRuleStep<DocumentDirective>
+    internal class Rule_5_7_3_DirectiveIsDefinedNoMoreThanOncePerLocation
+        : DocumentConstructionRuleStep<IDirectiveDocumentPart>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentConstructionContext context)
         {
-            var queryDirective = context.FindContextItem<DocumentDirective>();
+            var queryDirective = context.FindContextItem<IDirectiveDocumentPart>();
 
             if (context.DocumentScope.Directives.Count(x =>
                     x.Directive.Name == queryDirective.Directive.Name &&

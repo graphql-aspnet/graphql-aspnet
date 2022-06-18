@@ -9,17 +9,18 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// A rule that ensures that for any given input node, the name of the node is unique among the defined set of inputs
     /// on the target directive in the user's query document.
     /// </summary>
-    internal class Rule_5_4_2_B_ArgumentMustBeUniqueOnTheDirective : DocumentConstructionRuleStep<InputItemNode, DocumentDirective>
+    internal class Rule_5_4_2_B_ArgumentMustBeUniqueOnTheDirective
+        : DocumentConstructionRuleStep<InputItemNode, IDirectiveDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var directive = context.FindContextItem<DocumentDirective>();
+            var directive = context.FindContextItem<IDirectiveDocumentPart>();
 
             if (directive.Arguments.ContainsKey(node.InputName))
             {

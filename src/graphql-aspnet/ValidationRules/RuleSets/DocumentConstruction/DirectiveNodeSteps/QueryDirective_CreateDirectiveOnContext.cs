@@ -9,15 +9,16 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.DirectiveNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Assigns the active directive node to be the active <see cref="DocumentDirective"/> on the context.
+    /// Creates and assigns the active directive node to be the active <see cref="IDirectiveDocumentPart"/> on the context.
     /// </summary>
     internal class QueryDirective_CreateDirectiveOnContext : DocumentConstructionStep<DirectiveNode>
     {
