@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                         argContainer.AddArgument(qa);
 
                     // query arguments never retain parent scopes; they are considered independent
-                    this.AddOrUpdateContextItem(qa);
+                    this.AddOrUpdateContextItemByType(qa);
                     this.DocumentScope = new DocumentScope(part: qa);
                     _activePart = qa;
                     break;

@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
@@ -30,7 +29,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return context.ActiveNode is InputValueNode && (context.Contains<IQueryVariableDocumentPart>() || context.Contains<DocumentInputArgument>());
+            return context.ActiveNode is InputValueNode
+                && (context.Contains<IQueryVariableDocumentPart>()
+                    || context.Contains<IQueryArgumentDocumentPart>());
         }
 
         /// <summary>

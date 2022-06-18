@@ -12,12 +12,12 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Assigns a <see cref="DocumentInputArgument"/> to the current node context for the active node.
+    /// Assigns a variable reference to the active active <see cref="ISuppliedValueDocumentPart"/>
+    /// and marks the variable as used by the parent operation.
     /// </summary>
     internal class InputValue_AssignVariableReference
         : DocumentConstructionRuleStep<VariableValueNode, IQueryOperationDocumentPart>
