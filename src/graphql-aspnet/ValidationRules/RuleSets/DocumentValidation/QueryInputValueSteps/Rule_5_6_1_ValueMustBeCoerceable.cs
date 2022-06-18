@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
                     switch (valueTypeExpression.Wrappers[0])
                     {
                         case MetaGraphTypes.IsNotNull:
-                            if (item is DocumentNullSuppliedValue)
+                            if (item is INullSuppliedValueDocumentPart)
                                 return false;
                             else
                                 nextValueSet.Add(item);
@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
             // Null values are valid for all types at this stage
             foreach (var valueToEvaluate in valueSet)
             {
-                if (valueToEvaluate is DocumentNullSuppliedValue)
+                if (valueToEvaluate is INullSuppliedValueDocumentPart)
                     continue;
 
                 switch (queryArg.GraphType.Kind)
