@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
                             break;
 
                         case MetaGraphTypes.IsList:
-                            if (!(item is DocumentListSuppliedValue qliv))
+                            if (!(item is IListSuppliedValueDocumentPart qliv))
                             {
                                 if (!this.EnsureSingleValueChain(item))
                                     return false;
@@ -186,7 +186,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
             var valueToCheck = value.ParentValue;
             while (valueToCheck != null)
             {
-                if (valueToCheck is DocumentListSuppliedValue qliv && qliv.ListItems.Count > 1)
+                if (valueToCheck is IListSuppliedValueDocumentPart qliv && qliv.ListItems.Count > 1)
                     return false;
 
                 valueToCheck = valueToCheck.ParentValue;

@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
             {
                 var listType = typeof(List<>).MakeGenericType(_listItemType);
                 var listInstance = InstanceFactory.CreateInstance(listType) as IList;
-                foreach (var item in resolvableList.ListItems)
+                foreach (var item in resolvableList.ResolvableListItems)
                 {
                     var itemInstance = _itemResolver.Resolve(item, variableData);
                     listInstance.Add(itemInstance);

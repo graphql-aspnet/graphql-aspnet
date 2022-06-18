@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
                 case IVariableReferenceDocumentPart _:
                     return true;
 
-                case DocumentListSuppliedValue liv:
+                case IListSuppliedValueDocumentPart liv:
                     foreach (var child in liv.ListItems)
                     {
                         if (this.ShouldDeferResolution(child))

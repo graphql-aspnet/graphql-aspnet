@@ -260,7 +260,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1 = field.Arguments["arg1"];
 
-            var arg1Value = arg1.Value as DocumentListSuppliedValue;
+            var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
             Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
             Assert.AreEqual(4, arg1Value.ListItems.Count);
@@ -299,14 +299,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1 = field.Arguments["arg1"];
 
-            var arg1Value = arg1.Value as DocumentListSuppliedValue;
+            var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
             Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
             Assert.AreEqual(3, arg1Value.ListItems.Count);
 
-            var listItem1 = arg1Value.ListItems[0] as DocumentListSuppliedValue;
-            var listItem2 = arg1Value.ListItems[1] as DocumentListSuppliedValue;
-            var listItem3 = arg1Value.ListItems[2] as DocumentListSuppliedValue;
+            var listItem1 = arg1Value.ListItems[0] as IListSuppliedValueDocumentPart;
+            var listItem2 = arg1Value.ListItems[1] as IListSuppliedValueDocumentPart;
+            var listItem3 = arg1Value.ListItems[2] as IListSuppliedValueDocumentPart;
 
             Assert.IsNotNull(listItem1);
             Assert.AreEqual(2, listItem1.ListItems.Count);
@@ -354,7 +354,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1 = field.Arguments["arg1"];
 
-            var arg1Value = arg1.Value as DocumentListSuppliedValue;
+            var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
             Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
             Assert.AreEqual(2, arg1Value.ListItems.Count);
@@ -431,13 +431,13 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1 = field.Arguments["arg1"];
 
-            var arg1Value = arg1.Value as DocumentListSuppliedValue;
+            var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
             Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
             Assert.AreEqual(2, arg1Value.ListItems.Count);
 
-            var listItem1 = arg1Value.ListItems[0] as DocumentListSuppliedValue;
-            var listItem2 = arg1Value.ListItems[1] as DocumentListSuppliedValue;
+            var listItem1 = arg1Value.ListItems[0] as IListSuppliedValueDocumentPart;
+            var listItem2 = arg1Value.ListItems[1] as IListSuppliedValueDocumentPart;
 
             Assert.IsNotNull(listItem1);
             Assert.AreEqual(2, listItem1.ListItems.Count);

@@ -20,6 +20,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
         /// Gets the list of other resolvable items contained in this list.
         /// </summary>
         /// <value>The list items.</value>
-        IEnumerable<IResolvableItem> ListItems { get; }
+        IEnumerable<IResolvableItem> ResolvableListItems { get; }
     }
 }

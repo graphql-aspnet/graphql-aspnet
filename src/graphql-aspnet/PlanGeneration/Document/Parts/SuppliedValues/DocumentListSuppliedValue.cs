@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// A representation of a list of other input values for a single argument.
     /// </summary>
     [DebuggerDisplay("ListValue (Count = {ListItems.Count})")]
-    public class DocumentListSuppliedValue : DocumentSuppliedValue, IResolvableList
+    public class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentListSuppliedValue" /> class.
@@ -30,6 +30,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         {
             this.ListItems = new List<ISuppliedValueDocumentPart>();
         }
+
         /// <inheritdoc />
         public override void AddChild(IDocumentPart child)
         {
@@ -45,22 +46,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             }
         }
 
-        /// <summary>
-        /// Gets the list of other resolvable items contained in this list.
-        /// </summary>
-        /// <value>The list items.</value>
-        IEnumerable<IResolvableItem> IResolvableList.ListItems => this.ListItems;
+        /// <inheritdoc />
+        IEnumerable<IResolvableItem> IResolvableList.ResolvableListItems => this.ListItems;
 
-        /// <summary>
-        /// Gets the list items contained in this value.
-        /// </summary>
-        /// <value>The list items.</value>
+        /// <inheritdoc />
         public IList<ISuppliedValueDocumentPart> ListItems { get; }
 
-        /// <summary>
-        /// Gets the child parts declared in this instance.
-        /// </summary>
-        /// <value>The children.</value>
+        /// <inheritdoc />
         public override IEnumerable<IDocumentPart> Children
         {
             get

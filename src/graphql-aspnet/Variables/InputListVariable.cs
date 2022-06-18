@@ -51,6 +51,6 @@ namespace GraphQL.AspNet.Variables
         /// Gets the list of other resolvable items contained in this list.
         /// </summary>
         /// <value>The list items.</value>
-        public IEnumerable<IResolvableItem> ListItems => this.Items;
+        public IEnumerable<IResolvableItem> ResolvableListItems => this.Items;
     }
 }
