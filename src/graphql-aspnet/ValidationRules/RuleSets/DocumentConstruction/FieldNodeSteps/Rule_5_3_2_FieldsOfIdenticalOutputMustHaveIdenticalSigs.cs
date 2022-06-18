@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (FieldNode)context.ActiveNode;
-            var newField = context.FindContextItem<DocumentFieldSelection>();
+            var newField = context.FindContextItem<IFieldSelectionDocumentPart>();
 
             // do a fast lookup before enumerating the field selection to determine
             // if there would even be a name collision.

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
@@ -18,8 +19,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Creates a new <see cref="DocumentFieldSelection"/> on the active <see cref="DocumentFieldSelectionSet"/> and sets it as the
-    /// active <see cref="DocumentFieldSelection"/> on the current context.
+    /// Creates a new <see cref="IFieldSelectionDocumentPart"/> on the active <see cref="IFieldSelectionSetDocumentPart"/> and sets it as the
+    /// active <see cref="IFieldSelectionDocumentPart"/> on the current context.
     /// </summary>
     internal class FieldSelection_CreateFieldOnContext : DocumentConstructionStep<FieldNode>
     {

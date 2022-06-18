@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                     break;
 
                 case IFieldSelectionDocumentPart fs:
-                    this.AddOrUpdateContextItem(fs);
+                    this.AddOrUpdateContextItemByType(fs);
                     _selectionSet.AddFieldSelection(fs);
                     this.DocumentScope = new DocumentScope(this.DocumentScope, fs);
                     _activePart = fs;

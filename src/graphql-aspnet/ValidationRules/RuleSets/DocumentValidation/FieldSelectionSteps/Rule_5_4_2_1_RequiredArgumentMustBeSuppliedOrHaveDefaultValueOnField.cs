@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps
 {
     using System;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
@@ -19,12 +19,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelect
     /// All required input arguments for all fields/directives must be supplied on the document or declare a default
     /// value in the target schema.
     /// </summary>
-    internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField : DocumentPartValidationRuleStep<DocumentFieldSelection>
+    internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField
+        : DocumentPartValidationRuleStep<IFieldSelectionDocumentPart>
     {
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var fieldSelection = (DocumentFieldSelection)context.ActivePart;
+            var fieldSelection = (IFieldSelectionDocumentPart)context.ActivePart;
 
             // inspect all declared arguments from the schema
             var allArgsValid = true;

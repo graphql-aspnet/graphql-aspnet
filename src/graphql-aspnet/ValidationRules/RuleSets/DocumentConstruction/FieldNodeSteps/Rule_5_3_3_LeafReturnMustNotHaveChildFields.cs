@@ -15,13 +15,15 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
     /// <summary>
     /// <para>(5.3.3)A rule that dictates for any given graph type returned by a field if that graph type
     /// is a leaf type then the field cannot declare a selection set of fields to return.</para>
     /// <para>Reference: https://graphql.github.io/graphql-spec/June2018/#sec-Leaf-Field-Selections .</para>
     /// </summary>
-    internal class Rule_5_3_3_LeafReturnMustNotHaveChildFields : DocumentConstructionRuleStep<DocumentFieldSelection>
+    internal class Rule_5_3_3_LeafReturnMustNotHaveChildFields
+        : DocumentConstructionRuleStep<IFieldSelectionDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -44,7 +46,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentConstructionContext context)
         {
-            var field = context.FindContextItem<DocumentFieldSelection>();
+            var field = context.FindContextItem<IFieldSelectionDocumentPart>();
             if (field.GraphType.Kind.IsLeafKind() && context.ActiveNode.Children.Any<FieldCollectionNode>())
             {
                 this.ValidationError(

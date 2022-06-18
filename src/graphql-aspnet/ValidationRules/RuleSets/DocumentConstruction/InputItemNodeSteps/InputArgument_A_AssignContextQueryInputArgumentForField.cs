@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Contexts;
@@ -19,7 +20,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     /// Assigns a <see cref="DocumentInputArgument"/> to the current node context for the active node.
     /// </summary>
     internal class InputArgument_A_AssignContextQueryInputArgumentForField
-        : DocumentConstructionStep<InputItemNode, DocumentFieldSelection>
+        : DocumentConstructionStep<InputItemNode, IFieldSelectionDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var fieldSelection = context.FindContextItem<DocumentFieldSelection>();
+            var fieldSelection = context.FindContextItem<IFieldSelectionDocumentPart>();
 
             var fieldArg = fieldSelection.Field.Arguments[node.InputName.ToString()];
             var graphType = context.DocumentContext.Schema.KnownTypes.FindGraphType(fieldArg.TypeExpression.TypeName);
