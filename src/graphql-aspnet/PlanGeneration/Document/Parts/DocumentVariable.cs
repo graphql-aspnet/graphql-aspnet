@@ -25,21 +25,21 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Variable: {Name}")]
-    internal class DocumentVariable : IVariableDocumentPart
+    internal class DocumentVariable : DocumentPartBase<IVariableCollectionDocumentPart>, IVariableDocumentPart
     {
-        private readonly DocumentDirectiveCollection _rankedDirectives;
+        private readonly List<IDirectiveDocumentPart> _rankedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariable" /> class.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="node">The AST node from which this instance is created.</param>
         public DocumentVariable(VariableNode node)
         {
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.Name = node.Name.ToString();
             this.TypeExpression = GraphTypeExpression.FromDeclaration(node.TypeExpression.Span);
 
-            _rankedDirectives = new DocumentDirectiveCollection();
+            _rankedDirectives = new List<IDirectiveDocumentPart>();
         }
 
         /// <summary>
@@ -66,9 +66,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public void InsertDirective(IDirectiveDocumentPart directive, int rank)
+        public void InsertDirective(IDirectiveDocumentPart directive)
         {
-            _rankedDirectives.Add(rank, directive);
+            Validation.ThrowIfNull(directive, nameof(directive));
+            _rankedDirectives.Add(directive);
+            directive.AssignParent(this);
         }
 
         /// <inheritdoc />
@@ -90,13 +92,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public ISuppliedValueDocumentPart Value { get; private set; }
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children => Enumerable.Empty<IDocumentPart>();
+        public override IEnumerable<IDocumentPart> Children => _rankedDirectives;
 
         /// <inheritdoc />
         public string InputType => this.PartType.ToString();
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.Variable;
+        public override DocumentPartType PartType => DocumentPartType.Variable;
 
         /// <inheritdoc />
         public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;

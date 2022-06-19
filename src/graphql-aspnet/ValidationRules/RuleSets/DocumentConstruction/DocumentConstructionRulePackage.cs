@@ -197,17 +197,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
         {
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
-            // 1. Ensure the directive is defined on the schema
-            steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
-
-            // 2. create the entry for the directive in the document
+            // 1. create the entry for the directive in the document
             steps.Add(new QueryDirective_CreateDirectiveOnContext());
-
-            // 3. Ensure the directive is used in a valid location on the document
-            steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
-
-            // 4. Ensure the directive is only used once in the location where it is declared
-            steps.Add(new Rule_5_7_3_DirectiveIsDefinedNoMoreThanOncePerLocation());
 
             _stepCollection.Add(typeof(DirectiveNode), steps);
         }

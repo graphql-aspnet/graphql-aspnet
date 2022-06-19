@@ -88,6 +88,9 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         public TItem FindContextItem<TItem>()
             where TItem : class, IDocumentPart
         {
+            if (_itemType != null && Validation.IsCastable<TItem>(_itemType))
+                return _item as TItem;
+
             if (this.ContextItems.ContainsKey(typeof(TItem)))
                 return this.ContextItems[typeof(TItem)] as TItem;
 

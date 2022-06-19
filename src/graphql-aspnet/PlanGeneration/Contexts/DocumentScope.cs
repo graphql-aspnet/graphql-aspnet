@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -18,7 +19,8 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     /// <summary>
     /// A set of fields currently "in scope" that can be acted on as a group.
     /// </summary>
-    internal class DocumentScope : IEnumerable<IDocumentPart>
+    [DebuggerDisplay("Count = {_parts.Count}")]
+    internal class DocumentScope
     {
         private readonly DocumentScope _parentScope;
         private readonly List<IDocumentPart> _parts;
@@ -37,6 +39,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             _scopeRank = (_parentScope?._scopeRank ?? 0) + 5;
             _parts = new List<IDocumentPart>();
             _directives = new List<IDirectiveDocumentPart>();
+
             if (part != null)
                 this.AddNewPart(part);
         }
@@ -51,28 +54,8 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             _parts.Add(part);
             _parentScope?.AddNewPart(part);
 
-            if (part is IDirectiveContainerDocumentPart dcp)
-            {
-                foreach (var directive in this.Directives)
-                {
-                    dcp.InsertDirective(directive, _scopeRank);
-                }
-            }
-
             if (part is ITargetedDocumentPart tdp)
                 tdp.TargetGraphType = tdp.TargetGraphType ?? this.TargetGraphType;
-        }
-
-        /// <summary>
-        /// Adds the new directive to every field in this scope and will automatically preappend it to any new fields that are added later.
-        /// Directives are propagated to parent scopres.
-        /// </summary>
-        /// <param name="queryDirective">The query directive.</param>
-        public void InsertDirective(IDirectiveDocumentPart queryDirective)
-        {
-            _directives.Add(queryDirective);
-            foreach (var part in _parts.OfType<IDirectiveContainerDocumentPart>())
-                part.InsertDirective(queryDirective, _scopeRank);
         }
 
         /// <summary>
@@ -95,22 +78,10 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// <value>The type of the target graph.</value>
         public IGraphType TargetGraphType { get; private set; }
 
-        /// <inheritdoc />
-        public IEnumerator<IDocumentPart> GetEnumerator()
-        {
-            return _parts.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
         /// <summary>
-        /// Gets the directives currently attached to this field scope.
+        /// Gets the parts assigned to this scope.
         /// </summary>
-        /// <value>The directives.</value>
-        public IReadOnlyList<IDirectiveDocumentPart> Directives => _directives;
+        /// <value>The parts.</value>
+        public IEnumerable<IDocumentPart> Parts => _parts;
     }
 }

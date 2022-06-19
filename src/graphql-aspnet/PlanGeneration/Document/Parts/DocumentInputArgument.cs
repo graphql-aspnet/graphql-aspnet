@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -23,9 +24,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// An input argument (on a field or directive) that defined in a user's query document.
     /// </summary>
     [DebuggerDisplay("Input Arg: {Name} (GraphType = {GraphType.Name})")]
-    internal class DocumentInputArgument : IInputArgumentDocumentPart
+    internal class DocumentInputArgument : DocumentPartBase<IInputArgumentCollectionDocumentPart>, IInputArgumentDocumentPart
     {
-        private readonly DocumentDirectiveCollection _rankedDirectives;
+        private readonly List<IDirectiveDocumentPart> _rankedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentInputArgument" /> class.
@@ -38,14 +39,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.GraphType = Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.Name = node.InputName.ToString();
-            _rankedDirectives = new DocumentDirectiveCollection();
+            _rankedDirectives = new List<IDirectiveDocumentPart>();
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
         }
 
         /// <inheritdoc />
-        public void InsertDirective(IDirectiveDocumentPart directive, int rank)
+        public void InsertDirective(IDirectiveDocumentPart directive)
         {
-            _rankedDirectives.Add(rank, directive);
+            Validation.ThrowIfNull(directive, nameof(directive));
+            _rankedDirectives.Add(directive);
+            directive.AssignParent(this);
         }
 
         /// <inheritdoc />
@@ -72,7 +75,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public GraphTypeExpression TypeExpression { get; }
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children
+        public override IEnumerable<IDocumentPart> Children
         {
             get
             {
@@ -87,7 +90,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public string InputType => this.PartType.ToString();
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.InputArgument;
+        public override DocumentPartType PartType => DocumentPartType.InputArgument;
 
         /// <inheritdoc />
         public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;

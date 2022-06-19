@@ -30,10 +30,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Directive
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (DirectiveNode)context.ActiveNode;
-            var directive = context.DocumentContext.Schema.KnownTypes.FindGraphType(node.DirectiveName.ToString()) as IDirective;
-            if (directive == null)
-                return false;
 
+            // directive may not exist, validated in rule 5.7.1
+            var directive = context.DocumentContext.Schema.KnownTypes.FindGraphType(node.DirectiveName.ToString()) as IDirective;
             var location = node.ParentNode?.AsDirectiveLocation() ?? DirectiveLocation.NONE;
             var queryDirective = new DocumentDirective(node, directive, location);
             context.AddDocumentPart(queryDirective);

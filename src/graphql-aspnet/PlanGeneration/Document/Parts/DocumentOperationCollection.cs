@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -18,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// <summary>
     /// A collection of fragments parsed from the document that may be referenced by the various operations in the document.
     /// </summary>
-    internal class DocumentOperationCollection : IOperationCollectionDocumentPart
+    internal class DocumentOperationCollection : DocumentPartBase, IOperationCollectionDocumentPart
     {
         private readonly Dictionary<string, IOperationDocumentPart> _operations;
 
@@ -84,9 +85,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.OperationCollection;
+        public override DocumentPartType PartType => DocumentPartType.OperationCollection;
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children => _operations.Values;
+        public override IEnumerable<IDocumentPart> Children => _operations.Values;
     }
 }

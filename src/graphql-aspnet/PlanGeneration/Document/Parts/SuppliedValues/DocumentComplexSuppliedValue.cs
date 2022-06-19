@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentComplexSuppliedValue(SyntaxNode node)
             : base(node)
         {
-            this.Arguments = new DocumentInputArgumentCollection();
+            this.Arguments = new DocumentInputArgumentCollection(this);
         }
 
         /// <inheritdoc />
@@ -79,12 +79,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public IInputArgumentCollectionDocumentPart Arguments { get; }
 
         /// <inheritdoc />
-        public override IEnumerable<IDocumentPart> Children
-        {
-            get
-            {
-                return this.Arguments.Values;
-            }
-        }
+        public override IEnumerable<IDocumentPart> Children => this.Arguments.Values;
     }
 }

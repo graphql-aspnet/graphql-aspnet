@@ -22,8 +22,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// or variable in a query document.
     /// </summary>
     [Serializable]
-    internal abstract class DocumentSuppliedValue : ISuppliedValueDocumentPart
+    internal abstract class DocumentSuppliedValue : DocumentPartBase<IAssignableValueDocumentPart>, ISuppliedValueDocumentPart
     {
+        private IAssignableValueDocumentPart _owner;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentSuppliedValue" /> class.
         /// </summary>
@@ -34,24 +36,40 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
+        public override void AssignParent(IDocumentPart parent)
+        {
+            base.AssignParent(parent);
+            _owner = parent as IAssignableValueDocumentPart;
+        }
+
+        /// <inheritdoc />
         public virtual void AddChild(IDocumentPart child)
         {
             throw new InvalidOperationException($"{this.GetType().FriendlyName()} cannot contain children of type '{child?.GetType()}'");
         }
 
         /// <inheritdoc />
-        public IAssignableValueDocumentPart Owner { get;  set; }
+        public IAssignableValueDocumentPart Owner
+        {
+            get
+            {
+                return _owner;
+            }
+
+            set
+            {
+                _owner = value;
+                this.Parent = value;
+            }
+        }
 
         /// <inheritdoc />
-        public ISuppliedValueDocumentPart ParentValue { get;  set; }
+        public ISuppliedValueDocumentPart ParentValue { get; set; }
 
         /// <inheritdoc />
         public SyntaxNode ValueNode { get; }
 
         /// <inheritdoc />
-        public virtual IEnumerable<IDocumentPart> Children => Enumerable.Empty<IDocumentPart>();
-
-        /// <inheritdoc />
-        public virtual DocumentPartType PartType => DocumentPartType.SuppliedValue;
+        public override DocumentPartType PartType => DocumentPartType.SuppliedValue;
     }
 }

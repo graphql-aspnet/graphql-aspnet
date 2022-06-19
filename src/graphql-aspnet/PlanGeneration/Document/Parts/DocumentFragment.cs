@@ -9,9 +9,9 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A fragment that was parsed out of a submitted query document.
     /// </summary>
     [DebuggerDisplay("Named Fragment: {Name}")]
-    internal class DocumentFragment : IFragmentDocumentPart
+    internal class DocumentFragment : DocumentPartBase<IFragmentCollectionDocumentPart>, IFragmentDocumentPart
     {
-        private DocumentDirectiveCollection _rankedDirectives;
+        private List<IDirectiveDocumentPart> _rankedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragment" /> class.
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.Name = fragmentNode.FragmentName.ToString();
             this.ReferencedNamedFragments = new CharMemoryHashSet();
             this.TargetGraphTypeName = fragmentNode.TargetType.ToString();
-            _rankedDirectives = new DocumentDirectiveCollection();
+            _rankedDirectives = new List<IDirectiveDocumentPart>();
 
             foreach (var node in this.Node.Children)
                 this.BuildReferencedFragmentList(node);
@@ -83,9 +83,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public void InsertDirective(IDirectiveDocumentPart directive, int rank)
+        public void InsertDirective(IDirectiveDocumentPart directive)
         {
-            _rankedDirectives.Add(rank, directive);
+            Validation.ThrowIfNull(directive, nameof(directive));
+            _rankedDirectives.Add(directive);
+            directive.AssignParent(this);
         }
 
         /// <inheritdoc />
@@ -104,13 +106,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public bool IsReferenced { get; private set; }
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children => Enumerable.Empty<IDocumentPart>();
+        public override IEnumerable<IDocumentPart> Children => _rankedDirectives;
 
         /// <inheritdoc />
         public string TargetGraphTypeName { get; }
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.Fragment;
+        public override DocumentPartType PartType => DocumentPartType.Fragment;
 
         /// <inheritdoc />
         public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;

@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 {
     using System;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
             var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
@@ -43,7 +44,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
             var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
@@ -61,7 +62,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
             var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
@@ -80,7 +81,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var name = "thename".AsMemory();
             var othername = "theothername".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
             var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
@@ -98,7 +99,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
             var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),
@@ -117,7 +118,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection();
+            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
             var arg = new DocumentInputArgument(
                 new InputItemNode(SourceLocation.None, name),

@@ -176,8 +176,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         /// <returns><c>true</c> if the fields can coexist in the same field selection set; otherwise, <c>false</c>.</returns>
         private bool CanCoExist(ISchema targetSchema, IFieldSelectionSetDocumentPart selectionSet, IFieldSelectionDocumentPart existingField, IFieldSelectionDocumentPart newField)
         {
-            var inContextGraphType = existingField.TargetGraphType ?? selectionSet.GraphType;
-            var newFieldGraphType = newField.TargetGraphType ?? selectionSet.GraphType;
+            var inContextGraphType = existingField.TargetGraphType ?? selectionSet.SourceGraphType;
+            var newFieldGraphType = newField.TargetGraphType ?? selectionSet.SourceGraphType;
 
             // neither should be null at this point
             if (inContextGraphType == null)

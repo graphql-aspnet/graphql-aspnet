@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             // directive defined at appropriate locations (the restrict directive is not allowed at the "query" level)
             AddQuery("5.7.2", "query Operation1 @restrict(someValue: 10) { peopleMovers { elevator (id: 5) { id name } } }");
 
-            // directive defined no more than once per location
+            // non-repeateable directive defined no more than once per location
             AddQuery("5.7.3", "query Operation1{ peopleMovers  @restrict(someValue: 10)  @restrict(someValue: 10) { elevator (id: 5) { id name } } }");
 
             // all variable names must be unique

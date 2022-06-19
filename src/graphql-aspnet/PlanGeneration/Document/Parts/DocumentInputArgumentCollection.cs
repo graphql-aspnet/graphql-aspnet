@@ -19,14 +19,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A collection of input arguments defined in a user's query document for a single field or directive.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    internal class DocumentInputArgumentCollection : IInputArgumentCollectionDocumentPart
+    internal class DocumentInputArgumentCollection : DocumentPartBase<IInputArgumentCollectionDocumentPart>, IInputArgumentCollectionDocumentPart
     {
         private readonly Dictionary<string, IInputArgumentDocumentPart> _arguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentInputArgumentCollection" /> class.
         /// </summary>
-        public DocumentInputArgumentCollection()
+        /// <param name="parentContainer">The parent container that owns this collection instance.</param>
+        public DocumentInputArgumentCollection(IInputArgumentContainerDocumentPart parentContainer)
+            : base(parentContainer)
         {
             _arguments = new Dictionary<string, IInputArgumentDocumentPart>();
         }
@@ -36,6 +38,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             Validation.ThrowIfNull(argument, nameof(argument));
             _arguments.Add(argument.Name, argument);
+            argument.AssignParent(this);
         }
 
         /// <inheritdoc />
@@ -96,9 +99,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IEnumerable<IInputArgumentDocumentPart> Values => _arguments.Values;
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children => _arguments.Values;
+        public override IEnumerable<IDocumentPart> Children => _arguments.Values;
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.InputArgumentCollection;
+        public override DocumentPartType PartType => DocumentPartType.InputArgumentCollection;
     }
 }

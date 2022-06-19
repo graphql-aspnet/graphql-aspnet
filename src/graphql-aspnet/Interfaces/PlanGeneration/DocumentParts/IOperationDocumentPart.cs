@@ -18,11 +18,11 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     public interface IOperationDocumentPart : IFieldContainerDocumentPart, IDirectiveContainerDocumentPart, IDocumentPart
     {
         /// <summary>
-        /// Creates a collection of variables to be used and applied to the operation as its defined in the query document.
+        /// Ensures that collection of variables exists on the operation as its defined in the query document.
         /// Prior to calling this method this opertion will accept no variables.
         /// </summary>
         /// <returns>QueryVariableCollection.</returns>
-        internal IVariableCollectionDocumentPart CreateVariableCollection();
+        internal IVariableCollectionDocumentPart EnsureVariableCollection();
 
         /// <summary>
         /// Gets the type of the operation that was parsed.

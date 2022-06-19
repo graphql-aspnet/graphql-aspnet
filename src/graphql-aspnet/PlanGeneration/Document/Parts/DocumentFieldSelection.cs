@@ -22,9 +22,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A single field of data requested on a user's query document.
     /// </summary>
     [DebuggerDisplay("Field: {Field.Name} (Returns: {GraphType.Name}, Restricted: {TargetGraphType.Name)")]
-    internal class DocumentFieldSelection : IFieldSelectionDocumentPart
+    internal class DocumentFieldSelection : DocumentPartBase<IFieldSelectionSetDocumentPart>, IFieldSelectionDocumentPart
     {
-        private readonly DocumentDirectiveCollection _rankedDirectives;
+        private readonly List<IDirectiveDocumentPart> _rankedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelection" /> class.
@@ -37,9 +37,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.GraphType = Validation.ThrowIfNullOrReturn(fieldGraphType, nameof(fieldGraphType));
             this.Field = Validation.ThrowIfNullOrReturn(field, nameof(field));
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
-            _rankedDirectives = new DocumentDirectiveCollection();
-            this.Arguments = new DocumentInputArgumentCollection();
+            this.Arguments = new DocumentInputArgumentCollection(this);
             this.UpdatePath(null);
+
+            _rankedDirectives = new List<IDirectiveDocumentPart>();
         }
 
         /// <inheritdoc />
@@ -58,16 +59,18 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             if (this.FieldSelectionSet == null)
             {
-                this.FieldSelectionSet = new DocumentFieldSelectionSet(this.GraphType, this.Path);
+                this.FieldSelectionSet = new DocumentFieldSelectionSet(this.GraphType, this.Path, this);
             }
 
             return this.FieldSelectionSet;
         }
 
         /// <inheritdoc />
-        public void InsertDirective(IDirectiveDocumentPart directive, int rank)
+        public void InsertDirective(IDirectiveDocumentPart directive)
         {
-            _rankedDirectives.Add(rank, directive);
+            Validation.ThrowIfNull(directive, nameof(directive));
+            _rankedDirectives.Add(directive);
+            directive.AssignParent(this);
         }
 
         /// <inheritdoc />
@@ -122,7 +125,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public ReadOnlyMemory<char> Alias => this.Node.FieldAlias;
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children
+        public override IEnumerable<IDocumentPart> Children
         {
             get
             {
@@ -138,6 +141,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.FieldSelection;
+        public override DocumentPartType PartType => DocumentPartType.FieldSelection;
     }
 }

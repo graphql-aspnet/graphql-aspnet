@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
@@ -21,7 +22,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// An instance of a referenced directive in a query document.
     /// </summary>
     [DebuggerDisplay("Directive {Directive.Name}")]
-    internal class DocumentDirective : IDirectiveDocumentPart
+    internal class DocumentDirective : DocumentPartBase<IDirectiveContainerDocumentPart>, IDirectiveDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentDirective" /> class.
@@ -32,9 +33,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public DocumentDirective(DirectiveNode node, IDirective directive, DirectiveLocation location)
         {
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
-            this.Directive = Validation.ThrowIfNullOrReturn(directive, nameof(directive));
+            this.Directive = directive;
             this.Location = location;
-            this.Arguments = new DocumentInputArgumentCollection();
+            this.Arguments = new DocumentInputArgumentCollection(this);
         }
 
         /// <inheritdoc />
@@ -59,7 +60,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IInputArgumentCollectionDocumentPart Arguments { get; }
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children
+        public override IEnumerable<IDocumentPart> Children
         {
             get
             {
@@ -69,6 +70,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.Directive;
+        public override DocumentPartType PartType => DocumentPartType.Directive;
     }
 }

@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// on their query document. Selected fields are keyed by the return value (a.k.a. the field alias) requested by the user.
     /// </summary>
     [DebuggerDisplay("Graph Type: {GraphType.Name}, Fields = {Count}")]
-    internal class DocumentFieldSelectionSet : IFieldSelectionSetDocumentPart, IDocumentPart
+    internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart
     {
         private readonly CharMemoryHashSet _knownFieldAliases;
         private readonly List<IFieldSelectionDocumentPart> _fields;
@@ -32,11 +32,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
         /// </summary>
-        /// <param name="graphType">The graph type this selection set is acting on.</param>
+        /// <param name="sourceGraphType">The graph type this selection set is acting on.</param>
         /// <param name="path">The document specific root path under which all fields should be nested in this selection set.</param>
-        public DocumentFieldSelectionSet(IGraphType graphType, SourcePath path)
+        /// <param name="parentContainer">The container that owns this selection set.</param>
+        public DocumentFieldSelectionSet(IGraphType sourceGraphType, SourcePath path, IFieldContainerDocumentPart parentContainer)
+            : base(parentContainer)
         {
-            this.GraphType = Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
+            this.SourceGraphType = Validation.ThrowIfNullOrReturn(sourceGraphType, nameof(sourceGraphType));
             _knownFieldAliases = new CharMemoryHashSet();
             _fields = new List<IFieldSelectionDocumentPart>();
 
@@ -65,28 +67,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public IGraphType GraphType { get; }
+        public IGraphType SourceGraphType { get; }
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children
+        public override IEnumerable<IDocumentPart> Children
         {
             get
             {
                 foreach (var field in _fields)
                     yield return field;
             }
-        }
-
-        /// <inheritdoc />
-        public IEnumerator<IFieldSelectionDocumentPart> GetEnumerator()
-        {
-            return _fields.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -99,6 +89,18 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public virtual IFieldSelectionDocumentPart this[int index] => _fields[index];
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.FieldSelectionSet;
+        public override DocumentPartType PartType => DocumentPartType.FieldSelectionSet;
+
+        /// <inheritdoc />
+        public IEnumerator<IFieldSelectionDocumentPart> GetEnumerator()
+        {
+            return _fields.GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

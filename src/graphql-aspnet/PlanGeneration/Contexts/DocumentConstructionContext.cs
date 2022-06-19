@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 
                 case IVariableDocumentPart qv:
                     this.AddOrUpdateContextItem(qv);
-                    var variables = _operation?.CreateVariableCollection();
+                    var variables = _operation?.EnsureVariableCollection();
                     variables?.AddVariable(qv);
                     _activePart = qv;
                     break;
@@ -130,7 +130,11 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                 case IDirectiveDocumentPart qd:
                     // directives never alter the current scope, they just work within it
                     this.AddOrUpdateContextItem(qd);
-                    this.DocumentScope.InsertDirective(qd);
+
+                    if (_activePart is IDirectiveContainerDocumentPart dc)
+                        dc.InsertDirective(qd);
+
+                    this.AddOrUpdateContextItem(qd);
                     _activePart = qd;
                     break;
 
@@ -207,7 +211,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// Gets the graph type currently in scope in the document.
         /// </summary>
         /// <value>The type of the graph.</value>
-        public IGraphType GraphType => this.DocumentScope?.TargetGraphType ?? _selectionSet.GraphType;
+        public IGraphType GraphType => this.DocumentScope?.TargetGraphType ?? _selectionSet.SourceGraphType;
 
         /// <summary>
         /// Gets the active node on this context.

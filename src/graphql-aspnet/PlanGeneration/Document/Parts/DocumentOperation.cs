@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
@@ -23,9 +24,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// and construction phase.
     /// </summary>
     [DebuggerDisplay("Operation: {Name} (Type = {OperationType})")]
-    internal class DocumentOperation : IOperationDocumentPart
+    internal class DocumentOperation : DocumentPartBase<IOperationCollectionDocumentPart>, IOperationDocumentPart
     {
-        private readonly DocumentDirectiveCollection _rankedDirectives;
+        private readonly List<IDirectiveDocumentPart> _rankedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentOperation" /> class.
@@ -33,25 +34,26 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <param name="node">The node.</param>
         /// <param name="operationType">Type of the operation being represented.</param>
         /// <param name="operationGraphType">The graph type representing the operation type.</param>
+        /// <param name="parentCollection">The parent collection that owns this instance.</param>
         public DocumentOperation(
             OperationTypeNode node,
             GraphOperationType operationType,
-            IObjectGraphType operationGraphType)
+            IObjectGraphType operationGraphType,
+            IOperationCollectionDocumentPart parentCollection)
+            : base(parentCollection)
         {
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.OperationType = operationType;
             this.GraphType = Validation.ThrowIfNullOrReturn(operationGraphType, nameof(operationGraphType));
             this.Name = this.Node.OperationName.IsEmpty ? string.Empty : node.OperationName.ToString();
-            _rankedDirectives = new DocumentDirectiveCollection();
+            _rankedDirectives = new List<IDirectiveDocumentPart>();
         }
 
         /// <inheritdoc />
-        public IVariableCollectionDocumentPart CreateVariableCollection()
+        public IVariableCollectionDocumentPart EnsureVariableCollection()
         {
             if (this.Variables == null)
-            {
-                this.Variables = new DocumentVariableCollection();
-            }
+                this.Variables = new DocumentVariableCollection(this);
 
             return this.Variables;
         }
@@ -61,16 +63,18 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             if (this.FieldSelectionSet == null)
             {
-                this.FieldSelectionSet = new DocumentFieldSelectionSet(this.GraphType, new SourcePath());
+                this.FieldSelectionSet = new DocumentFieldSelectionSet(this.GraphType, new SourcePath(), this);
             }
 
             return this.FieldSelectionSet;
         }
 
         /// <inheritdoc />
-        public void InsertDirective(IDirectiveDocumentPart directive, int rank)
+        public void InsertDirective(IDirectiveDocumentPart directive)
         {
-            _rankedDirectives.Add(rank, directive);
+            Validation.ThrowIfNull(directive, nameof(directive));
+            _rankedDirectives.Add(directive);
+            directive.AssignParent(this);
         }
 
         /// <inheritdoc />
@@ -92,7 +96,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public string Name { get; }
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children
+        public override IEnumerable<IDocumentPart> Children
         {
             get
             {
@@ -108,7 +112,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.Operation;
+        public override DocumentPartType PartType => DocumentPartType.Operation;
 
         /// <inheritdoc />
         public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;

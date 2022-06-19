@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
 
             var operation = context.DocumentContext.Schema.OperationTypes[operationType];
 
-            var queryOperation = new DocumentOperation(node, operationType, operation);
+            var queryOperation = new DocumentOperation(node, operationType, operation, context.DocumentContext.Operations);
             context.AddDocumentPart(queryOperation);
             return true;
         }

@@ -107,7 +107,12 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
 
-            // 1. All required, schema defined input arguments are supplied in the document
+            steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
+            steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
+            steps.Add(new Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation());
+
+            // must evaluate after 5.7.1 which checks for the existing of the directive
+            // in the scheam
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
 
             _stepCollection.Add(DocumentPartType.Directive, steps);

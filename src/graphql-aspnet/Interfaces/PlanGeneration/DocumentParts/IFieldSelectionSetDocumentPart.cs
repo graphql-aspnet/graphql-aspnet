@@ -41,10 +41,11 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         IEnumerable<IFieldSelectionDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias);
 
         /// <summary>
-        /// Gets the graph type of the expected source object, from which the requested fields will be extracted.
+        /// Gets the graph type of the expected source object, from which the requested fields
+        /// in this set will be extracted.
         /// </summary>
-        /// <value>The type of the graph.</value>
-        public IGraphType GraphType { get; }
+        /// <value>The graph type definition for the source object.</value>
+        public IGraphType SourceGraphType { get; }
 
         /// <summary>
         /// Gets the path in the document that leads to this selection set.

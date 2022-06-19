@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Defaults
                 nodeContexts.Add(nodeContext);
             }
 
-            nodeContexts.Sort(new TopLevelNodeProcessingOrder());
+            nodeContexts.Sort(TopLevelNodeProcessingOrder.Instance);
             var completedAllSteps = nodeProcessor.Execute(nodeContexts);
 
             // --------------------------------------------
@@ -103,6 +103,13 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         private class TopLevelNodeProcessingOrder : IComparer<DocumentConstructionContext>
         {
+            public static TopLevelNodeProcessingOrder Instance { get; } = new TopLevelNodeProcessingOrder();
+
+            private TopLevelNodeProcessingOrder()
+            {
+
+            }
+
             /// <summary>
             /// Compares the two packages for sortability.
             /// </summary>

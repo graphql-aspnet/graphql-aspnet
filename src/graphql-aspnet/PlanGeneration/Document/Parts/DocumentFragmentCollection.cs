@@ -7,18 +7,26 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
     /// <summary>
     /// A collection of fragments parsed from the document that may be referenced by the various operations in the document.
     /// </summary>
-    internal class DocumentFragmentCollection : IFragmentCollectionDocumentPart
+    internal class DocumentFragmentCollection : DocumentPartBase, IFragmentCollectionDocumentPart
     {
         private Dictionary<string, IFragmentDocumentPart> _fragments;
 
@@ -68,7 +76,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public IEnumerable<IDocumentPart> Children => _fragments.Values;
+        public override IEnumerable<IDocumentPart> Children => _fragments.Values;
 
         /// <inheritdoc />
         public IEnumerable<string> Keys => _fragments.Keys;
@@ -83,6 +91,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IFragmentDocumentPart this[string key] => _fragments[key];
 
         /// <inheritdoc />
-        public DocumentPartType PartType => DocumentPartType.FragmentCollection;
+        public override DocumentPartType PartType => DocumentPartType.FragmentCollection;
     }
 }
