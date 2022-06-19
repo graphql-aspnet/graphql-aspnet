@@ -13,19 +13,19 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// An interface denoting that this docuemnt part is a container for query arguments.
     /// </summary>
-    public interface IQueryArgumentContainerDocumentPart : IDocumentPart
+    public interface IInputArgumentContainerDocumentPart : IDocumentPart
     {
         /// <summary>
         /// Adds the argument to the collection of arguments on this instance.
         /// </summary>
         /// <param name="argument">The argument.</param>
-        internal void AddArgument(IQueryArgumentDocumentPart argument);
+        internal void AddArgument(IInputArgumentDocumentPart argument);
 
         /// <summary>
         /// Gets a collection of input arguments arguments that have been declared in the query document that should be
         /// applied to this field.
         /// </summary>
         /// <value>The arguments.</value>
-        IQueryInputArgumentCollectionDocumentPart Arguments { get; }
+        IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

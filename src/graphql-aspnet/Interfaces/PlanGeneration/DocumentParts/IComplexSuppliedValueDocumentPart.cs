@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A value supplied in a query document representing a complex input object with its
     /// own defined fields.
     /// </summary>
-    public interface IComplexSuppliedValueDocumentPart : ISuppliedValueDocumentPart, IQueryArgumentContainerDocumentPart, IResolvableFieldSet
+    public interface IComplexSuppliedValueDocumentPart : ISuppliedValueDocumentPart, IInputArgumentContainerDocumentPart, IResolvableFieldSet
     {
     }
 }

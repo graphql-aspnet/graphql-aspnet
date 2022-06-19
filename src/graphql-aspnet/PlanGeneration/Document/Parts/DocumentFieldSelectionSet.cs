@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// on their query document. Selected fields are keyed by the return value (a.k.a. the field alias) requested by the user.
     /// </summary>
     [DebuggerDisplay("Graph Type: {GraphType.Name}, Fields = {Count}")]
-    public class DocumentFieldSelectionSet : IFieldSelectionSetDocumentPart, IDocumentPart
+    internal class DocumentFieldSelectionSet : IFieldSelectionSetDocumentPart, IDocumentPart
     {
         private readonly CharMemoryHashSet _knownFieldAliases;
         private readonly List<IFieldSelectionDocumentPart> _fields;

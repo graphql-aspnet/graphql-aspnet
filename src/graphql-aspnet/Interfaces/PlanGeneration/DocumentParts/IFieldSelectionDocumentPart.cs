@@ -6,10 +6,10 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A single field of data from a source object selected to be returned as part of a graph query.
     /// </summary>
-    public interface IFieldSelectionDocumentPart : ITargetedDocumentPart, IFieldContainerDocumentPart, IDirectiveContainerDocumentPart, IQueryArgumentContainerDocumentPart, IDocumentPart
+    public interface IFieldSelectionDocumentPart : ITargetedDocumentPart, IFieldContainerDocumentPart, IDirectiveContainerDocumentPart, IInputArgumentContainerDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Sets the path of this field to be nested under the supplied parent.
@@ -68,11 +68,5 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The node.</value>
         FieldNode Node { get; }
-
-        /// <summary>
-        /// Gets the directives assigned to this instance.
-        /// </summary>
-        /// <value>The directives.</value>
-        IEnumerable<IDirectiveDocumentPart> Directives { get; }
     }
 }

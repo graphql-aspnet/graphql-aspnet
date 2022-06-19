@@ -25,8 +25,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Variable: {Name}")]
-    public class DocumentVariable : IQueryVariableDocumentPart
+    internal class DocumentVariable : IVariableDocumentPart
     {
+        private readonly DocumentDirectiveCollection _rankedDirectives;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariable" /> class.
         /// </summary>
@@ -36,6 +38,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.Name = node.Name.ToString();
             this.TypeExpression = GraphTypeExpression.FromDeclaration(node.TypeExpression.Span);
+
+            _rankedDirectives = new DocumentDirectiveCollection();
         }
 
         /// <summary>
@@ -59,6 +63,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             Validation.ThrowIfNull(value, nameof(value));
             value.Owner = this;
             this.Value = value;
+        }
+
+        /// <inheritdoc />
+        public void InsertDirective(IDirectiveDocumentPart directive, int rank)
+        {
+            _rankedDirectives.Add(rank, directive);
         }
 
         /// <inheritdoc />
@@ -87,5 +97,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public DocumentPartType PartType => DocumentPartType.Variable;
+
+        /// <inheritdoc />
+        public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;
     }
 }

@@ -13,12 +13,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A representation of a collection of variables on a given operation defined in a user's query document.
     /// </summary>
-    public interface IQueryVariableCollectionDocumentPart : IReadOnlyDictionary<string, IQueryVariableDocumentPart>, IDocumentPart
+    public interface IVariableCollectionDocumentPart : IReadOnlyDictionary<string, IVariableDocumentPart>, IDocumentPart
     {
         /// <summary>
         /// Adds a parsed variable to this collection.
         /// </summary>
         /// <param name="variable">The variable to add.</param>
-        internal void AddVariable(IQueryVariableDocumentPart variable);
+        internal void AddVariable(IVariableDocumentPart variable);
     }
 }

@@ -30,8 +30,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
             return context.ActiveNode is InputValueNode
-                && (context.Contains<IQueryVariableDocumentPart>()
-                    || context.Contains<IQueryArgumentDocumentPart>());
+                && (context.Contains<IVariableDocumentPart>()
+                    || context.Contains<IInputArgumentDocumentPart>());
         }
 
         /// <summary>

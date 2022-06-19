@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// An input argument (on a field or directive) that defined in a user's query document.
     /// </summary>
     [DebuggerDisplay("Input Arg: {Name} (GraphType = {GraphType.Name})")]
-    public class DocumentInputArgument : IQueryArgumentDocumentPart
+    internal class DocumentInputArgument : IInputArgumentDocumentPart
     {
-        private readonly List<(int Rank, IDirectiveDocumentPart Directive)> _rankedDirectives;
+        private readonly DocumentDirectiveCollection _rankedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentInputArgument" /> class.
@@ -38,14 +38,14 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.GraphType = Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.Name = node.InputName.ToString();
-            _rankedDirectives = new List<(int Rank, IDirectiveDocumentPart Directive)>();
+            _rankedDirectives = new DocumentDirectiveCollection();
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
         }
 
         /// <inheritdoc />
         public void InsertDirective(IDirectiveDocumentPart directive, int rank)
         {
-            _rankedDirectives.Add((rank, directive));
+            _rankedDirectives.Add(rank, directive);
         }
 
         /// <inheritdoc />
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             get
             {
-                foreach (var directive in _rankedDirectives.OrderBy(x => x.Rank).Select(x => x.Directive))
+                foreach (var directive in this.Directives)
                     yield return directive;
 
                 yield return this.Value;
@@ -88,5 +88,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public DocumentPartType PartType => DocumentPartType.InputArgument;
+
+        /// <inheritdoc />
+        public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;
     }
 }

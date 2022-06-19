@@ -19,33 +19,33 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A collection of input arguments defined in a user's query document for a single field or directive.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    public class DocumentInputArgumentCollection : IQueryInputArgumentCollectionDocumentPart
+    internal class DocumentInputArgumentCollection : IInputArgumentCollectionDocumentPart
     {
-        private readonly Dictionary<string, IQueryArgumentDocumentPart> _arguments;
+        private readonly Dictionary<string, IInputArgumentDocumentPart> _arguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentInputArgumentCollection" /> class.
         /// </summary>
         public DocumentInputArgumentCollection()
         {
-            _arguments = new Dictionary<string, IQueryArgumentDocumentPart>();
+            _arguments = new Dictionary<string, IInputArgumentDocumentPart>();
         }
 
         /// <inheritdoc />
-        public void AddArgument(IQueryArgumentDocumentPart argument)
+        public void AddArgument(IInputArgumentDocumentPart argument)
         {
             Validation.ThrowIfNull(argument, nameof(argument));
             _arguments.Add(argument.Name, argument);
         }
 
         /// <inheritdoc />
-        public IQueryArgumentDocumentPart FindArgumentByName(ReadOnlyMemory<char> name)
+        public IInputArgumentDocumentPart FindArgumentByName(ReadOnlyMemory<char> name)
         {
             return this.FindArgumentByName(name.ToString());
         }
 
         /// <inheritdoc />
-        public IQueryArgumentDocumentPart FindArgumentByName(string name)
+        public IInputArgumentDocumentPart FindArgumentByName(string name)
         {
             if (this.ContainsKey(name))
                 return this[name];
@@ -66,13 +66,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public bool TryGetValue(string key, out IQueryArgumentDocumentPart value)
+        public bool TryGetValue(string key, out IInputArgumentDocumentPart value)
         {
             return _arguments.TryGetValue(key, out value);
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string, IQueryArgumentDocumentPart>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, IInputArgumentDocumentPart>> GetEnumerator()
         {
             return _arguments.GetEnumerator();
         }
@@ -87,13 +87,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public int Count => _arguments.Count;
 
         /// <inheritdoc />
-        public IQueryArgumentDocumentPart this[string key] => _arguments[key];
+        public IInputArgumentDocumentPart this[string key] => _arguments[key];
 
         /// <inheritdoc />
         public IEnumerable<string> Keys => _arguments.Keys;
 
         /// <inheritdoc />
-        public IEnumerable<IQueryArgumentDocumentPart> Values => _arguments.Values;
+        public IEnumerable<IInputArgumentDocumentPart> Values => _arguments.Values;
 
         /// <inheritdoc />
         public IEnumerable<IDocumentPart> Children => _arguments.Values;

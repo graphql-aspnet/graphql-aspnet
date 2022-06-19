@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     /// Ensures that there are no duplicate fields provided on a complex input object.
     /// </summary>
     internal class Rule_5_6_3_InputObjectFieldNamesMustBeUnique
-        : DocumentConstructionRuleStep<InputItemNode, IQueryArgumentDocumentPart>
+        : DocumentConstructionRuleStep<InputItemNode, IInputArgumentDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the input argument if it cannot
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (InputItemNode)context.ActiveNode;
-            var argument = context.FindContextItem<IQueryArgumentDocumentPart>();
+            var argument = context.FindContextItem<IInputArgumentDocumentPart>();
             var complexValue = context.FindContextItem<ISuppliedValueDocumentPart>() as IComplexSuppliedValueDocumentPart;
 
             if (complexValue.Arguments.ContainsKey(node.InputName.ToString()))

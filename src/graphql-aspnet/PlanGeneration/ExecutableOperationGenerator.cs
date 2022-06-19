@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// </summary>
         /// <param name="operation">The query operation to generate an execution context for.</param>
         /// <returns>Task&lt;IGraphFieldExecutableOperation&gt;.</returns>
-        public async Task<IGraphFieldExecutableOperation> Create(IQueryOperationDocumentPart operation)
+        public async Task<IGraphFieldExecutableOperation> Create(IOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
             _messages = new GraphMessageCollection();
@@ -187,7 +187,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <returns>Task&lt;IInputArgumentCollection&gt;.</returns>
         private IInputArgumentCollection CreateArgumentList(
             IGraphArgumentContainer argumentContainer,
-            IQueryInputArgumentCollectionDocumentPart querySuppliedArguments)
+            IInputArgumentCollectionDocumentPart querySuppliedArguments)
         {
             var collection = new InputArgumentCollection();
             var argGenerator = new ArgumentGenerator(_schema, querySuppliedArguments);

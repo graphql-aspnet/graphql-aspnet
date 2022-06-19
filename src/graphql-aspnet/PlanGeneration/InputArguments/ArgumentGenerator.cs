@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     /// </summary>
     public class ArgumentGenerator
     {
-        private readonly IQueryInputArgumentCollectionDocumentPart _suppliedArguments;
+        private readonly IInputArgumentCollectionDocumentPart _suppliedArguments;
         private readonly InputResolverMethodGenerator _inputResolverGenerator;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// <param name="schema">The schema.</param>
         /// <param name="suppliedArguments">A collection of arguments passed on a user's query
         /// to be used first in the chain of object resolution for any created arguments.</param>
-        public ArgumentGenerator(ISchema schema, IQueryInputArgumentCollectionDocumentPart suppliedArguments)
+        public ArgumentGenerator(ISchema schema, IInputArgumentCollectionDocumentPart suppliedArguments)
         {
             _suppliedArguments = Validation.ThrowIfNullOrReturn(suppliedArguments, nameof(suppliedArguments));
             Validation.ThrowIfNull(schema, nameof(schema));

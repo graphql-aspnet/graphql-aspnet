@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A document part representing the declaration of a variable
     /// on an operation defined in a query document.
     /// </summary>
-    public interface IQueryVariableDocumentPart : IAssignableValueDocumentPart
+    public interface IVariableDocumentPart : IAssignableValueDocumentPart, IDirectiveContainerDocumentPart
     {
         /// <summary>
         /// Assign the found graph type, from the target schema, to represent this variable.

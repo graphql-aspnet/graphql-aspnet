@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// to this input value to carry for future dereferencing.
         /// </summary>
         /// <param name="variable">The variable to attach.</param>
-        internal void AssignVariableReference(IQueryVariableDocumentPart variable);
+        internal void AssignVariableReference(IVariableDocumentPart variable);
 
         /// <summary>
         /// Gets the name of the variable this instance references.
@@ -34,6 +34,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Gets a reference to the variable instance in the operation that this value points to.
         /// </summary>
         /// <value>The variable.</value>
-        IQueryVariableDocumentPart Variable { get;  }
+        IVariableDocumentPart Variable { get;  }
     }
 }

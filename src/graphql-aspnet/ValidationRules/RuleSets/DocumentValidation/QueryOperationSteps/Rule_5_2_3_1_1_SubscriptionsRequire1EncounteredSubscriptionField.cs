@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
     /// can exist along side the first "top-level" encountered subscription field.
     /// </summary>
     internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField
-        : DocumentPartValidationRuleStep<IQueryOperationDocumentPart>
+        : DocumentPartValidationRuleStep<IOperationDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context)
-                && context.ActivePart is IQueryOperationDocumentPart operation
+                && context.ActivePart is IOperationDocumentPart operation
                 && operation.OperationType == GraphOperationType.Subscription;
         }
 
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
                 }
             */
 
-            var operation = context.ActivePart as IQueryOperationDocumentPart;
+            var operation = context.ActivePart as IOperationDocumentPart;
             var fieldCollection = operation?.FieldSelectionSet;
 
             while (fieldCollection != null && fieldCollection.Count == 1)

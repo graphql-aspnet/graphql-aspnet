@@ -22,9 +22,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A single field of data requested on a user's query document.
     /// </summary>
     [DebuggerDisplay("Field: {Field.Name} (Returns: {GraphType.Name}, Restricted: {TargetGraphType.Name)")]
-    public class DocumentFieldSelection : IFieldSelectionDocumentPart
+    internal class DocumentFieldSelection : IFieldSelectionDocumentPart
     {
-        private readonly List<(int Rank, IDirectiveDocumentPart Directive)> _rankedDirectives;
+        private readonly DocumentDirectiveCollection _rankedDirectives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelection" /> class.
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.GraphType = Validation.ThrowIfNullOrReturn(fieldGraphType, nameof(fieldGraphType));
             this.Field = Validation.ThrowIfNullOrReturn(field, nameof(field));
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
-            _rankedDirectives = new List<(int Rank, IDirectiveDocumentPart Directive)>();
+            _rankedDirectives = new DocumentDirectiveCollection();
             this.Arguments = new DocumentInputArgumentCollection();
             this.UpdatePath(null);
         }
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public void InsertDirective(IDirectiveDocumentPart directive, int rank)
         {
-            _rankedDirectives.Add((rank, directive));
+            _rankedDirectives.Add(rank, directive);
         }
 
         /// <inheritdoc />
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public void AddArgument(IQueryArgumentDocumentPart argument)
+        public void AddArgument(IInputArgumentDocumentPart argument)
         {
             this.Arguments.AddArgument(argument);
         }
@@ -104,12 +104,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IGraphField Field { get; }
 
         /// <inheritdoc />
-        public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives
-            .OrderBy(x => x.Rank)
-            .Select(x => x.Directive);
+        public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;
 
         /// <inheritdoc />
-        public IQueryInputArgumentCollectionDocumentPart Arguments { get; }
+        public IInputArgumentCollectionDocumentPart Arguments { get; }
 
         /// <inheritdoc />
         public SourcePath Path { get; private set; }

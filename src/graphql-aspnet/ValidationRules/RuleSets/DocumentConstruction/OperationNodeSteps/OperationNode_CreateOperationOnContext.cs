@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Generates the <see cref="IQueryOperationDocumentPart"/> to representing the operation node.
+    /// Generates the <see cref="IOperationDocumentPart"/> to representing the operation node.
     /// </summary>
     internal class OperationNode_CreateOperationOnContext
         : DocumentConstructionStep<OperationTypeNode>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
 
             var operation = context.DocumentContext.Schema.OperationTypes[operationType];
 
-            var queryOperation = new DocumentQueryOperation(node, operationType, operation);
+            var queryOperation = new DocumentOperation(node, operationType, operation);
             context.AddDocumentPart(queryOperation);
             return true;
         }

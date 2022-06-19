@@ -22,20 +22,20 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Count = {Count}")]
-    public class DocumentVariableCollection : IQueryVariableCollectionDocumentPart, IDocumentPart
+    internal class DocumentVariableCollection : IVariableCollectionDocumentPart, IDocumentPart
     {
-        private readonly Dictionary<string, IQueryVariableDocumentPart> _variables;
+        private readonly Dictionary<string, IVariableDocumentPart> _variables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariableCollection"/> class.
         /// </summary>
         public DocumentVariableCollection()
         {
-            _variables = new Dictionary<string, IQueryVariableDocumentPart>();
+            _variables = new Dictionary<string, IVariableDocumentPart>();
         }
 
         /// <inheritdoc />
-        public void AddVariable(IQueryVariableDocumentPart variable)
+        public void AddVariable(IVariableDocumentPart variable)
         {
             Validation.ThrowIfNull(variable, nameof(variable));
             _variables.Add(variable.Name, variable);
@@ -51,13 +51,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public bool TryGetValue(string key, out IQueryVariableDocumentPart value)
+        public bool TryGetValue(string key, out IVariableDocumentPart value)
         {
             return _variables.TryGetValue(key, out value);
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string, IQueryVariableDocumentPart>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, IVariableDocumentPart>> GetEnumerator()
         {
             return _variables.GetEnumerator();
         }
@@ -69,13 +69,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public IQueryVariableDocumentPart this[string key] => _variables[key];
+        public IVariableDocumentPart this[string key] => _variables[key];
 
         /// <inheritdoc />
         public IEnumerable<string> Keys => _variables.Keys;
 
         /// <inheritdoc />
-        public IEnumerable<IQueryVariableDocumentPart> Values => _variables.Values;
+        public IEnumerable<IVariableDocumentPart> Values => _variables.Values;
 
         /// <inheritdoc />
         public IEnumerable<IDocumentPart> Children

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
     /// A rule that dictates each variables core type must be a SCALAR, ENUM or INPUT_OBJECT.
     /// </summary>
     internal class Rule_5_8_2_B_VariablesMustDeclareAValidGraphType
-        : DocumentConstructionRuleStep<IQueryVariableDocumentPart>
+        : DocumentConstructionRuleStep<IVariableDocumentPart>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
         /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
         public override bool Execute(DocumentConstructionContext context)
         {
-            var variable = context.FindContextItem<IQueryVariableDocumentPart>();
+            var variable = context.FindContextItem<IVariableDocumentPart>();
 
             var graphType = context.DocumentContext.Schema.KnownTypes.FindGraphType(variable.TypeExpression.TypeName);
             if (graphType == null)

@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
             var value = ivdp.Value;
 
             // variables do not have to supply a default value
-            if (value == null && ivdp is IQueryVariableDocumentPart)
+            if (value == null && ivdp is IVariableDocumentPart)
                 return true;
 
             if (!this.EvaluateContextData(value))

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// Creats and assigns a <see cref="IQueryArgumentDocumentPart"/> to the current node context for the active node.
+    /// Creats and assigns a <see cref="IInputArgumentDocumentPart"/> to the current node context for the active node.
     /// </summary>
     internal class InputArgument_C_AssignContextQueryInputArgumentForInputObject
         : DocumentConstructionStep<InputItemNode>

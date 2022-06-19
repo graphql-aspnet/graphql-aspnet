@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
     /// and marks the variable as used by the parent operation.
     /// </summary>
     internal class InputValue_AssignVariableReference
-        : DocumentConstructionRuleStep<VariableValueNode, IQueryOperationDocumentPart>
+        : DocumentConstructionRuleStep<VariableValueNode, IOperationDocumentPart>
     {
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (VariableValueNode)context.ActiveNode;
-            var queryOperation = context.FindContextItem<IQueryOperationDocumentPart>();
+            var queryOperation = context.FindContextItem<IOperationDocumentPart>();
             var queryValue = context.FindContextItem<ISuppliedValueDocumentPart>() as IVariableReferenceDocumentPart;
 
             var variable = queryOperation.Variables[node.Value.ToString()];

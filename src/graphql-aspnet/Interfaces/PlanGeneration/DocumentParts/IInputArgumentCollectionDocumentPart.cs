@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A collection of arguments parsed from a user's query document for a given field or directive.
     /// </summary>
-    public interface IQueryInputArgumentCollectionDocumentPart : IReadOnlyDictionary<string, IQueryArgumentDocumentPart>, IDocumentPart
+    public interface IInputArgumentCollectionDocumentPart : IReadOnlyDictionary<string, IInputArgumentDocumentPart>, IDocumentPart
     {
         /// <summary>
         /// Determines whether the specified input name exists on this collection.
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Adds the input argument to the collection.
         /// </summary>
         /// <param name="argument">The argument.</param>
-        internal void AddArgument(IQueryArgumentDocumentPart argument);
+        internal void AddArgument(IInputArgumentDocumentPart argument);
 
         /// <summary>
         /// Searches for an argument with the provided name.
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <param name="name">The name of the argument to look for.</param>
         /// <returns>The found argument or null.</returns>
-        IQueryArgumentDocumentPart FindArgumentByName(ReadOnlyMemory<char> name);
+        IInputArgumentDocumentPart FindArgumentByName(ReadOnlyMemory<char> name);
 
         /// <summary>
         /// Searches for an argument with the provided name.
@@ -44,6 +44,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <param name="name">The name of the argument to look for.</param>
         /// <returns>The found argument or null.</returns>
-        IQueryArgumentDocumentPart FindArgumentByName(string name);
+        IInputArgumentDocumentPart FindArgumentByName(string name);
     }
 }

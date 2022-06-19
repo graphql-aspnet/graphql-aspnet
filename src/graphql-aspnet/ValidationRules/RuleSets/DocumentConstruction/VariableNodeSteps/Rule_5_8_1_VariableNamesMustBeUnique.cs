@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
     /// A rule that dictates that for any set of variables all the names must be unique.
     /// </summary>
     internal class Rule_5_8_1_VariableNamesMustBeUnique
-        : DocumentConstructionRuleStep<VariableNode, IQueryOperationDocumentPart>
+        : DocumentConstructionRuleStep<VariableNode, IOperationDocumentPart>
     {
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (VariableNode)context.ActiveNode;
-            var operation = context.FindContextItem<IQueryOperationDocumentPart>();
+            var operation = context.FindContextItem<IOperationDocumentPart>();
 
             if (operation?.Variables != null)
             {

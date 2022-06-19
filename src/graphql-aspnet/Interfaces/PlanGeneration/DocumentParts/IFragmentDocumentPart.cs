@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A definition of a single fragment within the query document. Represents
     /// both a named fragment and an inline fragment.
     /// </summary>
-    public interface IFragmentDocumentPart : IDocumentPart
+    public interface IFragmentDocumentPart : IDirectiveContainerDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Marks this fragment as being referenced and used in at least one operation in the document.

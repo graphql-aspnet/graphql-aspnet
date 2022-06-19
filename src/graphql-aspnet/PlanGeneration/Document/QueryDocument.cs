@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         /// <param name="maxDepth">The maximum depth achived by the document.</param>
         public QueryDocument(
             IGraphMessageCollection messages = null,
-            IEnumerable<IQueryOperationDocumentPart> operations = null,
+            IEnumerable<IOperationDocumentPart> operations = null,
             int maxDepth = 0)
         {
             this.MaxDepth = maxDepth;
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         /// Gets the set of operations parsed from a user's query text.
         /// </summary>
         /// <value>The operations.</value>
-        public IQueryOperationCollectionDocumentPart Operations { get; }
+        public IOperationCollectionDocumentPart Operations { get; }
 
         /// <summary>
         /// Gets the messages generated during the validation run, if any.

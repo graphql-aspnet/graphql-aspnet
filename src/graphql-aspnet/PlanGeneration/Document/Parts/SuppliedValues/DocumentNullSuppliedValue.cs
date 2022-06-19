@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// <summary>
     /// An input value representing that nothing/null was used as a supplied parameter for an input argument.
     /// </summary>
-    public class DocumentNullSuppliedValue : DocumentSuppliedValue, INullSuppliedValueDocumentPart
+    internal class DocumentNullSuppliedValue : DocumentSuppliedValue, INullSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNullSuppliedValue" /> class.

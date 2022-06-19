@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value representing a complex input object read from a user's query document.
     /// </summary>
     [DebuggerDisplay("ComplexInputValue (Arguments = {Arguments.Count})")]
-    public class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
+    internal class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue" /> class.
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// <inheritdoc />
         public override void AddChild(IDocumentPart child)
         {
-            if (child is IQueryArgumentDocumentPart qa)
+            if (child is IInputArgumentDocumentPart qa)
             {
                 this.AddArgument(qa);
             }
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        public void AddArgument(IQueryArgumentDocumentPart argument)
+        public void AddArgument(IInputArgumentDocumentPart argument)
         {
             this.Arguments.AddArgument(argument);
         }
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        public IQueryInputArgumentCollectionDocumentPart Arguments { get; }
+        public IInputArgumentCollectionDocumentPart Arguments { get; }
 
         /// <inheritdoc />
         public override IEnumerable<IDocumentPart> Children

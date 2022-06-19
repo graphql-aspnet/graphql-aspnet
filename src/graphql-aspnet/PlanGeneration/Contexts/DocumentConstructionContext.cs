@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         private List<SyntaxNode> _childNodes;
         private IFieldSelectionSetDocumentPart _selectionSet;
         private IDocumentPart _activePart;
-        private IQueryOperationDocumentPart _operation;
+        private IOperationDocumentPart _operation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentConstructionContext" /> class.
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// and scopes are reset under this operation.
         /// </summary>
         /// <param name="operation">The operation.</param>
-        private void BeginNewOperation(IQueryOperationDocumentPart operation)
+        private void BeginNewOperation(IOperationDocumentPart operation)
         {
             this.DocumentContext.Operations.AddOperation(operation);
             _operation = operation;
@@ -102,13 +102,13 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         {
             switch (docPart)
             {
-                case IQueryOperationDocumentPart qo:
+                case IOperationDocumentPart qo:
                     this.AddOrUpdateContextItem(qo);
                     this.BeginNewOperation(qo);
                     _activePart = qo;
                     break;
 
-                case IQueryVariableDocumentPart qv:
+                case IVariableDocumentPart qv:
                     this.AddOrUpdateContextItem(qv);
                     var variables = _operation?.CreateVariableCollection();
                     variables?.AddVariable(qv);
@@ -134,8 +134,8 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                     _activePart = qd;
                     break;
 
-                case IQueryArgumentDocumentPart qa:
-                    if (_activePart is IQueryArgumentContainerDocumentPart argContainer)
+                case IInputArgumentDocumentPart qa:
+                    if (_activePart is IInputArgumentContainerDocumentPart argContainer)
                         argContainer.AddArgument(qa);
 
                     // query arguments never retain parent scopes; they are considered independent

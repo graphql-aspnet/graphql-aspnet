@@ -7,15 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
@@ -31,7 +22,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// or variable in a query document.
     /// </summary>
     [Serializable]
-    public abstract class DocumentSuppliedValue : ISuppliedValueDocumentPart
+    internal abstract class DocumentSuppliedValue : ISuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentSuppliedValue" /> class.
@@ -49,10 +40,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        public IAssignableValueDocumentPart Owner { get; set; }
+        public IAssignableValueDocumentPart Owner { get;  set; }
 
         /// <inheritdoc />
-        public ISuppliedValueDocumentPart ParentValue { get; set; }
+        public ISuppliedValueDocumentPart ParentValue { get;  set; }
 
         /// <inheritdoc />
         public SyntaxNode ValueNode { get; }

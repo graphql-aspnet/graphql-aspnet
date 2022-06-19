@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// An instance of a referenced directive in a query document.
     /// </summary>
     [DebuggerDisplay("Directive {Directive.Name}")]
-    public class DocumentDirective : IDirectiveDocumentPart
+    internal class DocumentDirective : IDirectiveDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentDirective" /> class.
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public void AddArgument(IQueryArgumentDocumentPart argument)
+        public void AddArgument(IInputArgumentDocumentPart argument)
         {
             this.Arguments.AddArgument(argument);
         }
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public string Name => this.Directive.Name;
 
         /// <inheritdoc />
-        public IQueryInputArgumentCollectionDocumentPart Arguments { get; }
+        public IInputArgumentCollectionDocumentPart Arguments { get; }
 
         /// <inheritdoc />
         public IEnumerable<IDocumentPart> Children

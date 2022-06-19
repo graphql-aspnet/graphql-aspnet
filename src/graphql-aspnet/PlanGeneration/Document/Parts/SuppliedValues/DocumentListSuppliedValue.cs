@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// A representation of a list of other input values for a single argument.
     /// </summary>
     [DebuggerDisplay("ListValue (Count = {ListItems.Count})")]
-    public class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart
+    internal class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentListSuppliedValue" /> class.
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             if (child is ISuppliedValueDocumentPart suppliedValue)
             {
                 this.ListItems.Add(suppliedValue);
-                suppliedValue.ParentValue =this;
+                suppliedValue.ParentValue = this;
                 suppliedValue.Owner = this.Owner;
             }
             else
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        IEnumerable<IResolvableItem> IResolvableList.ResolvableListItems => this.ListItems;
+        public IEnumerable<IResolvableItem> ResolvableListItems => this.ListItems;
 
         /// <inheritdoc />
         public IList<ISuppliedValueDocumentPart> ListItems { get; }

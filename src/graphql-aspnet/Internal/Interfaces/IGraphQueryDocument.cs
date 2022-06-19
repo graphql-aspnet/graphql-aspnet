@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the collected set of operations parsed from a user's query document.
         /// </summary>
         /// <value>The operations.</value>
-        IQueryOperationCollectionDocumentPart Operations { get; }
+        IOperationCollectionDocumentPart Operations { get; }
 
         /// <summary>
         /// Gets the field maximum depth of any given operation of this document.

@@ -23,8 +23,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A fragment that was parsed out of a submitted query document.
     /// </summary>
     [DebuggerDisplay("Named Fragment: {Name}")]
-    internal class DocumentFragment : IFragmentDocumentPart, IDocumentPart
+    internal class DocumentFragment : IFragmentDocumentPart
     {
+        private DocumentDirectiveCollection _rankedDirectives;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragment" /> class.
         /// </summary>
@@ -35,6 +37,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.Name = fragmentNode.FragmentName.ToString();
             this.ReferencedNamedFragments = new CharMemoryHashSet();
             this.TargetGraphTypeName = fragmentNode.TargetType.ToString();
+            _rankedDirectives = new DocumentDirectiveCollection();
 
             foreach (var node in this.Node.Children)
                 this.BuildReferencedFragmentList(node);
@@ -73,12 +76,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             }
         }
 
-        /// <summary>
-        /// Marks this fragment as being referenced and used in at least one operation in the document.
-        /// </summary>
+        /// <inheritdoc />
         public void MarkAsReferenced()
         {
             this.IsReferenced = true;
+        }
+
+        /// <inheritdoc />
+        public void InsertDirective(IDirectiveDocumentPart directive, int rank)
+        {
+            _rankedDirectives.Add(rank, directive);
         }
 
         /// <inheritdoc />
@@ -104,5 +111,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public DocumentPartType PartType => DocumentPartType.Fragment;
+
+        /// <inheritdoc />
+        public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;
     }
 }

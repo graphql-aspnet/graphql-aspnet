@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     /// </summary>
     public static class DocumentPartTypeExtensions
     {
-
         /// <summary>
         /// Determines the related system level interface that any part of the given type
         /// should implement.
@@ -30,13 +29,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             switch (partType)
             {
                 case DocumentPartType.Operation:
-                    return typeof(IQueryOperationDocumentPart);
+                    return typeof(IOperationDocumentPart);
 
                 case DocumentPartType.Variable:
-                    return typeof(IQueryVariableDocumentPart);
+                    return typeof(IVariableDocumentPart);
 
                 case DocumentPartType.VariableCollection:
-                    return typeof(IQueryVariableCollectionDocumentPart);
+                    return typeof(IVariableCollectionDocumentPart);
 
                 case DocumentPartType.FieldSelection:
                     return typeof(IFieldSelectionDocumentPart);
@@ -48,7 +47,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
                     return typeof(ISuppliedValueDocumentPart);
 
                 case DocumentPartType.InputArgument:
-                    return typeof(IQueryArgumentDocumentPart);
+                    return typeof(IInputArgumentDocumentPart);
 
                 case DocumentPartType.Directive:
                     return typeof(IDirectiveDocumentPart);
@@ -60,10 +59,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document
                     return typeof(IFragmentCollectionDocumentPart);
 
                 case DocumentPartType.OperationCollection:
-                    return typeof(IQueryOperationCollectionDocumentPart);
+                    return typeof(IOperationCollectionDocumentPart);
 
                 case DocumentPartType.InputArgumentCollection:
-                    return typeof(IQueryInputArgumentCollectionDocumentPart);
+                    return typeof(IInputArgumentCollectionDocumentPart);
             }
 
             throw new InvalidOperationException($"Unsupported {partType}, no related interface exists.");

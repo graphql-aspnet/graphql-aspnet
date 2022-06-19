@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value representing a single scalar value of data.
     /// </summary>
     [DebuggerDisplay("Scalar: {Value.ToString()} (Type: {ValueType})")]
-    public class DocumentScalarSuppliedValue : DocumentSuppliedValue, IScalarSuppliedValue
+    internal class DocumentScalarSuppliedValue : DocumentSuppliedValue, IScalarSuppliedValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue" /> class.

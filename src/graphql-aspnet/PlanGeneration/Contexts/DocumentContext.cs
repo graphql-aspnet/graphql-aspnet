@@ -21,7 +21,8 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
-    /// A context allowing the sharing of data between validation rules against a cohesive data set.
+    /// A context used for building up a query document and a sharing of
+    /// its <see cref="IDocumentPart"/>s with validation rules.
     /// </summary>
     internal class DocumentContext
     {
@@ -93,7 +94,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// Gets a collection of all the defined operations declared on the document.
         /// </summary>
         /// <value>The operations.</value>
-        public IQueryOperationCollectionDocumentPart Operations { get; }
+        public IOperationCollectionDocumentPart Operations { get; }
 
         /// <summary>
         /// Gets the child parts declared in this instance.
