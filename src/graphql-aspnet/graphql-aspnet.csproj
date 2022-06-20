@@ -58,8 +58,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ValidationRules\RuleSets\DocumentConstruction\InputItemCollectionNodeSteps\" />
-    <Folder Include="ValidationRules\RuleSets\DocumentConstruction\TopLevelNodeSteps\" />
-    <Folder Include="ValidationRules\RuleSets\DocumentConstruction\VariableCollectionNodeSteps\" />
+    <Folder Include="RulesEngine\RuleSets\DocumentConstruction\InputItemCollectionNodeSteps\" />
+    <Folder Include="RulesEngine\RuleSets\DocumentConstruction\TopLevelNodeSteps\" />
+    <Folder Include="RulesEngine\RuleSets\DocumentConstruction\VariableCollectionNodeSteps\" />
   </ItemGroup>
 </Project>

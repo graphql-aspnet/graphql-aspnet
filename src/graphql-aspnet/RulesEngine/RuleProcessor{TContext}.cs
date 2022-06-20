@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.ValidationRules
     using GraphQL.AspNet.ValidationRules.Interfaces;
 
     /// <summary>
-    /// A processor that will execute a set of rules against a context.
+    /// A processor that will execute a set of hierarchial rules against a context.
     /// </summary>
     /// <typeparam name="TContext">The type of the context being processed by this rule set.</typeparam>
     internal abstract class RuleProcessor<TContext>
@@ -31,8 +31,10 @@ namespace GraphQL.AspNet.ValidationRules
         /// </summary>
         /// <param name="rulePackage">The rule package this instance will execute.</param>
         /// <param name="childrenFirst">if set to <c>true</c> child contexts of the current context will be generated
-        /// and executed before the current context. <c>false</c> to execute children after the currently scoped context.</param>
-        protected RuleProcessor(IRulePackage<TContext> rulePackage, bool childrenFirst = false)
+        /// and executed before the current context (LIFO). <c>false</c> to execute children after the currently scoped context (FIFO).</param>
+        protected RuleProcessor(
+            IRulePackage<TContext> rulePackage,
+            bool childrenFirst = false)
         {
             _maxDepth = RuleProcessor.MaxProcessingDepth;
             _rulePackage = Validation.ThrowIfNullOrReturn(rulePackage, nameof(rulePackage));
@@ -40,20 +42,18 @@ namespace GraphQL.AspNet.ValidationRules
         }
 
         /// <summary>
-        /// Executes the specified initial context.
+        /// Executes the single context against the rule set.
         /// </summary>
         /// <param name="initialContext">The initial, "Top level" context to execute against the rule
         /// set this instance contains.</param>
         /// <returns><c>true</c> if the context, at all levels, completed all steps successfully, <c>false</c> otherwise.</returns>
         public bool Execute(TContext initialContext)
         {
-            var list = new List<TContext>();
-            list.Add(initialContext);
-            return this.Execute(list);
+            return this.Execute(initialContext.AsEnumerable());
         }
 
         /// <summary>
-        /// Executes the specified initial context.
+        /// Executes the provided set of contexts against the rule set.
         /// </summary>
         /// <param name="initialContexts">The initial, "Top level" set of contexts to execute against the rule
         /// set this instance contains.</param>
@@ -114,7 +114,8 @@ namespace GraphQL.AspNet.ValidationRules
         }
 
         /// <summary>
-        /// Attempts to create and execution a collection of child contexts related to the given "parent" context.
+        /// Attempts to create and execute a collection of child contexts related
+        /// to the provided "parent" context.
         /// </summary>
         /// <param name="parentContext">The context for which children should be generated and executed.</param>
         /// <param name="parentDepth">The nesting depth of the executing parent context.</param>

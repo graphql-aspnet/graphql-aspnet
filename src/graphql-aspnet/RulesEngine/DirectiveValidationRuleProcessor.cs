@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.ValidationRules
     using GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution;
 
     /// <summary>
-    /// A rule process that handles rules related to the invocation of directives be that
-    /// invocations on a query document or those added to <see cref="ISchemaItem"/>
+    /// A rule processor that handles rules related to the invocation of directives at runtime,
+    /// be that invocations on a query document or those added to <see cref="ISchemaItem"/>
     /// during schema construction.
     /// </summary>
     internal class DirectiveValidationRuleProcessor : RuleProcessor<GraphDirectiveExecutionContext>

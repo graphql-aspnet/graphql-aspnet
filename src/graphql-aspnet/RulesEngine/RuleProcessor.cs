@@ -10,8 +10,8 @@
 namespace GraphQL.AspNet.ValidationRules
 {
     /// <summary>
-    /// A publically exposed core object for housing common constants and other rarely changed values relating
-    /// to all internal rule processors.
+    /// A publicly editable, core object for housing common constants and other rarely changed values relating
+    /// to the internal rule processors.
     /// </summary>
     public static class RuleProcessor
     {
