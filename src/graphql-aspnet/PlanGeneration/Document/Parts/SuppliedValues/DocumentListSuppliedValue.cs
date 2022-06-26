@@ -20,9 +20,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// <summary>
     /// A representation of a list of other input values for a single argument.
     /// </summary>
-    [DebuggerDisplay("ListValue (Count = {Count})")]
+    [DebuggerDisplay("ListValue (Count = {ListItems.Count})")]
     internal class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart
     {
+        private List<ISuppliedValueDocumentPart> _listItems;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentListSuppliedValue" /> class.
         /// </summary>
@@ -32,25 +34,47 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentListSuppliedValue(IDocumentPart parentPart, SyntaxNode node, string key = null)
             : base(parentPart, node, key)
         {
+            _listItems = new List<ISuppliedValueDocumentPart>();
         }
 
-        private int Count => this.ListItems.Count();
-
         /// <inheritdoc />
-        public IEnumerable<ISuppliedValueDocumentPart> ListItems => this
-            .Children[DocumentPartType.SuppliedValue]
-            .OfType<ISuppliedValueDocumentPart>();
-
-        /// <inheritdoc />
-        public IEnumerator<IResolvableKeyedItem> GetEnumerator()
+        public override bool IsEqualTo(ISuppliedValueDocumentPart value)
         {
-            return this.ListItems.GetEnumerator();
+            if (value == null || !(value is IListSuppliedValueDocumentPart))
+                return false;
+
+            var valueList = value as IListSuppliedValueDocumentPart;
+            if (valueList.ListItems.Count != this.ListItems.Count)
+                return false;
+
+            for (var i = 0; i < this.ListItems.Count; i++)
+            {
+                var localItem = this.ListItems[i];
+                var otherItem = valueList.ListItems[i];
+
+                if (!localItem.IsEqualTo(otherItem))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            return this.GetEnumerator();
+            base.OnChildPartAdded(childPart);
+            if (childPart is ISuppliedValueDocumentPart svdp)
+                _listItems.Add(svdp);
         }
+
+        /// <inheritdoc />
+        public IReadOnlyList<ISuppliedValueDocumentPart> ListItems => _listItems;
+
+        /// <inheritdoc />
+        public IEnumerator<IResolvableKeyedItem> GetEnumerator() => _listItems.GetEnumerator();
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
     }
 }

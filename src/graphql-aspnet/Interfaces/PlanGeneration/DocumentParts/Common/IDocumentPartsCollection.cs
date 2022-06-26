@@ -23,11 +23,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         internal event DocumentCollectionAlteredHandler PartAdded;
 
         /// <summary>
-        /// Raised when a part is successfully removed from this collection.
-        /// </summary>
-        internal event DocumentCollectionAlteredHandler PartRemoved;
-
-        /// <summary>
         /// Raised just before a part is added to this collection.
         /// </summary>
         internal event DocumentCollectionBeforeAddHandler BeforePartAdded;
@@ -45,11 +40,5 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <param name="documentParts">The document parts to add.</param>
         void Add(IEnumerable<IDocumentPart> documentParts);
-
-        /// <summary>
-        /// Removes the part from this collection if it exists.
-        /// </summary>
-        /// <param name="part">The part to remove.</param>
-        void RemoveChild(IDocumentPart part);
     }
 }

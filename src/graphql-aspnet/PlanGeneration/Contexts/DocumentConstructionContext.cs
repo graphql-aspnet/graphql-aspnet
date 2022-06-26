@@ -111,6 +111,9 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
                 throw new InvalidOperationException("This context already has a part assigned.");
 
             this.ActivePart = Validation.ThrowIfNullOrReturn(docPart, nameof(docPart));
+
+            this.ParentPart.Children.Add(this.ActivePart);
+
             if (this.ActivePart is IFieldDocumentPart)
                 this.Depth += 1;
 

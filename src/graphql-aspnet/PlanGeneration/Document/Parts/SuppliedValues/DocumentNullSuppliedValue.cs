@@ -30,6 +30,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
+        public override bool IsEqualTo(ISuppliedValueDocumentPart value)
+        {
+            return value != null && value is INullSuppliedValueDocumentPart;
+        }
+
+        /// <inheritdoc />
         public ReadOnlySpan<char> ResolvableValue => ReadOnlySpan<char>.Empty;
     }
 }

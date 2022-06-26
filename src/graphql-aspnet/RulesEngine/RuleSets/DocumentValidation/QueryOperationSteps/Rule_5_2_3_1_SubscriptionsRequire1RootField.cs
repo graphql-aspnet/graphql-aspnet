@@ -24,7 +24,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Operation
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) && ((IOperationDocumentPart)context.ActivePart).OperationType == GraphOperationType.Subscription;
+            return base.ShouldExecute(context)
+                && ((IOperationDocumentPart)context.ActivePart).OperationType == GraphOperationType.Subscription;
         }
 
         /// <inheritdoc />

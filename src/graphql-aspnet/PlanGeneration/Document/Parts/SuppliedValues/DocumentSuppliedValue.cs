@@ -19,8 +19,6 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
-    using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
@@ -42,6 +40,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         {
             this.Key = key?.Trim();
         }
+
+        /// <inheritdoc />
+        public abstract bool IsEqualTo(ISuppliedValueDocumentPart value);
 
         /// <inheritdoc />
         public string Key { get; }

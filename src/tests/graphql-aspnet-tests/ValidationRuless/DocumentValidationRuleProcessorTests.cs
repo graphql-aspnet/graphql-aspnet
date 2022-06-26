@@ -70,6 +70,26 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             // leaf fields must not have a child field set (name is a string, it has no fields)
             AddQuery("5.3.3", "query Operation1{ peopleMovers { elevator(id: 5){id, name { lastName } } } }");
 
+            // argument must be defined on the field in the schema
+            // id is a required arg on the field (added to prevent a flag of rule 5.4.2.1)
+            AddQuery("5.4.1", "query Operation1{ peopleMovers { elevator(id: 5, notAnArgument: 5){ id name } } }");
+
+            // argument must be defined on the directive in the schema
+            // someValue is the required arg on restrict (added to prevent a flag of rule 5.4.2.1)
+            AddQuery("5.4.1", "query Operation1{ peopleMovers @restrict(notAnArg: 1, someValue: 1) { elevator(id: 5){ id name } } }");
+
+            // arguments must be unique (field)
+            AddQuery("5.4.2", "query Operation1{ peopleMovers { elevator(id: 5, id: 5){ id name } } }");
+
+            // arguments must be unique (directive)
+            AddQuery("5.4.2", "query Operation1{ peopleMovers @restrict(someValue: 1, someValue: 2) { elevator(id: 5){ id name } } }");
+
+            // required argument must be provided (id is required on elevator but not provided)
+            AddQuery("5.4.2.1", "query Operation1{ peopleMovers { elevator{ id name } } }");
+
+            // required argument must be provided ("someValue" required on @Restrict but not provided)
+            AddQuery("5.4.2.1", "query Operation1{ peopleMovers @restrict { elevator (id: 5) { id name } } }");
+
             // named fragments must be unique
             AddQuery("5.5.1.1", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1  } } } fragment frag1 on Elevator { id } fragment frag1 on Elevator { name} ");
 
@@ -112,18 +132,6 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             // spreading a fragment: abstract inside an abstract (abstract must "contain" an intersection with other abstract)
             // (no object types implement both HorizontalMover and VerticalMover interfaces)
             AddQuery("5.5.2.3.4", "query Operation1{ peopleMovers { horizontalMover(id: 5){ ...frag1 } } } fragment frag1 on VerticalMover { id name }");
-
-            // argument must be defined on the field in the schema
-            AddQuery("5.4.1", "query Operation1{ peopleMovers { elevator(notAnArgument: 5){ id name } } }");
-
-            // arguments must be unique
-            AddQuery("5.4.2", "query Operation1{ peopleMovers { elevator(id: 5, id: 5){ id name } } }");
-
-            // required argument must be provided (id is required on elevator)
-            AddQuery("5.4.2.1", "query Operation1{ peopleMovers { elevator{ id name } } }");
-
-            // required argument must be provided ("someValue" required on @Restrict)
-            AddQuery("5.4.2.1", "query Operation1{ peopleMovers @restrict { elevator (id: 5) { id name } } }");
 
             // required argument must be provided (matchElevator accepts in an input object of "Input_Elevator", simulate passing all possible non-object types: number, stirng, enum, bool)
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: 5) { id name } } }");
@@ -190,7 +198,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             var document = server.CreateDocument(queryText);
 
             // execute the document validation
-            var validationContext = new DocumentValidationContext(document);
+            var validationContext = new DocumentValidationContext(server.Schema, document);
             var processor = new DocumentValidationRuleProcessor();
             processor.Execute(validationContext);
 

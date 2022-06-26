@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.ValidationRules.Interfaces;
 
@@ -24,12 +25,15 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentValidationContext" /> class.
         /// </summary>
+        /// <param name="targetSchema">The target schema the query document is validated against.</param>
         /// <param name="queryDocument">The query document to validate.</param>
-        public DocumentValidationContext(IGraphQueryDocument queryDocument)
+        public DocumentValidationContext(ISchema targetSchema, IGraphQueryDocument queryDocument)
         {
+            this.Schema = Validation.ThrowIfNullOrReturn(targetSchema, nameof(targetSchema));
             this.ActivePart = Validation.ThrowIfNullOrReturn(queryDocument, nameof(queryDocument));
             this.Document = queryDocument;
             this.Messages = queryDocument.Messages;
+            this.ChecksComplete = new HashSet<string>();
         }
 
         /// <summary>
@@ -41,6 +45,8 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             this.ParentContext = parentContext;
             this.Document = parentContext.Document;
             this.Messages = parentContext.Messages;
+            this.ChecksComplete = parentContext.ChecksComplete;
+            this.Schema = parentContext.Schema;
         }
 
         /// <summary>
@@ -59,11 +65,16 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         }
 
         /// <summary>
+        /// Gets the schema the document is being validated against.
+        /// </summary>
+        /// <value>The active schema.</value>
+        public ISchema Schema { get; }
+
+        /// <summary>
         /// Gets the part being validated on this context.
         /// </summary>
         /// <value>The active part.</value>
         public IDocumentPart ActivePart { get; private set; }
-
 
         /// <summary>
         /// Gets the part that owns the <see cref="ActivePart" /> on this context.
@@ -89,5 +100,11 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// </summary>
         /// <value>The document.</value>
         public IGraphQueryDocument Document { get; }
+
+        /// <summary>
+        /// Gets a set of keys identfying checks that have already been executed.
+        /// </summary>
+        /// <value>The checks complete.</value>
+        public HashSet<string> ChecksComplete { get; }
     }
 }

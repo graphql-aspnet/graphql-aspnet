@@ -6,13 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
@@ -20,23 +20,38 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A collection of input arguments defined in a user's query document for a single field or directive.
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
-    internal class DocumentInputArgumentCollectionDocumentPart : IInputArgumentCollectionDocumentPart
+    internal class DocumentInputArgumentCollection : IInputArgumentCollectionDocumentPart
     {
-        private readonly IReadOnlyDictionary<string, IInputArgumentDocumentPart> _arguments;
+        private readonly Dictionary<string, IInputArgumentDocumentPart> _arguments;
         private IDocumentPart _ownerPart;
+        private HashSet<string> _duplicateArguments;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentInputArgumentCollectionDocumentPart" /> class.
+        /// Initializes a new instance of the <see cref="DocumentInputArgumentCollection" /> class.
         /// </summary>
         /// <param name="ownerPart">The document part which contains/owns all
         /// the collected input arguments.</param>
-        public DocumentInputArgumentCollectionDocumentPart(IDocumentPart ownerPart)
+        public DocumentInputArgumentCollection(IDocumentPart ownerPart)
         {
             _ownerPart = Validation.ThrowIfNullOrReturn(ownerPart, nameof(ownerPart));
+            _arguments = new Dictionary<string, IInputArgumentDocumentPart>();
+            _duplicateArguments = new HashSet<string>();
+        }
 
-            _arguments = _ownerPart.Children[DocumentPartType.Argument]
-                .OfType<IInputArgumentDocumentPart>()
-                .ToDictionary(x => x.Name);
+        /// <summary>
+        /// Adds the argumment to the collection.
+        /// </summary>
+        /// <param name="argument">The argument.</param>
+        public void AddArgumment(IInputArgumentDocumentPart argument)
+        {
+            if (!_arguments.ContainsKey(argument.Name))
+            {
+                _arguments.Add(argument.Name, argument);
+            }
+            else
+            {
+                _duplicateArguments.Add(argument.Name);
+            }
         }
 
         /// <inheritdoc />
@@ -52,6 +67,21 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 return this[name];
 
             return null;
+        }
+
+        /// <inheritdoc />
+        public bool IsUnique(ReadOnlySpan<char> name)
+        {
+            return this.IsUnique(name.ToString());
+        }
+
+        /// <inheritdoc />
+        public bool IsUnique(string name)
+        {
+            if (name == null)
+                return false;
+
+            return !_duplicateArguments.Contains(name);
         }
 
         /// <inheritdoc />

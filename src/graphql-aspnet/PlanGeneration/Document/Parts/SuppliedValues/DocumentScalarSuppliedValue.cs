@@ -49,6 +49,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
+        public override bool IsEqualTo(ISuppliedValueDocumentPart value)
+        {
+            if (value == null || !(value is IScalarSuppliedValue))
+                return false;
+
+            var otherValue = value as IScalarSuppliedValue;
+            return this.Value.Span.SequenceEqual(otherValue.Value.Span);
+        }
+
+        /// <inheritdoc />
         public ScalarValueType ValueType { get; }
 
         /// <inheritdoc />

@@ -33,6 +33,15 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
+        public override bool IsEqualTo(ISuppliedValueDocumentPart value)
+        {
+            if (value == null || !(value is IEnumSuppliedValueDocumentPart))
+                return false;
+
+            return this.Value.Span.SequenceEqual(((IEnumSuppliedValueDocumentPart)value).Value.Span);
+        }
+
+        /// <inheritdoc />
         public ReadOnlyMemory<char> Value { get; }
 
         /// <inheritdoc />

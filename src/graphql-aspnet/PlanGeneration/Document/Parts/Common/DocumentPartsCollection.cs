@@ -26,9 +26,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         /// <inheritdoc />
         public event DocumentCollectionAlteredHandler PartAdded;
 
-        /// <inheritdoc />
-        public event DocumentCollectionAlteredHandler PartRemoved;
-
         // all the parts added to this collection in the order they
         // were added
         private List<IDocumentPart> _allParts;
@@ -82,20 +79,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
                     this.PartAdded?.Invoke(this, new DocumentPartEventArgs(part));
                 }
             }
-        }
-
-        /// <inheritdoc />
-        public void RemoveChild(IDocumentPart part)
-        {
-            if (part == null || part.Parent != this.Owner)
-                return;
-
-            var wasRemoved = _allParts.Remove(part);
-            if (_partsByType.ContainsKey(part.PartType))
-                _partsByType[part.PartType].Remove(part);
-
-            if (wasRemoved)
-                this.PartRemoved?.Invoke(this, new DocumentPartEventArgs(part));
         }
 
         /// <inheritdoc />

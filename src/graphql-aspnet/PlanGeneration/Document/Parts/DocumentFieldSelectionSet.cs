@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("FIELD SET: Graph Type: {GraphType.Name}, Fields = {Count}")]
     internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart
     {
-        private readonly CharMemoryHashSet _knownFieldAliases;
+        private readonly Dictionary<ReadOnlyMemory<char>, List<IFieldDocumentPart>> _fieldsByAlias;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public DocumentFieldSelectionSet(IDocumentPart parent)
             : base(parent, EmptyNode.Instance)
         {
-            _knownFieldAliases = new CharMemoryHashSet();
+            _fieldsByAlias = new Dictionary<ReadOnlyMemory<char>, List<IFieldDocumentPart>>(new MemoryOfCharComparer());
             this.AssignGraphType(parent.GraphType);
         }
 
@@ -44,28 +45,38 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         protected override void OnChildPartAdded(IDocumentPart childPart)
         {
             if (childPart is IFieldDocumentPart fds)
-                _knownFieldAliases.Add(fds.Alias);
+            {
+                if (!_fieldsByAlias.ContainsKey(fds.Alias))
+                    _fieldsByAlias.Add(fds.Alias, new List<IFieldDocumentPart>());
+
+                _fieldsByAlias[fds.Alias].Add(fds);
+            }
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartRemoved(IDocumentPart childPart)
+        public IReadOnlyList<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
         {
-            if (childPart is IFieldDocumentPart fds)
-                _knownFieldAliases.Remove(fds.Alias);
-        }
+            var list = new List<IFieldDocumentPart>();
+            if (_fieldsByAlias.ContainsKey(alias))
+                list.AddRange(_fieldsByAlias[alias]);
 
-        /// <inheritdoc />
-        public virtual bool ContainsAlias(in ReadOnlyMemory<char> alias)
-        {
-            return _knownFieldAliases.Contains(alias);
-        }
+            foreach (var inlineFrag in this.Children[DocumentPartType.InlineFragment]
+                                           .OfType<IInlineFragmentDocumentPart>())
+            {
+                var items = inlineFrag.FieldSelectionSet?.FindFieldsOfAlias(alias);
+                if (items != null)
+                    list.AddRange(items);
+            }
 
-        /// <inheritdoc />
-        public IEnumerable<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
-        {
-            return this.Children[DocumentPartType.Field]
-                .OfType<IFieldDocumentPart>()
-                .Where(x => x.Alias.Span.SequenceEqual(alias.Span));
+            foreach (var fragSpread in this.Children[DocumentPartType.FragmentSpread]
+                                           .OfType<IFragmentSpreadDocumentPart>())
+            {
+                var items = fragSpread.Fragment?.FieldSelectionSet?.FindFieldsOfAlias(alias);
+                if (items != null)
+                    list.AddRange(items);
+            }
+
+            return list;
         }
 
         /// <inheritdoc />

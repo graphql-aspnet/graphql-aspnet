@@ -22,6 +22,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Gets the values supplied on this list in the source document.
         /// </summary>
         /// <value>The list items defined in the document.</value>
-        public IEnumerable<ISuppliedValueDocumentPart> ListItems { get; }
+        public IReadOnlyList<ISuppliedValueDocumentPart> ListItems { get; }
     }
 }

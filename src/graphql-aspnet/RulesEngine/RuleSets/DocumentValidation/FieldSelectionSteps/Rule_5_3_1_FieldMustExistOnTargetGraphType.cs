@@ -11,17 +11,18 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
-    /// Ensures that for the active <see cref="FieldNode"/> that the currently scoped <see cref="IGraphType"/>
-    /// the field exists on said <see cref="IGraphType"/>.
+    /// Ensures that for the active <see cref="IFieldDocumentPart"/> that it exists on the currently
+    /// scoped graph type.
     /// </summary>
-    internal class Rule_5_3_1_FieldMustExistOnTargetGraphType : DocumentConstructionRuleStep<FieldNode>
+    internal class Rule_5_3_1_FieldMustExistOnTargetGraphType
+        : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
         /// <summary>
         /// Creates a common message to indicate and invalid or missing field.
@@ -34,78 +35,101 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
             return $"The graph type '{graphType}' does not contain a field named '{fieldName}'.";
         }
 
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
-        public override bool ShouldExecute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) && ((FieldNode)context.ActiveNode)
-                       .FieldName
+            return base.ShouldExecute(context) && ((IFieldDocumentPart)context.ActivePart)
+                       .Name
                        .Span
                        .SequenceNotEqual(Constants.ReservedNames.TYPENAME_FIELD.AsSpan());
         }
 
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode" /> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
-        public override bool Execute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool Execute(DocumentValidationContext context)
         {
-            var node = (FieldNode)context.ActiveNode;
+            var docPart = (IFieldDocumentPart)context.ActivePart;
+            var selectionSetGraphType = docPart.Parent.GraphType;
+            var fieldContainer = selectionSetGraphType as IGraphFieldContainer;
 
-            var searchContainer = context.GraphType as IGraphFieldContainer;
-
-            if (searchContainer == null)
+            // validate that the field is part of a selection that that belongs to a graph
+            // type that has fields
+            //
+            // Design Note: Rule 5.3.1 allows for unions because of the '__typename' field/
+            //              However, this rule instance does not validate against the speical '__typename '
+            //              field so there is never a case where this rule encounters a field declared against
+            //              a union is valid
+            if (selectionSetGraphType == null
+                || (selectionSetGraphType.Kind != TypeKind.OBJECT
+                    && selectionSetGraphType.Kind != TypeKind.INTERFACE))
             {
-                if (context.GraphType.Kind == TypeKind.UNION)
+                if (selectionSetGraphType != null && selectionSetGraphType.Kind == TypeKind.UNION)
                 {
                     // special error message for union types
                     this.ValidationError(
-                    context,
-                    $"The field '{node.FieldName.ToString()}' cannot be directly selected from type '{context.GraphType.Name}'. " +
-                    $"Fields cannot be directly selected from {nameof(TypeKind.UNION)} type selection sets.");
+                        context,
+                        $"The field '{docPart.Name.ToString()}' cannot be directly selected from type '{selectionSetGraphType.Name}'. " +
+                        $"Fields cannot be directly selected from {nameof(TypeKind.UNION)} type selection sets.");
                 }
-                else
+                else if (selectionSetGraphType != null)
                 {
                     this.ValidationError(
                         context,
-                        InvalidFieldMessage(context.GraphType.Name, node.FieldName.ToString()));
+                        InvalidFieldMessage(selectionSetGraphType.Name, docPart.Name.ToString()));
+                }
+                else
+                {
+                    // should be impossible given field selection set validation
+                    this.ValidationError(
+                        context,
+                        $"The document field '{docPart.Name.ToString()}' cannot be validated. Its parent selection set " +
+                        $"does not declare a graph type to validate against.");
                 }
 
                 return false;
             }
 
-            // if a fragment spread is in context that is performing a restriction on this field
-            // use that graph type restriction to check for a valid field
-            // otherwise revert back to the master selection set where the field is contained
-            if (!searchContainer.Fields.ContainsKey(node.FieldName.ToString()))
+            // ensure a field reference (and its resultant graph type) was properly mapped
+            // during construction and that the field belongs to the graph type in scope.
+            if (docPart.GraphType == null || docPart.Field == null || !fieldContainer.Fields.ContainsKey(docPart.Field.Name))
             {
                 this.ValidationError(
                     context,
-                    InvalidFieldMessage(searchContainer.Name, node.FieldName.ToString()));
+                    InvalidFieldMessage(selectionSetGraphType.Name, docPart.Name.ToString()));
 
                 return false;
+            }
+            else if (docPart.Field.Name != docPart.Name.ToString())
+            {
+                // ensure that the field reference assigned to fulfill the request matches the same name
+                // as that requested in the query document. Its possible for a directive execution to
+                // change out the field reference to a different field on the same parent type. This is not allowed.
+                this.ValidationError(
+                        context,
+                        $"Invalid field reference. The field name requested '{docPart.Name.ToString()}' does not match the field " +
+                        $"assigned to fulfill the request '{docPart.Field.Name}'");
+            }
+            else
+            {
+                // ensure that the field reference is to the field on the graph type in scope
+                // and not a field with the same name on a different graph type
+                // it is possible, though unlikely, that a directive execution could swap out the field reference
+                var field = fieldContainer.Fields[docPart.Field.Name];
+                if(docPart.Field != field)
+                {
+                    this.ValidationError(
+                        context,
+                        $"Invalid field reference. The document field '{docPart.Name.ToString()}' references a field that belongs " +
+                        $"to '{docPart.Field.Parent.Name}'. It should reference the field belonging to '{selectionSetGraphType.Name}' ");
+                }
             }
 
             return true;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.3.1";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Field-Selections-on-Objects-Interfaces-and-Unions-Types";
     }
 }

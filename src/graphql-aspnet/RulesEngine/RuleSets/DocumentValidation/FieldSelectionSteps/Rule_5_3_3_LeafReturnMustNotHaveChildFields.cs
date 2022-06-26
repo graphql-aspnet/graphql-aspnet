@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// <para>(5.3.3)A rule that dictates for any given graph type returned by a field if that graph type
@@ -23,31 +24,25 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     /// <para>Reference: https://graphql.github.io/graphql-spec/June2018/#sec-Leaf-Field-Selections .</para>
     /// </summary>
     internal class Rule_5_3_3_LeafReturnMustNotHaveChildFields
-        : DocumentConstructionRuleStep<IFieldSelectionDocumentPart>
+        : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
-        public override bool ShouldExecute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) && ((FieldNode)context.ActiveNode)
-                       .FieldName
+            return base.ShouldExecute(context) && ((IFieldDocumentPart)context.ActivePart)
+                       .Name
                        .Span
                        .SequenceNotEqual(Constants.ReservedNames.TYPENAME_FIELD.AsSpan());
         }
 
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode" /> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
-        public override bool Execute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool Execute(DocumentValidationContext context)
         {
-            var field = context.FindContextItem<IFieldSelectionDocumentPart>();
-            if (field.GraphType.Kind.IsLeafKind() && context.ActiveNode.Children.Any<FieldCollectionNode>())
+            var field = (IFieldDocumentPart)context.ActivePart;
+            var selectionSet = field.FieldSelectionSet;
+            var hasChildFields = selectionSet != null && selectionSet.Count > 0;
+
+            if (field.GraphType.Kind.IsLeafKind() && hasChildFields)
             {
                 this.ValidationError(
                     context,
@@ -60,18 +55,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
             return true;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.3.3";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Leaf-Field-Selections";
     }
 }

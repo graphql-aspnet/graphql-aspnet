@@ -22,6 +22,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     [DebuggerDisplay("ComplexInputValue (Children = {Children.Count})")]
     internal class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
     {
+        private Dictionary<string, IInputArgumentDocumentPart> _arguments;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue" /> class.
         /// </summary>
@@ -31,16 +33,55 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentComplexSuppliedValue(IDocumentPart parentPart, ComplexValueNode node, string key = null)
             : base(parentPart, node, key)
         {
-        }
-
-        public bool TryGetField(string fieldName, out IResolvableValueItem foundField)
-        {
-            throw new System.NotImplementedException();
+            _arguments = new Dictionary<string, IInputArgumentDocumentPart>();
         }
 
         /// <inheritdoc />
-        public IEnumerable<IResolvableValueItem> Fields => this
-                .Children[DocumentPartType.SuppliedValue]
-                .OfType<ISuppliedValueDocumentPart>();
+        public bool TryGetField(string fieldName, out IResolvableValueItem foundField)
+        {
+            foundField = default;
+            if(this.TryGetArgument(fieldName, out var arg))
+            {
+                foundField = arg.Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc />
+        public bool TryGetArgument(string fieldName, out IInputArgumentDocumentPart foundArgument)
+        {
+            return _arguments.TryGetValue(fieldName, out foundArgument);
+        }
+
+        /// <inheritdoc />
+        public override bool IsEqualTo(ISuppliedValueDocumentPart value)
+        {
+            if (value == null || !(value is IComplexSuppliedValueDocumentPart))
+                return false;
+
+            var otherComplexValue = value as IComplexSuppliedValueDocumentPart;
+            foreach (var argument in _arguments.Values)
+            {
+                if (!otherComplexValue.TryGetArgument(argument.Name, out var otherArg))
+                    return false;
+
+                if (!argument.Value.IsEqualTo(otherArg.Value))
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public bool ContainsArgument(string argumentName)
+        {
+            if (argumentName == null)
+                return false;
+
+            return _arguments.ContainsKey(argumentName);
+        }
+
     }
 }

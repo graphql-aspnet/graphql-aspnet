@@ -65,7 +65,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
             var document = server.CreateDocument(queryText);
 
             // execute the document validation
-            var validationContext = new DocumentValidationContext(document);
+            var validationContext = new DocumentValidationContext(server.Schema, document);
             var processor = new DocumentValidationRuleProcessor();
             processor.Execute(validationContext);
 

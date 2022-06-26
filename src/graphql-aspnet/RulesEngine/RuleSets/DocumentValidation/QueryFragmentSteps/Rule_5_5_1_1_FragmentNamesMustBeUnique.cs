@@ -9,30 +9,33 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFragmentNodeSteps
 {
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// <para>(5.5.1.1) Validate that each named fragment has a unique name within the document scope.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/June2018/#sec-Fragment-Name-Uniqueness .</para>
+    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Fragment-Name-Uniqueness .</para>
     /// </summary>
-    internal class Rule_5_5_1_1_FragmentNamesMustBeUnique : DocumentConstructionRuleStep<NamedFragmentNode>
+    internal class Rule_5_5_1_1_FragmentNamesMustBeUnique
+        : DocumentPartValidationRuleStep<INamedFragmentDocumentPart>
     {
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode"/> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
-        public override bool Execute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool Execute(DocumentValidationContext context)
         {
-            var namedFragment = (NamedFragmentNode)context.ActiveNode;
-            if (context.DocumentContext.Fragments.ContainsKey(namedFragment.FragmentName.ToString()))
+            var namedFragment = (INamedFragmentDocumentPart)context.ActivePart;
+
+            var key = $"5.5.1.1|namedFragmentUniqueness|name:{namedFragment.Name}";
+            if (context.ChecksComplete.Contains(key))
+                return true;
+
+            context.ChecksComplete.Add(key);
+
+            if (!context.Document.NamedFragments.IsUnique(namedFragment.Name))
             {
                 this.ValidationError(
                     context,
-                    $"Duplicate Fragment Name. The name '{namedFragment.FragmentName.ToString()}' must be unique in this document. Ensure that each " +
+                    $"Duplicate Fragment Name. The fragment name '{namedFragment.Name.ToString()}' must be unique in this document. Ensure that each " +
                     "fragment in the document is unique (case-sensitive).");
 
                 return false;
@@ -41,18 +44,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFrag
             return true;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z").
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.5.1.1";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Fragment-Name-Uniqueness";
     }
 }

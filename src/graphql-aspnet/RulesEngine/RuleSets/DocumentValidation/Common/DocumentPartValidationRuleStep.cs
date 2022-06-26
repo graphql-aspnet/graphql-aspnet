@@ -19,26 +19,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
     /// </summary>
     internal abstract class DocumentPartValidationRuleStep : DocumentPartValidationStep, IValidationRule
     {
-        /// <summary>
-        /// Registers a validation error with the local message collection as a critical error. The validation
-        /// message will automatically be appended with the appropriate message extensions to reference the error being validated.
-        /// </summary>
-        /// <param name="context">The validation context in scope.</param>
-        /// <param name="message">The error message.</param>
-        protected void ValidationError(DocumentValidationContext context, string message)
-        {
-            this.ValidationError(context, context.ActivePart.Node, message);
-        }
-
-        /// <summary>
-        /// Registers a validation error with the local message collection as a critical error. The validation
-        /// message will automatically be appended with the appropriate message extensions to reference the error being validated.
-        /// </summary>
-        /// <param name="context">The validation context in scope.</param>
-        /// <param name="node">A custom node to use to indicate the area in the source document
-        /// the error occured.</param>
-        /// <param name="message">The error message.</param>
-        protected void ValidationError(DocumentValidationContext context, SyntaxNode node, string message)
+        /// <inheritdoc />
+        protected override void ValidationError(DocumentValidationContext context, SyntaxNode node, string message)
         {
             var graphMessage = GraphExecutionMessage.FromValidationRule(
              this,
@@ -48,16 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
             context.Messages.Add(graphMessage);
         }
 
-        /// <summary>
-        /// Gets the error code to associate with the broken rule.
-        /// </summary>
-        /// <value>The error code.</value>
-        public virtual string ErrorCode => Constants.ErrorCodes.INVALID_DOCUMENT;
-
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public abstract string RuleNumber { get; }
 
         /// <summary>
@@ -68,10 +41,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
         /// <value>The rule anchor tag.</value>
         protected abstract string RuleAnchorTag { get; }
 
-        /// <summary>
-        /// Gets a url pointing to the rule definition in the graphql specification, if any.
-        /// </summary>
-        /// <value>The rule URL.</value>
+        /// <inheritdoc />
         public virtual string ReferenceUrl => ReferenceRule.CreateFromAnchorTag(this.RuleAnchorTag);
     }
 }

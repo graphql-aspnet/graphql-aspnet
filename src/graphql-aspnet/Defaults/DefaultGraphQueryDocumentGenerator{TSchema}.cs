@@ -90,11 +90,20 @@ namespace GraphQL.AspNet.Defaults
             {
                 foreach (var spread in constructionContext.Spreads)
                 {
-                    if (spread.Fragment == null)
+                    if (spread.Fragment != null)
                     {
-                        var targetFragment = document.NamedFragments.SingleOrDefault(x => x.Name == spread.FragmentName.ToString());
-                        spread.AssignNamedFragment(targetFragment);
-                        targetFragment?.MarkAsReferenced();
+                        spread.Fragment.MarkAsReferenced();
+                    }
+                    else
+                    {
+                        // mark all named fragments of this name as referenced
+                        document.NamedFragments.MarkAsReferenced(spread.FragmentName.ToString());
+
+                        // assign the official fragment reference to the spread
+                        if (document.NamedFragments.TryGetValue(spread.FragmentName.ToString(), out var foundFragment))
+                        {
+                            spread.AssignNamedFragment(foundFragment);
+                        }
                     }
                 }
             }

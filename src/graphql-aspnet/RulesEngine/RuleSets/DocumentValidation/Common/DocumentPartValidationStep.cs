@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
 {
+    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.ValidationRules.Interfaces;
 
@@ -18,32 +19,48 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
     internal abstract class DocumentPartValidationStep : IRuleStep<DocumentValidationContext>
     {
         /// <summary>
-        /// Determines where this context is in a state such that it should continue processing its children. Returning
-        /// false will cease processing child nodes under the active node of this context. This can be useful
-        /// if/when a situation in a parent disqualifies all other nodes in the tree. This step is always executed
-        /// even if the primary execution is skipped.
+        /// Registers a validation error with the local message collection as a critical error. The validation
+        /// message will automatically be appended with the appropriate message extensions to reference the error being validated.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns><c>true</c> if child node rulesets should be executed, <c>false</c> otherwise.</returns>
+        /// <param name="context">The validation context in scope.</param>
+        /// <param name="message">The error message.</param>
+        protected virtual void ValidationError(DocumentValidationContext context, string message)
+        {
+            this.ValidationError(context, context.ActivePart.Node, message);
+        }
+
+        /// <summary>
+        /// Registers a validation error with the local message collection as a critical error. The validation
+        /// message will automatically be appended with the appropriate message extensions to reference the error being validated.
+        /// </summary>
+        /// <param name="context">The validation context in scope.</param>
+        /// <param name="node">A custom node to use to indicate the area in the source document
+        /// the error occured.</param>
+        /// <param name="message">The error message.</param>
+        protected virtual void ValidationError(DocumentValidationContext context, SyntaxNode node, string message)
+        {
+            context.Messages.Critical(
+                message,
+                this.ErrorCode,
+                node.Location.AsOrigin());
+        }
+
+        /// <inheritdoc />
         public virtual bool ShouldAllowChildContextsToExecute(DocumentValidationContext context)
         {
             return true;
         }
 
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the document part if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified document part; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public abstract bool ShouldExecute(DocumentValidationContext context);
 
-        /// <summary>
-        /// Validates the completed document context to ensure it is "correct" against the specification before generating
-        /// the final document.
-        /// </summary>
-        /// <param name="context">The context containing the parsed sections of a query document..</param>
-        /// <returns><c>true</c> if the rule passes, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public abstract bool Execute(DocumentValidationContext context);
+
+        /// <summary>
+        /// Gets the error code to associate with any validation messages recorded.
+        /// </summary>
+        /// <value>The error code.</value>
+        public virtual string ErrorCode => Constants.ErrorCodes.INVALID_DOCUMENT;
     }
 }

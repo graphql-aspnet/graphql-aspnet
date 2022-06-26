@@ -47,10 +47,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
             {
                 if (context.ActiveOperation != null)
                 {
+                    var varName = varRef.VariableName.ToString();
                     var variables = context.ActiveOperation.GatherVariables();
-                    if (variables.ContainsKey(varRef.VariableName))
+                    if (variables.ContainsKey(varName))
                     {
-                        var variable = variables[varRef.VariableName];
+                        var variable = variables[varName];
                         varRef.AssignVariable(variable);
                         variable.MarkAsReferenced();
                     }

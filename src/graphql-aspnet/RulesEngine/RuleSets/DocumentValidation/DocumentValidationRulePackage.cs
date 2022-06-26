@@ -17,9 +17,18 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
     using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSetSteps;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
     using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFragmentNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragmentSteps;
 
     //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
     //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
@@ -79,6 +88,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
 
             return _stepCollection[type];
         }
+
         private void BuildDocumentSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
@@ -91,6 +101,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildFieldSelectionSetSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new FieldSelectionSet_DocumentPartCheck());
+
             _stepCollection.Add(DocumentPartType.FieldSelectionSet, steps);
         }
 
@@ -121,9 +133,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildNamedFragmentSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
-
-            // 1. All named fragments must be used at least once
-            //steps.Add(new Rule_5_5_1_4_AllDeclaredFragmentsMustBeUsed());
+            steps.Add(new Rule_5_5_1_1_FragmentNamesMustBeUnique());
+            steps.Add(new Rule_5_5_1_2_NamedFragmentGraphTypeMustExistInTheSchema());
+            steps.Add(new Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind());
+            steps.Add(new Rule_5_5_1_4_AllDeclaredFragmentsMustBeUsed());
 
             _stepCollection.Add(DocumentPartType.NamedFragment, steps);
         }
@@ -131,7 +144,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildInlineFragmentSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
-
+            steps.Add(new Rule_5_5_1_2_InlineFragmentGraphTypeMustExistInTheSchema());
+            steps.Add(new Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind());
 
             _stepCollection.Add(DocumentPartType.InlineFragment, steps);
         }
@@ -139,9 +153,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildFieldSelectionSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new FieldSelection_DocumentPartCheck());
+            steps.Add(new Rule_5_3_1_FieldMustExistOnTargetGraphType());
+            steps.Add(new Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs());
+            steps.Add(new Rule_5_3_3_LeafReturnMustNotHaveChildFields());
 
             // 1. All required, schema defined input arguments are supplied in the document
-            // steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
+            steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
 
             _stepCollection.Add(DocumentPartType.Field, steps);
         }
@@ -149,6 +167,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildQueryDirectiveSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
 
             //steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
             //steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
@@ -156,7 +175,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
 
             // must evaluate after 5.7.1 which checks for the existing of the directive
             // in the scheam
-            //steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
+
 
             _stepCollection.Add(DocumentPartType.Directive, steps);
         }
@@ -164,6 +183,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildQueryInputArgumentSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new Rule_5_4_1_ArgumentMustBeDefinedOnTheField());
+            steps.Add(new Rule_5_4_2_ArgumentMustBeUniquePerInvocation());
 
             //steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
             //steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());

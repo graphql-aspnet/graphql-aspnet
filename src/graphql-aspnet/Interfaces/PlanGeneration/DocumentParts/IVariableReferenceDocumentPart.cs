@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
 
     /// <summary>
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Gets the name of the variable this instance references.
         /// </summary>
         /// <value>The name of the variable.</value>
-        string VariableName { get; }
+        ReadOnlyMemory<char> VariableName { get; }
 
         /// <summary>
         /// Gets the declared variable this reference references.

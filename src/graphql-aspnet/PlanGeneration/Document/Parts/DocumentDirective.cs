@@ -10,7 +10,9 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -20,6 +22,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Directive {DirectiveName}")]
     internal class DocumentDirective : DocumentPartBase, IDirectiveDocumentPart
     {
+        private DocumentInputArgumentCollection _arguments;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentDirective" /> class.
         /// </summary>
@@ -30,6 +34,29 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             this.Location = parentPart.Node.AsDirectiveLocation();
             this.DirectiveName = node.DirectiveName.ToString();
+
+            _arguments = new DocumentInputArgumentCollection(this);
+        }
+
+        protected override void OnChildPartAdded(IDocumentPart childPart)
+        {
+            base.OnChildPartAdded(childPart);
+
+            if (childPart is IInputArgumentDocumentPart iiadp)
+                _arguments.AddArgumment(iiadp);
+        }
+
+        /// <inheritdoc />
+        protected override SourcePath CreatePath(SourcePath path)
+        {
+            var thisPath = path.Clone();
+            thisPath.AddFieldName(TokenTypeNames.AT_SYMBOL + this.DirectiveName.ToString());
+            return thisPath;
+        }
+
+        public IInputArgumentCollectionDocumentPart GatherArguments()
+        {
+            return _arguments;
         }
 
         /// <inheritdoc />
@@ -37,6 +64,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public string DirectiveName { get; }
+
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Directive;

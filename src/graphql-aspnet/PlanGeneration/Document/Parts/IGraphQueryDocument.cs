@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the set of named fragments defined on this query document.
         /// </summary>
         /// <value>The named fragments.</value>
-        IReadOnlyList<INamedFragmentDocumentPart> NamedFragments { get; }
+        INamedFragmentCollectionDocumentPart NamedFragments { get; }
 
         /// <summary>
         /// Gets or sets the maximum depth of any field of this document.

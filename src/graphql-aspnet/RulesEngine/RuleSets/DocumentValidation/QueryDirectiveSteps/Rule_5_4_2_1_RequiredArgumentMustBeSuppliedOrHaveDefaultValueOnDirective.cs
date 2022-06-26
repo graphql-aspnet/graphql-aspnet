@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
@@ -25,27 +26,33 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var queryDirective = (IDirectiveDocumentPart)context.ActivePart;
+            var docPart = (IDirectiveDocumentPart)context.ActivePart;
             var directiveIsValid = true;
 
-            // inspect all declared arguments from the schema
-            foreach (var argument in queryDirective.Directive.Arguments)
+            var directive = docPart.GraphType as IDirective;
+            if (directive != null)
             {
-                // any argument flaged as being a source input (such as for type extensions)
-                // or internal (such as subscription event sources)
-                // and can be skipped when validating query document
-                if (argument.ArgumentModifiers.IsSourceParameter())
-                    continue;
-                if (argument.ArgumentModifiers.IsInternalParameter())
-                    continue;
+                var suppliedArgs = docPart.GatherArguments();
 
-                if (argument.DefaultValue == null && !queryDirective.Arguments.ContainsKey(argument.Name.AsMemory()))
+                // inspect all declared arguments from the schema
+                foreach (var argument in directive.Arguments)
                 {
-                    this.ValidationError(
-                        context,
-                        queryDirective.Node,
-                        $"Missing Input Argument. The directive '{queryDirective.Name}' requires an input argument named '{argument.Name}'");
-                    directiveIsValid = false;
+                    // any argument flaged as being a source input (such as for type extensions)
+                    // or internal (such as subscription event sources)
+                    // and can be skipped when validating query document
+                    if (argument.ArgumentModifiers.IsSourceParameter())
+                        continue;
+                    if (argument.ArgumentModifiers.IsInternalParameter())
+                        continue;
+
+                    if (argument.DefaultValue == null && !suppliedArgs.ContainsKey(argument.Name.AsMemory()))
+                    {
+                        this.ValidationError(
+                            context,
+                            docPart.Node,
+                            $"Missing Input Argument. The directive '{docPart.DirectiveName}' requires an input argument named '{argument.Name}'");
+                        directiveIsValid = false;
+                    }
                 }
             }
 

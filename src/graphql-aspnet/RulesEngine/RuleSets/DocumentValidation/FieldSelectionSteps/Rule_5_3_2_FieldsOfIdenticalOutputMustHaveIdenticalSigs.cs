@@ -20,66 +20,64 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
-    /// Any fields within the current selection set must have identical signatures to be valid.
+    /// Any fields with the same exposed name, within the current selection set must
+    /// have identical signatures to be valid.
     /// </summary>
-    internal class Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs : DocumentConstructionRuleStep<FieldNode>
+    internal class Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs
+        : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
-        public override bool ShouldExecute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) && ((FieldNode)context.ActiveNode)
-                       .FieldName
+            return base.ShouldExecute(context) && ((IFieldDocumentPart)context.ActivePart)
+                       .Name
                        .Span
                        .SequenceNotEqual(Constants.ReservedNames.TYPENAME_FIELD.AsSpan());
         }
 
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode" /> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
-        public override bool Execute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool Execute(DocumentValidationContext context)
         {
-            var node = (FieldNode)context.ActiveNode;
-            var newField = context.FindContextItem<IFieldSelectionDocumentPart>();
+            var docPart = (IFieldDocumentPart)context.ActivePart;
+            var selectionSet = context.ParentPart as IFieldSelectionSetDocumentPart;
 
-            // do a fast lookup before enumerating the field selection to determine
-            // if there would even be a name collision.
-            if (!context.SelectionSet.ContainsAlias(node.FieldAlias))
+            // this rule will execute against every field in a selection
+            // we don't need to validate it more than once if there are mergable fields found
+            var key = $"Rule_5_3_2|{selectionSet.Path.DotString()}|alias:{docPart.Alias.ToString()}";
+            if (context.ChecksComplete.Contains(key))
+                return true;
+
+            context.ChecksComplete.Add(key);
+
+            var fields = selectionSet.FindFieldsOfAlias(docPart.Alias);
+            if (fields.Count == 1)
                 return true;
 
             var isValid = true;
-            var existingFields = context.SelectionSet.FindFieldsOfAlias(node.FieldAlias);
-            foreach (var existingField in existingFields)
+            for (var i = 0; i <= fields.Count - 2; i++)
             {
                 // we may iterate through the field we are adding, it can exist with itself
                 // just skip it
-                if (existingField == newField)
-                    continue;
+                var leftField = fields[i];
+                var rightField = fields[i + 1];
 
                 // fields with the same name in a given context
                 // but targeting non-intersecting types can safely co-exist
                 // in the same selection set.
-                if (this.CanCoExist(context.DocumentContext.Schema, context.SelectionSet, existingField, newField))
+                if (this.CanCoExist(context.Schema, leftField, rightField))
                     continue;
 
                 // fields that could cause a name collision for a type
                 // must be mergable (i.e. have the same shape/signature).
-                if (this.AreSameShape(existingField, newField))
+                if (this.AreSameShape(leftField, rightField))
                     continue;
 
                 this.ValidationError(
                     context,
-                    $"The selection set already contains a field with a name or alias of '{newField.Node.FieldAlias.ToString()}'. " +
+                    $"The selection set already contains a field with a name or alias of '{docPart.Alias}'. " +
                     "An attempt was made to add another field with the same name or alias to the selection set but with a different " +
                     "return graph type or input arguments. Fields with the same output name must have identicial signatures " +
                     "within a single selection set.");
@@ -94,67 +92,47 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         /// Inspects both field selections to determine if they have identicial signatures (referencing the same field in hte shema
         /// with the same input arguments).
         /// </summary>
-        /// <param name="existingField">The existing field already commited to the active selection set.</param>
-        /// <param name="newField">The new field having the same return name (field alias) as the already commited field. </param>
+        /// <param name="leftField">The existing field already commited to the active selection set.</param>
+        /// <param name="rightField">The new field having the same return name (field alias) as the already commited field. </param>
         /// <returns><c>true</c> if the field shape is identical; otherwise <c>false</c>.</returns>
-        private bool AreSameShape(IFieldSelectionDocumentPart existingField, IFieldSelectionDocumentPart newField)
+        private bool AreSameShape(IFieldDocumentPart leftField, IFieldDocumentPart rightField)
         {
             // one field could be referencing through an interface
             // and another through a concrete type so we cant check the IGraphField references.
             // Instead check to ensure the method invocation signatures are the same (field name, input args and return type).
-            if (!MemoryOfCharComparer.Instance.Equals(newField.Name, existingField.Name))
+            if (!MemoryOfCharComparer.Instance.Equals(rightField.Name, leftField.Name))
                 return false;
 
-            if (existingField.GraphType != newField.GraphType)
+            if (leftField.GraphType != rightField.GraphType)
                 return false;
 
-            // perform a node to node check for the arguments. newField might
-            // not be fully populated at this level but in context, we have enough
-            // information to successfully check equality.
-            var existingArgs = existingField.Node?
-                .Children?
-                .FirstOrDefault<InputItemCollectionNode>()?
-                .Children?
-                .OfType<InputItemNode>()
-                .ToList();
-
-            var newArgs = newField.Node?
-                .Children?
-                .FirstOrDefault<InputItemCollectionNode>()?
-                .Children?
-                .OfType<InputItemNode>()
-                .ToDictionary(x => x.InputName, x => x, MemoryOfCharComparer.Instance);
+            // perform a check for the arguments.
+            var leftArgs = leftField.GatherArguments();
+            var rightArgs = rightField.GatherArguments();
 
             // when no args are on the existing field
             // no args must be on the new field (either its not defined or none were defined; an empty set).
-            if (existingArgs == null)
-                return newArgs == null || newArgs.Count == 0;
+            if (leftArgs == null)
+                return rightArgs == null || rightArgs.Count == 0;
 
             // when no args are on the new field ensure the existing field
             // also has no args defined (empty set).
-            if (newArgs == null)
-                return !existingArgs.Any();
+            if (rightArgs == null)
+                return leftArgs.Count == 0;
 
             // both fields define a set of arguments, ensure they are equal
             // before doing an item by item check
-            if (existingArgs.Count != newArgs.Count)
+            if (leftArgs.Count != rightArgs.Count)
                 return false;
 
-            foreach (var existingArg in existingArgs)
+            foreach (var leftArg in leftArgs.Values)
             {
                 // ensure input arg names exist on the new field
-                var newArg = newArgs.ContainsKey(existingArg.InputName) ? newArgs[existingArg.InputName] : null;
-                if (newArg == null)
+                var rightArg = rightArgs.ContainsKey(leftArg.Name) ? rightArgs[leftArg.Name] : null;
+                if (rightArg == null)
                     return false;
 
-                // grab the raw values of the existing and new input args
-                var existingValue = existingArg.Children.FirstOrDefault<InputValueNode>()?.Value ?? ReadOnlyMemory<char>.Empty;
-                var newValue = newArg.Children.FirstOrDefault<InputValueNode>()?.Value ?? ReadOnlyMemory<char>.Empty;
-
-                // we can get away with checking the raw input text provided on the document
-                // don't have to fully check parsed values to determine equaility in the sense that this
-                // rule requires.
-                if (!MemoryOfCharComparer.Instance.Equals(existingValue, newValue))
+                if (!leftArg.Value.IsEqualTo(rightArg.Value))
                     return false;
             }
 
@@ -169,39 +147,41 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
         /// otherwise returns false if the fields cannot co exist and must be merged.
         /// </summary>
         /// <param name="targetSchema">The schema to which this rule is validating against.</param>
-        /// <param name="selectionSet">The set of fields to which the new field needs to be added and the existing field is already
-        /// a part of.</param>
-        /// <param name="existingField">The field that has already been added to the field selection set.</param>
-        /// <param name="newField">The new field that is being requested to be added to the field selection set.</param>
+        /// <param name="leftField">One of two fields being checked.</param>
+        /// <param name="rightField">The other field being compared to <paramref name="leftField" />.</param>
         /// <returns><c>true</c> if the fields can coexist in the same field selection set; otherwise, <c>false</c>.</returns>
-        private bool CanCoExist(ISchema targetSchema, IFieldSelectionSetDocumentPart selectionSet, IFieldSelectionDocumentPart existingField, IFieldSelectionDocumentPart newField)
+        private bool CanCoExist(ISchema targetSchema, IFieldDocumentPart leftField, IFieldDocumentPart rightField)
         {
-            var inContextGraphType = existingField.TargetGraphType ?? selectionSet.SourceGraphType;
-            var newFieldGraphType = newField.TargetGraphType ?? selectionSet.SourceGraphType;
+            IGraphType leftSourceGraphType = null;
+            IGraphType rightSourceGraphType = null;
+            if (leftField.Parent is IFieldSelectionSetDocumentPart fsdl)
+                leftSourceGraphType = fsdl.GraphType;
+            if (rightField.Parent is IFieldSelectionSetDocumentPart fsdr)
+                rightSourceGraphType = fsdr.GraphType;
 
             // neither should be null at this point
-            if (inContextGraphType == null)
+            if (leftSourceGraphType == null)
             {
                 throw new GraphExecutionException(
                     $"Attempting to resolve specification rule {this.RuleNumber} resulted in " +
                     "an invalid graph type comparrison. Unable to determine the target graph type of the " +
-                    $"existing field aliased as '{existingField.Alias.ToString()}'. Query was aborted.");
+                    $"existing field aliased as '{leftField.Alias.ToString()}'. Query was aborted.");
             }
 
-            if (newFieldGraphType == null)
+            if (rightSourceGraphType == null)
             {
                 throw new GraphExecutionException(
                     $"Attempting to resolve specification rule {this.RuleNumber} resulted in " +
                     "an invalid graph type comparrison. Unable to determine the target graph type of the " +
-                    $"new field aliased as '{existingField.Alias.ToString()}'. Query was aborted.");
+                    $"new field aliased as '{rightField.Alias.ToString()}'. Query was aborted.");
             }
 
-            // if the graph types of either field "could" overlap at some point
+            // if the source graph types of either field "could" overlap at some point
             // then the two fields cannot safely co-exist.
-            var inContextTypes = targetSchema.KnownTypes.ExpandAbstractType(inContextGraphType);
-            var newfieldTypes = targetSchema.KnownTypes.ExpandAbstractType(newFieldGraphType);
+            var leftTypes = targetSchema.KnownTypes.ExpandAbstractType(leftSourceGraphType);
+            var rightTypes = targetSchema.KnownTypes.ExpandAbstractType(rightSourceGraphType);
 
-            return !inContextTypes.Intersect(newfieldTypes).Any();
+            return !leftTypes.Intersect(rightTypes).Any();
         }
 
         /// <summary>

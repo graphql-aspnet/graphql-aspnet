@@ -19,6 +19,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
     internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>
     {
+        private DocumentInputArgumentCollection _arguments;
+
         protected DocumentFieldBase(
             IDocumentPart parentPart,
             FieldNode node,
@@ -29,6 +31,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
             this.AssignGraphType(fieldGraphType);
             this.Field = field;
+
+            _arguments = new DocumentInputArgumentCollection(this);
         }
 
         /// <inheritdoc />
@@ -55,7 +59,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         public virtual IInputArgumentCollectionDocumentPart GatherArguments()
         {
-            return new DocumentInputArgumentCollectionDocumentPart(this);
+            return _arguments;
         }
 
         public virtual IEnumerable<IDirectiveDocumentPart> GatherDirectives()
@@ -65,6 +69,22 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 .ToList();
         }
 
+        /// <inheritdoc />
+        protected override void OnChildPartAdded(IDocumentPart childPart)
+        {
+            base.OnChildPartAdded(childPart);
+
+            if (childPart is IFieldSelectionSetDocumentPart fss)
+                this.FieldSelectionSet = fss;
+
+            if (childPart is IInputArgumentDocumentPart iadp)
+                _arguments.AddArgumment(iadp);
+        }
+
+        /// <summary>
+        /// Gets a reference to the field, within the schema, this document part points to.
+        /// </summary>
+        /// <value>The schema field refrence.</value>
         public IGraphField Field { get; }
 
         /// <summary>
@@ -83,10 +103,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// Gets the set of fields to query off a resolved value from this field.
         /// </summary>
         /// <value>The field selection set.</value>
-        public IFieldSelectionSetDocumentPart FieldSelectionSet =>
-            this.Children[DocumentPartType.FieldSelectionSet]
-            .FirstOrDefault() as IFieldSelectionSetDocumentPart;
-
+        public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Field;

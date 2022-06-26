@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
+    using System;
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
@@ -31,7 +32,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentVariableReferenceValue(IDocumentPart parentPart, VariableValueNode node, string key = null)
             : base(parentPart, node, key)
         {
-            this.VariableName = node.Value.ToString();
+            this.VariableName = node.Value;
         }
 
         /// <inheritdoc />
@@ -42,10 +43,20 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        public string VariableName { get; }
+        public override bool IsEqualTo(ISuppliedValueDocumentPart value)
+        {
+            if (value == null || !(value is IVariableReferenceDocumentPart))
+                return false;
+
+            var otherVar = value as IVariableReferenceDocumentPart;
+            return this.VariableName.Span.SequenceEqual(otherVar.VariableName.Span);
+        }
 
         /// <inheritdoc />
-        public string PointsTo => this.VariableName;
+        public ReadOnlyMemory<char> VariableName { get; }
+
+        /// <inheritdoc />
+        public string PointsTo => this.VariableName.ToString();
 
         /// <inheritdoc />
         public IVariableDocumentPart Variable { get; private set; }

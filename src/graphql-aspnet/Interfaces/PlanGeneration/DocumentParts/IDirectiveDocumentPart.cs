@@ -17,6 +17,8 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// </summary>
     public interface IDirectiveDocumentPart : IDocumentPart
     {
+        IInputArgumentCollectionDocumentPart GatherArguments();
+
         /// <summary>
         /// Gets the location in the source document where this directive instance was declared.
         /// </summary>

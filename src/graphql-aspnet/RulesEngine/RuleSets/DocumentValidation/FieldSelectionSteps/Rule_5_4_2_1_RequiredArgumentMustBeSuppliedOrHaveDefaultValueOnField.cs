@@ -20,15 +20,16 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelect
     /// value in the target schema.
     /// </summary>
     internal class Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField
-        : DocumentPartValidationRuleStep<IFieldSelectionDocumentPart>
+        : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var fieldSelection = (IFieldSelectionDocumentPart)context.ActivePart;
+            var fieldSelection = (IFieldDocumentPart)context.ActivePart;
 
             // inspect all declared arguments from the schema
             var allArgsValid = true;
+            var suppliedArguments = fieldSelection.GatherArguments();
             foreach (var argument in fieldSelection.Field.Arguments)
             {
                 // any argument flaged as being a source input (such as for type extensions)
@@ -43,7 +44,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelect
                 // and it was not on the user query document this rule fails
                 if (argument.TypeExpression.IsRequired &&
                     argument.DefaultValue == null &&
-                    !fieldSelection.Arguments.ContainsKey(argument.Name.AsMemory()))
+                    !suppliedArguments.ContainsKey(argument.Name.AsMemory()))
                 {
                     this.ValidationError(
                         context,

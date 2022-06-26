@@ -30,6 +30,15 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
+        protected override void OnChildPartAdded(IDocumentPart childPart)
+        {
+            base.OnChildPartAdded(childPart);
+
+            if (childPart is IFieldSelectionSetDocumentPart fss)
+                this.FieldSelectionSet = fss;
+        }
+
+        /// <inheritdoc />
         public void MarkAsReferenced()
         {
             this.IsReferenced = true;
@@ -40,5 +49,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public string TargetGraphTypeName { get; protected set; }
+
+        /// <inheritdoc />
+        public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
     }
 }

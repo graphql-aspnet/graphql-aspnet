@@ -33,6 +33,20 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         IInputArgumentDocumentPart FindArgumentByName(ReadOnlyMemory<char> name);
 
         /// <summary>
+        /// Determines whether the specified argument name is considered unique within the given set.
+        /// </summary>
+        /// <param name="name">The name to check.</param>
+        /// <returns><c>true</c> if the specified name is unique; otherwise, <c>false</c>.</returns>
+        bool IsUnique(ReadOnlySpan<char> name);
+
+        /// <summary>
+        /// Determines whether the specified argument name is considered unique within the given set.
+        /// </summary>
+        /// <param name="name">The name to check.</param>
+        /// <returns><c>true</c> if the specified name is unique; otherwise, <c>false</c>.</returns>
+        bool IsUnique(string name);
+
+        /// <summary>
         /// Searches for an argument with the provided name.
         /// Returns the argument if its found otherwise null.
         /// </summary>

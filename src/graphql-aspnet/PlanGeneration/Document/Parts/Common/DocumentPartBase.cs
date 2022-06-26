@@ -39,15 +39,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
             // wire up local events
             this.Children.PartAdded += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart);
-            this.Children.PartRemoved += (o, e) => this.OnChildPartRemoved(e.TargetDocumentPart);
             this.Children.BeforePartAdded += (o, e) =>
             {
                 this.OnBeforeChildAdd(e.TargetDocumentPart);
                 e.AllowAdd = this.OnBeforeChildAdd(e.TargetDocumentPart);
             };
-
-            this.Parent.Children.Add(this);
-
         }
 
         /// <summary>
@@ -67,15 +63,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// </summary>
         /// <param name="childPart">The child part.</param>
         protected virtual void OnChildPartAdded(IDocumentPart childPart)
-        {
-        }
-
-        /// <summary>
-        /// When overriden in a child class, this method is called
-        /// when a child part is removed from this instance.
-        /// </summary>
-        /// <param name="childPart">The child part.</param>
-        protected virtual void OnChildPartRemoved(IDocumentPart childPart)
         {
         }
 

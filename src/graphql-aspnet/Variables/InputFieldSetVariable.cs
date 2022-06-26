@@ -67,16 +67,16 @@ namespace GraphQL.AspNet.Variables
         /// Gets the dictionary of fields defined for this field set variable.
         /// </summary>
         /// <value>The fields.</value>
-        IEnumerable<IResolvableValueItem> IResolvableFieldSet.Fields
-        {
-            get
-            {
-                throw new System.Exception();
-                foreach (var kvp in _fields)
-                {
-                     //yield return new KeyValuePair<string, IResolvableValueItem>(kvp.Key, kvp.Value);
-                }
-            }
-        }
+        //public IEnumerable<IResolvableValueItem> Fields
+        //{
+        //    get
+        //    {
+        //        throw new System.Exception();
+        //        foreach (var kvp in _fields)
+        //        {
+        //             //yield return new KeyValuePair<string, IResolvableValueItem>(kvp.Key, kvp.Value);
+        //        }
+        //    }
+        //}
     }
 }

@@ -17,5 +17,14 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// </summary>
     public interface IComplexSuppliedValueDocumentPart : ISuppliedValueDocumentPart, IResolvableFieldSet
     {
+        /// <summary>
+        /// Determines whether this complex value contains an input value named <paramref name="argumentName"/>.
+        /// </summary>
+        /// <param name="argumentName">Name of the argument to look for.</param>
+        /// <returns><c>true</c> if the specified argument name contains argument; otherwise, <c>false</c>.</returns>
+        bool ContainsArgument(string argumentName);
+
+
+        bool TryGetArgument(string fieldName, out IInputArgumentDocumentPart foundArgument);
     }
 }

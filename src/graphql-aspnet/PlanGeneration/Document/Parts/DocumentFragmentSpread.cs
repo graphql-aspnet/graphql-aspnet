@@ -48,6 +48,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             this.Fragment = targetFragment;
             this.AssignGraphType(targetFragment?.GraphType);
+            targetFragment.MarkAsReferenced();
         }
 
         /// <inheritdoc />
