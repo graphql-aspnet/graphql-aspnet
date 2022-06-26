@@ -6,41 +6,28 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A represention of a top level operation (mutation, query etc.) defined in a query document.
     /// </summary>
-    public interface IOperationDocumentPart : IFieldContainerDocumentPart, IDirectiveContainerDocumentPart, IDocumentPart
+    public interface IOperationDocumentPart : IDocumentPart
     {
         /// <summary>
-        /// Ensures that collection of variables exists on the operation as its defined in the query document.
-        /// Prior to calling this method this opertion will accept no variables.
+        /// Gathers the variables currently defined as children of this
+        /// operation and packages them into a collection.
         /// </summary>
-        /// <returns>QueryVariableCollection.</returns>
-        internal IVariableCollectionDocumentPart EnsureVariableCollection();
+        /// <returns>IVariableCollectionDocumentPart.</returns>
+        IVariableCollectionDocumentPart GatherVariables();
 
         /// <summary>
         /// Gets the type of the operation that was parsed.
         /// </summary>
         /// <value>The type of the operation.</value>
         GraphOperationType OperationType { get; }
-
-        /// <summary>
-        /// Gets the operation, in the target schema, that is referenced by this instance.
-        /// </summary>
-        /// <value>The operation.</value>
-        IObjectGraphType GraphType { get; }
-
-        /// <summary>
-        /// Gets a collection of variables as defined for this operation in the query document.
-        /// </summary>
-        /// <value>The variables.</value>
-        IVariableCollectionDocumentPart Variables { get; }
 
         /// <summary>
         /// Gets the name assigned to this query operation. Used to distinguish, and required for,
@@ -50,9 +37,16 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         string Name { get; }
 
         /// <summary>
-        /// Gets the node parsed from the syntax tree to warrant this operation reference.
+        /// Gets the name of the operation type as it was declared in the document
+        /// (e.g. query, mutation subscription etc.)
         /// </summary>
-        /// <value>The node.</value>
-        OperationTypeNode Node { get; }
+        /// <value>The name of the operation type.</value>
+        string OperationTypeName { get; }
+
+        /// <summary>
+        /// Gets the defined field selection set for this operation.
+        /// </summary>
+        /// <value>The field selection set.</value>
+        IFieldSelectionSetDocumentPart FieldSelectionSet { get; }
     }
 }

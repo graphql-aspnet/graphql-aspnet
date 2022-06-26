@@ -157,27 +157,28 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [SetCulture("en-US")]
         public void DefaultScalarValueResolvers(string expressionText, string inputText, object expectedOutput)
         {
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            Assert.Fail("Fix this Test");
+            //var generator = new InputResolverMethodGenerator(this.CreateSchema());
 
-            var text = inputText?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
-            var source = new SourceText(text);
-            var tokenStream = Lexer.Tokenize(source);
+            //var text = inputText?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+            //var source = new SourceText(text);
+            //var tokenStream = Lexer.Tokenize(source);
 
-            tokenStream.Prime();
-            InputValueNode node = null;
-            if (!tokenStream.EndOfStream)
-            {
-                var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
-                if (maker != null)
-                    node = maker.MakeNode(tokenStream) as InputValueNode;
-            }
+            //tokenStream.Prime();
+            //InputValueNode node = null;
+            //if (!tokenStream.EndOfStream)
+            //{
+            //    var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
+            //    if (maker != null)
+            //        node = maker.MakeNode(tokenStream) as InputValueNode;
+            //}
 
-            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(node);
-            var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
-            var resolver = generator.CreateResolver(typeExpression);
-            var result = resolver.Resolve(inputValue);
+            //var inputValue = DocumentSuppliedValueFactory.CreateInputValue(node);
+            //var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
+            //var resolver = generator.CreateResolver(typeExpression);
+            //var result = resolver.Resolve(inputValue);
 
-            Assert.AreEqual(expectedOutput, result);
+            //Assert.AreEqual(expectedOutput, result);
         }
 
         [TestCaseSource(nameof(_inputValueResolverTestCases_WithValidData))]
@@ -190,69 +191,72 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [TestCaseSource(nameof(_inputValueResolverTestCases_WithInvalidData))]
         public void DefaultScalarValueResolvers_InvalidInputValue(string expressionText, string inputText)
         {
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            Assert.Fail("Fix this Test");
+            //var generator = new InputResolverMethodGenerator(this.CreateSchema());
 
-            var text = inputText?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
-            var source = new SourceText(text);
-            var tokenStream = Lexer.Tokenize(source);
+            //var text = inputText?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+            //var source = new SourceText(text);
+            //var tokenStream = Lexer.Tokenize(source);
 
-            tokenStream.Prime();
-            InputValueNode node = null;
-            if (!tokenStream.EndOfStream)
-            {
-                var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
-                if (maker != null)
-                    node = maker.MakeNode(tokenStream) as InputValueNode;
-            }
+            //tokenStream.Prime();
+            //InputValueNode node = null;
+            //if (!tokenStream.EndOfStream)
+            //{
+            //    var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
+            //    if (maker != null)
+            //        node = maker.MakeNode(tokenStream) as InputValueNode;
+            //}
 
-            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(node);
-            var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
-            var resolver = generator.CreateResolver(typeExpression);
+            //var inputValue = DocumentSuppliedValueFactory.CreateInputValue(node);
+            //var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
+            //var resolver = generator.CreateResolver(typeExpression);
 
-            Assert.Throws<UnresolvedValueException>(() =>
-            {
-                resolver.Resolve(inputValue);
-            });
+            //Assert.Throws<UnresolvedValueException>(() =>
+            //{
+            //    resolver.Resolve(inputValue);
+            //});
         }
 
         [Test]
         public void BasicListValueResolver()
         {
-            var sourceList = new DocumentListSuppliedValue(new FakeSyntaxNode());
-            sourceList.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
-            sourceList.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
+            Assert.Fail("Fix this Test");
+            //var sourceList = new DocumentListSuppliedValue(new FakeSyntaxNode());
+            //sourceList.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
+            //sourceList.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
 
-            var typeExpression = GraphTypeExpression.FromDeclaration("[Int]");
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            //var typeExpression = GraphTypeExpression.FromDeclaration("[Int]");
+            //var generator = new InputResolverMethodGenerator(this.CreateSchema());
 
-            var resolver = generator.CreateResolver(typeExpression);
-            var result = resolver.Resolve(sourceList) as IEnumerable;
+            //var resolver = generator.CreateResolver(typeExpression);
+            //var result = resolver.Resolve(sourceList) as IEnumerable;
 
-            CollectionAssert.AreEqual(new List<int> { 15, 12 }, result);
+            //CollectionAssert.AreEqual(new List<int> { 15, 12 }, result);
         }
 
         [Test]
         public void ListOfListValueResolver()
         {
-            var innerList1 = new DocumentListSuppliedValue(new FakeSyntaxNode());
-            innerList1.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
-            innerList1.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
+            Assert.Fail("Fix this Test");
+            //var innerList1 = new DocumentListSuppliedValue(new FakeSyntaxNode());
+            //innerList1.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "15", ScalarValueType.Number));
+            //innerList1.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "12", ScalarValueType.Number));
 
-            var innerList2 = new DocumentListSuppliedValue(new FakeSyntaxNode());
-            innerList2.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "30", ScalarValueType.Number));
-            innerList2.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "40", ScalarValueType.Number));
+            //var innerList2 = new DocumentListSuppliedValue(new FakeSyntaxNode());
+            //innerList2.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "30", ScalarValueType.Number));
+            //innerList2.ListItems.Add(new DocumentScalarSuppliedValue(new FakeSyntaxNode(), "40", ScalarValueType.Number));
 
-            var outerList = new DocumentListSuppliedValue(new FakeSyntaxNode());
-            outerList.ListItems.Add(innerList1);
-            outerList.ListItems.Add(innerList2);
+            //var outerList = new DocumentListSuppliedValue(new FakeSyntaxNode());
+            //outerList.ListItems.Add(innerList1);
+            //outerList.ListItems.Add(innerList2);
 
-            var typeExpression = GraphTypeExpression.FromDeclaration("[[Int]]");
-            var generator = new InputResolverMethodGenerator(this.CreateSchema());
+            //var typeExpression = GraphTypeExpression.FromDeclaration("[[Int]]");
+            //var generator = new InputResolverMethodGenerator(this.CreateSchema());
 
-            var resolver = generator.CreateResolver(typeExpression);
-            var result = resolver.Resolve(outerList) as IEnumerable;
+            //var resolver = generator.CreateResolver(typeExpression);
+            //var result = resolver.Resolve(outerList) as IEnumerable;
 
-            CollectionAssert.AreEqual(new List<IEnumerable<int>> { new List<int> { 15, 12 }, new List<int> { 30, 40 } }, result);
+            //CollectionAssert.AreEqual(new List<IEnumerable<int>> { new List<int> { 15, 12 }, new List<int> { 30, 40 } }, result);
         }
     }
 }

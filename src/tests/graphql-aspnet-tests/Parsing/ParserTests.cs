@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Tests.Parsing
 
             var parser = new GraphQLParser();
             var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsMemory());
-            Assert.AreEqual(1, syntaxTree.Nodes.Count);
+            Assert.AreEqual(1, syntaxTree.RootNode.Children.Count);
         }
 
         [Test]

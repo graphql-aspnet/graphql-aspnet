@@ -66,7 +66,10 @@ namespace GraphQL.AspNet.Parsing
             //    5a) All comments start with '#' and are always only one line
             // ----------------------------------
             var source = new SourceText(queryText);
+
             var tokenStream = Lexer.Tokenize(source);
+            tokenStream.Prime();
+
             var syntaxTree = new SyntaxTree();
 
             // ----------------------------------
@@ -111,11 +114,11 @@ namespace GraphQL.AspNet.Parsing
                 }
                 else
                 {
-                    maker = NodeMakerFactory.CreateMaker<OperationTypeNode>();
+                    maker = NodeMakerFactory.CreateMaker<OperationNode>();
                 }
 
                 var node = maker.MakeNode(tokenStream);
-                syntaxTree.AddNode(node);
+                syntaxTree.RootNode.AddChild(node);
             }
 
             return syntaxTree;

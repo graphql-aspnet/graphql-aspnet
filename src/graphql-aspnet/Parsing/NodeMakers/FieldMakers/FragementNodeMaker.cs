@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (!fragmentName.IsEmpty)
                 node = new FragmentSpreadNode(startLocation, fragmentName);
             else
-                node = new FragmentNode(startLocation, restrictedToType);
+                node = new InlineFragmentNode(startLocation, restrictedToType);
 
             if (collection != null && collection.Children.Any())
                 node.AddChild(collection);

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
     /// <summary>
     /// Defines tests related to creation of the opening, top level
-    /// <see cref="OperationTypeNode"/> under which a complete document segment is defined.
+    /// <see cref="OperationNode"/> under which a complete document segment is defined.
     /// </summary>
     [TestFixture]
     public class OperationTypeNodeTests
@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationTypeNodeMaker.Instance.MakeNode(stream) as OperationTypeNode;
+            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(string.Empty, node.OperationType.ToString());
             Assert.AreEqual(string.Empty, node.OperationName.ToString());
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationTypeNodeMaker.Instance.MakeNode(stream) as OperationTypeNode;
+            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("namedQueryType", node.OperationType.ToString());
             Assert.AreEqual(string.Empty, node.OperationName.ToString());
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationTypeNodeMaker.Instance.MakeNode(stream) as OperationTypeNode;
+            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("namedQueryType", node.OperationType.ToString());
             Assert.AreEqual("aNamedQueryName", node.OperationName.ToString());
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationTypeNodeMaker.Instance.MakeNode(stream) as OperationTypeNode;
+            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("namedQueryType", node.OperationType.ToString());
             Assert.AreEqual("aNamedQuery", node.OperationName.ToString());

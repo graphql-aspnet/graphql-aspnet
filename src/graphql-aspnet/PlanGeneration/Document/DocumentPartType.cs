@@ -15,25 +15,69 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     /// </summary>
     public enum DocumentPartType
     {
+        /// <summary>
+        /// An unknown document type. This type indicates an error condition.
+        /// </summary>
+        Unknown = 0,
 
-        Unknown                 = 0,
+        /// <summary>
+        /// A top level operation to execute (e.g. query, mutation etc.).
+        /// </summary>
+        Operation                       = 10,
 
-        OperationCollection     = 1 << 1,
-        Operation               = 1 << 2,
+        /// <summary>
+        /// A variable declared on an operation.
+        /// </summary>
+        Variable                        = 20,
 
-        VariableCollection      = 1 << 3,
-        Variable                = 1 << 4,
+        /// <summary>
+        /// The set of fields to select from the parent <see cref="Field"/>'s resolved value, if any.
+        /// Fields that return leaf types will cannot contain a selection set.
+        /// </summary>
+        FieldSelectionSet               = 30,
 
-        FieldSelectionSet       = 1 << 5,
-        FieldSelection          = 1 << 6,
+        /// <summary>
+        /// A single field of data to query from a given source object.
+        /// </summary>
+        Field                           = 40,
 
-        InputArgumentCollection = 1 << 7,
-        InputArgument           = 1 << 8,
-        SuppliedValue           = 1 << 9,
+        /// <summary>
+        /// An argument supplied to a <see cref="Field" /> or a <see cref="Directive"/>.
+        /// </summary>
+        Argument                        = 50,
 
-        Directive               = 1 << 10,
+        /// <summary>
+        /// A supplied value to an <see cref="Argument"/>.
+        /// </summary>
+        SuppliedValue                   = 60,
 
-        FragmentCollection      = 1 << 11,
-        Fragment                = 1 << 12,
+        /// <summary>
+        /// A directive attached to its parent document part, to be executed by the runtime prior
+        /// to executing the document.
+        /// </summary>
+        Directive                       = 70,
+
+        /// <summary>
+        /// A fragment to be spread, declared inline in the parent <see cref="FieldSelectionSet"/>.
+        /// </summary>
+        InlineFragment                  = 80,
+
+        /// <summary>
+        /// A top level, formally declared fragment that can be spread into any allowed
+        /// <see cref="FieldSelectionSet"/> within the document.
+        /// </summary>
+        NamedFragment                   = 90,
+
+        /// <summary>
+        /// A spread operation to inject a <see cref="NamedFragment"/> into this items parent
+        /// parent <see cref="FieldSelectionSet"/>.
+        /// </summary>
+        FragmentSpread                  = 100,
+
+        /// <summary>
+        /// The document itself. Represents the top most part from which all other
+        /// parts children or grandchildren etc.
+        /// </summary>
+        Document = 110,
     }
 }

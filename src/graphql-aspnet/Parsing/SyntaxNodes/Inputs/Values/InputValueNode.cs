@@ -46,5 +46,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values
         /// </summary>
         /// <value>The value.</value>
         public ReadOnlyMemory<char> Value { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"IV-{this.Value}";
+        }
     }
 }

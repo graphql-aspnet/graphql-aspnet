@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             this.SchemaInstanceName = schemaInstance?.Name;
             this.SchemaGraphTypeCount = schemaInstance?.KnownTypes?.Count;
             this.SchemaSupportedOperationTypes = schemaInstance?
-                .OperationTypes?
+                .Operations?
                 .OrderBy(x => x.Key)
                 .Select(x => x.Key.ToString().ToLower())
                 .ToList();

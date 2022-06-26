@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Schemas
         public static Dictionary<SubscriptionEventName, GraphFieldPath> CreateEventMap(ISchema schema)
         {
             var dic = new Dictionary<SubscriptionEventName, GraphFieldPath>(SubscriptionEventNameEqualityComparer.Instance);
-            if (schema == null || !schema.OperationTypes.ContainsKey(GraphOperationType.Subscription))
+            if (schema == null || !schema.Operations.ContainsKey(GraphOperationType.Subscription))
                 return dic;
 
             foreach (var field in schema.KnownTypes.OfType<IObjectGraphType>()

@@ -23,11 +23,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentEnumSuppliedValue" /> class.
         /// </summary>
-        /// <param name="value">The value parsed from a query document.</param>
-        public DocumentEnumSuppliedValue(EnumValueNode value)
-            : base(value)
+        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
+        /// <param name="node">The node that represents this value in the user's query document.</param>
+        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
+        public DocumentEnumSuppliedValue(IDocumentPart parentPart, EnumValueNode node, string key = null)
+            : base(parentPart, node, key)
         {
-            this.Value = value.Value;
+            this.Value = node.Value;
         }
 
         /// <inheritdoc />

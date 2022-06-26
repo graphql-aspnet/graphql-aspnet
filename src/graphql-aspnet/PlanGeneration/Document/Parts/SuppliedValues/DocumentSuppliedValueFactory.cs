@@ -23,9 +23,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// Converts a node read on a query document into a value representation that can be resolved
         /// to a usable .NET type in a query plan.
         /// </summary>
-        /// <param name="valueNode">The value node.</param>
+        /// <param name="ownerPart">The document part which will own the created value.</param>
+        /// <param name="valueNode">The AST node from which the value should be created.</param>
+        /// <param name="key">A key value, if any, to assign to the value node.</param>
         /// <returns>IQueryInputValue.</returns>
-        public static ISuppliedValueDocumentPart CreateInputValue(InputValueNode valueNode)
+        public static ISuppliedValueDocumentPart CreateInputValue(IDocumentPart ownerPart, InputValueNode valueNode, string key = null)
         {
             if (valueNode == null)
                 return null;
@@ -33,22 +35,22 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             switch (valueNode)
             {
                 case ListValueNode lvn:
-                    return new DocumentListSuppliedValue(lvn);
+                    return new DocumentListSuppliedValue(ownerPart,lvn, key);
 
                 case NullValueNode nvn:
-                    return new DocumentNullSuppliedValue(nvn);
+                    return new DocumentNullSuppliedValue(ownerPart, nvn, key);
 
                 case ComplexValueNode cvn:
-                    return new DocumentComplexSuppliedValue(cvn);
+                    return new DocumentComplexSuppliedValue(ownerPart, cvn, key);
 
                 case ScalarValueNode svn:
-                    return new DocumentScalarSuppliedValue(svn);
+                    return new DocumentScalarSuppliedValue(ownerPart, svn, key);
 
                 case EnumValueNode evn:
-                    return new DocumentEnumSuppliedValue(evn);
+                    return new DocumentEnumSuppliedValue(ownerPart, evn, key);
 
                 case VariableValueNode vvn:
-                    return new DocumentVariableReferenceInputValue(vvn);
+                    return new DocumentVariableReferenceValue(ownerPart, vvn, key);
 
                 default:
                     throw new ArgumentOutOfRangeException(

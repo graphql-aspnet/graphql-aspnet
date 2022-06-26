@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         public GraphSchema()
         {
-            this.OperationTypes = new Dictionary<GraphOperationType, IGraphOperation>();
+            this.Operations = new Dictionary<GraphOperationType, IGraphOperation>();
             this.KnownTypes = new SchemaTypeCollection();
             this.Configuration = new SchemaConfiguration();
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <inheritdoc />
-        public IDictionary<GraphOperationType, IGraphOperation> OperationTypes { get; }
+        public IDictionary<GraphOperationType, IGraphOperation> Operations { get; }
 
         /// <inheritdoc />
         public ISchemaTypeCollection KnownTypes { get; }

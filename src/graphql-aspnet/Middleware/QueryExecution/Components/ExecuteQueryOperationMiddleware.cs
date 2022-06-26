@@ -275,7 +275,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <returns>System.Object.</returns>
         private object GenerateRootSourceData(GraphOperationType operationType)
         {
-            if (_schema.OperationTypes.TryGetValue(operationType, out var rootOperation))
+            if (_schema.Operations.TryGetValue(operationType, out var rootOperation))
             {
                 return new VirtualResolvedObject(rootOperation.Name);
             }

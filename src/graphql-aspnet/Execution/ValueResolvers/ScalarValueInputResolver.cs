@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         }
 
         /// <inheritdoc />
-        public object Resolve(IResolvableItem resolvableItem, IResolvedVariableCollection variableData = null)
+        public object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
             if (resolvableItem is IResolvablePointer pointer)
             {
@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 if (variableFound)
                     return variable.Value;
 
-                resolvableItem = pointer.DefaultItem;
+                resolvableItem = pointer.DefaultValue;
             }
 
             if (resolvableItem is IResolvableValue resolvableValue)

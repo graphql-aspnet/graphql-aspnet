@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// <inheritdoc />
         public IGraphType FindGraphType(string graphTypeName)
         {
-            if (_graphTypesByName.TryGetValue(graphTypeName, out var graphType))
+            if (graphTypeName != null && _graphTypesByName.TryGetValue(graphTypeName, out var graphType))
                 return graphType;
 
             return null;

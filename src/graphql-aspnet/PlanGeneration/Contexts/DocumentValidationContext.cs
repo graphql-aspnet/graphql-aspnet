@@ -9,35 +9,38 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Contexts
 {
-    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.PlanGeneration.Document;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.ValidationRules.Interfaces;
 
     /// <summary>
     /// A context used to validate all the created parts of a document generated during construction.
     /// </summary>
-    internal class DocumentValidationContext : DocumentGenerationContext<IDocumentPart>, IContextGenerator<DocumentValidationContext>
+    internal class DocumentValidationContext : IContextGenerator<DocumentValidationContext>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentValidationContext" /> class.
         /// </summary>
-        /// <param name="docContext">The document context.</param>
-        /// <param name="part">The currently scoped document part.</param>
-        public DocumentValidationContext(DocumentContext docContext, IDocumentPart part)
-            : base(docContext, part)
+        /// <param name="queryDocument">The query document to validate.</param>
+        public DocumentValidationContext(IGraphQueryDocument queryDocument)
         {
+            this.ActivePart = Validation.ThrowIfNullOrReturn(queryDocument, nameof(queryDocument));
+            this.Document = queryDocument;
+            this.Messages = queryDocument.Messages;
         }
 
         /// <summary>
         /// Prevents a default instance of the <see cref="DocumentValidationContext" /> class from being created.
         /// </summary>
-        private DocumentValidationContext()
+        private DocumentValidationContext(DocumentValidationContext parentContext, IDocumentPart partToValidate)
         {
+            this.ActivePart = Validation.ThrowIfNullOrReturn(partToValidate, nameof(partToValidate));
+            this.ParentContext = parentContext;
+            this.Document = parentContext.Document;
+            this.Messages = parentContext.Messages;
         }
 
         /// <summary>
@@ -50,39 +53,23 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             foreach (var docPart in this.ActivePart.Children)
             {
                 // use the private constructor
-                var newContext = new DocumentValidationContext
-                {
-                    DocumentContext = this.DocumentContext,
-                    Item = docPart,
-                    ContextItems = new Dictionary<Type, IDocumentPart>(this.ContextItems),
-                    ParentContext = this,
-                };
-
-                // set the part of THIS context as something in scope on the child
-                // if its not the same type (shouldnt be)
-                if (this.ActivePart.GetType() != docPart.GetType())
-                {
-                    var expectedType = this.ActivePart.PartType.RelatedInterface();
-                    if (!Validation.IsCastable(this.ActivePart.GetType(), expectedType))
-                    {
-                        throw new GraphExecutionException(
-                            $"The active document part (Type: {this.ActivePart.PartType}) does not implement " +
-                            $"interface '{expectedType.FriendlyName()}'. All document parts of type {this.ActivePart.PartType} must " +
-                            $"implement this interface.");
-                    }
-
-                    newContext.AddOrUpdateContextItem(this.ActivePart, expectedType);
-                }
-
+                var newContext = new DocumentValidationContext(this, docPart);
                 yield return newContext;
             }
         }
 
         /// <summary>
-        /// Gets the active node on this context.
+        /// Gets the part being validated on this context.
         /// </summary>
-        /// <value>The active node.</value>
-        public IDocumentPart ActivePart => this.Item;
+        /// <value>The active part.</value>
+        public IDocumentPart ActivePart { get; private set; }
+
+
+        /// <summary>
+        /// Gets the part that owns the <see cref="ActivePart" /> on this context.
+        /// </summary>
+        /// <value>The parent part.</value>
+        public IDocumentPart ParentPart => this.ParentContext?.ActivePart;
 
         /// <summary>
         /// Gets the parent context that created this child context, if any. Root contexts will
@@ -90,5 +77,17 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// </summary>
         /// <value>The parent context.</value>
         public DocumentValidationContext ParentContext { get; private set; }
+
+        /// <summary>
+        /// Gets the message collection where validation errors should be saved.
+        /// </summary>
+        /// <value>The messages.</value>
+        public IGraphMessageCollection Messages { get; }
+
+        /// <summary>
+        /// Gets a reference to the document being validated.
+        /// </summary>
+        /// <value>The document.</value>
+        public IGraphQueryDocument Document { get; }
     }
 }

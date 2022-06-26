@@ -9,8 +9,10 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -18,47 +20,37 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// <summary>
     /// A representation of a list of other input values for a single argument.
     /// </summary>
-    [DebuggerDisplay("ListValue (Count = {ListItems.Count})")]
+    [DebuggerDisplay("ListValue (Count = {Count})")]
     internal class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentListSuppliedValue" /> class.
         /// </summary>
+        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
         /// <param name="node">The node that represents this input value in the user query document.</param>
-        public DocumentListSuppliedValue(SyntaxNode node)
-            : base(node)
+        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
+        public DocumentListSuppliedValue(IDocumentPart parentPart, SyntaxNode node, string key = null)
+            : base(parentPart, node, key)
         {
-            this.ListItems = new List<ISuppliedValueDocumentPart>();
+        }
+
+        private int Count => this.ListItems.Count();
+
+        /// <inheritdoc />
+        public IEnumerable<ISuppliedValueDocumentPart> ListItems => this
+            .Children[DocumentPartType.SuppliedValue]
+            .OfType<ISuppliedValueDocumentPart>();
+
+        /// <inheritdoc />
+        public IEnumerator<IResolvableKeyedItem> GetEnumerator()
+        {
+            return this.ListItems.GetEnumerator();
         }
 
         /// <inheritdoc />
-        public override void AddChild(IDocumentPart child)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            if (child is ISuppliedValueDocumentPart suppliedValue)
-            {
-                this.ListItems.Add(suppliedValue);
-                suppliedValue.ParentValue = this;
-                suppliedValue.Owner = this.Owner;
-            }
-            else
-            {
-                base.AddChild(child);
-            }
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<IResolvableItem> ResolvableListItems => this.ListItems;
-
-        /// <inheritdoc />
-        public IList<ISuppliedValueDocumentPart> ListItems { get; }
-
-        /// <inheritdoc />
-        public override IEnumerable<IDocumentPart> Children
-        {
-            get
-            {
-                return this.ListItems;
-            }
+            return this.GetEnumerator();
         }
     }
 }

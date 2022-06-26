@@ -21,16 +21,15 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNullSuppliedValue" /> class.
         /// </summary>
+        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
         /// <param name="node">The node that represents this input value in the user query document.</param>
-        public DocumentNullSuppliedValue(SyntaxNode node)
-            : base(node)
+        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
+        public DocumentNullSuppliedValue(IDocumentPart parentPart, SyntaxNode node, string key = null)
+            : base(parentPart, node, key)
         {
         }
 
-        /// <summary>
-        /// Gets the value to be used to resolve to some .NET type.
-        /// </summary>
-        /// <value>The resolvable value.</value>
+        /// <inheritdoc />
         public ReadOnlySpan<char> ResolvableValue => ReadOnlySpan<char>.Empty;
     }
 }

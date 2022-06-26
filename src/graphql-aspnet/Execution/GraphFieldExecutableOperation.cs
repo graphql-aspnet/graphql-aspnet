@@ -40,9 +40,7 @@ namespace GraphQL.AspNet.Execution
 
             // Create a blank internal collection of variables if none
             // were defined in the query docuemnt.
-            _variableCollection = _operation.Variables;
-            if (_variableCollection == null)
-                _variableCollection = new DocumentVariableCollection(_operation);
+            _variableCollection = _operation.GatherVariables();
 
             this.FieldContexts = new FieldInvocationContextCollection();
             this.Messages = new GraphMessageCollection();

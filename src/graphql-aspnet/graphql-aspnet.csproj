@@ -25,6 +25,33 @@
     <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\**" />
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\**" />
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\**" />
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\**" />
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\**" />
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\**" />
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\**" />
+    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\**" />
+    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\**" />
+    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\**" />
+  </ItemGroup>
+
     <ItemGroup>
       <None Include="..\icon.png">
         <Pack>True</Pack>
@@ -38,6 +65,15 @@
 
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\Rule_5_1_1_OnlyExecutableDefinition.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\Rule_5_2_1_1_OperationNamesMustBeUnique.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\Rule_5_2_2_1_LoneAnonymousOperation.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_1_1_ExecutableOperationDefinition.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_SubscriptionsRequire1RootField.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,11 +91,5 @@
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
 
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="RulesEngine\RuleSets\DocumentConstruction\InputItemCollectionNodeSteps\" />
-    <Folder Include="RulesEngine\RuleSets\DocumentConstruction\TopLevelNodeSteps\" />
-    <Folder Include="RulesEngine\RuleSets\DocumentConstruction\VariableCollectionNodeSteps\" />
   </ItemGroup>
 </Project>

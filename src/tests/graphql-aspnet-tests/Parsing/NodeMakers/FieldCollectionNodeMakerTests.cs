@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(field);
             Assert.AreEqual("field1", field.FieldName.ToString());
 
-            var frag = node.Children[1] as FragmentNode;
+            var frag = node.Children[1] as InlineFragmentNode;
             Assert.IsNotNull(frag);
             Assert.AreEqual("User", frag.TargetType.ToString());
             Assert.AreEqual(1, frag.Children.Count); // has a field collection

@@ -8,6 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -17,21 +18,25 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.InputItemCollectionNodeSteps;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.VariableCollectionNodeSteps;
     using GraphQL.AspNet.ValidationRules.Interfaces;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.DirectiveNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldColletionNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentInlineNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentSpreadNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemCollectionNodeSteps;
+    // using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemCollectionNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValueNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFragmentNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.TopLevelNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableCollectionNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableNodeSteps;
+
+    // using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
+    // using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.TopLevelNodeSteps;
+    // using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableCollectionNodeSteps;
+    // using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableNodeSteps;
 
     /// <summary>
     /// A rule package containing rules for processing a nested hierarchy of syntax nodes.
@@ -57,7 +62,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 
             // build the top level rules for nodes declared at the outermost level
             // of the document then build the matched specifics for the expected defintions (operation and fragment)
-            _topLevelSteps.Add(new Rule_5_1_1_ExecutableDefinitions());
+            // _topLevelSteps.Add(new Rule_5_1_1_ExecutableDefinitions());
+
+            // top level document
+            this.BuildTopLevelDocumentSteps();
 
             // operation and variables
             this.BuildOperationSteps();
@@ -99,27 +107,30 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
                 : _stepCollection[type];
         }
 
-        /// <summary>
-        /// Builds the rule chain required to successfully process the top level operation node.
-        /// </summary>
+        private void BuildTopLevelDocumentSteps()
+        {
+            // no steps for processing a root document node at this time
+            // its skipped and the operation/framents are immediately processed
+        }
+
         private void BuildOperationSteps()
         {
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
             // 0.  Ensure that the type of operation (mutation, query etc.) exists on the schema
-            steps.Add(new Rule_5_2_OperationTypeMustBeDefinedOnTheSchema());
+            // steps.Add(new Rule_5_2_OperationTypeMustBeDefinedOnTheSchema());
 
             // 1. Ensure that the operation type (query, mutation, subscription) exists for the
             //    target schema
-            steps.Add(new Rule_5_2_1_1_OperationNamesMustBeUnique());
+            //   steps.Add(new Rule_5_2_1_1_OperationNamesMustBeUnique());
 
             // 2. Add the node to context
             steps.Add(new OperationNode_CreateOperationOnContext());
 
             // 3. Ensure that subscriptions have exactly one root field
-            steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
+            //   steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
 
-            _stepCollection.Add(typeof(OperationTypeNode), steps);
+            _stepCollection.Add(typeof(OperationNode), steps);
         }
 
         private void BuildFieldCollectionSteps()
@@ -136,8 +147,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
         {
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
-            // 1. Ensure that variables are only declared on operations
-            steps.Add(new Rule_5_8_OnlyOperationsCanDeclareVariables());
+            steps.Add(new VariableCollectionNode_Skip());
 
             _stepCollection.Add(typeof(VariableCollectionNode), steps);
         }
@@ -148,22 +158,22 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 
             // for each variable in the collection
             // 1. ensure a unique name
-            steps.Add(new Rule_5_8_1_VariableNamesMustBeUnique());
+            // steps.Add(new Rule_5_8_1_VariableNamesMustBeUnique());
 
             // 2. add the variable to active collection
-            steps.Add(new QueryVariable_CreateNewVariableOnContext());
+            steps.Add(new QueryVariable_CreateNewVariable());
 
             // 3. ensure the variable declares a type declaration
-            steps.Add(new Rule_5_8_2_A_VariablesMustDeclareAType());
+            //  steps.Add(new Rule_5_8_2_A_VariablesMustDeclareAType());
 
             // 4. ensure that type declaration is valid (exists in the schema)
-            steps.Add(new Rule_5_8_2_B_VariablesMustDeclareAValidGraphType());
+            //  steps.Add(new Rule_5_8_2_B_VariablesMustDeclareAValidGraphType());
 
             // 5. assign the graph type to the variable
-            steps.Add(new QueryVariable_AssignGraphTypeStep());
+            // steps.Add(new QueryVariable_AssignGraphTypeStep());
 
             // 6. ensure that the graph type is allowed in context (ENUM, SCALAR, INPUT_OBJECT)
-            steps.Add(new Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds());
+            // steps.Add(new Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds());
 
             _stepCollection.Add(typeof(VariableNode), steps);
         }
@@ -173,7 +183,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
             // 1. ensure the field exists on the "in context" target graph type
-            steps.Add(new Rule_5_3_1_FieldMustExistOnTargetGraphType());
+            //   steps.Add(new Rule_5_3_1_FieldMustExistOnTargetGraphType());
 
             // 2. Create the field and set as the field on the active context
             //    Also add it to the active selection set
@@ -181,14 +191,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 
             // 3. Check the field against hte other fields in the active selection set, if it
             //    matches output name insure it has an identicial signature
-            steps.Add(new Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs());
+            //   steps.Add(new Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs());
 
             // 4. ensure no down stream fields exist when this field's return type is a leaf
             //    (i.e. scalars dont have fields)
-            steps.Add(new Rule_5_3_3_LeafReturnMustNotHaveChildFields());
+            //  steps.Add(new Rule_5_3_3_LeafReturnMustNotHaveChildFields());
 
             // special case for the '__typename' field on union graph types
-            steps.Add(new TypeNameMetaField_SpecialCase());
+            steps.Add(new FieldSelection_TypeNameMetaField_SpecialCase());
 
             _stepCollection.Add(typeof(FieldNode), steps);
         }
@@ -198,7 +208,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
             // 1. create the entry for the directive in the document
-            steps.Add(new QueryDirective_CreateDirectiveOnContext());
+            steps.Add(new DirectiveNode_CreateDirective());
 
             _stepCollection.Add(typeof(DirectiveNode), steps);
         }
@@ -207,8 +217,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
         {
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
-            // 1. Ensure that input arguments (a collection of them) only exists on fields or directives
-            steps.Add(new Rule_5_4_InputItemsOnlyOnFieldsOrDirectives());
+            steps.Add(new InputItemCollection_Skip());
 
             _stepCollection.Add(typeof(InputItemCollectionNode), steps);
         }
@@ -219,16 +228,16 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 
             // 1. Ensure the nodes are valid for the given scope
             // field arguments
-            steps.Add(new Rule_5_4_1_A_ArgumentMustBeDefinedOnTheField());
-            steps.Add(new Rule_5_4_2_A_ArgumentMustBeUniqueOnTheField());
+            // steps.Add(new Rule_5_4_1_A_ArgumentMustBeDefinedOnTheField());
+            //  steps.Add(new Rule_5_4_2_A_ArgumentMustBeUniqueOnTheField());
 
             // directive arguments
-            steps.Add(new Rule_5_4_1_B_ArgumentMustBeDefinedOnTheDirective());
-            steps.Add(new Rule_5_4_2_B_ArgumentMustBeUniqueOnTheDirective());
+            //  steps.Add(new Rule_5_4_1_B_ArgumentMustBeDefinedOnTheDirective());
+            //   steps.Add(new Rule_5_4_2_B_ArgumentMustBeUniqueOnTheDirective());
 
             // INPUT_OBJECT arguments
-            steps.Add(new Rule_5_6_2_InputObjectFieldsMustExistOnTargetGraphType());
-            steps.Add(new Rule_5_6_3_InputObjectFieldNamesMustBeUnique());
+            //   steps.Add(new Rule_5_6_2_InputObjectFieldsMustExistOnTargetGraphType());
+            // steps.Add(new Rule_5_6_3_InputObjectFieldNamesMustBeUnique());
 
             // 2. create a new query argument on the context
             steps.Add(new InputArgument_A_AssignContextQueryInputArgumentForField());
@@ -243,11 +252,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
             // 1. Ensure variable references are allowed in the scoped operation
-            steps.Add(new Rule_5_8_3_AllUsedVariablesMustBeDeclaredOnTheOperation());
+            //     steps.Add(new Rule_5_8_3_AllUsedVariablesMustBeDeclaredOnTheOperation());
 
             // 2. Assign the input value to the active argument on the context
             steps.Add(new InputValue_AssignValueToArgumentOrValue());
-            steps.Add(new InputValue_AssignVariableReference());
 
             _stepCollection.Add(typeof(ListValueNode), steps);
             _stepCollection.Add(typeof(ComplexValueNode), steps);
@@ -263,18 +271,18 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
 
             // 1. Ensure that the fragment pointed to by this spread node
             //    actually exists on the target document
-            steps.Add(new Rule_5_5_2_1_SpreadOfNamedFragmentMustExist());
+            //  steps.Add(new Rule_5_5_2_1_SpreadOfNamedFragmentMustExist());
 
             // 2. Check for any cyclic references of named fragments that would
             //    result in an infite fragment resolution
-            steps.Add(new Rule_5_5_2_2_SpreadingANamedFragmentMustNotFormCycles());
+            // steps.Add(new Rule_5_5_2_2_SpreadingANamedFragmentMustNotFormCycles());
 
             // 3. Ensure that based on where the named fragment is being spread
             //    that it COULD be spead into the current context
-            steps.Add(new Rule_5_5_2_3_1_ObjectFragmentSpreadInObjectCanSpreadInContext());
-            steps.Add(new Rule_5_5_2_3_2_AbstractFragmentSpreadInObjectCanSpreadInContext());
-            steps.Add(new Rule_5_5_2_3_3_ObjectFragmentSpreadInAbstractCanSpreadInContext());
-            steps.Add(new Rule_5_5_2_3_4_AbstractFragmentSpreadInAbstractCanSpreadInContext());
+            // steps.Add(new Rule_5_5_2_3_1_ObjectFragmentSpreadInObjectCanSpreadInContext());
+            // steps.Add(new Rule_5_5_2_3_2_AbstractFragmentSpreadInObjectCanSpreadInContext());
+            // steps.Add(new Rule_5_5_2_3_3_ObjectFragmentSpreadInAbstractCanSpreadInContext());
+            // steps.Add(new Rule_5_5_2_3_4_AbstractFragmentSpreadInAbstractCanSpreadInContext());
 
             // 3. Set the active query fragment to be the fragment pointed to by the spread
             steps.Add(new FragmentSpread_RegisterNamedFragmentToContext());
@@ -287,11 +295,11 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
             // 1. set the fragment node to be the QueryFragment that on the active context
-            steps.Add(new InlineFragment_RegisterFragmentToContext());
+            steps.Add(new FragmentInline_CreateInlineFragmentOnDocument());
 
             // process the context query fragment
             this.AddQueryFragmentSteps(steps);
-            _stepCollection.Add(typeof(FragmentNode), steps);
+            _stepCollection.Add(typeof(InlineFragmentNode), steps);
         }
 
         private void BuildNamedFragmentSteps()
@@ -299,10 +307,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
 
             // 1. Ensure unique name on the document
-            steps.Add(new Rule_5_5_1_1_FragmentNamesMustBeUnique());
+            //  steps.Add(new Rule_5_5_1_1_FragmentNamesMustBeUnique());
 
             // 2. Create the named fragment and register it with the master document context.
-            steps.Add(new NamedFragment_CreateFragmentOnDocument());
+            steps.Add(new FragmentNamed_CreateFragmentOnDocument());
 
             // process the finish processing the fragment
             this.AddQueryFragmentSteps(steps);
@@ -312,13 +320,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction
         private void AddQueryFragmentSteps(IList<IRuleStep<DocumentConstructionContext>> steps)
         {
             // 1. Ensure that the type on the fragment (if declared) exists in the target schema
-            steps.Add(new Rule_5_5_1_2_FragmentGraphTypeMustExistInTheSchema());
+            // steps.Add(new Rule_5_5_1_2_FragmentGraphTypeMustExistInTheSchema());
 
             // 2. Assign the target graph type to the query fragment
-            steps.Add(new QueryFragment_AssignGraphType());
+            // steps.Add(new QueryFragment_AssignGraphType());
 
             // 3. Ensure that the target type (if declared) is one of the allowed types (INTERFACE, UNION, OBJECT)
-            steps.Add(new Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind());
+            // steps.Add(new Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind());
         }
     }
 }

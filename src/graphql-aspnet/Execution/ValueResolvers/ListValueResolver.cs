@@ -38,30 +38,32 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         }
 
         /// <inheritdoc />
-        public object Resolve(IResolvableItem resolvableItem, IResolvedVariableCollection variableData = null)
+        public object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
-            if (resolvableItem is IResolvablePointer pointer)
-            {
-                IResolvedVariable variable = null;
-                var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
-                if (variableFound)
-                    return variable.Value;
+            throw new System.Exception();
+            //
+            //if (resolvableItem is IResolvablePointer pointer)
+            //{
+            //    IResolvedVariable variable = null;
+            //    var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
+            //    if (variableFound)
+            //        return variable.Value;
 
-                resolvableItem = pointer.DefaultItem;
-            }
+            //    resolvableItem = pointer.DefaultItem;
+            //}
 
-            if (resolvableItem is IResolvableList resolvableList)
-            {
-                var listType = typeof(List<>).MakeGenericType(_listItemType);
-                var listInstance = InstanceFactory.CreateInstance(listType) as IList;
-                foreach (var item in resolvableList.ResolvableListItems)
-                {
-                    var itemInstance = _itemResolver.Resolve(item, variableData);
-                    listInstance.Add(itemInstance);
-                }
+            //if (resolvableItem is IResolvableList resolvableList)
+            //{
+            //    var listType = typeof(List<>).MakeGenericType(_listItemType);
+            //    var listInstance = InstanceFactory.CreateInstance(listType) as IList;
+            //    foreach (var item in resolvableList.ResolvableListItems)
+            //    {
+            //        var itemInstance = _itemResolver.Resolve(item, variableData);
+            //        listInstance.Add(itemInstance);
+            //    }
 
-                return listInstance;
-            }
+            //    return listInstance;
+            //}
 
             return null;
         }

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Common.Source
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Text;
 
@@ -20,6 +21,7 @@ namespace GraphQL.AspNet.Common.Source
     /// to assist a developer in locating the source of their error in their query.
     /// </summary>
     [Serializable]
+    [DebuggerDisplay("{DotString()}")]
     public class SourcePath : IReadOnlyList<object>
     {
         /// <summary>

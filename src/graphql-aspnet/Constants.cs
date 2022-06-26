@@ -220,6 +220,12 @@ namespace GraphQL.AspNet
             public const string TYPE_FIELD = "__type";
             public const string TYPENAME_FIELD = "__typename";
 
+            /// <summary>
+            /// Gets a list of approved operation types available on this server. (e.g. query, mutation etc.)
+            /// </summary>
+            /// <value>The operation names.</value>
+            public static IReadOnlyList<string> GRAPH_OPERATION_NAMES { get; }
+
             private static readonly IReadOnlyDictionary<GraphOperationType, string> GRAPH_OPERATION_TYPE_NAME_BY_TYPE;
             private static readonly IReadOnlyDictionary<string, GraphOperationType> GRAPH_OPERATION_TYPE_BY_KEYWORD;
 
@@ -257,6 +263,12 @@ namespace GraphQL.AspNet
             /// </summary>
             static ReservedNames()
             {
+                var list = new List<string>();
+                list.Add(ParserConstants.Keywords.Query.ToString());
+                list.Add(ParserConstants.Keywords.Mutation.ToString());
+                list.Add(ParserConstants.Keywords.Subscription.ToString());
+                GRAPH_OPERATION_NAMES = list;
+
                 var dicOperationType = new Dictionary<string, GraphOperationType>();
                 dicOperationType.Add(ParserConstants.Keywords.Query.ToString(), GraphOperationType.Query);
                 dicOperationType.Add(ParserConstants.Keywords.Mutation.ToString(), GraphOperationType.Mutation);

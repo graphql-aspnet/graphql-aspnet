@@ -54,8 +54,8 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(null, entry.Message);
 
-            Assert.AreEqual(server.Schema.OperationTypes.Count, entry.SchemaSupportedOperationTypes.Count);
-            foreach (var operation in server.Schema.OperationTypes)
+            Assert.AreEqual(server.Schema.Operations.Count, entry.SchemaSupportedOperationTypes.Count);
+            foreach (var operation in server.Schema.Operations)
                 Assert.IsTrue(entry.SchemaSupportedOperationTypes.Contains(operation.Key.ToString().ToLower()));
 
             Assert.AreEqual(LogEventIds.SchemaInstanceCreated.Id, entry.EventId);

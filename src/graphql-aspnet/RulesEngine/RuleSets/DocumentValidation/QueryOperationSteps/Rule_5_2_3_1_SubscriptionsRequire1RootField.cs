@@ -9,64 +9,47 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps
 {
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// A rule to validate that a subscription operation has 1 and only 1 root level field declaration.
     /// </summary>
     internal class Rule_5_2_3_1_SubscriptionsRequire1RootField
-        : DocumentConstructionRuleStep<OperationTypeNode, IOperationDocumentPart>
+        : DocumentPartValidationRuleStep<IOperationDocumentPart>
     {
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
-        public override bool ShouldExecute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) && context.FindContextItem<IOperationDocumentPart>().OperationType == GraphOperationType.Subscription;
+            return base.ShouldExecute(context) && ((IOperationDocumentPart)context.ActivePart).OperationType == GraphOperationType.Subscription;
         }
 
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode" /> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
-        public override bool Execute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool Execute(DocumentValidationContext context)
         {
-            var otn = (OperationTypeNode)context.ActiveNode;
+            var operation = (IOperationDocumentPart)context.ActivePart;
 
-            var fieldCollection = otn.Children.SingleOrDefault<FieldCollectionNode>();
+            var fieldCollection = operation.FieldSelectionSet;
             if (fieldCollection == null || fieldCollection.Children.Count != 1)
             {
                 this.ValidationError(
                     context,
-                    $"Invalid Subscription. Expected exactly 1 root child field, recieved {fieldCollection?.Children.Count ?? 0} child fields.");
+                    operation.Node,
+                    $"Invalid Subscription. Expected exactly 1 root child field, " +
+                    $"recieved {fieldCollection?.Children.Count ?? 0} child fields.");
                 return false;
             }
 
             return true;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z").
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.2.3.1";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Single-root-field";
     }
 }

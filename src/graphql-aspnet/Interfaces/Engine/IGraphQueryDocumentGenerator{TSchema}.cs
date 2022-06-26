@@ -13,10 +13,8 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
-    /// Validates that a lexed syntax tree, intended to execute a query on a target schema,
-    /// is valid on that schema such that all field selection sets for all graph types are valid and executable
-    /// ultimately generating a document that can be used to create a query plan from the various resolvers
-    /// that can complete the query.
+    /// Called by the runtime to convert an AST into an unvalidated query document
+    /// targeting a specific schema.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this generator is registered for.</typeparam>
     public interface IGraphQueryDocumentGenerator<TSchema>

@@ -58,5 +58,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         /// </summary>
         /// <value>The type of the variable.</value>
         public ReadOnlyMemory<char> TypeExpression { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"V-{this.Name}";
+        }
     }
 }

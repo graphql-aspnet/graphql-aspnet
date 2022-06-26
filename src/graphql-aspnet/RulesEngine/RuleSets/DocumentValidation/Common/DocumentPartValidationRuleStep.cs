@@ -24,14 +24,26 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
         /// message will automatically be appended with the appropriate message extensions to reference the error being validated.
         /// </summary>
         /// <param name="context">The validation context in scope.</param>
-        /// <param name="node">The node in scope when the error was generated.</param>
         /// <param name="message">The error message.</param>
-        protected void ValidationError(DocumentValidationContext context, SyntaxNode node,  string message)
+        protected void ValidationError(DocumentValidationContext context, string message)
+        {
+            this.ValidationError(context, context.ActivePart.Node, message);
+        }
+
+        /// <summary>
+        /// Registers a validation error with the local message collection as a critical error. The validation
+        /// message will automatically be appended with the appropriate message extensions to reference the error being validated.
+        /// </summary>
+        /// <param name="context">The validation context in scope.</param>
+        /// <param name="node">A custom node to use to indicate the area in the source document
+        /// the error occured.</param>
+        /// <param name="message">The error message.</param>
+        protected void ValidationError(DocumentValidationContext context, SyntaxNode node, string message)
         {
             var graphMessage = GraphExecutionMessage.FromValidationRule(
-                this,
-                message,
-                node.Location.AsOrigin());
+             this,
+             message,
+             node.Location.AsOrigin());
 
             context.Messages.Add(graphMessage);
         }
@@ -40,7 +52,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
         /// Gets the error code to associate with the broken rule.
         /// </summary>
         /// <value>The error code.</value>
-        public string ErrorCode => Constants.ErrorCodes.INVALID_DOCUMENT;
+        public virtual string ErrorCode => Constants.ErrorCodes.INVALID_DOCUMENT;
 
         /// <summary>
         /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.

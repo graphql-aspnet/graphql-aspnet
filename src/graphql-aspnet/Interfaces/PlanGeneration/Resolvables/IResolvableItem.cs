@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
     /// A marker interface identifying an object as being one of several types of "resolvable items".
     /// It indicates that the runtime can resolve the item into real .NET objects from their graphql representations of fields, arrays and values.
     /// </summary>
-    public interface IResolvableItem
+    public interface IResolvableValueItem
     {
     }
 }

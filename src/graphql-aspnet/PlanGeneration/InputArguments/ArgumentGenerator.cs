@@ -47,46 +47,47 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// <returns>Task.</returns>
         public ArgumentGenerationResult CreateInputArgument(IGraphArgument argument)
         {
+            throw new NotImplementedException();
             Validation.ThrowIfNull(argument, nameof(argument));
 
-            if (!_suppliedArguments.ContainsKey(argument.Name))
-            {
-                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(argument.Name, argument.DefaultValue));
-            }
+            //if (!_suppliedArguments.ContainsKey(argument.Name))
+            //{
+            //    return new ArgumentGenerationResult(new ResolvedInputArgumentValue(argument.Name, argument.DefaultValue));
+            //}
 
-            var coreValue = _suppliedArguments[argument.Name].Value;
-            var resolver = _inputResolverGenerator.CreateResolver(coreValue.Owner.TypeExpression);
+            //var coreValue = _suppliedArguments[argument.Name].Value;
+            //var resolver = _inputResolverGenerator.CreateResolver(coreValue.Owner.TypeExpression);
 
-            if (this.ShouldDeferResolution(coreValue))
-                return new ArgumentGenerationResult(new DeferredInputArgumentValue(coreValue, resolver));
+            //if (this.ShouldDeferResolution(coreValue))
+            //    return new ArgumentGenerationResult(new DeferredInputArgumentValue(coreValue, resolver));
 
-            try
-            {
-                var data = resolver.Resolve(coreValue);
-                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(coreValue.Owner.Name, data));
-            }
-            catch (UnresolvedValueException svce)
-            {
-                var message = new GraphExecutionMessage(
-                   GraphMessageSeverity.Critical,
-                   svce.Message,
-                   Constants.ErrorCodes.INVALID_ARGUMENT,
-                   coreValue.Owner.Value.ValueNode.Location.AsOrigin(),
-                   exception: svce.InnerException);
+            //try
+            //{
+            //    var data = resolver.Resolve(coreValue);
+            //    return new ArgumentGenerationResult(new ResolvedInputArgumentValue(coreValue.Owner.Name, data));
+            //}
+            //catch (UnresolvedValueException svce)
+            //{
+            //    var message = new GraphExecutionMessage(
+            //       GraphMessageSeverity.Critical,
+            //       svce.Message,
+            //       Constants.ErrorCodes.INVALID_ARGUMENT,
+            //       coreValue.Owner.Value.ValueNode.Location.AsOrigin(),
+            //       exception: svce.InnerException);
 
-                return new ArgumentGenerationResult(message);
-            }
-            catch (Exception ex)
-            {
-                var message = new GraphExecutionMessage(
-                    GraphMessageSeverity.Critical,
-                    "Invalid argument value.",
-                    Constants.ErrorCodes.INVALID_ARGUMENT,
-                    coreValue.Owner.Value.ValueNode.Location.AsOrigin(),
-                    ex);
+            //    return new ArgumentGenerationResult(message);
+            //}
+            //catch (Exception ex)
+            //{
+            //    var message = new GraphExecutionMessage(
+            //        GraphMessageSeverity.Critical,
+            //        "Invalid argument value.",
+            //        Constants.ErrorCodes.INVALID_ARGUMENT,
+            //        coreValue.Owner.Value.ValueNode.Location.AsOrigin(),
+            //        ex);
 
-                return new ArgumentGenerationResult(message);
-            }
+            //    return new ArgumentGenerationResult(message);
+            //}
         }
 
         /// <summary>
@@ -97,31 +98,32 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// <returns><c>true</c> if execution should be deferred, <c>false</c> otherwise.</returns>
         private bool ShouldDeferResolution(ISuppliedValueDocumentPart value)
         {
-            switch (value)
-            {
-                case IVariableReferenceDocumentPart _:
-                    return true;
+            throw new NotImplementedException();
+            //switch (value)
+            //{
+            //    case IVariableReferenceDocumentPart _:
+            //        return true;
 
-                case IListSuppliedValueDocumentPart liv:
-                    foreach (var child in liv.ListItems)
-                    {
-                        if (this.ShouldDeferResolution(child))
-                            return true;
-                    }
+            //    case IListSuppliedValueDocumentPart liv:
+            //        foreach (var child in liv.ListItems)
+            //        {
+            //            if (this.ShouldDeferResolution(child))
+            //                return true;
+            //        }
 
-                    break;
+            //        break;
 
-                case IComplexSuppliedValueDocumentPart civ:
-                    foreach (var argument in civ.Arguments.Values)
-                    {
-                        if (this.ShouldDeferResolution(argument.Value))
-                            return true;
-                    }
+            //    case IComplexSuppliedValueDocumentPart civ:
+            //        foreach (var argument in civ.Arguments.Values)
+            //        {
+            //            if (this.ShouldDeferResolution(argument.Value))
+            //                return true;
+            //        }
 
-                    break;
-            }
+            //        break;
+            //}
 
-            return false;
+            //return false;
         }
     }
 }

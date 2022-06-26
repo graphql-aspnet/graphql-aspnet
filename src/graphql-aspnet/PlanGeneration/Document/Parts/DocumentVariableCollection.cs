@@ -22,26 +22,28 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Count = {Count}")]
-    internal class DocumentVariableCollection : DocumentPartBase, IVariableCollectionDocumentPart, IDocumentPart
+    internal class DocumentVariableCollection : IVariableCollectionDocumentPart
     {
         private readonly Dictionary<string, IVariableDocumentPart> _variables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariableCollection" /> class.
         /// </summary>
-        /// <param name="ownerOperation">The operation that owns this variable collection.</param>
+        /// <param name="ownerOperation">The operation that owns this variable collection.
+        /// this instance will be automatically populated by the variables it contains.</param>
         public DocumentVariableCollection(IOperationDocumentPart ownerOperation)
-            : base(ownerOperation)
         {
             _variables = new Dictionary<string, IVariableDocumentPart>();
-        }
+            this.Operation = Validation.ThrowIfNullOrReturn(ownerOperation, nameof(ownerOperation));
 
-        /// <inheritdoc />
-        public void AddVariable(IVariableDocumentPart variable)
-        {
-            Validation.ThrowIfNull(variable, nameof(variable));
-            _variables.Add(variable.Name, variable);
-            variable.AssignParent(this);
+            foreach (var variable in ownerOperation.Children[DocumentPartType.Variable])
+            {
+                if (variable is IVariableDocumentPart v)
+                {
+                    if (!_variables.ContainsKey(v.Name))
+                        _variables.Add(v.Name, v);
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -57,6 +59,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
+        public IOperationDocumentPart Operation { get; }
+
+        /// <inheritdoc />
         public int Count => _variables.Count;
 
         /// <inheritdoc />
@@ -67,12 +72,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IEnumerable<IVariableDocumentPart> Values => _variables.Values;
-
-        /// <inheritdoc />
-        public override IEnumerable<IDocumentPart> Children => _variables.Values;
-
-        /// <inheritdoc />
-        public override DocumentPartType PartType => DocumentPartType.VariableCollection;
 
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, IVariableDocumentPart>> GetEnumerator()

@@ -12,109 +12,73 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An wrapper for a <see cref="OperationTypeNode"/> to track additional details needed during the validation
+    /// An wrapper for a <see cref="OperationNode"/> to track additional details needed during the validation
     /// and construction phase.
     /// </summary>
     [DebuggerDisplay("Operation: {Name} (Type = {OperationType})")]
-    internal class DocumentOperation : DocumentPartBase<IOperationCollectionDocumentPart>, IOperationDocumentPart
+    internal class DocumentOperation : DocumentPartBase, IOperationDocumentPart
     {
-        private readonly List<IDirectiveDocumentPart> _rankedDirectives;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentOperation" /> class.
         /// </summary>
-        /// <param name="node">The node.</param>
+        /// <param name="parentPart">The owning document.</param>
+        /// <param name="node">The node representing the operation which created
+        /// this part.</param>
         /// <param name="operationType">Type of the operation being represented.</param>
-        /// <param name="operationGraphType">The graph type representing the operation type.</param>
-        /// <param name="parentCollection">The parent collection that owns this instance.</param>
         public DocumentOperation(
-            OperationTypeNode node,
-            GraphOperationType operationType,
-            IObjectGraphType operationGraphType,
-            IOperationCollectionDocumentPart parentCollection)
-            : base(parentCollection)
+            IDocumentPart parentPart,
+            OperationNode node,
+            GraphOperationType operationType)
+            : base(parentPart, node)
         {
-            this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
             this.OperationType = operationType;
-            this.GraphType = Validation.ThrowIfNullOrReturn(operationGraphType, nameof(operationGraphType));
-            this.Name = this.Node.OperationName.IsEmpty ? string.Empty : node.OperationName.ToString();
-            _rankedDirectives = new List<IDirectiveDocumentPart>();
+            this.Name = node.OperationName.IsEmpty ? string.Empty : node.OperationName.ToString();
+            this.OperationTypeName = node.OperationType.ToString();
         }
 
         /// <inheritdoc />
-        public IVariableCollectionDocumentPart EnsureVariableCollection()
+        protected override SourcePath CreatePath(SourcePath path)
         {
-            if (this.Variables == null)
-                this.Variables = new DocumentVariableCollection(this);
+            var thisPath = path.Clone();
+            if (!string.IsNullOrWhiteSpace(this.Name))
+                thisPath.AddFieldName(this.OperationType.ToString().ToLower() + "-" + this.Name.ToString());
+            else
+                thisPath.AddFieldName(this.OperationType.ToString().ToLower());
 
-            return this.Variables;
+            return thisPath;
         }
 
         /// <inheritdoc />
-        public IFieldSelectionSetDocumentPart CreateFieldSelectionSet()
+        public IVariableCollectionDocumentPart GatherVariables()
         {
-            if (this.FieldSelectionSet == null)
-            {
-                this.FieldSelectionSet = new DocumentFieldSelectionSet(this.GraphType, new SourcePath(), this);
-            }
-
-            return this.FieldSelectionSet;
-        }
-
-        /// <inheritdoc />
-        public void InsertDirective(IDirectiveDocumentPart directive)
-        {
-            Validation.ThrowIfNull(directive, nameof(directive));
-            _rankedDirectives.Add(directive);
-            directive.AssignParent(this);
+            return new DocumentVariableCollection(this);
         }
 
         /// <inheritdoc />
         public GraphOperationType OperationType { get; }
 
         /// <inheritdoc />
-        public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
-
-        /// <inheritdoc />
-        public OperationTypeNode Node { get; }
-
-        /// <inheritdoc />
-        public IObjectGraphType GraphType { get; }
-
-        /// <inheritdoc />
-        public IVariableCollectionDocumentPart Variables { get; private set; }
+        public IFieldSelectionSetDocumentPart FieldSelectionSet =>
+            this.Children[DocumentPartType.FieldSelectionSet]
+            .FirstOrDefault() as IFieldSelectionSetDocumentPart;
 
         /// <inheritdoc />
         public string Name { get; }
 
         /// <inheritdoc />
-        public override IEnumerable<IDocumentPart> Children
-        {
-            get
-            {
-                foreach (var directive in this.Directives)
-                    yield return directive;
-
-                if (this.Variables != null)
-                    yield return this.Variables;
-
-                if (this.FieldSelectionSet != null)
-                    yield return this.FieldSelectionSet;
-            }
-        }
+        public string OperationTypeName { get; }
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Operation;
-
-        /// <inheritdoc />
-        public IEnumerable<IDirectiveDocumentPart> Directives => _rankedDirectives;
     }
 }

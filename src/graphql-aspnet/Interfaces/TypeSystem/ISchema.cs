@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets the named operation types supported by this schema.
         /// </summary>
         /// <value>The root operations.</value>
-        IDictionary<GraphOperationType, IGraphOperation> OperationTypes { get; }
+        IDictionary<GraphOperationType, IGraphOperation> Operations { get; }
 
         /// <summary>
         /// Gets a collection of known graph object/scalar types available to this schema. Serves as the basis for the type

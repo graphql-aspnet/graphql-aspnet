@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common
     /// <summary>
     /// A construction step that automatically does a check for a context item.
     /// </summary>
-    /// <typeparam name="T1">A required context item on a node context for this step to execute.</typeparam>
+    /// <typeparam name="T1">A required active node or part for this step to execute.</typeparam>
     internal abstract class DocumentConstructionStep<T1> : DocumentConstructionStep
         where T1 : class
     {
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return context.Contains<T1>();
+            return context.ActivePart is T1 || context.ActiveNode is T1;
         }
     }
 }

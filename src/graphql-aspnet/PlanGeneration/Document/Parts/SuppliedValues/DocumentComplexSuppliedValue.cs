@@ -11,74 +11,36 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
     /// An input value representing a complex input object read from a user's query document.
     /// </summary>
-    [DebuggerDisplay("ComplexInputValue (Arguments = {Arguments.Count})")]
+    [DebuggerDisplay("ComplexInputValue (Children = {Children.Count})")]
     internal class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue" /> class.
         /// </summary>
+        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
         /// <param name="node">The node that represents this input value in the user query document.</param>
-        public DocumentComplexSuppliedValue(SyntaxNode node)
-            : base(node)
+        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
+        public DocumentComplexSuppliedValue(IDocumentPart parentPart, ComplexValueNode node, string key = null)
+            : base(parentPart, node, key)
         {
-            this.Arguments = new DocumentInputArgumentCollection(this);
+        }
+
+        public bool TryGetField(string fieldName, out IResolvableValueItem foundField)
+        {
+            throw new System.NotImplementedException();
         }
 
         /// <inheritdoc />
-        public override void AddChild(IDocumentPart child)
-        {
-            if (child is IInputArgumentDocumentPart qa)
-            {
-                this.AddArgument(qa);
-            }
-            else
-            {
-                base.AddChild(child);
-            }
-        }
-
-        /// <inheritdoc />
-        public void AddArgument(IInputArgumentDocumentPart argument)
-        {
-            this.Arguments.AddArgument(argument);
-        }
-
-        /// <inheritdoc />
-        public bool TryGetField(string fieldName, out IResolvableItem field)
-        {
-            field = null;
-            var found = this.Arguments.TryGetValue(fieldName, out var item);
-            if (found)
-                field = item.Value;
-
-            return found;
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<KeyValuePair<string, IResolvableItem>> Fields
-        {
-            get
-            {
-                foreach (var argument in this.Arguments.Values)
-                {
-                    yield return new KeyValuePair<string, IResolvableItem>(
-                        argument.Name,
-                        argument.Value);
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public IInputArgumentCollectionDocumentPart Arguments { get; }
-
-        /// <inheritdoc />
-        public override IEnumerable<IDocumentPart> Children => this.Arguments.Values;
+        public IEnumerable<IResolvableValueItem> Fields => this
+                .Children[DocumentPartType.SuppliedValue]
+                .OfType<ISuppliedValueDocumentPart>();
     }
 }

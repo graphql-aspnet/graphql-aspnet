@@ -51,5 +51,13 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Fragments
         /// </summary>
         /// <value>The name of the node.</value>
         protected override string NodeName => "FragmentSpread";
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"S-{this.PointsToFragmentName}";
+        }
+
+
     }
 }

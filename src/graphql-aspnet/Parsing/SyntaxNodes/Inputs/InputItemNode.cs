@@ -49,5 +49,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         /// </summary>
         /// <value>The text that is the name of this input item.</value>
         public ReadOnlyMemory<char> InputName { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"II-{this.InputName}";
+        }
     }
 }

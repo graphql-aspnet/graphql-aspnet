@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperationSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
@@ -21,25 +21,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
     internal class Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField
         : DocumentPartValidationRuleStep<IOperationDocumentPart>
     {
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context)
-                && context.ActivePart is IOperationDocumentPart operation
-                && operation.OperationType == GraphOperationType.Subscription;
+                && ((IOperationDocumentPart)context.ActivePart).OperationType == GraphOperationType.Subscription;
         }
 
-        /// <summary>
-        /// Validates the completed document context to ensure it is "correct" against the specification before generating
-        /// the final document.
-        /// </summary>
-        /// <param name="context">The context containing the parsed sections of a query document..</param>
-        /// <returns><c>true</c> if the rule passes, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
             // due to the use of virtual fields used by controllers to make a dynamic schema,
@@ -121,23 +110,15 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperat
             this.ValidationError(
                 context,
                 operation.Node,
-                "Invalid Subscription. Expected exactly 1 child field, " +
+                "Invalid Subscription. Expected exactly 1 root, non-virtual child field, " +
                 $"recieved {fieldCollection?.Count ?? 0} child fields at {fieldCollection?.Path.DotString() ?? "-null-"}.");
             return false;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z").
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.2.3.1.1";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Single-root-field";
     }
 }

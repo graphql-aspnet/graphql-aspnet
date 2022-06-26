@@ -14,8 +14,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common
     /// <summary>
     /// A helper base validation step that will automatically check for two different context items on a given node context before executing.
     /// </summary>
-    /// <typeparam name="T1">The first of two required context items on a node context for this step to execute.</typeparam>
-    /// <typeparam name="T2">The second of two required context items on a node context for this step to execute.</typeparam>
+    /// <typeparam name="T1">A required active node for this step to execute.</typeparam>
+    /// <typeparam name="T2">A required active part for this step to execute.</typeparam>
     internal abstract class DocumentConstructionRuleStep<T1, T2> : DocumentConstructionRuleStep<T1>
         where T1 : class
         where T2 : class
@@ -28,7 +28,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common
         /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return base.ShouldExecute(context) && context.Contains<T2>();
+            return base.ShouldExecute(context)
+                && (context.ActivePart is T2 || context.ActiveNode is T2);
         }
     }
 }

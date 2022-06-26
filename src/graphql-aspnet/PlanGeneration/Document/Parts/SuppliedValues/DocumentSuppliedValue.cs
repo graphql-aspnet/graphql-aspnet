@@ -7,11 +7,18 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -22,52 +29,22 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// or variable in a query document.
     /// </summary>
     [Serializable]
-    internal abstract class DocumentSuppliedValue : DocumentPartBase<IAssignableValueDocumentPart>, ISuppliedValueDocumentPart
+    internal abstract class DocumentSuppliedValue : DocumentPartBase, ISuppliedValueDocumentPart
     {
-        private IAssignableValueDocumentPart _owner;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentSuppliedValue" /> class.
         /// </summary>
+        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
         /// <param name="node">The node that represents this value in the user's query document.</param>
-        protected DocumentSuppliedValue(SyntaxNode node)
+        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
+        protected DocumentSuppliedValue(IDocumentPart parentPart, SyntaxNode node, string key = null)
+            : base(parentPart, node)
         {
-            this.ValueNode = Validation.ThrowIfNullOrReturn(node, nameof(node));
+            this.Key = key?.Trim();
         }
 
         /// <inheritdoc />
-        public override void AssignParent(IDocumentPart parent)
-        {
-            base.AssignParent(parent);
-            _owner = parent as IAssignableValueDocumentPart;
-        }
-
-        /// <inheritdoc />
-        public virtual void AddChild(IDocumentPart child)
-        {
-            throw new InvalidOperationException($"{this.GetType().FriendlyName()} cannot contain children of type '{child?.GetType()}'");
-        }
-
-        /// <inheritdoc />
-        public IAssignableValueDocumentPart Owner
-        {
-            get
-            {
-                return _owner;
-            }
-
-            set
-            {
-                _owner = value;
-                this.Parent = value;
-            }
-        }
-
-        /// <inheritdoc />
-        public ISuppliedValueDocumentPart ParentValue { get; set; }
-
-        /// <inheritdoc />
-        public SyntaxNode ValueNode { get; }
+        public string Key { get; }
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.SuppliedValue;

@@ -24,112 +24,118 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void FindArgumentByStringName_ForExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            Assert.Fail("Fix this Test");
+            //var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
+            //var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
-            var arg = new DocumentInputArgument(
-                new InputItemNode(SourceLocation.None, name),
-                new Mock<IGraphType>().Object,
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+            //var arg = new DocumentInputArgument(
+            //    new InputItemNode(SourceLocation.None, name),
+            //    new Mock<IGraphType>().Object,
+            //    new AspNet.Schemas.GraphTypeExpression("bob"));
 
-            colllection.AddArgument(arg);
+            //colllection.AddArgument(arg);
 
-            var item = colllection.FindArgumentByName("thename");
-            Assert.IsNotNull(item);
+            //var item = colllection.FindArgumentByName("thename");
+            //Assert.IsNotNull(item);
         }
 
         [Test]
         public void FindArgumentByStringName_ForNonArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            Assert.Fail("Fix this Test");
+            //var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
+            //var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
-            var arg = new DocumentInputArgument(
-                new InputItemNode(SourceLocation.None, name),
-                new Mock<IGraphType>().Object,
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+            //var arg = new DocumentInputArgument(
+            //    new InputItemNode(SourceLocation.None, name),
+            //    new Mock<IGraphType>().Object,
+            //    new AspNet.Schemas.GraphTypeExpression("bob"));
 
-            colllection.AddArgument(arg);
+            //colllection.AddArgument(arg);
 
-            var item = colllection.FindArgumentByName("notAnArgument");
-            Assert.IsNull(item);
+            //var item = colllection.FindArgumentByName("notAnArgument");
+            //Assert.IsNull(item);
         }
 
         [Test]
         public void FindArgumentByMemoryName_ForExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            Assert.Fail("Fix this Test");
+            //var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
+            //var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
-            var arg = new DocumentInputArgument(
-                new InputItemNode(SourceLocation.None, name),
-                new Mock<IGraphType>().Object,
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+            //var arg = new DocumentInputArgument(
+            //    new InputItemNode(SourceLocation.None, name),
+            //    new Mock<IGraphType>().Object,
+            //    new AspNet.Schemas.GraphTypeExpression("bob"));
 
-            colllection.AddArgument(arg);
+            //colllection.AddArgument(arg);
 
-            var item = colllection.FindArgumentByName(name);
-            Assert.IsNotNull(item);
+            //var item = colllection.FindArgumentByName(name);
+            //Assert.IsNotNull(item);
         }
 
         [Test]
         public void FindArgumentByMemoryName_ForNonArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
-            var othername = "theothername".AsMemory();
+            Assert.Fail("Fix this Test");
+            //var name = "thename".AsMemory();
+            //var othername = "theothername".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
+            //var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
-            var arg = new DocumentInputArgument(
-                new InputItemNode(SourceLocation.None, name),
-                new Mock<IGraphType>().Object,
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+            //var arg = new DocumentInputArgument(
+            //    new InputItemNode(SourceLocation.None, name),
+            //    new Mock<IGraphType>().Object,
+            //    new AspNet.Schemas.GraphTypeExpression("bob"));
 
-            colllection.AddArgument(arg);
+            //colllection.AddArgument(arg);
 
-            var item = colllection.FindArgumentByName(othername);
-            Assert.IsNull(item);
+            //var item = colllection.FindArgumentByName(othername);
+            //Assert.IsNull(item);
         }
 
         [Test]
         public void TryGetByStringName_ForExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            Assert.Fail("Fix this Test");
+            //var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
+            //var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
-            var arg = new DocumentInputArgument(
-                new InputItemNode(SourceLocation.None, name),
-                new Mock<IGraphType>().Object,
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+            //var arg = new DocumentInputArgument(
+            //    new InputItemNode(SourceLocation.None, name),
+            //    new Mock<IGraphType>().Object,
+            //    new AspNet.Schemas.GraphTypeExpression("bob"));
 
-            colllection.AddArgument(arg);
+            //colllection.AddArgument(arg);
 
-            var result = colllection.TryGetValue("thename", out var argOut);
-            Assert.IsTrue(result);
-            Assert.AreEqual(arg, argOut);
+            //var result = colllection.TryGetValue("thename", out var argOut);
+            //Assert.IsTrue(result);
+            //Assert.AreEqual(arg, argOut);
         }
 
         [Test]
         public void TryGetByStringName_ForNonExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            Assert.Fail("Fix this Test");
+            //var name = "thename".AsMemory();
 
-            var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
+            //var colllection = new DocumentInputArgumentCollection(new Mock<IInputArgumentContainerDocumentPart>().Object);
 
-            var arg = new DocumentInputArgument(
-                new InputItemNode(SourceLocation.None, name),
-                new Mock<IGraphType>().Object,
-                new GraphTypeExpression("bob"));
+            //var arg = new DocumentInputArgument(
+            //    new InputItemNode(SourceLocation.None, name),
+            //    new Mock<IGraphType>().Object,
+            //    new GraphTypeExpression("bob"));
 
-            colllection.AddArgument(arg);
+            //colllection.AddArgument(arg);
 
-            var result = colllection.TryGetValue("theOthername", out var argOut);
-            Assert.IsFalse(result);
-            Assert.IsNull(argOut);
+            //var result = colllection.TryGetValue("theOthername", out var argOut);
+            //Assert.IsFalse(result);
+            //Assert.IsNull(argOut);
         }
     }
 }

@@ -88,16 +88,13 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 case FragmentSpreadNode _:
                     return DirectiveLocation.FRAGMENT_SPREAD;
 
-                case FragmentNode _:
+                case InlineFragmentNode _:
                     return DirectiveLocation.INLINE_FRAGMENT;
 
                 case FieldNode _:
                     return DirectiveLocation.FIELD;
 
-                case InputItemNode _:
-                    return DirectiveLocation.INPUT_OBJECT;
-
-                case OperationTypeNode otn:
+                case OperationNode otn:
                     var operationType = Constants.ReservedNames.FindOperationTypeByKeyword(otn.OperationType.ToString());
                     switch (operationType)
                     {

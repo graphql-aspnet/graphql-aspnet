@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 
     /// <summary>
     /// An internal input argument data resolver that converts parted document parts, derived from
-    /// <see cref="IResolvableItem" />, into valid .NET objects of an appropriate type.
+    /// <see cref="IResolvableValueItem" />, into valid .NET objects of an appropriate type.
     /// </summary>
     public interface IInputValueResolver
     {
@@ -26,6 +26,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="variableData">An optiona collection of supplied variable data that
         /// can be used to resolve variable references contained within the <paramref name="resolvableItem"/>.</param>
         /// <returns>System.Object.</returns>
-        object Resolve(IResolvableItem resolvableItem, IResolvedVariableCollection variableData = null);
+        object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null);
     }
 }

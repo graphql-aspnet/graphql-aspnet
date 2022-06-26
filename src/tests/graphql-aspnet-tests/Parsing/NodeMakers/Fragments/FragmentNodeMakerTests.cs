@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(tokenStream) as FragmentNode;
+            var node = FragementNodeMaker.Instance.MakeNode(tokenStream) as InlineFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("User", node.TargetType.ToString());
             Assert.AreEqual(0, node.Children.Count);
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(tokenStream) as FragmentNode;
+            var node = FragementNodeMaker.Instance.MakeNode(tokenStream) as InlineFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("User", node.TargetType.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(tokenStream) as FragmentNode;
+            var node = FragementNodeMaker.Instance.MakeNode(tokenStream) as InlineFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("User", node.TargetType.ToString());
             Assert.AreEqual(1, node.Children.Count);

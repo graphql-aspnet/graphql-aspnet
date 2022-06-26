@@ -22,25 +22,27 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     internal class DocumentScalarSuppliedValue : DocumentSuppliedValue, IScalarSuppliedValue
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue" /> class.
+        /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue"/> class.
         /// </summary>
-        /// <param name="value">The value parsed from a query document.</param>
-        public DocumentScalarSuppliedValue(ScalarValueNode value)
-            : base(value)
+        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
+        /// <param name="node">The node that represents this value in the user's query document.</param>
+        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
+        public DocumentScalarSuppliedValue(IDocumentPart parentPart, ScalarValueNode node, string key = null)
+            : base(parentPart, node, key)
         {
-            this.ValueType = value.ValueType;
-            this.Value = value.Value;
+            this.ValueType = node.ValueType;
+            this.Value = node.Value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue"/> class.
+        /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue" /> class.
         /// </summary>
-        /// <param name="node">The node that represents a location in the document where this scalar should be
-        /// present.</param>
+        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
         /// <param name="value">The value of the scalar value.</param>
         /// <param name="valueType">The type of scalar value being represented.</param>
-        public DocumentScalarSuppliedValue(SyntaxNode node, string value, ScalarValueType valueType)
-             : base(node)
+        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
+        public DocumentScalarSuppliedValue(IDocumentPart parentPart, string value, ScalarValueType valueType, string key = null)
+             : base(parentPart, EmptyNode.Instance, key)
         {
             this.Value = value?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
             this.ValueType = valueType;

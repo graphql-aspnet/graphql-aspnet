@@ -18,40 +18,40 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A collection of fields (from a <see cref="IGraphType"/>) that are requested by a user and defined
     /// on their query document. Selected fields are keyed by the return value (a.k.a. the field alias) requested by the user.
     /// </summary>
-    [DebuggerDisplay("Graph Type: {GraphType.Name}, Fields = {Count}")]
+    [DebuggerDisplay("FIELD SET: Graph Type: {GraphType.Name}, Fields = {Count}")]
     internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart
     {
         private readonly CharMemoryHashSet _knownFieldAliases;
-        private readonly List<IFieldSelectionDocumentPart> _fields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
         /// </summary>
-        /// <param name="sourceGraphType">The graph type this selection set is acting on.</param>
-        /// <param name="path">The document specific root path under which all fields should be nested in this selection set.</param>
-        /// <param name="parentContainer">The container that owns this selection set.</param>
-        public DocumentFieldSelectionSet(IGraphType sourceGraphType, SourcePath path, IFieldContainerDocumentPart parentContainer)
-            : base(parentContainer)
+        /// <param name="parent">The parent document part that owns this set.</param>
+        public DocumentFieldSelectionSet(IDocumentPart parent)
+            : base(parent, EmptyNode.Instance)
         {
-            this.SourceGraphType = Validation.ThrowIfNullOrReturn(sourceGraphType, nameof(sourceGraphType));
             _knownFieldAliases = new CharMemoryHashSet();
-            _fields = new List<IFieldSelectionDocumentPart>();
-
-            Validation.ThrowIfNull(path, nameof(path));
-            this.Path = path.Clone();
+            this.AssignGraphType(parent.GraphType);
         }
 
         /// <inheritdoc />
-        public virtual void AddFieldSelection(IFieldSelectionDocumentPart newField)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            _knownFieldAliases.Add(newField.Alias);
-            _fields.Add(newField);
-            newField.UpdatePath(this.Path);
+            if (childPart is IFieldDocumentPart fds)
+                _knownFieldAliases.Add(fds.Alias);
+        }
+
+        /// <inheritdoc />
+        protected override void OnChildPartRemoved(IDocumentPart childPart)
+        {
+            if (childPart is IFieldDocumentPart fds)
+                _knownFieldAliases.Remove(fds.Alias);
         }
 
         /// <inheritdoc />
@@ -61,40 +61,30 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public IEnumerable<IFieldSelectionDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
+        public IEnumerable<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
         {
-            return _fields.Where(x => x.Alias.Span.SequenceEqual(alias.Span));
+            return this.Children[DocumentPartType.Field]
+                .OfType<IFieldDocumentPart>()
+                .Where(x => x.Alias.Span.SequenceEqual(alias.Span));
         }
-
-        /// <inheritdoc />
-        public IGraphType SourceGraphType { get; }
-
-        /// <inheritdoc />
-        public override IEnumerable<IDocumentPart> Children
-        {
-            get
-            {
-                foreach (var field in _fields)
-                    yield return field;
-            }
-        }
-
-        /// <inheritdoc />
-        public virtual int Count => _fields.Count;
-
-        /// <inheritdoc />
-        public SourcePath Path { get; }
-
-        /// <inheritdoc />
-        public virtual IFieldSelectionDocumentPart this[int index] => _fields[index];
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.FieldSelectionSet;
 
         /// <inheritdoc />
-        public IEnumerator<IFieldSelectionDocumentPart> GetEnumerator()
+        public int Count => this.Children[DocumentPartType.Field]
+                .OfType<IFieldDocumentPart>()
+                .Count();
+
+        public IFieldDocumentPart this[int index]
+            => this.Children[DocumentPartType.Field][index] as IFieldDocumentPart;
+
+        /// <inheritdoc />
+        public IEnumerator<IFieldDocumentPart> GetEnumerator()
         {
-            return _fields.GetEnumerator();
+            return this.Children[DocumentPartType.Field]
+                .OfType<IFieldDocumentPart>()
+                .GetEnumerator();
         }
 
         /// <inheritdoc />

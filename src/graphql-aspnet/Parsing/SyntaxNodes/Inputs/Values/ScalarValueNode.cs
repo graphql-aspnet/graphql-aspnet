@@ -39,5 +39,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values
         /// </summary>
         /// <value>The type of the value.</value>
         public ScalarValueType ValueType { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"SV-{this.Value}";
+        }
     }
 }

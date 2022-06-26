@@ -45,17 +45,21 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Initializes a new instance of the <see cref="VirtualGraphField" /> class.
         /// </summary>
+        /// <param name="parent">The parent graph type that owns this field.</param>
         /// <param name="fieldName">Name of the field in the object graph.</param>
         /// <param name="route">The path segment that represents this virtual field.</param>
         /// <param name="parentTypeName">The type name to use for the virtual type that owns this field.</param>
         public VirtualGraphField(
+            IGraphType parent,
             string fieldName,
             GraphFieldPath route,
             string parentTypeName)
         {
+
             Validation.ThrowIfNull(route, nameof(route));
             Validation.ThrowIfNullWhiteSpace(parentTypeName, nameof(parentTypeName));
 
+            this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
 

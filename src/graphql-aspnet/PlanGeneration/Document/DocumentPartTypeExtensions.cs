@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
 
     /// <summary>
     /// Helper methods for managing the <see cref="DocumentPartType"/>
@@ -34,35 +35,29 @@ namespace GraphQL.AspNet.PlanGeneration.Document
                 case DocumentPartType.Variable:
                     return typeof(IVariableDocumentPart);
 
-                case DocumentPartType.VariableCollection:
-                    return typeof(IVariableCollectionDocumentPart);
-
-                case DocumentPartType.FieldSelection:
-                    return typeof(IFieldSelectionDocumentPart);
-
                 case DocumentPartType.FieldSelectionSet:
                     return typeof(IFieldSelectionSetDocumentPart);
+
+                case DocumentPartType.Field:
+                    return typeof(IFieldDocumentPart);
 
                 case DocumentPartType.SuppliedValue:
                     return typeof(ISuppliedValueDocumentPart);
 
-                case DocumentPartType.InputArgument:
+                case DocumentPartType.Argument:
                     return typeof(IInputArgumentDocumentPart);
 
                 case DocumentPartType.Directive:
                     return typeof(IDirectiveDocumentPart);
 
-                case DocumentPartType.Fragment:
-                    return typeof(IFragmentDocumentPart);
+                case DocumentPartType.InlineFragment:
+                    return typeof(IInlineFragmentDocumentPart);
 
-                case DocumentPartType.FragmentCollection:
-                    return typeof(IFragmentCollectionDocumentPart);
+                case DocumentPartType.NamedFragment:
+                    return typeof(INamedFragmentDocumentPart);
 
-                case DocumentPartType.OperationCollection:
-                    return typeof(IOperationCollectionDocumentPart);
-
-                case DocumentPartType.InputArgumentCollection:
-                    return typeof(IInputArgumentCollectionDocumentPart);
+                case DocumentPartType.FragmentSpread:
+                    return typeof(IFragmentSpreadDocumentPart);
             }
 
             throw new InvalidOperationException($"Unsupported {partType}, no related interface exists.");

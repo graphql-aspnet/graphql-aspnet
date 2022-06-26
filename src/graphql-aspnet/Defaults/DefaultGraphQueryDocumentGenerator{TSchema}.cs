@@ -9,13 +9,13 @@
 
 namespace GraphQL.AspNet.Defaults
 {
-    using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.ValidationRules;
 
     /// <summary>
@@ -45,100 +45,61 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         /// <param name="syntaxTree">The syntax tree to create a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>
-        public IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree)
+        public virtual IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree)
         {
             Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
+            Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
+
+            return this.FillDocument(syntaxTree, new QueryDocument());
+        }
+
+        /// <summary>
+        /// An internal method for populating an existing query document.
+        /// </summary>
+        /// <param name="syntaxTree">The syntax tree to convert.</param>
+        /// <param name="document">The query document to fill.</param>
+        /// <returns>IGraphQueryDocument.</returns>
+        protected virtual IGraphQueryDocument FillDocument(ISyntaxTree syntaxTree, IGraphQueryDocument document)
+        {
+            Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
+            Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
+            Validation.ThrowIfNull(document, nameof(document));
 
             // --------------------------------------------
             // Step 1: Parse the syntax tree
             // --------------------------------------------
             // Walk all nodes of the tree and on a "per node" basis perform actions
-            // that are required of that node be it a specification validation rule or
-            // an incremental addition to the document context being built.
-            //
-            // Note: All packages are rendered and then named fragment nodes are processed first
-            //       as they are required by any operations referenced elsewhere in the document
+            // that are required of that node to create pieces (IDocumentPart) of the
+            // document being constructed
             // --------------------------------------------
             var nodeProcessor = new DocumentConstructionRuleProcessor();
-            var docContext = new DocumentContext(_schema);
-            var nodeContexts = new List<DocumentConstructionContext>();
-            foreach (var node in syntaxTree.Nodes)
-            {
-                var nodeContext = docContext.ForTopLevelNode(node);
-                nodeContexts.Add(nodeContext);
-            }
+            var constructionContext = new DocumentConstructionContext(syntaxTree, document, _schema);
 
-            nodeContexts.Sort(TopLevelNodeProcessingOrder.Instance);
-            var completedAllSteps = nodeProcessor.Execute(nodeContexts);
+            var completedAllSteps = nodeProcessor.Execute(constructionContext);
 
             // --------------------------------------------
-            // Step 2: Validate the document parts
+            // Step 2: Part Linking
             // --------------------------------------------
-            // Inspect the document parts that were generated during part one and, as a whole, run additional
-            // validation rules and perform final changes before constructing the final document.
-            // e.g. ensure all fragments were called, all variables were referenced at least once etc.
+            // Many document parts reference other parts, such as variable references or
+            // fragment spreads. With fragment spreads at the time the parts are constructed
+            // the named fragment may or may not have been parsed yet. As a result we need
+            // ensure that the fragment the spread references is assigned correctly after
+            // the whole document has been parsed
             // --------------------------------------------
             if (completedAllSteps)
             {
-                var documentProcessor = new DocumentValidationRuleProcessor();
-                var validationContexts = new List<DocumentValidationContext>();
-                foreach (var part in docContext.Children)
+                foreach (var spread in constructionContext.Spreads)
                 {
-                    var partContext = new DocumentValidationContext(docContext, part);
-                    validationContexts.Add(partContext);
+                    if (spread.Fragment == null)
+                    {
+                        var targetFragment = document.NamedFragments.SingleOrDefault(x => x.Name == spread.FragmentName.ToString());
+                        spread.AssignNamedFragment(targetFragment);
+                        targetFragment?.MarkAsReferenced();
+                    }
                 }
-
-                documentProcessor.Execute(validationContexts);
             }
 
-            // --------------------------------------------
-            // Step 3: Build out the final document
-            // --------------------------------------------
-            return docContext.ConstructDocument();
-        }
-
-        /// <summary>
-        /// Sorts a collection of construction packages such that those referencing a <see cref="NamedFragmentNode"/>
-        /// are at the top of the list.
-        /// </summary>
-        private class TopLevelNodeProcessingOrder : IComparer<DocumentConstructionContext>
-        {
-            public static TopLevelNodeProcessingOrder Instance { get; } = new TopLevelNodeProcessingOrder();
-
-            private TopLevelNodeProcessingOrder()
-            {
-
-            }
-
-            /// <summary>
-            /// Compares the two packages for sortability.
-            /// </summary>
-            /// <param name="x">The first package to compare.</param>
-            /// <param name="y">The second package to compare.</param>
-            /// <returns>System.Int32.</returns>
-            public int Compare(DocumentConstructionContext x, DocumentConstructionContext y)
-            {
-                if (x?.ActiveNode == null)
-                {
-                    return y?.ActiveNode is NamedFragmentNode ? 1 : 0;
-                }
-
-                if (y?.ActiveNode == null)
-                {
-                    return x?.ActiveNode is NamedFragmentNode ? -1 : 0;
-                }
-
-                if (x.ActiveNode is NamedFragmentNode && y.ActiveNode is NamedFragmentNode)
-                    return 0;
-
-                if (x.ActiveNode is NamedFragmentNode)
-                    return -1;
-
-                if (y.ActiveNode is NamedFragmentNode)
-                    return 1;
-
-                return 0;
-            }
+            return document;
         }
     }
 }

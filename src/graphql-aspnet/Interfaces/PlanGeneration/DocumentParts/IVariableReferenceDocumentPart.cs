@@ -18,11 +18,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     public interface IVariableReferenceDocumentPart : ISuppliedValueDocumentPart, IResolvablePointer
     {
         /// <summary>
-        /// Attaches the formal variable declaration found within an operation
-        /// to this input value to carry for future dereferencing.
+        /// Assigns the document variable this reference references.
         /// </summary>
-        /// <param name="variable">The variable to attach.</param>
-        internal void AssignVariableReference(IVariableDocumentPart variable);
+        /// <param name="variable">The variable.</param>
+        void AssignVariable(IVariableDocumentPart variable);
 
         /// <summary>
         /// Gets the name of the variable this instance references.
@@ -31,9 +30,9 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         string VariableName { get; }
 
         /// <summary>
-        /// Gets a reference to the variable instance in the operation that this value points to.
+        /// Gets the declared variable this reference references.
         /// </summary>
         /// <value>The variable.</value>
-        IVariableDocumentPart Variable { get;  }
+        IVariableDocumentPart Variable { get; }
     }
 }

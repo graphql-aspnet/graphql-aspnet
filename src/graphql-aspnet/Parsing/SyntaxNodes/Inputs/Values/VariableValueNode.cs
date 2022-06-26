@@ -32,5 +32,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values
             : base(startLocation, variableName)
         {
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"VV-{this.Value}";
+        }
     }
 }

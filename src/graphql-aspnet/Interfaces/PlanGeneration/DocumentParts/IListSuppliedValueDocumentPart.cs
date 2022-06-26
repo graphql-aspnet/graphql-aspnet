@@ -19,9 +19,9 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     public interface IListSuppliedValueDocumentPart : ISuppliedValueDocumentPart, IResolvableList
     {
         /// <summary>
-        /// Gets the list items contained in this value.
+        /// Gets the values supplied on this list in the source document.
         /// </summary>
-        /// <value>The list items.</value>
-        IList<ISuppliedValueDocumentPart> ListItems { get; }
+        /// <value>The list items defined in the document.</value>
+        public IEnumerable<ISuppliedValueDocumentPart> ListItems { get; }
     }
 }

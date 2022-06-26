@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.PlanGeneration
             _messages = new GraphMessageCollection();
 
             var topLevelFields = await this.CreateContextsForFieldSelectionSet(
-                operation.GraphType,
+                operation.GraphType as IObjectGraphType,
                 operation.FieldSelectionSet).ConfigureAwait(false);
 
             var result = new GraphFieldExecutableOperation(operation);
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <returns>IGraphFieldExecutionContext.</returns>
         private async Task<IGraphFieldInvocationContext> CreateFieldContext(
             IObjectGraphType sourceGraphType,
-            IFieldSelectionDocumentPart fieldSelection)
+            IFieldDocumentPart fieldSelection)
         {
             var concreteType = _schema.KnownTypes.FindConcreteType(sourceGraphType);
 
@@ -128,13 +128,13 @@ namespace GraphQL.AspNet.PlanGeneration
                 targetField,
                 new SourceOrigin(fieldSelection.Node.Location, fieldSelection.Path));
 
-            var arguments = this.CreateArgumentList(targetField, fieldSelection.Arguments);
+            var arguments = this.CreateArgumentList(targetField, fieldSelection.GatherArguments());
             foreach (var argument in arguments)
                 fieldContext.Arguments.Add(argument);
 
-            var directives = this.CreateDirectiveContexts(fieldSelection.Directives);
-            foreach (var directive in directives)
-                fieldContext.Directives.Add(directive);
+            //var directives = this.CreateDirectiveContexts(fieldSelection.GatherDirectives());
+            //foreach (var directive in directives)
+            //    fieldContext.Directives.Add(directive);
 
             // if the field declares itself as being specifically for a single concrete type
             // enforce that restriction (all user created POCO data types will, most virtual controller based types will not)
@@ -185,9 +185,9 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <param name="argumentContainer">The field selection.</param>
         /// <param name="querySuppliedArguments">The supplied argument collection parsed from the user query document.</param>
         /// <returns>Task&lt;IInputArgumentCollection&gt;.</returns>
-        private IInputArgumentCollection CreateArgumentList(
+        private Interfaces.PlanGeneration.IInputArgumentCollection CreateArgumentList(
             IGraphArgumentContainer argumentContainer,
-            IInputArgumentCollectionDocumentPart querySuppliedArguments)
+            Interfaces.PlanGeneration.DocumentParts.IInputArgumentCollectionDocumentPart querySuppliedArguments)
         {
             var collection = new InputArgumentCollection();
             var argGenerator = new ArgumentGenerator(_schema, querySuppliedArguments);
@@ -204,30 +204,30 @@ namespace GraphQL.AspNet.PlanGeneration
             return collection;
         }
 
-        /// <summary>
-        /// Convert the referenced directives into executable contexts.
-        /// </summary>
-        /// <param name="queryDirectives">The directives parsed from the user supplied query document..</param>
-        private IEnumerable<IDirectiveInvocationContext> CreateDirectiveContexts(IEnumerable<IDirectiveDocumentPart> queryDirectives)
-        {
-            var list = new List<IDirectiveInvocationContext>();
+        ///// <summary>
+        ///// Convert the referenced directives into executable contexts.
+        ///// </summary>
+        ///// <param name="queryDirectives">The directives parsed from the user supplied query document..</param>
+        //private IEnumerable<IDirectiveInvocationContext> CreateDirectiveContexts(IEnumerable<IDirectiveDocumentPart> queryDirectives)
+        //{
+        //    var list = new List<IDirectiveInvocationContext>();
 
-            foreach (var directive in queryDirectives)
-            {
-                var directiveContext = new DirectiveInvocationContext(
-                    directive.Directive,
-                    directive.Location,
-                    directive.Node.Location.AsOrigin());
+        //    foreach (var directive in queryDirectives)
+        //    {
+        //        var directiveContext = new DirectiveInvocationContext(
+        //            directive.Directive,
+        //            directive.Location,
+        //            directive.Node.Location.AsOrigin());
 
-                // gather arguments
-                var arguments = this.CreateArgumentList(directive.Directive, directive.Arguments);
-                foreach (var arg in arguments)
-                    directiveContext.Arguments.Add(arg);
+        //        // gather arguments
+        //        var arguments = this.CreateArgumentList(directive.Directive, directive.Arguments);
+        //        foreach (var arg in arguments)
+        //            directiveContext.Arguments.Add(arg);
 
-                list.Add(directiveContext);
-            }
+        //        list.Add(directiveContext);
+        //    }
 
-            return list;
-        }
+        //    return list;
+        //}
     }
 }

@@ -6,16 +6,16 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
     /// A collection of arguments parsed from a user's query document for a given field or directive.
     /// </summary>
-    public interface IInputArgumentCollectionDocumentPart : IReadOnlyDictionary<string, IInputArgumentDocumentPart>, IDocumentPart
+    public interface IInputArgumentCollectionDocumentPart : IReadOnlyDictionary<string, IInputArgumentDocumentPart>
     {
         /// <summary>
         /// Determines whether the specified input name exists on this collection.
@@ -23,12 +23,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <param name="inputName">Name of the input argument.</param>
         /// <returns><c>true</c> if this instance contains the key; otherwise, <c>false</c>.</returns>
         bool ContainsKey(ReadOnlyMemory<char> inputName);
-
-        /// <summary>
-        /// Adds the input argument to the collection.
-        /// </summary>
-        /// <param name="argument">The argument.</param>
-        internal void AddArgument(IInputArgumentDocumentPart argument);
 
         /// <summary>
         /// Searches for an argument with the provided name.
