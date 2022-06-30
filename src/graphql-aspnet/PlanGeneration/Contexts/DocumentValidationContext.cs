@@ -10,9 +10,11 @@
 namespace GraphQL.AspNet.PlanGeneration.Contexts
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.ValidationRules.Interfaces;
@@ -20,6 +22,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     /// <summary>
     /// A context used to validate all the created parts of a document generated during construction.
     /// </summary>
+    [DebuggerDisplay("Part: {ActivePart.PartType}")]
     internal class DocumentValidationContext : IContextGenerator<DocumentValidationContext>
     {
         /// <summary>
@@ -33,7 +36,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             this.ActivePart = Validation.ThrowIfNullOrReturn(queryDocument, nameof(queryDocument));
             this.Document = queryDocument;
             this.Messages = queryDocument.Messages;
-            this.ChecksComplete = new HashSet<string>();
+            this.GlobalKeys = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -45,7 +48,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             this.ParentContext = parentContext;
             this.Document = parentContext.Document;
             this.Messages = parentContext.Messages;
-            this.ChecksComplete = parentContext.ChecksComplete;
+            this.GlobalKeys = parentContext.GlobalKeys;
             this.Schema = parentContext.Schema;
         }
 
@@ -102,9 +105,10 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         public IGraphQueryDocument Document { get; }
 
         /// <summary>
-        /// Gets a set of keys identfying checks that have already been executed.
+        /// Gets a set of key/values identfying data items
+        /// that apply to the entire context.
         /// </summary>
-        /// <value>The checks complete.</value>
-        public HashSet<string> ChecksComplete { get; }
+        /// <value>The global keys.</value>
+        public Dictionary<string, object> GlobalKeys { get; }
     }
 }

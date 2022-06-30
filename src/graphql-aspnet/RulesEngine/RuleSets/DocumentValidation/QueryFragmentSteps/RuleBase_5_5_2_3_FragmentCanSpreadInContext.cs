@@ -16,31 +16,30 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
     /// <summary>
     /// A base class providing common functionality for the 5.5.2.3 rules.
     /// </summary>
     internal abstract class RuleBase_5_5_2_3_FragmentCanSpreadInContext
-        : DocumentConstructionRuleStep<FragmentSpreadNode>
+        : DocumentPartValidationRuleStep<IFragmentSpreadDocumentPart>
     {
-        /// <summary>
-        /// Determines whether this instance can process the given context. The rule will have no effect on the node if it cannot
-        /// process it.
-        /// </summary>
-        /// <param name="context">The context that may be acted upon.</param>
-        /// <returns><c>true</c> if this instance can validate the specified node; otherwise, <c>false</c>.</returns>
-        public override bool ShouldExecute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
         {
+            var str = this.RuleNumber;
             if (!base.ShouldExecute(context))
                 return false;
 
-            if (context.GraphType == null)
+            if (context.ActivePart?.GraphType == null || context.ActivePart.Parent?.GraphType == null)
                 return false;
 
-            if (!this.AllowedContextGraphTypeKinds.Contains(context.GraphType.Kind))
+            if (!this.AllowedFieldSetGraphTypeKinds.Contains(context.ActivePart.Parent.GraphType.Kind))
                 return false;
 
-            var targetGraphType = this.ExtractTargetGraphType(context);
+            var targetGraphType = ((IFragmentSpreadDocumentPart)context.ActivePart).GraphType;
             if (targetGraphType == null)
                 return false;
 
@@ -50,49 +49,33 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
             return true;
         }
 
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode"/> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
-        public override bool Execute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool Execute(DocumentValidationContext context)
         {
             // both objects should exist if the rule chain is followed
             // but do a null check just in case
-            var fragmentPointer = (FragmentSpreadNode)context.ActiveNode;
-            var targetGraphType = this.ExtractTargetGraphType(context);
-            var contextGraphType = context.GraphType;
+            var fragmentPointer = (IFragmentSpreadDocumentPart)context.ActivePart;
+            var targetGraphType = fragmentPointer.GraphType;
+            IGraphType spreadInGraphType = null;
 
-            if (targetGraphType == null || contextGraphType == null)
+            // this should always be true
+            if (fragmentPointer.Parent is IFieldSelectionSetDocumentPart fs)
+                spreadInGraphType = fs.GraphType;
+
+            if (targetGraphType == null || spreadInGraphType == null)
                 return false;
 
-            var rulePassed = this.CanAcceptGraphType(context.DocumentContext.Schema, contextGraphType, targetGraphType);
+            var rulePassed = this.CanAcceptGraphType(context.Schema, spreadInGraphType, targetGraphType);
             if (!rulePassed)
             {
                 this.ValidationError(
                     context,
-                    $"The named fragment '{fragmentPointer.PointsToFragmentName.ToString()}' has a target graph type " +
+                    $"The named fragment '{fragmentPointer.FragmentName.ToString()}' has a target graph type " +
                     $"named '{targetGraphType.Name}' (Kind: '{targetGraphType.Kind.ToString()}') which cannot be coerced " +
-                    $"into the current selection set's target graph type of '{contextGraphType.Name}'.");
+                    $"into the current selection set's target graph type of '{spreadInGraphType?.Name}'.");
             }
 
             return rulePassed;
-        }
-
-        /// <summary>
-        /// Attempts to find the target graph type of the active spread node on the context.
-        /// </summary>
-        /// <param name="context">The context to extract from.</param>
-        /// <returns>The found graph type or null if the fragment is not found or
-        /// has no defined graph type.</returns>
-        private IGraphType ExtractTargetGraphType(DocumentConstructionContext context)
-        {
-            var node = context.ActiveNode as FragmentSpreadNode;
-            if (node == null)
-                return null;
-
-            var namedFragment = context.DocumentContext.Fragments.FindFragment(node.PointsToFragmentName.ToString());
-            return namedFragment?.GraphType;
         }
 
         /// <summary>
@@ -112,10 +95,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
         protected abstract HashSet<TypeKind> AllowedTargetGraphTypeKinds { get; }
 
         /// <summary>
-        /// Gets the set of type kinds for the "in context" graph type
+        /// Gets the set of type kinds for the parent field set graph type
         /// that this rule can validate for.
         /// </summary>
         /// <value>A list of type kinds.</value>
-        protected abstract HashSet<TypeKind> AllowedContextGraphTypeKinds { get; }
+        protected abstract HashSet<TypeKind> AllowedFieldSetGraphTypeKinds { get; }
     }
 }

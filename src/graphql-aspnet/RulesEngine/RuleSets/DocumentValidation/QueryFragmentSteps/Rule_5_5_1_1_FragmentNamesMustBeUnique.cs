@@ -26,10 +26,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFrag
             var namedFragment = (INamedFragmentDocumentPart)context.ActivePart;
 
             var key = $"5.5.1.1|namedFragmentUniqueness|name:{namedFragment.Name}";
-            if (context.ChecksComplete.Contains(key))
+            if (context.GlobalKeys.ContainsKey(key))
                 return true;
 
-            context.ChecksComplete.Add(key);
+            context.GlobalKeys.Add(key, true);
 
             if (!context.Document.NamedFragments.IsUnique(namedFragment.Name))
             {

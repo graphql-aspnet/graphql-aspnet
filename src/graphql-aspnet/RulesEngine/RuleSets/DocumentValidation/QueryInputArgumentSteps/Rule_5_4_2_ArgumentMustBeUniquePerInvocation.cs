@@ -33,10 +33,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
             // short cut. if an arugment IS declared this rule would be
             // run twice duplicating the error message for the same argument name
             var key = $"5.4.2|{docPart.Parent.Path.DotString()}|argument:{docPart.Name}";
-            if (context.ChecksComplete.Contains(key))
+            if (context.GlobalKeys.ContainsKey(key))
                 return true;
 
-            context.ChecksComplete.Add(key);
+            context.GlobalKeys.Add(key, true);
 
             var parentType = "unknown type";
             var parentName = "~unknown~";

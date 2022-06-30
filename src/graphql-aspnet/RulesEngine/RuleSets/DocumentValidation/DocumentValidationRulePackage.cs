@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
     using GraphQL.AspNet.ValidationRules.Interfaces;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentSpreadNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFragmentNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps;
@@ -29,6 +30,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragmentSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputValueSteps;
 
     //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
     //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
@@ -114,8 +116,14 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
 
         private void BuildFragmentSpreadSteps()
         {
-
             var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new Rule_5_5_2_1_SpreadOfNamedFragmentMustExist());
+            steps.Add(new Rule_5_5_2_2_SpreadingANamedFragmentMustNotFormCycles());
+            steps.Add(new Rule_5_5_2_3_1_ObjectFragmentSpreadInObjectCanSpreadInContext());
+            steps.Add(new Rule_5_5_2_3_2_AbstractFragmentSpreadInObjectCanSpreadInContext());
+            steps.Add(new Rule_5_5_2_3_3_ObjectFragmentSpreadInAbstractCanSpreadInContext());
+            steps.Add(new Rule_5_5_2_3_4_AbstractFragmentSpreadInAbstractCanSpreadInContext());
+
             _stepCollection.Add(DocumentPartType.FragmentSpread, steps);
         }
 
@@ -124,6 +132,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             var steps = new List<IRuleStep<DocumentValidationContext>>();
 
             steps.Add(new Rule_5_1_1_ExecutableOperationDefinition());
+            steps.Add(new Rule_5_2_OperationTypeMustBeDefinedOnTheSchema());
             steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
             steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
 
@@ -186,7 +195,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_4_1_ArgumentMustBeDefinedOnTheField());
             steps.Add(new Rule_5_4_2_ArgumentMustBeUniquePerInvocation());
 
-            //steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
+            steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
             //steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
             //steps.Add(new Rule_5_8_5_VariableValueMustBeUsableInContext());
 

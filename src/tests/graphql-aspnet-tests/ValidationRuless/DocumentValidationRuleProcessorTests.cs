@@ -34,6 +34,9 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             // no such operation type as 'fakeOperationType'
             AddQuery("5.1.1", "fakeOperationType Operation1{ peopleMovers { elevator(id: 5){id, name} } }");
 
+            // mutation is not valid in this schema
+            AddQuery("5.2", "mutation Operation1{ peopleMovers { elevator(id: 5){id, name } } }");
+
             // duplciate named operations
             AddQuery("5.2.1.1", "query Operation1{ peopleMovers { elevator(id: 5){id, name } } }" +
                                 "query Operation1{ peopleMovers { elevator(id: 8){id, name } } }");
@@ -123,15 +126,15 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
 
             // spreading a fragment: Abstract inside object (object must "be a part of" the abstract type)
             // (Elevator does not implement interface HoriztonalMover)
-            AddQuery("5.5.2.3.2", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1 } } } fragment frag1 on HorizontalMover { id name }");
+            AddQuery("5.5.2.3.2", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1 } } } fragment frag1 on HorizontalMover { id }");
 
             // spreading a fragment: object inside an abstract (abstract must "contain" the object )
             // (HoriztonalMover is not implemented by Elevator)
-            AddQuery("5.5.2.3.3", "query Operation1{ peopleMovers { horizontalMover (id: 5){ ...frag1 } } } fragment frag1 on Elevator { id name }");
+            AddQuery("5.5.2.3.3", "query Operation1{ peopleMovers { horizontalMover (id: \"5\"){ ...frag1 } } } fragment frag1 on Elevator { id name }");
 
             // spreading a fragment: abstract inside an abstract (abstract must "contain" an intersection with other abstract)
             // (no object types implement both HorizontalMover and VerticalMover interfaces)
-            AddQuery("5.5.2.3.4", "query Operation1{ peopleMovers { horizontalMover(id: 5){ ...frag1 } } } fragment frag1 on VerticalMover { id name }");
+            AddQuery("5.5.2.3.4", "query Operation1{ peopleMovers { horizontalMover(id: \"5\"){ ...frag1 } } } fragment frag1 on VerticalMover { id }");
 
             // required argument must be provided (matchElevator accepts in an input object of "Input_Elevator", simulate passing all possible non-object types: number, stirng, enum, bool)
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: 5) { id name } } }");

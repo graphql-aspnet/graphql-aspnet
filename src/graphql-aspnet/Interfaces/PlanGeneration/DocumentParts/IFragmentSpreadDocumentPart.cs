@@ -11,9 +11,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     public interface IFragmentSpreadDocumentPart : IDocumentPart
     {
+        internal event DocumentCollectionAlteredHandler NamedFragmentAssigned;
+
         /// <summary>
         /// Assigns the named fragment document part this spread is referencing.
         /// </summary>

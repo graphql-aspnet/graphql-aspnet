@@ -9,47 +9,79 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentSpreadNodeSteps
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.PlanGeneration.Document;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// Ensures that whereever a named fragment is spread that it is not, in the current path,
     /// nested inside itself forming an infinite resolution loop.
     /// </summary>
-    internal class Rule_5_5_2_2_SpreadingANamedFragmentMustNotFormCycles : DocumentConstructionRuleStep<FragmentSpreadNode>
+    internal class Rule_5_5_2_2_SpreadingANamedFragmentMustNotFormCycles
+        : DocumentPartValidationRuleStep<IFragmentSpreadDocumentPart>
     {
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode" /> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
-        public override bool Execute(DocumentConstructionContext context)
+        /// <inheritdoc />
+        public override bool Execute(DocumentValidationContext context)
         {
-            var pointer = (FragmentSpreadNode)context.ActiveNode;
+            var pointer = (IFragmentSpreadDocumentPart)context.ActivePart;
 
-            var fragmentPath = new Stack<ReadOnlyMemory<char>>();
-            var formsACycle = this.DoesNodeFormAFragmentCycle(pointer, context.DocumentContext.Fragments, fragmentPath);
+
+            // this rule cant be properly validated if no named fragment was
+            // referenced. Rule 5.5.1.2 will trigger when this happens, this rule can be ignored.
+            if (pointer.Fragment == null)
+                return true;
+
+            if (!context.GlobalKeys.ContainsKey(this.RuleNumber))
+                context.GlobalKeys.Add(this.RuleNumber, new HashSet<INamedFragmentDocumentPart>());
+
+            var checkedFragments = context.GlobalKeys[this.RuleNumber] as HashSet<INamedFragmentDocumentPart>;
+
+            // if a spread of this fragmente has already been evaluated we dont
+            // need to eval it again
+            if (checkedFragments.Contains(pointer.Fragment))
+                return true;
+
+            // tracked for use in an error message to display the found
+            // cycle if needed
+            var fragmentPath = new Stack<string>();
+
+            var fragmentsVisited = new HashSet<INamedFragmentDocumentPart>();
+
+            // used to track already visited fragments in this change,
+            // if a repeat occurs we have a cycle and this rule fails
+            var formsACycle = this.DoesSpreadFormAFragmentCycle(
+                pointer,
+                fragmentPath,
+                fragmentsVisited);
+
             if (formsACycle)
             {
-                var list = fragmentPath.Select(x => $"'{x.ToString()}").ToList();
+                var list = fragmentPath.ToList();
                 list.Reverse();
 
                 var cyclePath = string.Join(" -> ", list);
                 this.ValidationError(
                     context,
-                    $"Spreading named fragment '{pointer.PointsToFragmentName.ToString()}' forms an infinite cycle of " +
-                    $"named fragment spreads. Recursive Fragment Path: {cyclePath}.");
+                    $"Spreading named fragment '{pointer.FragmentName}' forms an infinite cycle of " +
+                    $"named fragment spreads. Path: {cyclePath}.");
+
+                // when a cycle was formed we can be sure that any frags left
+                // in the visited chain also form a cycle
+                // and can be marked as checked
+                // e.g.  in the chain A -> B -> A , starting at A or B form a cycle
+                foreach (var frag in fragmentsVisited)
+                    checkedFragments.Add(frag);
 
                 return false;
             }
 
+            // if no rule was broken (meaning no cycles formed)
+            // then this fragment can be considered checked with no cycles
+            checkedFragments.Add(pointer.Fragment);
             return true;
         }
 
@@ -59,93 +91,52 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
         /// result in an infinite loop of resolutions. If the node is not a fragment pointer, the fragment's children
         /// are traversed looking for additional pointers.
         /// </summary>
-        /// <param name="node">The current node to inspect.</param>
-        /// <param name="allKnownNamedFragments">A list of all known named fragments that can be looked for.</param>
-        /// <param name="fragmentsUsed">A stack inidcating the path within the node tree being inspected of all
+        /// <param name="docPart">The document part being tested.</param>
+        /// <param name="fragmentPath">A stack inidcating the path within the node tree being inspected of all
         /// the named fragments that are/have been traversed.</param>
+        /// <param name="fragmentsVisited">The fragments visited.</param>
         /// <returns><c>True</c> if a cyclic path was detected; otherwise, false.</returns>
-        private bool DoesNodeFormAFragmentCycle(
-            SyntaxNode node,
-            IFragmentCollectionDocumentPart allKnownNamedFragments,
-            Stack<ReadOnlyMemory<char>> fragmentsUsed)
+        private bool DoesSpreadFormAFragmentCycle(
+            IFragmentSpreadDocumentPart docPart,
+            Stack<string> fragmentPath,
+            HashSet<INamedFragmentDocumentPart> fragmentsVisited)
         {
-            if (node is FragmentSpreadNode fsn)
+            // this rule cant be properly validated if no named fragment was
+            // referenced. Rule 5.5.1.2 will trigger when this happens, this rule can be ignored.
+            if (docPart.Fragment == null)
+                return false;
+
+            // push the path to aid in error messages if this inspection forms a
+            // cycle: e.g   A -> B -> A
+            fragmentPath.Push(docPart.Fragment.Name);
+            if (fragmentsVisited.Contains(docPart.Fragment))
+                return true;
+
+            // mark this instance as visited
+            fragmentsVisited.Add(docPart.Fragment);
+
+            var childSpreads = docPart.Fragment
+                .FieldSelectionSet?
+                .Children[DocumentPartType.FragmentSpread]
+                .OfType<IFragmentSpreadDocumentPart>();
+            childSpreads = childSpreads ?? Enumerable.Empty<IFragmentSpreadDocumentPart>();
+
+            foreach (var childSpread in childSpreads)
             {
-                // check to see if the current pointed at named fragment
-                // is already in the built up path
-                var fragmentAlreadyReferenced = this.IsInPath(fsn.PointsToFragmentName, fragmentsUsed);
-
-                // push where we are to the chain to indicate this pointer is being traversed
-                fragmentsUsed.Push(fsn.PointsToFragmentName);
-
-                // when the pointed at named fragment was already seen once we have formed a
-                // cycle and can't continue
-                // the framgent path will now contain something like: Frag1 -> Frag2 -> Frag3 -> Frag2
-                // which can be put into an error message.
-                if (fragmentAlreadyReferenced)
-                    return true;
-
-                // fetch the named fragment and walk its node chain to see if any
-                // cycles are formed given the current context.
-                // i.e. if the named fragment references any other named fragments walk through them looking
-                //      for cycles.
-                var namedFragment = allKnownNamedFragments.FindFragment(fsn.PointsToFragmentName.ToString());
-                if (namedFragment != null)
-                {
-                    if (this.DoesNodeFormAFragmentCycle(namedFragment.Node, allKnownNamedFragments, fragmentsUsed))
-                        return true;
-                }
-
-                // back out of the current named fragment pointer
-                fragmentsUsed.Pop();
-            }
-            else if (node.Children != null)
-            {
-                // when not pointed at a named fragment
-                // inspect every child to see if the current node
-                // ever references one deeper in its node chain
-                foreach (var childNode in node.Children)
-                {
-                    if (this.DoesNodeFormAFragmentCycle(childNode, allKnownNamedFragments, fragmentsUsed))
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Inspects the stack to determine i the given fragment name already exists within it.
-        /// </summary>
-        /// <param name="fragmentName">The name of the Named Fragment to search fro.</param>
-        /// <param name="fragmentPath">The current named framgnet path in the current scope.</param>
-        /// <returns><c>True</c> if the fragment name does exist in the stack; otherwise false.</returns>
-        private bool IsInPath(ReadOnlyMemory<char> fragmentName, Stack<ReadOnlyMemory<char>> fragmentPath)
-        {
-            // the stack shouldnt usually be more than 3-5 elements deep
-            // it only contains the named fragment names.
-            var span = fragmentName.Span;
-            foreach (var item in fragmentPath)
-            {
-                if (item.Span.SequenceEqual(span))
+                if (this.DoesSpreadFormAFragmentCycle(childSpread, fragmentPath, fragmentsVisited))
                     return true;
             }
 
+            // "unvisit" this fragment
+            fragmentPath.Pop();
+            fragmentsVisited.Remove(docPart.Fragment);
             return false;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.5.2.2";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Fragment-spreads-must-not-form-cycles";
     }
 }

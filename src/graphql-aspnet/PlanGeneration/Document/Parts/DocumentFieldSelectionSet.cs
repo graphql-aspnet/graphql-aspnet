@@ -44,12 +44,31 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart)
         {
+            // for any direct children of this selection set:
+            //      * fields
+            //      * top level fields of inline fragments
+            //      * top level fields of named framgents
+            // make sure to add their aliases to the set of known aliases
+            // at this level
             if (childPart is IFieldDocumentPart fds)
             {
                 if (!_fieldsByAlias.ContainsKey(fds.Alias))
                     _fieldsByAlias.Add(fds.Alias, new List<IFieldDocumentPart>());
 
                 _fieldsByAlias[fds.Alias].Add(fds);
+            }
+            else if (childPart is IFragmentDocumentPart fragPart)
+            {
+                foreach (var child in childPart.Children)
+                    this.OnChildPartAdded(child);
+
+                // monitor for new children being added to the inline or named fragment
+                fragPart.Children.PartAdded += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart);
+            }
+            else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+            {
+                this.OnChildPartAdded(fragSpread.Fragment);
+                fragSpread.NamedFragmentAssigned += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart);
             }
         }
 
@@ -59,22 +78,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             var list = new List<IFieldDocumentPart>();
             if (_fieldsByAlias.ContainsKey(alias))
                 list.AddRange(_fieldsByAlias[alias]);
-
-            foreach (var inlineFrag in this.Children[DocumentPartType.InlineFragment]
-                                           .OfType<IInlineFragmentDocumentPart>())
-            {
-                var items = inlineFrag.FieldSelectionSet?.FindFieldsOfAlias(alias);
-                if (items != null)
-                    list.AddRange(items);
-            }
-
-            foreach (var fragSpread in this.Children[DocumentPartType.FragmentSpread]
-                                           .OfType<IFragmentSpreadDocumentPart>())
-            {
-                var items = fragSpread.Fragment?.FieldSelectionSet?.FindFieldsOfAlias(alias);
-                if (items != null)
-                    list.AddRange(items);
-            }
 
             return list;
         }

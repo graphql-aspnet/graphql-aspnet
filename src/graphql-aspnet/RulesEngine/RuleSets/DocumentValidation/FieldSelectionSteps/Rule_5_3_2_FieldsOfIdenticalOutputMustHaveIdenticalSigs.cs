@@ -47,10 +47,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
             // this rule will execute against every field in a selection
             // we don't need to validate it more than once if there are mergable fields found
             var key = $"Rule_5_3_2|{selectionSet.Path.DotString()}|alias:{docPart.Alias.ToString()}";
-            if (context.ChecksComplete.Contains(key))
+            if (context.GlobalKeys.ContainsKey(key))
                 return true;
 
-            context.ChecksComplete.Add(key);
+            context.GlobalKeys.Add(key, true);
 
             var fields = selectionSet.FindFieldsOfAlias(docPart.Alias);
             if (fields.Count == 1)

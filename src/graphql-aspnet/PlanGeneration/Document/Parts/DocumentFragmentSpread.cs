@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
@@ -19,8 +20,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// Indicates that a named fragment is to be spread in place into the parent
     /// field selection set.
     /// </summary>
+    [DebuggerDisplay("Spread: {FragmentName}")]
     internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart
     {
+        /// <inheritdoc />
+        public event DocumentCollectionAlteredHandler NamedFragmentAssigned;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragmentSpread" /> class.
         /// </summary>
@@ -46,9 +51,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public void AssignNamedFragment(INamedFragmentDocumentPart targetFragment)
         {
-            this.Fragment = targetFragment;
-            this.AssignGraphType(targetFragment?.GraphType);
-            targetFragment.MarkAsReferenced();
+            if (targetFragment != null)
+            {
+                this.Fragment = targetFragment;
+                this.AssignGraphType(targetFragment?.GraphType);
+                targetFragment.MarkAsReferenced();
+                this.NamedFragmentAssigned?.Invoke(this, new DocumentPartEventArgs(targetFragment));
+            }
         }
 
         /// <inheritdoc />

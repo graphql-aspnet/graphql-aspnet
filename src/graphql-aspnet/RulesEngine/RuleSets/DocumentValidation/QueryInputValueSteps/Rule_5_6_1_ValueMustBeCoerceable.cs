@@ -14,40 +14,35 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// Ensures that the value of an input argument passed on the query document can be converted into the type required by the argument definition on the schema.
     /// </summary>
-    internal class Rule_5_6_1_ValueMustBeCoerceable : DocumentPartValidationRuleStep
+    internal class Rule_5_6_1_ValueMustBeCoerceable
+        : DocumentPartValidationRuleStep<IInputArgumentDocumentPart>
     {
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return context.ActivePart is IAssignableValueDocumentPart ivdp
-                && !(ivdp.Value is IVariableReferenceDocumentPart);
+            return base.ShouldExecute(context)
+                && !(((IInputArgumentDocumentPart)context.ActivePart).Value is IVariableReferenceDocumentPart)
+                && ((IInputArgumentDocumentPart)context.ActivePart).TypeExpression != null;
         }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var ivdp = context.ActivePart as IAssignableValueDocumentPart;
-            var value = ivdp.Value;
+            var argument = context.ActivePart as IInputArgumentDocumentPart;
 
-            // variables do not have to supply a default value
-            if (value == null && ivdp is IVariableDocumentPart)
-                return true;
-
-            if (!this.EvaluateContextData(value))
+            if (!this.EvaluateInputValue(argument))
             {
                 this.ValidationError(
                     context,
-                    value.ValueNode,
-                    $"Invalid {ivdp.InputType}. The value for the input item named '{ivdp.Name}' could " +
-                    $"not be successfully coerced to the required type of '{ivdp.TypeExpression}'.");
+                    argument.Value?.Node ?? argument.Node,
+                    $"Invalid argument value. The value for the input item named '{argument.Name}' could " +
+                    $"not be coerced to the required type of '{argument.TypeExpression}'.");
 
                 return false;
             }
@@ -56,19 +51,19 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         }
 
         /// <summary>
-        /// Validates the context input data for correctness against the argument definition on the schema.
+        /// Validates the input value for correctness against the argument's type expression
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="queryArg">The query argument, with an supplied value, to evaluate.</param>
         /// <returns><c>true</c> if the data is valid for this rule, <c>false</c> otherwise.</returns>
-        private bool EvaluateContextData(ISuppliedValueDocumentPart value)
+        private bool EvaluateInputValue(IInputArgumentDocumentPart queryArg)
         {
-            if (value == null)
+            if (queryArg?.TypeExpression == null || queryArg.Value == null)
                 return false;
 
-            var queryArg = value.Owner;
-            var valueTypeExpression = value.Owner.TypeExpression.Clone();
+            var argumentValue = queryArg.Value;
+            var valueTypeExpression = queryArg.TypeExpression.Clone();
             var valueSet = new List<ISuppliedValueDocumentPart>();
-            valueSet.Add(value);
+            valueSet.Add(argumentValue);
 
             // walk all type expression wrappers (IsList and IsNotNull)
             // and check the items in scope at the given level for their "correctness"
@@ -175,21 +170,24 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         }
 
         /// <summary>
-        /// From the curent context inspect every "up level" parent context to ensure that none were lists
+        /// From the curent document part inspect every "up level" item to ensure that none were lists
         /// or if they were, that the list contained at most one item.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The value to check.</param>
         /// <returns>
-        ///   <c>true</c> if the context chain represents one single value, <c>false</c> otherwise.</returns>
+        ///   <c>true</c> if the parental chain represents one single value, <c>false</c> otherwise.</returns>
         private bool EnsureSingleValueChain(ISuppliedValueDocumentPart value)
         {
-            var valueToCheck = value.ParentValue;
+            var valueToCheck = value.Parent;
             while (valueToCheck != null)
             {
+                if (!(valueToCheck is ISuppliedValueDocumentPart))
+                    break;
+
                 if (valueToCheck is IListSuppliedValueDocumentPart qliv && qliv.ListItems.Count > 1)
                     return false;
 
-                valueToCheck = valueToCheck.ParentValue;
+                valueToCheck = valueToCheck.Parent;
             }
 
             return true;

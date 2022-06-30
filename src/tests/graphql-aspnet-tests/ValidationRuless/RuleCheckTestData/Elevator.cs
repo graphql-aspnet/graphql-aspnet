@@ -24,5 +24,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless.RuleCheckTestData
 
         [GraphField("name", TypeExpression = TypeExpressions.IsNotNull)]
         public string Name { get; set; }
+
+        public int Height { get; set; }
     }
 }

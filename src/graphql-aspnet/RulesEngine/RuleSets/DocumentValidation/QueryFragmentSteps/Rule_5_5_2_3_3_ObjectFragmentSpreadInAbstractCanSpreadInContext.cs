@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
         /// that this rule can validate for.
         /// </summary>
         /// <value>A list of type kinds.</value>
-        protected override HashSet<TypeKind> AllowedContextGraphTypeKinds { get; }
+        protected override HashSet<TypeKind> AllowedFieldSetGraphTypeKinds { get; }
             = new HashSet<TypeKind> { TypeKind.UNION, TypeKind.INTERFACE };
 
         /// <summary>
