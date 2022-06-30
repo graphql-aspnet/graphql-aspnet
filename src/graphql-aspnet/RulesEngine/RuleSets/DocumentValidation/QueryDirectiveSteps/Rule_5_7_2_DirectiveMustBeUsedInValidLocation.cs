@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
@@ -23,45 +23,39 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
     internal class Rule_5_7_2_DirectiveMustBeUsedInValidLocation
         : DocumentPartValidationRuleStep<IDirectiveDocumentPart>
     {
-        /// <summary>
-        /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
-        /// </summary>
-        /// <param name="context">The validation context encapsulating a <see cref="SyntaxNode" /> that needs to be validated.</param>
-        /// <returns><c>true</c> if the node is valid, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
+        {
+            return base.ShouldExecute(context) && ((IDirectiveDocumentPart)context.ActivePart).GraphType is IDirective;
+        }
+
+        /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var queryDirective = context.FindContextItem<IDirectiveDocumentPart>();
-            if (queryDirective == null)
+            var docPart = (IDirectiveDocumentPart)context.ActivePart;
+            var directive = (IDirective)docPart.GraphType;
+            if (docPart == null || directive == null)
                 return false;
 
-            if (!queryDirective.Directive.Locations.HasFlag(queryDirective.Location))
+            if (!directive.Locations.HasFlag(docPart.Location))
             {
-                var locationName = queryDirective.Location.ToString();
-                var allowedLocations = queryDirective.Directive.Locations.GetIndividualFlags<DirectiveLocation>();
+                var locationName = docPart.Location.ToString();
+                var allowedLocations = directive.Locations.GetIndividualFlags<DirectiveLocation>();
 
                 var allowedString = string.Join(", ", allowedLocations.Select(x => x.ToString()));
                 this.ValidationError(
                     context,
-                    queryDirective.Node,
-                    $"Invalid directive location. Attempted use of '{queryDirective.Directive.Name}' at location '{locationName}'. " +
+                    $"Invalid directive location. Attempted use of '{directive.Name}' at location '{locationName}'. " +
                     $"Allowed Locations:  {allowedString}");
             }
 
             return true;
         }
 
-        /// <summary>
-        /// Gets the rule number being validated in this instance (e.g. "X.Y.Z"), if any.
-        /// </summary>
-        /// <value>The rule number.</value>
+        /// <inheritdoc />
         public override string RuleNumber => "5.7.2";
 
-        /// <summary>
-        /// Gets an anchor tag, pointing to a specific location on the webpage identified
-        /// as the specification supported by this library. If ReferenceUrl is overriden
-        /// this value is ignored.
-        /// </summary>
-        /// <value>The rule anchor tag.</value>
+        /// <inheritdoc />
         protected override string RuleAnchorTag => "#sec-Directives-Are-In-Valid-Locations";
     }
 }

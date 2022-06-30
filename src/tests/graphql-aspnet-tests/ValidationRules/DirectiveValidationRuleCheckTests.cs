@@ -6,7 +6,8 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.ValidationRuless
+
+namespace GraphQL.AspNet.Tests.ValidationRules
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;

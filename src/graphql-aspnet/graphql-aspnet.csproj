@@ -77,6 +77,9 @@
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_3_LeafReturnMustNotHaveChildFields.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_1_DirectiveMustBeDefinedInTheSchema.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_2_DirectiveMustBeUsedInValidLocation.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\RuleBase_5_5_2_3_FragmentCanSpreadInContext.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_1_FragmentNamesMustBeUnique.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_2_NamedFragmentGraphTypeMustExistInTheSchema.cs" />
@@ -94,10 +97,15 @@
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_1_ValueMustBeCoerceable.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_2_ComplexValueFieldsMustExistOnTargetGraphType.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_3_InputObjectFieldNamesMustBeUnique.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_1_1_ExecutableOperationDefinition.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_SubscriptionsRequire1RootField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_OperationTypeMustBeDefinedOnTheSchema.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_1_VariableNamesMustBeUnique.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_2_A_VariablesMustDeclareAType.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_2_B_VariablesMustDeclareAValidGraphType.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds.cs" />
   </ItemGroup>
 
   <ItemGroup>

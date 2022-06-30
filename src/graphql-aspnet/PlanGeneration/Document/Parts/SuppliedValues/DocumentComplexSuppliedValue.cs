@@ -36,6 +36,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             _arguments = new Dictionary<string, IInputArgumentDocumentPart>();
         }
 
+        protected override void OnChildPartAdded(IDocumentPart childPart)
+        {
+            base.OnChildPartAdded(childPart);
+            if (childPart is IInputArgumentDocumentPart iia)
+            {
+                if (!_arguments.ContainsKey(iia.Name))
+                    _arguments.Add(iia.Name, iia);
+            }
+        }
+
         /// <inheritdoc />
         public bool TryGetField(string fieldName, out IResolvableValueItem foundField)
         {

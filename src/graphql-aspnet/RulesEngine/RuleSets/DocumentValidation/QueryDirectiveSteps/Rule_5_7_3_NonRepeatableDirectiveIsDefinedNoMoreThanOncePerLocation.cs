@@ -11,8 +11,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
 {
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
@@ -22,31 +23,49 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
     internal class Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation
         : DocumentPartValidationRuleStep<IDirectiveDocumentPart>
     {
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
+        {
+            if (!base.ShouldExecute(context))
+                return false;
+
+            // skip this rule is repeatability is allowed for the target directive
+            if (((IDirectiveDocumentPart)context.ActivePart).GraphType is IDirective dir)
+            {
+                return !dir.IsRepeatable;
+            }
+
+            return false;
+        }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var thisDirective = context.ActivePart as IDirectiveDocumentPart;
-            var container = context.ActivePart.Parent as IDirectiveContainerDocumentPart;
+            var docPart = (IDirectiveDocumentPart)context.ActivePart;
+            var directive = (IDirective)docPart.GraphType;
 
-            if (thisDirective == null || container == null)
+            if (docPart == null || context.ParentPart == null)
                 return false;
 
             // skip validation of this rule if this second (or more) encountered
             // instance of this directive in the document
-            // we only need to validate it once per directive name
-            var firstInstance = container.Directives.FirstOrDefault(x => x.Name == thisDirective.Name);
-            if (firstInstance != null && firstInstance != thisDirective)
+            // we only need to validate its duplication once per directive name
+            var firstInstance = context.ParentPart.Children[DocumentPartType.Directive]
+                .OfType<IDirectiveDocumentPart>()
+                .FirstOrDefault(x => x.DirectiveName == docPart.DirectiveName);
+
+            if (firstInstance != null && firstInstance != docPart)
                 return true;
 
-            if (!thisDirective.Directive.IsRepeatable && container.Directives.Count(x =>
-                    x != thisDirective
-                    && x.Directive.Name == thisDirective.Directive.Name) > 0)
+            var totalWithName = context.ParentPart.Children[DocumentPartType.Directive]
+                .OfType<IDirectiveDocumentPart>().Count(x => x.DirectiveName == docPart.DirectiveName);
+
+            if (totalWithName > 1)
             {
                 this.ValidationError(
                     context,
-                    thisDirective.Node,
-                    $"The directive '{thisDirective.Name}' is already defined in this location in the query document. " +
+                    docPart.Node,
+                    $"The directive '{docPart.DirectiveName}' is already defined in this location in the query document. " +
                     $"Non-repeatable directives must be unique per instantiated location (e.g. once per field, once per input argument etc.).");
 
                 return false;

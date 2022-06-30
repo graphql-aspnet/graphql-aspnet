@@ -13,49 +13,48 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// Ensures that any input objects supply all the required fields of their argument definition in the target schema.
     /// </summary>
     internal class Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided
-        : DocumentPartValidationRuleStep
+        : DocumentPartValidationRuleStep<IComplexSuppliedValueDocumentPart>
     {
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return context.ActivePart is IAssignableValueDocumentPart ivdp &&
-                ivdp.Value is IComplexSuppliedValueDocumentPart;
+            return base.ShouldExecute(context)
+                && ((IComplexSuppliedValueDocumentPart)context.ActivePart).GraphType is IInputObjectGraphType;
         }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var ivdp = context.ActivePart as IAssignableValueDocumentPart;
-            var graphType = ivdp.GraphType as IInputObjectGraphType;
+            var complexValue = context.ActivePart as IComplexSuppliedValueDocumentPart;
+            var argument = complexValue.Parent as IInputArgumentDocumentPart;
+            var graphType = complexValue.GraphType as IInputObjectGraphType;
             var requiredFields = graphType?.Fields.Where(x => x.TypeExpression.IsRequired).ToList();
-            var complexValue = ivdp.Value as IComplexSuppliedValueDocumentPart;
-            if (complexValue == null || requiredFields == null)
+
+            if (requiredFields == null)
             {
                 this.ValidationError(
                     context,
-                    ivdp.Node,
-                    $"Input type mismatch. The {ivdp.InputType} '{ivdp.Name}' was used like an {TypeKind.INPUT_OBJECT.ToString()} " +
-                    $"but contained no fields to evaluate. Check the schema definition for {ivdp.TypeExpression.TypeName}.");
+                    $"Input type mismatch. The input argument '{argument.Name}' was used like an {TypeKind.INPUT_OBJECT.ToString()} " +
+                    $"but contained no fields to evaluate. Check the schema definition for {graphType.Name}.");
                 return false;
             }
 
             var allFieldsAccountedFor = true;
             foreach (var field in requiredFields)
             {
-                if (!complexValue.Arguments.ContainsKey(field.Name))
+                if (!complexValue.TryGetArgument(field.Name, out _))
                 {
                     this.ValidationError(
                         context,
-                        ivdp.Node,
-                        $"The {ivdp.InputType} '{ivdp.Name}' requires a field named '{field.Name}'.");
+                        $"The graph type '{graphType.Name}' requires a field named '{field.Name}'.");
+
                     allFieldsAccountedFor = false;
                 }
             }

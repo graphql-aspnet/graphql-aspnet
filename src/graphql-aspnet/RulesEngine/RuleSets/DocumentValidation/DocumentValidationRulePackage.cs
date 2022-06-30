@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFragmentNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragmentSteps;
@@ -113,6 +114,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_6_2_ComplexValueFieldsMustExistOnTargetGraphType());
             steps.Add(new Rule_5_6_3_InputObjectFieldNamesMustBeUnique());
+            steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
             _stepCollection.Add(DocumentPartType.SuppliedValue, steps);
         }
 
@@ -180,9 +182,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
 
-            //steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
-            //steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
-            //steps.Add(new Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation());
+            steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
+            steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
+            steps.Add(new Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation());
 
             // must evaluate after 5.7.1 which checks for the existing of the directive
             // in the scheam
@@ -207,6 +209,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildQueryVariableSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new Rule_5_8_1_VariableNamesMustBeUnique());
+            steps.Add(new Rule_5_8_2_A_VariablesMustDeclareAType());
+            steps.Add(new Rule_5_8_2_B_VariablesMustDeclareAValidGraphType());
+            steps.Add(new Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds());
 
             // 1. ensure that any variable declared on an operation is referenced at least once in said operation.
             //steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());

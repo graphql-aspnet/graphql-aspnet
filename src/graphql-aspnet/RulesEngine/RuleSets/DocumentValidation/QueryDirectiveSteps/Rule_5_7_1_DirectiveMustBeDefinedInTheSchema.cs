@@ -9,12 +9,10 @@
 
 namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps
 {
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
     /// <summary>
     /// A rule that checks a directive node's parent to ensure that the location the directive is attached to
@@ -26,13 +24,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirect
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var directivePart = context.FindContextItem<IDirectiveDocumentPart>();
-            if (directivePart == null || directivePart.Directive == null || directivePart.Directive.Kind != TypeKind.DIRECTIVE)
+            var directivePart = (IDirectiveDocumentPart)context.ActivePart;
+            if (directivePart.GraphType == null || directivePart.GraphType.Kind != TypeKind.DIRECTIVE)
             {
                 this.ValidationError(
                     context,
                     directivePart.Node,
-                    $"The target schema does not contain a directive named '{directivePart.Node.DirectiveName.ToString()}'.");
+                    $"The target schema does not contain a directive named '{directivePart.DirectiveName}'.");
 
                 return false;
             }
