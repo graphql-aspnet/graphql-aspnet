@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
             {
                 var inputField = iio.Fields.FindField(node.InputName.ToString());
                 expectedTypeExpression = inputField?.TypeExpression;
-                inputItemGraphType = context.Schema.KnownTypes.FindGraphType(inputField.TypeExpression.TypeName);
+                inputItemGraphType = context.Schema.KnownTypes.FindGraphType(expectedTypeExpression?.TypeName);
             }
 
             var docPart = new DocumentInputArgument(

@@ -111,6 +111,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildSuppliedValueSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new Rule_5_6_2_ComplexValueFieldsMustExistOnTargetGraphType());
+            steps.Add(new Rule_5_6_3_InputObjectFieldNamesMustBeUnique());
             _stepCollection.Add(DocumentPartType.SuppliedValue, steps);
         }
 

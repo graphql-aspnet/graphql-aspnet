@@ -92,6 +92,8 @@
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\Rule_5_4_1_ArgumentMustBeDefinedOnTheField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\Rule_5_4_2_ArgumentMustBeUniquePerInvocation.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_1_ValueMustBeCoerceable.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_2_ComplexValueFieldsMustExistOnTargetGraphType.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_3_InputObjectFieldNamesMustBeUnique.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_1_1_ExecutableOperationDefinition.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_SubscriptionsRequire1RootField.cs" />
