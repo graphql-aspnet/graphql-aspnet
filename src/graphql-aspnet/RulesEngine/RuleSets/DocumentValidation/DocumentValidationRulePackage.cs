@@ -24,6 +24,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentSpreadNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps;
+    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValueNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFragmentNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
@@ -32,6 +33,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragmentSteps;
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputValueSteps;
+    // using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryVariableSteps;
 
     //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
     //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
@@ -139,6 +141,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_2_OperationTypeMustBeDefinedOnTheSchema());
             steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
             steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
+            steps.Add(new Rule_5_8_VariableDeclarationChecks());
 
             _stepCollection.Add(DocumentPartType.Operation, steps);
         }
@@ -209,15 +212,15 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildQueryVariableSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
-            steps.Add(new Rule_5_8_1_VariableNamesMustBeUnique());
-            steps.Add(new Rule_5_8_2_A_VariablesMustDeclareAType());
-            steps.Add(new Rule_5_8_2_B_VariablesMustDeclareAValidGraphType());
-            steps.Add(new Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds());
+            // steps.Add(new Rule_5_8_1_VariableNamesMustBeUnique());
+            //steps.Add(new Rule_5_8_2_A_VariablesMustDeclareAType());
+            //steps.Add(new Rule_5_8_2_B_VariablesMustDeclareAValidGraphType());
+            //steps.Add(new Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds());
 
             // 1. ensure that any variable declared on an operation is referenced at least once in said operation.
             //steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
             //steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
-            //steps.Add(new Rule_5_8_4_AllVariablesMustBeUsedInTheOperation());
+            // steps.Add(new Rule_5_8_4_AllDeclaredVariablesMustBeUsedInTheOperation());
 
             _stepCollection.Add(DocumentPartType.Variable, steps);
         }

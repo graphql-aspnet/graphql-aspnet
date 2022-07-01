@@ -534,10 +534,10 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             Assert.AreEqual("MyQuery", operation.Name);
 
-            var variables = operation.GatherVariables();
+            var variables = operation.Variables;
             Assert.AreEqual(1, variables.Count);
 
-            var var1 = variables.First().Value;
+            var var1 = variables.First();
             Assert.AreEqual("var1", var1.Name);
             Assert.AreEqual("Int!", var1.TypeExpression.ToString());
             Assert.AreEqual(Constants.ScalarNames.INT, var1.GraphType.Name);
@@ -690,7 +690,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             var bagel4VariableRef = bagelsValue[1]
                 .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "orderCreated")
-                .Children.OfType<IVariableReferenceDocumentPart>().Single();
+                .Children.OfType<IVariableUsageDocumentPart>().Single();
             Assert.AreEqual("orderCount", bagel4VariableRef.VariableName.ToString());
 
             var singleDonut = firstItem

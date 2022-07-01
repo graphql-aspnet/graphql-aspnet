@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value that is a pointer to a variable defined in the operation that contains it.
     /// </summary>
     [DebuggerDisplay("Variable Ref: {VariableName}")]
-    internal class DocumentVariableReferenceValue : DocumentSuppliedValue, IVariableReferenceDocumentPart
+    internal class DocumentVariableReferenceValue : DocumentSuppliedValue, IVariableUsageDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariableReferenceValue" /> class.
@@ -45,10 +45,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// <inheritdoc />
         public override bool IsEqualTo(ISuppliedValueDocumentPart value)
         {
-            if (value == null || !(value is IVariableReferenceDocumentPart))
+            if (value == null || !(value is IVariableUsageDocumentPart))
                 return false;
 
-            var otherVar = value as IVariableReferenceDocumentPart;
+            var otherVar = value as IVariableUsageDocumentPart;
             return this.VariableName.Span.SequenceEqual(otherVar.VariableName.Span);
         }
 

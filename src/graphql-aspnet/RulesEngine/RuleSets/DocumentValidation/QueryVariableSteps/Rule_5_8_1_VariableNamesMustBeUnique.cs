@@ -32,20 +32,20 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
             var docPart = (IVariableDocumentPart)context.ActivePart;
             var operation = (IOperationDocumentPart)context.ParentPart;
 
-            var variables = operation.GatherVariables();
-            if (variables != null)
+            if (operation.Variables.IsDuplicated(docPart.Name))
             {
-                if (variables.TryGetValue(docPart.Name, out var foundVar))
+                // if the tracked variable IS this variable being tested
+                // then report on it (this enables us to report once per duplicated variable, rather
+                // than once per duplication).
+                operation.Variables.TryGetValue(docPart.Name, out var trackedVar);
+                if (trackedVar == docPart)
                 {
-                    if (foundVar != docPart)
-                    {
-                        this.ValidationError(
-                            context,
-                            $"Duplicate Variable Name. The variable named '{docPart.Name.ToString()}' must be unique " +
-                            "in its contained operation. Ensure that all variable names, per operation, are unique (case-sensitive).");
+                    this.ValidationError(
+                        context,
+                        $"Duplicate Variable Name. The variable named '{docPart.Name.ToString()}' must be unique " +
+                        "in its contained operation. Ensure that all variable names, per operation, are unique (case-sensitive).");
 
-                        return false;
-                    }
+                    return false;
                 }
             }
 

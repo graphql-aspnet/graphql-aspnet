@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
 
             _fragmentCollection = new DocumentNamedFragmentCollection(this);
 
-            this.Children.PartAdded += this.Children_PartAdded;
+            this.Children.ChildPartAdded += this.Children_PartAdded;
         }
 
         private void Children_PartAdded(object sender, DocumentPartEventArgs eventArgs)

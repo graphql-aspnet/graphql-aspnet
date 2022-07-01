@@ -22,6 +22,12 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
     internal class Rule_5_8_2_B_VariablesMustDeclareAValidGraphType
         : DocumentPartValidationRuleStep<IVariableDocumentPart>
     {
+        /// <inheritdoc />
+        public override bool ShouldExecute(DocumentValidationContext context)
+        {
+            return base.ShouldExecute(context)
+                && ((IVariableDocumentPart)context.ActivePart).TypeExpression != null; // passed 5.8.2A
+        }
         /// <summary>
         /// Validates the specified node to ensure it is "correct" in the context of the rule doing the valdiation.
         /// </summary>

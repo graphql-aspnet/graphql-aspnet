@@ -18,11 +18,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     public interface IVariableDocumentPart : IDocumentPart
     {
         /// <summary>
-        /// Marks this variable as being referenced within the operation.
-        /// </summary>
-        internal void MarkAsReferenced();
-
-        /// <summary>
         /// Gets the type expression assigned to this variable.
         /// </summary>
         /// <value>The type expression.</value>
@@ -33,13 +28,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The name.</value>
         string Name { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is referenced somewhere within the operation
-        /// where its defined.
-        /// </summary>
-        /// <value><c>true</c> if this instance is referenced; otherwise, <c>false</c>.</value>
-        bool IsReferenced { get; }
 
         /// <summary>
         /// Gets the default value assigned to this variable, if any.

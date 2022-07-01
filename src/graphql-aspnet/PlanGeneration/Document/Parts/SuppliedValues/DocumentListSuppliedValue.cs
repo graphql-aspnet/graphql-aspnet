@@ -60,10 +60,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
-            base.OnChildPartAdded(childPart);
-            if (childPart is ISuppliedValueDocumentPart svdp)
+            if (relativeDepth == 1 && childPart is ISuppliedValueDocumentPart svdp)
                 _listItems.Add(svdp);
         }
 

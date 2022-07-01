@@ -43,27 +43,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
 
             var suppliedValue = DocumentSuppliedValueFactory.CreateInputValue(context.ParentPart, node, keyValue);
 
-            if (suppliedValue is IVariableReferenceDocumentPart varRef)
-            {
-                if (context.ActiveOperation != null)
-                {
-                    var varName = varRef.VariableName.ToString();
-                    var variables = context.ActiveOperation.GatherVariables();
-                    if (variables.ContainsKey(varName))
-                    {
-                        var variable = variables[varName];
-                        varRef.AssignVariable(variable);
-                        variable.MarkAsReferenced();
-                    }
-                }
-            }
-            else
-            {
-                // the graph type of the supplied value is that of its owning argument
-                // unless it is a reference to a declared variable. Declared variables
-                // have their own declared graph type and expression
-                suppliedValue.AssignGraphType(context.ParentPart.GraphType);
-            }
+            // the graph type of the supplied value is that of its owning argument
+            suppliedValue.AssignGraphType(context.ParentPart.GraphType);
 
             context.AssignPart(suppliedValue);
             return true;

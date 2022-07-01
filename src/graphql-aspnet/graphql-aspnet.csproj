@@ -102,10 +102,7 @@
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_SubscriptionsRequire1RootField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_OperationTypeMustBeDefinedOnTheSchema.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_1_VariableNamesMustBeUnique.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_2_A_VariablesMustDeclareAType.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_2_B_VariablesMustDeclareAValidGraphType.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_8_VariableDeclarationChecks.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -123,5 +120,9 @@
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
 
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RulesEngine\RuleSets\DocumentValidation\QueryVariableSteps\" />
   </ItemGroup>
 </Project>

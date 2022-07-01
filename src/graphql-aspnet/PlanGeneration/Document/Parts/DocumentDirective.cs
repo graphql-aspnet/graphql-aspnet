@@ -38,10 +38,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _arguments = new DocumentInputArgumentCollection(this);
         }
 
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
-            base.OnChildPartAdded(childPart);
-
             if (childPart is IInputArgumentDocumentPart iiadp)
                 _arguments.AddArgumment(iiadp);
         }

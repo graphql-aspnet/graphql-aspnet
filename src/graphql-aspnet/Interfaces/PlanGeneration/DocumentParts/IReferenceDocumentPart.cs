@@ -1,0 +1,27 @@
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+{
+    public interface IReferenceDocumentPart : IDocumentPart
+    {
+        /// <summary>
+        /// Gets the set named fragment spreads used in field selection sets within this operation.
+        /// </summary>
+        /// <value>All named fragment spreads within this operation.</value>
+        IFragmentSpreadCollectionDocumentPart FragmentSpreads { get; }
+
+        /// <summary>
+        /// Gets the supplied value items which reference a variable, on fields or directives, within
+        /// this operation.
+        /// </summary>
+        /// <value>All variable references declared within this operation.</value>
+        IVariableUsageCollectionDocumentPart VariableUsages { get; }
+    }
+}

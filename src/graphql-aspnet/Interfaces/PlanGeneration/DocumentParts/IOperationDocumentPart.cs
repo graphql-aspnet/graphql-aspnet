@@ -9,20 +9,15 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    using System.Collections.Generic;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A represention of a top level operation (mutation, query etc.) defined in a query document.
     /// </summary>
-    public interface IOperationDocumentPart : IDocumentPart
+    public interface IOperationDocumentPart : IReferenceDocumentPart, IDocumentPart
     {
-        /// <summary>
-        /// Gathers the variables currently defined as children of this
-        /// operation and packages them into a collection.
-        /// </summary>
-        /// <returns>IVariableCollectionDocumentPart.</returns>
-        IVariableCollectionDocumentPart GatherVariables();
-
         /// <summary>
         /// Gets the type of the operation that was parsed.
         /// </summary>
@@ -48,5 +43,11 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The field selection set.</value>
         IFieldSelectionSetDocumentPart FieldSelectionSet { get; }
+
+        /// <summary>
+        /// Gets the variables declared in this operation.
+        /// </summary>
+        /// <value>The variables.</value>
+        IVariableCollectionDocumentPart Variables { get; }
     }
 }

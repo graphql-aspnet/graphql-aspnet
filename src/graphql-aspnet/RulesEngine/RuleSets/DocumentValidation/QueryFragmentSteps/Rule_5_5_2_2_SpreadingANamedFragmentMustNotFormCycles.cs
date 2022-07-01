@@ -29,7 +29,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentS
         {
             var pointer = (IFragmentSpreadDocumentPart)context.ActivePart;
 
-
             // this rule cant be properly validated if no named fragment was
             // referenced. Rule 5.5.1.2 will trigger when this happens, this rule can be ignored.
             if (pointer.Fragment == null)

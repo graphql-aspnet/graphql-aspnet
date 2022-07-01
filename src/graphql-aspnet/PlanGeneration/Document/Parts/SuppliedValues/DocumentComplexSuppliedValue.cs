@@ -36,10 +36,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             _arguments = new Dictionary<string, IInputArgumentDocumentPart>();
         }
 
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        /// <inheritdoc />
+        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
-            base.OnChildPartAdded(childPart);
-            if (childPart is IInputArgumentDocumentPart iia)
+            if (relativeDepth == 1 && childPart is IInputArgumentDocumentPart iia)
             {
                 if (!_arguments.ContainsKey(iia.Name))
                     _arguments.Add(iia.Name, iia);

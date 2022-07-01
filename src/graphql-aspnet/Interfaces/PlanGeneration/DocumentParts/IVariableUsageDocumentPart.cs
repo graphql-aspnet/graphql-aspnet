@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A supplied value in a query document representing a variable defined on the
     /// query operation that owns this document part.
     /// </summary>
-    public interface IVariableReferenceDocumentPart : ISuppliedValueDocumentPart, IResolvablePointer
+    public interface IVariableUsageDocumentPart : ISuppliedValueDocumentPart, IResolvablePointer
     {
         /// <summary>
         /// Assigns the document variable this reference references.
@@ -29,11 +29,5 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The name of the variable.</value>
         ReadOnlyMemory<char> VariableName { get; }
-
-        /// <summary>
-        /// Gets the declared variable this reference references.
-        /// </summary>
-        /// <value>The variable.</value>
-        IVariableDocumentPart Variable { get; }
     }
 }

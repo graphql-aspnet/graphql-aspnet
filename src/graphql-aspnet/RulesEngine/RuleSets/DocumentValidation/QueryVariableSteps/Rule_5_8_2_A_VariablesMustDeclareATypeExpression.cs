@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
     /// <summary>
     /// A rule that dictates each variables core type must be a SCALAR, ENUM or INPUT_OBJECT.
     /// </summary>
-    internal class Rule_5_8_2_A_VariablesMustDeclareAType
+    internal class Rule_5_8_2_A_VariablesMustDeclareATypeExpression
         : DocumentPartValidationRuleStep<IVariableDocumentPart>
     {
         /// <inheritdoc />

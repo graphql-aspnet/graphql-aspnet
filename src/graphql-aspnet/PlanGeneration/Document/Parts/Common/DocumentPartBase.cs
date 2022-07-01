@@ -38,12 +38,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.Children = new DocumentPartsCollection(this);
 
             // wire up local events
-            this.Children.PartAdded += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart);
-            this.Children.BeforePartAdded += (o, e) =>
-            {
-                this.OnBeforeChildAdd(e.TargetDocumentPart);
-                e.AllowAdd = this.OnBeforeChildAdd(e.TargetDocumentPart);
-            };
+            this.Children.ChildPartAdded += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart, e.RelativeDepth);
         }
 
         /// <summary>
@@ -61,21 +56,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// When overriden in a child class, this method is called
         /// when a child part is added to this instance.
         /// </summary>
-        /// <param name="childPart">The child part.</param>
-        protected virtual void OnChildPartAdded(IDocumentPart childPart)
+        /// <param name="childPart">The child part that was added.</param>
+        /// <param name="relativeDepth">The depth of the part relative to this part. A depth of 1 indicates
+        /// a direect child, 2 a grand child etc..</param>
+        protected virtual void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
-        }
-
-        /// <summary>
-        /// When overriden in a child class, allows for the inspection
-        /// of the child part to determine if it can be added.
-        /// </summary>
-        /// <param name="childPart">The child part.</param>
-        /// <returns><c>true</c> to indicate that the part should be added;
-        /// otherwise false.</returns>
-        protected virtual bool OnBeforeChildAdd(IDocumentPart childPart)
-        {
-            return true;
         }
 
         /// <inheritdoc />

@@ -37,14 +37,42 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin messageOrigin = null,
             Exception exception = null)
         {
+            return FromValidationRule(
+                validationRule.RuleNumber,
+                validationRule.ReferenceUrl,
+                validationRule.ErrorCode,
+                messageText,
+                messageOrigin,
+                exception);
+        }
+
+        /// <summary>
+        /// Creates a graph message from the given rule and message specifics in a common manner.
+        /// </summary>
+        /// <param name="ruleNumber">The rule number that failed validation.</param>
+        /// <param name="url">The url pointing to the rule in the specification.</param>
+        /// <param name="errorCode">The error code.</param>
+        /// <param name="messageText">The context sensitive message text.</param>
+        /// <param name="messageOrigin">The origin location where this message is generated, if any.</param>
+        /// <param name="exception">The exception generated with extended details, if any.</param>
+        /// <returns>IGraphMessage.</returns>
+        internal static IGraphMessage FromValidationRule(
+            string ruleNumber,
+            string url,
+            string errorCode,
+            string messageText,
+            SourceOrigin messageOrigin = null,
+            Exception exception = null)
+        {
             var graphMessage = new GraphExecutionMessage(
                 GraphMessageSeverity.Critical,
                 messageText,
-                validationRule.ErrorCode,
+                errorCode,
                 messageOrigin,
                 exception);
-            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_NUMBER, validationRule.RuleNumber);
-            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_URL, validationRule.ReferenceUrl);
+
+            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_NUMBER, ruleNumber);
+            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_URL, url);
             return graphMessage;
         }
 

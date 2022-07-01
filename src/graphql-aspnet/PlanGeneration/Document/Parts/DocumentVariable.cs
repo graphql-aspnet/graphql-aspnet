@@ -40,15 +40,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public void MarkAsReferenced()
-        {
-            this.IsReferenced = true;
-        }
-
-        /// <inheritdoc />
-        public bool IsReferenced { get; private set; }
-
-        /// <inheritdoc />
         public string Name { get; }
 
         /// <inheritdoc />

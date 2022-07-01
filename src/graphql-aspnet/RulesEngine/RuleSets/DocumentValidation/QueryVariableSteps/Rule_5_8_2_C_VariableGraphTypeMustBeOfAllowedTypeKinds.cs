@@ -28,8 +28,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableN
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context)
-                && ((IVariableDocumentPart)context.ActivePart).GraphType != null
-                && ((IVariableDocumentPart)context.ActivePart).TypeExpression != null;
+                && ((IVariableDocumentPart)context.ActivePart).GraphType != null // passed 5.8.2A
+                && ((IVariableDocumentPart)context.ActivePart).TypeExpression != null; // passed 5.8.2B
         }
 
         /// <inheritdoc />

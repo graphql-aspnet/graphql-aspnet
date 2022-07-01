@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -21,6 +22,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Named Fragment: {Name}")]
     internal class DocumentNamedFragment : DocumentFragmentBase<NamedFragmentNode>, INamedFragmentDocumentPart
     {
+        private DocumentFragmentSpreadCollection _fragmentSpreads;
+        private DocumentVariableUsageCollection _variableUsages;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNamedFragment" /> class.
         /// </summary>
@@ -33,6 +37,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             this.Name = fragmentNode.FragmentName.ToString();
             this.TargetGraphTypeName = fragmentNode.TargetType.ToString();
+
+            _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
+            _variableUsages = new DocumentVariableUsageCollection(this);
         }
 
         /// <inheritdoc />
@@ -44,9 +51,23 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
+        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        {
+            base.OnChildPartAdded(childPart, relativeDepth);
+            if (childPart is IVariableUsageDocumentPart varRef)
+                _variableUsages.Add(varRef);
+            else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+                _fragmentSpreads.Add(fragSpread);
+        }
+
+        /// <inheritdoc />
         public string Name { get; }
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.NamedFragment;
+
+        public IFragmentSpreadCollectionDocumentPart FragmentSpreads => _fragmentSpreads;
+
+        public IVariableUsageCollectionDocumentPart VariableUsages => _variableUsages;
     }
 }

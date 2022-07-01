@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryVariab
     /// <summary>
     /// Ensures that any declared variable was referenced in the operation.
     /// </summary>
-    internal class Rule_5_8_4_AllVariablesMustBeUsedInTheOperation
+    internal class Rule_5_8_4_AllDeclaredVariablesMustBeUsedInTheOperation
         : DocumentPartValidationRuleStep<IVariableDocumentPart>
     {
         /// <summary>

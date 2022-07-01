@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 this.Fragment = targetFragment;
                 this.AssignGraphType(targetFragment?.GraphType);
                 targetFragment.MarkAsReferenced();
-                this.NamedFragmentAssigned?.Invoke(this, new DocumentPartEventArgs(targetFragment));
+                this.NamedFragmentAssigned?.Invoke(this, new DocumentPartEventArgs(targetFragment, 0));
             }
         }
 

@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
-    public interface INamedFragmentDocumentPart : IFragmentDocumentPart
+    public interface INamedFragmentDocumentPart : IFragmentDocumentPart, IReferenceDocumentPart
     {
 
         /// <summary>

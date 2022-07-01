@@ -18,7 +18,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
     using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
-    /// Ensures that the value of an input argument passed on the query document can be converted into the type required by the argument definition on the schema.
+    /// Ensures that the value of an input argument passed on the query document
+    /// can be converted into the type required by the argument definition on the schema.
     /// </summary>
     internal class Rule_5_6_1_ValueMustBeCoerceable
         : DocumentPartValidationRuleStep<IInputArgumentDocumentPart>
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context)
-                && !(((IInputArgumentDocumentPart)context.ActivePart).Value is IVariableReferenceDocumentPart)
+                && !(((IInputArgumentDocumentPart)context.ActivePart).Value is IVariableUsageDocumentPart)
                 && ((IInputArgumentDocumentPart)context.ActivePart).TypeExpression != null;
         }
 
@@ -74,17 +75,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputV
                 var nextValueSet = new List<ISuppliedValueDocumentPart>();
                 foreach (var item in valueSet)
                 {
-                    // ensure a variable reference is of the correct type expression
-                    // for this level
-                    // then elimnate it
-                    if (item is IVariableReferenceDocumentPart qvr)
-                    {
-                        var typeExpression = qvr.Variable.TypeExpression;
-                        if (!typeExpression.Equals(valueTypeExpression))
-                            return false;
-
+                    // variable usage expression are evaluated as part of
+                    // 5.8.5.
+                    if (item is IVariableUsageDocumentPart)
                         continue;
-                    }
 
                     switch (valueTypeExpression.Wrappers[0])
                     {

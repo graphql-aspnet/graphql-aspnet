@@ -17,14 +17,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
 
     /// <inheritdoc cref="IDocumentPartsCollection" />
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {Count}, Owner: {Owner.GetType().Name}")]
     internal class DocumentPartsCollection : IDocumentPartsCollection
     {
         /// <inheritdoc />
-        public event DocumentCollectionBeforeAddHandler BeforePartAdded;
-
-        /// <inheritdoc />
-        public event DocumentCollectionAlteredHandler PartAdded;
+        public event DocumentCollectionAlteredHandler ChildPartAdded;
 
         // all the parts added to this collection in the order they
         // were added
@@ -64,8 +61,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
                         $"part to a collection owned by a different parent.");
                 }
 
-                var args = new DocumentPartBeforeAddEventArgs(part);
-                this.BeforePartAdded?.Invoke(this, args);
+                var args = new DocumentPartBeforeAddEventArgs(part, 1);
 
                 if (args.AllowAdd)
                 {
@@ -76,9 +72,20 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 
                     _partsByType[part.PartType].Add(part);
 
-                    this.PartAdded?.Invoke(this, new DocumentPartEventArgs(part));
+                    this.ChildPartAdded?.Invoke(this, new DocumentPartEventArgs(part, 1));
                 }
+
+                part.Children.ChildPartAdded += this.Decendent_PartAdded;
             }
+        }
+
+        private void Decendent_PartAdded(object sender, DocumentPartEventArgs eventArgs)
+        {
+            this.ChildPartAdded?.Invoke(
+                this,
+                new DocumentPartEventArgs(
+                    eventArgs.TargetDocumentPart,
+                    eventArgs.RelativeDepth + 1));
         }
 
         /// <inheritdoc />

@@ -164,13 +164,13 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
             AddQuery("5.7.3", "query Operation1{ peopleMovers  @restrict(someValue: 10)  @restrict(someValue: 10) { elevator (id: 5) { id name } } }");
 
             // all variable names must be unique
-            AddQuery("5.8.1", "query Operation1($var1: Int, $var1: int){ peopleMovers { elevator (id: $var1) { id name } } }");
+            AddQuery("5.8.1", "query Operation1($var1: Int!, $var1: Int!){ peopleMovers { elevator (id: $var1) { id name } } }");
 
             // all variable must be of a valid type (HorizontalMover is an interface)
             AddQuery("5.8.2", "query Operation1($var1: HorizontalMover){ peopleMovers { elevator (id: $var1) { id name } } }");
 
             // all used variables must be declared ($var2 is not declared)
-            AddQuery("5.8.3", "query Operation1($var1: Int){ peopleMovers { elevator (id: $var1) @restrict(someValue: $var2) { id name } } }");
+            AddQuery("5.8.3", "query Operation1($var1: Int!){ peopleMovers { elevator (id: $var1) @restrict(someValue: $var2) { id name } } }");
 
             // all variable must be used ($var2 is not referenced)
             AddQuery("5.8.4", "query Operation1($var1: Int!, $var2: String){ peopleMovers { elevator (id: $var1) { id name } } }");
