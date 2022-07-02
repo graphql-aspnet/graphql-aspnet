@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// Creates a new <see cref="IFieldDocumentPart"/> on the active <see cref="IFieldSelectionSetDocumentPart"/> and sets it as the

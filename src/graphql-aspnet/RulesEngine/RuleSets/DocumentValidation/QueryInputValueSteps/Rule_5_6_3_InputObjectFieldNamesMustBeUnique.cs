@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps
 {
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// Ensures that there are no duplicate fields provided on a complex input object.

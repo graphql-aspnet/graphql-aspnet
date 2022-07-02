@@ -6,17 +6,17 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps
+
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// <para>(5.3.3)A rule that dictates for any given graph type returned by a field if that graph type

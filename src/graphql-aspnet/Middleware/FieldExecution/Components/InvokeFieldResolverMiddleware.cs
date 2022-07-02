@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.ValidationRules;
+    using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
     /// A middleware component to create a <see cref="GraphController" /> and invoke an action method.

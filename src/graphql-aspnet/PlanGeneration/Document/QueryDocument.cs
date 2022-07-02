@@ -15,12 +15,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
 
     /// <summary>
     /// A document representing the query text as supplied by the user matched against a schema.

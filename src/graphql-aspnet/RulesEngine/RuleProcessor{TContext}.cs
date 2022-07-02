@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules
+namespace GraphQL.AspNet.RulesEngine
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A processor that will execute a set of hierarchial rules against a context.

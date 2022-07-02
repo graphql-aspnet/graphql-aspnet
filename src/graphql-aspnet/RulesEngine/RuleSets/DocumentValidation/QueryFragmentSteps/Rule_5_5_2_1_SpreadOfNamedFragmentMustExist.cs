@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentSpreadNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// Checks to ensure that when a spread of a named fragment occurs (<see cref="FragmentSpreadNode"/>) that the named

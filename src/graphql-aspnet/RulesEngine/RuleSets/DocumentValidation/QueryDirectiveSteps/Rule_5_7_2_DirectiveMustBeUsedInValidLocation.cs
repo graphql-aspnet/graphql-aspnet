@@ -7,15 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryDirectiveSteps
 {
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// Ensures that the item the directive is acting on/against is valid for the directive as its defined in the target schema.

@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.ValidationRuless.RuleCheckTestData;
-    using GraphQL.AspNet.ValidationRules;
     using NUnit.Framework;
 
     [TestFixture]

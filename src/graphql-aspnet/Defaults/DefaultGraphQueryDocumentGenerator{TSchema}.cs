@@ -9,14 +9,14 @@
 
 namespace GraphQL.AspNet.Defaults
 {
-    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document;
-    using GraphQL.AspNet.ValidationRules;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
     /// Validates that a lexed syntax tree, intended to execute a query on a target schema,

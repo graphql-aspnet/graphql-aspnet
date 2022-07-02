@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.VariableCollectionNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// A step to pass through the <see cref="VariableCollectionNode"/> effectively

@@ -20,7 +20,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
     /// <summary>
     /// A base class providing common functionality for any "supplied value" to an argument

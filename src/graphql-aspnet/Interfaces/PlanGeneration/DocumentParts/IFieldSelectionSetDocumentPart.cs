@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
     /// A collection of fields to query <see cref="IFieldDocumentPart"/>

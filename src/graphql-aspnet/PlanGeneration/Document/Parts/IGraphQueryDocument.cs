@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Interfaces
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
     /// An interface representing a query document that can be

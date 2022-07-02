@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValueNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps
 {
     using System;
     using System.Collections.Generic;
@@ -15,10 +15,10 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValu
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
     /// A collective rule to evaluate all variable targets (5.8.*) at once.

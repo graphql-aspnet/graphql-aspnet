@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItem
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// Creates and assigns a <see cref="IInputArgumentDocumentPart"/> to the current node context for the active node.

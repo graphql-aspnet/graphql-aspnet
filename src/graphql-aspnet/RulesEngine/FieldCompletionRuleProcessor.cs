@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules
+namespace GraphQL.AspNet.RulesEngine
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution;
+    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution;
 
     /// <summary>
     /// A rule processor that handles a set of rules relating to the immediate completion of a field

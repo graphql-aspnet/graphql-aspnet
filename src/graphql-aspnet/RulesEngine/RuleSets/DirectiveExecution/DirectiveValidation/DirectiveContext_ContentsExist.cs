@@ -6,13 +6,14 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveValidation
+
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation
 {
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.Common;
 
     /// <summary>
     /// A general rule to ensure the context is structured correctly before

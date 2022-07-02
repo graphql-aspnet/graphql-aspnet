@@ -13,8 +13,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
     /// <summary>
     /// Indicates that a named fragment is to be spread in place into the parent

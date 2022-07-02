@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.Interfaces
+namespace GraphQL.AspNet.RulesEngine.Interfaces
 {
     using System.Collections.Generic;
 

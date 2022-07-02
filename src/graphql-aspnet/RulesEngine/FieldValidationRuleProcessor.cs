@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules
+namespace GraphQL.AspNet.RulesEngine
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution;
+    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution;
 
     /// <summary>
     /// A child first rule processor that starts at the bottom of a set of executed fields

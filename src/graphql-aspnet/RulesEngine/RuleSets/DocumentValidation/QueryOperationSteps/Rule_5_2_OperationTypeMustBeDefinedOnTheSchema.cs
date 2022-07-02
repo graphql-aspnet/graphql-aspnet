@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// A rule to ensure the operation type defined on the document is one thats handlable

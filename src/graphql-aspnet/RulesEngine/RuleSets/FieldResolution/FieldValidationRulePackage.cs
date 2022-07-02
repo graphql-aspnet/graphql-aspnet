@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution
+namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
-    using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldValidation;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
+    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldValidation;
 
     /// <summary>
     /// A rule package for performing final validation checks of a rule and all its children.

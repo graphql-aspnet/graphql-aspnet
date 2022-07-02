@@ -20,8 +20,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Middleware;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
     using GraphQL.AspNet.Variables;
 
     /// <summary>

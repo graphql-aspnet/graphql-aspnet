@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps
 {
     using System.Linq;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// <para>(5.2.2.1) Validate that when an anon operation is included it exists by itself.</para>

@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentInlineNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// Set the currently pointed at inline fragmnet to be the query fragment on the current context for further processing.

@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common
 {
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A base construction step containing common logic for most active steps (not validators).

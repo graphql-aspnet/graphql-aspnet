@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletion
+namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
 
     /// <summary>
     /// A rule that inspects a completed result to ensure it conforms to the field's type expression

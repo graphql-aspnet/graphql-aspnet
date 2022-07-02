@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
+
     public interface IReferenceDocumentPart : IDocumentPart
     {
         /// <summary>

@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// <para>(5.1.1) Verify that all top level definitions in the document are either an operation definition

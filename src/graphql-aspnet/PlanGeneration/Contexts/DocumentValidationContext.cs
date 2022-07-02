@@ -13,11 +13,10 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A context used to validate all the created parts of a document generated during construction.

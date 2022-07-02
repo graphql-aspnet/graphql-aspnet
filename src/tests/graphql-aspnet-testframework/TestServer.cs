@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;

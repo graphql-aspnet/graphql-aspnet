@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// <para>(5.2.1.1) Validate that each top level operation has a unique name within the document scope.</para>

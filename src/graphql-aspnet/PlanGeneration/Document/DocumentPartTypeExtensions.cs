@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
 
     /// <summary>
     /// Helper methods for managing the <see cref="DocumentPartType"/>

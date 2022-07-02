@@ -6,11 +6,12 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.Common
+
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common
 {
     using System;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A base step for any rules targeting the validation of

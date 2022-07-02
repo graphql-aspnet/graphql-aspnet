@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
     using System.Security.Claims;

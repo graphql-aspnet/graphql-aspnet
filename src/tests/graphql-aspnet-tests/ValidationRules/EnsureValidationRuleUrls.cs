@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.ValidationRuless
     using System.Text;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
     using NUnit.Framework;
 
     [TestFixture]

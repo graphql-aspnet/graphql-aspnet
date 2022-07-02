@@ -19,12 +19,12 @@ namespace GraphQL.AspNet.Tests.ValidationRules
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ValidationRuless.DirectiveTestData;
-    using GraphQL.AspNet.ValidationRules;
     using Moq;
     using NUnit.Framework;
 

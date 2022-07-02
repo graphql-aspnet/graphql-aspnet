@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
     /// An indexed collection of named fragments contained within a query document.

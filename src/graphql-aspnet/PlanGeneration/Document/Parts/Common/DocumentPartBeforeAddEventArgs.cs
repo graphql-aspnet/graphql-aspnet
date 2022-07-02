@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts
+namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
     /// A delegate describing a method that can act to determine if a document part

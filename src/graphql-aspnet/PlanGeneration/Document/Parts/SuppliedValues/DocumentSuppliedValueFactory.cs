@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>

@@ -7,10 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew
+namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-
     public interface IInlineFragmentDocumentPart : IFragmentDocumentPart
     {
     }

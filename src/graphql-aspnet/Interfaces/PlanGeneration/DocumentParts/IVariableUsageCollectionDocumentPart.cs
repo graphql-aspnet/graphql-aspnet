@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     public interface IVariableUsageCollectionDocumentPart : IEnumerable<IVariableUsageDocumentPart>
     {

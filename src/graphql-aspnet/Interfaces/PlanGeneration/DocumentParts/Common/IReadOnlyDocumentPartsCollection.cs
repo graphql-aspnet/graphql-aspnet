@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.PlanGeneration.Document;

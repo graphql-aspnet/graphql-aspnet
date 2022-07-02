@@ -7,41 +7,22 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSetSteps;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryDirectiveSteps;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgumentSteps;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValueSteps;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FragmentSpreadNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputItemNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.InputValueNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.NamedFragmentNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.OperationNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.QueryFragmentSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.VariableNodeSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragmentSteps;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputValueSteps;
-    // using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryVariableSteps;
-
-    //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.FieldSelectionSteps;
-    //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryDirectiveSteps;
-    //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryFragmentSteps;
-    //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputArgumentSteps;
-    //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryInputValueSteps;
-    //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryOperationSteps;
-    //using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.QueryVariableSteps;
 
     /// <summary>
     /// A rule package for doing a wholistic validation pass at parsed query document before the final
@@ -74,11 +55,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             this.BuildFieldSelectionSetSteps();
             this.BuildQueryInputArgumentSteps();
             this.BuildQueryDirectiveSteps();
-            this.BuildQueryVariableSteps();
             this.BuildSuppliedValueSteps();
         }
-
-
 
         /// <summary>
         /// Fetches the rules that should be executed, in order, for the given context.
@@ -100,6 +78,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_1_1_OnlyExecutableDefinition());
             steps.Add(new Rule_5_2_1_1_OperationNamesMustBeUnique());
             steps.Add(new Rule_5_2_2_1_LoneAnonymousOperation());
+
             _stepCollection.Add(DocumentPartType.Document, steps);
         }
 
@@ -117,6 +96,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_6_2_ComplexValueFieldsMustExistOnTargetGraphType());
             steps.Add(new Rule_5_6_3_InputObjectFieldNamesMustBeUnique());
             steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
+
             _stepCollection.Add(DocumentPartType.SuppliedValue, steps);
         }
 
@@ -136,11 +116,13 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         private void BuildOperationSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
-
             steps.Add(new Rule_5_1_1_ExecutableOperationDefinition());
             steps.Add(new Rule_5_2_OperationTypeMustBeDefinedOnTheSchema());
             steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
             steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
+
+            // variable checks, the 5.8 series, are evaluated in context of the operation
+            // due to the nature of fragment spreads and variables used
             steps.Add(new Rule_5_8_VariableDeclarationChecks());
 
             _stepCollection.Add(DocumentPartType.Operation, steps);
@@ -173,8 +155,6 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             steps.Add(new Rule_5_3_1_FieldMustExistOnTargetGraphType());
             steps.Add(new Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs());
             steps.Add(new Rule_5_3_3_LeafReturnMustNotHaveChildFields());
-
-            // 1. All required, schema defined input arguments are supplied in the document
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
 
             _stepCollection.Add(DocumentPartType.Field, steps);
@@ -184,14 +164,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
-
             steps.Add(new Rule_5_7_1_DirectiveMustBeDefinedInTheSchema());
             steps.Add(new Rule_5_7_2_DirectiveMustBeUsedInValidLocation());
             steps.Add(new Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation());
-
-            // must evaluate after 5.7.1 which checks for the existing of the directive
-            // in the scheam
-
 
             _stepCollection.Add(DocumentPartType.Directive, steps);
         }
@@ -201,28 +176,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_4_1_ArgumentMustBeDefinedOnTheField());
             steps.Add(new Rule_5_4_2_ArgumentMustBeUniquePerInvocation());
-
             steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
-            //steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
-            //steps.Add(new Rule_5_8_5_VariableValueMustBeUsableInContext());
 
             _stepCollection.Add(DocumentPartType.Argument, steps);
-        }
-
-        private void BuildQueryVariableSteps()
-        {
-            var steps = new List<IRuleStep<DocumentValidationContext>>();
-            // steps.Add(new Rule_5_8_1_VariableNamesMustBeUnique());
-            //steps.Add(new Rule_5_8_2_A_VariablesMustDeclareAType());
-            //steps.Add(new Rule_5_8_2_B_VariablesMustDeclareAValidGraphType());
-            //steps.Add(new Rule_5_8_2_C_VariableGraphTypeMustBeOfAllowedTypeKinds());
-
-            // 1. ensure that any variable declared on an operation is referenced at least once in said operation.
-            //steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
-            //steps.Add(new Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided());
-            // steps.Add(new Rule_5_8_4_AllDeclaredVariablesMustBeUsedInTheOperation());
-
-            _stepCollection.Add(DocumentPartType.Variable, steps);
         }
     }
 }

@@ -7,15 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNodeSteps
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common;
 
     /// <summary>
     /// Ensures that for the active <see cref="IFieldDocumentPart"/> that it exists on the currently
@@ -59,8 +59,8 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
             //              field so there is never a case where this rule encounters a field declared against
             //              a union is valid
             if (selectionSetGraphType == null
-                || (selectionSetGraphType.Kind != TypeKind.OBJECT
-                    && selectionSetGraphType.Kind != TypeKind.INTERFACE))
+                || selectionSetGraphType.Kind != TypeKind.OBJECT
+                    && selectionSetGraphType.Kind != TypeKind.INTERFACE)
             {
                 if (selectionSetGraphType != null && selectionSetGraphType.Kind == TypeKind.UNION)
                 {
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.FieldNode
                 // and not a field with the same name on a different graph type
                 // it is possible, though unlikely, that a directive execution could swap out the field reference
                 var field = fieldContainer.Fields[docPart.Field.Name];
-                if(docPart.Field != field)
+                if (docPart.Field != field)
                 {
                     this.ValidationError(
                         context,

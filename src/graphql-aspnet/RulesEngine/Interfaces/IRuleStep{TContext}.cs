@@ -7,8 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.Interfaces
+namespace GraphQL.AspNet.RulesEngine.Interfaces
 {
+    using GraphQL.AspNet.RulesEngine;
+
     /// <summary>
     /// A Rule that can be executed by a <see cref="RuleProcessor{TContext}"/>.
     /// </summary>

@@ -6,11 +6,12 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.ValidationRules
+
+namespace GraphQL.AspNet.RulesEngine
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution;
 
     /// <summary>
     /// A rule processor that handles rules related to the invocation of directives at runtime,

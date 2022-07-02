@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A default, concrete implementation of a <see cref="IGraphMessage"/> used

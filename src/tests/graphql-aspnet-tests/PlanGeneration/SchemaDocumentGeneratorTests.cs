@@ -9,14 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.PlanGeneration
 {
-    using System.Linq;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData;
     using NUnit.Framework;
@@ -44,6 +38,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void NoFragments_OneOperation_OneField_ParsesDocumentCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument("query { retrieveUsers { birthDay, name, location } }");
 
             //Assert.IsNotNull(document);
@@ -91,6 +86,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void DirectiveDeclaredOnField_IsNotPropegatedToChildFields()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument("query { retrieveUsers @fieldLevel(arg: 3) { birthDay, name, location } }");
 
             //Assert.IsNotNull(document);
@@ -120,6 +116,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ComplexValueOnInput_IsParsedIntoQueryArgumentsCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
             //    "query { complexUserMethod(arg1: {birthDay: 1234, name: \"Jane\" location: \"Outside\"}  arg2: 5){ birthDay name} }",
             //    out var schema);
@@ -172,6 +169,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void NestedComplexValueOnInput_IsParsedIntoQueryArgumentsCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
             //    @"query { nestedInputObjectMethod(
             //                        arg1: {user: {birthDay: 1234, name: ""Jane"" location: ""Outside""}, id: 15, houseName: ""BobHouse""}
@@ -242,6 +240,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ListValueOnInput_IsParsedIntoQueryArgumentsCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
             //    @"query { multiScalarInput(arg1: [5, 15, 18, 95] arg2: 5)
             //                    {
@@ -284,6 +283,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ListValueOnListValueOnInput_IsParsedIntoQueryArgumentsCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
             //                    @"query { multiScalarOfScalarInput(arg1: [[1, 5], [10, 15], [20, 30]])
             //                    {
@@ -337,6 +337,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void ListValueOfComplexInputs_IsParsedIntoQueryArgumentsCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(@"query { multiUserInput(arg1: [
             //                                                {birthDay: 1234, name: ""Jane"" location: ""Outside""},
             //                                                {birthDay: 5678, name: ""John"" location: ""Inside""}
@@ -382,11 +383,12 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void VariableOnInput_IsParsedIntoQueryArgumentsCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
-            //    @"query($var1: Int!) { 
+            //    @"query($var1: Int!) {
             //        retrieveUser(id: $var1) {
             //            birthDay name
-            //        } 
+            //        }
             //    }");
 
             //Assert.IsNotNull(document);
@@ -418,6 +420,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void NestedVariable_IsParsedIntoQueryArgumentsCorrectly()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
             //                    @"query($var1 : Int!) { multiScalarOfScalarInput(arg1: [[1, 5], [$var1, 15]])
             //                    {
@@ -465,6 +468,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void Variables_NoDefaultValue_ParseInto_DocumentElements()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument("query($var1: Int!) { retrieveUser(id: $var1) { birthDay } }");
 
             //Assert.IsNotNull(document);
@@ -486,6 +490,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void Variables_WithDefaultValue_ParseInto_DocumentElements()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
             //    @"query($var1: Input_TestUser = {birthDay: 5 name: ""Bob"" location: ""Somewhere""}) {
             //        complexUserMethod(arg1: $var1 arg2: 5) {
@@ -519,6 +524,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void MultiLevelNestedQuery_SetsMaxDepthAppropriately()
         {
             Assert.Fail("Fix this Test");
+
             //var document = this.CreateDocument(
             //    @"query{
             //        multiLevelOutput() {

@@ -7,12 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentValidation.Common
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common
 {
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A base step with commmon logic for all document validation steps.

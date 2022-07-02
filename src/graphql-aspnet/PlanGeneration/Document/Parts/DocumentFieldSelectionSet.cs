@@ -17,9 +17,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
     /// <summary>
     /// A collection of fields (from a <see cref="IGraphType"/>) that are requested by a user and defined

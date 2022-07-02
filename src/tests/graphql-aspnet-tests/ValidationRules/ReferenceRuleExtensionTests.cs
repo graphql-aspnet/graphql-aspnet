@@ -8,7 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.ValidationRuless
 {
-    using GraphQL.AspNet.ValidationRules;
+    using GraphQL.AspNet.RulesEngine;
     using NUnit.Framework;
 
     [TestFixture]

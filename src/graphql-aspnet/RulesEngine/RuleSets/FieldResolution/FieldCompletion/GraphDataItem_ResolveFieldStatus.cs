@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletion
+namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
 
     /// <summary>
     /// Updates the status of the data item on the context based on its current state.

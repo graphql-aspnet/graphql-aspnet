@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldValidation
+namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldValidation
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common;
+    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
 
     /// <summary>
     /// Inspects the current context for a valid result and appropriately allows

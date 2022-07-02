@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     public interface IFragmentSpreadCollectionDocumentPart : IEnumerable<IFragmentSpreadDocumentPart>
     {

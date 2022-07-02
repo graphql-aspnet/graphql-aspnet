@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware;
 
     /// <summary>
     /// A base context used by all field and directive resolvers in order to successfully invoke

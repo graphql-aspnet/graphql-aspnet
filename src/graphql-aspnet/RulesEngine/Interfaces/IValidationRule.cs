@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.Interfaces
+namespace GraphQL.AspNet.RulesEngine.Interfaces
 {
     /// <summary>
     /// An interface describing a type of rule that may be executed in the rule processors.

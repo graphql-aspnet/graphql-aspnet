@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules
+namespace GraphQL.AspNet.RulesEngine
 {
     using System.Text;
 

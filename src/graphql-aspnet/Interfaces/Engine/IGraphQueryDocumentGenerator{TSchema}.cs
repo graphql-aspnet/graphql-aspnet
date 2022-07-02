@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 {
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
     /// Called by the runtime to convert an AST into an unvalidated query document

@@ -44,29 +44,27 @@ namespace GraphQL.AspNet.Variables
         /// <returns>IResolvedVariableCollection.</returns>
         public IResolvedVariableCollection Resolve(IInputVariableCollection inputVariables)
         {
-            throw new System.Exception();
-            //
-            //if (inputVariables == null || inputVariables.Count == 0)
-            //    return ResolvedVariableCollection.Empty;
+            if (inputVariables == null || inputVariables.Count == 0)
+                return ResolvedVariableCollection.Empty;
 
-            //var resolverGenerator = new InputResolverMethodGenerator(_schema);
-            //var result = new ResolvedVariableCollection();
+            var resolverGenerator = new InputResolverMethodGenerator(_schema);
+            var result = new ResolvedVariableCollection();
 
-            //foreach (var variable in _operation.DeclaredVariables.Values)
-            //{
-            //    var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);
+            foreach (var variable in _operation.DeclaredVariables)
+            {
+                var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);
 
-            //    IResolvableValueItem resolvableItem = null;
-            //    var found = inputVariables.TryGetVariable(variable.Name, out var suppliedValue);
-            //    resolvableItem = found ? suppliedValue : variable.Value as IResolvableValueItem;
+                IResolvableValueItem resolvableItem = null;
+                var found = inputVariables.TryGetVariable(variable.Name, out var suppliedValue);
+                resolvableItem = found ? suppliedValue : variable.Value as IResolvableValueItem;
 
-            //    var resolvedValue = resolver.Resolve(resolvableItem);
+                var resolvedValue = resolver.Resolve(resolvableItem);
 
-            //    var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvedValue);
-            //    result.AddVariable(resolvedVariable);
-            //}
+                var resolvedVariable = new ResolvedVariable(variable.Name, variable.TypeExpression, resolvedValue);
+                result.AddVariable(resolvedVariable);
+            }
 
-            //return result;
+            return result;
         }
     }
 }

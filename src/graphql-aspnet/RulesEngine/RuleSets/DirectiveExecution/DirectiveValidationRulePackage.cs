@@ -6,12 +6,12 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution.DirectiveValidation;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation;
 
     /// <summary>
     /// A rule package for validating a request to execute a directive against
@@ -20,9 +20,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.DirectiveExecution
     internal class DirectiveValidationRulePackage : IRulePackage<GraphDirectiveExecutionContext>
     {
         /// <summary>
-       /// Gets the singleton instance of this rule package.
-       /// </summary>
-       /// <value>The instance.</value>
+        /// Gets the singleton instance of this rule package.
+        /// </summary>
+        /// <value>The instance.</value>
         public static DirectiveValidationRulePackage Instance { get; } = new DirectiveValidationRulePackage();
 
         private readonly IDictionary<object, IList<IRuleStep<GraphDirectiveExecutionContext>>> _stepCollection;

@@ -12,18 +12,18 @@ namespace GraphQL.AspNet.Tests.ValidationRules
     using System;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentPartsNew;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.PlanGeneration.DocumentConstructionTestData;
-    using GraphQL.AspNet.ValidationRules;
     using NUnit.Framework;
 
     [TestFixture]

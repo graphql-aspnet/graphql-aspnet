@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletion
+namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
 {
     using System;
     using System.Linq;
@@ -17,9 +17,9 @@ namespace GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.FieldCompletio
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
-    using GraphQL.AspNet.ValidationRules.RuleSets.FieldResolution.Common;
 
     /// <summary>
     /// A rule that inspects the to ensure that the actual .NET class type

@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.PlanGeneration;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
     /// A plan generator capable of converting a syntax tree into an actionable

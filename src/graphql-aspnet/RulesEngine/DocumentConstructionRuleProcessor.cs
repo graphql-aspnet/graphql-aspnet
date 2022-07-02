@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules
+namespace GraphQL.AspNet.RulesEngine
 {
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction;
 
     /// <summary>
     /// A rule processor that handles rules related to constructing a query document from source text

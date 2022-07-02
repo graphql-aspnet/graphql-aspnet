@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 

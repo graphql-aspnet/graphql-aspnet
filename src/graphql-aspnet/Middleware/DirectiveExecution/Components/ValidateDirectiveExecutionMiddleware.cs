@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.ValidationRules;
+    using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
     /// A piece of middleware that can fully validate a request to process

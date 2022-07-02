@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ValidationRules.RuleSets.DocumentConstruction.Common
+namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common
 {
     using GraphQL.AspNet.PlanGeneration.Contexts;
 
