@@ -102,45 +102,6 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task SimpleResolution_WithDirective_CallsDirectiveCorrectly()
-        {
-            var server = new TestServerBuilder()
-                   .AddType<SimpleExecutionController>()
-                   .AddType<CallTestDirective>()
-                   .Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText("query Operation1{  simple {  simpleQueryMethod @callTest(arg: 3) { property1} } }")
-                .AddOperationName("Operation1");
-
-            // supply no values, allowing the defaults to take overand returning the single
-            // requested "Property1" with the default string defined on the method.
-            var result = await server.ExecuteQuery(builder);
-            Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(1, CallTestDirective.TotalCalls);
-        }
-
-        [Test]
-        public async Task DirectiveExecution_MaintainsRequestMetaDataCollectionAcrossPhases_CallsDirectiveCorrectly()
-        {
-            var server = new TestServerBuilder()
-            .AddType<SimpleExecutionController>()
-                .AddType<MetaDataShareDirective>()
-                .Build();
-
-            var builder = server.CreateQueryContextBuilder();
-            builder.AddQueryText("query Operation1{  simple {  simpleQueryMethod @metaDataShare(arg: 3) { property1} } }");
-            builder.AddOperationName("Operation1");
-
-            // supply no values, allowing the defaults to take overand returning the single
-            // requested "Property1" with the default string defined on the method.
-            var context = builder.Build();
-            await server.ExecuteQuery(context);
-            Assert.AreEqual(0, context.Messages.Count);
-            Assert.IsTrue(MetaDataShareDirective.FoundInAfterCompletion);
-        }
-
-        [Test]
         public async Task WhenNoLeafValuesAreRequested_ItemIsReturnedAsNullAndPropegated()
         {
             var server = new TestServerBuilder()

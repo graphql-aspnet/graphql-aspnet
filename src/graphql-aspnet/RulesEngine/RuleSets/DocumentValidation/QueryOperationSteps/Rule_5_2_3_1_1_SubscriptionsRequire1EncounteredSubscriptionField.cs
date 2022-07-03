@@ -101,6 +101,12 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                 // did we encounter a field collection with exactly one child that is not virtual?
                 // i.e. one "top-level user action" to be called for the subscription?
                 var childField = fieldCollection.ExecutableFields[0];
+
+                // if no field was found in the schema for the item on the document
+                // this rule cannot continue (other rules will pick up the missing field error)
+                if (childField.GraphType == null || childField.Field == null)
+                    return true;
+
                 if (!childField.GraphType.IsVirtual)
                     return true;
 

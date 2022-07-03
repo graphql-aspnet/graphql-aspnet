@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var operation = document.Operations[string.Empty];
 
-            Assert.IsNull(operation.Variables);
+            Assert.AreEqual(0, operation.Variables.Count);
 
             Assert.IsNotNull(operation.FieldSelectionSet);
             Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
@@ -306,19 +306,19 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(listItem1);
             Assert.AreEqual(2, listItem1.ListItems.Count);
-            Assert.AreEqual(arg1Value.Parent, listItem1.Parent);
+            Assert.AreEqual(arg1Value, listItem1.Parent);
             Assert.IsTrue(listItem1.ListItems[0] is IScalarSuppliedValue svn1A && svn1A.Value.ToString() == "1");
             Assert.IsTrue(listItem1.ListItems[1] is IScalarSuppliedValue svn1B && svn1B.Value.ToString() == "5");
 
             Assert.IsNotNull(listItem2);
             Assert.AreEqual(2, listItem2.ListItems.Count);
-            Assert.AreEqual(arg1Value.Parent, listItem2.Parent);
+            Assert.AreEqual(arg1Value, listItem2.Parent);
             Assert.IsTrue(listItem2.ListItems[0] is IScalarSuppliedValue svn2A && svn2A.Value.ToString() == "10");
             Assert.IsTrue(listItem2.ListItems[1] is IScalarSuppliedValue svn2B && svn2B.Value.ToString() == "15");
 
             Assert.IsNotNull(listItem3);
             Assert.AreEqual(2, listItem3.ListItems.Count);
-            Assert.AreEqual(arg1Value.Parent, listItem3.Parent);
+            Assert.AreEqual(arg1Value, listItem3.Parent);
             Assert.IsTrue(listItem3.ListItems[0] is IScalarSuppliedValue svn3A && svn3A.Value.ToString() == "20");
             Assert.IsTrue(listItem3.ListItems[1] is IScalarSuppliedValue svn3B && svn3B.Value.ToString() == "30");
         }
@@ -326,212 +326,197 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void ListValueOfComplexInputs_IsParsedIntoQueryArgumentsCorrectly()
         {
-            Assert.Fail("Fix this Test");
+            var document = this.CreateDocument(@"query { multiUserInput(arg1: [
+                                                            {birthDay: 1234, name: ""Jane"" location: ""Outside""},
+                                                            {birthDay: 5678, name: ""John"" location: ""Inside""}
+                                                        ] arg2: 5)
+                                {
+                                        birthDay name
+                                } }");
 
-            //var document = this.CreateDocument(@"query { multiUserInput(arg1: [
-            //                                                {birthDay: 1234, name: ""Jane"" location: ""Outside""},
-            //                                                {birthDay: 5678, name: ""John"" location: ""Inside""}
-            //                                            ] arg2: 5)
-            //                    {
-            //                            birthDay name
-            //                    } }");
+            Assert.IsNotNull(document);
+            Assert.AreEqual(0, document.Messages.Count);
+            Assert.AreEqual(1, document.Operations.Count);
+            Assert.AreEqual(2, document.MaxDepth);
 
-            //Assert.IsNotNull(document);
-            //Assert.AreEqual(0, document.Messages.Count);
-            //Assert.AreEqual(1, document.Operations.Count);
-            //Assert.AreEqual(2, document.MaxDepth);
+            var operation = document.Operations[string.Empty];
+            Assert.IsNotNull(operation);
 
-            //var operation = document.Operations[string.Empty];
-            //Assert.IsNotNull(operation);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            var field = operation.FieldSelectionSet.ExecutableFields[0];
+            Assert.AreEqual("multiUserInput", field.Name.ToString());
 
-            //Assert.AreEqual(1, operation.FieldSelectionSet.Count);
-            //var field = operation.FieldSelectionSet[0];
-            //Assert.AreEqual("multiUserInput", field.Name.ToString());
+            Assert.AreEqual(2, field.Arguments.Count);
 
-            //Assert.AreEqual(2, field.Arguments.Count);
+            var arg1 = field.Arguments["arg1"];
 
-            //var arg1 = field.Arguments["arg1"];
+            var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
+            Assert.IsNotNull(arg1Value);
+            Assert.IsTrue(arg1Value.Node is ListValueNode);
+            Assert.AreEqual(2, arg1Value.ListItems.Count);
 
-            //var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
-            //Assert.IsNotNull(arg1Value);
-            //Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
-            //Assert.AreEqual(2, arg1Value.ListItems.Count);
+            var user1 = arg1Value.ListItems[0] as IComplexSuppliedValueDocumentPart;
+            var user2 = arg1Value.ListItems[1] as IComplexSuppliedValueDocumentPart;
 
-            //var user1 = arg1Value.ListItems[0] as IComplexSuppliedValueDocumentPart;
-            //var user2 = arg1Value.ListItems[1] as IComplexSuppliedValueDocumentPart;
+            Assert.IsNotNull(user1);
 
-            //Assert.IsNotNull(user1);
+            Assert.IsNotNull(user2);
 
-            //Assert.IsNotNull(user2);
-
-            //var arg2 = field.Arguments["arg2"];
-            //var value = arg2.Value as IScalarSuppliedValue;
-            //Assert.AreEqual("5", value.Value.ToString());
+            var arg2 = field.Arguments["arg2"];
+            var value = arg2.Value as IScalarSuppliedValue;
+            Assert.AreEqual("5", value.Value.ToString());
         }
 
         [Test]
         public void VariableOnInput_IsParsedIntoQueryArgumentsCorrectly()
         {
-            Assert.Fail("Fix this Test");
+            var document = this.CreateDocument(
+                @"query($var1: Int!) {
+                    retrieveUser(id: $var1) {
+                        birthDay name
+                    }
+                }");
 
-            //var document = this.CreateDocument(
-            //    @"query($var1: Int!) {
-            //        retrieveUser(id: $var1) {
-            //            birthDay name
-            //        }
-            //    }");
+            Assert.IsNotNull(document);
+            Assert.AreEqual(0, document.Messages.Count);
+            Assert.AreEqual(1, document.Operations.Count);
+            Assert.AreEqual(2, document.MaxDepth);
 
-            //Assert.IsNotNull(document);
-            //Assert.AreEqual(0, document.Messages.Count);
-            //Assert.AreEqual(1, document.Operations.Count);
-            //Assert.AreEqual(2, document.MaxDepth);
+            var operation = document.Operations[string.Empty];
+            Assert.IsNotNull(operation);
 
-            //var operation = document.Operations[string.Empty];
-            //Assert.IsNotNull(operation);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            var field = operation.FieldSelectionSet.ExecutableFields[0];
+            Assert.AreEqual("retrieveUser", field.Name.ToString());
 
-            //Assert.AreEqual(1, operation.FieldSelectionSet.Count);
-            //var field = operation.FieldSelectionSet[0];
-            //Assert.AreEqual("retrieveUser", field.Name.ToString());
+            Assert.AreEqual(1, field.Arguments.Count);
 
-            //Assert.AreEqual(1, field.Arguments.Count);
+            var arg1 = field.Arguments["id"];
 
-            //var arg1 = field.Arguments["id"];
-
-            //var arg1Value = arg1.Value as IVariableReferenceDocumentPart;
-            //Assert.IsNotNull(arg1Value);
-            //Assert.IsTrue(arg1Value.ValueNode is VariableValueNode);
-            //Assert.AreEqual("var1", arg1Value.VariableName);
-            //Assert.IsNotNull(arg1Value.Variable);
-            //Assert.AreEqual("var1", arg1Value.Variable.Name);
-            //Assert.IsTrue(arg1Value.Variable.IsReferenced);
+            var arg1Value = arg1.Value as IVariableUsageDocumentPart;
+            Assert.IsNotNull(arg1Value);
+            Assert.IsTrue(arg1Value.Node is VariableValueNode);
+            Assert.AreEqual("var1", arg1Value.VariableName.ToString());
         }
 
         [Test]
         public void NestedVariable_IsParsedIntoQueryArgumentsCorrectly()
         {
-            Assert.Fail("Fix this Test");
+            var document = this.CreateDocument(
+                                @"query($var1 : Int!) { multiScalarOfScalarInput(arg1: [[1, 5], [$var1, 15]])
+                                {
+                                        birthDay name
+                                } }");
 
-            //var document = this.CreateDocument(
-            //                    @"query($var1 : Int!) { multiScalarOfScalarInput(arg1: [[1, 5], [$var1, 15]])
-            //                    {
-            //                            birthDay name
-            //                    } }");
+            Assert.IsNotNull(document);
+            Assert.AreEqual(0, document.Messages.Count);
+            Assert.AreEqual(1, document.Operations.Count);
+            Assert.AreEqual(2, document.MaxDepth);
 
-            //Assert.IsNotNull(document);
-            //Assert.AreEqual(0, document.Messages.Count);
-            //Assert.AreEqual(1, document.Operations.Count);
-            //Assert.AreEqual(2, document.MaxDepth);
+            var operation = document.Operations[string.Empty];
+            Assert.IsNotNull(operation);
 
-            //var operation = document.Operations[string.Empty];
-            //Assert.IsNotNull(operation);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            var field = operation.FieldSelectionSet.ExecutableFields[0];
+            Assert.AreEqual("multiScalarOfScalarInput", field.Name.ToString());
 
-            //Assert.AreEqual(1, operation.FieldSelectionSet.Count);
-            //var field = operation.FieldSelectionSet[0];
-            //Assert.AreEqual("multiScalarOfScalarInput", field.Name.ToString());
+            Assert.AreEqual(1, field.Arguments.Count);
 
-            //Assert.AreEqual(1, field.Arguments.Count);
+            var arg1 = field.Arguments["arg1"];
 
-            //var arg1 = field.Arguments["arg1"];
+            var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
+            Assert.IsNotNull(arg1Value);
+            Assert.IsTrue(arg1Value.Node is ListValueNode);
+            Assert.AreEqual(2, arg1Value.ListItems.Count);
 
-            //var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
-            //Assert.IsNotNull(arg1Value);
-            //Assert.IsTrue(arg1Value.ValueNode is ListValueNode);
-            //Assert.AreEqual(2, arg1Value.ListItems.Count);
+            var listItem1 = arg1Value.ListItems[0] as IListSuppliedValueDocumentPart;
+            var listItem2 = arg1Value.ListItems[1] as IListSuppliedValueDocumentPart;
 
-            //var listItem1 = arg1Value.ListItems[0] as IListSuppliedValueDocumentPart;
-            //var listItem2 = arg1Value.ListItems[1] as IListSuppliedValueDocumentPart;
+            Assert.IsNotNull(listItem1);
+            Assert.AreEqual(2, listItem1.ListItems.Count);
+            Assert.AreEqual(arg1Value, listItem1.Parent);
+            Assert.IsTrue(listItem1.ListItems[0] is IScalarSuppliedValue svn1A && svn1A.Value.ToString() == "1");
+            Assert.IsTrue(listItem1.ListItems[1] is IScalarSuppliedValue svn1B && svn1B.Value.ToString() == "5");
 
-            //Assert.IsNotNull(listItem1);
-            //Assert.AreEqual(2, listItem1.ListItems.Count);
-            //Assert.AreEqual(arg1Value.Owner, listItem1.Owner);
-            //Assert.IsTrue(listItem1.ListItems[0] is IScalarSuppliedValue svn1A && svn1A.Value.ToString() == "1");
-            //Assert.IsTrue(listItem1.ListItems[1] is IScalarSuppliedValue svn1B && svn1B.Value.ToString() == "5");
-
-            //Assert.IsNotNull(listItem2);
-            //Assert.AreEqual(2, listItem2.ListItems.Count);
-            //Assert.AreEqual(arg1Value.Owner, listItem2.Owner);
-            //Assert.IsTrue(listItem2.ListItems[0] is IVariableReferenceDocumentPart qiv && qiv.VariableName == "var1");
-            //Assert.IsTrue(listItem2.ListItems[1] is IScalarSuppliedValue svn3B && svn3B.Value.ToString() == "15");
+            Assert.IsNotNull(listItem2);
+            Assert.AreEqual(2, listItem2.ListItems.Count);
+            Assert.AreEqual(arg1Value, listItem2.Parent);
+            Assert.IsTrue(listItem2.ListItems[0] is IVariableUsageDocumentPart qiv && qiv.VariableName.ToString() == "var1");
+            Assert.IsTrue(listItem2.ListItems[1] is IScalarSuppliedValue svn3B && svn3B.Value.ToString() == "15");
         }
 
         [Test]
         public void Variables_NoDefaultValue_ParseInto_DocumentElements()
         {
-            Assert.Fail("Fix this Test");
+            var document = this.CreateDocument("query($var1: Int!) { retrieveUser(id: $var1) { birthDay } }");
 
-            //var document = this.CreateDocument("query($var1: Int!) { retrieveUser(id: $var1) { birthDay } }");
+            Assert.IsNotNull(document);
+            Assert.AreEqual(0, document.Messages.Count);
+            Assert.AreEqual(1, document.Operations.Count);
+            Assert.AreEqual(2, document.MaxDepth);
 
-            //Assert.IsNotNull(document);
-            //Assert.AreEqual(0, document.Messages.Count);
-            //Assert.AreEqual(1, document.Operations.Count);
-            //Assert.AreEqual(2, document.MaxDepth);
+            var operation = document.Operations[string.Empty];
 
-            //var operation = document.Operations[string.Empty];
+            Assert.IsNotNull(operation.Variables);
+            Assert.AreEqual(1, operation.Variables.Count);
 
-            //Assert.IsNotNull(operation.Variables);
-            //Assert.AreEqual(1, operation.Variables.Count);
-
-            //var var1 = operation.Variables["var1"];
-            //Assert.AreEqual("Int!", var1.TypeExpression.ToString());
-            //Assert.AreEqual(null, var1.Value);
+            var var1 = operation.Variables["var1"];
+            Assert.AreEqual("Int!", var1.TypeExpression.ToString());
+            Assert.AreEqual(null, var1.DefaultValue);
         }
 
         [Test]
         public void Variables_WithDefaultValue_ParseInto_DocumentElements()
         {
-            Assert.Fail("Fix this Test");
+            var document = this.CreateDocument(
+                @"query($var1: Input_TestUser = {birthDay: 5 name: ""Bob"" location: ""Somewhere""}) {
+                    complexUserMethod(arg1: $var1 arg2: 5) {
+                        birthDay
+                    }
+                }",
+                out var schema);
 
-            //var document = this.CreateDocument(
-            //    @"query($var1: Input_TestUser = {birthDay: 5 name: ""Bob"" location: ""Somewhere""}) {
-            //        complexUserMethod(arg1: $var1 arg2: 5) {
-            //            birthDay
-            //        }
-            //    }",
-            //    out var schema);
+            Assert.IsNotNull(document);
+            Assert.AreEqual(0, document.Messages.Count);
+            Assert.AreEqual(1, document.Operations.Count);
+            Assert.AreEqual(2, document.MaxDepth);
 
-            //Assert.IsNotNull(document);
-            //Assert.AreEqual(0, document.Messages.Count);
-            //Assert.AreEqual(1, document.Operations.Count);
-            //Assert.AreEqual(2, document.MaxDepth);
+            var operation = document.Operations[string.Empty];
 
-            //var operation = document.Operations[string.Empty];
+            Assert.IsNotNull(operation.Variables);
+            Assert.AreEqual(1, operation.Variables.Count);
 
-            //Assert.IsNotNull(operation.Variables);
-            //Assert.AreEqual(1, operation.Variables.Count);
+            var graphType = schema.KnownTypes.FindGraphType(typeof(TestUser), TypeKind.INPUT_OBJECT);
 
-            //var graphType = schema.KnownTypes.FindGraphType(typeof(TestUser), TypeKind.INPUT_OBJECT);
+            var var1 = operation.Variables["var1"];
+            Assert.AreEqual("Input_TestUser", var1.TypeExpression.ToString());
+            Assert.AreEqual(graphType, var1.GraphType);
 
-            //var var1 = operation.Variables["var1"];
-            //Assert.AreEqual("Input_TestUser", var1.TypeExpression.ToString());
-            //Assert.AreEqual(graphType, var1.GraphType);
-
-            //var defaultValue = var1.Value as IComplexSuppliedValueDocumentPart;
-            //Assert.IsNotNull(defaultValue);
-            //Assert.AreEqual(3, defaultValue.Arguments.Count);
+            var defaultValue = var1.DefaultValue as IComplexSuppliedValueDocumentPart;
+            Assert.IsNotNull(defaultValue);
+            Assert.AreEqual(3, defaultValue.Arguments.Count);
         }
 
         [Test]
         public void MultiLevelNestedQuery_SetsMaxDepthAppropriately()
         {
-            Assert.Fail("Fix this Test");
+            var document = this.CreateDocument(
+                @"query{
+                    multiLevelOutput() {
+                        user {
+                            name
+                            birthDay
+                        }
+                        id
+                        houseName
+                    }
+                }",
+                out var _);
 
-            //var document = this.CreateDocument(
-            //    @"query{
-            //        multiLevelOutput() {
-            //            user {
-            //                name
-            //                birthDay
-            //            }
-            //            id
-            //            houseName
-            //        }
-            //    }",
-            //    out var _);
-
-            //Assert.IsNotNull(document);
-            //Assert.AreEqual(0, document.Messages.Count);
-            //Assert.AreEqual(1, document.Operations.Count);
-            //Assert.AreEqual(3, document.MaxDepth);
+            Assert.IsNotNull(document);
+            Assert.AreEqual(0, document.Messages.Count);
+            Assert.AreEqual(1, document.Operations.Count);
+            Assert.AreEqual(3, document.MaxDepth);
         }
     }
 }

@@ -506,15 +506,12 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var firstArg = args.First();
             Assert.AreEqual("newDonut", firstArg.Key);
 
-            var argValue = firstArg.Value.Value as DocumentVariableReferenceValue;
+            var argValue = firstArg.Value.Value as DocumentVariableUsageValue;
             Assert.IsNotNull(argValue);
             Assert.AreEqual("var1", argValue.VariableName.ToString());
 
             // the expected graph type of the value is that of hte parent argument
             Assert.AreEqual(_inputDonutGraphType, argValue.GraphType);
-
-            // with variable reference, there is no default value to be had
-            Assert.IsNull(argValue.DefaultValue);
         }
 
         [Test]

@@ -77,8 +77,6 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
                 if (variableFound)
                     return variable.Value;
-
-                resolvableItem = pointer.DefaultValue;
             }
 
             if (!(resolvableItem is IResolvableFieldSet fieldSet))

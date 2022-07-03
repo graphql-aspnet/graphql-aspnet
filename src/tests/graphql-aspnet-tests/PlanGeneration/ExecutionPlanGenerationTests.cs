@@ -228,14 +228,15 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             // arg1 represents a TWoPropertyObjectV2 with a prop1 type of float
             var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(@"query($var1 : Float! = 15.5)
-                                                        {
-                                                            simple {
-                                                                complexQueryMethod(arg1: { property1: $var1, property2: 0} ) {
-                                                                    property1
-                                                                }
-                                                            }
-                                                        }".AsMemory());
+            var syntaxTree = parser.ParseQueryDocument(
+                @"query($var1 : Float! = 15.5)
+                {
+                    simple {
+                        complexQueryMethod(arg1: { property1: $var1, property2: 0} ) {
+                            property1
+                        }
+                    }
+                }".AsMemory());
 
             var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
                 server.Schema,

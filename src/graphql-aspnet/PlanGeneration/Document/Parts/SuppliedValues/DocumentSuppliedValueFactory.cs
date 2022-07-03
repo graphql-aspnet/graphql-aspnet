@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                     return new DocumentEnumSuppliedValue(ownerPart, evn, key);
 
                 case VariableValueNode vvn:
-                    return new DocumentVariableReferenceValue(ownerPart, vvn, key);
+                    return new DocumentVariableUsageValue(ownerPart, vvn, key);
 
                 default:
                     throw new ArgumentOutOfRangeException(

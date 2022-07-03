@@ -63,11 +63,7 @@ namespace GraphQL.AspNet.Defaults
             // ------------------------------------------
             // Step 1:  Parse the document.
             // ------------------------------------------
-            // Validate that the lexed syntax tree is internally consistant and
-            // is valid in context to the schema it is to be processed against
-            // at the same time build up the query document in anticipation that it will be correct
-            // as in production this should mostly be the case. Should it fail return the messages
-            // on an empty query plan.
+            // Convert the syntax tree into a functional query document
             // ------------------------------------------
             var document = _documentGenerator.CreateDocument(syntaxTree);
             this.InspectSyntaxDepth(document);
@@ -77,7 +73,17 @@ namespace GraphQL.AspNet.Defaults
                 return queryPlan;
 
             // ------------------------------------------
-            // Step 2:  Plan Construction
+            // Step 2:  Parse the document.
+            // ------------------------------------------
+            // Validate that the created document is functionally correct
+            // ------------------------------------------
+            _documentGenerator.ValidateDocument(document);
+            queryPlan.Messages.AddRange(document.Messages);
+            if (!queryPlan.IsValid)
+                return queryPlan;
+
+            // ------------------------------------------
+            // Step 3:  Plan Construction
             // ------------------------------------------
             // The document is garunteed to be syntactically correct and, barring anything user related (variable data, custom code etc.),
             // will resolve to produce a result.  Using the correct operation (or the anon operation), extract the resolvers for all possible concrete

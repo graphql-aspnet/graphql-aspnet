@@ -22,25 +22,18 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value that is a pointer to a variable defined in the operation that contains it.
     /// </summary>
     [DebuggerDisplay("Variable Ref: {VariableName}")]
-    internal class DocumentVariableReferenceValue : DocumentSuppliedValue, IVariableUsageDocumentPart
+    internal class DocumentVariableUsageValue : DocumentSuppliedValue, IVariableUsageDocumentPart
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentVariableReferenceValue" /> class.
+        /// Initializes a new instance of the <see cref="DocumentVariableUsageValue" /> class.
         /// </summary>
         /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
         /// <param name="node">The node that represents this input value in the user query document.</param>
         /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
-        public DocumentVariableReferenceValue(IDocumentPart parentPart, VariableValueNode node, string key = null)
+        public DocumentVariableUsageValue(IDocumentPart parentPart, VariableValueNode node, string key = null)
             : base(parentPart, node, key)
         {
             this.VariableName = node.Value;
-        }
-
-        /// <inheritdoc />
-        public void AssignVariable(IVariableDocumentPart variable)
-        {
-            this.Variable = variable;
-            this.AssignGraphType(this.Variable?.GraphType);
         }
 
         /// <inheritdoc />
@@ -58,11 +51,5 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         public string PointsTo => this.VariableName.ToString();
-
-        /// <inheritdoc />
-        public IVariableDocumentPart Variable { get; private set; }
-
-        /// <inheritdoc />
-        public IResolvableValueItem DefaultValue => this.Variable?.DefaultValue;
     }
 }

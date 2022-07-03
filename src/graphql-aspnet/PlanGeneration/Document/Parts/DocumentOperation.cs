@@ -48,35 +48,26 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.OperationType = operationType;
             this.Name = node.OperationName.IsEmpty ? string.Empty : node.OperationName.ToString();
             this.OperationTypeName = node.OperationType.ToString();
+
+            _variableCollection = new DocumentVariableCollection(this);
+            _variableUsages = new DocumentVariableUsageCollection(this);
+            _directives = new DocumentDirectiveCollection(this);
+            _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
         }
 
         /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             if (relativeDepth == 1 && childPart is IVariableDocumentPart vd)
-            {
-                _variableCollection = _variableCollection ?? new DocumentVariableCollection(this);
                 _variableCollection.Add(vd);
-            }
             else if (relativeDepth == 1 && childPart is IFieldSelectionSetDocumentPart fieldSelection)
-            {
                 _fieldSelectionSet = fieldSelection;
-            }
-            else if (relativeDepth == 1&& childPart is IDirectiveDocumentPart ddp)
-            {
-                _directives = _directives ?? new DocumentDirectiveCollection(this);
+            else if (relativeDepth == 1 && childPart is IDirectiveDocumentPart ddp)
                 _directives.AddDirective(ddp);
-            }
             else if (childPart is IVariableUsageDocumentPart varRef)
-            {
-                _variableUsages = _variableUsages ?? new DocumentVariableUsageCollection(this);
                 _variableUsages.Add(varRef);
-            }
             else if (childPart is IFragmentSpreadDocumentPart fragSpread)
-            {
-                _fragmentSpreads = _fragmentSpreads ?? new DocumentFragmentSpreadCollection(this);
                 _fragmentSpreads.Add(fragSpread);
-            }
         }
 
         /// <inheritdoc />

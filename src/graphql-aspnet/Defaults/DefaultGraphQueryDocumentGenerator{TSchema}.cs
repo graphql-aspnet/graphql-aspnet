@@ -57,6 +57,16 @@ namespace GraphQL.AspNet.Defaults
             return this.FillDocument(syntaxTree, new QueryDocument());
         }
 
+        public bool ValidateDocument(IGraphQueryDocument document)
+        {
+            Validation.ThrowIfNull(document, nameof(document));
+
+            var docProcessor = new DocumentValidationRuleProcessor();
+            var context = new DocumentValidationContext(_schema, document);
+
+            return docProcessor.Execute(context);
+        }
+
         /// <summary>
         /// An internal method for populating an existing query document.
         /// </summary>

@@ -19,11 +19,5 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
         /// </summary>
         /// <value>The points to.</value>
         string PointsTo { get; }
-
-        /// <summary>
-        /// Gets the fallback resolvable item should the item this pointer points to not exist.
-        /// </summary>
-        /// <value>The default item.</value>
-        IResolvableValueItem DefaultValue { get; }
     }
 }

@@ -44,9 +44,6 @@ namespace GraphQL.AspNet.Variables
         /// <returns>IResolvedVariableCollection.</returns>
         public IResolvedVariableCollection Resolve(IInputVariableCollection inputVariables)
         {
-            if (inputVariables == null || inputVariables.Count == 0)
-                return ResolvedVariableCollection.Empty;
-
             var resolverGenerator = new InputResolverMethodGenerator(_schema);
             var result = new ResolvedVariableCollection();
 
@@ -55,7 +52,11 @@ namespace GraphQL.AspNet.Variables
                 var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);
 
                 IResolvableValueItem resolvableItem = null;
-                var found = inputVariables.TryGetVariable(variable.Name, out var suppliedValue);
+                IInputVariable suppliedValue = null;
+                var found = false;
+                if (inputVariables != null)
+                    found = inputVariables.TryGetVariable(variable.Name, out suppliedValue);
+
                 resolvableItem = found ? suppliedValue : variable.DefaultValue as IResolvableValueItem;
 
                 var resolvedValue = resolver.Resolve(resolvableItem);

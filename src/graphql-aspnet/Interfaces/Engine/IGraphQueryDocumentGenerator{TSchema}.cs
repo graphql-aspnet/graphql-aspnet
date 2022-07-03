@@ -28,5 +28,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="syntaxTree">The syntax tree to create a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>
         IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree);
+
+        bool ValidateDocument(IGraphQueryDocument document);
     }
 }

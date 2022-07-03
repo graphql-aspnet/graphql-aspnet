@@ -11,10 +11,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgum
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
@@ -24,6 +21,13 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgum
     internal class Rule_5_4_1_ArgumentMustBeDefinedOnTheField
         : DocumentPartValidationRuleStep<IInputArgumentDocumentPart>
     {
+        public override bool ShouldExecute(DocumentValidationContext context)
+        {
+            // rule 5.4.1 does not cover "arguments" as fields on complex values
+            return base.ShouldExecute(context)
+                && (context.ParentPart is IDirectiveDocumentPart
+                   || context.ParentPart is IFieldDocumentPart);
+        }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
