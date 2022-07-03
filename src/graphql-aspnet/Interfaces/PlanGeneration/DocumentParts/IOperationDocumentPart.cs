@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A represention of a top level operation (mutation, query etc.) defined in a query document.
     /// </summary>
-    public interface IOperationDocumentPart : IReferenceDocumentPart, IDocumentPart
+    public interface IOperationDocumentPart : IDirectiveContainerDocumentPart, IReferenceDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Gets the type of the operation that was parsed.

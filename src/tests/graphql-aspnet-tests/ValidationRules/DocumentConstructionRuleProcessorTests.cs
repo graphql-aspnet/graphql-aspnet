@@ -177,21 +177,21 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var operation = result.Operations[0];
 
             Assert.AreEqual("MyQuery", operation.Name);
-            Assert.AreEqual(1, operation.FieldSelectionSet.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
 
-            var retrieveDonuts = operation.FieldSelectionSet[0];
+            var retrieveDonuts = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(retrieveDonuts);
 
             Assert.AreEqual("retrieveAllDonuts", retrieveDonuts.Name.ToString());
             Assert.IsNotNull(retrieveDonuts.FieldSelectionSet);
-            Assert.AreEqual(3, retrieveDonuts.FieldSelectionSet.Count);
+            Assert.AreEqual(3, retrieveDonuts.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(retrieveDonuts.Field);
             Assert.AreEqual("retrieveAllDonuts", retrieveDonuts.Field.Name.ToString());
             Assert.AreEqual(_schema.Operations[GraphOperationType.Query], retrieveDonuts.Field.Parent);
 
-            var id = retrieveDonuts.FieldSelectionSet[0];
-            var name = retrieveDonuts.FieldSelectionSet[1];
-            var flavor = retrieveDonuts.FieldSelectionSet[2];
+            var id = retrieveDonuts.FieldSelectionSet.ExecutableFields[0];
+            var name = retrieveDonuts.FieldSelectionSet.ExecutableFields[1];
+            var flavor = retrieveDonuts.FieldSelectionSet.ExecutableFields[2];
 
             Assert.IsNotNull(id);
             Assert.AreEqual("id", id.Name.ToString());
@@ -201,8 +201,8 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.AreEqual(id.Field.Parent, _donutGraphType);
             Assert.AreEqual(Constants.ScalarNames.INT, id.GraphType.Name);
             Assert.IsNull(id.FieldSelectionSet);
-            Assert.AreEqual(0, id.GatherDirectives().Count());
-            Assert.AreEqual(0, id.GatherArguments().Count);
+            Assert.AreEqual(0, id.Directives.Count);
+            Assert.AreEqual(0, id.Arguments.Count);
 
             Assert.IsNotNull(name);
             Assert.AreEqual("name", name.Name.ToString());
@@ -212,8 +212,8 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.AreEqual(name.Field.Parent, _donutGraphType);
             Assert.AreEqual(Constants.ScalarNames.STRING, name.GraphType.Name);
             Assert.IsNull(name.FieldSelectionSet);
-            Assert.AreEqual(0, name.GatherDirectives().Count());
-            Assert.AreEqual(0, name.GatherArguments().Count);
+            Assert.AreEqual(0, name.Directives.Count);
+            Assert.AreEqual(0, name.Arguments.Count);
 
             Assert.IsNotNull(flavor);
             Assert.AreEqual("flavor", flavor.Name.ToString());
@@ -223,8 +223,8 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.AreEqual(flavor.Field.Parent, _donutGraphType);
             Assert.AreEqual(nameof(DonutFlavor), flavor.GraphType.Name);
             Assert.IsNull(flavor.FieldSelectionSet);
-            Assert.AreEqual(0, flavor.GatherDirectives().Count());
-            Assert.AreEqual(0, flavor.GatherArguments().Count);
+            Assert.AreEqual(0, flavor.Directives.Count);
+            Assert.AreEqual(0, flavor.Arguments.Count);
         }
 
         [Test]
@@ -250,31 +250,31 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var operation = result.Operations[0];
 
             Assert.AreEqual("MyQuery", operation.Name);
-            Assert.AreEqual(1, operation.FieldSelectionSet.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
 
-            var bakery = operation.FieldSelectionSet[0];
+            var bakery = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(bakery);
 
             Assert.AreEqual("bakery", bakery.Name.ToString());
             Assert.IsNotNull(bakery.FieldSelectionSet);
-            Assert.AreEqual(1, bakery.FieldSelectionSet.Count);
+            Assert.AreEqual(1, bakery.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(bakery.Field);
             Assert.AreEqual("bakery", bakery.Field.Name.ToString());
             Assert.AreEqual(_schema.Operations[GraphOperationType.Query], bakery.Field.Parent);
 
-            var retrieveDonut = bakery.FieldSelectionSet[0];
+            var retrieveDonut = bakery.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(retrieveDonut);
 
             Assert.AreEqual("retrieveDonut", retrieveDonut.Name.ToString());
             Assert.IsNotNull(retrieveDonut.FieldSelectionSet);
-            Assert.AreEqual(3, retrieveDonut.FieldSelectionSet.Count);
+            Assert.AreEqual(3, retrieveDonut.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(retrieveDonut.Field);
             Assert.AreEqual("retrieveDonut", retrieveDonut.Field.Name.ToString());
 
             // should be virtual type "bakery"
             Assert.IsTrue(((IGraphType)retrieveDonut.Field.Parent).IsVirtual);
 
-            var args = retrieveDonut.GatherArguments();
+            var args = retrieveDonut.Arguments;
             Assert.IsNotNull(args);
             Assert.AreEqual(1, args.Count);
 
@@ -311,31 +311,31 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var operation = result.Operations[0];
 
             Assert.AreEqual("MyQuery", operation.Name);
-            Assert.AreEqual(1, operation.FieldSelectionSet.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
 
-            var bakery = operation.FieldSelectionSet[0];
+            var bakery = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(bakery);
 
             Assert.AreEqual("bakery", bakery.Name.ToString());
             Assert.IsNotNull(bakery.FieldSelectionSet);
-            Assert.AreEqual(1, bakery.FieldSelectionSet.Count);
+            Assert.AreEqual(1, bakery.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(bakery.Field);
             Assert.AreEqual("bakery", bakery.Field.Name.ToString());
             Assert.AreEqual(_schema.Operations[GraphOperationType.Query], bakery.Field.Parent);
 
-            var retrieveDonut = bakery.FieldSelectionSet[0];
+            var retrieveDonut = bakery.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(retrieveDonut);
 
             Assert.AreEqual("retrieveDonutByNullableId", retrieveDonut.Name.ToString());
             Assert.IsNotNull(retrieveDonut.FieldSelectionSet);
-            Assert.AreEqual(1, retrieveDonut.FieldSelectionSet.Count);
+            Assert.AreEqual(1, retrieveDonut.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(retrieveDonut.Field);
             Assert.AreEqual("retrieveDonutByNullableId", retrieveDonut.Field.Name.ToString());
 
             // should be virtual type "bakery"
             Assert.IsTrue(((IGraphType)retrieveDonut.Field.Parent).IsVirtual);
 
-            var args = retrieveDonut.GatherArguments();
+            var args = retrieveDonut.Arguments;
             Assert.IsNotNull(args);
             Assert.AreEqual(1, args.Count);
 
@@ -370,31 +370,31 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var operation = result.Operations[0];
 
             Assert.AreEqual("MyQuery", operation.Name);
-            Assert.AreEqual(1, operation.FieldSelectionSet.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
 
-            var bakery = operation.FieldSelectionSet[0];
+            var bakery = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(bakery);
 
             Assert.AreEqual("bakery", bakery.Name.ToString());
             Assert.IsNotNull(bakery.FieldSelectionSet);
-            Assert.AreEqual(1, bakery.FieldSelectionSet.Count);
+            Assert.AreEqual(1, bakery.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(bakery.Field);
             Assert.AreEqual("bakery", bakery.Field.Name.ToString());
             Assert.AreEqual(_schema.Operations[GraphOperationType.Query], bakery.Field.Parent);
 
-            var retrieveBagelsById = bakery.FieldSelectionSet[0];
+            var retrieveBagelsById = bakery.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(retrieveBagelsById);
 
             Assert.AreEqual("retrieveBagelsById", retrieveBagelsById.Name.ToString());
             Assert.IsNotNull(retrieveBagelsById.FieldSelectionSet);
-            Assert.AreEqual(1, retrieveBagelsById.FieldSelectionSet.Count);
+            Assert.AreEqual(1, retrieveBagelsById.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(retrieveBagelsById.Field);
             Assert.AreEqual("retrieveBagelsById", retrieveBagelsById.Field.Name.ToString());
 
             // should be virtual type "bakery"
             Assert.IsTrue(((IGraphType)retrieveBagelsById.Field.Parent).IsVirtual);
 
-            var args = retrieveBagelsById.GatherArguments();
+            var args = retrieveBagelsById.Arguments;
             Assert.IsNotNull(args);
             Assert.AreEqual(1, args.Count);
 
@@ -433,19 +433,19 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var operation = result.Operations[0];
 
             Assert.AreEqual("MyQuery", operation.Name);
-            Assert.AreEqual(1, operation.FieldSelectionSet.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
 
-            var addDonut = operation.FieldSelectionSet[0];
+            var addDonut = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(addDonut);
 
             Assert.AreEqual("addDonut", addDonut.Name.ToString());
             Assert.IsNotNull(addDonut.FieldSelectionSet);
-            Assert.AreEqual(1, addDonut.FieldSelectionSet.Count);
+            Assert.AreEqual(1, addDonut.FieldSelectionSet.ExecutableFields.Count);
             Assert.IsNotNull(addDonut.Field);
             Assert.AreEqual("addDonut", addDonut.Field.Name.ToString());
             Assert.AreEqual(_schema.Operations[GraphOperationType.Query], addDonut.Field.Parent);
 
-            var args = addDonut.GatherArguments();
+            var args = addDonut.Arguments;
             Assert.IsNotNull(args);
             Assert.AreEqual(1, args.Count);
 
@@ -496,10 +496,10 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
-            var addDonut = operation.FieldSelectionSet[0];
+            var addDonut = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(addDonut);
 
-            var args = addDonut.GatherArguments();
+            var args = addDonut.Arguments;
             Assert.IsNotNull(args);
             Assert.AreEqual(1, args.Count);
 
@@ -510,9 +510,8 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.IsNotNull(argValue);
             Assert.AreEqual("var1", argValue.VariableName.ToString());
 
-            // the query doesn't define hte variable
-            // so the reference type can't be set
-            Assert.IsNull(argValue.GraphType);
+            // the expected graph type of the value is that of hte parent argument
+            Assert.AreEqual(_inputDonutGraphType, argValue.GraphType);
 
             // with variable reference, there is no default value to be had
             Assert.IsNull(argValue.DefaultValue);
@@ -591,7 +590,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
-            var multiScalarArguments = operation.FieldSelectionSet[0];
+            var multiScalarArguments = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(multiScalarArguments);
 
             var args = multiScalarArguments
@@ -643,7 +642,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
-            var complexScenario = operation.FieldSelectionSet[0];
+            var complexScenario = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.IsNotNull(complexScenario);
 
             var args = complexScenario
@@ -722,7 +721,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var result = this.CreateDocument(tree);
 
             var outerlist = result.Operations[0]
-                .FieldSelectionSet[0]
+                .FieldSelectionSet.ExecutableFields[0]
                 .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "items")
                 .Children.OfType<IListSuppliedValueDocumentPart>().Single();
 
@@ -811,7 +810,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
                 }");
 
             var result = this.CreateDocument(tree);
-            var inlineFragment = result.Operations[0].FieldSelectionSet[0]
+            var inlineFragment = result.Operations[0].FieldSelectionSet.ExecutableFields[0]
                 .FieldSelectionSet.Children.OfType<IInlineFragmentDocumentPart>().Single();
 
             Assert.AreEqual(_bagelGraphType, inlineFragment.GraphType);
@@ -835,7 +834,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
                 }");
 
             var result = this.CreateDocument(tree);
-            var inlineFragment = result.Operations[0].FieldSelectionSet[0]
+            var inlineFragment = result.Operations[0].FieldSelectionSet.ExecutableFields[0]
                 .FieldSelectionSet.Children.OfType<IInlineFragmentDocumentPart>().Single();
 
             Assert.AreEqual(_donutGraphType, inlineFragment.GraphType);
@@ -876,7 +875,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
                 }");
 
             var result = this.CreateDocument(tree);
-            var fragSpread = result.Operations[0].FieldSelectionSet[0]
+            var fragSpread = result.Operations[0].FieldSelectionSet.ExecutableFields[0]
                 .FieldSelectionSet.Children.OfType<IFragmentSpreadDocumentPart>().Single();
 
             Assert.AreEqual(null, fragSpread.GraphType); // graphtype not set yet
@@ -1117,6 +1116,38 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.AreEqual("__typename", typeName.Name.ToString());
             Assert.IsNotNull(typeName.GraphType);
             Assert.AreEqual(Constants.ScalarNames.STRING, typeName.GraphType.Name);
+        }
+
+        [Test]
+        public void TypeNameFieldOnAUnionAddsFieldsForEachUnionMember()
+        {
+            var tree = this.CreateSyntaxTree(@"
+                    query {
+                        retrieveEither(){
+                            ... on Donut {
+                                id
+                            }
+                            ... on Bagel {
+                                id
+                            }
+                            __typename
+                        }
+                    }");
+
+            var result = this.CreateDocument(tree);
+            var retrieveEither = result.Operations[0]
+                .FieldSelectionSet.Children.OfType<IFieldDocumentPart>().Single(); // retrieveEither
+
+            var fieldSelectionSet = retrieveEither.FieldSelectionSet;
+
+            // should contain two inline fragments and two __typename fields (one for bagel one for donut)
+            Assert.AreEqual(4, fieldSelectionSet.Children.Count);
+            Assert.AreEqual(2, fieldSelectionSet.Children[DocumentPartType.InlineFragment].Count);
+            Assert.AreEqual(2, fieldSelectionSet.Children[DocumentPartType.Field].Count);
+            Assert.IsNotNull(fieldSelectionSet.Children[DocumentPartType.Field]
+                .OfType<IFieldDocumentPart>().SingleOrDefault(x => x.Field.Parent == _donutGraphType && x.Field.Name == "__typename"));
+            Assert.IsNotNull(fieldSelectionSet.Children[DocumentPartType.Field]
+                .OfType<IFieldDocumentPart>().SingleOrDefault(x => x.Field.Parent == _bagelGraphType && x.Field.Name == "__typename"));
         }
     }
 }

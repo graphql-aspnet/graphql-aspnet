@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -21,7 +20,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
     internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>
     {
-        private DocumentInputArgumentCollection _arguments;
+        private readonly DocumentInputArgumentCollection _arguments;
+        private readonly DocumentDirectiveCollection _directives;
 
         protected DocumentFieldBase(
             IDocumentPart parentPart,
@@ -30,10 +30,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             IGraphType fieldGraphType)
             : base(parentPart, node)
         {
-
             this.AssignGraphType(fieldGraphType);
             this.Field = field;
 
+            _directives = new DocumentDirectiveCollection(this);
             _arguments = new DocumentInputArgumentCollection(this);
         }
 
@@ -47,38 +47,46 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         public virtual bool CanResolveForGraphType(IGraphType graphType)
         {
-            // when there is no target restriction or a direct type match
-            if (this.GraphType == null || graphType == this.GraphType)
-                return true;
+            // if the provided graphtype owns this field
+            // then yes it can resolve for it
+            if (graphType is IGraphFieldContainer fieldContainer)
+            {
+                if (fieldContainer.Fields.Contains(this.Field))
+                    return true;
+            }
 
-            // also allowed if the provided graphType can masquerade
-            // as this target graph type (such as an object type implementing an interface)
-            if (graphType is IObjectGraphType obj && obj.InterfaceNames.Contains(this.GraphType.Name))
-                return true;
+            // if the target graph type is an object and this field points to
+            // an interface that said object implements, its also allowed.
+            if (graphType is IObjectGraphType obj)
+            {
+                if (this.Field.Parent is IInterfaceGraphType igt)
+                {
+                    if (obj.InterfaceNames.Contains(igt.Name))
+                        return true;
+                }
+            }
 
             return false;
-        }
-
-        public virtual IInputArgumentCollectionDocumentPart GatherArguments()
-        {
-            return _arguments;
-        }
-
-        public virtual IEnumerable<IDirectiveDocumentPart> GatherDirectives()
-        {
-            return this.Children[DocumentPartType.Directive]
-                .OfType<IDirectiveDocumentPart>()
-                .ToList();
         }
 
         /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
-            if (relativeDepth == 1 && childPart is IFieldSelectionSetDocumentPart fss)
-                this.FieldSelectionSet = fss;
-
-            if (relativeDepth == 1 && childPart is IInputArgumentDocumentPart iadp)
-                _arguments.AddArgumment(iadp);
+            if (relativeDepth == 1)
+            {
+                if (childPart is IFieldSelectionSetDocumentPart fss)
+                {
+                    this.FieldSelectionSet = fss;
+                }
+                else if (childPart is IInputArgumentDocumentPart iadp)
+                {
+                    _arguments.AddArgument(iadp);
+                }
+                else if (childPart is IDirectiveDocumentPart ddp)
+                {
+                    _directives.AddDirective(ddp);
+                }
+            }
         }
 
         /// <summary>
@@ -104,6 +112,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// </summary>
         /// <value>The field selection set.</value>
         public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
+
+        public IInputArgumentCollectionDocumentPart Arguments => _arguments;
+
+        public IDirectiveCollectionDocumentPart Directives => _directives;
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Field;

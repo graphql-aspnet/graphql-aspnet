@@ -96,11 +96,11 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
             var operation = context.ActivePart as IOperationDocumentPart;
             var fieldCollection = operation?.FieldSelectionSet;
 
-            while (fieldCollection != null && fieldCollection.Count == 1)
+            while (fieldCollection != null && fieldCollection.ExecutableFields.Count == 1)
             {
                 // did we encounter a field collection with exactly one child that is not virtual?
                 // i.e. one "top-level user action" to be called for the subscription?
-                var childField = fieldCollection[0];
+                var childField = fieldCollection.ExecutableFields[0];
                 if (!childField.GraphType.IsVirtual)
                     return true;
 
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                 context,
                 operation.Node,
                 "Invalid Subscription. Expected exactly 1 root, non-virtual child field, " +
-                $"recieved {fieldCollection?.Count ?? 0} child fields at {fieldCollection?.Path.DotString() ?? "-null-"}.");
+                $"recieved {fieldCollection?.ExecutableFields.Count ?? 0} child fields at {fieldCollection?.Path.DotString() ?? "-null-"}.");
             return false;
         }
 

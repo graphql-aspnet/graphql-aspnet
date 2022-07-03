@@ -18,8 +18,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// </summary>
     public interface IDirectiveDocumentPart : IDocumentPart
     {
-        IInputArgumentCollectionDocumentPart GatherArguments();
-
         /// <summary>
         /// Gets the location in the source document where this directive instance was declared.
         /// </summary>
@@ -32,5 +30,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The name of the directive indicated by this instance.</value>
         string DirectiveName { get; }
+
+        IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

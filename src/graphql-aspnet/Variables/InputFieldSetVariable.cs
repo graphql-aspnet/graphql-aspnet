@@ -47,6 +47,7 @@ namespace GraphQL.AspNet.Variables
         /// <value>The fields.</value>
         public IReadOnlyDictionary<string, IInputVariable> Fields => _fields;
 
+
         /// <summary>
         /// Attempts to retrieve a field by its name.
         /// </summary>
@@ -61,6 +62,22 @@ namespace GraphQL.AspNet.Variables
                 field = item;
 
             return found;
+        }
+
+
+        /// <summary>
+        /// Gets the dictionary of fields defined for this field set variable.
+        /// </summary>
+        /// <value>The fields.</value>
+        IEnumerable<KeyValuePair<string, IResolvableValueItem>> IResolvableFieldSet.Fields
+        {
+            get
+            {
+                foreach (var kvp in this.Fields)
+                {
+                    yield return new KeyValuePair<string, IResolvableValueItem>(kvp.Key, kvp.Value);
+                }
+            }
         }
 
         /// <summary>

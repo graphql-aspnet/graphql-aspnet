@@ -79,9 +79,9 @@ namespace GraphQL.AspNet.PlanGeneration
             IFieldSelectionSetDocumentPart fieldsToReturn)
         {
             var tasks = new List<Task<IGraphFieldInvocationContext>>();
-            if (sourceGraphType != null && fieldsToReturn != null && fieldsToReturn.Count > 0)
+            if (sourceGraphType != null && fieldsToReturn != null && fieldsToReturn.ExecutableFields.Count > 0)
             {
-                foreach (var field in fieldsToReturn)
+                foreach (var field in fieldsToReturn.ExecutableFields)
                 {
                     // not all fields in a selection set will target all known source types
                     // like when a fragment is spread into a selection set, the fragment target type will
@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.PlanGeneration
                 targetField,
                 new SourceOrigin(fieldSelection.Node.Location, fieldSelection.Path));
 
-            var arguments = this.CreateArgumentList(targetField, fieldSelection.GatherArguments());
+            var arguments = this.CreateArgumentList(targetField, fieldSelection.Arguments);
             foreach (var argument in arguments)
                 fieldContext.Arguments.Add(argument);
 
@@ -144,7 +144,7 @@ namespace GraphQL.AspNet.PlanGeneration
                     fieldContext.Restrict(typedType.ObjectType);
             }
 
-            if (fieldSelection.FieldSelectionSet != null && fieldSelection.FieldSelectionSet.Count > 0)
+            if (fieldSelection.FieldSelectionSet != null && fieldSelection.FieldSelectionSet.ExecutableFields.Count > 0)
             {
                 // resolve the child fields for each possible known return type
                 // since we don't know what the resultant query may produce at runtime we need to account

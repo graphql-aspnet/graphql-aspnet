@@ -10,7 +10,9 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps
 {
     using System.Linq;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
@@ -27,11 +29,15 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSt
             // anonymous operations will all present as ReadOnlyMemory<char>.Empty
             var document = (IGraphQueryDocument)context.ActivePart;
 
-            var anonymousOperations = document.Operations
+            var allFoundOperations = document.Children[DocumentPartType.Operation]
+                .OfType<IOperationDocumentPart>()
+                .ToList();
+
+            var anonymousOperations = allFoundOperations
                 .Where(x => string.IsNullOrWhiteSpace(x.Name))
                 .ToList();
 
-            if (anonymousOperations.Count >= 1 && document.Operations.Count > 1)
+            if (anonymousOperations.Count >= 1 && allFoundOperations.Count > 1)
             {
                 var node = anonymousOperations.Count > 1 ? anonymousOperations[1].Node : anonymousOperations[0].Node;
                 this.ValidationError(

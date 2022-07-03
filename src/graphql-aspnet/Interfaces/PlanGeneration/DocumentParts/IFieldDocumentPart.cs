@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A single field of data from a source object selected to be returned as part of a graph query.
     /// </summary>
-    public interface IFieldDocumentPart : IDocumentPart
+    public interface IFieldDocumentPart : IDirectiveContainerDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Determines whether this field is capable of resolving itself for the given graph type.
@@ -25,20 +25,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <param name="graphType">the graph type to test.</param>
         /// <returns><c>true</c> if this field can be returned the specified graph type; otherwise, <c>false</c>.</returns>
         internal bool CanResolveForGraphType(IGraphType graphType);
-
-        /// <summary>
-        /// Gathers the arguments currently defined on this instance and packages
-        /// them into a queryable collection.
-        /// </summary>
-        /// <returns>IInputArgumentCollectionDocumentPart.</returns>
-        IInputArgumentCollectionDocumentPart GatherArguments();
-
-        /// <summary>
-        /// Gathers the directives currently defined on this instance. Directives
-        /// are returned in the order they were encountered.
-        /// </summary>
-        /// <returns>IEnumerable&lt;IDirectiveDocumentPart&gt;.</returns>
-        IEnumerable<IDirectiveDocumentPart> GatherDirectives();
 
         /// <summary>
         /// Gets the name of the field requested, as it exists in the schema.
@@ -64,5 +50,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The child selection set.</value>
         IFieldSelectionSetDocumentPart FieldSelectionSet { get; }
+
+        IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

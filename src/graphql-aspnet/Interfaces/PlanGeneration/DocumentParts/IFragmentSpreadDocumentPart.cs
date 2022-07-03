@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
-    public interface IFragmentSpreadDocumentPart : IDocumentPart
+    public interface IFragmentSpreadDocumentPart : IDirectiveContainerDocumentPart, IDocumentPart
     {
         internal event DocumentCollectionAlteredHandler NamedFragmentAssigned;
 

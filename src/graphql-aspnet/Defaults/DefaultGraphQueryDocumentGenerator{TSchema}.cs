@@ -9,8 +9,12 @@
 
 namespace GraphQL.AspNet.Defaults
 {
+    using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.PlanGeneration.Contexts;
@@ -104,11 +108,79 @@ namespace GraphQL.AspNet.Defaults
                         {
                             spread.AssignNamedFragment(foundFragment);
                         }
+                        else
+                        {
+                            completedAllSteps = false;
+                        }
                     }
                 }
             }
 
+            // --------------------------------------------
+            // Step 3: Max Depth Calculation
+            // --------------------------------------------
+            // When Named fragments spread into other field selection sets they can potentially
+            // increase the maximum depth of the operation
+            // --------------------------------------------
+            if (completedAllSteps && document.NamedFragments.Count > 0)
+            {
+                foreach (var operation in document.Operations.Values)
+                {
+                    // no spreads no recomputing of the depth is necessary
+                    if (operation.FragmentSpreads.Count == 0)
+                        continue;
+
+                    var depth = this.RecomputeDepth(
+                        operation.FieldSelectionSet,
+                        new HashSet<INamedFragmentDocumentPart>());
+                    if (depth > document.MaxDepth)
+                        document.MaxDepth = depth;
+                }
+            }
+
+
             return document;
+        }
+
+        private int RecomputeDepth(
+            IFieldSelectionSetDocumentPart selectionSet,
+            HashSet<INamedFragmentDocumentPart> walkedNamedFragments)
+        {
+            int maxDepth = 0;
+            if (selectionSet != null)
+            {
+                foreach (var child in selectionSet.Children)
+                {
+                    if (child is IFieldDocumentPart fd)
+                    {
+                        var depth = 1;
+                        if (fd.FieldSelectionSet != null)
+                            depth += this.RecomputeDepth(fd.FieldSelectionSet, walkedNamedFragments);
+                        if (depth > maxDepth)
+                            maxDepth = depth;
+                    }
+                    else if (child is IInlineFragmentDocumentPart iif)
+                    {
+                        var depth = this.RecomputeDepth(iif.FieldSelectionSet, walkedNamedFragments);
+                        if (depth > maxDepth)
+                            maxDepth = depth;
+                    }
+                    else if (child is IFragmentSpreadDocumentPart spread && spread.Fragment != null)
+                    {
+                        if (!walkedNamedFragments.Contains(spread.Fragment))
+                        {
+                            walkedNamedFragments.Add(spread.Fragment);
+                            var depth = this.RecomputeDepth(spread.Fragment.FieldSelectionSet, walkedNamedFragments);
+                            walkedNamedFragments.Remove(spread.Fragment);
+
+                            if (depth > maxDepth)
+                                maxDepth = depth;
+                        }
+                    }
+                }
+            }
+
+            return maxDepth;
         }
     }
 }

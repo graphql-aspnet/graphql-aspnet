@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Parsing
             // * variables are identified and proper reference is ensured
             // * ..and on and on
             // ----------------------------------
-            while (!tokenStream.EndOfStream)
+            do
             {
                 // offload processing of the queue to a specialized top-level-node "maker"
                 // based on the keyword at the top of the stream .
@@ -120,6 +120,7 @@ namespace GraphQL.AspNet.Parsing
                 var node = maker.MakeNode(tokenStream);
                 syntaxTree.RootNode.AddChild(node);
             }
+            while (!tokenStream.EndOfStream);
 
             return syntaxTree;
         }

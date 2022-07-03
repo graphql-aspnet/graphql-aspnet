@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// Adds the argumment to the collection.
         /// </summary>
         /// <param name="argument">The argument.</param>
-        public void AddArgumment(IInputArgumentDocumentPart argument)
+        public void AddArgument(IInputArgumentDocumentPart argument)
         {
             if (!_arguments.ContainsKey(argument.Name))
             {

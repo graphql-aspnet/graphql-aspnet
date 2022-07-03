@@ -6,16 +6,20 @@
 // --
 // License:  MIT
 // *************************************************************
+
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
-    using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -26,10 +30,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A collection of fields (from a <see cref="IGraphType"/>) that are requested by a user and defined
     /// on their query document. Selected fields are keyed by the return value (a.k.a. the field alias) requested by the user.
     /// </summary>
-    [DebuggerDisplay("FIELD SET: Graph Type: {GraphType.Name}, Fields = {Count}")]
+    [DebuggerDisplay("FIELD SET: Graph Type: {GraphType.Name}")]
     internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart
     {
-        private readonly Dictionary<ReadOnlyMemory<char>, List<IFieldDocumentPart>> _fieldsByAlias;
+        private Dictionary<string, List<IFieldDocumentPart>> _fieldsByAlias = null;
+        private List<IFieldDocumentPart> _allResolvedFields = null;
+
+        // a named fragment could be spread multiple times
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
@@ -38,74 +45,81 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public DocumentFieldSelectionSet(IDocumentPart parent)
             : base(parent, EmptyNode.Instance)
         {
-            _fieldsByAlias = new Dictionary<ReadOnlyMemory<char>, List<IFieldDocumentPart>>(new MemoryOfCharComparer());
             this.AssignGraphType(parent.GraphType);
         }
 
-        /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        private void EnsureExecutableFieldSet()
         {
-            if (relativeDepth == 1)
-            {
-                // for any direct children of this selection set:
-                //      * fields
-                //      * top level fields of inline fragments
-                //      * top level fields of named framgents
-                // make sure to add their aliases to the set of known aliases
-                // at this level
-                if (childPart is IFieldDocumentPart fds)
-                {
-                    if (!_fieldsByAlias.ContainsKey(fds.Alias))
-                        _fieldsByAlias.Add(fds.Alias, new List<IFieldDocumentPart>());
+            if (_allResolvedFields != null)
+                return;
 
-                    _fieldsByAlias[fds.Alias].Add(fds);
-                }
-                else if (childPart is IFragmentDocumentPart fragPart)
+            _allResolvedFields = new List<IFieldDocumentPart>();
+            _fieldsByAlias = new Dictionary<string, List<IFieldDocumentPart>>();
+
+            this.GatherFieldSet(this, new HashSet<INamedFragmentDocumentPart>());
+        }
+
+        private void GatherFieldSet(
+            IFieldSelectionSetDocumentPart fieldSet,
+            HashSet<INamedFragmentDocumentPart> walkedNamedFrags)
+        {
+            if (fieldSet == null)
+                return;
+
+            foreach (var docPart in fieldSet.Children)
+            {
+                if (docPart is IFieldDocumentPart fd)
                 {
-                    foreach (var child in childPart.Children)
-                        this.OnChildPartAdded(child, relativeDepth);
+                    _allResolvedFields.Add(fd);
+                    this.AddFieldAlias(fd);
                 }
-                else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+                else if (docPart is IInlineFragmentDocumentPart inlineFrag)
                 {
-                    this.OnChildPartAdded(fragSpread.Fragment, relativeDepth);
-                    fragSpread.NamedFragmentAssigned += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart, e.RelativeDepth);
+                    this.GatherFieldSet(inlineFrag.FieldSelectionSet, walkedNamedFrags);
+                }
+                else if (docPart is IFragmentSpreadDocumentPart fragSpread && fragSpread.Fragment != null)
+                {
+                    if (!walkedNamedFrags.Contains(fragSpread.Fragment))
+                    {
+                        // its possible, though not legal, for named fragment spreads to form cycles
+                        // if this occurs stop when a cycle is found (the document is in error and will be
+                        // failed, no need to continue gathering top level fields)
+                        walkedNamedFrags.Add(fragSpread.Fragment);
+                        this.GatherFieldSet(fragSpread.Fragment.FieldSelectionSet, walkedNamedFrags);
+                        walkedNamedFrags.Remove(fragSpread.Fragment);
+                    }
                 }
             }
+        }
+
+        private void AddFieldAlias(IFieldDocumentPart fieldPart)
+        {
+            if (!_fieldsByAlias.ContainsKey(fieldPart.Alias.ToString()))
+                _fieldsByAlias.Add(fieldPart.Alias.ToString(), new List<IFieldDocumentPart>());
+
+            _fieldsByAlias[fieldPart.Alias.ToString()].Add(fieldPart);
         }
 
         /// <inheritdoc />
         public IReadOnlyList<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
         {
-            var list = new List<IFieldDocumentPart>();
-            if (_fieldsByAlias.ContainsKey(alias))
-                list.AddRange(_fieldsByAlias[alias]);
+            this.EnsureExecutableFieldSet();
+            if (_fieldsByAlias.ContainsKey(alias.ToString()))
+                return _fieldsByAlias[alias.ToString()];
 
-            return list;
+            return new List<IFieldDocumentPart>();
         }
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.FieldSelectionSet;
 
-        /// <inheritdoc />
-        public int Count => this.Children[DocumentPartType.Field]
-                .OfType<IFieldDocumentPart>()
-                .Count();
-
-        public IFieldDocumentPart this[int index]
-            => this.Children[DocumentPartType.Field][index] as IFieldDocumentPart;
-
-        /// <inheritdoc />
-        public IEnumerator<IFieldDocumentPart> GetEnumerator()
+        public IReadOnlyList<IFieldDocumentPart> ExecutableFields
         {
-            return this.Children[DocumentPartType.Field]
-                .OfType<IFieldDocumentPart>()
-                .GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
+            get
+            {
+                this.EnsureExecutableFieldSet();
+                return _allResolvedFields;
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A common fragment definition shared by all fragment types within the query
     /// document (Inline and Named fragments).
     /// </summary>
-    public interface IFragmentDocumentPart : IDocumentPart
+    public interface IFragmentDocumentPart : IDirectiveContainerDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Marks this fragment as being referenced and used in at least one operation in the document.

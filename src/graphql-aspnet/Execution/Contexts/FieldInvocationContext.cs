@@ -36,14 +36,12 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="name">The name to apply to this data set once resolution is complete.</param>
         /// <param name="field">The field.</param>
         /// <param name="origin">The origin, in the source text, that this context was generated from.</param>
-        /// <param name="directives">The directives parsed from a query document that are to be executed as part of this context.</param>
         public FieldInvocationContext(
             ISchema schema,
             Type expectedSourceType,
             string name,
             IGraphField field,
-            SourceOrigin origin,
-            IEnumerable<IDirectiveInvocationContext> directives = null)
+            SourceOrigin origin)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Field = Validation.ThrowIfNullOrReturn(field, nameof(field));
@@ -54,9 +52,6 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
 
             var list = new List<IDirectiveInvocationContext>();
-            if (directives != null)
-                list.AddRange(directives);
-            this.Directives = list;
         }
 
         /// <inheritdoc />
@@ -82,9 +77,6 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The expected name of the source type.</value>
         private string ExpectedSourceTypeName => this.ExpectedSourceType?.FriendlyName() ?? "null";
-
-        /// <inheritdoc />
-        public IList<IDirectiveInvocationContext> Directives { get; }
 
         /// <inheritdoc />
         public string Name { get; }

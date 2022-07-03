@@ -98,114 +98,112 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         {
             // Step 1: Execute the directives prior to resolution for those
             // those that can be run.
-            (var continueExecution, object resolvedData) = await this.ExecuteFieldDirectives(
-                  context,
-                  DirectiveInvocationPhase.BeforeFieldResolution,
-                  null).ConfigureAwait(false);
+            //(var continueExecution, object resolvedData) = await this.ExecuteFieldDirectives(
+            //      context,
+            //      DirectiveInvocationPhase.BeforeFieldResolution,
+            //      null).ConfigureAwait(false);
 
-            if (continueExecution)
-            {
-                // build a collection of invokable parameters from the supplied context
-                var executionArguments = context
-                    .InvocationContext
-                    .Arguments
-                    .Merge(context.VariableData)
-                    .WithSourceData(context.Request.Data.Value);
 
-                var resolutionContext = new FieldResolutionContext(
-                    _schema,
-                    context,
-                    context.Request,
-                    executionArguments,
-                    context.User);
+            // build a collection of invokable parameters from the supplied context
+            var executionArguments = context
+                .InvocationContext
+                .Arguments
+                .Merge(context.VariableData)
+                .WithSourceData(context.Request.Data.Value);
 
-                // Step 2: Resolve the field
-                context.Logger?.FieldResolutionStarted(resolutionContext);
+            var resolutionContext = new FieldResolutionContext(
+                _schema,
+                context,
+                context.Request,
+                executionArguments,
+                context.User);
 
-                var task = context.Field?.Resolver?.Resolve(resolutionContext, cancelToken);
-                await task.ConfigureAwait(false);
-                context.Messages.AddRange(resolutionContext.Messages);
+            // Step 2: Resolve the field
+            context.Logger?.FieldResolutionStarted(resolutionContext);
 
-                continueExecution = !resolutionContext.IsCancelled;
-                context.Logger?.FieldResolutionCompleted(resolutionContext);
+            var task = context.Field?.Resolver?.Resolve(resolutionContext, cancelToken);
+            await task.ConfigureAwait(false);
+            context.Messages.AddRange(resolutionContext.Messages);
 
-                // Step 3: Execute the directives after resolution for those
-                // those that can be run to give them a chance to alter result data
-                // if necessary.
-                if (continueExecution)
-                {
-                    (continueExecution, resolvedData) = await this.ExecuteFieldDirectives(
-                        context,
-                        DirectiveInvocationPhase.AfterFieldResolution,
-                        resolutionContext.Result,
-                        cancelToken)
-                        .ConfigureAwait(false);
+            var continueExecution = !resolutionContext.IsCancelled;
+            context.Logger?.FieldResolutionCompleted(resolutionContext);
 
-                    resolutionContext.Result = resolvedData;
-                }
+            // Step 3: Execute the directives after resolution for those
+            // those that can be run to give them a chance to alter result data
+            // if necessary.
+            //if (continueExecution)
+            //{
+            //    (continueExecution, resolvedData) = await this.ExecuteFieldDirectives(
+            //        context,
+            //        DirectiveInvocationPhase.AfterFieldResolution,
+            //        resolutionContext.Result,
+            //        cancelToken)
+            //        .ConfigureAwait(false);
 
-                this.AssignResults(context, resolutionContext);
-            }
+            //    resolutionContext.Result = resolvedData;
+            //}
+
+            this.AssignResults(context, resolutionContext);
 
             return continueExecution;
         }
 
-        private async Task<(bool CompletedSuccessfully, object DataTarget)> ExecuteFieldDirectives(
-            GraphFieldExecutionContext executionContext,
-            DirectiveInvocationPhase invocationPhase,
-            object dataTarget,
-            CancellationToken cancelToken = default)
-        {
-            IEnumerable<IDirectiveInvocationContext> contextSearchResult = executionContext?
-                .Request?
-                .InvocationContext?
-                .Directives?
-                .Where(x => x.Directive.InvocationPhases.HasFlag(invocationPhase));
+        //private async Task<(bool CompletedSuccessfully, object DataTarget)> ExecuteFieldDirectives(
+        //    GraphFieldExecutionContext executionContext,
+        //    DirectiveInvocationPhase invocationPhase,
+        //    object dataTarget,
+        //    CancellationToken cancelToken = default)
+        //{
+        //    IEnumerable<IDirectiveInvocationContext> contextSearchResult = executionContext?
+        //        .Request?
+        //        .InvocationContext?
+        //        .Directives?
+        //        .Where(x => x.Directive.InvocationPhases.HasFlag(invocationPhase));
 
-            var invocationContexts = new List<IDirectiveInvocationContext>();
-            if (contextSearchResult != null)
-                invocationContexts.AddRange(contextSearchResult);
+        //    var invocationContexts = new List<IDirectiveInvocationContext>();
+        //    if (contextSearchResult != null)
+        //        invocationContexts.AddRange(contextSearchResult);
 
-            // generate requests context for each directive to be processed
-            // then process the directive sequentially.
-            //
-            // NOTE: Order matters, they can't be executed in parallel
-            // https://spec.graphql.org/October2021/#sec-Language.Directives
-            bool continueExecution = true;
-            object localDataTarget = dataTarget; // box the data target
-            for (var i = 0; i < invocationContexts.Count; i++)
-            {
-                var request = new GraphDirectiveRequest(
-                    invocationContexts[i],
-                    invocationPhase,
-                    localDataTarget,
-                    executionContext?.Request?.Items);
+        //    // generate requests context for each directive to be processed
+        //    // then process the directive sequentially.
+        //    //
+        //    // NOTE: Order matters, they can't be executed in parallel
+        //    // https://spec.graphql.org/October2021/#sec-Language.Directives
+        //    bool continueExecution = true;
+        //    object localDataTarget = dataTarget; // box the data target
+        //    for (var i = 0; i < invocationContexts.Count; i++)
+        //    {
+        //        var request = new GraphDirectiveRequest(
+        //            invocationContexts[i],
+        //            invocationPhase,
+        //            localDataTarget,
+        //            executionContext?.Request?.Items);
 
-                var directiveContext = new GraphDirectiveExecutionContext(
-                    _schema,
-                    executionContext,
-                    request,
-                    executionContext.VariableData,
-                    executionContext.User);
+        //        var directiveContext = new GraphDirectiveExecutionContext(
+        //            _schema,
+        //            executionContext,
+        //            request,
+        //            executionContext.VariableData,
+        //            executionContext.User);
 
-                // directives must be awaited individually
-                // the spec dictates they must be executed in a predictable order
-                await _directiveExecutionPipeline.InvokeAsync(directiveContext, cancelToken)
-                    .ConfigureAwait(false);
+        //        // directives must be awaited individually
+        //        // the spec dictates they must be executed in a predictable order
+        //        await _directiveExecutionPipeline.InvokeAsync(directiveContext, cancelToken)
+        //            .ConfigureAwait(false);
 
-                executionContext.Messages.AddRange(directiveContext.Messages);
+        //        executionContext.Messages.AddRange(directiveContext.Messages);
 
-                localDataTarget = request.DirectiveTarget;
-                continueExecution = !directiveContext.IsCancelled;
+        //        localDataTarget = request.DirectiveTarget;
+        //        continueExecution = !directiveContext.IsCancelled;
 
-                // when one directive fails or cancels
-                // skip the exectuion of other directives in the chain
-                if (!continueExecution)
-                    break;
-            }
+        //        // when one directive fails or cancels
+        //        // skip the exectuion of other directives in the chain
+        //        if (!continueExecution)
+        //            break;
+        //    }
 
-            return (continueExecution, localDataTarget);
-        }
+        //    return (continueExecution, localDataTarget);
+        //}
 
         /// <summary>
         /// Assigns the results of resolving the field to the items on the execution context.

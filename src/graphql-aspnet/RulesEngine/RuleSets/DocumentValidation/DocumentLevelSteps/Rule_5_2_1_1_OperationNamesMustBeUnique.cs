@@ -10,7 +10,10 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSteps
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
@@ -28,7 +31,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSt
 
             var allNamesUnique = true;
             var names = new HashSet<string>();
-            foreach (var operation in document.Operations)
+            foreach (var operation in document.Children[DocumentPartType.Operation].OfType<IOperationDocumentPart>())
             {
                 var operationName = operation.Name.ToString();
                 if (!string.IsNullOrWhiteSpace(operationName))

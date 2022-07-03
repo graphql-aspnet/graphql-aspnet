@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
 
             // inspect all declared arguments from the schema
             var allArgsValid = true;
-            var suppliedArguments = fieldSelection.GatherArguments();
+            var suppliedArguments = fieldSelection.Arguments;
             foreach (var argument in fieldSelection.Field.Arguments)
             {
                 // any argument flaged as being a source input (such as for type extensions)

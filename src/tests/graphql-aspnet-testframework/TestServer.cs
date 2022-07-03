@@ -255,7 +255,6 @@ namespace GraphQL.AspNet.Tests.Framework
             fieldInvocationContext.Setup(x => x.Field).Returns(field);
             fieldInvocationContext.Setup(x => x.Arguments).Returns(arguments);
             fieldInvocationContext.Setup(x => x.Name).Returns(field.Name);
-            fieldInvocationContext.Setup(x => x.Directives).Returns(new List<IDirectiveInvocationContext>());
             fieldInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
             fieldInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
             fieldInvocationContext.Setup(x => x.Schema).Returns(this.Schema);

@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Variables
 
                 IResolvableValueItem resolvableItem = null;
                 var found = inputVariables.TryGetVariable(variable.Name, out var suppliedValue);
-                resolvableItem = found ? suppliedValue : variable.Value as IResolvableValueItem;
+                resolvableItem = found ? suppliedValue : variable.DefaultValue as IResolvableValueItem;
 
                 var resolvedValue = resolver.Resolve(resolvableItem);
 

@@ -17,13 +17,25 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A collection of fields to query <see cref="IFieldDocumentPart"/>
     /// from a source object.
     /// </summary>
-    public interface IFieldSelectionSetDocumentPart : IReadOnlyList<IFieldDocumentPart>, IDocumentPart
+    public interface IFieldSelectionSetDocumentPart : IDocumentPart
     {
         /// <summary>
-        /// Searches this selection set for any fields with the given output alias/name.
+        /// Searches this selection set for any fields with the given output alias/name. Found
+        /// fields may include those that would be included at the same level
+        /// as this selection set from any inline fragments or named
+        /// fragment spreads.
         /// </summary>
         /// <param name="alias">The alias to search for.</param>
         /// <returns>A list of fields with the given name or an empty list.</returns>
         IReadOnlyList<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias);
+
+        /// <summary>
+        /// Gets a collection of fields to resolve for this selection set, in order of execution,
+        /// combining all document parts that contribute to the set of fields to be resolved.
+        /// This list walks any inline fragments and fragment spreads to produce a final set of fields
+        /// that should be resolved.
+        /// </summary>
+        /// <value>The executable fields.</value>
+        IReadOnlyList<IFieldDocumentPart> ExecutableFields { get; }
     }
 }

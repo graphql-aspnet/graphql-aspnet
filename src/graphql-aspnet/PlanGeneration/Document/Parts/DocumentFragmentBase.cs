@@ -21,6 +21,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     internal abstract class DocumentFragmentBase<TSyntaxNode> : DocumentPartBase<TSyntaxNode>, IFragmentDocumentPart
         where TSyntaxNode : SyntaxNode
     {
+        private DocumentDirectiveCollection _directives;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragmentBase{TSyntaxNode}" /> class.
         /// </summary>
@@ -29,14 +31,24 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public DocumentFragmentBase(IDocumentPart parentPart, TSyntaxNode fragmentNode)
             : base(parentPart, fragmentNode)
         {
+            _directives = new DocumentDirectiveCollection(this);
         }
 
         /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             base.OnChildPartAdded(childPart, relativeDepth);
-            if (relativeDepth == 1 && childPart is IFieldSelectionSetDocumentPart fss)
-                this.FieldSelectionSet = fss;
+            if (relativeDepth == 1)
+            {
+                if (childPart is IFieldSelectionSetDocumentPart fss)
+                {
+                    this.FieldSelectionSet = fss;
+                }
+                else if (childPart is IDirectiveDocumentPart ddp)
+                {
+                    _directives.AddDirective(ddp);
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -53,5 +65,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
+
+        public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

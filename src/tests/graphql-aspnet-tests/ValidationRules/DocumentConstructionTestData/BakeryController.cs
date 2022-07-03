@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration.DocumentConstructionTestData
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Interfaces.Controllers;
 
     public class BakeryController : GraphController
     {
@@ -23,6 +24,12 @@ namespace GraphQL.AspNet.Tests.PlanGeneration.DocumentConstructionTestData
 
         [Query]
         public Donut RetrieveDonut(int id)
+        {
+            return null;
+        }
+
+        [QueryRoot("retrieveEither", "BagelOrDonut", typeof(Donut), typeof(Bagel))]
+        public IGraphActionResult RetrieveEither()
         {
             return null;
         }

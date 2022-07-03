@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
 
     /// <summary>
@@ -24,7 +25,8 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <returns><c>true</c> if the specified argument name contains argument; otherwise, <c>false</c>.</returns>
         bool ContainsArgument(string argumentName);
 
-
         bool TryGetArgument(string fieldName, out IInputArgumentDocumentPart foundArgument);
+
+        IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

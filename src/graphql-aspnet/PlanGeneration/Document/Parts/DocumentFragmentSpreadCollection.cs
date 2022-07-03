@@ -3,12 +3,14 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Text;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
+    [DebuggerDisplay("Count = {Count}")]
     internal class DocumentFragmentSpreadCollection : IFragmentSpreadCollectionDocumentPart
     {
         private Dictionary<string, List<IFragmentSpreadDocumentPart>> _spreads;

@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryDirectiveS
             var directive = docPart.GraphType as IDirective;
             if (directive != null)
             {
-                var suppliedArgs = docPart.GatherArguments();
+                var suppliedArgs = docPart.Arguments;
 
                 // inspect all declared arguments from the schema
                 foreach (var argument in directive.Arguments)

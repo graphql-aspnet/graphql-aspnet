@@ -27,6 +27,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public event DocumentCollectionAlteredHandler NamedFragmentAssigned;
 
+        private DocumentDirectiveCollection _directives;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragmentSpread" /> class.
         /// </summary>
@@ -39,6 +41,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             : base(parentPart, node)
         {
             this.FragmentName = node.PointsToFragmentName;
+            _directives = new DocumentDirectiveCollection(this);
+        }
+
+        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        {
+            base.OnChildPartAdded(childPart, relativeDepth);
+            if (relativeDepth == 1 && childPart is IDirectiveDocumentPart ddp)
+            {
+                _directives.AddDirective(ddp);
+            }
         }
 
         /// <inheritdoc />
@@ -69,5 +81,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public INamedFragmentDocumentPart Fragment { get; private set; }
+        public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

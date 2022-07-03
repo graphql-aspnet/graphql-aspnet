@@ -84,41 +84,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         }
 
         [Test]
-        public async Task SingleField_WithDirective_ValidateFields()
-        {
-            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query {  simple @skip(if: true) {  simpleQueryMethod { property1} } }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
-
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
-
-            // the "simple" virtual field queued to be resolved when the plan
-            // is executed
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
-            Assert.IsNotNull(queuedContext);
-            Assert.AreEqual("simple", queuedContext.Name);
-
-            Assert.AreEqual(1, queuedContext.Directives.Count);
-
-            var directiveContext = queuedContext.Directives[0];
-            Assert.IsNotNull(directiveContext);
-            Assert.AreEqual(DirectiveLocation.FIELD, directiveContext.Location);
-            Assert.AreEqual("skip", directiveContext.Directive.Name);
-
-            Assert.AreEqual(1, directiveContext.Arguments.Count);
-            Assert.AreEqual(true, directiveContext.Arguments["if"].Value.Resolve(ResolvedVariableCollection.Empty));
-        }
-
-        [Test]
         public async Task MultiOperationDocument_SelectsCorrectOperationInPlan()
         {
             var server = new TestServerBuilder()
@@ -505,7 +470,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task Union_TypeName_AsAFieldSelectionDirectlyOnAUnion_ProducesTypeNameFieldForAllMembersOfTheUnion()
         {
-            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder()
+                .AddType<SimplePlanGenerationController>()
+                .Build();
 
             // unionQuery returns a union graphtype of TwoPropObject and TwoPropObjectV2
             // specific fields for V1 are requested but V2 should be included with __typename as well

@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
         {
             var field = (IFieldDocumentPart)context.ActivePart;
             var selectionSet = field.FieldSelectionSet;
-            var hasChildFields = selectionSet != null && selectionSet.Count > 0;
+            var hasChildFields = selectionSet != null && selectionSet.ExecutableFields.Count > 0;
 
             if (field.GraphType.Kind.IsLeafKind() && hasChildFields)
             {

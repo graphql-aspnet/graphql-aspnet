@@ -48,12 +48,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IGraphField Field { get; }
 
         /// <summary>
-        /// Gets the directives that should be executed as part of this context.
-        /// </summary>
-        /// <value>The directives.</value>
-        IList<IDirectiveInvocationContext> Directives { get; }
-
-        /// <summary>
         /// Gets the child contexts that are dependent on this context's result in order to execute.
         /// </summary>
         /// <value>The child contexts.</value>

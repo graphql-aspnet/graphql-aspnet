@@ -107,8 +107,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
                 return false;
 
             // perform a check for the arguments.
-            var leftArgs = leftField.GatherArguments();
-            var rightArgs = rightField.GatherArguments();
+            var leftArgs = leftField.Arguments;
+            var rightArgs = rightField.Arguments;
 
             // when no args are on the existing field
             // no args must be on the new field (either its not defined or none were defined; an empty set).

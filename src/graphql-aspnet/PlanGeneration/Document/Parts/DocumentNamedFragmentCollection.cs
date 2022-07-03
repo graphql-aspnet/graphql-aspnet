@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -19,6 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// <summary>
     /// An indexed collection of named fragments contained within a query document.
     /// </summary>
+    [DebuggerDisplay("Count = {Count}")]
     internal class DocumentNamedFragmentCollection : INamedFragmentCollectionDocumentPart
     {
         private OrderedDictionary<string, INamedFragmentDocumentPart> _fragments;

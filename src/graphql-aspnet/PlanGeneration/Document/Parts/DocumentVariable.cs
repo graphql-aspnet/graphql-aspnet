@@ -29,6 +29,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Variable: {Name}")]
     internal class DocumentVariable : DocumentPartBase<VariableNode>, IVariableDocumentPart
     {
+        private DocumentDirectiveCollection _directives = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariable" /> class.
         /// </summary>
@@ -39,6 +41,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             this.Name = node.Name.ToString();
             this.TypeExpression = GraphTypeExpression.FromDeclaration(node.TypeExpression.Span);
+        }
+
+        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        {
+            base.OnChildPartAdded(childPart, relativeDepth);
+            if (relativeDepth == 1 && childPart is IDirectiveDocumentPart ddp)
+            {
+                _directives = _directives ?? new DocumentDirectiveCollection(this);
+                _directives.AddDirective(ddp);
+            }
         }
 
         /// <inheritdoc />
@@ -53,5 +65,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public ISuppliedValueDocumentPart DefaultValue =>
             this.Children.OfType<ISuppliedValueDocumentPart>().FirstOrDefault();
+
+        public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

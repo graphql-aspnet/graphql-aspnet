@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Defaults
             // types needed to fulfill the user's request and generate a query plan that can be executed to fulfill the request.
             // ------------------------------------------
             var generator = new ExecutableOperationGenerator(_schema);
-            foreach (var operation in document.Operations)
+            foreach (var operation in document.Operations.Values)
             {
                 var executableOperation = await generator.Create(operation).ConfigureAwait(false);
                 queryPlan.AddOperation(executableOperation);

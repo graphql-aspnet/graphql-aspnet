@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// Gets the operations defined on this query document.
         /// </summary>
         /// <value>The operations.</value>
-        IReadOnlyList<IOperationDocumentPart> Operations { get; }
+        IOperationCollectionDocumentPart Operations { get; }
 
         /// <summary>
         /// Gets the set of named fragments defined on this query document.

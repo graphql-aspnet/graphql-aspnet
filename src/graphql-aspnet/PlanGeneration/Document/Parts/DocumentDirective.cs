@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             if (childPart is IInputArgumentDocumentPart iiadp)
-                _arguments.AddArgumment(iiadp);
+                _arguments.AddArgument(iiadp);
         }
 
         /// <inheritdoc />
@@ -52,11 +52,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             var thisPath = path.Clone();
             thisPath.AddFieldName(TokenTypeNames.AT_SYMBOL + this.DirectiveName.ToString());
             return thisPath;
-        }
-
-        public IInputArgumentCollectionDocumentPart GatherArguments()
-        {
-            return _arguments;
         }
 
         /// <inheritdoc />
@@ -68,5 +63,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Directive;
+
+        public IInputArgumentCollectionDocumentPart Arguments => _arguments;
     }
 }

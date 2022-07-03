@@ -42,13 +42,13 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgum
             var isDuplicate = false;
             if (context.ParentPart is IDirectiveDocumentPart ddp)
             {
-                isDuplicate = !ddp.GatherArguments().IsUnique(docPart.Name);
+                isDuplicate = !ddp.Arguments.IsUnique(docPart.Name);
                 parentType = "directive";
                 parentName = ddp.DirectiveName;
             }
             else if (context.ParentPart is IFieldDocumentPart fdp)
             {
-                isDuplicate = !fdp.GatherArguments().IsUnique(docPart.Name);
+                isDuplicate = !fdp.Arguments.IsUnique(docPart.Name);
                 parentType = "field";
                 parentName = fdp.Name.ToString();
             }

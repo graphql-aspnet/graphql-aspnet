@@ -25,9 +25,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Operation: {Name} (Type = {OperationType})")]
     internal class DocumentOperation : DocumentPartBase, IOperationDocumentPart
     {
-        private readonly DocumentVariableCollection _variableCollection;
-        private readonly DocumentFragmentSpreadCollection _fragmentSpreads;
-        private readonly DocumentVariableUsageCollection _variableUsages;
+        private DocumentVariableCollection _variableCollection = null;
+        private DocumentFragmentSpreadCollection _fragmentSpreads = null;
+        private DocumentVariableUsageCollection _variableUsages = null;
+        private DocumentDirectiveCollection _directives = null;
 
         private IFieldSelectionSetDocumentPart _fieldSelectionSet;
 
@@ -47,35 +48,35 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.OperationType = operationType;
             this.Name = node.OperationName.IsEmpty ? string.Empty : node.OperationName.ToString();
             this.OperationTypeName = node.OperationType.ToString();
-
-            _variableCollection = new DocumentVariableCollection(this);
-            _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
-            _variableUsages = new DocumentVariableUsageCollection(this);
-        }
-
-        /// <inheritdoc />
-        protected override SourcePath CreatePath(SourcePath path)
-        {
-            var thisPath = path.Clone();
-            if (!string.IsNullOrWhiteSpace(this.Name))
-                thisPath.AddFieldName(this.OperationType.ToString().ToLower() + "-" + this.Name.ToString());
-            else
-                thisPath.AddFieldName(this.OperationType.ToString().ToLower());
-
-            return thisPath;
         }
 
         /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             if (relativeDepth == 1 && childPart is IVariableDocumentPart vd)
+            {
+                _variableCollection = _variableCollection ?? new DocumentVariableCollection(this);
                 _variableCollection.Add(vd);
+            }
             else if (relativeDepth == 1 && childPart is IFieldSelectionSetDocumentPart fieldSelection)
+            {
                 _fieldSelectionSet = fieldSelection;
+            }
+            else if (relativeDepth == 1&& childPart is IDirectiveDocumentPart ddp)
+            {
+                _directives = _directives ?? new DocumentDirectiveCollection(this);
+                _directives.AddDirective(ddp);
+            }
             else if (childPart is IVariableUsageDocumentPart varRef)
+            {
+                _variableUsages = _variableUsages ?? new DocumentVariableUsageCollection(this);
                 _variableUsages.Add(varRef);
+            }
             else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+            {
+                _fragmentSpreads = _fragmentSpreads ?? new DocumentFragmentSpreadCollection(this);
                 _fragmentSpreads.Add(fragSpread);
+            }
         }
 
         /// <inheritdoc />
@@ -101,5 +102,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IVariableCollectionDocumentPart Variables => _variableCollection;
+
+        public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

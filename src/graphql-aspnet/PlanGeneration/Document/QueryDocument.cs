@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     /// </summary>
     internal class QueryDocument : IGraphQueryDocument
     {
-        private readonly Dictionary<string, IOperationDocumentPart> _operations;
+        private readonly DocumentOperationCollection _operations;
         private readonly DocumentNamedFragmentCollection _fragmentCollection;
 
         /// <summary>
@@ -39,9 +39,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             this.Children = new DocumentPartsCollection(this);
 
             this.Path = new SourcePath();
-            this.Path.AddFieldName("document");
-
             _fragmentCollection = new DocumentNamedFragmentCollection(this);
+            _operations = new DocumentOperationCollection(this);
 
             this.Children.ChildPartAdded += this.Children_PartAdded;
         }
@@ -50,6 +49,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         {
             if (eventArgs.TargetDocumentPart is INamedFragmentDocumentPart nf)
                 _fragmentCollection.AddFragment(nf);
+            else if (eventArgs.TargetDocumentPart is IOperationDocumentPart od)
+                _operations.AddOperation(od);
         }
 
         /// <inheritdoc />
@@ -83,10 +84,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         public SourcePath Path { get; }
 
         /// <inheritdoc />
-        public IReadOnlyList<IOperationDocumentPart> Operations =>
-            this.Children[DocumentPartType.Operation]
-            .OfType<IOperationDocumentPart>()
-            .ToList();
+        public IOperationCollectionDocumentPart Operations => _operations;
 
         /// <inheritdoc />
         public INamedFragmentCollectionDocumentPart NamedFragments => _fragmentCollection;

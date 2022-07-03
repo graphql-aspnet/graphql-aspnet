@@ -44,12 +44,12 @@ namespace GraphQL.AspNet.Variables
 
         public IEnumerator<IResolvableKeyedItem> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return _items.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return this.GetEnumerator();
         }
 
         /// <summary>
