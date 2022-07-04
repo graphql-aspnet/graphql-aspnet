@@ -177,7 +177,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
 
         /// <summary>
         /// Gets a helpful path to determine where this context is in the document.
-        /// Debug only
+        /// Debug only.
         /// </summary>
         /// <value>The path.</value>
         public string Path

@@ -59,8 +59,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             //              field so there is never a case where this rule encounters a field declared against
             //              a union is valid
             if (selectionSetGraphType == null
-                || selectionSetGraphType.Kind != TypeKind.OBJECT
-                    && selectionSetGraphType.Kind != TypeKind.INTERFACE)
+                || (selectionSetGraphType.Kind != TypeKind.OBJECT
+                    && selectionSetGraphType.Kind != TypeKind.INTERFACE))
             {
                 if (selectionSetGraphType != null && selectionSetGraphType.Kind == TypeKind.UNION)
                 {

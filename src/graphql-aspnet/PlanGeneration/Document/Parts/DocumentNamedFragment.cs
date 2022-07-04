@@ -66,8 +66,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.NamedFragment;
 
+        /// <inheritdoc />
         public IFragmentSpreadCollectionDocumentPart FragmentSpreads => _fragmentSpreads;
 
+        /// <inheritdoc />
         public IVariableUsageCollectionDocumentPart VariableUsages => _variableUsages;
     }
 }

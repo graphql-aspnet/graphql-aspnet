@@ -43,12 +43,7 @@ namespace GraphQL.AspNet.Defaults
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Interpretes the syntax tree and generates a contextual document that can be transformed into
-        /// a query plan.
-        /// </summary>
-        /// <param name="syntaxTree">The syntax tree to create a document for.</param>
-        /// <returns>IGraphQueryDocument.</returns>
+        /// <inheritdoc />
         public virtual IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree)
         {
             Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
@@ -57,6 +52,7 @@ namespace GraphQL.AspNet.Defaults
             return this.FillDocument(syntaxTree, new QueryDocument());
         }
 
+        /// <inheritdoc />
         public bool ValidateDocument(IGraphQueryDocument document)
         {
             Validation.ThrowIfNull(document, nameof(document));
@@ -147,7 +143,6 @@ namespace GraphQL.AspNet.Defaults
                         document.MaxDepth = depth;
                 }
             }
-
 
             return document;
         }

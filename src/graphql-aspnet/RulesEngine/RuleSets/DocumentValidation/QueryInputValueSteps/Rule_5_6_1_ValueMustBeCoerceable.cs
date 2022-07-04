@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
         }
 
         /// <summary>
-        /// Validates the input value for correctness against the argument's type expression
+        /// Validates the input value for correctness against the argument's type expression.
         /// </summary>
         /// <param name="queryArg">The query argument, with an supplied value, to evaluate.</param>
         /// <returns><c>true</c> if the data is valid for this rule, <c>false</c> otherwise.</returns>

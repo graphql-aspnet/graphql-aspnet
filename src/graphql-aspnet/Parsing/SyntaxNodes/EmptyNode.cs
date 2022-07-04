@@ -38,7 +38,6 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
             return false;
         }
 
-
         /// <inheritdoc />
         public override string ToString()
         {

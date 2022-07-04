@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgum
     internal class Rule_5_4_2_ArgumentMustBeUniquePerInvocation
         : DocumentPartValidationRuleStep<IInputArgumentDocumentPart>
     {
-
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {

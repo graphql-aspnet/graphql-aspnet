@@ -17,6 +17,13 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
     /// </summary>
     public interface IResolvableFieldSet : IResolvableValueItem
     {
+        /// <summary>
+        /// Attempts to retrieve a resolvable field with the given name from this set of
+        /// items.
+        /// </summary>
+        /// <param name="fieldName">Name of the field to find.</param>
+        /// <param name="foundField">When found, the field is assigned to this parameter.</param>
+        /// <returns><c>true</c> if the field was found, <c>false</c> otherwise.</returns>
         bool TryGetField(string fieldName, out IResolvableValueItem foundField);
 
         /// <summary>

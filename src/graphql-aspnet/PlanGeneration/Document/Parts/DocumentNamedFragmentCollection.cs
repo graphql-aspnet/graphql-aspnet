@@ -29,7 +29,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         // name. Keep track of the duplicates for document validation reporting.
         private Dictionary<string, IList<INamedFragmentDocumentPart>> _overflowFragments = null;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNamedFragmentCollection"/> class.
         /// </summary>

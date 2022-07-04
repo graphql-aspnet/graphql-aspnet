@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
@@ -94,8 +93,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             return _arguments.ContainsKey(argumentName);
         }
 
+        /// <inheritdoc />
         public IInputArgumentCollectionDocumentPart Arguments => _arguments;
 
+        /// <inheritdoc />
         public IEnumerable<KeyValuePair<string, IResolvableValueItem>> Fields
         {
             get

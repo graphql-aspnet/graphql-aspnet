@@ -9,6 +9,10 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    /// <summary>
+    /// A document part representing the special '__typename' field applicable to any
+    /// object or interface graph type.
+    /// </summary>
     public interface IFieldTypeNameDocumentPart : IFieldDocumentPart
     {
     }

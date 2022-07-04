@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
 
     /// <summary>
@@ -25,8 +24,18 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <returns><c>true</c> if the specified argument name contains argument; otherwise, <c>false</c>.</returns>
         bool ContainsArgument(string argumentName);
 
-        bool TryGetArgument(string fieldName, out IInputArgumentDocumentPart foundArgument);
+        /// <summary>
+        /// Attempts to retrieve an named argument on this complex value.
+        /// </summary>
+        /// <param name="argumentName">Name of the argument to search for.</param>
+        /// <param name="foundArgument">When found, the argument is assigned to this parameter.</param>
+        /// <returns><c>true</c> if the argument was found, <c>false</c> otherwise.</returns>
+        bool TryGetArgument(string argumentName, out IInputArgumentDocumentPart foundArgument);
 
+        /// <summary>
+        /// Gets the set of arguments/fields defined on the query document for this complex value.
+        /// </summary>
+        /// <value>The arguments.</value>
         IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

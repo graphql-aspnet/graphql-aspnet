@@ -250,7 +250,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "15", ScalarValueType.Number));
             innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "12", ScalarValueType.Number));
 
-            var innerList2 = new DocumentListSuppliedValue(outerList,new FakeSyntaxNode());
+            var innerList2 = new DocumentListSuppliedValue(outerList, new FakeSyntaxNode());
             innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "30", ScalarValueType.Number));
             innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "40", ScalarValueType.Number));
 

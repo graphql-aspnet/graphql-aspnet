@@ -12,6 +12,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
+    /// <summary>
+    /// A collection of the usage of variables within another document part. Allows for easy
+    /// discovery and reference during document validation.
+    /// </summary>
     public interface IVariableUsageCollectionDocumentPart : IEnumerable<IVariableUsageDocumentPart>
     {
         /// <summary>

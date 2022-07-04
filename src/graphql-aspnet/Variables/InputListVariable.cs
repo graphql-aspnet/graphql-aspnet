@@ -42,26 +42,22 @@ namespace GraphQL.AspNet.Variables
             _items.Add(variable);
         }
 
+        /// <inheritdoc />
         public IEnumerator<IResolvableKeyedItem> GetEnumerator()
         {
             return _items.GetEnumerator();
         }
 
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets the collection of items contained in this list variable.
-        /// </summary>
-        /// <value>The items.</value>
+        /// <inheritdoc />
         public IReadOnlyList<IInputVariable> Items => _items;
 
-        /// <summary>
-        /// Gets the list of other resolvable items contained in this list.
-        /// </summary>
-        /// <value>The list items.</value>
+        /// <inheritdoc />
         public IEnumerable<IResolvableValueItem> ResolvableListItems => this.Items;
     }
 }

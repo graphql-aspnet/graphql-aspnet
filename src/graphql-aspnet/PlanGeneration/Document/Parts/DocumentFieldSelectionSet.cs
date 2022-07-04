@@ -7,14 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
@@ -35,8 +27,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     {
         private Dictionary<string, List<IFieldDocumentPart>> _fieldsByAlias = null;
         private List<IFieldDocumentPart> _allResolvedFields = null;
-
-        // a named fragment could be spread multiple times
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
@@ -113,6 +103,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.FieldSelectionSet;
 
+        /// <inheritdoc />
         public IReadOnlyList<IFieldDocumentPart> ExecutableFields
         {
             get

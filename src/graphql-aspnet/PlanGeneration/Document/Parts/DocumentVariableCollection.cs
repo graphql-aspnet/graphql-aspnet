@@ -83,6 +83,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             return _duplicates != null && _duplicates.Contains(variableName);
         }
 
+        /// <inheritdoc />
         public void MarkAsReferenced(string variableName)
         {
             variableName = Validation.ThrowIfNullWhiteSpaceOrReturn(variableName, nameof(variableName));
@@ -90,22 +91,26 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 _referencedVariables.Add(variableName);
         }
 
+        /// <inheritdoc />
         public bool IsReferenced(string variableName)
         {
             variableName = Validation.ThrowIfNullWhiteSpaceOrReturn(variableName, nameof(variableName));
             return _referencedVariables.Contains(variableName);
         }
 
+        /// <inheritdoc />
         public IEnumerator<IVariableDocumentPart> GetEnumerator()
         {
             return _variables.Values.GetEnumerator();
         }
 
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
+        /// <inheritdoc />
         public void ClearReferences()
         {
             _referencedVariables.Clear();
@@ -117,8 +122,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public int Count => _variables.Count;
 
+        /// <inheritdoc />
         public IEnumerable<string> Duplicates => _duplicates ?? Enumerable.Empty<string>();
 
+        /// <inheritdoc />
         public IEnumerable<IVariableDocumentPart> UnreferencedVariables
         {
             get

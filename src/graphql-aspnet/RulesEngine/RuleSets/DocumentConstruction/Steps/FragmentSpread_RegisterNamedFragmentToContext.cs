@@ -28,8 +28,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
         public override bool Execute(DocumentConstructionContext context)
         {
             var node = (FragmentSpreadNode)context.ActiveNode;
-
-
             var docPart = new DocumentFragmentSpread(context.ParentPart, node);
 
             // cant set graphtype yet, that is done during linking after all named

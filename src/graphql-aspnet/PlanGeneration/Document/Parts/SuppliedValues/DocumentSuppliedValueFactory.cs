@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             switch (valueNode)
             {
                 case ListValueNode lvn:
-                    return new DocumentListSuppliedValue(ownerPart,lvn, key);
+                    return new DocumentListSuppliedValue(ownerPart, lvn, key);
 
                 case NullValueNode nvn:
                     return new DocumentNullSuppliedValue(ownerPart, nvn, key);

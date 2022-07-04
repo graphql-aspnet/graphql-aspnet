@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
@@ -23,7 +22,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
     internal class FragmentNamed_CreateFragmentOnDocument
         : DocumentConstructionStep<NamedFragmentNode>
     {
-
         /// <inheritdoc />
         public override bool Execute(DocumentConstructionContext context)
         {

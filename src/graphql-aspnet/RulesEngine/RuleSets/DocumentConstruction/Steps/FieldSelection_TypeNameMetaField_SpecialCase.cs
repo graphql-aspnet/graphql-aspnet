@@ -50,9 +50,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
 
             // the '__typename' field is a known static quantity that requires no special rule processing or validation
             // it just exists or it doesn't and would be valid on any graph type returning it.
-            //
-            // however it can also be applied to unions so make sure its added as a field
-
+            // However, it can also be applied to unions so make sure its added as a field
             IGraphType fieldGraphType = context.Schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING);
 
             if (context.ParentPart.GraphType is IGraphFieldContainer gfc)

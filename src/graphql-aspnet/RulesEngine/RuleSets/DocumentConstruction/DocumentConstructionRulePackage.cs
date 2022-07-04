@@ -7,18 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -77,11 +67,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction
             this.BuildInlineFragmentSteps();
         }
 
-        /// <summary>
-        /// Fetches the rules that should be executed, in order, for the given context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns>IEnumerable&lt;IRuleStep&lt;TContext&gt;&gt;.</returns>
+        /// <inheritdoc />
         public IEnumerable<IRuleStep<DocumentConstructionContext>> FetchRules(DocumentConstructionContext context)
         {
             var type = context?.ActiveNode?.GetType();

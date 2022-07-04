@@ -18,11 +18,22 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
+    /// <summary>
+    /// A base class defining common elements for different field types within a query
+    /// document.
+    /// </summary>
     internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>
     {
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentFieldBase"/> class.
+        /// </summary>
+        /// <param name="parentPart">The parent part that owns this field.</param>
+        /// <param name="node">The node in the AST that defined the creation of this field.</param>
+        /// <param name="field">The field referenced from the target schema.</param>
+        /// <param name="fieldGraphType">The graph type for data returned from the field.</param>
         protected DocumentFieldBase(
             IDocumentPart parentPart,
             FieldNode node,
@@ -45,6 +56,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             return thisPath;
         }
 
+        /// <inheritdoc cref="IFieldDocumentPart.CanResolveForGraphType(IGraphType)" />
         public virtual bool CanResolveForGraphType(IGraphType graphType)
         {
             // if the provided graphtype owns this field
@@ -89,32 +101,22 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             }
         }
 
-        /// <summary>
-        /// Gets a reference to the field, within the schema, this document part points to.
-        /// </summary>
-        /// <value>The schema field refrence.</value>
+        /// <inheritdoc cref="IFieldDocumentPart.Field" />
         public IGraphField Field { get; }
 
-        /// <summary>
-        /// Gets the name of the field declared by this part.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc cref="IFieldDocumentPart.Name" />
         public ReadOnlyMemory<char> Name => this.Node.FieldName;
 
-        /// <summary>
-        /// Gets the alias to apply to the field declared by this part.
-        /// </summary>
-        /// <value>The alias.</value>
+        /// <inheritdoc cref="IFieldDocumentPart.Alias" />
         public ReadOnlyMemory<char> Alias => this.Node.FieldAlias;
 
-        /// <summary>
-        /// Gets the set of fields to query off a resolved value from this field.
-        /// </summary>
-        /// <value>The field selection set.</value>
+        /// <inheritdoc cref="IFieldDocumentPart.FieldSelectionSet" />
         public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
 
+        /// <inheritdoc cref="IFieldDocumentPart.Arguments" />
         public IInputArgumentCollectionDocumentPart Arguments => _arguments;
 
+        /// <inheritdoc cref="IDirectiveContainerDocumentPart.Directives" />
         public IDirectiveCollectionDocumentPart Directives => _directives;
 
         /// <inheritdoc />

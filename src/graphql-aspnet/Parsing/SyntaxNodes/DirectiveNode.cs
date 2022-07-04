@@ -48,7 +48,6 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         /// <value>The name of the directive.</value>
         public ReadOnlyMemory<char> DirectiveName { get; }
 
-
         /// <inheritdoc />
         public override string ToString()
         {

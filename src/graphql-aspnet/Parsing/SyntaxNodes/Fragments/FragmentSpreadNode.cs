@@ -57,7 +57,5 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Fragments
         {
             return $"S-{this.PointsToFragmentName}";
         }
-
-
     }
 }

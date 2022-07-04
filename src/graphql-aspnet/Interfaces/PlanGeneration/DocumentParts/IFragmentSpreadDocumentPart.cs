@@ -13,8 +13,16 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
+    /// <summary>
+    /// A document part representing the spreading of a named fragment within
+    /// the selection set where this spread is defined.
+    /// </summary>
     public interface IFragmentSpreadDocumentPart : IDirectiveContainerDocumentPart, IDocumentPart
     {
+        /// <summary>
+        /// Occurs when a fragment matching the requested name is discovered and
+        /// assigned to this instance.
+        /// </summary>
         internal event DocumentCollectionAlteredHandler NamedFragmentAssigned;
 
         /// <summary>

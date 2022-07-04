@@ -44,7 +44,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
             var graphField = sourceGraphType?.Fields.FindField(node.FieldName.ToString());
             var fieldReturnGraphType = context.Schema.KnownTypes.FindGraphType(graphField);
 
-
             var docPart = new DocumentField(
                 context.ParentPart,
                 node,

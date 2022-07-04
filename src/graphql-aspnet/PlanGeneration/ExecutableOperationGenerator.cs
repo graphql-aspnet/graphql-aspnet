@@ -20,12 +20,11 @@ namespace GraphQL.AspNet.PlanGeneration
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
 
     /// <summary>
-    /// A generator capable of converting a single operation from a query document into an actionable
-    /// "execution context" containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
+    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> from a query document into an actionable
+    /// execution context containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
     /// request made from it.
     /// </summary>
     public class ExecutableOperationGenerator
@@ -132,10 +131,6 @@ namespace GraphQL.AspNet.PlanGeneration
             foreach (var argument in arguments)
                 fieldContext.Arguments.Add(argument);
 
-            //var directives = this.CreateDirectiveContexts(fieldSelection.GatherDirectives());
-            //foreach (var directive in directives)
-            //    fieldContext.Directives.Add(directive);
-
             // if the field declares itself as being specifically for a single concrete type
             // enforce that restriction (all user created POCO data types will, most virtual controller based types will not)
             if (sourceGraphType is ITypedSchemaItem typedType)
@@ -185,9 +180,9 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <param name="argumentContainer">The field selection.</param>
         /// <param name="querySuppliedArguments">The supplied argument collection parsed from the user query document.</param>
         /// <returns>Task&lt;IInputArgumentCollection&gt;.</returns>
-        private Interfaces.PlanGeneration.IInputArgumentCollection CreateArgumentList(
+        private IInputArgumentCollection CreateArgumentList(
             IGraphArgumentContainer argumentContainer,
-            Interfaces.PlanGeneration.DocumentParts.IInputArgumentCollectionDocumentPart querySuppliedArguments)
+            IInputArgumentCollectionDocumentPart querySuppliedArguments)
         {
             var collection = new InputArgumentCollection();
             var argGenerator = new ArgumentGenerator(_schema, querySuppliedArguments);
@@ -203,31 +198,5 @@ namespace GraphQL.AspNet.PlanGeneration
 
             return collection;
         }
-
-        ///// <summary>
-        ///// Convert the referenced directives into executable contexts.
-        ///// </summary>
-        ///// <param name="queryDirectives">The directives parsed from the user supplied query document..</param>
-        //private IEnumerable<IDirectiveInvocationContext> CreateDirectiveContexts(IEnumerable<IDirectiveDocumentPart> queryDirectives)
-        //{
-        //    var list = new List<IDirectiveInvocationContext>();
-
-        //    foreach (var directive in queryDirectives)
-        //    {
-        //        var directiveContext = new DirectiveInvocationContext(
-        //            directive.Directive,
-        //            directive.Location,
-        //            directive.Node.Location.AsOrigin());
-
-        //        // gather arguments
-        //        var arguments = this.CreateArgumentList(directive.Directive, directive.Arguments);
-        //        foreach (var arg in arguments)
-        //            directiveContext.Arguments.Add(arg);
-
-        //        list.Add(directiveContext);
-        //    }
-
-        //    return list;
-        //}
     }
 }

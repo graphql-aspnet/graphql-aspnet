@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
@@ -75,6 +74,5 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
     }
 }

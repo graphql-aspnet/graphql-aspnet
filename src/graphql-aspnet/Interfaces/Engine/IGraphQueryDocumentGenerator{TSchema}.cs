@@ -29,6 +29,14 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <returns>IGraphQueryDocument.</returns>
         IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree);
 
+        /// <summary>
+        /// Validates a query document as being valid against the given <typeparamref name="TSchema"/>.
+        /// </summary>
+        /// <remarks>
+        /// Note: A return value of <c>true</c> indicates that the validation completed, not that it was successful.
+        /// Inspect the document's messages collection for any validation failures.</remarks>
+        /// <param name="document">The document.</param>
+        /// <returns><c>true</c> if the validation completed successfully, <c>false</c> otherwise.</returns>
         bool ValidateDocument(IGraphQueryDocument document);
     }
 }

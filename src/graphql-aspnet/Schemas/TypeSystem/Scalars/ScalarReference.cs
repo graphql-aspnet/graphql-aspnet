@@ -13,29 +13,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
-
-
-/* Unmerged change from project 'graphql-aspnet (net6.0)'
-Before:
-    using GraphQL.AspNet.Defaults;
-
-/* Unmerged change from project 'graphql-aspnet (net6.0)'
-After:
-    /* Unmerged change from project 'graphql-aspnet (net6.0)'
-*/
-    using GraphQL.AspNet.Defaults;
-
-    /* Unmerged change from project 'graphql-aspnet (net6.0)'
-    Before:
-        using GraphQL.AspNet.Interfaces.TypeSystem;
-
-        /// <summary>
-    After:
-        using GraphQL.AspNet.Interfaces.TypeSystem;
-        using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
-
-        /// <summary>
-    */
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

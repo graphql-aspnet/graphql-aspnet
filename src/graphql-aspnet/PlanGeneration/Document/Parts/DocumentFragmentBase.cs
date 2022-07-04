@@ -66,6 +66,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
 
+        /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

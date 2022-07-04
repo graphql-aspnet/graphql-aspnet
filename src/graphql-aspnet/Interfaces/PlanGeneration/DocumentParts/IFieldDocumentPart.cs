@@ -51,6 +51,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <value>The child selection set.</value>
         IFieldSelectionSetDocumentPart FieldSelectionSet { get; }
 
+        /// <summary>
+        /// Gets the arguments defined on this field.
+        /// </summary>
+        /// <value>The arguments.</value>
         IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

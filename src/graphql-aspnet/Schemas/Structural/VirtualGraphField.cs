@@ -55,7 +55,6 @@ namespace GraphQL.AspNet.Schemas.Structural
             GraphFieldPath route,
             string parentTypeName)
         {
-
             Validation.ThrowIfNull(route, nameof(route));
             Validation.ThrowIfNullWhiteSpace(parentTypeName, nameof(parentTypeName));
 

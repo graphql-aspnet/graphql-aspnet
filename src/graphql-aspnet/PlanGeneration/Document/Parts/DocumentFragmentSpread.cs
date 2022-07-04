@@ -44,6 +44,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _directives = new DocumentDirectiveCollection(this);
         }
 
+        /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             base.OnChildPartAdded(childPart, relativeDepth);
@@ -81,6 +82,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public INamedFragmentDocumentPart Fragment { get; private set; }
+
+        /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

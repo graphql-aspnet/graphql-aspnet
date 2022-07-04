@@ -31,6 +31,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <value>The name of the directive indicated by this instance.</value>
         string DirectiveName { get; }
 
+        /// <summary>
+        /// Gets the collection of arguments defined on this directive instance.
+        /// </summary>
+        /// <value>The arguments.</value>
         IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

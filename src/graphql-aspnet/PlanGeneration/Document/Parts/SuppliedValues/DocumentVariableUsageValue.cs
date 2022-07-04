@@ -12,16 +12,14 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     using System;
     using System.Diagnostics;
     using System.Linq;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
     /// An input value that is a pointer to a variable defined in the operation that contains it.
     /// </summary>
-    [DebuggerDisplay("Variable Ref: {VariableName}")]
+    [DebuggerDisplay("Variable Usage: {VariableName}")]
     internal class DocumentVariableUsageValue : DocumentSuppliedValue, IVariableUsageDocumentPart
     {
         /// <summary>

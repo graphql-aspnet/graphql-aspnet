@@ -10,14 +10,10 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.Schemas;
@@ -43,6 +39,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.TypeExpression = GraphTypeExpression.FromDeclaration(node.TypeExpression.Span);
         }
 
+        /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             base.OnChildPartAdded(childPart, relativeDepth);
@@ -64,8 +61,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public ISuppliedValueDocumentPart DefaultValue =>
-            this.Children.OfType<ISuppliedValueDocumentPart>().FirstOrDefault();
+            this.Children.OfType<ISuppliedValueDocumentPart>().SingleOrDefault();
 
+        /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

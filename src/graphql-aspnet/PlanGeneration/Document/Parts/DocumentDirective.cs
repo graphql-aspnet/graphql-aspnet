@@ -40,6 +40,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _arguments = new DocumentInputArgumentCollection(this);
         }
 
+        /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             if (childPart is IInputArgumentDocumentPart iiadp)
@@ -60,10 +61,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public string DirectiveName { get; }
 
-
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Directive;
 
+        /// <inheritdoc />
         public IInputArgumentCollectionDocumentPart Arguments => _arguments;
     }
 }

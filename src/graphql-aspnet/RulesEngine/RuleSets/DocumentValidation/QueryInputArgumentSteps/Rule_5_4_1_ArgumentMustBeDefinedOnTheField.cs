@@ -21,6 +21,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgum
     internal class Rule_5_4_1_ArgumentMustBeDefinedOnTheField
         : DocumentPartValidationRuleStep<IInputArgumentDocumentPart>
     {
+
+        /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             // rule 5.4.1 does not cover "arguments" as fields on complex values

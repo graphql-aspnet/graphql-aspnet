@@ -94,6 +94,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public IVariableCollectionDocumentPart Variables => _variableCollection;
 
+        /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
     }
 }

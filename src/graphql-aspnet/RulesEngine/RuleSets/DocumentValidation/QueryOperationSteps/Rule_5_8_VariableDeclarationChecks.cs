@@ -51,9 +51,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var docPart = (IOperationDocumentPart)context.ActivePart;
-
-
             var passed = this.Check581(context);
             passed = passed && this.Check582(context);
             passed = passed && this.Check583(context);
@@ -279,7 +276,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
 
             return allValidUsages;
         }
-
 
         private bool CheckForValidUsage585(
             DocumentValidationContext context,
