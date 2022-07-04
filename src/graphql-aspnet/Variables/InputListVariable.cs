@@ -56,8 +56,5 @@ namespace GraphQL.AspNet.Variables
 
         /// <inheritdoc />
         public IReadOnlyList<IInputVariable> Items => _items;
-
-        /// <inheritdoc />
-        public IEnumerable<IResolvableValueItem> ResolvableListItems => this.Items;
     }
 }

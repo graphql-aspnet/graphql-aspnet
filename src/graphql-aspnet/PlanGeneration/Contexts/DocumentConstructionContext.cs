@@ -48,7 +48,6 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             this.Depth = 0;
             this.Spreads = new List<IFragmentSpreadDocumentPart>();
             this.ActiveOperation = null;
-
         }
 
         /// <summary>

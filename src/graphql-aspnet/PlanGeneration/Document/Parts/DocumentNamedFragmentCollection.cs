@@ -121,6 +121,5 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             return this.GetEnumerator();
         }
-
     }
 }

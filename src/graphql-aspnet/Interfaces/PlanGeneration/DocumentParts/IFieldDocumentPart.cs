@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -24,7 +23,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <param name="graphType">the graph type to test.</param>
         /// <returns><c>true</c> if this field can be returned the specified graph type; otherwise, <c>false</c>.</returns>
-        internal bool CanResolveForGraphType(IGraphType graphType);
+        bool CanResolveForGraphType(IGraphType graphType);
 
         /// <summary>
         /// Gets the name of the field requested, as it exists in the schema.

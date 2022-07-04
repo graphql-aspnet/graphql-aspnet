@@ -11,6 +11,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
+    /// <summary>
+    /// An interface employed by any document part that contains references to other parts
+    /// of the document (i.e. fragment spreads and variable usages).
+    /// </summary>
     public interface IReferenceDocumentPart : IDocumentPart
     {
         /// <summary>
