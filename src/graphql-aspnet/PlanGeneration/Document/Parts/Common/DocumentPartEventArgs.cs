@@ -17,12 +17,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="eventArgs">The <see cref="DocumentPartEventArgs"/> instance containing the event data.</param>
-    internal delegate void DocumentCollectionAlteredHandler(object sender, DocumentPartEventArgs eventArgs);
+    public delegate void DocumentCollectionAlteredHandler(object sender, DocumentPartEventArgs eventArgs);
 
     /// <summary>
     /// A set of event args to communicate changes to a document parts collection.
     /// </summary>
-    internal class DocumentPartEventArgs
+    public class DocumentPartEventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentPartEventArgs" /> class.

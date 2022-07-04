@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <summary>
         /// Marks this fragment as being referenced and used in at least one operation in the document.
         /// </summary>
-        internal void MarkAsReferenced();
+        void MarkAsReferenced();
 
         /// <summary>
         /// Gets a value indicating whether this instance is referenced by an operation in the query document.

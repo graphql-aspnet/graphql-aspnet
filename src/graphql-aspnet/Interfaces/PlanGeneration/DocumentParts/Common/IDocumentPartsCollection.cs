@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
         /// Raised when a new direct child part is added to this collection or any of its
         /// child's collection (recursive).
         /// </summary>
-        internal event DocumentCollectionAlteredHandler ChildPartAdded;
+        event DocumentCollectionAlteredHandler ChildPartAdded;
 
         /// <summary>
         /// Adds the document parts to this collection. The parts

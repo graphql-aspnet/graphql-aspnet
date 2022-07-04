@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     internal abstract class DocumentFragmentBase<TSyntaxNode> : DocumentPartBase<TSyntaxNode>, IFragmentDocumentPart
         where TSyntaxNode : SyntaxNode
     {
-        private DocumentDirectiveCollection _directives;
+        private readonly DocumentDirectiveCollection _directives;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragmentBase{TSyntaxNode}" /> class.

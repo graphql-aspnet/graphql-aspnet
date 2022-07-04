@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Occurs when a fragment matching the requested name is discovered and
         /// assigned to this instance.
         /// </summary>
-        internal event DocumentCollectionAlteredHandler NamedFragmentAssigned;
+        event DocumentCollectionAlteredHandler NamedFragmentAssigned;
 
         /// <summary>
         /// Assigns the named fragment document part this spread is referencing.
