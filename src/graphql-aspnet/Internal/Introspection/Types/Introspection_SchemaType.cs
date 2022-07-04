@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
             : base(Constants.ReservedNames.SCHEMA_TYPE)
         {
             // "__Schema" type definition
-            // https://graphql.github.io/graphql-spec/June2018/#sec-Introspection
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
             this.GraphFieldCollection.AddField<IntrospectedSchema, IEnumerable<IntrospectedType>>(
                 "types",

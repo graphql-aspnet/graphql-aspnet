@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.CharacterGroupValidation
 
     /// <summary>
     /// Validates that a group of characters conforms the specification for a comment
-    /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Comments.
+    /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Comments.
     /// </summary>
     public class CommentPhraseValidator
     {

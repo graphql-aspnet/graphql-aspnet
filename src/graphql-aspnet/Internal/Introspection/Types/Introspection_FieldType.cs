@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
             : base(Constants.ReservedNames.FIELD_TYPE)
         {
             // "__Field" type definition
-            // https://graphql.github.io/graphql-spec/June2018/#sec-Introspection
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
             this.GraphFieldCollection.AddField<IntrospectedField, string>(
                 "name",

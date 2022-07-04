@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Response
 
         /// <summary>
         /// Creates a new dictionary of properties for the message map
-        /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Errors .
+        /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Errors .
         /// </summary>
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="message">The message to render into the output.</param>

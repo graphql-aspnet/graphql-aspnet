@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Defaults
 
         /// <summary>
         /// Converts the operation reslt into a dictionary map of the required fields for a graphql response.
-        /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Response .
+        /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Response .
         /// </summary>
         /// <param name="writer">The json writer to output the reslts to.</param>
         /// <param name="resultToWrite">The operation result to write.</param>

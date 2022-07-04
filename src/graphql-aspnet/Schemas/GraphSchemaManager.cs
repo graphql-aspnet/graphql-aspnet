@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas
 
             // Note: introspection fields are defined by the graphql spec, no custom name or item formatting is allowed
             // for Type and field name formatting.
-            // spec: https://graphql.github.io/graphql-spec/June2018/#sec-Schema-Introspection
+            // spec: https://graphql.github.io/graphql-spec/October2021/#sec-Schema-Introspection
             if (!queryField.Fields.ContainsKey(Constants.ReservedNames.SCHEMA_FIELD))
             {
                 var introspectedSchema = new IntrospectedSchema(this.Schema);

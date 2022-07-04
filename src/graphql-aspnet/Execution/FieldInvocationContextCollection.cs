@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Execution
             // has the same resultant name
             // these fields can be safely merged or in the case of this library
             // the secondary one just discarded
-            // spec: https://graphql.github.io/graphql-spec/June2018/#sec-Field-Selection-Merging
+            // spec: https://graphql.github.io/graphql-spec/October2021/#sec-Field-Selection-Merging
             //
             // key (Alias Name, Field name, return graph type name, expected source type)
             var contextKey = Tuple.Create(context.Name, context.Field.Name, context.Field.TypeExpression.TypeName, context.ExpectedSourceType);

@@ -211,8 +211,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             // validate each type in the list for "correctness"
             // Possible Types must conform to the rules of those required by sub type declarations of unions and interfaces
-            // interfaces: https://graphql.github.io/graphql-spec/June2018/#sec-Interfaces
-            // unions: https://graphql.github.io/graphql-spec/June2018/#sec-Unions
+            // interfaces: https://graphql.github.io/graphql-spec/October2021/#sec-Interfaces
+            // unions: https://graphql.github.io/graphql-spec/October2021/#sec-Unions
             foreach (var type in this.PossibleTypes)
             {
                 if (enforceUnionRules)

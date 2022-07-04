@@ -450,7 +450,7 @@ namespace GraphQL.AspNet
         {
             /// <summary>
             /// A regex containing the rules for parsing a graphql name.
-            /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
+            /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
             /// </summary>
             public static readonly Regex NameRegex = new Regex(@"^([_A-Za-z][0-9A-Za-z]|[0-9A-Za-z]+)[_0-9A-Za-z]*$");
         }
@@ -500,6 +500,6 @@ namespace GraphQL.AspNet
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.
         /// </summary>
-        public const string SPECIFICATION_URL = "https://spec.graphql.org/June2018/";
+        public const string SPECIFICATION_URL = "https://spec.graphql.org/October2021/";
     }
 }

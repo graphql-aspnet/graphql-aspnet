@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.CharacterGroupValidation
     /// <summary>
     /// A validator that will inspect a span to ensure its characters
     /// are valid for a string in graphql
-    /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-String-Value .
+    /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-String-Value .
     /// </summary>
     public class StringValidator
     {

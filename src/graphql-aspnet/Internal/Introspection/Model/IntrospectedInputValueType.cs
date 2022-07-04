@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             else if (_rawDefaultValue is string stringValue)
             {
                 // graphql requires and defaultValue parameters be encoded as a string
-                // see spec: https://graphql.github.io/graphql-spec/June2018/#sec-The-__InputValue-Type
+                // see spec: https://graphql.github.io/graphql-spec/October2021/#sec-The-__InputValue-Type
                 // any strings must be escaped to be treated as a string
                 // e.g. convert "myString" => "\"myString\""
                 var delimiter = stringValue.Contains("\n") ? ParserConstants.BLOCK_STRING_DELIMITER : ParserConstants.NORMAL_STRING_DELIMITER;

@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 .Build();
 
             // arg1 accepts [int] (an array of ints), single value should be coercable into a list
-            // https://graphql.github.io/graphql-spec/June2018/#sec-Type-System.List
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Type-System.List
             var document = server.CreateDocument("query { singleScalarIntInput(arg1: 5) {name} }");
 
             Assert.IsNotNull(document);

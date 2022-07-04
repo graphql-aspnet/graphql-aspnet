@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Fields
     /// <para>A meta field automatically added to all OBJECT graph types to return the type name of the object in question.
     /// Exposed as '__typeName' on any object. This field will not be published
     /// on any introspection queries.</para>
-    /// <para>spec: https://graphql.github.io/graphql-spec/June2018/#sec-Type-Name-Introspection .</para>
+    /// <para>spec: https://graphql.github.io/graphql-spec/October2021/#sec-Type-Name-Introspection .</para>
     /// </summary>
     [DebuggerDisplay("Meta Field: " + Constants.ReservedNames.TYPENAME_FIELD)]
     public class Introspection_TypeNameMetaField : MethodGraphField

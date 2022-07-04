@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 {
                     // top level mutation operatons must be executed in sequential order
                     // due to potential side effects on the data
-                    // https://graphql.github.io/graphql-spec/June2018/#sec-Mutation
+                    // https://graphql.github.io/graphql-spec/October2021/#sec-Mutation
                     orderedContextList = operation.FieldContexts
                         .Select(x => (x, true));
                 }

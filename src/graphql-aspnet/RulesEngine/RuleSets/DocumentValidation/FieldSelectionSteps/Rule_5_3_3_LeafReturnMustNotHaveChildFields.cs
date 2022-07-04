@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
     /// <summary>
     /// <para>(5.3.3)A rule that dictates for any given graph type returned by a field if that graph type
     /// is a leaf type then the field cannot declare a selection set of fields to return.</para>
-    /// <para>Reference: https://graphql.github.io/graphql-spec/June2018/#sec-Leaf-Field-Selections .</para>
+    /// <para>Reference: https://graphql.github.io/graphql-spec/October2021/#sec-Leaf-Field-Selections .</para>
     /// </summary>
     internal class Rule_5_3_3_LeafReturnMustNotHaveChildFields
         : DocumentPartValidationRuleStep<IFieldDocumentPart>

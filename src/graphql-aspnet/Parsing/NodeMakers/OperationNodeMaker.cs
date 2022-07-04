@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
     /// <summary>
     /// A maker that can create a top level operation type node including its
     /// field selection, variables etc.
-    /// spec: https://graphql.github.io/graphql-spec/June2018/#sec-Language.Operations .
+    /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-Language.Operations .
     /// </summary>
     public class OperationNodeMaker : ISyntaxNodeMaker
     {

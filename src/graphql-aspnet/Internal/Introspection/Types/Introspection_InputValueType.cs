@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
             : base(Constants.ReservedNames.INPUT_VALUE_TYPE)
         {
             // "__InputValue" type definition
-            // https://graphql.github.io/graphql-spec/June2018/#sec-Introspection
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
             this.Description = "A single argument supplied to a field, a directive or a complex input object.";
 

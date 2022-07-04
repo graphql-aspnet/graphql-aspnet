@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Common.Source
         /// <summary>
         /// <para>Adds the name of the current field to the path. Note: This should be the field alias if the
         /// user supplied one.</para>
-        /// <para>Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Errors .</para>
+        /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Errors .</para>
         /// </summary>
         /// <param name="fieldName">Name of the field.</param>
         public void AddFieldName(string fieldName)
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Common.Source
 
         /// <summary>
         /// <para>Adds the index of the current array being iterated to the path.</para>
-        /// <para>Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Errors .</para>
+        /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Errors .</para>
         /// </summary>
         /// <param name="index">The current index.</param>
         public void AddArrayIndex(int index)

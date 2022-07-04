@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
     /// <summary>
     /// A graph type representing a UNION.
-    /// spec: https://graphql.github.io/graphql-spec/June2018/#sec-Unions .
+    /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-Unions .
     /// </summary>
     [DebuggerDisplay("UNION {Name} (Types = {_types.Count})")]
     public class UnionGraphType : IUnionGraphType
