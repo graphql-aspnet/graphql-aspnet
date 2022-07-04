@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
     using System.Linq;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Variables;

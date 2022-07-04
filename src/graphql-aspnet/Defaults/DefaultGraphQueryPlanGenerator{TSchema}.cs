@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;

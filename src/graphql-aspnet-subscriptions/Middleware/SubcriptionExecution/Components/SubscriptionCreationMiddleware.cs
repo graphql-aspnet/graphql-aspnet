@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// This middleware assemblies the final subscription if and when warranted. If assembled the query

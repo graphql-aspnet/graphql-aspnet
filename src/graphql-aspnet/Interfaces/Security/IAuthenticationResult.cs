@@ -9,7 +9,6 @@
 namespace GraphQL.AspNet.Interfaces.Security
 {
     using System.Security.Claims;
-    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// The result of executing an authentication request against

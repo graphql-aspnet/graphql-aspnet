@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.RulesEngine
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution;
 
     /// <summary>

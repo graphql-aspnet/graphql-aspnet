@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Web
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;

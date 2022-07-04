@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;

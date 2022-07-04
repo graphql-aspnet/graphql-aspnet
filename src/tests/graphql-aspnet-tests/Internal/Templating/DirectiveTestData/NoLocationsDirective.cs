@@ -10,10 +10,8 @@
 namespace GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class NoLocationsDirective : GraphDirective
     {

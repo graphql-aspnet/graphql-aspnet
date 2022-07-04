@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;

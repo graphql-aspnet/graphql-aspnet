@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

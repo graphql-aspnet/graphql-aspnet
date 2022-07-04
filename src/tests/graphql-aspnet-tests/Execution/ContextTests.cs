@@ -10,15 +10,11 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
-    using System.Linq;
-    using System.Security.Claims;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.Schemas;
     using Moq;

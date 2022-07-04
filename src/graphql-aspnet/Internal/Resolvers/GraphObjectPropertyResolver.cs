@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A resolver that extracts a property from an object and returns it as a field value.

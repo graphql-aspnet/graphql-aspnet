@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
     using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.PlanGeneration.DocumentConstructionTestData;
+    using GraphQL.AspNet.Tests.ValidationRules.DocumentConstructionTestData;
     using NUnit.Framework;
 
     [TestFixture]

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.ValidationRuless.RuleCheckTestData
+namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
 {
     public class ExtendedElevator : IPeopleMover, IVerticalMover
     {

@@ -8,7 +8,6 @@
 // *************************************************************
 namespace GraphQL.AspNet.Internal.Interfaces
 {
-    using System;
     using GraphQL.AspNet.Defaults.TypeMakers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 

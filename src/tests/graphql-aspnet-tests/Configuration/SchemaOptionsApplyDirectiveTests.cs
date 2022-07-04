@@ -11,10 +11,7 @@ namespace GraphQL.AspNet.Tests.Configuration
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration.Exceptions;
-    using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Configuration.SchemaOptionsTestData;

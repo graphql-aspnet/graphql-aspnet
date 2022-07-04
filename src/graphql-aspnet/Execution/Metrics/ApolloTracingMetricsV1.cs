@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Execution.Metrics
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Response;
 
     /// <summary>

@@ -8,7 +8,6 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Execution.AuthenticatedUserTestData
 {
-    using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using Microsoft.AspNetCore.Authorization;

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldValidation
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
 
     /// <summary>

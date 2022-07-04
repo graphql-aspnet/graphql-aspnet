@@ -8,10 +8,8 @@
 // *************************************************************
 namespace GraphQL.AspNet.Security
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// A set of requirements indicating what security parameters are enforced

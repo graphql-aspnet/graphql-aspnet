@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common
     using System;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.RulesEngine.Interfaces;
 

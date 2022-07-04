@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;

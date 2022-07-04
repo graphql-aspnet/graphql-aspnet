@@ -22,8 +22,6 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Schemas.GraphTypeCollectionTestData;
     using GraphQL.AspNet.Tests.Schemas.SchemaTestData;
-    using GraphQL.AspNet.Tests.Schemas.SchemaTestData.InterfaceRegistrationTestData;
-    using Moq;
     using NUnit.Framework;
 
     [TestFixture]

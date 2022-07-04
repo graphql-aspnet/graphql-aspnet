@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Security
 {
-    using System;
     using System.Diagnostics;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Security;

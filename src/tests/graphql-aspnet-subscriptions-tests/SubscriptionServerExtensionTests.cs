@@ -19,9 +19,7 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;

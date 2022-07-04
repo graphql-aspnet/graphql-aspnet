@@ -10,11 +10,9 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
 
     /// <summary>
     /// Helper methods for the <see cref="DirectiveLocation"/> enumeration.

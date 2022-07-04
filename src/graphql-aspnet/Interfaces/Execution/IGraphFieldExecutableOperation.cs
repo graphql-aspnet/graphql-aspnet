@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

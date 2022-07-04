@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Apollo;
     using GraphQL.AspNet.Apollo.Exceptions;
     using GraphQL.AspNet.Apollo.Messages.Converters;
@@ -18,7 +17,6 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;

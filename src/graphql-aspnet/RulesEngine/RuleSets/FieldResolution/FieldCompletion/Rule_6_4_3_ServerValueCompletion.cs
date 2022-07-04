@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
@@ -19,7 +18,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem.TypeCollections;
 
     /// <summary>
     /// A rule that inspects the to ensure that the actual .NET class type

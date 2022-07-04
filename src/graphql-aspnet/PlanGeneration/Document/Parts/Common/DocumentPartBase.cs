@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 {
-    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;

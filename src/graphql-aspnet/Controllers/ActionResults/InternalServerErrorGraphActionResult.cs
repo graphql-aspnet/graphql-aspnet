@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A graph action result returned when the controller method encountered an error

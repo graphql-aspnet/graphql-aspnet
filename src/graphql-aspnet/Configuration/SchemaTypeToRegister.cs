@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A representation of a type that needs to be registered to a schema when its

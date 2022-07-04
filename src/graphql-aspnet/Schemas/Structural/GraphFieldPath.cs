@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 

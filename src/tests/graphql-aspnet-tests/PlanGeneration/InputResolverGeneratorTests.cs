@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;

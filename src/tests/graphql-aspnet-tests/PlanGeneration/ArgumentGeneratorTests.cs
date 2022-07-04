@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;

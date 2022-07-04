@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Interfaces.Controllers
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// An action result rendered by a graph controller method that can be resolved against a <see cref="IGraphFieldRequest"/>

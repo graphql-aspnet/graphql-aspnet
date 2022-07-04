@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common
 {
-    using System;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.RulesEngine.Interfaces;
 

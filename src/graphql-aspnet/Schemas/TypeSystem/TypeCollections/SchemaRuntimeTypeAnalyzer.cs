@@ -14,9 +14,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Introspection.Fields;
 
     /// <summary>
     /// Performs an analysis of a runtime type to determine known and allowed concrete types for a

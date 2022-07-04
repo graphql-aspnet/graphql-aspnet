@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Middleware
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// A middleware component in the primary query processing pipeline.

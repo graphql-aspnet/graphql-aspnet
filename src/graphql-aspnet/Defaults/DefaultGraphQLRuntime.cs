@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -22,8 +21,6 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// The default implementation of the core runtime.

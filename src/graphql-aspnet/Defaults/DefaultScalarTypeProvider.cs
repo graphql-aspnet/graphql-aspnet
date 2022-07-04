@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;

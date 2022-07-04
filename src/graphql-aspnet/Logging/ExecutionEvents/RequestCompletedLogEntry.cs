@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// Recorded by an executor after the entire graphql operation has been completed

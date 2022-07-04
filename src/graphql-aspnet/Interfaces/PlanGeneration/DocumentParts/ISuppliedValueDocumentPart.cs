@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
     /// Represents a specific provided value (usually a variable reference or hard coded value) in a query document.

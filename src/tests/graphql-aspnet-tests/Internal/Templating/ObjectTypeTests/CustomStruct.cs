@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 {
-    using GraphQL.AspNet.Attributes;
-
     public struct CustomStruct
     {
         public string Prop1 { get; set; }

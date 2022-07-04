@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// Wraps a user provided function as a custom resolver to any declared field. Useful for small, mostly static

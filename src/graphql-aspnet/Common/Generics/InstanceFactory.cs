@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Common.Generics
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>

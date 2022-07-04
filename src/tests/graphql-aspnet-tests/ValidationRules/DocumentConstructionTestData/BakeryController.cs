@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration.DocumentConstructionTestData
+namespace GraphQL.AspNet.Tests.ValidationRules.DocumentConstructionTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;

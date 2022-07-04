@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
-    using System.Reflection;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;

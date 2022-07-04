@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Resolvers
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Model;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A resolver for the '__type' meta field returning an <see cref="IntrospectedType"/> model item

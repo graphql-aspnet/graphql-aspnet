@@ -10,12 +10,10 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Creates and assigns the active directive node to be the active <see cref="IDirectiveDocumentPart"/> on the context.

@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.FieldSecurity.Components;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.AspNetCore.Authentication;

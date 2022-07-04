@@ -25,12 +25,10 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.ExecutionEvents;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.ServerBuilders;
     using GraphQL.AspNet.Tests.Logging.LoggerTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;

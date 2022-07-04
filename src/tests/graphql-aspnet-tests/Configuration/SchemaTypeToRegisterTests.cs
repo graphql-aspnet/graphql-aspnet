@@ -9,7 +9,6 @@
 namespace GraphQL.AspNet.Tests.Configuration
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;

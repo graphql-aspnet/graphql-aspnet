@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Execution.Contexts
 {
-    using System.Collections;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;

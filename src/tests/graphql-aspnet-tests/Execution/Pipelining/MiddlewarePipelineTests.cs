@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Execution.Pipelining
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -17,7 +16,6 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware.Exceptions;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Execution.Pipelining.Data;
     using GraphQL.AspNet.Tests.Framework;

@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Internal.Introspection.Resolvers
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Introspection.Model;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A resolver to extract enum values from a __Type during an introspection query.

@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;

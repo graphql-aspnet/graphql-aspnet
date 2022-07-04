@@ -12,8 +12,6 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Security.Claims;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;

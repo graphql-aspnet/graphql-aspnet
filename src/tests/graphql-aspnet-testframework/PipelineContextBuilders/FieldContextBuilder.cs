@@ -10,8 +10,6 @@
 namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 {
     using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Controllers;
@@ -23,7 +21,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Variables;

@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// A middleware component for tracking execution time and other Apollo tracing

@@ -12,7 +12,6 @@ namespace GraphQL.Subscriptions.Tests.Schemas
     using System;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;

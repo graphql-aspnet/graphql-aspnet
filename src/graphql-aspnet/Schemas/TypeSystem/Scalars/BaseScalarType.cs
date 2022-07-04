@@ -9,7 +9,6 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
-    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;

@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Connections.WebSockets
 {
     using System;
     using System.Net.WebSockets;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;

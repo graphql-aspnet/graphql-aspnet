@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Internal.Introspection.Model
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;

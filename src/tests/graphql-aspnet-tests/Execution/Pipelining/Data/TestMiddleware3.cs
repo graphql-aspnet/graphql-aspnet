@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A test middleware component in a chain. Used to test pipeline invocation order.

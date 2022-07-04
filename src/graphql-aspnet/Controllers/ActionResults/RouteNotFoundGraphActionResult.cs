@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// An action result thrown when the requested route was not found or otherwise

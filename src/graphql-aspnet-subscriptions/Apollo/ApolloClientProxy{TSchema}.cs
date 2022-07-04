@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Apollo
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Text;
     using System.Text.Json;
     using System.Threading;
@@ -35,7 +34,6 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Logging.Extensions;

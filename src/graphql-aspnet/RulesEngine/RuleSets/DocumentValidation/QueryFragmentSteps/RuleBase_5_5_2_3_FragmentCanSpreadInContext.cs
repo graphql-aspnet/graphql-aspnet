@@ -11,8 +11,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;

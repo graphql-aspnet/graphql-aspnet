@@ -10,7 +10,6 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Tests.Execution.InheritanceTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;

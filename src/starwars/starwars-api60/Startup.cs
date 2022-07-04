@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.StarWarsAPI6X
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.StarwarsAPI.Common.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;

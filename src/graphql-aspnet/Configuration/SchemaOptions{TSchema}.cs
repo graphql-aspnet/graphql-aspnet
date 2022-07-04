@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Configuration
 {
-    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
 

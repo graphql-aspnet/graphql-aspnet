@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
