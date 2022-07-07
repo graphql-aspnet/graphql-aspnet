@@ -1,0 +1,48 @@
+﻿namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Parsing.SyntaxNodes;
+
+    /// <summary>
+    /// A graph type representing a short.
+    /// </summary>
+    [DebuggerDisplay("SCALAR: {Name}")]
+    public sealed class ShortScalarType : BaseScalarType
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShortScalarType"/> class.
+        /// </summary>
+        public ShortScalarType()
+            : base(Constants.ScalarNames.SHORT, typeof(short))
+        {
+            this.Description = $"A short. (Min: {short.MinValue}, Max: {short.MaxValue})";
+            this.OtherKnownTypes = new TypeCollection(typeof(short?));
+        }
+
+        /// <inheritdoc />
+        public override TypeCollection OtherKnownTypes { get; }
+
+        /// <inheritdoc />
+        public override ScalarValueType ValueType => ScalarValueType.Number;
+
+        /// <inheritdoc />
+        public override object Resolve(ReadOnlySpan<char> data)
+        {
+            if (short.TryParse(data.ToString(), out var i))
+                return i;
+
+            throw new UnresolvedValueException(data);
+        }
+
+        /// <inheritdoc />
+        public override object Serialize(object item)
+        {
+            return item;
+        }
+    }
+}
