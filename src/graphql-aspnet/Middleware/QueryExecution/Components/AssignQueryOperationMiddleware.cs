@@ -19,13 +19,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     /// </summary>
     internal class AssignQueryOperationMiddleware : IQueryExecutionMiddleware
     {
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.QueryPlan != null && context.QueryPlan.IsValid)

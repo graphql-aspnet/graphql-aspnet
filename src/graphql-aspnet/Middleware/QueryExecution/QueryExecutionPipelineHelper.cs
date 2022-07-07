@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryDocumentParsingMiddleware()
         {
-            this.PipelineBuilder.AddMiddleware<ParseQueryDocumentMiddleware>();
+            this.PipelineBuilder.AddMiddleware<ParseQueryDocumentMiddleware<TSchema>>();
             return this;
         }
 

@@ -14,8 +14,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Metrics;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
 
@@ -23,26 +26,29 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     /// Attempts to generate a valid syntax tree for the incoming query text when needed. Skipped if a query plan was pulled
     /// from the global cache.
     /// </summary>
-    public class ParseQueryDocumentMiddleware : IQueryExecutionMiddleware
+    /// <typeparam name="TSchema">The type of the schema this middleware component parses
+    /// documents for.</typeparam>
+    public class ParseQueryDocumentMiddleware<TSchema> : IQueryExecutionMiddleware
+        where TSchema : class, ISchema
     {
         private readonly IGraphQLDocumentParser _parser;
+        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParseQueryDocumentMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="ParseQueryDocumentMiddleware{TSchema}" /> class.
         /// </summary>
         /// <param name="parser">The parser.</param>
-        public ParseQueryDocumentMiddleware(IGraphQLDocumentParser parser)
+        /// <param name="documentGenerator">The document generator used to convert syntax
+        /// trees into functional documents.</param>
+        public ParseQueryDocumentMiddleware(
+            IGraphQLDocumentParser parser,
+            IGraphQueryDocumentGenerator<TSchema> documentGenerator)
         {
             _parser = Validation.ThrowIfNullOrReturn(parser, nameof(parser));
+            _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
         }
 
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.QueryPlan == null)
@@ -51,7 +57,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                 try
                 {
-                    context.SyntaxTree = _parser.ParseQueryDocument(context.OperationRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
+                    // parse the text into an AST
+                    var syntaxTree = _parser.ParseQueryDocument(context.OperationRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
+
+                    // convert the AST into a functional document
+                    // matched against the target schema
+                    var document = _documentGenerator.CreateDocument(syntaxTree);
+                    context.QueryDocument = document;
+                    context.Messages.AddRange(document.Messages);
                 }
                 catch (GraphQLSyntaxException syntaxException)
                 {
@@ -67,6 +80,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 {
                     context.Metrics?.EndPhase(ApolloExecutionPhase.PARSING);
                 }
+
+                if (!context.Messages.IsSucessful)
+                    context.Cancel();
             }
 
             return next(context, cancelToken);

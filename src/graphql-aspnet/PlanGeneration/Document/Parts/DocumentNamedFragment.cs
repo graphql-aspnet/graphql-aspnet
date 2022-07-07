@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -21,8 +22,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Named Fragment: {Name}")]
     internal class DocumentNamedFragment : DocumentFragmentBase<NamedFragmentNode>, INamedFragmentDocumentPart
     {
-        private DocumentFragmentSpreadCollection _fragmentSpreads;
-        private DocumentVariableUsageCollection _variableUsages;
+        private readonly DocumentFragmentSpreadCollection _fragmentSpreads;
+        private readonly DocumentVariableUsageCollection _variableUsages;
+        private readonly List<IDirectiveDocumentPart> _allDirectives;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNamedFragment" /> class.
@@ -39,6 +42,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
             _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
             _variableUsages = new DocumentVariableUsageCollection(this);
+            _allDirectives = new List<IDirectiveDocumentPart>();
         }
 
         /// <inheritdoc />
@@ -54,9 +58,17 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             base.OnChildPartAdded(childPart, relativeDepth);
             if (childPart is IVariableUsageDocumentPart varRef)
+            {
                 _variableUsages.Add(varRef);
+            }
             else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+            {
                 _fragmentSpreads.Add(fragSpread);
+            }
+            else if (childPart is IDirectiveDocumentPart ddp)
+            {
+                _allDirectives.Add(ddp);
+            }
         }
 
         /// <inheritdoc />
@@ -70,5 +82,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IVariableUsageCollectionDocumentPart VariableUsages => _variableUsages;
+
+        /// <inheritdoc />
+        public IEnumerable<IDirectiveDocumentPart> AllDirectives => _allDirectives;
     }
 }

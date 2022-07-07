@@ -9,17 +9,20 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
-    /// An interface declaring the implementer as a document part that can contain directives.
+    /// An interface describing common elements amongst all top level document
+    /// parts within a query document.
     /// </summary>
-    public interface IDirectiveContainerDocumentPart : IDocumentPart
+    public interface ITopLevelDocumentPart : IDocumentPart
     {
         /// <summary>
-        /// Gets the set of directives defined as direct children on this document part.
+        /// Gets a collection of all the directives defined on any document part, at any level,
+        /// within this part.
         /// </summary>
-        /// <value>The directives.</value>
-        IDirectiveCollectionDocumentPart Directives { get; }
+        /// <value>All directives defined as children, at any level, on this part.</value>
+        IReadOnlyList<IDirectiveDocumentPart> AllDirectives { get; }
     }
 }

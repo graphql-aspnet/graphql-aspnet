@@ -138,14 +138,16 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Renders a completed query document in the same manner that the graphql server would as part of fulfilling a request.
+        /// Renders a completed query document in the same manner that the graphql server
+        /// would as part of fulfilling a request. This method DOES NOT validate the document
         /// </summary>
         /// <param name="queryText">The query text to generate a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>
         public IGraphQueryDocument CreateDocument(string queryText)
         {
             var generator = this.ServiceProvider.GetService<IGraphQueryDocumentGenerator<TSchema>>();
-            return generator.CreateDocument(this.CreateSyntaxTree(queryText));
+            var document = generator.CreateDocument(this.CreateSyntaxTree(queryText));
+            return document;
         }
 
         /// <summary>
@@ -155,8 +157,13 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
         public Task<IGraphQueryPlan> CreateQueryPlan(string queryText)
         {
+            var documentGenerator = this.ServiceProvider.GetService<IGraphQueryDocumentGenerator<TSchema>>();
             var planGenerator = this.ServiceProvider.GetService<IGraphQueryPlanGenerator<TSchema>>();
-            return planGenerator.CreatePlan(this.CreateSyntaxTree(queryText));
+            var document = this.CreateDocument(queryText);
+
+            documentGenerator.ValidateDocument(document);
+
+            return planGenerator.CreatePlan(document);
         }
 
         /// <summary>

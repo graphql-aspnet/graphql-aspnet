@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
@@ -23,10 +24,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Operation: {Name} (Type = {OperationType})")]
     internal class DocumentOperation : DocumentPartBase, IOperationDocumentPart
     {
-        private DocumentVariableCollection _variableCollection = null;
-        private DocumentFragmentSpreadCollection _fragmentSpreads = null;
-        private DocumentVariableUsageCollection _variableUsages = null;
-        private DocumentDirectiveCollection _directives = null;
+        private readonly DocumentVariableCollection _variableCollection = null;
+        private readonly DocumentFragmentSpreadCollection _fragmentSpreads = null;
+        private readonly DocumentVariableUsageCollection _variableUsages = null;
+        private readonly DocumentDirectiveCollection _directives = null;
+        private readonly List<IDirectiveDocumentPart> _allDirectives;
 
         private IFieldSelectionSetDocumentPart _fieldSelectionSet;
 
@@ -51,21 +53,34 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _variableUsages = new DocumentVariableUsageCollection(this);
             _directives = new DocumentDirectiveCollection(this);
             _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
+            _allDirectives = new List<IDirectiveDocumentPart>();
         }
 
         /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
             if (relativeDepth == 1 && childPart is IVariableDocumentPart vd)
+            {
                 _variableCollection.Add(vd);
+            }
             else if (relativeDepth == 1 && childPart is IFieldSelectionSetDocumentPart fieldSelection)
+            {
                 _fieldSelectionSet = fieldSelection;
-            else if (relativeDepth == 1 && childPart is IDirectiveDocumentPart ddp)
-                _directives.AddDirective(ddp);
+            }
+            else if (childPart is IDirectiveDocumentPart ddp)
+            {
+                if (relativeDepth == 1)
+                    _directives.AddDirective(ddp);
+                _allDirectives.Add(ddp);
+            }
             else if (childPart is IVariableUsageDocumentPart varRef)
+            {
                 _variableUsages.Add(varRef);
+            }
             else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+            {
                 _fragmentSpreads.Add(fragSpread);
+            }
         }
 
         /// <inheritdoc />
@@ -94,5 +109,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
+
+        /// <inheritdoc />
+        public IEnumerable<IDirectiveDocumentPart> AllDirectives => _allDirectives;
     }
 }

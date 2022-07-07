@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Internal.Interfaces;
 
@@ -63,11 +64,11 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IGraphQueryPlan QueryPlan { get; set; }
 
         /// <summary>
-        /// Gets or sets the syntax tree parsed from the provided query text. Will be null if a query plan
-        /// was retrieved from the cache.
+        /// Gets or sets the query document, parsed from the query text supplied by the user
+        /// on the request.
         /// </summary>
-        /// <value>The syntax tree.</value>
-        public ISyntaxTree SyntaxTree { get; set; }
+        /// <value>The completed query document.</value>
+        public IGraphQueryDocument QueryDocument { get; set; }
 
         /// <summary>
         /// Gets or sets the query operation to execute of the active query plan.

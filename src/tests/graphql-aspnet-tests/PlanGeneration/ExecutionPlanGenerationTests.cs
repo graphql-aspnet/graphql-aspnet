@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas;
@@ -24,20 +25,28 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
     [TestFixture]
     public class ExecutionPlanGenerationTests
-    {
+   {
+        private async Task<IGraphQueryPlan> CreatePlan(GraphSchema schema, string text)
+        {
+            var parser = new GraphQLParser();
+            var syntaxTree = parser.ParseQueryDocument(text.AsMemory());
+
+            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(schema);
+            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+                schema,
+                new DefaultOperationComplexityCalculator<GraphSchema>());
+
+            var doc = docGenerator.CreateDocument(syntaxTree);
+            return await planGenerator.CreatePlan(doc);
+        }
+
         [Test]
         public async Task SingleField_NoExtras_ValidateFields()
         {
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query {  simple {  simpleQueryMethod { property1} } }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var plan = await this.CreatePlan(
                 server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+                "query {  simple {  simpleQueryMethod { property1} } }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -95,14 +104,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             query Operation2{  simple {  simpleQueryMethod { property2} } }
                             ";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(str.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, str);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -132,14 +134,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 .AddType<SimplePlanGenerationController>()
                 .Build();
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query {  simple {  simpleQueryMethod(arg1: \"bob\", arg2: 15) { property1} } }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(
+              server.Schema,
+              "query {  simple {  simpleQueryMethod(arg1: \"bob\", arg2: 15) { property1} } }");
 
             Assert.AreEqual(1, plan.Operations.Count);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -159,21 +156,16 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(@"query($var1 : Long = 22)
-                                                        {
-                                                            simple {
-                                                                simpleQueryMethod(arg1: ""bob"", arg2: $var1) {
-                                                                    property1
-                                                                }
-                                                            }
-                                                        }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(
+              server.Schema,
+                @"query($var1 : Long = 22)
+                {
+                    simple {
+                        simpleQueryMethod(arg1: ""bob"", arg2: $var1) {
+                            property1
+                        }
+                    }
+                }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -191,21 +183,15 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public async Task SingleField_WhenInputArgumentPassesNull_WhenAcceptable_GeneratesArgumentAsNull()
         {
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(@"query {
-                                                            simple {
-                                                                complexQueryMethod(arg1: null) {
-                                                                    property1
-                                                                }
-                                                            }
-                                                        }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var plan = await this.CreatePlan(
                 server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+                @"query {
+                    simple {
+                        complexQueryMethod(arg1: null) {
+                            property1
+                        }
+                    }
+                }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -226,8 +212,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             // arg1 represents a TWoPropertyObjectV2 with a prop1 type of float
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(
+            var plan = await this.CreatePlan(
+                server.Schema,
                 @"query($var1 : Float! = 15.5)
                 {
                     simple {
@@ -235,13 +221,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property1
                         }
                     }
-                }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+                }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -277,14 +257,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -352,14 +325,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(1, plan.Operations.Count);
@@ -400,14 +366,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property1
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(1, plan.Operations.Count);
@@ -447,14 +406,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -491,14 +443,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
@@ -539,14 +484,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property1
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);

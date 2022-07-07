@@ -9,13 +9,15 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A represention of a top level operation (mutation, query etc.) defined in a query document.
     /// </summary>
-    public interface IOperationDocumentPart : IDirectiveContainerDocumentPart, IReferenceDocumentPart, IDocumentPart
+    public interface IOperationDocumentPart 
+        : IDirectiveContainerDocumentPart, ITopLevelDocumentPart, IReferenceDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Gets the type of the operation that was parsed.

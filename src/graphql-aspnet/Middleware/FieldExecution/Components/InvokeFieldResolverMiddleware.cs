@@ -30,20 +30,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
-        private readonly ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directiveExecutionPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvokeFieldResolverMiddleware{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        /// <param name="directiveExecutionPipeline">The directive execution pipeline
-        /// to invoke for any directives attached to this field.</param>
+        /// <param name="schema">The schema targeted by this middleware component.</param>
         public InvokeFieldResolverMiddleware(
-            TSchema schema,
-            ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> directiveExecutionPipeline)
+            TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _directiveExecutionPipeline = Validation.ThrowIfNullOrReturn(directiveExecutionPipeline, nameof(directiveExecutionPipeline));
         }
 
         /// <summary>

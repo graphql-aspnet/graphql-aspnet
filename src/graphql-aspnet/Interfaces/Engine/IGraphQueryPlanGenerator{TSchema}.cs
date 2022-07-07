@@ -10,11 +10,12 @@
 namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
-    /// A plan generator capable of converting a syntax tree into an actionable
+    /// A plan generator capable of converting a fully constructed query document into an actionable
     /// query plan executable by a the query pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this plan generator is registered for.</typeparam>
@@ -24,8 +25,9 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <summary>
         /// Creates a new query plan from the parsed syntax tree.
         /// </summary>
-        /// <param name="syntaxTree">The syntax tree.</param>
+        /// <param name="queryDocument">The parsed, and validated query document to
+        /// convert into a query plan.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        Task<IGraphQueryPlan> CreatePlan(ISyntaxTree syntaxTree);
+        Task<IGraphQueryPlan> CreatePlan(IGraphQueryDocument queryDocument);
     }
 }

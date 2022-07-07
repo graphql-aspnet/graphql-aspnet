@@ -31,67 +31,38 @@ namespace GraphQL.AspNet.Defaults
     {
         private readonly ISchema _schema;
         private readonly IQueryOperationComplexityCalculator<TSchema> _complexityCalculator;
-        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQueryPlanGenerator{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        /// <param name="documentGenerator">The document generator that will generate query documents, a precursor
-        /// to a query plan.</param>
         /// <param name="complexityCalculator">The complexity calculator for this plan generator to use
         /// when computing complexity scores.</param>
         public DefaultGraphQueryPlanGenerator(
             TSchema schema,
-            IGraphQueryDocumentGenerator<TSchema> documentGenerator,
             IQueryOperationComplexityCalculator<TSchema> complexityCalculator)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _complexityCalculator = Validation.ThrowIfNullOrReturn(complexityCalculator, nameof(complexityCalculator));
-            _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
         }
 
-        /// <summary>
-        /// Creates a qualified exeuction plan that can be executed to fulfill a user's request.
-        /// </summary>
-        /// <param name="syntaxTree">The syntax tree that was lexed from the original source supplied by a user.</param>
-        /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        public async Task<IGraphQueryPlan> CreatePlan(ISyntaxTree syntaxTree)
+        /// <inheritdoc />
+        public async Task<IGraphQueryPlan> CreatePlan(IGraphQueryDocument queryDocument)
         {
-            Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
+            Validation.ThrowIfNull(queryDocument, nameof(queryDocument));
+            Validation.ThrowIfNull(queryDocument.Operations, $"{nameof(queryDocument)}.{nameof(queryDocument.Operations)}");
+
             var queryPlan = this.CreatePlanInstance();
 
-            // ------------------------------------------
-            // Step 1:  Parse the document.
-            // ------------------------------------------
-            // Convert the syntax tree into a functional query document
-            // ------------------------------------------
-            var document = _documentGenerator.CreateDocument(syntaxTree);
-            this.InspectSyntaxDepth(document);
-            queryPlan.MaxDepth = document.MaxDepth;
-            queryPlan.Messages.AddRange(document.Messages);
+            // Validate that the document meets the depth requirements for plan generation
+            this.InspectSyntaxDepth(queryDocument);
+            queryPlan.MaxDepth = queryDocument.MaxDepth;
+            queryPlan.Messages.AddRange(queryDocument.Messages);
             if (!queryPlan.IsValid)
                 return queryPlan;
 
-            // ------------------------------------------
-            // Step 2:  Parse the document.
-            // ------------------------------------------
-            // Validate that the created document is functionally correct
-            // ------------------------------------------
-            _documentGenerator.ValidateDocument(document);
-            queryPlan.Messages.AddRange(document.Messages);
-            if (!queryPlan.IsValid)
-                return queryPlan;
-
-            // ------------------------------------------
-            // Step 3:  Plan Construction
-            // ------------------------------------------
-            // The document is garunteed to be syntactically correct and, barring anything user related (variable data, custom code etc.),
-            // will resolve to produce a result.  Using the correct operation (or the anon operation), extract the resolvers for all possible concrete
-            // types needed to fulfill the user's request and generate a query plan that can be executed to fulfill the request.
-            // ------------------------------------------
             var generator = new ExecutableOperationGenerator(_schema);
-            foreach (var operation in document.Operations.Values)
+            foreach (var operation in queryDocument.Operations.Values)
             {
                 var executableOperation = await generator.Create(operation).ConfigureAwait(false);
                 queryPlan.AddOperation(executableOperation);
@@ -126,7 +97,7 @@ namespace GraphQL.AspNet.Defaults
         /// <see cref="GraphQLSyntaxException" /> is thrown aborting the query.
         /// </summary>
         /// <param name="document">The document to inspect.</param>
-        protected void InspectSyntaxDepth(IGraphQueryDocument document)
+        protected virtual void InspectSyntaxDepth(IGraphQueryDocument document)
         {
             var maxAllowedDepth = _schema.Configuration?.ExecutionOptions?.MaxQueryDepth;
             if (maxAllowedDepth.HasValue && document.MaxDepth > maxAllowedDepth.Value)
@@ -144,7 +115,7 @@ namespace GraphQL.AspNet.Defaults
         /// occur, a message is recorded to the plan and it is abandoned.
         /// </summary>
         /// <param name="plan">The plan.</param>
-        protected void InspectQueryPlanComplexity(IGraphQueryPlan plan)
+        protected virtual void InspectQueryPlanComplexity(IGraphQueryPlan plan)
         {
             var maxComplexity = _schema.Configuration?.ExecutionOptions?.MaxQueryComplexity;
             if (maxComplexity.HasValue && plan.EstimatedComplexity > maxComplexity.Value)

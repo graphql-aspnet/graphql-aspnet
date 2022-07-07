@@ -64,13 +64,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
 
-        /// <summary>
-        /// Invokes the asynchronous.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="next">The next.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             context.Metrics?.StartPhase(ApolloExecutionPhase.EXECUTION);
