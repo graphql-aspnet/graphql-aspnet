@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
-    using System.Reflection;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -95,6 +94,11 @@ namespace GraphQL.AspNet.Tests.Schemas
             new object[] { typeof(UriScalarType), "-1", null, true },
             new object[] { typeof(UriScalarType), "\"abc\"", new Uri("abc", UriKind.RelativeOrAbsolute), false },
 
+            new object[] { typeof(ShortScalarType), "1", 1, false },
+            new object[] { typeof(ShortScalarType), "-1", -1, false },
+            new object[] { typeof(ShortScalarType), "\"1\"", null, true },
+            new object[] { typeof(ShortScalarType), "\"abc\"", null, true },
+
 #if NET6_0_OR_GREATER
             new object[] { typeof(DateOnlyScalarType), "\"2021-11-12\"", new DateOnly(2021, 11, 12), false },
             new object[] { typeof(DateOnlyScalarType), "\"2021-10-21T11:12:13+00:00\"", new DateOnly(2021, 10, 21), false },
@@ -159,6 +163,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             new object[] { typeof(UriScalarType), new Uri("http://fakewebsite.com", UriKind.RelativeOrAbsolute), "http://fakewebsite.com/" },
             new object[] { typeof(UriScalarType), null, null },
+            new object[] { typeof(ShortScalarType), 1, 1, },
 
 #if NET6_0_OR_GREATER
             new object[] { typeof(DateOnlyScalarType), new DateOnly(2021, 10, 11), new DateOnly(2021, 10, 11) },
