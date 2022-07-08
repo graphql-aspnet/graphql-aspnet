@@ -1,9 +1,16 @@
-﻿namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Text;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
