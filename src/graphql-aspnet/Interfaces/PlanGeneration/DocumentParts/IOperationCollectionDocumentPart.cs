@@ -29,5 +29,13 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// <param name="index">The index of the operation within the query document.</param>
         /// <returns>IOperationDocumentPart.</returns>
         IOperationDocumentPart this[int index] { get; }
+
+        /// <summary>
+        /// Attempts to retrieve an operation with the given name. If one is not found,
+        /// null is returned.
+        /// </summary>
+        /// <param name="operationName">Name of the operation.</param>
+        /// <returns>IOperationDocumentPart.</returns>
+        IOperationDocumentPart RetrieveOperation(string operationName = null);
     }
 }

@@ -190,7 +190,9 @@ namespace GraphQL.AspNet.Tests.Logging
             var server = new TestServerBuilder()
                             .AddType<LogTestController>()
                             .Build();
-            var queryPlan = await server.CreateQueryPlan("query Operation1{ field1 } query Operation2 { fieldException }");
+            var queryPlan = await server.CreateQueryPlan(
+                "query Operation1{ field1 } query Operation2 { fieldException }",
+                "Operation1");
 
             var entry = new QueryPlanCacheAddLogEntry("abc123", queryPlan);
 
@@ -207,7 +209,9 @@ namespace GraphQL.AspNet.Tests.Logging
             var server = new TestServerBuilder()
                             .AddType<LogTestController>()
                             .Build();
-            var queryPlan = await server.CreateQueryPlan("query Operation1{ field1 } query Operation2 { fieldException }");
+            var queryPlan = await server.CreateQueryPlan(
+                "query Operation1{ field1 } query Operation2 { fieldException }",
+                "Operation1");
 
             var entry = new QueryPlanGeneratedLogEntry(queryPlan);
 
@@ -215,7 +219,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
             Assert.AreEqual(queryPlan.Id, entry.QueryPlanId);
             Assert.AreEqual(queryPlan.IsValid, entry.QueryPlanIsValid);
-            Assert.AreEqual(queryPlan.Operations.Count, entry.QueryOperationCount);
+            Assert.AreEqual(queryPlan.OperationName, entry.QueryPlanOperationName);
             Assert.AreEqual(queryPlan.EstimatedComplexity, entry.QueryPlanEstimatedComplexity);
             Assert.AreEqual(queryPlan.MaxDepth, entry.QueryPlanMaxDepth);
             Assert.IsNotNull(entry.ToString());

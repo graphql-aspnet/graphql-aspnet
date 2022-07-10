@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
 
     /// <summary>
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.PlanGeneration
     /// execution context containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
     /// request made from it.
     /// </summary>
-    public class ExecutableOperationGenerator
+    internal class ExecutableOperationGenerator
     {
         private readonly ISchema _schema;
         private IGraphMessageCollection _messages;
@@ -78,9 +79,9 @@ namespace GraphQL.AspNet.PlanGeneration
             IFieldSelectionSetDocumentPart fieldsToReturn)
         {
             var tasks = new List<Task<IGraphFieldInvocationContext>>();
-            if (sourceGraphType != null && fieldsToReturn != null && fieldsToReturn.ExecutableFields.Count > 0)
+            if (sourceGraphType != null && fieldsToReturn != null)
             {
-                foreach (var field in fieldsToReturn.ExecutableFields)
+                foreach (var field in fieldsToReturn.ExecutableFields.IncludedOnly)
                 {
                     // not all fields in a selection set will target all known source types
                     // like when a fragment is spread into a selection set, the fragment target type will
@@ -139,7 +140,7 @@ namespace GraphQL.AspNet.PlanGeneration
                     fieldContext.Restrict(typedType.ObjectType);
             }
 
-            if (fieldSelection.FieldSelectionSet != null && fieldSelection.FieldSelectionSet.ExecutableFields.Count > 0)
+            if (fieldSelection.FieldSelectionSet != null)
             {
                 // resolve the child fields for each possible known return type
                 // since we don't know what the resultant query may produce at runtime we need to account

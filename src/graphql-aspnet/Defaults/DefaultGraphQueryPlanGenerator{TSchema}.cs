@@ -15,15 +15,15 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.PlanGeneration;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
-    /// A plan generator capable of converting a syntax tree into an actionable
-    /// query plan executable by a the query pipeline.
+    /// A plan generator capable of converting an operation document part into an
+    /// executable operatiopn by a the query pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this plan generator is registered for.</typeparam>
     public class DefaultGraphQueryPlanGenerator<TSchema> : IGraphQueryPlanGenerator<TSchema>
@@ -47,34 +47,31 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public async Task<IGraphQueryPlan> CreatePlan(IGraphQueryDocument queryDocument)
+        public async Task<IGraphQueryPlan> CreatePlan(
+            IOperationDocumentPart operation)
         {
-            Validation.ThrowIfNull(queryDocument, nameof(queryDocument));
-            Validation.ThrowIfNull(queryDocument.Operations, $"{nameof(queryDocument)}.{nameof(queryDocument.Operations)}");
+            Validation.ThrowIfNull(operation, nameof(operation));
 
             var queryPlan = this.CreatePlanInstance();
 
             // Validate that the document meets the depth requirements for plan generation
-            this.InspectSyntaxDepth(queryDocument);
-            queryPlan.MaxDepth = queryDocument.MaxDepth;
-            queryPlan.Messages.AddRange(queryDocument.Messages);
+            this.InspectSyntaxDepth(queryPlan, operation);
+            queryPlan.MaxDepth = operation.MaxDepth;
             if (!queryPlan.IsValid)
                 return queryPlan;
 
             var generator = new ExecutableOperationGenerator(_schema);
-            foreach (var operation in queryDocument.Operations.Values)
+
+            var executableOperation = await generator.Create(operation).ConfigureAwait(false);
+            queryPlan.Operation = executableOperation;
+            queryPlan.Messages.AddRange(executableOperation.Messages);
+
+            // estimate the complexity for any successfully parsed operations
+            if (executableOperation.Messages.IsSucessful)
             {
-                var executableOperation = await generator.Create(operation).ConfigureAwait(false);
-                queryPlan.AddOperation(executableOperation);
-
-                // estimate the complexity for any successfully parsed operations
-                if (executableOperation.Messages.IsSucessful)
-                {
-                    var complexity = _complexityCalculator.Calculate(executableOperation);
-
-                    if (complexity > queryPlan.EstimatedComplexity)
-                        queryPlan.EstimatedComplexity = complexity;
-                }
+                var complexity = _complexityCalculator.Calculate(executableOperation);
+                if (complexity > queryPlan.EstimatedComplexity)
+                    queryPlan.EstimatedComplexity = complexity;
             }
 
             this.InspectQueryPlanComplexity(queryPlan);
@@ -89,21 +86,24 @@ namespace GraphQL.AspNet.Defaults
         /// <returns>IGraphQueryPlan.</returns>
         protected virtual IGraphQueryPlan CreatePlanInstance()
         {
-             return new GraphQueryExecutionPlan<TSchema>();
+            return new GraphQueryExecutionPlan<TSchema>();
         }
 
         /// <summary>
         /// Inspects the syntax tree against the required metric values for the target schema and should a violation occur a
         /// <see cref="GraphQLSyntaxException" /> is thrown aborting the query.
         /// </summary>
-        /// <param name="document">The document to inspect.</param>
-        protected virtual void InspectSyntaxDepth(IGraphQueryDocument document)
+        /// <param name="queryPlan">The query plan being generated.</param>
+        /// <param name="operation">The operation to be included.</param>
+        protected virtual void InspectSyntaxDepth(
+            IGraphQueryPlan queryPlan,
+            IOperationDocumentPart operation)
         {
             var maxAllowedDepth = _schema.Configuration?.ExecutionOptions?.MaxQueryDepth;
-            if (maxAllowedDepth.HasValue && document.MaxDepth > maxAllowedDepth.Value)
+            if (maxAllowedDepth.HasValue && operation.MaxDepth > maxAllowedDepth.Value)
             {
-                document.Messages.Critical(
-                    $"The query has a max field depth of {document.MaxDepth} but " +
+                queryPlan.Messages.Critical(
+                    $"The query operation has a max field depth of {operation.MaxDepth} but " +
                     $"this schema has been configured to only accept queries with a max depth of {maxAllowedDepth.Value}. " +
                     "Adjust your query and try again.",
                     Constants.ErrorCodes.REQUEST_ABORTED);

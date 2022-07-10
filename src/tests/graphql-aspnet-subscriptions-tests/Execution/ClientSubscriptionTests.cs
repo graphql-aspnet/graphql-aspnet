@@ -40,10 +40,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var subServer = testServer.RetrieveSubscriptionServer();
             var queryPlan = await testServer.CreateQueryPlan("subscription { watchObjects { property1 property2  }} ");
 
-            Assert.AreEqual(1, queryPlan.Operations.Count);
+            Assert.IsNotNull(queryPlan.Operation);
             Assert.AreEqual(0, queryPlan.Messages.Count);
 
-            var field = queryPlan.Operations.Values.First().FieldContexts[0].Field;
+            var field = queryPlan.Operation.FieldContexts[0].Field;
             var name = field.GetType().FullName;
 
             (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
@@ -54,7 +54,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 testClient,
                 queryData,
                 queryPlan,
-                queryPlan.Operations.First().Value,
+                queryPlan.Operation,
                 "abc123");
 
             Assert.IsTrue(sub.IsValid);

@@ -33,6 +33,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             // inline fragments are, by nature, already referenced in the document
             this.MarkAsReferenced();
             this.TargetGraphTypeName = fragmentNode.TargetType.ToString();
+            this.IsIncluded = true;
         }
 
         /// <inheritdoc />
@@ -45,5 +46,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.InlineFragment;
+
+        /// <inheritdoc />
+        public bool IsIncluded { get; set; }
     }
 }

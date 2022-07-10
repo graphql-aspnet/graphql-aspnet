@@ -74,6 +74,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
+        public IOperationDocumentPart RetrieveOperation(string operationName = null)
+        {
+            operationName = operationName?.Trim() ?? string.Empty;
+            if (this.TryGetValue(operationName, out var operation))
+                return operation;
+
+            return null;
+        }
+
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

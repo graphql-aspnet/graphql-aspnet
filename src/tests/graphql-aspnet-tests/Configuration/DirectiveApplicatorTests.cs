@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Tests.Configuration
                 {
                     var directive = item.AppliedDirectives.FirstOrDefault(x => x.DirectiveName == "testDirective");
                     if (directive != null)
-                        Assert.AreEqual(argSet, directive.Arguments);
+                        Assert.AreEqual(argSet, directive.ArgumentValues);
                 }
             }
         }

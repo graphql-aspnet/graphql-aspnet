@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     using GraphQL.AspNet.Directives;
 
     /// <summary>
-    /// An instance of a directive to be applied to a system item.
+    /// An instance of a directive to be applied to an item (either a document or a type system item).
     /// </summary>
     public interface IAppliedDirective
     {
@@ -29,12 +29,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         string DirectiveName { get; }
 
         /// <summary>
-        /// Gets the collection of arguments supplied on the directive
+        /// Gets the collection of supplied, ordered argument values to be used on the directive
         /// invocation. These arguments are passed to the <see cref="GraphDirective"/>
-        /// created to process the <see cref="ISchemaItem"/>
-        /// that owns instance.
+        /// created to process the target that owns instance.
         /// </summary>
         /// <value>The arguments.</value>
-        object[] Arguments { get; }
+        object[] ArgumentValues { get; }
     }
 }

@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Execution
     {
         private IServiceProvider _serviceProvider = null;
         private IServiceCollection _serviceCollection = null;
-        private SchemaDirectiveProcessor<GraphSchema> _instance = null;
+        private DirectiveProcessorTypeSystem<GraphSchema> _instance = null;
         private Mock<ISchemaPipeline<GraphSchema, GraphDirectiveExecutionContext>> _directivePipeline = null;
         private List<object> _itemsExecuted;
         private GraphSchema _schemaInstance;
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // build the test object
             _serviceProvider = _serviceCollection.BuildServiceProvider();
-            _instance = new SchemaDirectiveProcessor<GraphSchema>(_serviceProvider);
+            _instance = new DirectiveProcessorTypeSystem<GraphSchema>(_serviceProvider);
         }
 
         [Test]

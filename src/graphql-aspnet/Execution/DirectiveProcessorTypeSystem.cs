@@ -34,17 +34,17 @@ namespace GraphQL.AspNet.Execution
     /// respective schema items.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to work with.</typeparam>
-    internal sealed class SchemaDirectiveProcessor<TSchema>
+    internal sealed class DirectiveProcessorTypeSystem<TSchema>
         where TSchema : class, ISchema
     {
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SchemaDirectiveProcessor{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="DirectiveProcessorTypeSystem{TSchema}" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider used to instantiate
         /// and apply type system directives.</param>
-        public SchemaDirectiveProcessor(IServiceProvider serviceProvider)
+        public DirectiveProcessorTypeSystem(IServiceProvider serviceProvider)
         {
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
@@ -70,7 +70,6 @@ namespace GraphQL.AspNet.Execution
         /// <param name="item">The item.</param>
         private bool ApplyDirectivesToItem(TSchema schema, ISchemaItem item)
         {
-            var fullRouteName = item.Name;
             var invokedDirectives = new HashSet<IDirective>();
             foreach (var appliedDirective in item.AppliedDirectives)
             {
@@ -114,7 +113,7 @@ namespace GraphQL.AspNet.Execution
 
                 invokedDirectives.Add(targetDirective);
 
-                var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.Arguments);
+                var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.ArgumentValues);
 
                 var parentRequest = new GraphOperationRequest(GraphQueryData.Empty);
 

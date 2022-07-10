@@ -81,6 +81,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             {
                 _fragmentSpreads.Add(fragSpread);
             }
+
+            if (relativeDepth > this.MaxDepth)
+                this.MaxDepth = relativeDepth;
         }
 
         /// <inheritdoc />
@@ -111,6 +114,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IDirectiveCollectionDocumentPart Directives => _directives;
 
         /// <inheritdoc />
-        public IEnumerable<IDirectiveDocumentPart> AllDirectives => _allDirectives;
+        public IReadOnlyList<IDirectiveDocumentPart> AllDirectives => _allDirectives;
+
+        /// <inheritdoc />
+        public int MaxDepth { get; private set; }
     }
 }

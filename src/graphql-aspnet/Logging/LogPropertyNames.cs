@@ -98,9 +98,9 @@ namespace GraphQL.AspNet.Logging
         public const string QUERY_PLAN_ID = "queryPlanId";
 
         /// <summary>
-        /// The total number of operations that exist in a query plan.
+        /// The name of the operation on the query plan.
         /// </summary>
-        public const string QUERY_PLAN_OPERATION_COUNT = "operationCount";
+        public const string QUERY_PLAN_OPERATION_NAME = "operationName";
 
         /// <summary>
         /// The calculated complexity of the query plan.

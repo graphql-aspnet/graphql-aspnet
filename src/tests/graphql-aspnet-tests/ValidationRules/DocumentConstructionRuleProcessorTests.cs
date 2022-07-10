@@ -311,6 +311,8 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var operation = result.Operations[0];
 
             Assert.AreEqual("MyQuery", operation.Name);
+
+
             Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
 
             var bakery = operation.FieldSelectionSet.ExecutableFields[0];

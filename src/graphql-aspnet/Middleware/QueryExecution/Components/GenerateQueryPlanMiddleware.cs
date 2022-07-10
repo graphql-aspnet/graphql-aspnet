@@ -14,7 +14,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
@@ -30,26 +32,25 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class GenerateQueryPlanMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
+        private readonly TSchema _schema;
         private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
         private readonly IGraphQueryPlanGenerator<TSchema> _planGenerator;
-        private readonly ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directivePipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerateQueryPlanMiddleware{TSchema}" /> class.
         /// </summary>
+        /// <param name="schema">The target schema.</param>
         /// <param name="documentGenerator">The document generator used to validate
         /// document instances.</param>
         /// <param name="planGenerator">The plan generator.</param>
-        /// <param name="directiveExecutionPipeline">The directive execution pipeline used to
-        /// execute directives declared on a query document.</param>
         public GenerateQueryPlanMiddleware(
+            TSchema schema,
             IGraphQueryDocumentGenerator<TSchema> documentGenerator,
-            IGraphQueryPlanGenerator<TSchema> planGenerator,
-            ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> directiveExecutionPipeline)
+            IGraphQueryPlanGenerator<TSchema> planGenerator)
         {
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
             _planGenerator = Validation.ThrowIfNullOrReturn(planGenerator, nameof(planGenerator));
-            _directivePipeline = Validation.ThrowIfNullOrReturn(directiveExecutionPipeline, nameof(directiveExecutionPipeline));
         }
 
         /// <inheritdoc />
@@ -74,23 +75,67 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 }
 
                 // ------------------------------------------
+                // Step 1a: Fetch a reference to the operation to be used for the rest of
+                //          the query plan generation process
+                // -----------------------------------------
+                // Validate the document that was just created to make sure its
+                // executable against the target schema
+                IOperationDocumentPart targetOperation = null;
+                if (context.IsValid && !context.IsCancelled)
+                {
+                    if (document.Operations.Count == 1)
+                        targetOperation = document.Operations[0];
+                    else
+                        targetOperation = document.Operations.RetrieveOperation(context.OperationRequest.OperationName);
+
+                    if (targetOperation == null)
+                    {
+                        var name = context.OperationRequest.OperationName?.Trim() ?? "~anonymous~";
+                        context.Messages.Critical(
+                            $"Undeclared operation. An operation with the name '{name}' was not " +
+                            "found on the query document.",
+                            Constants.ErrorCodes.BAD_REQUEST,
+                            document.Node.Location.AsOrigin());
+
+                        context.Cancel();
+                    }
+                }
+
+                // ------------------------------------------
                 // Step 2: Execute Execution Directives
                 // -----------------------------------------
-                // We have a document that is, as of right now, executable and resolvable
-                // however, execution directives may be included and need to be processed
+                // We have a document that is, as of right now, executable and resolvable,
+                // however; execution directives may be included and need to be processed
                 // against the document parts to potentially alter them before
                 // the plan is generated
                 var totalExecutedDirectives = 0;
                 if (context.IsValid && !context.IsCancelled)
                 {
-                    totalExecutedDirectives = await this.ExecuteDirectives(context, document);
+                    var directiveProcessor = new DirectiveProcessorQueryDocument<TSchema>(_schema, context);
+
+                    try
+                    {
+                        totalExecutedDirectives = await directiveProcessor
+                            .ApplyDirectives(targetOperation, cancelToken)
+                            .ConfigureAwait(false);
+                    }
+                    catch (GraphExecutionException gee)
+                    {
+                        context.Messages.Critical(
+                            gee.Message,
+                            Constants.ErrorCodes.EXECUTION_ERROR,
+                            gee.Origin,
+                            gee);
+
+                        context.Cancel();
+                    }
                 }
 
                 // ------------------------------------------
                 // Step 3: Perform a second pass validation
                 // -----------------------------------------
                 // Since the user is in charge of the directives we have no idea what
-                // code they may have executed or what tehy may have done to the query document
+                // code they may have executed or what they may have done to the query document
                 // we need to perform another full validation before we can execute against it
                 if (context.IsValid && !context.IsCancelled && totalExecutedDirectives > 0)
                 {
@@ -103,14 +148,18 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 }
 
                 // ------------------------------------------
-                // Step 3: Generate the final execution plan
+                // Step 4: Generate the final execution plan
                 // -----------------------------------------
                 // With the now fully complete query document, create a query plan
                 // that will resolve the expected fields in the expected order to generate
                 // a data result
                 if (context.IsValid && !context.IsCancelled)
                 {
-                    context.QueryPlan = await _planGenerator.CreatePlan(context.QueryDocument).ConfigureAwait(false);
+                    context.QueryPlan = await _planGenerator
+                        .CreatePlan(targetOperation)
+                        .ConfigureAwait(false);
+
+                    context.QueryPlan.IsCacheable = totalExecutedDirectives == 0;
                     context.Messages.AddRange(context.QueryPlan.Messages);
                     context.Metrics?.EndPhase(ApolloExecutionPhase.VALIDATION);
 
@@ -120,50 +169,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             }
 
             await next(context, cancelToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Invokes the directive pipeline for all execution directives defined on the query
-        /// document.
-        /// </summary>
-        /// <param name="context">The master context being executed.</param>
-        /// <param name="document">The document to search for directives within.</param>
-        /// <returns>Task.</returns>
-        private async Task<int> ExecuteDirectives(GraphQueryExecutionContext context, IGraphQueryDocument document)
-        {
-            var totalDirectivesExecuted = 0;
-            var allTopParts = document.Operations.Values
-                .OfType<ITopLevelDocumentPart>()
-                .Concat(document.NamedFragments.Values);
-
-            foreach (ITopLevelDocumentPart topLevelPart in allTopParts)
-            {
-                if (topLevelPart.AllDirectives.Count == 0)
-                    continue;
-
-                foreach (var directive in topLevelPart.AllDirectives)
-                {
-                    // order of execution must be predictable, we can't execute
-                    // all directives at once
-                    await this.ExecuteDirective(context, directive.Parent, directive);
-                    totalDirectivesExecuted += 1;
-                }
-            }
-
-            return totalDirectivesExecuted;
-        }
-
-        /// <summary>
-        /// Executes the single directive against its target document part.
-        /// </summary>
-        /// <param name="context">The master context being executed.</param>
-        /// <param name="targetPart">The document part targeted by the directive.</param>
-        /// <param name="directive">The directive being invoked.</param>
-        private async Task ExecuteDirective(
-            GraphQueryExecutionContext context,
-            IDocumentPart targetPart,
-            IDirectiveDocumentPart directive)
-        {
         }
     }
 }

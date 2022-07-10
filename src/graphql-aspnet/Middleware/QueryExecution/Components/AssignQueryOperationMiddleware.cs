@@ -24,11 +24,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             if (context.IsValid && context.QueryPlan != null && context.QueryPlan.IsValid)
             {
-                context.QueryOperation = context.QueryPlan.RetrieveOperation(context.OperationRequest.OperationName);
+                context.QueryOperation = context.QueryPlan.Operation;
                 if (context.QueryOperation == null)
                 {
                     context.Messages.Critical(
-                        $"No operation found with the name '{context.OperationRequest.OperationName}'.",
+                        $"No executable operation was found on the generated query plan.",
                         Constants.ErrorCodes.BAD_REQUEST);
                 }
             }

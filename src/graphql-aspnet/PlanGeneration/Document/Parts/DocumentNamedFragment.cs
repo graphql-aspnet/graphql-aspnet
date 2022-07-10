@@ -26,7 +26,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         private readonly DocumentVariableUsageCollection _variableUsages;
         private readonly List<IDirectiveDocumentPart> _allDirectives;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNamedFragment" /> class.
         /// </summary>
@@ -84,6 +83,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IVariableUsageCollectionDocumentPart VariableUsages => _variableUsages;
 
         /// <inheritdoc />
-        public IEnumerable<IDirectiveDocumentPart> AllDirectives => _allDirectives;
+        public IReadOnlyList<IDirectiveDocumentPart> AllDirectives => _allDirectives;
     }
 }

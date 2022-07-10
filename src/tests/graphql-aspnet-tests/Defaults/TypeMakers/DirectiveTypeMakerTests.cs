@@ -36,7 +36,6 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual("A Multi Method Directive", directive.Description);
             Assert.AreEqual(TypeKind.DIRECTIVE, directive.Kind);
             Assert.IsTrue(directive.Publish);
-            Assert.AreEqual(DirectiveInvocationPhase.DefaultPhases, directive.InvocationPhases);
             Assert.AreEqual(DirectiveLocation.FIELD | DirectiveLocation.SCALAR, directive.Locations);
             Assert.AreEqual(typeof(GraphDirectiveActionResolver), directive.Resolver.GetType());
 
@@ -68,7 +67,6 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual("repeatable", directive.Name);
             Assert.AreEqual(TypeKind.DIRECTIVE, directive.Kind);
             Assert.IsTrue(directive.Publish);
-            Assert.AreEqual(DirectiveInvocationPhase.DefaultPhases, directive.InvocationPhases);
             Assert.AreEqual(DirectiveLocation.SCALAR, directive.Locations);
 
             Assert.AreEqual(2, directive.Arguments.Count);

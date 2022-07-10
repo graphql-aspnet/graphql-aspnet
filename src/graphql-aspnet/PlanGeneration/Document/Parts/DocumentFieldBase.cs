@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A base class defining common elements for different field types within a query
     /// document.
     /// </summary>
-    internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>
+    internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>, IResolvableDocumentPart
     {
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
@@ -46,6 +46,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
             _directives = new DocumentDirectiveCollection(this);
             _arguments = new DocumentInputArgumentCollection(this);
+            this.IsIncluded = true;
         }
 
         /// <inheritdoc />
@@ -121,5 +122,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Field;
+
+        /// <inheritdoc />
+        public bool IsIncluded { get; set; }
     }
 }

@@ -69,13 +69,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             var routeName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
             this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, routeName));
 
-            var phases = DirectiveInvocationPhase.DefaultPhases;
-            var phaseAttrib = this.AttributeProvider.SingleAttributeOrDefault<DirectiveInvocationPhaseAttribute>();
-            if (phaseAttrib != null)
-                phases = phaseAttrib.Phases;
-
-            this.InvocationPhases = phases;
-
             foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
                 if (methodInfo.FirstAttributeOfTypeOrDefault<DirectiveLocationsAttribute>() != null)
@@ -153,9 +146,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public IEnumerable<IGraphArgumentTemplate> Arguments => this.Methods.Arguments;
-
-        /// <inheritdoc />
-        public DirectiveInvocationPhase InvocationPhases { get; private set;  }
 
         /// <inheritdoc />
         public bool IsRepeatable { get; private set;  }

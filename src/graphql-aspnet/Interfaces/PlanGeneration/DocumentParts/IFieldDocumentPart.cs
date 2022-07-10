@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A single field of data from a source object selected to be returned as part of a graph query.
     /// </summary>
-    public interface IFieldDocumentPart : IDirectiveContainerDocumentPart, IDocumentPart
+    public interface IFieldDocumentPart : IDirectiveContainerDocumentPart, IResolvableDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Determines whether this field is capable of resolving itself for the given graph type.

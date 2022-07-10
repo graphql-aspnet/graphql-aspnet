@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>

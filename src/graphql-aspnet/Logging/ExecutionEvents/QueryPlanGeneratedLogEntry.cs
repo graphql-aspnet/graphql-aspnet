@@ -29,8 +29,8 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         {
             this.SchemaTypeName = queryPlan?.SchemaType?.FriendlyName(true);
             this.QueryPlanIsValid = queryPlan?.IsValid;
-            this.QueryOperationCount = queryPlan?.Operations?.Count;
             this.QueryPlanEstimatedComplexity = queryPlan?.EstimatedComplexity;
+            this.QueryPlanOperationName = queryPlan?.OperationName;
             this.QueryPlanMaxDepth = queryPlan?.MaxDepth;
             this.QueryPlanId = queryPlan?.Id;
         }
@@ -68,16 +68,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         }
 
         /// <summary>
-        /// Gets the number of operations defined on the query plan.
-        /// </summary>
-        /// <value>The query operation count.</value>
-        public int? QueryOperationCount
-        {
-            get => this.GetProperty<int?>(LogPropertyNames.QUERY_PLAN_OPERATION_COUNT);
-            private set => this.SetProperty(LogPropertyNames.QUERY_PLAN_OPERATION_COUNT, value);
-        }
-
-        /// <summary>
         /// Gets the depth of the deepest field resolution path for any operation in a query plan.
         /// </summary>
         /// <value>The query plan maximum depth.</value>
@@ -96,6 +86,16 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         {
             get => this.GetProperty<float?>(LogPropertyNames.QUERY_PLAN_ESTIMATED_COMPLEXITY);
             private set => this.SetProperty(LogPropertyNames.QUERY_PLAN_ESTIMATED_COMPLEXITY, value);
+        }
+
+        /// <summary>
+        /// Gets the name of the operation attached to the query plan.
+        /// </summary>
+        /// <value>The name of the query plan operation.</value>
+        public string QueryPlanOperationName
+        {
+            get => this.GetProperty<string>(LogPropertyNames.QUERY_PLAN_OPERATION_NAME);
+            private set => this.SetProperty(LogPropertyNames.QUERY_PLAN_OPERATION_NAME, value);
         }
 
         /// <summary>

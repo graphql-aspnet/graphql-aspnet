@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Directives.Global
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -19,7 +20,6 @@ namespace GraphQL.AspNet.Directives.Global
     /// <para>Spec: https://graphql.github.io/graphql-spec/October2021/#sec--include .</para>
     /// </summary>
     [GraphType(Constants.ReservedNames.INCLUDE_DIRECTIVE)]
-    [DirectiveInvocationPhase(DirectiveInvocationPhase.BeforeFieldResolution)]
     public sealed class IncludeDirective : GraphDirective
     {
         /// <summary>
@@ -31,7 +31,10 @@ namespace GraphQL.AspNet.Directives.Global
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
         public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
         {
-            return ifArgument ? this.Ok() : this.Cancel();
+            if (this.DirectiveTarget is IResolvableDocumentPart rdp)
+                rdp.IsIncluded = ifArgument;
+
+            return this.Ok();
         }
     }
 }

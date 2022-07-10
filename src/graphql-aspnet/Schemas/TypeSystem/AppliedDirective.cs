@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
 
-            this.Arguments = arguments;
+            this.ArgumentValues = arguments;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             if (this.DirectiveName.StartsWith(TokenTypeNames.STRING_AT_SYMBOL))
                 this.DirectiveName = this.DirectiveName.Substring(1);
 
-            this.Arguments = arguments;
+            this.ArgumentValues = arguments;
         }
 
         /// <inheritdoc />
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public string DirectiveName { get; }
 
         /// <inheritdoc />
-        public object[] Arguments { get; }
+        public object[] ArgumentValues { get; }
 
         /// <summary>
         /// Gets a diagnostics friendly name that can be used in the debugger

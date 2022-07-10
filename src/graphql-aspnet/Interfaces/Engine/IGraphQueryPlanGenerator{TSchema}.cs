@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
 
@@ -23,11 +23,10 @@ namespace GraphQL.AspNet.Interfaces.Engine
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Creates a new query plan from the parsed syntax tree.
+        /// Creates a new query plan from the parsed operation.
         /// </summary>
-        /// <param name="queryDocument">The parsed, and validated query document to
-        /// convert into a query plan.</param>
+        /// <param name="operation">The operation to generate a query plan for.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        Task<IGraphQueryPlan> CreatePlan(IGraphQueryDocument queryDocument);
+        Task<IGraphQueryPlan> CreatePlan(IOperationDocumentPart operation);
     }
 }

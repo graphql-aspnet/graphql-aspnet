@@ -37,7 +37,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 new DefaultOperationComplexityCalculator<GraphSchema>());
 
             var doc = docGenerator.CreateDocument(syntaxTree);
-            return await planGenerator.CreatePlan(doc);
+            docGenerator.ValidateDocument(doc);
+
+            return await planGenerator.CreatePlan(doc.Operations[0]);
         }
 
         [Test]
@@ -50,11 +52,11 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // the "simple" virtual field queued to be resolved when the plan
             // is executed
-            var queuedContext = plan.Operations[string.Empty].FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(queuedContext);
             Assert.AreEqual("simple", queuedContext.Name);
             Assert.AreEqual("simple", queuedContext.Origin.Path.DotString());
@@ -92,42 +94,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         }
 
         [Test]
-        public async Task MultiOperationDocument_SelectsCorrectOperationInPlan()
-        {
-            var server = new TestServerBuilder()
-            .AddType<SimplePlanGenerationController>()
-                .Build();
-
-            var str = @"
-                            query Operation1{  simple {  simpleQueryMethod { property1} } }
-
-                            query Operation2{  simple {  simpleQueryMethod { property2} } }
-                            ";
-
-            var plan = await this.CreatePlan(server.Schema, str);
-
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(2, plan.Operations.Count);
-
-            // the "simple" virtual field queued to be resolved when the plan
-            // is executed
-            var queuedContext = plan.RetrieveOperation("Operation1").FieldContexts[0];
-            Assert.IsNotNull(queuedContext);
-            Assert.AreEqual("simple", queuedContext.Name);
-
-            // simpleQueryMethod should contain 1 property to be resolved
-            var child = queuedContext.ChildContexts[0];
-            Assert.IsNotNull(child);
-            Assert.AreEqual("simpleQueryMethod", child.Name);
-
-            // "property1"
-            var prop1 = child.ChildContexts[0];
-            Assert.IsNotNull(prop1);
-            Assert.AreEqual("property1", prop1.Name);
-        }
-
-        [Test]
         public async Task SingleField_WithAcceptableArgumentsOnMethod_ValidateFields()
         {
             var server = new TestServerBuilder()
@@ -138,9 +104,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
               server.Schema,
               "query {  simple {  simpleQueryMethod(arg1: \"bob\", arg2: 15) { property1} } }");
 
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             var child = queuedContext.ChildContexts[0];
 
             var arg1 = child.Arguments["arg1"];
@@ -169,9 +135,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             var child = queuedContext.ChildContexts[0];
 
             // Ensur the variable $var1 used its default value and that arg2 is assigned that value
@@ -195,9 +161,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             var child = queuedContext.ChildContexts[0];
 
             // Ensure that arg1 exists and is recieved as null
@@ -225,9 +191,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
 
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
             var child = queuedContext.ChildContexts[0];
@@ -261,11 +227,11 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // the "simple" virtual field queued to be resolved when the plan
             // is executed
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(queuedContext);
             Assert.AreEqual("simple", queuedContext.Name);
 
@@ -327,11 +293,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var plan = await this.CreatePlan(server.Schema, query);
 
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan?.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
 
-            var fragTester = plan.RetrieveOperation().FieldContexts[0];
+            var fragTester = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(fragTester);
 
             var makeHybridData = fragTester.ChildContexts[0];
@@ -369,10 +334,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
 
-            var fragTester = plan.RetrieveOperation().FieldContexts[0];
+            var fragTester = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(fragTester);
 
             var makeHybridData = fragTester.ChildContexts[0];
@@ -410,9 +375,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // simple -> SimpleQueryMthod
-            var simpleQueryMethodField = plan.RetrieveOperation().FieldContexts[0].ChildContexts[0];
+            var simpleQueryMethodField = plan.Operation.FieldContexts[0].ChildContexts[0];
 
             Assert.AreEqual(2, simpleQueryMethodField.ChildContexts.Count);
             Assert.IsTrue(simpleQueryMethodField.ChildContexts.Any(x => x.Name == "property1"));
@@ -447,9 +413,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // simple -> SimpleQueryMthod
-            var unionQueryField = plan.RetrieveOperation().FieldContexts[0].ChildContexts[0];
+            var unionQueryField = plan.Operation.FieldContexts[0].ChildContexts[0];
 
             // prop1 for TwoPropObject, prop2 fro TwoPropObject, __typename for TwoPropObject, __typename for TwoPropObjectV2
             Assert.AreEqual(4, unionQueryField.ChildContexts.Count);
@@ -486,11 +453,11 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var plan = await this.CreatePlan(server.Schema, query);
 
-            Assert.IsNotNull(plan);
+            Assert.IsNotNull(plan?.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
 
             // simple -> SimpleQueryMthod
-            var unionQueryField = plan.RetrieveOperation().FieldContexts[0].ChildContexts[0];
+            var unionQueryField = plan.Operation.FieldContexts[0].ChildContexts[0];
 
             // prop1 for TwoPropObject
             Assert.AreEqual(1, unionQueryField.ChildContexts.Count);

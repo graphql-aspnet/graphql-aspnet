@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var server = builder.Build();
             var queryText = "query { simple{ simpleQueryMethod { property1} } }";
-            var expectedCacheKey = keyManager.CreateKey<GraphSchema>(queryText);
+            var expectedCacheKey = keyManager.CreateKey<GraphSchema>(queryText, null);
 
             var queryBuilder = server.CreateQueryContextBuilder();
             queryBuilder.AddQueryText(queryText);

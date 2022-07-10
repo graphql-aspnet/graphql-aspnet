@@ -9,14 +9,13 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A represention of a top level operation (mutation, query etc.) defined in a query document.
     /// </summary>
-    public interface IOperationDocumentPart 
+    public interface IOperationDocumentPart
         : IDirectiveContainerDocumentPart, ITopLevelDocumentPart, IReferenceDocumentPart, IDocumentPart
     {
         /// <summary>
@@ -50,5 +49,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The variables.</value>
         IVariableCollectionDocumentPart Variables { get; }
+
+        /// <summary>
+        /// Gets the depth of any field of this operation, including spread
+        /// named fragments.
+        /// </summary>
+        /// <value>The depth achived by the operation.</value>
+        int MaxDepth { get; }
     }
 }

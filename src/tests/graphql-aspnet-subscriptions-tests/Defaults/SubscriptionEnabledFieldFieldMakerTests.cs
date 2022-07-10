@@ -46,7 +46,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var appliedDirective = field.AppliedDirectives.FirstOrDefault();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 99, "sub action arg" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 99, "sub action arg" }, appliedDirective.ArgumentValues);
         }
     }
 }

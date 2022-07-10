@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.Model
         /// </summary>
         /// <value>The mass.</value>
         [Description("Mass in kilograms, or null if unknown")]
-        public float? Mass { get; set; }
+        public short? Mass { get; set; }
 
         /// <summary>
         /// Gets or sets the home planet of this human.

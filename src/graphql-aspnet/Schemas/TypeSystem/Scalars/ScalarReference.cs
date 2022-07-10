@@ -28,7 +28,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// <param name="graphType">An instance of the graph type from which reference
         /// details can be extracted.</param>
         /// <param name="instanceType">The concrete type from which
-        /// instances of the scalar type can be created.</param>
+        /// instances of the scalar type can be created This is NOT the .NET type representing
+        /// the scalar, but rather the registered system type from which
+        /// <paramref name="graphType"/> is created.</param>
         /// <returns>ScalarReference.</returns>
         public static ScalarReference Create(IScalarGraphType graphType, Type instanceType)
         {
@@ -56,7 +58,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <summary>
-        /// Gets the registered type from which instances of the scalar can be made.
+        /// Gets the registered type from which instances of the
+        /// scalar can be made (e.g. LongScalarType, StringScalarType etc.).
         /// </summary>
         /// <value>The type of the instance class for this scalar.</value>
         public Type InstanceType { get; private set; }
@@ -68,7 +71,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public Type PrimaryType { get; private set; }
 
         /// <summary>
-        /// Gets a list of known alternate types that can be handled by this scalar (e.g. int?, long? etc.)
+        /// Gets a list of known alternate .NET types that can be
+        /// handled by this scalar (e.g. int?, long? etc.)
         /// </summary>
         /// <value>The other known types.</value>
         public IReadOnlyList<Type> OtherKnownTypes { get; private set; }

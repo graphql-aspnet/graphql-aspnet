@@ -54,8 +54,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             this.BuildFragmentSpreadSteps();
             this.BuildFieldSelectionSteps();
             this.BuildFieldSelectionSetSteps();
-            this.BuildQueryInputArgumentSteps();
-            this.BuildQueryDirectiveSteps();
+            this.BuildArgumentSteps();
+            this.BuildDirectiveSteps();
             this.BuildSuppliedValueSteps();
         }
 
@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             _stepCollection.Add(DocumentPartType.Field, steps);
         }
 
-        private void BuildQueryDirectiveSteps()
+        private void BuildDirectiveSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective());
@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             _stepCollection.Add(DocumentPartType.Directive, steps);
         }
 
-        private void BuildQueryInputArgumentSteps()
+        private void BuildArgumentSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_4_1_ArgumentMustBeDefinedOnTheField());

@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
@@ -30,7 +29,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <param name="name">The name of the directive as it appears in the schema.</param>
         /// <param name="locations">The locations where this directive is valid.</param>
-        /// <param name="phases">The phases under which this directive will be invoked.</param>
         /// <param name="directiveType">The concrete type of the directive.</param>
         /// <param name="route">The route path that identifies this directive.</param>
         /// <param name="isRepeatable">if set to <c>true</c> the directive is repeatable
@@ -39,7 +37,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public Directive(
             string name,
             DirectiveLocation locations,
-            DirectiveInvocationPhase phases,
             Type directiveType,
             GraphFieldPath route,
             bool isRepeatable = false,
@@ -50,7 +47,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Locations = locations;
             this.Resolver = resolver;
             this.Publish = true;
-            this.InvocationPhases = phases;
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
             this.InternalName = this.ObjectType.FriendlyName();
@@ -88,9 +84,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public virtual bool IsVirtual => false;
-
-        /// <inheritdoc />
-        public virtual DirectiveInvocationPhase InvocationPhases { get; }
 
         /// <inheritdoc />
         public virtual IAppliedDirectiveCollection AppliedDirectives { get; }

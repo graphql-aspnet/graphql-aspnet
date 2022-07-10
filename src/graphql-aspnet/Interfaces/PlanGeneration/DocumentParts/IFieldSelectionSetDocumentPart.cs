@@ -30,12 +30,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         IReadOnlyList<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias);
 
         /// <summary>
-        /// Gets a collection of fields to resolve for this selection set, in order of execution,
+        /// Gets a set of fields to resolve for this selection set, in order of execution,
         /// combining all document parts that contribute to the set of fields to be resolved.
         /// This list walks any inline fragments and fragment spreads to produce a final set of fields
         /// that should be resolved.
         /// </summary>
-        /// <value>The executable fields.</value>
-        IReadOnlyList<IFieldDocumentPart> ExecutableFields { get; }
+        /// <value>The executable fields of this selection set.</value>
+        IExecutableFieldSelectionSet ExecutableFields { get; }
     }
 }

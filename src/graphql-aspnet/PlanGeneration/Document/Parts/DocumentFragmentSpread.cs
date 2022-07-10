@@ -85,5 +85,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
+
+        /// <inheritdoc />
+        public bool IsIncluded { get; set; }
     }
 }

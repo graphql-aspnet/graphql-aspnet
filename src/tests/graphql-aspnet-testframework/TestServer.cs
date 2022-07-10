@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
@@ -154,8 +155,10 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Renders a qualified query plan in the same manner that the graphql server would as part of fulfilling a request.
         /// </summary>
         /// <param name="queryText">The query text to generate a plan for.</param>
+        /// <param name="operationName">Name of the operation in the query text to formalize
+        /// into the plan.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        public Task<IGraphQueryPlan> CreateQueryPlan(string queryText)
+        public Task<IGraphQueryPlan> CreateQueryPlan(string queryText, string operationName = null)
         {
             var documentGenerator = this.ServiceProvider.GetService<IGraphQueryDocumentGenerator<TSchema>>();
             var planGenerator = this.ServiceProvider.GetService<IGraphQueryPlanGenerator<TSchema>>();
@@ -163,7 +166,13 @@ namespace GraphQL.AspNet.Tests.Framework
 
             documentGenerator.ValidateDocument(document);
 
-            return planGenerator.CreatePlan(document);
+            IOperationDocumentPart docPart = null;
+            if (document.Operations.Count == 1)
+                docPart = document.Operations[0];
+            else
+                docPart = document.Operations.RetrieveOperation(operationName);
+
+            return planGenerator.CreatePlan(docPart);
         }
 
         /// <summary>

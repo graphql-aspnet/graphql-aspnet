@@ -61,7 +61,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             string key = null;
             if (_keyManager != null && _cacheProvider != null && context.OperationRequest?.QueryText != null)
             {
-                key = _keyManager.CreateKey<TSchema>(context.OperationRequest.QueryText);
+                key = _keyManager.CreateKey<TSchema>(
+                    context.OperationRequest.QueryText,
+                    context.OperationRequest.OperationName);
+
                 planFound = await _cacheProvider.TryGetPlanAsync(key, out var queryPlan).ConfigureAwait(false);
                 if (planFound)
                 {
@@ -77,7 +80,12 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // invoke the rest of the pipeline
             await next(context, cancelToken).ConfigureAwait(false);
 
-            if (!planFound && !string.IsNullOrWhiteSpace(key) && context.QueryPlan != null && context.QueryPlan.IsValid)
+            // try and cache the completed plan
+            if (!planFound
+                && !string.IsNullOrWhiteSpace(key)
+                && context.QueryPlan != null
+                && context.QueryPlan.IsValid
+                && context.QueryPlan.IsCacheable)
             {
                 // calculate the plan's time to live in the cache and cache it
                 DateTimeOffset? absoluteExpiration = null;

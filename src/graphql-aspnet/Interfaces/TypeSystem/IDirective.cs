@@ -31,13 +31,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         DirectiveLocation Locations { get; }
 
         /// <summary>
-        /// Gets the invocation phases this directive is allowed to
-        /// execute during.
-        /// </summary>
-        /// <value>The invocation phases.</value>
-        DirectiveInvocationPhase InvocationPhases { get; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this directive is repeatable at a given
         /// target location.
         /// </summary>

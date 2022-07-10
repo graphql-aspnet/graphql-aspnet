@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationSteps
 {
+    using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
@@ -100,24 +101,24 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
             {
                 // did we encounter a field collection with exactly one child that is not virtual?
                 // i.e. one "top-level user action" to be called for the subscription?
-                var childField = fieldCollection.ExecutableFields[0];
+                var singleExecutableField = fieldCollection.ExecutableFields[0];
 
                 // if no field was found in the schema for the item on the document
                 // this rule cannot continue (other rules will pick up the missing field error)
-                if (childField.GraphType == null || childField.Field == null)
+                if (singleExecutableField.GraphType == null || singleExecutableField.Field == null)
                     return true;
 
-                if (!childField.GraphType.IsVirtual)
+                if (!singleExecutableField.GraphType.IsVirtual)
                     return true;
 
-                fieldCollection = childField.FieldSelectionSet;
+                fieldCollection = singleExecutableField.FieldSelectionSet;
             }
 
             this.ValidationError(
                 context,
                 operation.Node,
-                "Invalid Subscription. Expected exactly 1 root, non-virtual child field, " +
-                $"recieved {fieldCollection?.ExecutableFields.Count ?? 0} child fields at {fieldCollection?.Path.DotString() ?? "-null-"}.");
+                "Invalid Subscription. Expected exactly 1 root, non-virtual " +
+                $"child field at {fieldCollection?.Path.DotString() ?? "-null-"}.");
             return false;
         }
 
