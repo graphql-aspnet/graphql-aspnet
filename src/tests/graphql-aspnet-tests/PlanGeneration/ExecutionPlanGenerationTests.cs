@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             var plan = await this.CreatePlan(
-              server.Schema,
+                server.Schema,
                 @"query($var1 : Long = 22)
                 {
                     simple {

@@ -105,5 +105,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                     yield return new KeyValuePair<string, IResolvableValueItem>(kvp.Key, kvp.Value.Value);
             }
         }
+
+        /// <inheritdoc />
+        public override string Description => "Complex Input Value";
     }
 }

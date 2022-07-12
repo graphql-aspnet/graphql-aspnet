@@ -48,6 +48,23 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public override DocumentPartType PartType => DocumentPartType.InlineFragment;
 
         /// <inheritdoc />
-        public bool IsIncluded { get; set; }
+        public bool IsIncluded
+        {
+            get
+            {
+                return this.Attributes.Contains(Constants.DocumentPartAttributes.Included);
+            }
+
+            set
+            {
+                if (value)
+                    this.Attributes.Add(Constants.DocumentPartAttributes.Included);
+                else
+                    this.Attributes.Remove(Constants.DocumentPartAttributes.Included);
+            }
+        }
+
+        /// <inheritdoc />
+        public override string Description => "Inline Fragment";
     }
 }

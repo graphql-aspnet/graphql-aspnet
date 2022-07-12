@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <param name="alias">The alias to search for.</param>
         /// <returns>A list of fields with the given name or an empty list.</returns>
-        IReadOnlyList<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias);
+        IEnumerable<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias);
 
         /// <summary>
         /// Gets a set of fields to resolve for this selection set, in order of execution,

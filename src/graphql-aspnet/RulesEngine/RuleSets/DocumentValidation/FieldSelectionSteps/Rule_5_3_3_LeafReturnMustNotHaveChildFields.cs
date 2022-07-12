@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
+    using System.Linq;
 
     /// <summary>
     /// <para>(5.3.3)A rule that dictates for any given graph type returned by a field if that graph type
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
         {
             var field = (IFieldDocumentPart)context.ActivePart;
             var selectionSet = field.FieldSelectionSet;
-            var hasChildFields = selectionSet != null && selectionSet.ExecutableFields.Count > 0;
+            var hasChildFields = selectionSet != null && selectionSet.ExecutableFields.Any();
 
             if (field.GraphType.Kind.IsLeafKind() && hasChildFields)
             {

@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
 
             context.GlobalKeys.Add(key, true);
 
-            var fields = selectionSet.FindFieldsOfAlias(docPart.Alias);
+            var fields = selectionSet.FindFieldsOfAlias(docPart.Alias).ToList();
             if (fields.Count == 1)
                 return true;
 

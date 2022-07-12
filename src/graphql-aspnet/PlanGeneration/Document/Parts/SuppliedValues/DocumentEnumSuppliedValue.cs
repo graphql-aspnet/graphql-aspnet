@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// <summary>
     /// An input value representing a single enumeration value of data.
     /// </summary>
-    [DebuggerDisplay("EnumValue: {Value.ToString()}")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentEnumSuppliedValue : DocumentSuppliedValue, IEnumSuppliedValueDocumentPart
     {
         /// <summary>
@@ -47,5 +47,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         public ReadOnlySpan<char> ResolvableValue => this.Value.Span;
+
+        /// <inheritdoc />
+        public override string Description => $"EnumValue: {this.Value}";
     }
 }

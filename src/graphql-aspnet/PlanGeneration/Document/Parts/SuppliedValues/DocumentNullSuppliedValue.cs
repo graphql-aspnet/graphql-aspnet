@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
+    using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -17,6 +18,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// <summary>
     /// An input value representing that nothing/null was used as a supplied parameter for an input argument.
     /// </summary>
+    [DebuggerDisplay("{Description}")]
     internal class DocumentNullSuppliedValue : DocumentSuppliedValue, INullSuppliedValueDocumentPart
     {
         /// <summary>
@@ -38,5 +40,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         public ReadOnlySpan<char> ResolvableValue => ReadOnlySpan<char>.Empty;
+
+        /// <inheritdoc />
+        public override string Description => "Null Value";
     }
 }

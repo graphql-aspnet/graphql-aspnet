@@ -9,11 +9,18 @@
 
 namespace GraphQL.AspNet.Tests.PlanGeneration.ExecutionFieldSetTestData
 {
-    public enum GameType
+    using System.Collections.Generic;
+
+    public class Game2
     {
-        XBox,
-        Switch,
-        Playstation,
-        PC,
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public GameType GameType { get; set; }
+
+        public float HoursOfPlay { get; set; }
+
+        public IEnumerable<Game> RelatedGames { get; set; }
     }
 }

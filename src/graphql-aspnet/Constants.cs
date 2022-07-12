@@ -129,6 +129,18 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// A set of known attributes that can be applied to query document part.
+        /// </summary>
+        public static class DocumentPartAttributes
+        {
+            /// <summary>
+            /// When present, this attirbute indicates the document part as "included"
+            /// or part of the result set the document produces.
+            /// </summary>
+            public const string Included = "~GraphQL~ASPNET~IsIncluded~";
+        }
+
+        /// <summary>
         /// Common error codes used in graph resolution errors.
         /// </summary>
         public static class ErrorCodes

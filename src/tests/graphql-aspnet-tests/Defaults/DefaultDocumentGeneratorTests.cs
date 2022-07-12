@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Defaults
             Assert.AreEqual(1, retrieveDonut.Children.OfType<IFragmentSpreadDocumentPart>().Count());
 
             // executable fields are the combined field set in expected order
-            Assert.AreEqual(5, retrieveDonut.ExecutableFields.Count);
+            Assert.AreEqual(5, retrieveDonut.ExecutableFields.Count());
             Assert.AreEqual("id", retrieveDonut.ExecutableFields[0].Name.ToString());
             Assert.AreEqual("__typename", retrieveDonut.ExecutableFields[1].Name.ToString());
             Assert.AreEqual("name", retrieveDonut.ExecutableFields[2].Name.ToString());

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -42,6 +43,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             _operations = new DocumentOperationCollection(this);
 
             this.Children.ChildPartAdded += this.Children_PartAdded;
+            this.Attributes = new HashSet<string>();
         }
 
         private void Children_PartAdded(object sender, DocumentPartEventArgs eventArgs)
@@ -87,5 +89,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document
 
         /// <inheritdoc />
         public INamedFragmentCollectionDocumentPart NamedFragments => _fragmentCollection;
+
+        /// <inheritdoc />
+        public ISet<string> Attributes { get; }
+
+        /// <inheritdoc />
+        public string Description => "Document Root";
     }
 }

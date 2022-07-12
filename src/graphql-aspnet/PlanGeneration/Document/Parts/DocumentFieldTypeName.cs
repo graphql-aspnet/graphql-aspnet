@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// <summary>
     /// A single field of data requested on a user's query document.
     /// </summary>
-    [DebuggerDisplay("Field: __typename (Returns: {GraphType?.Name})")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentFieldTypeName : DocumentFieldBase, IFieldTypeNameDocumentPart
     {
         /// <summary>
@@ -32,5 +32,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             : base(parentPart, node, field, fieldGraphType)
         {
         }
+
+        /// <inheritdoc />
+        public override string Description => $"Field: {Constants.ReservedNames.TYPENAME_FIELD}";
     }
 }

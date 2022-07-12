@@ -97,11 +97,17 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
             var operation = context.ActivePart as IOperationDocumentPart;
             var fieldCollection = operation?.FieldSelectionSet;
 
-            while (fieldCollection != null && fieldCollection.ExecutableFields.Count == 1)
+            while (fieldCollection != null)
             {
+                // if there is exactly one child then further inspection is needed
+                // if there is more than one child, its an automatic failure
+                var firstFew = fieldCollection.ExecutableFields.Take(2).ToList();
+                if (firstFew.Count > 1)
+                    break;
+
                 // did we encounter a field collection with exactly one child that is not virtual?
                 // i.e. one "top-level user action" to be called for the subscription?
-                var singleExecutableField = fieldCollection.ExecutableFields[0];
+                var singleExecutableField = firstFew[0];
 
                 // if no field was found in the schema for the item on the document
                 // this rule cannot continue (other rules will pick up the missing field error)

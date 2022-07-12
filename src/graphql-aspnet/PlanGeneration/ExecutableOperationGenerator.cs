@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.PlanGeneration
             IFieldSelectionSetDocumentPart fieldsToReturn)
         {
             var tasks = new List<Task<IGraphFieldInvocationContext>>();
-            if (sourceGraphType != null && fieldsToReturn != null)
+            if (sourceGraphType != null && fieldsToReturn?.ExecutableFields != null)
             {
                 foreach (var field in fieldsToReturn.ExecutableFields.IncludedOnly)
                 {

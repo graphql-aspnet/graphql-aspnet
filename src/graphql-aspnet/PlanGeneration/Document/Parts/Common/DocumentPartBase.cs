@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
@@ -32,6 +33,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         /// <param name="node">The AST node from which this part was created.</param>
         protected DocumentPartBase(IDocumentPart parentPart, SyntaxNode node)
         {
+            this.Attributes = new HashSet<string>();
             this.Parent = Validation.ThrowIfNullOrReturn(parentPart, nameof(Parent));
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
 
@@ -97,5 +99,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 
         /// <inheritdoc />
         public SyntaxNode Node { get; }
+
+        /// <inheritdoc />
+        public ISet<string> Attributes { get; }
+
+        /// <inheritdoc />
+        public abstract string Description { get; }
     }
 }

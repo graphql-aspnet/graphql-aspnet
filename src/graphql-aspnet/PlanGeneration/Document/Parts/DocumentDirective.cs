@@ -9,12 +9,10 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
-    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
@@ -23,7 +21,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// <summary>
     /// An instance of a referenced directive in a query document.
     /// </summary>
-    [DebuggerDisplay("Directive {DirectiveName}")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentDirective : DocumentPartBase, IDirectiveDocumentPart
     {
         private DocumentInputArgumentCollection _arguments;
@@ -68,5 +66,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IInputArgumentCollectionDocumentPart Arguments => _arguments;
+
+        /// <inheritdoc />
+        public override string Description => $"Directive {this.DirectiveName ?? "-unknown-"}";
     }
 }

@@ -65,5 +65,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
+
+        /// <inheritdoc />
+        public override string Description => $"Variable: {Name ?? "-unknown-"}";
     }
 }

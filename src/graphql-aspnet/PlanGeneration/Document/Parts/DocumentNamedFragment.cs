@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// <summary>
     /// A named fragment declared at the top of a query document.
     /// </summary>
-    [DebuggerDisplay("Named Fragment: {Name}")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentNamedFragment : DocumentFragmentBase<NamedFragmentNode>, INamedFragmentDocumentPart
     {
         private readonly DocumentFragmentSpreadCollection _fragmentSpreads;
@@ -84,5 +84,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IReadOnlyList<IDirectiveDocumentPart> AllDirectives => _allDirectives;
+
+        /// <inheritdoc />
+        public override string Description => $"Named Fragment: {this.Name}";
     }
 }

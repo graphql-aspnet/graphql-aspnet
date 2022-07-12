@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// Indicates that a named fragment is to be spread in place into the parent
     /// field selection set.
     /// </summary>
-    [DebuggerDisplay("Spread: {FragmentName}")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart
     {
         /// <inheritdoc />
@@ -42,6 +42,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             this.FragmentName = node.PointsToFragmentName;
             _directives = new DocumentDirectiveCollection(this);
+            this.IsIncluded = true;
         }
 
         /// <inheritdoc />
@@ -87,6 +88,23 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IDirectiveCollectionDocumentPart Directives => _directives;
 
         /// <inheritdoc />
-        public bool IsIncluded { get; set; }
+        public bool IsIncluded
+        {
+            get
+            {
+                return this.Attributes.Contains(Constants.DocumentPartAttributes.Included);
+            }
+
+            set
+            {
+                if (value)
+                    this.Attributes.Add(Constants.DocumentPartAttributes.Included);
+                else
+                    this.Attributes.Remove(Constants.DocumentPartAttributes.Included);
+            }
+        }
+
+        /// <inheritdoc />
+        public override string Description => $"Spread: {this.FragmentName}";
     }
 }

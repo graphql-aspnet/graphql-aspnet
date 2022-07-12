@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.PlanGeneration
 {
+    using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.Tests.Framework;
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("singleScalarIntInput", field.Name.ToString());
 

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// <summary>
     /// An input argument (on a field or directive) that defined in a user's query document.
     /// </summary>
-    [DebuggerDisplay("Input Arg: {Name} (GraphType = {GraphType.Name})")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentInputArgument : DocumentPartBase, IInputArgumentDocumentPart
     {
         /// <summary>
@@ -53,5 +53,19 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             .Children[DocumentPartType.SuppliedValue]
             .OfType<ISuppliedValueDocumentPart>()
             .FirstOrDefault();
+
+        /// <inheritdoc />
+        public override string Description
+        {
+            get
+            {
+                if (this.Parent is IFieldDocumentPart)
+                    return $"Field Argument: {this.Name}";
+                else if (this.Parent is IComplexSuppliedValueDocumentPart)
+                    return $"Input Object Field: {this.Name}";
+                else
+                    return $"Argument: {this.Name}";
+            }
+        }
     }
 }

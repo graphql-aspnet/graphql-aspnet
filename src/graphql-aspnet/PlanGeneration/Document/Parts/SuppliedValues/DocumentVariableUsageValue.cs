@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// <summary>
     /// An input value that is a pointer to a variable defined in the operation that contains it.
     /// </summary>
-    [DebuggerDisplay("Variable Usage: {VariableName}")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentVariableUsageValue : DocumentSuppliedValue, IVariableUsageDocumentPart
     {
         /// <summary>
@@ -48,5 +48,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         public string PointsTo => this.VariableName.ToString();
+
+        /// <inheritdoc />
+        public override string Description => $"Variable Usage: {VariableName}";
     }
 }

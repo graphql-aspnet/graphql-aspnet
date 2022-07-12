@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// <summary>
     /// A representation of a list of other input values for a single argument.
     /// </summary>
-    [DebuggerDisplay("ListValue (Count = {ListItems.Count})")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart
     {
         private List<ISuppliedValueDocumentPart> _listItems;
@@ -74,5 +74,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+        /// <inheritdoc />
+        public override string Description => $"ListValue (Count = {_listItems.Count})";
     }
 }

@@ -67,5 +67,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         public ReadOnlySpan<char> ResolvableValue => this.Value.Span;
+
+        /// <inheritdoc />
+        public override string Description => "SCALAR: " + this.Value.ToString();
     }
 }

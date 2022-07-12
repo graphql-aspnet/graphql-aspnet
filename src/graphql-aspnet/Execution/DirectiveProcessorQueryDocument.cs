@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="operation">The operation in which the directives shound be applied.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         public async Task<int> ApplyDirectives(
             IOperationDocumentPart operation,
             CancellationToken cancelToken = default)

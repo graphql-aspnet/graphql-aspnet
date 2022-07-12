@@ -13,20 +13,20 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     using System.Collections.Generic;
 
     /// <summary>
-    /// A set of fields to be executed and values resolved for within a given
+    /// A set of fields to be executed within a given
     /// <see cref="IFieldSelectionSetDocumentPart"/>. This executable set includes
-    /// all the fields that would end up in the results document at this level of the owner
-    /// selection set. This includes fields that would be added via an inline fragment or a
+    /// all the fields that would end up in the results document for this selection set which
+    /// includes fields that would be added via an inline fragment or a
     /// spread of a named fragment.
     /// </summary>
-    public interface IExecutableFieldSelectionSet : IReadOnlyList<IFieldDocumentPart>
+    public interface IExecutableFieldSelectionSet : IEnumerable<IFieldDocumentPart>
     {
         /// <summary>
         /// Filters the set of executable fields to those that match the provided alias.
         /// </summary>
         /// <param name="alias">The alias to search for.</param>
         /// <returns>IReadOnlyList&lt;IFieldDocumentPart&gt;.</returns>
-        IReadOnlyList<IFieldDocumentPart> FilterByAlias(ReadOnlyMemory<char> alias);
+        IEnumerable<IFieldDocumentPart> FilterByAlias(ReadOnlyMemory<char> alias);
 
         /// <summary>
         /// Gets the subset of executable fields that are marked as being included
@@ -40,5 +40,18 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The owner.</value>
         IFieldSelectionSetDocumentPart Owner { get; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IFieldDocumentPart"/> at the specified index. This index
+        /// represents its position in the resultant field. This may be a field in a child
+        /// fragment spread or inline fragment and will not necessarily coorispond to a direct child
+        /// of the owner selection set.
+        /// </summary>
+        /// <remarks>
+        /// This method works in the same capacity as as <c>ElementAt()</c> and
+        /// exists only for convience reasons. Avoid using it for performance critical operations.</remarks>
+        /// <param name="index">The index of the field.</param>
+        /// <returns>IFieldDocumentPart.</returns>
+        IFieldDocumentPart this[int index] { get; }
     }
 }

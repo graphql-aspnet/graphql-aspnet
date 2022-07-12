@@ -118,5 +118,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public int MaxDepth { get; private set; }
+
+        /// <inheritdoc />
+        public override string Description => $"Operation: {this.Name}";
     }
 }

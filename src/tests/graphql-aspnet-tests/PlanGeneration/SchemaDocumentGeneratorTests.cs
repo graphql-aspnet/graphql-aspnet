@@ -55,13 +55,13 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.AreEqual(0, operation.Variables.Count);
 
             Assert.IsNotNull(operation.FieldSelectionSet);
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
 
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("retrieveUsers", field.Alias.ToString());
 
             Assert.IsNotNull(field.FieldSelectionSet);
-            Assert.AreEqual(3, field.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(3, field.FieldSelectionSet.ExecutableFields.Count());
 
             var birthDay = field.FieldSelectionSet.ExecutableFields[0];
             var name = field.FieldSelectionSet.ExecutableFields[1];
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("retrieveUsers", field.Name.ToString());
 
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.AreEqual("fieldLevel", field.Directives.First().DirectiveName);
 
             // all child fields sohuld have no directives
-            Assert.AreEqual(3, field.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(3, field.FieldSelectionSet.ExecutableFields.Count());
             Assert.AreEqual(0, field.FieldSelectionSet.ExecutableFields[0].Directives.Count);
             Assert.AreEqual(0, field.FieldSelectionSet.ExecutableFields[1].Directives.Count);
             Assert.AreEqual(0, field.FieldSelectionSet.ExecutableFields[2].Directives.Count);
@@ -126,7 +126,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("complexUserMethod", field.Name.ToString());
 
@@ -181,7 +181,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("nestedInputObjectMethod", field.Name.ToString());
 
@@ -249,7 +249,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("multiScalarInput", field.Name.ToString());
 
@@ -288,7 +288,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("multiScalarOfScalarInput", field.Name.ToString());
 
@@ -343,7 +343,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("multiUserInput", field.Name.ToString());
 
@@ -386,7 +386,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("retrieveUser", field.Name.ToString());
 
@@ -417,7 +417,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count);
+            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("multiScalarOfScalarInput", field.Name.ToString());
 

@@ -1,10 +1,16 @@
-﻿namespace GraphQL.AspNet.Tests.PlanGeneration
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Tests.PlanGeneration
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.Tests.Framework;
@@ -30,7 +36,7 @@
                     retrieveGame(id: 3) {
                         id
                         name
-                        gametype
+                        gameType
                         relatedGames {
                             id
                             name
@@ -50,7 +56,7 @@
                         id
                         ... {
                             name
-                            gametype
+                            gameType
                         }
                         RG: relatedGames {
                             id
@@ -71,7 +77,7 @@
                         id
                         ... {
                             name
-                            gametype
+                            gameType
                         }
                         relatedGames {
                             ... RGames
@@ -99,7 +105,7 @@
                 fragment GameData on Game {
                     id
                     name
-                    gametype
+                    gameType
                 }
                 ",
                 new string[] { "id", "name", "gameType" },
@@ -124,7 +130,7 @@
                 fragment GameData on Game {
                     id
                     name
-                    gametype
+                    gameType
                 }
                 ",
                 new string[] { "id", "name", "gameType", "relatedGames", "id1" },
@@ -147,7 +153,7 @@
                 fragment GameData on Game {
                     id1: id
                     name1: name
-                    gametype
+                    gameType
                 }
                 ",
                 new string[] { "id", "name", "id1", "name1", "gameType", "gameType1" },
@@ -173,7 +179,30 @@
                     }
                 }
                 ",
-                new string[] { "id", "gameType1", "name"},
+                new string[] { "id", "gameType1", "name" },
+            });
+
+            TEST_DATA.Add(new object[]
+            {
+                "MultipleNamedFragments",
+                @"
+                query {
+                    retrieveAnyGame {
+                            ...aData
+                            ...bData
+                    }
+                }
+
+                fragment aData on Game {
+                    id
+                    name
+                }
+
+                fragment bData on Game2 {
+                    name
+                    gameType
+                }",
+                new string[] { "id", "name", "name", "gameType" },
             });
         }
 
@@ -194,13 +223,14 @@
                 .FieldSelectionSet.ExecutableFields;
 
             Assert.IsNotNull(executableFieldSet);
-            Assert.AreEqual(expectedAliases.Length, executableFieldSet.Count);
 
-            for (var i = 0; i < executableFieldSet.Count; i++)
+            var foundFields = executableFieldSet.ToList();
+            Assert.AreEqual(expectedAliases.Length, foundFields.Count);
+
+            for (var i = 0; i < foundFields.Count; i++)
             {
-                var executableField = executableFieldSet[i];
-
-                Assert.AreEqual(expectedAliases[i], executableField.Alias.ToString());
+                Assert.AreEqual(expectedAliases[i], foundFields[i].Alias.ToString());
+                i++;
             }
         }
     }

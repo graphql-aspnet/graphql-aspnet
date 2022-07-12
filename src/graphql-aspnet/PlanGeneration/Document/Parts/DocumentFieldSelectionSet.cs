@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
@@ -22,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A collection of fields (from a <see cref="IGraphType"/>) that are requested by a user and defined
     /// on their query document. Selected fields are keyed by the return value (a.k.a. the field alias) requested by the user.
     /// </summary>
-    [DebuggerDisplay("FIELD SET: Graph Type: {GraphType.Name}")]
+    [DebuggerDisplay("{Description}")]
     internal class DocumentFieldSelectionSet : DocumentPartBase, IFieldSelectionSetDocumentPart, IDocumentPart
     {
         private ExecutionFieldSet _executionSet;
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public IReadOnlyList<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
+        public IEnumerable<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
         {
             return this.ExecutableFields.FilterByAlias(alias);
         }
@@ -49,5 +50,40 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IExecutableFieldSelectionSet ExecutableFields => _executionSet;
+
+        /// <inheritdoc />
+        public override string Description
+        {
+            get
+            {
+                switch (this.Parent)
+                {
+                    case IFieldDocumentPart fd:
+
+                        return $"FIELD SET for field {fd.Name}";
+
+                    case IInlineFragmentDocumentPart iif:
+                        return $"FIELD SET for inline fragment of {iif.Parent.Description}";
+
+                    case INamedFragmentDocumentPart nfd:
+                        return $"FIELD SET for fragment  {nfd.Name}";
+
+                    case IOperationDocumentPart op:
+                        var opname = op.Name?.Trim();
+                        if (string.IsNullOrWhiteSpace(opname))
+                            opname = "{anonymous}";
+                        return $"FIELD SET for operation '{opname}'";
+
+                    case IComplexSuppliedValueDocumentPart cs:
+                        if (cs.Parent is IInputArgumentDocumentPart ia)
+                            return $"FIELD SET for argument {ia.Name}";
+                        else if (cs.Parent is IResolvableKeyedItem keyedItem)
+                            return $"FIELD SET for complex value '{keyedItem.Key}'";
+                        break;
+                }
+
+                return "FIELD SET for " + this.Parent.Description;
+            }
+        }
     }
 }
