@@ -10,12 +10,15 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A represention of a graphql directive in the schema. This object defines all the exposed
@@ -34,13 +37,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="isRepeatable">if set to <c>true</c> the directive is repeatable
         /// at a target location.</param>
         /// <param name="resolver">The resolver used to process this instance.</param>
+        /// <param name="securityGroups">The security groups applied to this directive
+        /// that must be passed before this directive can be invoked.</param>
         public Directive(
             string name,
             DirectiveLocation locations,
             Type directiveType,
             GraphFieldPath route,
             bool isRepeatable = false,
-            IGraphDirectiveResolver resolver = null)
+            IGraphDirectiveResolver resolver = null,
+            IEnumerable<AppliedSecurityPolicyGroup> securityGroups = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
             this.Arguments = new GraphFieldArgumentCollection(this);
@@ -53,6 +59,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
             this.IsRepeatable = isRepeatable;
+            this.SecurityGroups = securityGroups ?? Enumerable.Empty<AppliedSecurityPolicyGroup>();
         }
 
         /// <inheritdoc />
@@ -99,5 +106,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public bool IsRepeatable { get; set; }
+
+        /// <inheritdoc />
+        public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; private set; }
     }
 }

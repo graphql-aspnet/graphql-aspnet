@@ -88,8 +88,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
             // Convert the supplied variable values to usable objects of the type expression
             // of the chosen operation
-            var variableResolver = new ResolvedVariableGenerator(_schema, operation);
-            var variableData = variableResolver.Resolve(context.OperationRequest.VariableData);
+            var variableResolver = new ResolvedVariableGenerator(_schema, operation.DeclaredVariables);
+            var variableData = variableResolver.Resolve(context.ParentRequest.VariableData);
             var cancelSource = new CancellationTokenSource();
 
             try
@@ -142,7 +142,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var sourceData = new GraphDataContainer(dataSourceValue, path, topLevelDataItem);
 
                     var fieldRequest = new GraphFieldRequest(
-                        context.OperationRequest,
+                        context.ParentRequest,
                         sortedContext.Context,
                         sourceData,
                         new SourceOrigin(sortedContext.Context.Origin.Location, path),

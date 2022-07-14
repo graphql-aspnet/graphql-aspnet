@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var operationRequest = new Mock<IGraphOperationRequest>();
             var parentContext = new Mock<IGraphExecutionContext>();
 
-            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(_securityContext);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
@@ -177,12 +177,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Creates an authorization context to validate the field request this builder is creating.
         /// </summary>
         /// <returns>GraphFieldAuthorizationContext.</returns>
-        public GraphFieldSecurityContext CreateSecurityContext()
+        public GraphSchemaItemSecurityContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
-            var request = new GraphFieldSecurityRequest(this.FieldRequest);
-            return new GraphFieldSecurityContext(
+            var request = new GraphSchemaItemSecurityRequest(this.FieldRequest);
+            return new GraphSchemaItemSecurityContext(
                 parent,
                 request);
         }

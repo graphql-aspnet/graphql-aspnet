@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution
         private GraphFieldExecutionContext CreateFakeContext()
         {
             var parentContext = new Mock<IGraphExecutionContext>();
-            parentContext.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            parentContext.Setup(x => x.ParentRequest).Returns(new Mock<IGraphOperationRequest>().Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
 
             var request = new Mock<IGraphFieldRequest>();

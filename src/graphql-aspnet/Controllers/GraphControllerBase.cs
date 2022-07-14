@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Controllers
             _logger = context?.Logger;
             _logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
 
-            if (_resolutionContext.OperationRequest is IGraphOperationWebRequest webRequest)
+            if (_resolutionContext.ParentRequest is IGraphOperationWebRequest webRequest)
                 this.HttpContext = webRequest.HttpContext;
 
             if (_action?.Method == null)

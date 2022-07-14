@@ -25,16 +25,16 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
     /// the field authorizatio pipeline.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the pipeline is being constructed for.</typeparam>
-    public class FieldSecurityPipelineHelper<TSchema>
+    public class SchemaItemSecurityPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> _pipelineBuilder;
+        private readonly ISchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityContext> _pipelineBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldSecurityPipelineHelper{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="SchemaItemSecurityPipelineHelper{TSchema}"/> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public FieldSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, IGraphFieldSecurityMiddleware, GraphFieldSecurityContext> pipelineBuilder)
+        public SchemaItemSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityContext> pipelineBuilder)
         {
             _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }
@@ -44,27 +44,27 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
         /// </summary>
         /// <param name="options">The configuration options to use when deriving the components to include.</param>
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
-        public FieldSecurityPipelineHelper<TSchema> AddDefaultMiddlewareComponents(Configuration.SchemaOptions options = null)
+        public SchemaItemSecurityPipelineHelper<TSchema> AddDefaultMiddlewareComponents(Configuration.SchemaOptions options = null)
         {
             return this.AddPolicyAggregationMiddleware()
-                       .AddFieldAuthenticationMiddleware()
-                       .AddFieldAuthorizationMiddleware();
+                       .AddAuthenticationMiddleware()
+                       .AddAuthorizationMiddleware();
         }
 
         /// <summary>
         /// Adds the middleware component that performs the primary field authorization.
         /// </summary>
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
-        public FieldSecurityPipelineHelper<TSchema> AddPolicyAggregationMiddleware()
+        public SchemaItemSecurityPipelineHelper<TSchema> AddPolicyAggregationMiddleware()
         {
-            FieldSecurityRequirementsMiddleware MiddlewareFactory(IServiceProvider sp)
+            SchemItemSecurityRequirementsMiddleware MiddlewareFactory(IServiceProvider sp)
             {
                 // policy provider may not be registered and is optional
                 var policyProvider = sp.GetService<IAuthorizationPolicyProvider>();
-                return new FieldSecurityRequirementsMiddleware(policyProvider);
+                return new SchemItemSecurityRequirementsMiddleware(policyProvider);
             }
 
-            _pipelineBuilder.AddMiddleware<FieldSecurityRequirementsMiddleware>(
+            _pipelineBuilder.AddMiddleware<SchemItemSecurityRequirementsMiddleware>(
                 MiddlewareFactory,
                 ServiceLifetime.Singleton);
 
@@ -75,16 +75,16 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
         /// Adds the middleware component that performs authentication for the field.
         /// </summary>
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
-        public FieldSecurityPipelineHelper<TSchema> AddFieldAuthenticationMiddleware()
+        public SchemaItemSecurityPipelineHelper<TSchema> AddAuthenticationMiddleware()
         {
-            FieldAuthenticationMiddleware MiddlewareFactory(IServiceProvider sp)
+            SchemaItemAuthenticationMiddleware MiddlewareFactory(IServiceProvider sp)
             {
                 // policy provider may not be registered and is optional
                 var schemeProvider = sp.GetService<IAuthenticationSchemeProvider>();
-                return new FieldAuthenticationMiddleware(schemeProvider);
+                return new SchemaItemAuthenticationMiddleware(schemeProvider);
             }
 
-            _pipelineBuilder.AddMiddleware<FieldAuthenticationMiddleware>(
+            _pipelineBuilder.AddMiddleware<SchemaItemAuthenticationMiddleware>(
                 MiddlewareFactory,
                 ServiceLifetime.Singleton);
 
@@ -95,9 +95,9 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
         /// Adds the middleware component that performs the primary field authorization.
         /// </summary>
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
-        public FieldSecurityPipelineHelper<TSchema> AddFieldAuthorizationMiddleware()
+        public SchemaItemSecurityPipelineHelper<TSchema> AddAuthorizationMiddleware()
         {
-            _pipelineBuilder.AddMiddleware<FieldAuthorizationMiddleware>();
+            _pipelineBuilder.AddMiddleware<SchemaItemAuthorizationMiddleware>();
             return this;
         }
     }

@@ -23,15 +23,15 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authorize a single user
     /// to a single field of data.
     /// </summary>
-    public class FieldAuthorizationMiddleware : IGraphFieldSecurityMiddleware
+    public class SchemaItemAuthorizationMiddleware : IGraphSchemaItemSecurityMiddleware
     {
         private readonly IAuthorizationService _authService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldAuthorizationMiddleware" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemAuthorizationMiddleware" /> class.
         /// </summary>
         /// <param name="authService">The authentication service.</param>
-        public FieldAuthorizationMiddleware(IAuthorizationService authService = null)
+        public SchemaItemAuthorizationMiddleware(IAuthorizationService authService = null)
         {
             _authService = authService;
         }
@@ -43,19 +43,19 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(GraphSchemaItemSecurityContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityContext> next, CancellationToken cancelToken = default)
         {
-            context.Logger?.FieldAuthorizationChallenge(context);
+            context.Logger?.SchemaItemAuthorizationChallenge(context);
 
             // a result may have been set by other middleware
             // in this auth pipeline, if a result is already determined just skip this step
             if (context.Result == null)
             {
                 var result = await this.AuthorizeRequest(context).ConfigureAwait(false);
-                context.Result = result ?? FieldSecurityChallengeResult.Default();
+                context.Result = result ?? SchemaItemSecurityChallengeResult.Default();
             }
 
-            context.Logger?.FieldAuthorizationChallengeResult(context);
+            context.Logger?.SchemaItemAuthorizationChallengeResult(context);
 
             await next(context, cancelToken).ConfigureAwait(false);
         }
@@ -65,9 +65,9 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// </summary>
         /// <param name="context">The context to process.</param>
         /// <returns>FieldSecurityChallengeResult.</returns>
-        private async Task<FieldSecurityChallengeResult> AuthorizeRequest(GraphFieldSecurityContext context)
+        private async Task<SchemaItemSecurityChallengeResult> AuthorizeRequest(GraphSchemaItemSecurityContext context)
         {
-            Validation.ThrowIfNull(context?.SecurityRequirements, nameof(GraphFieldSecurityContext.SecurityRequirements));
+            Validation.ThrowIfNull(context?.SecurityRequirements, nameof(GraphSchemaItemSecurityContext.SecurityRequirements));
 
             var claimsUser = context.AuthenticatedUser;
 
@@ -77,15 +77,15 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             if (!anyPoliciesToEnforce
                 && !anyRolesToCheck)
             {
-                return FieldSecurityChallengeResult.Skipped(claimsUser);
+                return SchemaItemSecurityChallengeResult.Skipped(claimsUser);
             }
 
             if (context.SecurityRequirements.AllowAnonymous)
-                return FieldSecurityChallengeResult.Success(claimsUser);
+                return SchemaItemSecurityChallengeResult.Success(claimsUser);
 
             if (anyPoliciesToEnforce && _authService == null)
             {
-                return FieldSecurityChallengeResult.Fail(
+                return SchemaItemSecurityChallengeResult.Fail(
                     "The field defines authorization policies but " +
                     $"no '{nameof(IAuthorizationService)}' exists to enforce them.");
             }
@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             {
                 var authResult = await _authService.AuthorizeAsync(claimsUser, policy.Policy).ConfigureAwait(false);
                 if (!authResult.Succeeded)
-                    return FieldSecurityChallengeResult.Unauthorized($"Access denied via policy '{policy.Name}'.");
+                    return SchemaItemSecurityChallengeResult.Unauthorized($"Access denied via policy '{policy.Name}'.");
             }
 
             // for any roles groups defined in the hierarchy of [Authorize]
@@ -106,11 +106,11 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 if (!hasARole)
                 {
                     var roleNames = string.Join(", ", roleSet.Select(roleName => $"'{roleName}'"));
-                    return FieldSecurityChallengeResult.Unauthorized($"Access denied. User must belong to at least one role: {roleNames}.");
+                    return SchemaItemSecurityChallengeResult.Unauthorized($"Access denied. User must belong to at least one role: {roleNames}.");
                 }
             }
 
-            return FieldSecurityChallengeResult.Success(claimsUser);
+            return SchemaItemSecurityChallengeResult.Success(claimsUser);
         }
     }
 }

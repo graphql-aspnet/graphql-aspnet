@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IGraphQLHttpProcessor<GraphSchema>)));
 
             Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphFieldExecutionContext>)));
-            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphFieldSecurityContext>)));
+            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphSchemaItemSecurityContext>)));
             Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphQueryExecutionContext>)));
 
             // objects injected for by standard pipeline components

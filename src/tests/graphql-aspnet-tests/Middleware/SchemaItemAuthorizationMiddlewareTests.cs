@@ -26,13 +26,13 @@ namespace GraphQL.AspNet.Tests.Middleware
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class FieldAuthorizationMiddlewareTests
+    public class SchemaItemAuthorizationMiddlewareTests
     {
         private Mock<IAuthorizationService> _authService;
         private string _userName;
         private ClaimsPrincipal _user = null;
 
-        public FieldAuthorizationMiddlewareTests()
+        public SchemaItemAuthorizationMiddlewareTests()
         {
             _authService = new Mock<IAuthorizationService>();
             _userName = "john-doe";
@@ -50,13 +50,13 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .ReturnsAsync(AuthorizationResult.Failed());
         }
 
-        public Task EmptyNextDelegate(GraphFieldSecurityContext context, CancellationToken token)
+        public Task EmptyNextDelegate(GraphSchemaItemSecurityContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        private async Task<GraphFieldSecurityContext> ExecuteTest(
-            FieldSecurityRequirements secRequirements,
+        private async Task<GraphSchemaItemSecurityContext> ExecuteTest(
+            SchemaItemSecurityRequirements secRequirements,
             string userRoles = null)
         {
             var rolesToInclude = new List<string>();
@@ -87,15 +87,15 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = contextBuilder.Build();
 
             var field = new Mock<IGraphField>();
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
+            var securityRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            securityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(field.Object);
 
-            var fieldSecurityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
+            var fieldSecurityContext = new GraphSchemaItemSecurityContext(queryContext, securityRequest.Object);
             fieldSecurityContext.AuthenticatedUser = _user;
             fieldSecurityContext.SecurityRequirements = secRequirements;
 
-            var middleware = new FieldAuthorizationMiddleware(_authService?.Object);
+            var middleware = new SchemaItemAuthorizationMiddleware(_authService?.Object);
             await middleware.InvokeAsync(fieldSecurityContext, this.EmptyNextDelegate);
 
             return fieldSecurityContext;
@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Skipped, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Skipped, result.Result.Status);
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Skipped, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Skipped, result.Result.Status);
         }
 
         [Test]
@@ -171,7 +171,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -192,7 +192,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -232,7 +232,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -253,7 +253,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthorized, result.Result.Status);
         }
 
         [Test]
@@ -272,7 +272,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthorized, result.Result.Status);
         }
 
         [Test]
@@ -286,7 +286,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -300,7 +300,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthorized, result.Result.Status);
         }
 
         [Test]
@@ -316,7 +316,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthorized, result.Result.Status);
         }
 
         [Test]
@@ -334,7 +334,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -349,7 +349,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -365,7 +365,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -380,7 +380,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -399,7 +399,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Result.Status);
         }
 
         [Test]
@@ -427,7 +427,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Result.Status);
         }
 
         [Test]
@@ -455,7 +455,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthorized, result.Result.Status);
         }
 
         [Test]
@@ -483,7 +483,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthorized, result.Result.Status);
         }
 
         [Test]
@@ -510,7 +510,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNotNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Result.Status);
         }
     }
 }

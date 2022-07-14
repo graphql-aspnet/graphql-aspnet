@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 try
                 {
                     // parse the text into an AST
-                    var syntaxTree = _parser.ParseQueryDocument(context.OperationRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
+                    var syntaxTree = _parser.ParseQueryDocument(context.ParentRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
 
                     // convert the AST into a functional document
                     // matched against the target schema

@@ -36,6 +36,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     [DebuggerDisplay("Directive Template: {InternalName}")]
     public class GraphDirectiveTemplate : BaseGraphTypeTemplate, IGraphDirectiveTemplate
     {
+        private AppliedSecurityPolicyGroup _securityPolicies;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveTemplate"/> class.
         /// </summary>
@@ -47,6 +49,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             this.Methods = new GraphDirectiveMethodTemplateContainer(this);
             this.ObjectType = graphDirectiveType;
+            _securityPolicies = AppliedSecurityPolicyGroup.Empty;
         }
 
         /// <inheritdoc />
@@ -78,6 +81,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     this.Methods.RegisterMethod(methodTemplate);
                 }
             }
+
+            _securityPolicies = AppliedSecurityPolicyGroup.FromAttributeCollection(this.AttributeProvider);
         }
 
         /// <inheritdoc />
@@ -139,7 +144,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override bool IsExplicitDeclaration => true;
 
         /// <inheritdoc />
-        public override AppliedSecurityPolicyGroup SecurityPolicies { get; } = AppliedSecurityPolicyGroup.Empty;
+        public override AppliedSecurityPolicyGroup SecurityPolicies => _securityPolicies;
 
         /// <inheritdoc />
         public override TypeKind Kind => TypeKind.DIRECTIVE;
@@ -148,6 +153,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public IEnumerable<IGraphArgumentTemplate> Arguments => this.Methods.Arguments;
 
         /// <inheritdoc />
-        public bool IsRepeatable { get; private set;  }
+        public bool IsRepeatable { get; private set; }
     }
 }

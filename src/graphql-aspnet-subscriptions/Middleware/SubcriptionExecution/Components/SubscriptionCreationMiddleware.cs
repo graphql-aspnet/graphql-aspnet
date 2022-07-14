@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
             {
                 subContext.Subscription = new ClientSubscription<TSchema>(
                     subContext.Client,
-                    subContext.OperationRequest.ToDataPackage(),
+                    subContext.ParentRequest.ToDataPackage(),
                     subContext.QueryPlan,
                     subContext.QueryOperation,
                     subContext.SubscriptionId);

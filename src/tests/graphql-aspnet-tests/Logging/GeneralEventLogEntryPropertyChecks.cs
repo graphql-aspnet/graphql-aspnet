@@ -285,11 +285,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
 
-            var entry = new FieldAuthorizationStartedLogEntry(authContext);
+            var entry = new SchemaItemAuthorizationStartedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.FieldAuthorizationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
-            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
+            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
             Assert.IsNotNull(entry.ToString());
         }
@@ -309,12 +309,12 @@ namespace GraphQL.AspNet.Tests.Logging
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
 
-            authContext.Result = FieldSecurityChallengeResult.Fail("test message 1");
-            var entry = new FieldAuthorizationCompletedLogEntry(authContext);
+            authContext.Result = SchemaItemSecurityChallengeResult.Fail("test message 1");
+            var entry = new SchemaItemAuthorizationCompletedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.FieldAuthorizationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
-            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
+            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
             Assert.AreEqual(authContext.Result.Status.ToString(), entry.AuthorizationStatus);
             Assert.IsNotNull(entry.ToString());
@@ -337,11 +337,11 @@ namespace GraphQL.AspNet.Tests.Logging
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
 
-            var entry = new FieldAuthenticationStartedLogEntry(authContext);
+            var entry = new SchemaItemAuthenticationStartedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.FieldAuthenticationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
-            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
+            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.IsNotNull(entry.ToString());
         }
 
@@ -369,13 +369,13 @@ namespace GraphQL.AspNet.Tests.Logging
             var fieldRequest = package.FieldRequest;
             var authContext = package.CreateSecurityContext();
             authContext.AuthenticatedUser = server.SecurityContext.DefaultUser;
-            authContext.Result = FieldSecurityChallengeResult.Fail("test message 1");
+            authContext.Result = SchemaItemSecurityChallengeResult.Fail("test message 1");
 
-            var entry = new FieldAuthenticationCompletedLogEntry(authContext, authResult.Object);
+            var entry = new SchemaItemAuthenticationCompletedLogEntry(authContext, authResult.Object);
 
             Assert.AreEqual(LogEventIds.FieldAuthenticationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
-            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
+            Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual("someOtherUser", entry.Username); // ensure its the user from the authResult
             Assert.AreEqual("testScheme", entry.AuthenticationScheme);
             Assert.IsTrue(entry.AuthethenticationSuccess);

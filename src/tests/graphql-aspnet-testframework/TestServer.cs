@@ -255,7 +255,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var parentContext = new Mock<IGraphExecutionContext>();
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
 
-            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(this.SecurityContext);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
@@ -544,9 +544,9 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        public async Task ExecuteFieldAuthorization(GraphFieldSecurityContext context)
+        public async Task ExecuteFieldAuthorization(GraphSchemaItemSecurityContext context)
         {
-            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphFieldSecurityContext>>();
+            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext>>();
             await pipeline.InvokeAsync(context, default).ConfigureAwait(false);
         }
 

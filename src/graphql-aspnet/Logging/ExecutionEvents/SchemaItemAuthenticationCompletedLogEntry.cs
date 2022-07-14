@@ -18,18 +18,18 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     /// Recorded when the security middleware completes an authentication challenge
     /// against a <see cref="IUserSecurityContext"/>.
     /// </summary>
-    public class FieldAuthenticationCompletedLogEntry : GraphLogEntry
+    public class SchemaItemAuthenticationCompletedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldAuthenticationCompletedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemAuthenticationCompletedLogEntry" /> class.
         /// </summary>
         /// <param name="securityContext">The security context.</param>
         /// <param name="authResult">The authentication result.</param>
-        public FieldAuthenticationCompletedLogEntry(GraphFieldSecurityContext securityContext, IAuthenticationResult authResult)
+        public SchemaItemAuthenticationCompletedLogEntry(GraphSchemaItemSecurityContext securityContext, IAuthenticationResult authResult)
             : base(LogEventIds.FieldAuthenticationCompleted)
         {
             this.PipelineRequestId = securityContext?.Request?.Id;
-            this.FieldPath = securityContext?.Request?.Field?.Route?.Path;
+            this.SchemaItemPath = securityContext?.Request?.SecureSchemaItem?.Route?.Path;
             this.Username = authResult?.User?.RetrieveUsername();
             this.AuthenticationScheme = authResult?.AuthenticationScheme;
             this.AuthethenticationSuccess = authResult?.Suceeded;
@@ -79,14 +79,14 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         }
 
         /// <summary>
-        /// Gets the fully qualified path in the graph schema that identifies the field
+        /// Gets the fully qualified path in the graph schema that identifies the item
         /// being resolved.
         /// </summary>
-        /// <value>The field path.</value>
-        public string FieldPath
+        /// <value>The schema item path.</value>
+        public string SchemaItemPath
         {
-            get => this.GetProperty<string>(LogPropertyNames.FIELD_PATH);
-            private set => this.SetProperty(LogPropertyNames.FIELD_PATH, value);
+            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);
+            private set => this.SetProperty(LogPropertyNames.SCHEMA_ITEM_PATH, value);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public override string ToString()
         {
             var idTruncated = this.PipelineRequestId?.Length > 8 ? this.PipelineRequestId.Substring(0, 8) : this.PipelineRequestId;
-            return $"Field Authentication Completed | Id: {idTruncated},  Path: '{this.FieldPath}', Scheme: {this.AuthenticationScheme} | Successful: {this.AuthethenticationSuccess}";
+            return $"Field Authentication Completed | Id: {idTruncated},  Path: '{this.SchemaItemPath}', Scheme: {this.AuthenticationScheme} | Successful: {this.AuthethenticationSuccess}";
         }
     }
 }

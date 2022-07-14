@@ -50,8 +50,8 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <value>The field path.</value>
         public string FieldPath
         {
-            get => this.GetProperty<string>(LogPropertyNames.FIELD_PATH);
-            private set => this.SetProperty(LogPropertyNames.FIELD_PATH, value);
+            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);
+            private set => this.SetProperty(LogPropertyNames.SCHEMA_ITEM_PATH, value);
         }
 
         /// <summary>

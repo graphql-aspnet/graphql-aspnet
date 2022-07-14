@@ -24,7 +24,9 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.Variables;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -91,11 +93,16 @@ namespace GraphQL.AspNet.Execution
                     $"service provider for the target schema '{_schema.Name}'.");
             }
 
+            // Convert the supplied variable values to usable objects of the type expression
+            // of the chosen operation
+            var variableResolver = new ResolvedVariableGenerator(_schema, operation.Variables);
+            var variableData = variableResolver.Resolve(_queryContext.ParentRequest.VariableData);
+
             var totalApplied = 0;
             foreach (var directiveDocumentPart in directivesToExecute)
             {
                 var targetPart = directiveDocumentPart.Parent;
-                await this.ApplyDirectiveToItem(targetPart, directiveDocumentPart, cancelToken);
+                await this.ApplyDirectiveToItem(targetPart, directiveDocumentPart, variableData, cancelToken);
                 totalApplied++;
             }
 
@@ -105,6 +112,7 @@ namespace GraphQL.AspNet.Execution
         private async Task ApplyDirectiveToItem(
             IDocumentPart targetDocumentPart,
             IDirectiveDocumentPart directiveDocumentPart,
+            IResolvedVariableCollection variableData,
             CancellationToken cancelToken)
         {
             var targetDirective = directiveDocumentPart.GraphType as IDirective;
@@ -123,7 +131,7 @@ namespace GraphQL.AspNet.Execution
 
             var inputArgs = this.GatherInputArguments(targetDirective, directiveDocumentPart);
 
-            var parentRequest = _queryContext.OperationRequest;
+            var parentRequest = _queryContext.ParentRequest;
 
             var invocationContext = new DirectiveInvocationContext(
                 targetDirective,
@@ -138,12 +146,9 @@ namespace GraphQL.AspNet.Execution
 
             var context = new GraphDirectiveExecutionContext(
                 _schema,
-                _queryContext.ServiceProvider,
-                parentRequest,
+                _queryContext,
                 request,
-                _queryContext.Metrics,
-                _eventLogger,
-                items: request.Items);
+                variableData);
 
             Exception causalException = null;
 
@@ -158,8 +163,17 @@ namespace GraphQL.AspNet.Execution
                 causalException = ex;
             }
 
-            if (context.IsCancelled || !context.Messages.IsSucessful)
+            if (!context.Messages.IsSucessful)
             {
+                // if the directive execution provided meaningful failure messages
+                // such as validation failures use those
+                _queryContext.Messages.AddRange(context.Messages);
+            }
+            else if (context.IsCancelled)
+            {
+                // when the context is just flat out canceled ensure a causal exception
+                // is availabe then throw it
+
                 // attempt to discover the reason for the failure if its contained within the
                 // executed context
                 if (causalException == null)

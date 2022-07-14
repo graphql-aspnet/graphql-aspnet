@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Security.Web;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -134,8 +135,9 @@ namespace GraphQL.AspNet.Execution
                     scopedProvider.ServiceProvider,
                     parentRequest,
                     request,
-                    null as IGraphQueryExecutionMetrics,
-                    logger,
+                    metrics: null as IGraphQueryExecutionMetrics,
+                    logger: logger,
+                    userSecurityContext: null,
                     items: request.Items);
 
                 Exception causalException = null;

@@ -59,11 +59,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             bool planFound = false;
             string key = null;
-            if (_keyManager != null && _cacheProvider != null && context.OperationRequest?.QueryText != null)
+            if (_keyManager != null && _cacheProvider != null && context.ParentRequest?.QueryText != null)
             {
                 key = _keyManager.CreateKey<TSchema>(
-                    context.OperationRequest.QueryText,
-                    context.OperationRequest.OperationName);
+                    context.ParentRequest.QueryText,
+                    context.ParentRequest.OperationName);
 
                 planFound = await _cacheProvider.TryGetPlanAsync(key, out var queryPlan).ConfigureAwait(false);
                 if (planFound)

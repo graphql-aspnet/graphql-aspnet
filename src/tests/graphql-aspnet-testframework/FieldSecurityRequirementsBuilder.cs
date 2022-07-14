@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
-    /// A builder that can generate a <see cref="FieldSecurityRequirements"/>
+    /// A builder that can generate a <see cref="SchemaItemSecurityRequirements"/>
     /// object.
     /// </summary>
     public class FieldSecurityRequirementsBuilder
@@ -85,14 +85,14 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Builds this instance.
         /// </summary>
         /// <returns>GraphQL.AspNet.Security.FieldSecurityRequirements.</returns>
-        public FieldSecurityRequirements Build()
+        public SchemaItemSecurityRequirements Build()
         {
             var allowedSchemes = new List<AllowedAuthenticationScheme>();
 
             foreach (var scheme in _schemes)
                 allowedSchemes.Add(new AllowedAuthenticationScheme(scheme));
 
-            return FieldSecurityRequirements.Create(
+            return SchemaItemSecurityRequirements.Create(
                 _allowAnonymous,
                 allowedSchemes,
                 _policies,

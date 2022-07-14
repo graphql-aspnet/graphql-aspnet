@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Defaults
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new GraphOperationResult(context.OperationRequest);
+                queryResponse = new GraphOperationResult(context.ParentRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
             }
 

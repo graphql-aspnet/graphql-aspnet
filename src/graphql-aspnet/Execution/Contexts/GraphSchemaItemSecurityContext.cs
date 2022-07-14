@@ -20,15 +20,15 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// <summary>
     /// A context for handling a request through the field authorization pipeline.
     /// </summary>
-    [DebuggerDisplay("Auth Context, Field: {Field.Route.Path}")]
-    public class GraphFieldSecurityContext : BaseGraphExecutionContext
+    [DebuggerDisplay("Auth Context, Item: {SecureSchemaItem.Route.Path}")]
+    public class GraphSchemaItemSecurityContext : BaseGraphExecutionContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldSecurityContext" /> class.
+        /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityContext" /> class.
         /// </summary>
         /// <param name="parentContext">The parent context which created this instance.</param>
         /// <param name="authRequest">The authorization request to be governed.</param>
-        public GraphFieldSecurityContext(IGraphExecutionContext parentContext, IGraphFieldSecurityRequest authRequest)
+        public GraphSchemaItemSecurityContext(IGraphExecutionContext parentContext, IGraphSchemaItemSecurityRequest authRequest)
              : base(parentContext)
         {
             this.Request = Validation.ThrowIfNullOrReturn(authRequest, nameof(authRequest));
@@ -39,25 +39,25 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// during this context invocation.
         /// </summary>
         /// <value>The enforced security group.</value>
-        public FieldSecurityRequirements SecurityRequirements { get; set; }
+        public SchemaItemSecurityRequirements SecurityRequirements { get; set; }
 
         /// <summary>
         /// Gets the request that is being passed through this pipeline.
         /// </summary>
         /// <value>The request.</value>
-        public IGraphFieldSecurityRequest Request { get; }
+        public IGraphSchemaItemSecurityRequest Request { get; }
 
         /// <summary>
         /// Gets or sets the final response generated from a middleware component as a result of executing the pipeline.
         /// </summary>
         /// <value>The response.</value>
-        public FieldSecurityChallengeResult Result { get; set; }
+        public SchemaItemSecurityChallengeResult Result { get; set; }
 
         /// <summary>
-        /// Gets the field in scope for the request being passed through the pipeline.
+        /// Gets the secured schema item being queried with this request.
         /// </summary>
         /// <value>The field.</value>
-        public IGraphField Field => this.Request.Field;
+        public ISecureSchemaItem SecureSchemaItem => this.Request.SecureSchemaItem;
 
         /// <summary>
         /// Gets or sets the user principal that was authenticated and will be used for

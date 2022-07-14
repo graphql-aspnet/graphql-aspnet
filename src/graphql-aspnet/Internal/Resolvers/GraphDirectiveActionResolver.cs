@@ -58,14 +58,14 @@ namespace GraphQL.AspNet.Internal.Resolvers
             IGraphActionResult result;
             try
             {
-                // create a scoped controller instance for this invocation
+                // create a directive instance for this invocation
                 var directive = context
                     .ServiceProvider?
                     .GetService(_directiveTemplate.ObjectType) as GraphDirective;
 
                 if (directive == null)
                 {
-                    // attempt to just "create" a directive if it has no constructor parameters
+                    // fallback: attempt to create the directive if it has no constructor parameters
                     try
                     {
                         directive = InstanceFactory.CreateInstance(_directiveTemplate.ObjectType) as GraphDirective;

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Directives
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A base class from which all directives mush inherit.
@@ -53,6 +54,19 @@ namespace GraphQL.AspNet.Directives
             get
             {
                 return _context?.Request?.DirectivePhase ?? DirectiveInvocationPhase.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// Gets the location in the active query document or the type system where this directive
+        /// is executing from.
+        /// </summary>
+        /// <value>The currently active directive location.</value>
+        public DirectiveLocation DirectiveLocation
+        {
+            get
+            {
+                return _context?.Request?.InvocationContext?.Location ?? DirectiveLocation.NONE;
             }
         }
 

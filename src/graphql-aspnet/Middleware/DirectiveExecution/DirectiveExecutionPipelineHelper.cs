@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A wrapper for a schema pipeline builder to easily add the default middleware componentry for
@@ -43,6 +44,13 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
         public DirectiveExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(SchemaOptions options = null)
         {
             this.AddValidateContextMiddleware();
+
+            var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
+            if (authOption == AuthorizationMethod.PerField)
+            {
+                this.AddDirectiveAuthorizationMiddleware();
+            }
+
             this.AddResolverDirectiveMiddleware();
 
             return this;
@@ -65,6 +73,16 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
         public DirectiveExecutionPipelineHelper<TSchema> AddValidateContextMiddleware()
         {
             _pipelineBuilder.AddMiddleware<ValidateDirectiveExecutionMiddleware<TSchema>>();
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the middleware component to authorize the user on the context to the directive being processed.
+        /// </summary>
+        /// <returns>FieldExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        public DirectiveExecutionPipelineHelper<TSchema> AddDirectiveAuthorizationMiddleware()
+        {
+            _pipelineBuilder.AddMiddleware<AuthorizeDirectiveMiddleware<TSchema>>();
             return this;
         }
     }

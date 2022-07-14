@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Middleware
     /// <summary>
     /// A middleware component in the field authorization pipeline.
     /// </summary>
-    public interface IGraphFieldSecurityMiddleware : IGraphMiddlewareComponent<GraphFieldSecurityContext>
+    public interface IGraphSchemaItemSecurityMiddleware : IGraphMiddlewareComponent<GraphSchemaItemSecurityContext>
     {
     }
 }

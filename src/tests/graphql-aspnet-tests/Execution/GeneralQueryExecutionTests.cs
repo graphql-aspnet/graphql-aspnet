@@ -219,50 +219,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual("Failure from ObjectWithThrowMethod", result.Messages[0].Exception.Message);
         }
 
-        [TestCase(true, "{ \"data\" : { \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\" } } } }")]
-        [TestCase(false, "{ \"data\" : { \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\", \"property2\": 5 } } } }")]
-        public async Task SkipDirective_ResponseAppropriately(bool skipValue, string expectedJson)
-        {
-            var server = new TestServerBuilder()
-            .AddType<SimpleExecutionController>()
-                .AddType<SkipDirective>()
-                .Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 @skip(if: " +
-                    skipValue.ToString().ToLower() +
-                    ") } } }")
-                .AddOperationName("Operation1");
-
-            var result = await server.RenderResult(builder);
-            CommonAssertions.AreEqualJsonStrings(
-                expectedJson,
-                result);
-        }
-
-        [TestCase(true, "{ \"data\" :{ \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\", \"property2\": 5 } } } }")]
-        [TestCase(false, "{ \"data\" :{ \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\" } } } }")]
-        public async Task IncludeDirective_ResponseAppropriately(bool includeValue, string expectedJson)
-        {
-            var server = new TestServerBuilder()
-             .AddType<SimpleExecutionController>()
-                 .AddType<IncludeDirective>()
-                 .Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 @include(if: " +
-                    includeValue.ToString().ToLower() +
-                    ") } } }")
-                .AddOperationName("Operation1");
-
-            var result = await server.RenderResult(builder);
-            CommonAssertions.AreEqualJsonStrings(
-                expectedJson,
-                result);
-        }
-
         [Test]
         public async Task ObjectMethodAsField_Syncronously_ResolvesCorrectly()
         {

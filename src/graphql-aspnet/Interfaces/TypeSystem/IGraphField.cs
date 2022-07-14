@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
     /// accepted arguments, any nullable or list modifiers and publication and depreciation information.
     /// </summary>
-    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISchemaItem
+    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISecureSchemaItem, ISchemaItem
     {
         /// <summary>
         /// Updates the known graph type this field belongs to.
@@ -95,13 +95,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The field souce.</value>
         GraphFieldSource FieldSource { get; }
-
-        /// <summary>
-        /// Gets the security groups, a collection of policy requirements, of which each must be met,
-        /// in order to access this field.
-        /// </summary>
-        /// <value>The security groups.</value>
-        IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate

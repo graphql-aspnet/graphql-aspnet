@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 fieldSet = this.CreateFinalDictionary(context);
             }
 
-            context.Result = new GraphOperationResult(context.OperationRequest, context.Messages, fieldSet, context.Metrics);
+            context.Result = new GraphOperationResult(context.ParentRequest, context.Messages, fieldSet, context.Metrics);
             context.Logger?.RequestCompleted(context);
             return next(context, cancelToken);
         }

@@ -64,12 +64,12 @@ namespace GraphQL.AspNet.Tests.Middleware
             _usersByScheme.Add(DEFAULT_SCHEME, new ClaimsPrincipal());
         }
 
-        public Task EmptyNextDelegate(GraphFieldSecurityContext context, CancellationToken token)
+        public Task EmptyNextDelegate(GraphSchemaItemSecurityContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        private async Task<GraphFieldSecurityContext> ExecuteTest(FieldSecurityRequirements secRequirements)
+        private async Task<GraphSchemaItemSecurityContext> ExecuteTest(SchemaItemSecurityRequirements secRequirements)
         {
             var defaultSet = false;
             foreach (var kvp in _usersByScheme)
@@ -103,14 +103,14 @@ namespace GraphQL.AspNet.Tests.Middleware
             var queryContext = contextBuilder.Build();
 
             var field = new Mock<IGraphField>();
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
+            var fieldSecurityRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(field.Object);
 
-            var fieldSecurityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
+            var fieldSecurityContext = new GraphSchemaItemSecurityContext(queryContext, fieldSecurityRequest.Object);
             fieldSecurityContext.SecurityRequirements = secRequirements;
 
-            var middleware = new FieldAuthenticationMiddleware(_provider?.Object);
+            var middleware = new SchemaItemAuthenticationMiddleware(_provider?.Object);
             await middleware.InvokeAsync(fieldSecurityContext, this.EmptyNextDelegate);
             middleware.Dispose();
 
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthenticated, result.Result.Status);
         }
 
         [Test]
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthenticated, result.Result.Status);
         }
 
         [Test]
@@ -207,7 +207,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthenticated, result.Result.Status);
         }
 
         [Test]
@@ -240,7 +240,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Result.Status);
         }
 
         [Test]
@@ -250,17 +250,17 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Result.Status);
         }
 
         [Test]
         public async Task SecurityRequirementsAreAutoDeny_Unauthenticated()
         {
-            var result = await this.ExecuteTest(FieldSecurityRequirements.AutoDeny);
+            var result = await this.ExecuteTest(SchemaItemSecurityRequirements.AutoDeny);
 
             Assert.IsNull(result.AuthenticatedUser);
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthenticated, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthenticated, result.Result.Status);
         }
     }
 }

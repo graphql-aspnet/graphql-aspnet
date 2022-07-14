@@ -86,11 +86,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     if (document.Operations.Count == 1)
                         targetOperation = document.Operations[0];
                     else
-                        targetOperation = document.Operations.RetrieveOperation(context.OperationRequest.OperationName);
+                        targetOperation = document.Operations.RetrieveOperation(context.ParentRequest.OperationName);
 
                     if (targetOperation == null)
                     {
-                        var name = context.OperationRequest.OperationName?.Trim() ?? "~anonymous~";
+                        var name = context.ParentRequest.OperationName?.Trim() ?? "~anonymous~";
                         context.Messages.Critical(
                             $"Undeclared operation. An operation with the name '{name}' was not " +
                             "found on the query document.",

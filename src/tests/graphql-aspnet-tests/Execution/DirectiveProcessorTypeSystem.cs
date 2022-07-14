@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class GraphSchemaDirectiveProcessorTests
+    public class DirectiveProcessorTypeSystem
     {
         private IServiceProvider _serviceProvider = null;
         private IServiceCollection _serviceCollection = null;
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Execution
         private GraphSchema _schemaInstance;
         private List<Type> _typesToAdd;
 
-        public GraphSchemaDirectiveProcessorTests()
+        public DirectiveProcessorTypeSystem()
         {
             _serviceCollection = new ServiceCollection();
             _itemsExecuted = new List<object>();

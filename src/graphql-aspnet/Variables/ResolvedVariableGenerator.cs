@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Variables
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
@@ -23,17 +23,18 @@ namespace GraphQL.AspNet.Variables
     public class ResolvedVariableGenerator
     {
         private readonly ISchema _schema;
-        private readonly IGraphFieldExecutableOperation _operation;
+        private readonly IVariableCollectionDocumentPart _variableCollection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResolvedVariableGenerator" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        /// <param name="operation">The operation.</param>
-        public ResolvedVariableGenerator(ISchema schema, IGraphFieldExecutableOperation operation)
+        /// <param name="schema">A schema to resolve against.</param>
+        /// <param name="variableCollection">A set of declared variable references
+        /// on a query document.</param>
+        public ResolvedVariableGenerator(ISchema schema, IVariableCollectionDocumentPart variableCollection)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _operation = Validation.ThrowIfNullOrReturn(operation, nameof(operation));
+            _variableCollection = Validation.ThrowIfNullOrReturn(variableCollection, nameof(variableCollection));
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace GraphQL.AspNet.Variables
             var resolverGenerator = new InputResolverMethodGenerator(_schema);
             var result = new ResolvedVariableCollection();
 
-            foreach (var variable in _operation.DeclaredVariables)
+            foreach (var variable in _variableCollection)
             {
                 var resolver = resolverGenerator.CreateResolver(variable.TypeExpression);
 

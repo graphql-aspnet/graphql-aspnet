@@ -38,5 +38,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The directive phase.</value>
         DirectiveInvocationPhase DirectivePhase { get; }
+
+        /// <summary>
+        /// Gets the directive graph type that is targeted by this request.
+        /// </summary>
+        /// <value>The directive.</value>
+        IDirective Directive { get; }
     }
 }

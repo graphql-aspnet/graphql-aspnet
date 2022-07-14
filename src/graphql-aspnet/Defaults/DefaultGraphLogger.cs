@@ -151,62 +151,62 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void FieldAuthorizationChallenge(GraphFieldSecurityContext context)
+        public virtual void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new FieldAuthorizationStartedLogEntry(context);
+            var entry = new SchemaItemAuthorizationStartedLogEntry(context);
             this.LogEvent(LogLevel.Trace, entry);
         }
 
         /// <inheritdoc />
-        public virtual void FieldAuthorizationChallengeResult(GraphFieldSecurityContext context)
+        public virtual void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityContext context)
         {
-            var logLevel = context?.Result == null || context.Result.Status == FieldSecurityChallengeStatus.Unauthorized
+            var logLevel = context?.Result == null || context.Result.Status == SchemaItemSecurityChallengeStatus.Unauthorized
                 ? LogLevel.Warning
                 : LogLevel.Trace;
 
             if (!this.IsEnabled(logLevel))
                 return;
 
-            var entry = new FieldAuthorizationCompletedLogEntry(context);
+            var entry = new SchemaItemAuthorizationCompletedLogEntry(context);
             this.LogEvent(logLevel, entry);
         }
 
         /// <inheritdoc />
-        public void FieldAuthenticationChallenge(GraphFieldSecurityContext context)
+        public void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new FieldAuthenticationStartedLogEntry(context);
+            var entry = new SchemaItemAuthenticationStartedLogEntry(context);
             this.LogEvent(LogLevel.Trace, entry);
         }
 
         /// <inheritdoc />
-        public void FieldAuthenticationChallengeResult(GraphFieldSecurityContext context, IAuthenticationResult authResult)
+        public void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityContext context, IAuthenticationResult authResult)
         {
             LogLevel logLevel;
-            if (context.AuthenticatedUser != null)
+            if (context?.AuthenticatedUser != null)
             {
                 logLevel = LogLevel.Trace;
             }
-            else if (context.Result != null)
+            else if (context?.Result != null)
             {
-                logLevel = context.Result.Status == FieldSecurityChallengeStatus.Failed
+                logLevel = context.Result.Status == SchemaItemSecurityChallengeStatus.Failed
                 ? LogLevel.Warning
                 : LogLevel.Trace;
             }
             else
             {
-                logLevel = authResult.Suceeded ? LogLevel.Trace : LogLevel.Warning;
+                logLevel = authResult == null || !authResult.Suceeded ? LogLevel.Warning : LogLevel.Trace;
             }
 
             if (!this.IsEnabled(logLevel))
                 return;
 
-            var entry = new FieldAuthenticationCompletedLogEntry(context, authResult);
+            var entry = new SchemaItemAuthenticationCompletedLogEntry(context, authResult);
             this.LogEvent(logLevel, entry);
         }
 

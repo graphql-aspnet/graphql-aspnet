@@ -15,21 +15,21 @@ namespace GraphQL.AspNet.Security
 
     /// <summary>
     /// A result generated after testing a <see cref="IUserSecurityContext"/> ability to access
-    /// a requested field of data.
+    /// a requested schema item.
     /// </summary>
     [DebuggerDisplay("Status: {Status}")]
-    public class FieldSecurityChallengeResult
+    public class SchemaItemSecurityChallengeResult
     {
         /// <summary>
         /// Creates an authorization result indicating that the user was successfully authorized to the field.
         /// </summary>
         /// <param name="user">The user that was authorized by the challenge.</param>
-        /// <returns>FieldAuthorizationResult.</returns>
-        public static FieldSecurityChallengeResult Success(
+        /// <returns>SchemaItemSecurityChallengeResult.</returns>
+        public static SchemaItemSecurityChallengeResult Success(
             ClaimsPrincipal user)
         {
-            return new FieldSecurityChallengeResult(
-                FieldSecurityChallengeStatus.Authorized,
+            return new SchemaItemSecurityChallengeResult(
+                SchemaItemSecurityChallengeStatus.Authorized,
                 user);
         }
 
@@ -38,10 +38,10 @@ namespace GraphQL.AspNet.Security
         /// </summary>
         /// <param name="user">The user credentials present on the security context
         /// at the time it was determined that authorization could be skipped.</param>
-        /// <returns>FieldAuthorizationResult.</returns>
-        public static FieldSecurityChallengeResult Skipped(ClaimsPrincipal user)
+        /// <returns>SchemaItemSecurityChallengeResult.</returns>
+        public static SchemaItemSecurityChallengeResult Skipped(ClaimsPrincipal user)
         {
-            return new FieldSecurityChallengeResult(FieldSecurityChallengeStatus.Skipped, user);
+            return new SchemaItemSecurityChallengeResult(SchemaItemSecurityChallengeStatus.Skipped, user);
         }
 
         /// <summary>
@@ -49,11 +49,11 @@ namespace GraphQL.AspNet.Security
         /// message.
         /// </summary>
         /// <param name="internalMessage">The internal message.</param>
-        /// <returns>FieldAuthorizationResult.</returns>
-        public static FieldSecurityChallengeResult Fail(string internalMessage)
+        /// <returns>SchemaItemSecurityChallengeResult.</returns>
+        public static SchemaItemSecurityChallengeResult Fail(string internalMessage)
         {
-            return new FieldSecurityChallengeResult(
-                FieldSecurityChallengeStatus.Failed,
+            return new SchemaItemSecurityChallengeResult(
+                SchemaItemSecurityChallengeStatus.Failed,
                 message: internalMessage);
         }
 
@@ -63,11 +63,11 @@ namespace GraphQL.AspNet.Security
         /// message.
         /// </summary>
         /// <param name="internalMessage">The internal message.</param>
-        /// <returns>FieldAuthorizationResult.</returns>
-        public static FieldSecurityChallengeResult Unauthorized(string internalMessage)
+        /// <returns>SchemaItemSecurityChallengeResult.</returns>
+        public static SchemaItemSecurityChallengeResult Unauthorized(string internalMessage)
         {
-            return new FieldSecurityChallengeResult(
-                FieldSecurityChallengeStatus.Unauthorized,
+            return new SchemaItemSecurityChallengeResult(
+                SchemaItemSecurityChallengeStatus.Unauthorized,
                 message: internalMessage);
         }
 
@@ -77,32 +77,31 @@ namespace GraphQL.AspNet.Security
         /// message.
         /// </summary>
         /// <param name="internalMessage">The internal message.</param>
-        /// <returns>FieldAuthorizationResult.</returns>
-        public static FieldSecurityChallengeResult UnAuthenticated(string internalMessage)
+        /// <returns>SchemaItemSecurityChallengeResult.</returns>
+        public static SchemaItemSecurityChallengeResult UnAuthenticated(string internalMessage)
         {
-            return new FieldSecurityChallengeResult(
-                FieldSecurityChallengeStatus.Unauthenticated,
+            return new SchemaItemSecurityChallengeResult(
+                SchemaItemSecurityChallengeStatus.Unauthenticated,
                 message: internalMessage);
         }
 
         /// <summary>
         /// Creates a default, failed result with a generic message indicating no other result existed.
         /// </summary>
-        /// <returns>FieldAuthorizationResult.</returns>
-        public static FieldSecurityChallengeResult Default()
+        /// <returns>SchemaItemSecurityChallengeResult.</returns>
+        public static SchemaItemSecurityChallengeResult Default()
         {
-            return new FieldSecurityChallengeResult(
-                FieldSecurityChallengeStatus.Unauthorized,
+            return new SchemaItemSecurityChallengeResult(
+                SchemaItemSecurityChallengeStatus.Unauthorized,
                 message: "Unknown result");
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldSecurityChallengeResult" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemSecurityChallengeResult" /> class.
         /// </summary>
-        private FieldSecurityChallengeResult(
-            FieldSecurityChallengeStatus status,
+        private SchemaItemSecurityChallengeResult(
+            SchemaItemSecurityChallengeStatus status,
             ClaimsPrincipal user = null,
-            string authenticationScheme = null,
             string message = null)
         {
             this.LogMessage = message;
@@ -114,7 +113,7 @@ namespace GraphQL.AspNet.Security
         /// Gets the status of this result.
         /// </summary>
         /// <value>The status.</value>
-        public FieldSecurityChallengeStatus Status { get; }
+        public SchemaItemSecurityChallengeStatus Status { get; }
 
         /// <summary>
         /// Gets the user principal that was constructed from the authorized security context.

@@ -27,13 +27,13 @@ namespace GraphQL.AspNet.Tests.Middleware
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class FieldSecurityRequirementsMiddlewareTests
+    public class SchemaItemAuthenticationMiddlewareTests
     {
         private IGraphField _field;
         private Mock<IAuthorizationPolicyProvider> _policyProvider;
         private AuthorizationPolicy _defaultPolicy;
 
-        public FieldSecurityRequirementsMiddlewareTests()
+        public SchemaItemAuthenticationMiddlewareTests()
         {
             _policyProvider = new Mock<IAuthorizationPolicyProvider>();
             _policyProvider.Setup(x => x.GetDefaultPolicyAsync())
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .Build();
         }
 
-        public Task EmptyNextDelegate(GraphFieldSecurityContext context, CancellationToken token)
+        public Task EmptyNextDelegate(GraphSchemaItemSecurityContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             _field = field.Object;
         }
 
-        private async Task<GraphFieldSecurityContext> ExecuteTest()
+        private async Task<GraphSchemaItemSecurityContext> ExecuteTest()
         {
             var builder = new TestServerBuilder();
             var server = builder.Build();
@@ -89,13 +89,13 @@ namespace GraphQL.AspNet.Tests.Middleware
             var contextBuilder = server.CreateQueryContextBuilder();
             var queryContext = contextBuilder.Build();
 
-            var fieldSecurityRequest = new Mock<IGraphFieldSecurityRequest>();
-            fieldSecurityRequest.Setup(x => x.Field)
+            var fieldSecurityRequest = new Mock<IGraphSchemaItemSecurityRequest>();
+            fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(_field);
 
-            var securityContext = new GraphFieldSecurityContext(queryContext, fieldSecurityRequest.Object);
+            var securityContext = new GraphSchemaItemSecurityContext(queryContext, fieldSecurityRequest.Object);
 
-            var component = new FieldSecurityRequirementsMiddleware(_policyProvider?.Object);
+            var component = new SchemItemSecurityRequirementsMiddleware(_policyProvider?.Object);
             await component.InvokeAsync(securityContext, this.EmptyNextDelegate);
 
             return securityContext;
@@ -183,11 +183,11 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var result = await this.ExecuteTest();
 
-            Assert.AreEqual(FieldSecurityRequirements.AutoDeny, result.SecurityRequirements);
+            Assert.AreEqual(SchemaItemSecurityRequirements.AutoDeny, result.SecurityRequirements);
             Assert.IsFalse(result.SecurityRequirements.AllowAnonymous);
 
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Result.Status);
         }
 
         [Test]
@@ -199,11 +199,11 @@ namespace GraphQL.AspNet.Tests.Middleware
             // no policy defined
             var result = await this.ExecuteTest();
 
-            Assert.AreEqual(FieldSecurityRequirements.AutoDeny, result.SecurityRequirements);
+            Assert.AreEqual(SchemaItemSecurityRequirements.AutoDeny, result.SecurityRequirements);
             Assert.IsFalse(result.SecurityRequirements.AllowAnonymous);
 
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Result.Status);
         }
 
         [Test]
@@ -217,11 +217,11 @@ namespace GraphQL.AspNet.Tests.Middleware
 
             var result = await this.ExecuteTest();
 
-            Assert.AreEqual(FieldSecurityRequirements.AutoDeny, result.SecurityRequirements);
+            Assert.AreEqual(SchemaItemSecurityRequirements.AutoDeny, result.SecurityRequirements);
             Assert.IsFalse(result.SecurityRequirements.AllowAnonymous);
 
             Assert.IsNotNull(result.Result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Result.Status);
         }
 
         [Test]
@@ -366,7 +366,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             var result = await this.ExecuteTest();
 
             Assert.IsNotNull(result.SecurityRequirements);
-            Assert.AreEqual(FieldSecurityRequirements.AutoDeny, result.SecurityRequirements);
+            Assert.AreEqual(SchemaItemSecurityRequirements.AutoDeny, result.SecurityRequirements);
             Assert.IsFalse(result.SecurityRequirements.AllowAnonymous);
             Assert.IsNull(result.Result);
         }

@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authenticate a
     /// <see cref="IUserSecurityContext"/>.
     /// </summary>
-    public class FieldAuthenticationMiddleware : IGraphFieldSecurityMiddleware, IDisposable
+    public class SchemaItemAuthenticationMiddleware : IGraphSchemaItemSecurityMiddleware, IDisposable
     {
         private SemaphoreSlim _locker = new SemaphoreSlim(1);
         private IAuthenticationSchemeProvider _schemeProvider;
@@ -34,20 +34,20 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         private bool disposedValue;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldAuthenticationMiddleware" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemAuthenticationMiddleware" /> class.
         /// </summary>
         /// <param name="schemeProvider">The scheme provider used to determine
         /// various authentication defaults.</param>
-        public FieldAuthenticationMiddleware(IAuthenticationSchemeProvider schemeProvider = null)
+        public SchemaItemAuthenticationMiddleware(IAuthenticationSchemeProvider schemeProvider = null)
         {
             _schemeProvider = schemeProvider;
             _allKnownSchemes = ImmutableHashSet.Create<string>();
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphFieldSecurityContext context, GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(GraphSchemaItemSecurityContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityContext> next, CancellationToken cancelToken = default)
         {
-            context.Logger?.FieldAuthenticationChallenge(context);
+            context.Logger?.SchemaItemAuthenticationChallenge(context);
 
             // only attempt an authentication
             // if no result is already deteremined and if no user has already been authenticated
@@ -55,33 +55,33 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             if (context.Result == null && context.AuthenticatedUser == null)
             {
                 ClaimsPrincipal user;
-                FieldSecurityChallengeResult challengeResult;
+                SchemaItemSecurityChallengeResult challengeResult;
 
                 (user, authenticationResult, challengeResult) = await this.AuthenticateUser(context, cancelToken);
                 context.AuthenticatedUser = user;
                 context.Result = challengeResult;
             }
 
-            context.Logger?.FieldAuthenticationChallengeResult(context, authenticationResult);
+            context.Logger?.SchemaItemAuthenticationChallengeResult(context, authenticationResult);
 
             await next.Invoke(context, cancelToken).ConfigureAwait(false);
         }
 
-        private async Task<(ClaimsPrincipal, IAuthenticationResult, FieldSecurityChallengeResult)>
-            AuthenticateUser(GraphFieldSecurityContext context, CancellationToken cancelToken)
+        private async Task<(ClaimsPrincipal, IAuthenticationResult, SchemaItemSecurityChallengeResult)>
+            AuthenticateUser(GraphSchemaItemSecurityContext context, CancellationToken cancelToken)
         {
             // Step 1: Initial check for null requirements or allowed anonymous access
             if (context.SecurityRequirements == null)
             {
-                var failure = FieldSecurityChallengeResult.Fail(
+                var failure = SchemaItemSecurityChallengeResult.Fail(
                     $"No user could be authenticated because no security requirements were available on the request.");
 
                 return (null, null, failure);
             }
 
-            if (context.SecurityRequirements == FieldSecurityRequirements.AutoDeny)
+            if (context.SecurityRequirements == SchemaItemSecurityRequirements.AutoDeny)
             {
-                var failure = FieldSecurityChallengeResult.UnAuthenticated(
+                var failure = SchemaItemSecurityChallengeResult.UnAuthenticated(
                     $"No user could be authenticated because the request indicated no user could ever be authorized.");
 
                 return (null, null, failure);
@@ -133,7 +133,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             // special message
             if (context.SecurityContext == null)
             {
-                var failure = FieldSecurityChallengeResult.Fail(
+                var failure = SchemaItemSecurityChallengeResult.Fail(
                            $"No user could be authenticated because no security context was available on the request.");
 
                 return (null, null, failure);
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             // indicate as such
             if (authTicket == null || !authTicket.Suceeded)
             {
-                var failure = FieldSecurityChallengeResult.UnAuthenticated(
+                var failure = SchemaItemSecurityChallengeResult.UnAuthenticated(
                            $"No user could be authenticated using the approved authentication schemes.");
 
                 return (null, authTicket, failure);

@@ -24,45 +24,45 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// security groups (and subseqent policies) that should be evaluated for the
     /// target field.
     /// </summary>
-    public class FieldSecurityRequirementsMiddleware : IGraphFieldSecurityMiddleware
+    public class SchemItemSecurityRequirementsMiddleware : IGraphSchemaItemSecurityMiddleware
     {
         private class CachedRequirements
         {
-            public CachedRequirements(FieldSecurityRequirements requirements, FieldSecurityChallengeResult challengeResult)
+            public CachedRequirements(SchemaItemSecurityRequirements requirements, SchemaItemSecurityChallengeResult challengeResult)
             {
                 this.Requirements = requirements;
                 this.ChallengeResult = challengeResult;
             }
 
-            public FieldSecurityRequirements Requirements { get; }
+            public SchemaItemSecurityRequirements Requirements { get; }
 
-            public FieldSecurityChallengeResult ChallengeResult { get; }
+            public SchemaItemSecurityChallengeResult ChallengeResult { get; }
         }
 
         private const string DEFAULT_POLICY_NAME = "{6134DC1E-7B4C-4C9A-A410-D7322FE42D5C}";
 
         private readonly IAuthorizationPolicyProvider _policyProvider;
-        private readonly ConcurrentDictionary<IGraphField, CachedRequirements> _cachedRequirements;
+        private readonly ConcurrentDictionary<ISecureSchemaItem, CachedRequirements> _cachedRequirements;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldSecurityRequirementsMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="SchemItemSecurityRequirementsMiddleware"/> class.
         /// </summary>
         /// <param name="policyProvider">The policy provider used by this application instance.</param>
-        public FieldSecurityRequirementsMiddleware(IAuthorizationPolicyProvider policyProvider = null)
+        public SchemItemSecurityRequirementsMiddleware(IAuthorizationPolicyProvider policyProvider = null)
         {
             _policyProvider = policyProvider;
-            _cachedRequirements = new ConcurrentDictionary<IGraphField, CachedRequirements>();
+            _cachedRequirements = new ConcurrentDictionary<ISecureSchemaItem, CachedRequirements>();
         }
 
         /// <inheritdoc />
         public async Task InvokeAsync(
-            GraphFieldSecurityContext context,
-            GraphMiddlewareInvocationDelegate<GraphFieldSecurityContext> next,
+            GraphSchemaItemSecurityContext context,
+            GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityContext> next,
             CancellationToken cancelToken = default)
         {
             if (context.SecurityRequirements == null)
             {
-                var reqSet = await this.RetrieveSecurityRequirements(context.Field);
+                var reqSet = await this.RetrieveSecurityRequirements(context.SecureSchemaItem);
                 context.Result = context.Result ?? reqSet.ChallengeResult;
                 context.SecurityRequirements = reqSet.Requirements;
             }
@@ -70,29 +70,29 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             await next.Invoke(context, cancelToken);
         }
 
-        private async Task<CachedRequirements> RetrieveSecurityRequirements(IGraphField field)
+        private async Task<CachedRequirements> RetrieveSecurityRequirements(ISecureSchemaItem schemaItem)
         {
-            if (_cachedRequirements.TryGetValue(field, out var requirementSet))
+            if (_cachedRequirements.TryGetValue(schemaItem, out var requirementSet))
                 return requirementSet;
 
-            requirementSet = await this.CreateSecurityRequirements(field);
-            _cachedRequirements.TryAdd(field, requirementSet);
+            requirementSet = await this.CreateSecurityRequirements(schemaItem);
+            _cachedRequirements.TryAdd(schemaItem, requirementSet);
 
             return requirementSet;
         }
 
-        private async Task<CachedRequirements> CreateSecurityRequirements(IGraphField field)
+        private async Task<CachedRequirements> CreateSecurityRequirements(ISecureSchemaItem schemaItem)
         {
-            if (field?.SecurityGroups == null)
+            if (schemaItem?.SecurityGroups == null)
             {
                 return new CachedRequirements(
-                    FieldSecurityRequirements.AutoDeny,
+                    SchemaItemSecurityRequirements.AutoDeny,
                     null);
             }
 
             // when no policies are ever defined (meaning no security)
             // then we assume anon access is allowed
-            bool allowAnonmous = field.SecurityGroups.Sum(x => x.AppliedPolicies.Count) == 0;
+            bool allowAnonmous = schemaItem.SecurityGroups.Sum(x => x.AppliedPolicies.Count) == 0;
 
             AuthorizationPolicy defaultPolicy = null;
             if (_policyProvider != null)
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             var schemeGroups = new List<IEnumerable<AllowedAuthenticationScheme>>();
             var enforcedRoleGroups = new List<IEnumerable<string>>();
 
-            foreach (var group in field.SecurityGroups)
+            foreach (var group in schemaItem.SecurityGroups)
             {
                 // when [AllowAnonymous] is encountered in the group chain
                 // it is applied regardless of other settings
@@ -121,24 +121,24 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                     {
                         if (_policyProvider == null)
                         {
-                            var result = FieldSecurityChallengeResult.Fail(
-                                $"A named policy '{rule.PolicyName}' has been applied to the field '{field.Route}' but " +
+                            var result = SchemaItemSecurityChallengeResult.Fail(
+                                $"A named policy '{rule.PolicyName}' has been applied to the schema item '{schemaItem.Route}' but " +
                                 $"no policy provider is configured that can handle it.");
 
                             return new CachedRequirements(
-                                FieldSecurityRequirements.AutoDeny,
+                                SchemaItemSecurityRequirements.AutoDeny,
                                 result);
                         }
 
                         var policy = await _policyProvider.GetPolicyAsync(rule.PolicyName);
                         if (policy == null)
                         {
-                            var result = FieldSecurityChallengeResult.Fail(
-                                $"The field '{field.Route}' named policy '{rule.PolicyName}' has been applied to the field '{field.Name}' but " +
+                            var result = SchemaItemSecurityChallengeResult.Fail(
+                                $"The schema item '{schemaItem.Route}' named policy '{rule.PolicyName}' has been applied to the schema item '{schemaItem.Name}' but " +
                                 $"no policy provider is configured that can handle it.");
 
                             return new CachedRequirements(
-                                FieldSecurityRequirements.AutoDeny,
+                                SchemaItemSecurityRequirements.AutoDeny,
                                 result);
                         }
 
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             // can we allow the fallback default
             var allowDefaultSchemeFallThrough = schemeGroups.Count == 0;
 
-            var requirements = FieldSecurityRequirements.Create(
+            var requirements = SchemaItemSecurityRequirements.Create(
                 allowAnonmous,
                 this.DeteremineFinalSchemeSet(schemeGroups),
                 this.DeteremineFinalPolicySet(enforcedPolicies),
@@ -178,12 +178,12 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 && !requirements.AllowedAuthenticationSchemes.Any()
                 && !allowDefaultSchemeFallThrough)
             {
-                var result = FieldSecurityChallengeResult.Fail(
-                    $"The field '{field.Route}' has mismatched required authentication schemes in its applied security groups. It contains " +
+                var result = SchemaItemSecurityChallengeResult.Fail(
+                    $"The schema item '{schemaItem.Route}' has mismatched required authentication schemes in its applied security groups. It contains " +
                     $"no scenarios where an authentication scheme can be used to authenticate a user to all possible required authorizations.");
 
                 return new CachedRequirements(
-                    FieldSecurityRequirements.AutoDeny,
+                    SchemaItemSecurityRequirements.AutoDeny,
                     result);
             }
 

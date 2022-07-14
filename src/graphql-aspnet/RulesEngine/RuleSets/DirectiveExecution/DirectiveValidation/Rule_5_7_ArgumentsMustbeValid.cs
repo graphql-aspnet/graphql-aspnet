@@ -103,8 +103,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.DirectiveValida
                 {
                     this.ValidationError(
                             context,
-                            $"Invalid Directive Invocation. The directive '{context.Directive.Name}' " +
-                            $"requires that the value for argument '{suppliedArg.Name}' not be null.");
+                            $"Invalid Directive Invocation. The directive '@{context.Directive.Name}' " +
+                            $"requires that the value for argument '{suppliedArg.Name}' is not null.");
                     completedSuccessfully = false;
                 }
 

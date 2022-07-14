@@ -13,14 +13,14 @@ namespace GraphQL.AspNet.Interfaces.Security
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// An request to authentication and authorize a user to a field of data.
+    /// An request to authentication and authorize a user to a schema item.
     /// </summary>
-    public interface IGraphFieldSecurityRequest : IDataRequest
+    public interface IGraphSchemaItemSecurityRequest : IDataRequest
     {
         /// <summary>
-        /// Gets the field being queried with this request.
+        /// Gets the secured schema item being queried with this request.
         /// </summary>
         /// <value>The field.</value>
-        IGraphField Field { get; }
+        ISecureSchemaItem SecureSchemaItem { get; }
     }
 }

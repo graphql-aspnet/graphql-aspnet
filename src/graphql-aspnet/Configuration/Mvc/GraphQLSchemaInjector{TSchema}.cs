@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var fieldPipelineHelper = new FieldExecutionPipelineHelper<TSchema>(_schemaBuilder.FieldExecutionPipeline);
             fieldPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
-            var authPipelineHelper = new FieldSecurityPipelineHelper<TSchema>(_schemaBuilder.FieldAuthorizationPipeline);
+            var authPipelineHelper = new SchemaItemSecurityPipelineHelper<TSchema>(_schemaBuilder.FieldAuthorizationPipeline);
             authPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
             var directivePipelineHelper = new DirectiveExecutionPipelineHelper<TSchema>(_schemaBuilder.DirectiveExecutionPipeline);

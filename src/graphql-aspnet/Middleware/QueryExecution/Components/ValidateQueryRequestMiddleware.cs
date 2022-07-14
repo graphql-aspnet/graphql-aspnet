@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     new InvalidOperationException($"The {nameof(GraphQueryExecutionContext)} governing the execution of the pipeline was provided as null. Operation failed."));
             }
 
-            if (context.OperationRequest == null || string.IsNullOrWhiteSpace(context.OperationRequest.QueryText))
+            if (context.ParentRequest == null || string.IsNullOrWhiteSpace(context.ParentRequest.QueryText))
             {
                 // capture execution exceptions, they will relate to the internal processing
                 // of the server and should only be exposed to authorized parties (via exception details)

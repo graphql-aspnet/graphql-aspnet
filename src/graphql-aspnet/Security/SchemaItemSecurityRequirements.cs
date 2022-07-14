@@ -17,14 +17,14 @@ namespace GraphQL.AspNet.Security
     /// various levels of security that can ultimately be applied to a field
     /// at runtime.
     /// </summary>
-    public class FieldSecurityRequirements
+    public class SchemaItemSecurityRequirements
     {
         /// <summary>
         /// Gets a set of requirements that automatically denies and will never approve
         /// any field security request.
         /// </summary>
         /// <value>The automatic deny.</value>
-        public static FieldSecurityRequirements AutoDeny { get; } = new FieldSecurityRequirements();
+        public static SchemaItemSecurityRequirements AutoDeny { get; } = new SchemaItemSecurityRequirements();
 
         /// <summary>
         /// Creates a new set of security requirements.
@@ -36,13 +36,13 @@ namespace GraphQL.AspNet.Security
         /// <param name="enforcedPolicies">The enforced policies.</param>
         /// <param name="enforcedRoleGroups">The enforced role groups.</param>
         /// <returns>FieldSecurityRequirements.</returns>
-        public static FieldSecurityRequirements Create(
+        public static SchemaItemSecurityRequirements Create(
             bool allowAnonymous,
             IEnumerable<AllowedAuthenticationScheme> allowedAuthSchemes,
             IEnumerable<EnforcedSecurityPolicy> enforcedPolicies = null,
             IEnumerable<IEnumerable<string>> enforcedRoleGroups = null)
         {
-            var result = new FieldSecurityRequirements();
+            var result = new SchemaItemSecurityRequirements();
 
             result.AllowedAuthenticationSchemes = allowedAuthSchemes?.ToList() ?? new List<AllowedAuthenticationScheme>();
             result.EnforcedPolicies = enforcedPolicies?.ToList() ?? new List<EnforcedSecurityPolicy>();
@@ -54,9 +54,9 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="FieldSecurityRequirements"/> class from being created.
+        /// Prevents a default instance of the <see cref="SchemaItemSecurityRequirements"/> class from being created.
         /// </summary>
-        private FieldSecurityRequirements()
+        private SchemaItemSecurityRequirements()
         {
             this.AllowedAuthenticationSchemes = new List<AllowedAuthenticationScheme>();
             this.AllowAnonymous = false;

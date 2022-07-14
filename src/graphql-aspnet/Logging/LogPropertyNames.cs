@@ -128,11 +128,6 @@ namespace GraphQL.AspNet.Logging
         public const string PIPELINE_REQUEST_ID = "pipelineRequestId";
 
         /// <summary>
-        /// The full path of a field of data (e.g. [query]/hero/name).
-        /// </summary>
-        public const string FIELD_PATH = "path";
-
-        /// <summary>
         /// The mode the field is being executed in (per item or batch).
         /// </summary>
         public const string FIELD_EXECUTION_MODE = "executionMode";

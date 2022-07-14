@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Security
     /// A set of possible stati indicating the success or failure
     /// of a pipeline authorization challenge.
     /// </summary>
-    public enum FieldSecurityChallengeStatus
+    public enum SchemaItemSecurityChallengeStatus
     {
         /// <summary>
         /// Indicates that no challange occured. THe user was neither authorized
