@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <inheritdoc />
         public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context.IsValid && context.QueryOperation != null)
+            if (context.IsValid && context.Operation != null)
             {
                 var anyFieldFailed = await this.AuthorizeOperation(context, cancelToken).ConfigureAwait(false);
                 if (anyFieldFailed)
@@ -63,9 +63,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             var authTasks = new List<Task>();
             bool anyFieldFailed = false;
-            foreach (var fieldContext in context.QueryOperation.SecureFieldContexts)
+            foreach (var securePart in context.Operation.SecureItems)
             {
-                var authRequest = new GraphSchemaItemSecurityRequest(fieldContext);
+                // should be caught by validation but just in case prevent an auth
+                if (securePart?.SecureItem == null)
+                    continue;
+
+                var authRequest = new GraphSchemaItemSecurityRequest(securePart);
                 var authContext = new GraphSchemaItemSecurityContext(context, authRequest);
 
                 var pipelineTask = _authPipeline.InvokeAsync(authContext, cancelToken)
@@ -80,9 +84,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                             if (!authResult.Status.IsAuthorized())
                             {
                                 context.Messages.Critical(
-                                    $"Access Denied to field {fieldContext.Field.Route.Path}",
+                                    $"Access Denied to {securePart.SecureItem.Route.Path}",
                                     Constants.ErrorCodes.ACCESS_DENIED,
-                                    fieldContext.Origin);
+                                    securePart.Node.Location.AsOrigin());
                                 anyFieldFailed = true;
                             }
                         }, cancelToken);

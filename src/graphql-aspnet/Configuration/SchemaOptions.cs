@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Configuration
         {
             this.ServiceCollection = Validation.ThrowIfNullOrReturn(serviceCollection, nameof(serviceCollection));
             _schemaType = Validation.ThrowIfNullOrReturn(schemaType, nameof(schemaType));
-            _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultComparer);
+            _possibleTypes = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultEqualityComparer);
             _serverExtensions = new Dictionary<Type, IGraphQLServerExtension>();
             _registeredServices = new List<ServiceToRegister>();
             _configExtensions = new List<ISchemaConfigurationExtension>();
@@ -106,13 +106,13 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddGraphType<TItem>()
         {
-            if (typeof(TItem) == typeof(GraphController))
+            if (Validation.IsCastable<GraphController>(typeof(TItem)))
             {
                 throw new SchemaConfigurationException(
                     $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a controller.");
             }
 
-            if (typeof(TItem) == typeof(GraphDirective))
+            if (Validation.IsCastable<GraphDirective>(typeof(TItem)))
             {
                 throw new SchemaConfigurationException(
                     $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a directive.");
@@ -161,6 +161,18 @@ namespace GraphQL.AspNet.Configuration
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Registers the given type to the schema. It will be made available
+        /// in the type system and queriable via introspection. This method can be used to register
+        /// graph types, controllers and directives.
+        /// </summary>
+        /// <typeparam name="TType">The type to add.</typeparam>
+        /// <returns>SchemaOptions.</returns>
+        public SchemaOptions AddType<TType>()
+        {
+            return this.AddType(typeof(TType));
         }
 
         private void RegisterTypeAsDependentService(Type type)

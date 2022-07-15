@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             context.Metrics?.StartPhase(ApolloExecutionPhase.EXECUTION);
-            if (context.IsValid && context.QueryOperation != null)
+            if (context.IsValid && context.QueryPlan != null)
             {
                 await this.ExecuteOperation(context).ConfigureAwait(false);
             }
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // create a cancelation sourc irrespective of the required timeout for exeucting this operation
             // this allows for indication of why a task was canceled (timeout or other user driven reason)
             // vs just "it was canceled" which allows for tighter error messages in the response.
-            var operation = context.QueryOperation;
+            var operation = context.QueryPlan.Operation;
             var fieldInvocations = new List<FieldPipelineInvocation>();
             var fieldInvocationTasks = new List<Task>();
 

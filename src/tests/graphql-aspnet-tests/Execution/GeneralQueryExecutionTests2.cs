@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputArrayScalarController>();
+                        o.AddType<InputArrayScalarController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputStructController>();
+                        o.AddType<InputStructController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputStructController>();
+                        o.AddType<InputStructController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputObjectArrayController>();
+                        o.AddType<InputObjectArrayController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();

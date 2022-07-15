@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
         {
             get
             {
-                return (this.QueryOperation != null && this.QueryOperation.OperationType == GraphOperationType.Subscription)
+                return (this.QueryPlan?.Operation != null && this.QueryPlan.Operation.OperationType == GraphOperationType.Subscription)
                     || this.Items.ContainsKey(SubscriptionConstants.Execution.CREATED_SUBSCRIPTION);
             }
         }

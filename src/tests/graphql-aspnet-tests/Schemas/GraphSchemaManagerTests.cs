@@ -239,7 +239,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                 .AddGraphQL(o =>
                 {
                     o.DeclarationOptions.DisableIntrospection = true;
-                    o.AddGraphType<KitchenSinkController>();
+                    o.AddType<KitchenSinkController>();
                 })
                 .Build();
 

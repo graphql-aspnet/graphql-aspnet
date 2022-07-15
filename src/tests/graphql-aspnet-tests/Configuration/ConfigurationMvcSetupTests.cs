@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
             });
 
             var sp = serviceCollection.BuildServiceProvider();
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
             });
 
             var sp = serviceCollection.BuildServiceProvider();
@@ -179,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             var provider = serviceCollection.BuildServiceProvider();
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<Sample1Directive>();
+                options.AddType<Sample1Directive>();
             });
 
             var provider = serviceCollection.BuildServiceProvider();
@@ -254,7 +254,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serverBuilder = new TestServerBuilder<CandleSchema>();
             var builder = serverBuilder.AddGraphQL<CandleSchema>(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             builder.FieldExecutionPipeline.AddMiddleware((req, next, token) =>
@@ -282,7 +282,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serverBuilder = new TestServerBuilder<CandleSchema>();
             var schemaBuilder = serverBuilder.AddGraphQL<CandleSchema>(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             schemaBuilder.FieldExecutionPipeline.AddMiddleware<CandleMiddleware>(ServiceLifetime.Singleton, "Candle middleware");
@@ -321,7 +321,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serverBuilder = new TestServerBuilder<CandleSchema>();
             var schemaBuilder = serverBuilder.AddGraphQL<CandleSchema>(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             var descriptor = serverBuilder.SchemaOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(CandleController));

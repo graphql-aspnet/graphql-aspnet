@@ -58,15 +58,12 @@ namespace GraphQL.AspNet.Tests.Security
             {
               ""errors"": [
                 {
-                  ""message"": ""Access Denied to field [query]/secured"",
+                  ""message"": ""Access Denied to [query]/secured"",
                   ""locations"": [
                     {
                       ""line"": 7,
                       ""column"": 25
                     }
-                  ],
-                  ""path"": [
-                    ""secured""
                   ],
                   ""extensions"": {
                     ""code"": ""ACCESS_DENIED"",
@@ -74,16 +71,13 @@ namespace GraphQL.AspNet.Tests.Security
                     ""severity"": ""CRITICAL""
                   }
                 },
-{
-                  ""message"": ""Access Denied to field [query]/policySecured"",
+                {
+                  ""message"": ""Access Denied to [query]/policySecured"",
                   ""locations"": [
                     {
                       ""line"": 11,
                       ""column"": 25
                     }
-                  ],
-                  ""path"": [
-                    ""policySecured""
                   ],
                   ""extensions"": {
                     ""code"": ""ACCESS_DENIED"",

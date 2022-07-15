@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -56,5 +57,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The depth achived by the operation.</value>
         int MaxDepth { get; }
+
+        /// <summary>
+        /// Gets a list of all the document parts in this operation that represent
+        /// a secured item (typically a field or directive).
+        /// </summary>
+        /// <value>The secure items.</value>
+        IReadOnlyList<ISecureDocumentPart> SecureItems { get; }
     }
 }

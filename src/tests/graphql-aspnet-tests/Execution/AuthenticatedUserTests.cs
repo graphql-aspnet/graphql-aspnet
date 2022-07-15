@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var serverBuilder = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<AuthenticatedController>();
+                        o.AddType<AuthenticatedController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     });
 

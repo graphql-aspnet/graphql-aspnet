@@ -35,14 +35,13 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
         {
             if (context is SubcriptionExecutionContext subContext
                 && subContext.IsSubscriptionOperation
-                && subContext.QueryPlan != null
-                && subContext.QueryOperation != null)
+                && subContext.QueryPlan != null)
             {
                 subContext.Subscription = new ClientSubscription<TSchema>(
                     subContext.Client,
                     subContext.ParentRequest.ToDataPackage(),
                     subContext.QueryPlan,
-                    subContext.QueryOperation,
+                    subContext.QueryPlan.Operation,
                     subContext.SubscriptionId);
 
                 return Task.CompletedTask;

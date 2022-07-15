@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     /// <typeparam name="TSchema">The type of the graphql schema to this plan exists for.</typeparam>
     [Serializable]
-    [DebuggerDisplay("Operations = {Operations.Count}")]
+    [DebuggerDisplay("Operation {OperationName}")]
     public class GraphQueryExecutionPlan<TSchema> : IGraphQueryPlan
          where TSchema : class, ISchema
     {

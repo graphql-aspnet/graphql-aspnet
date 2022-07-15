@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Security
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -61,6 +62,20 @@ namespace GraphQL.AspNet.Security
             this.Id = Guid.NewGuid().ToString("N");
             this.SecureSchemaItem = invocationContext.Field;
             this.Origin = invocationContext.Origin;
+            this.Items = new MetaDataCollection();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest" /> class.
+        /// </summary>
+        /// <param name="securedDocumentPart">The secured document part that must
+        /// be authorized.</param>
+        public GraphSchemaItemSecurityRequest(ISecureDocumentPart securedDocumentPart)
+        {
+            Validation.ThrowIfNull(securedDocumentPart, nameof(securedDocumentPart));
+            this.Id = Guid.NewGuid().ToString("N");
+            this.SecureSchemaItem = securedDocumentPart.SecureItem;
+            this.Origin = securedDocumentPart.Node.Location.AsOrigin();
             this.Items = new MetaDataCollection();
         }
 

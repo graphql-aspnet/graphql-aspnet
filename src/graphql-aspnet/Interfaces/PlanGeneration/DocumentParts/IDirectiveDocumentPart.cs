@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A directive, indicated in the supplied query document, to be executed by the runtime
     /// against the <see cref="IDocumentPart"/> to which its assigned.
     /// </summary>
-    public interface IDirectiveDocumentPart : IDocumentPart
+    public interface IDirectiveDocumentPart : ISecureDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Gets the location in the source document where this directive instance was declared.

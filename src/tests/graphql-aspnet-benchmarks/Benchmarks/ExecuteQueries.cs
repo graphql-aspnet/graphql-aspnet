@@ -49,11 +49,11 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
             // schema setup
             Action<SchemaOptions> configureOptions = (SchemaOptions options) =>
             {
-                options.AddGraphType<Artist>();
-                options.AddGraphType<MusicGenre>();
-                options.AddGraphType<Record>();
-                options.AddGraphType<RecordCompany>();
-                options.AddGraphType<MusicController>();
+                options.AddController<MusicController>();
+                options.AddType<Artist>();
+                options.AddType<MusicGenre>();
+                options.AddType<Record>();
+                options.AddType<RecordCompany>();
             };
 
             var schemaOptions = new SchemaOptions<GraphSchema>(serviceCollection);

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Apollo
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Text;
     using System.Text.Json;
@@ -32,19 +33,20 @@ namespace GraphQL.AspNet.Apollo
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Logging.Extensions;
     using Microsoft.Extensions.DependencyInjection;
-    using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide
     /// GraphQL subscription support for Apollo's graphql-over-websockets protocol.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
+    [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
     public class ApolloClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
         where TSchema : class, ISchema
     {
@@ -569,7 +571,6 @@ namespace GraphQL.AspNet.Apollo
                 // register the event data as a source input for the target subscription field
                 context.DefaultFieldSources.AddSource(subscription.Field, sourceData);
                 context.QueryPlan = subscription.QueryPlan;
-                context.QueryOperation = subscription.QueryOperation;
 
                 tasks.Add(runtime.ExecuteRequest(context, cancelToken)
                     .ContinueWith(

@@ -56,9 +56,8 @@ namespace GraphQL.AspNet.Tests.Logging
             var startupEvents = new Dictionary<EventId, int>();
             startupEvents.Add(LogEventIds.SchemaInstanceCreated, 1);
 
-            // Entries: query, field execution, field authorization
-            // since no directives are included no directive pipeline is created
-            startupEvents.Add(LogEventIds.SchemaPipelineInstanceCreated, 3);
+            // Entries: query, field execution, field authorization, directive
+            startupEvents.Add(LogEventIds.SchemaPipelineInstanceCreated, 4);
 
             // can't test schema route regstered due to
             // not mocking IAppBuilder

@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -72,10 +73,12 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IGraphQueryDocument QueryDocument { get; set; }
 
         /// <summary>
-        /// Gets or sets the query operation to execute of the active query plan.
+        /// Gets or sets the chosen operation, parsed from the <see cref="QueryDocument"/> to
+        /// execute. This operation will have its directives applied and a query plan will be generated
+        /// from it.
         /// </summary>
-        /// <value>The query operation.</value>
-        public IGraphFieldExecutableOperation QueryOperation { get; set; }
+        /// <value>The chosen operation to execute.</value>
+        public IOperationDocumentPart Operation { get; set; }
 
         /// <summary>
         /// Gets the collection of top level field results produced by executing the operation on this

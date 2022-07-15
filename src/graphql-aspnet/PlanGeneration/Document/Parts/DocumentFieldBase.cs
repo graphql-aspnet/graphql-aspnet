@@ -123,6 +123,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.Field;
 
+        /// <inheritdoc cref="ISecureDocumentPart.SecureItem" />
+        public ISecureSchemaItem SecureItem => this.Field;
+
         /// <inheritdoc />
         public bool IsIncluded
         {

@@ -56,116 +56,17 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <inheritdoc />
         public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context.IsValid && context.QueryPlan == null && context.QueryDocument != null)
+            if (context.IsValid && context.QueryPlan == null && context.Operation != null)
             {
-                context.Metrics?.StartPhase(ApolloExecutionPhase.VALIDATION);
+                context.QueryPlan = await _planGenerator
+                    .CreatePlan(context.Operation)
+                    .ConfigureAwait(false);
 
-                var document = context.QueryDocument;
+                context.QueryPlan.IsCacheable = context.Operation.AllDirectives.Count == 0;
+                context.Messages.AddRange(context.QueryPlan.Messages);
 
-                // ------------------------------------------
-                // Step 1: Perform a first pass validation
-                // -----------------------------------------
-                // Validate the document that was just created to make sure its
-                // executable against the target schema
-                _documentGenerator.ValidateDocument(document);
-                if (!document.Messages.IsSucessful)
-                {
-                    context.Messages.AddRange(document.Messages);
-                    context.Cancel();
-                }
-
-                // ------------------------------------------
-                // Step 1a: Fetch a reference to the operation to be used for the rest of
-                //          the query plan generation process
-                // -----------------------------------------
-                // Validate the document that was just created to make sure its
-                // executable against the target schema
-                IOperationDocumentPart targetOperation = null;
-                if (context.IsValid && !context.IsCancelled)
-                {
-                    if (document.Operations.Count == 1)
-                        targetOperation = document.Operations[0];
-                    else
-                        targetOperation = document.Operations.RetrieveOperation(context.ParentRequest.OperationName);
-
-                    if (targetOperation == null)
-                    {
-                        var name = context.ParentRequest.OperationName?.Trim() ?? "~anonymous~";
-                        context.Messages.Critical(
-                            $"Undeclared operation. An operation with the name '{name}' was not " +
-                            "found on the query document.",
-                            Constants.ErrorCodes.BAD_REQUEST,
-                            document.Node.Location.AsOrigin());
-
-                        context.Cancel();
-                    }
-                }
-
-                // ------------------------------------------
-                // Step 2: Execute Execution Directives
-                // -----------------------------------------
-                // We have a document that is, as of right now, executable and resolvable,
-                // however; execution directives may be included and need to be processed
-                // against the document parts to potentially alter them before
-                // the plan is generated
-                var totalExecutedDirectives = 0;
-                if (context.IsValid && !context.IsCancelled)
-                {
-                    var directiveProcessor = new DirectiveProcessorQueryDocument<TSchema>(_schema, context);
-
-                    try
-                    {
-                        totalExecutedDirectives = await directiveProcessor
-                            .ApplyDirectives(targetOperation, cancelToken)
-                            .ConfigureAwait(false);
-                    }
-                    catch (GraphExecutionException gee)
-                    {
-                        context.Messages.Critical(
-                            gee.Message,
-                            Constants.ErrorCodes.EXECUTION_ERROR,
-                            gee.Origin,
-                            gee);
-
-                        context.Cancel();
-                    }
-                }
-
-                // ------------------------------------------
-                // Step 3: Perform a second pass validation
-                // -----------------------------------------
-                // Since the user is in charge of the directives we have no idea what
-                // code they may have executed or what they may have done to the query document
-                // we need to perform another full validation before we can execute against it
-                if (context.IsValid && !context.IsCancelled && totalExecutedDirectives > 0)
-                {
-                    _documentGenerator.ValidateDocument(document);
-                    if (!document.Messages.IsSucessful)
-                    {
-                        context.Messages.AddRange(document.Messages);
-                        context.Cancel();
-                    }
-                }
-
-                // ------------------------------------------
-                // Step 4: Generate the final execution plan
-                // -----------------------------------------
-                // With the now fully complete query document, create a query plan
-                // that will resolve the expected fields in the expected order to generate
-                // a data result
-                if (context.IsValid && !context.IsCancelled)
-                {
-                    context.QueryPlan = await _planGenerator
-                        .CreatePlan(targetOperation)
-                        .ConfigureAwait(false);
-
-                    context.QueryPlan.IsCacheable = totalExecutedDirectives == 0;
-                    context.Messages.AddRange(context.QueryPlan.Messages);
-                    context.Metrics?.EndPhase(ApolloExecutionPhase.VALIDATION);
-
-                    if (context.QueryPlan.IsValid)
-                        context.Logger?.QueryPlanGenerated(context.QueryPlan);
-                }
+                if (context.QueryPlan.IsValid)
+                    context.Logger?.QueryPlanGenerated(context.QueryPlan);
             }
 
             await next(context, cancelToken).ConfigureAwait(false);

@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         {
             this.ParentRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
             this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
-            this.SecurityContext = securityContext ?? EmptyUserSecurityContext.Instance;
+            this.SecurityContext = securityContext;
             this.Metrics = metrics;
             this.Items = items ?? new MetaDataCollection();
             this.Messages = new GraphMessageCollection();

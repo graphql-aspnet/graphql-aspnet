@@ -9,6 +9,7 @@
 namespace GraphQL.AspNet.Tests.Configuration
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
@@ -28,10 +29,22 @@ namespace GraphQL.AspNet.Tests.Configuration
             var instance1 = type1 != null ? new SchemaTypeToRegister(type1) : null;
             var instance2 = type2 != null ? new SchemaTypeToRegister(type2) : null;
 
-            var comparer = SchemaTypeToRegister.DefaultComparer;
+            var comparer = SchemaTypeToRegister.DefaultEqualityComparer;
             var result = comparer.Equals(instance1, instance2);
 
             Assert.AreEqual(areEqual, result);
+        }
+
+        [Test]
+        public void HashSetOfSchemaTypeToRegister_DoesNotRegisterTypeTwice()
+        {
+            var hashSet = new HashSet<SchemaTypeToRegister>(SchemaTypeToRegister.DefaultEqualityComparer);
+            var firstAdd = hashSet.Add(new SchemaTypeToRegister(typeof(TwoPropertyObject)));
+            var secondAdd = hashSet.Add(new SchemaTypeToRegister(typeof(TwoPropertyObject)));
+
+            Assert.IsTrue(firstAdd);
+            Assert.IsFalse(secondAdd);
+            Assert.AreEqual(1, hashSet.Count);
         }
     }
 }

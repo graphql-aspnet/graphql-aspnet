@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Security.Web
     /// </summary>
     public class HttpUserSecurityContext : IUserSecurityContext, IDisposable
     {
-        private const string DEFAULT_SCHEME = "-DefaultSchemeKey-";
+        private const string DEFAULT_SCHEME = "-GraphQL.ASPNET.DefaultSchemeKey-";
         private readonly SemaphoreSlim _slim = new SemaphoreSlim(1);
         private readonly HttpContext _httpContext;
         private readonly ConcurrentDictionary<string, IAuthenticationResult> _authResults;
@@ -55,6 +55,8 @@ namespace GraphQL.AspNet.Security.Web
             if (_authResults.TryGetValue(schemeKey, out var authResult))
                 return authResult;
 
+            // multiple field resolution pipelines could be authenticating at
+            // the same time for the same request.
             await _slim.WaitAsync(token).ConfigureAwait(false);
 
             try
@@ -66,10 +68,10 @@ namespace GraphQL.AspNet.Security.Web
                 // allow it to bubble out and fail don't trap it as an "unauthenticated"
                 var result = await _httpContext.AuthenticateAsync(scheme);
                 authResult = new HttpContextAuthenticationResult(scheme, result);
+                _authResults.TryAdd(schemeKey, authResult);
             }
             finally
             {
-                _authResults.TryAdd(schemeKey, authResult);
                 _slim.Release();
             }
 
@@ -100,12 +102,14 @@ namespace GraphQL.AspNet.Security.Web
 
         /// <summary>
         /// <para>
-        /// Gets the claims principal representing the user as supplied by default.
+        /// Gets the claims principal representing the user as supplied by default for the underlying
+        /// provider. This may or may not represent the claims principal used for a specific
+        /// authentication scheme.
         /// </para>
-        /// <para>
-        /// For the <see cref="HttpContext"/> based security context this value is equivilant to
+        /// <remarks>
+        /// For an <see cref="HttpContext"/> based security context this value is equivilant to
         /// <c>HttpContext.User</c>.
-        /// </para>
+        /// </remarks>
         /// </summary>
         /// <value>The user.</value>
         public ClaimsPrincipal DefaultUser => _httpContext?.User;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution
+namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
     using System;
     using System.Collections.Generic;
@@ -16,8 +16,11 @@ namespace GraphQL.AspNet.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Execution.Metrics;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
@@ -27,53 +30,83 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Variables;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// Executes any supplied directives on a query document against those
-    /// document parts where they are applied.
+    /// For the chosen operation to execute, applies any directives to elements and fragments
+    /// contained in or referenced by said operation.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema to work with.</typeparam>
-    internal sealed class DirectiveProcessorQueryDocument<TSchema>
+    /// <typeparam name="TSchema">The schema targeted by this middleware component.</typeparam>
+    internal class ApplyExecutionDirectivesMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
-        private readonly GraphQueryExecutionContext _queryContext;
-        private IGraphEventLogger _eventLogger;
-        private ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directivePipeline;
-        private IOperationDocumentPart _operation;
+        private readonly ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directivePipeline;
+        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveProcessorQueryDocument{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ApplyExecutionDirectivesMiddleware{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The schema in focus while processing directives.</param>
-        /// <param name="queryContext">The query context.</param>
-        public DirectiveProcessorQueryDocument(
+        /// <param name="schema">The schema being executed against.</param>
+        /// <param name="directivePipeline">The directive pipeline to process applied directives
+        /// on.</param>
+        /// <param name="documentGenerator">The document generator used to revalidate
+        /// the doc after directive execution.</param>
+        public ApplyExecutionDirectivesMiddleware(
             TSchema schema,
-            GraphQueryExecutionContext queryContext)
+            ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> directivePipeline,
+            IGraphQueryDocumentGenerator<TSchema> documentGenerator)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _queryContext = Validation.ThrowIfNullOrReturn(queryContext, nameof(queryContext));
+            _directivePipeline = Validation.ThrowIfNullOrReturn(directivePipeline, nameof(directivePipeline));
+            _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
         }
 
-        /// <summary>
-        /// Scans and applies the directives found on the operation (and any referenced named fragments)
-        /// to the parts where they are defined.
-        /// </summary>
-        /// <param name="operation">The operation in which the directives shound be applied.</param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        public async Task<int> ApplyDirectives(
-            IOperationDocumentPart operation,
+        /// <inheritdoc />
+        public async Task InvokeAsync(
+            GraphQueryExecutionContext context,
+            GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
             CancellationToken cancelToken = default)
         {
-            _operation = Validation.ThrowIfNullOrReturn(operation, nameof(operation));
+            if (context.IsValid && context.QueryPlan == null && context.Operation != null)
+            {
+                if (context.Operation.AllDirectives.Count > 0)
+                {
+                    // when there are directives to apply, start the exectuion phase
+                    // early
+                    context.Metrics?.StartPhase(ApolloExecutionPhase.EXECUTION);
 
-            var directivesToExecute = new List<IDirectiveDocumentPart>(_operation.AllDirectives.Count + _operation.FragmentSpreads.Count);
-            directivesToExecute.AddRange(_operation.AllDirectives);
+                    var totalDirectivesApplied = await this.ApplyDirectives(
+                        context,
+                        context.Operation,
+                        cancelToken);
+
+                    if (totalDirectivesApplied > 0)
+                    {
+                        // revalidate since user supplied directives
+                        // may have altered the document structure
+                        _documentGenerator.ValidateDocument(context.QueryDocument);
+                        if (!context.QueryDocument.Messages.IsSucessful)
+                        {
+                            context.Messages.AddRange(context.QueryDocument.Messages);
+                            context.Cancel();
+                        }
+                    }
+                }
+            }
+
+            await next(context, cancelToken).ConfigureAwait(false);
+        }
+
+        private async Task<int> ApplyDirectives(
+            GraphQueryExecutionContext context,
+            IOperationDocumentPart operation,
+            CancellationToken cancelToken)
+        {
+            var directivesToExecute = new List<IDirectiveDocumentPart>(operation.AllDirectives.Count + operation.FragmentSpreads.Count);
+            directivesToExecute.AddRange(operation.AllDirectives);
 
             // append the directive invaocations on any referenced named fragments
-            directivesToExecute.AddRange(_operation
+            directivesToExecute.AddRange(operation
                 .FragmentSpreads
                 .Select(x => x.Fragment)
                 .Distinct()
@@ -83,26 +116,25 @@ namespace GraphQL.AspNet.Execution
             if (directivesToExecute.Count == 0)
                 return 0;
 
-            _eventLogger = _queryContext.ServiceProvider.GetService<IGraphEventLogger>();
-            _directivePipeline = _queryContext.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphDirectiveExecutionContext>>();
-            if (_directivePipeline == null)
-            {
-                throw new GraphExecutionException(
-                    "Unable to process document directives. " +
-                    $"No directive processing pipeline was registered in the " +
-                    $"service provider for the target schema '{_schema.Name}'.");
-            }
-
             // Convert the supplied variable values to usable objects of the type expression
             // of the chosen operation
             var variableResolver = new ResolvedVariableGenerator(_schema, operation.Variables);
-            var variableData = variableResolver.Resolve(_queryContext.ParentRequest.VariableData);
+            var variableData = variableResolver.Resolve(context.ParentRequest.VariableData);
 
+            // Directive order matters we can only execute one at a time
+            // to ensure predicatable execution order
+            // https://spec.graphql.org/October2021/#sec-Language.Directives
             var totalApplied = 0;
             foreach (var directiveDocumentPart in directivesToExecute)
             {
                 var targetPart = directiveDocumentPart.Parent;
-                await this.ApplyDirectiveToItem(targetPart, directiveDocumentPart, variableData, cancelToken);
+                await this.ApplyDirectiveToItem(
+                    context,
+                    targetPart,
+                    directiveDocumentPart,
+                    variableData,
+                    cancelToken);
+
                 totalApplied++;
             }
 
@@ -110,6 +142,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         private async Task ApplyDirectiveToItem(
+            GraphQueryExecutionContext queryContext,
             IDocumentPart targetDocumentPart,
             IDirectiveDocumentPart directiveDocumentPart,
             IResolvedVariableCollection variableData,
@@ -118,6 +151,7 @@ namespace GraphQL.AspNet.Execution
             var targetDirective = directiveDocumentPart.GraphType as IDirective;
             if (targetDirective == null)
             {
+                // it should be impossible for this line to execute
                 var directiveName = directiveDocumentPart.DirectiveName ?? "-unknown-";
                 var failureMessage =
                     $"Document Directive Invocation Failure. " +
@@ -129,9 +163,12 @@ namespace GraphQL.AspNet.Execution
                     targetDocumentPart.Node.Location.AsOrigin());
             }
 
-            var inputArgs = this.GatherInputArguments(targetDirective, directiveDocumentPart);
+            var inputArgs = this.GatherInputArguments(
+                queryContext,
+                targetDirective,
+                directiveDocumentPart);
 
-            var parentRequest = _queryContext.ParentRequest;
+            var parentRequest = queryContext.ParentRequest;
 
             var invocationContext = new DirectiveInvocationContext(
                 targetDirective,
@@ -146,7 +183,7 @@ namespace GraphQL.AspNet.Execution
 
             var context = new GraphDirectiveExecutionContext(
                 _schema,
-                _queryContext,
+                queryContext,
                 request,
                 variableData);
 
@@ -167,7 +204,7 @@ namespace GraphQL.AspNet.Execution
             {
                 // if the directive execution provided meaningful failure messages
                 // such as validation failures use those
-                _queryContext.Messages.AddRange(context.Messages);
+                queryContext.Messages.AddRange(context.Messages);
             }
             else if (context.IsCancelled)
             {
@@ -223,6 +260,7 @@ namespace GraphQL.AspNet.Execution
         }
 
         private IInputArgumentCollection GatherInputArguments(
+            GraphQueryExecutionContext queryContext,
             IDirective targetDirective,
             IDirectiveDocumentPart directivePart)
         {
@@ -235,7 +273,7 @@ namespace GraphQL.AspNet.Execution
                 if (argResult.IsValid)
                     collection.Add(new InputArgument(directiveArg, argResult.Argument));
                 else
-                    _queryContext.Messages.Add(argResult.Message);
+                    queryContext.Messages.Add(argResult.Message);
             }
 
             return collection;
