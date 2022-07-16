@@ -71,13 +71,14 @@
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_1_FieldMustExistOnTargetGraphType.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\FieldSelection_DocumentPartCheck.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_3_LeafReturnMustNotHaveChildFields.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_3_B_NonLeafFieldMustHaveChildField.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_3_A_LeafFieldMustNotHaveChildFields.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_1_DirectiveMustBeDefinedInTheSchema.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_2_DirectiveMustBeUsedInValidLocation.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\RuleBase_5_5_2_3_FragmentCanSpreadInContext.cs" />
+    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_3_BaseFragmentCanSpreadInContext.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_1_FragmentNamesMustBeUnique.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_2_NamedFragmentGraphTypeMustExistInTheSchema.cs" />
     <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_2_InlineFragmentGraphTypeMustExistInTheSchema.cs" />

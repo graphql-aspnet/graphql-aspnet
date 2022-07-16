@@ -126,5 +126,42 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task TypeNameOnAUnionReturn_YieldsResults()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<UnionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                      retrieveUnion  {
+                         ... on TwoPropertyObject {
+                                property1 
+                                property2
+                         }
+                         __typename
+                      }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveUnion"" : {
+                            ""property1"" : ""prop1"",
+                            ""property2"" : 5,
+                            ""__typename"" : ""TwoPropertyObject""
+                       }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

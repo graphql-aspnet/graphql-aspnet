@@ -87,6 +87,7 @@ namespace GraphQL.AspNet.Tests.Security
                 }
               ]
             }";
+
             expectedResults = expectedResults.Replace("[TIME_STAMP]", now.ToRfc3339String());
 
             CommonAssertions.AreEqualJsonStrings(expectedResults, result);

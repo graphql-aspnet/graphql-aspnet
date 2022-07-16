@@ -50,5 +50,12 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The count.</value>
         int Count { get; }
+
+        /// <summary>
+        /// Gets a subset of fields which are required as indicated by an
+        /// INPUT_OBJECT graph type.
+        /// </summary>
+        /// <value>The required fields.</value>
+        public IReadOnlyList<IGraphField> RequiredFields { get; }
     }
 }

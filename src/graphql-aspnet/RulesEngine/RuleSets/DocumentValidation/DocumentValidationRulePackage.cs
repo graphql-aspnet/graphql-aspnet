@@ -145,6 +145,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             var steps = new List<IRuleStep<DocumentValidationContext>>();
             steps.Add(new Rule_5_5_1_2_InlineFragmentGraphTypeMustExistInTheSchema());
             steps.Add(new Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind());
+            steps.Add(new Rule_5_5_2_3_1_ObjectFragmentSpreadInObjectCanSpreadInContext());
+            steps.Add(new Rule_5_5_2_3_2_AbstractFragmentSpreadInObjectCanSpreadInContext());
+            steps.Add(new Rule_5_5_2_3_3_ObjectFragmentSpreadInAbstractCanSpreadInContext());
+            steps.Add(new Rule_5_5_2_3_4_AbstractFragmentSpreadInAbstractCanSpreadInContext());
 
             _stepCollection.Add(DocumentPartType.InlineFragment, steps);
         }
@@ -155,7 +159,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             steps.Add(new FieldSelection_DocumentPartCheck());
             steps.Add(new Rule_5_3_1_FieldMustExistOnTargetGraphType());
             steps.Add(new Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs());
-            steps.Add(new Rule_5_3_3_LeafReturnMustNotHaveChildFields());
+            steps.Add(new Rule_5_3_3_A_LeafFieldMustNotHaveChildFields());
+            steps.Add(new Rule_5_3_3_B_NonLeafFieldMustHaveChildField());
             steps.Add(new Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField());
 
             _stepCollection.Add(DocumentPartType.Field, steps);

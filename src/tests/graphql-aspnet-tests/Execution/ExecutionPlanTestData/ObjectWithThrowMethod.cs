@@ -20,5 +20,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
         {
             throw new Exception("Failure from ObjectWithThrowMethod");
         }
+
+        public string ItemProperty { get; set; }
     }
 }

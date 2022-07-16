@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
     /// that the target type of the named fragment CAN be spread into the given object.
     /// </summary>
     internal class Rule_5_5_2_3_1_ObjectFragmentSpreadInObjectCanSpreadInContext
-        : RuleBase_5_5_2_3_FragmentCanSpreadInContext
+        : Rule_5_5_2_3_BaseFragmentCanSpreadInContext
     {
         /// <summary>
         /// Determines if the target graph type COULD BE spread into the active context graph type.

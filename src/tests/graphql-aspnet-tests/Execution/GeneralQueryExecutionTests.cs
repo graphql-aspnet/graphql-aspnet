@@ -105,11 +105,22 @@ namespace GraphQL.AspNet.Tests.Execution
         public async Task WhenNoLeafValuesAreRequested_ItemIsReturnedAsNullAndPropegated()
         {
             var server = new TestServerBuilder()
-                        .AddType<SimpleExecutionController>()
+                        .AddType<UnionController>()
                         .Build();
 
             var builder = server.CreateQueryContextBuilder();
-            builder.AddQueryText("query Operation1{  simple {  simpleQueryMethod  } }");
+
+            // retrieveUnion only returns TwoPropertyObject
+            // since the declaration does not declare what to do with the value
+            // it should be dropped
+            builder.AddQueryText(@"query Operation1
+            {
+                    retrieveUnion {
+                        ... on TwoPropertyObjectV2 {
+                             property1
+                        }
+                    }
+            }");
             builder.AddOperationName("Operation1");
 
             var result = await server.RenderResult(builder);
@@ -181,7 +192,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
-                    .AddQueryText("query {  simple {  throwFromController } }");
+                    .AddQueryText("query {  simple {  throwFromController { itemProperty } } }");
 
             // the controller method returns an object with a single mapped method "ExecuteThrow" that throws an exception
             // this is executed through the graphmethod resolver (not the controller action resolver) allowing an internal

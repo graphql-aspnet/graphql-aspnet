@@ -41,6 +41,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
         }
 
+        /// <inheritdoc />
         public override string Description => $"Field: {Field?.Name ?? "-unknown-"}";
     }
 }

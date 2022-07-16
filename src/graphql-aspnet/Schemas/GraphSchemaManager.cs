@@ -56,8 +56,12 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         private void EnsureSchemaDependencies()
         {
-            this.Schema.EnsureAppliedDirectives();
+            // all schemas depend on String because of the __typename field
+            // applied to various graphtypes included the required query operation
+            this.EnsureGraphType<string>();
 
+            // ensure top level schema directives are accounted for
+            this.Schema.EnsureAppliedDirectives();
             foreach (var appliedDirective in this.Schema.AppliedDirectives.Where(x => x.DirectiveType != null))
             {
                 this.EnsureGraphType(

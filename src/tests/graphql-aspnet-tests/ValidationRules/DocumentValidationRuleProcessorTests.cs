@@ -73,12 +73,15 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // leaf fields must not have a child field set (name is a string, it has no fields)
             AddQuery("5.3.3", "query Operation1{ peopleMovers { elevator(id: 5){id, name { lastName } } } }");
 
-            // argument must be defined on the field in the schema
-            // id is a required arg on the field (added to prevent a flag of rule 5.4.2.1)
-            AddQuery("5.4.1", "query Operation1{ peopleMovers { elevator(id: 5, notAnArgument: 5){ id name } } }");
+            // non-leaf fields must have a child field set (elevator is an object)
+            AddQuery("5.3.3", "query Operation1{ peopleMovers { elevator(id: 5) } }");
 
-            // argument must be defined on the directive in the schema
-            // someValue is the required arg on restrict (added to prevent a flag of rule 5.4.2.1)
+            // argument must be defined on the field in the schema  (notAnArg is not defined)
+            // note: id is a required arg on the field (added to prevent a flag of rule 5.4.2.1 in this test)
+            AddQuery("5.4.1", "query Operation1{ peopleMovers { elevator(id: 5, notAnArg: 5){ id name } } }");
+
+            // argument must be defined on the directive in the schema (notAnArg is not defined)
+            // note: someValue is a required arg on restrict (added to prevent a flag of rule 5.4.2.1 in this test)
             AddQuery("5.4.1", "query Operation1{ peopleMovers @restrict(notAnArg: 1, someValue: 1) { elevator(id: 5){ id name } } }");
 
             // arguments must be unique (field)
@@ -105,17 +108,18 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // inlined fragments must have a declared target type (invalid type bob)
             AddQuery("5.5.1.2", "query Operation1{ peopleMover(id: 5) { ... on Bob  { id } } } ");
 
-            // all declared target graph types must be Union, interface or object on named fragment
-            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1  } } } fragment frag1 on String {  }");
+            // all declared target types of a fragment must be Union, interface or object on named fragment
+            // frag 1 declars a target of the string scalar
+            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1  } } } fragment frag1 on String { unknownField1  }");
 
             // all declared target graph types must be Union, interface or object on inline fragment
-            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ... on String { } } } } ");
+            AddQuery("5.5.1.3", "query Operation1{ peopleMovers { elevator(id: 5){ ... on String { unknownField1 } } } } ");
 
             // all declared named fragments must be spread at least once
             AddQuery("5.5.1.4", "query Operation1{ peopleMovers { elevator(id: 5){ id name } } } fragment frag1 on Elevator { id }");
 
             // any spread named fragment must exist in the document
-            AddQuery("5.5.2.1", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1 } } }");
+            AddQuery("5.5.2.1", "query Operation1{ peopleMovers { elevator(id: 5){ id ...frag1 } } }");
 
             // spreading a named fragment must not form a cycle
             AddQuery("5.5.2.2", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1 } } } fragment frag1 on Elevator { ...frag2 id name } fragment frag2 on Elevator { ...frag1 height} ");
@@ -124,17 +128,33 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // (Elevator is not an Escalator)
             AddQuery("5.5.2.3.1", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1 } } } fragment frag1 on Escalator { id name }");
 
+            // spreading an inline fragment: Object inside object (objects must match)
+            // (Elevator is not an Escalator)
+            AddQuery("5.5.2.3.1", "query Operation1{ peopleMovers { elevator(id: 5){ ... on Escalator {id} } } } ");
+
             // spreading a fragment: Abstract inside object (object must "be a part of" the abstract type)
             // (Elevator does not implement interface HoriztonalMover)
             AddQuery("5.5.2.3.2", "query Operation1{ peopleMovers { elevator(id: 5){ ...frag1 } } } fragment frag1 on HorizontalMover { id }");
+
+            // spreading a inline fragment: Abstract inside object (object must "be a part of" the abstract type)
+            // (Elevator does not implement interface HoriztonalMover)
+            AddQuery("5.5.2.3.2", "query Operation1{ peopleMovers { elevator(id: 5){ ... on HorizontalMover { id } } } }");
 
             // spreading a fragment: object inside an abstract (abstract must "contain" the object )
             // (HoriztonalMover is not implemented by Elevator)
             AddQuery("5.5.2.3.3", "query Operation1{ peopleMovers { horizontalMover (id: \"5\"){ ...frag1 } } } fragment frag1 on Elevator { id name }");
 
+            // spreading a inline fragment: object inside an abstract (abstract must "contain" the object )
+            // (HoriztonalMover is not implemented by Elevator)
+            AddQuery("5.5.2.3.3", "query Operation1{ peopleMovers { horizontalMover (id: \"5\"){ ...on Elevator { id name } } } }");
+
             // spreading a fragment: abstract inside an abstract (abstract must "contain" an intersection with other abstract)
             // (no object types implement both HorizontalMover and VerticalMover interfaces)
             AddQuery("5.5.2.3.4", "query Operation1{ peopleMovers { horizontalMover(id: \"5\"){ ...frag1 } } } fragment frag1 on VerticalMover { id }");
+
+            // spreading a inline fragment: abstract inside an abstract (abstract must "contain" an intersection with other abstract)
+            // (no object types implement both HorizontalMover and VerticalMover interfaces)
+            AddQuery("5.5.2.3.4", "query Operation1{ peopleMovers { horizontalMover(id: \"5\"){ ...on VerticalMover { id } } } }");
 
             // required argument must be provided (matchElevator accepts in an input object of "Input_Elevator", simulate passing all possible non-object types: number, stirng, enum, bool)
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: 5) { id name } } }");

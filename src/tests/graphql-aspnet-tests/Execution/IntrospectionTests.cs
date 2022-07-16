@@ -1092,7 +1092,7 @@ namespace GraphQL.AspNet.Tests.Execution
                             {
                                __type(name : ""SodaTypes"")
                               {
-                                 name kind possibleTypes { name kind } fields
+                                 name kind possibleTypes { name kind }
                               }
                             }");
 
@@ -1113,8 +1113,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                             ""name"": ""SodaTypeB"",
                                             ""kind"": ""OBJECT""
                                         }
-                                    ],
-                                    ""fields"" : null
+                                    ]
                                 }
                            }
                        } ";

@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc cref="IFieldDocumentPart.Field" />
-        public IGraphField Field { get; }
+        public IGraphField Field { get; set; }
 
         /// <inheritdoc cref="IFieldDocumentPart.Name" />
         public ReadOnlyMemory<char> Name => this.Node.FieldName;

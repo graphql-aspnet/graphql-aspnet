@@ -19,27 +19,24 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
     /// <summary>
     /// A base class providing common functionality for the 5.5.2.3 rules.
     /// </summary>
-    internal abstract class RuleBase_5_5_2_3_FragmentCanSpreadInContext
-        : DocumentPartValidationRuleStep<IFragmentSpreadDocumentPart>
+    internal abstract class Rule_5_5_2_3_BaseFragmentCanSpreadInContext
+        : DocumentPartValidationRuleStep
     {
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             var str = this.RuleNumber;
-            if (!base.ShouldExecute(context))
+
+            if (!(context.ActivePart is IFragmentSpreadDocumentPart) && !(context.ActivePart is IInlineFragmentDocumentPart))
                 return false;
 
             if (context.ActivePart?.GraphType == null || context.ActivePart.Parent?.GraphType == null)
                 return false;
 
+            if (!this.AllowedTargetGraphTypeKinds.Contains(context.ActivePart.GraphType.Kind))
+                return false;
+
             if (!this.AllowedFieldSetGraphTypeKinds.Contains(context.ActivePart.Parent.GraphType.Kind))
-                return false;
-
-            var targetGraphType = ((IFragmentSpreadDocumentPart)context.ActivePart).GraphType;
-            if (targetGraphType == null)
-                return false;
-
-            if (!this.AllowedTargetGraphTypeKinds.Contains(targetGraphType.Kind))
                 return false;
 
             return true;
@@ -48,14 +45,14 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
+            var str = this.RuleNumber;
             // both objects should exist if the rule chain is followed
             // but do a null check just in case
-            var fragmentPointer = (IFragmentSpreadDocumentPart)context.ActivePart;
-            var targetGraphType = fragmentPointer.GraphType;
+            var targetGraphType = context.ActivePart.GraphType;
             IGraphType spreadInGraphType = null;
 
             // this should always be true
-            if (fragmentPointer.Parent is IFieldSelectionSetDocumentPart fs)
+            if (context.ActivePart.Parent is IFieldSelectionSetDocumentPart fs)
                 spreadInGraphType = fs.GraphType;
 
             if (targetGraphType == null || spreadInGraphType == null)
@@ -64,9 +61,17 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
             var rulePassed = this.CanAcceptGraphType(context.Schema, spreadInGraphType, targetGraphType);
             if (!rulePassed)
             {
+                string desc;
+                if (context.ActivePart is IFragmentSpreadDocumentPart fsdp)
+                    desc = $"named fragment '{fsdp.FragmentName.ToString()}'";
+                else if (context.ActivePart is IInlineFragmentDocumentPart inlineFrag)
+                    desc = $"inline fragment";
+                else
+                    desc = "~unknown item~"; // technically impossible based on ShouldExecute
+
                 this.ValidationError(
                     context,
-                    $"The named fragment '{fragmentPointer.FragmentName.ToString()}' has a target graph type " +
+                    $"The {desc} has a target graph type " +
                     $"named '{targetGraphType.Name}' (Kind: '{targetGraphType.Kind.ToString()}') which cannot be coerced " +
                     $"into the current selection set's target graph type of '{spreadInGraphType?.Name}'.");
             }

@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         ReadOnlyMemory<char> Alias { get; }
 
         /// <summary>
-        /// Gets the field reference pointed to by this instance as its declared in the schema.
+        /// Gets or sets the field reference pointed to by this instance as its declared in the schema.
         /// </summary>
         /// <value>The field.</value>
-        IGraphField Field { get; }
+        IGraphField Field { get; set; }
 
         /// <summary>
         /// Gets the field selection set, if any, contained in this field.

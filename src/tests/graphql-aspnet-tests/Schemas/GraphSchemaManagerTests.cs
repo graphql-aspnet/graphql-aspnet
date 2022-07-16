@@ -153,11 +153,12 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.Operations.ContainsKey(GraphOperationType.Query));
             Assert.IsFalse(schema.Operations.ContainsKey(GraphOperationType.Mutation));
 
-            Assert.AreEqual(7, schema.KnownTypes.Count);
+            Assert.AreEqual(8, schema.KnownTypes.Count);
 
-            // expect 2 scalars
+            // expect 3 scalars
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.FLOAT));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.DATETIME));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING));
 
             // expect 5 types to be generated
             // ----------------------------------
@@ -437,8 +438,9 @@ namespace GraphQL.AspNet.Tests.Schemas
             var schema = new GraphSchema() as ISchema;
             var manager = new GraphSchemaManager(schema);
             manager.EnsureGraphType(typeof(RandomEnum));
-            Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
+            Assert.AreEqual(3, schema.KnownTypes.Count);  // added type + query + string
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(RandomEnum)));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string)));
         }
 
         [Test]
@@ -447,8 +449,9 @@ namespace GraphQL.AspNet.Tests.Schemas
             var schema = new GraphSchema() as ISchema;
             var manager = new GraphSchemaManager(schema);
             manager.EnsureGraphType(typeof(RandomEnum), TypeKind.ENUM);
-            Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
+            Assert.AreEqual(3, schema.KnownTypes.Count);  // added type + query + string
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(RandomEnum), TypeKind.ENUM));
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string), TypeKind.SCALAR));
         }
 
         [Test]
@@ -470,9 +473,11 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // object will be coerced to enum
             manager.EnsureGraphType(typeof(RandomEnum), TypeKind.OBJECT);
-            Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
+            Assert.AreEqual(3, schema.KnownTypes.Count);  // added type + query + string
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string), TypeKind.SCALAR));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(RandomEnum), TypeKind.ENUM));
             Assert.IsFalse(schema.KnownTypes.Contains(typeof(RandomEnum), TypeKind.OBJECT));
+
         }
 
         [Test]
@@ -514,9 +519,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             manager.EnsureGraphType(typeof(int));
             manager.EnsureGraphType(typeof(int));
 
-            Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
+            Assert.AreEqual(3, schema.KnownTypes.Count);  // added type + query + string
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(int)));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.INT));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
         }
 
@@ -528,11 +534,12 @@ namespace GraphQL.AspNet.Tests.Schemas
             manager.EnsureGraphType(typeof(int));
             manager.EnsureGraphType(typeof(long));
 
-            Assert.AreEqual(3, schema.KnownTypes.Count); // added types + query
+            Assert.AreEqual(4, schema.KnownTypes.Count); // added types + query + string
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(int)));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.INT));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(typeof(long)));
             Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.LONG));
+            Assert.IsNotNull(schema.KnownTypes.FindGraphType(Constants.ScalarNames.STRING));
         }
 
         [Test]
@@ -542,9 +549,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             var manager = new GraphSchemaManager(schema);
             manager.EnsureGraphType(typeof(IEnumerable<int>));
 
-            Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
+            Assert.AreEqual(3, schema.KnownTypes.Count);  // added type + query + string
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
             Assert.IsTrue(schema.KnownTypes.Contains(Constants.ScalarNames.INT));
+            Assert.IsTrue(schema.KnownTypes.Contains(Constants.ScalarNames.STRING));
         }
 
         [Test]
@@ -554,9 +562,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             var manager = new GraphSchemaManager(schema);
             manager.EnsureGraphType(typeof(List<int>));
 
-            Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
+            Assert.AreEqual(3, schema.KnownTypes.Count);  // added type + query + string
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
             Assert.IsTrue(schema.KnownTypes.Contains(Constants.ScalarNames.INT));
+            Assert.IsTrue(schema.KnownTypes.Contains(Constants.ScalarNames.STRING));
         }
 
         [Test]
@@ -569,9 +578,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             schema.KnownTypes.EnsureGraphType(intScalar, typeof(int));
             manager.EnsureGraphType(typeof(List<int>));
 
-            Assert.AreEqual(2, schema.KnownTypes.Count);  // added type + query
+            Assert.AreEqual(3, schema.KnownTypes.Count);  // added type + query + string
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));
             Assert.IsTrue(schema.KnownTypes.Contains(Constants.ScalarNames.INT));
+            Assert.IsTrue(schema.KnownTypes.Contains(Constants.ScalarNames.STRING));
 
             var includedType = schema.KnownTypes.FindGraphType(typeof(int));
             Assert.AreEqual(includedType, intScalar);
@@ -826,5 +836,24 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Fail("No exception was thrown when one was expected.");
         }
+
+        [Test]
+        public void EnsureGraphType_WhenATypeWithNoStringsIsAdded_StringIsStillAddedBecauseOfTypeName()
+        {
+            var schema = new GraphSchema() as ISchema;
+            schema.SetNoAlterationConfiguration();
+
+            var manager = new GraphSchemaManager(schema);
+
+            manager.EnsureGraphType<ObjectWithNoStrings>();
+
+            // query, ObjectWittNoStrings, int, string
+            Assert.AreEqual(4, schema.KnownTypes.Count);
+
+            Assert.AreEqual(1, schema.Operations.Values.Count);
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(ObjectWithNoStrings))); // the item itself
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(int)));  // for the declared property
+            Assert.IsTrue(schema.KnownTypes.Contains(typeof(string))); // for __typename
+        }
     }
-}
+};

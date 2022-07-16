@@ -42,6 +42,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// if any.
         /// </summary>
         /// <value>The named fragment in the document.</value>
-        INamedFragmentDocumentPart Fragment { get; }
+        INamedFragmentDocumentPart Fragment { get;  }
     }
 }

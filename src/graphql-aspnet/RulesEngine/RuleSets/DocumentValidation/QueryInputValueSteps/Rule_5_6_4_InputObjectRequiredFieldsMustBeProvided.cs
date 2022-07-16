@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
             var complexValue = context.ActivePart as IComplexSuppliedValueDocumentPart;
             var argument = complexValue.Parent as IInputArgumentDocumentPart;
             var graphType = complexValue.GraphType as IInputObjectGraphType;
-            var requiredFields = graphType?.Fields.Where(x => x.TypeExpression.IsRequired).ToList();
+            var requiredFields = graphType?.Fields.RequiredFields;
 
             if (requiredFields == null)
             {
