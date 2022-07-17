@@ -202,9 +202,6 @@ namespace GraphQL.AspNet.Execution
                         $"See inner exception(s) for details.",
                         innerException: causalException);
                 }
-
-                var eventLogger = scopedProvider.ServiceProvider.GetService<IGraphEventLogger>();
-                eventLogger?.TypeSystemDirectiveApplied<TSchema>(targetDirective, item);
             }
 
             return item.AppliedDirectives.Count > 0;

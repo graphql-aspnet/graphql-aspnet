@@ -48,10 +48,11 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
             var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
             if (authOption == AuthorizationMethod.PerField)
             {
-                this.AddDirectiveAuthorizationMiddleware();
+                this.AddAuthorizationMiddleware();
             }
 
-            this.AddResolverDirectiveMiddleware();
+            this.AddResolverMiddleware()
+                .AddLoggingMiddleware();
 
             return this;
         }
@@ -60,7 +61,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
         /// Adds the middleware component to resolve the field context by invoking the assigned field resolver.
         /// </summary>
         /// <returns>DirectiveExecutionPipelineHelper.</returns>
-        public DirectiveExecutionPipelineHelper<TSchema> AddResolverDirectiveMiddleware()
+        public DirectiveExecutionPipelineHelper<TSchema> AddResolverMiddleware()
         {
             _pipelineBuilder.AddMiddleware<InvokeDirectiveResolverMiddleware<TSchema>>();
             return this;
@@ -80,9 +81,20 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
         /// Adds the middleware component to authorize the user on the context to the directive being processed.
         /// </summary>
         /// <returns>FieldExecutionPipelineHelper&lt;TSchema&gt;.</returns>
-        public DirectiveExecutionPipelineHelper<TSchema> AddDirectiveAuthorizationMiddleware()
+        public DirectiveExecutionPipelineHelper<TSchema> AddAuthorizationMiddleware()
         {
             _pipelineBuilder.AddMiddleware<AuthorizeDirectiveMiddleware<TSchema>>();
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the middleware component used to log the successful completion of
+        /// appling a directive to a target.
+        /// </summary>
+        /// <returns>DirectiveExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        public DirectiveExecutionPipelineHelper<TSchema> AddLoggingMiddleware()
+        {
+            _pipelineBuilder.AddMiddleware<LogDirectiveExecutionMiddleware<TSchema>>();
             return this;
         }
     }

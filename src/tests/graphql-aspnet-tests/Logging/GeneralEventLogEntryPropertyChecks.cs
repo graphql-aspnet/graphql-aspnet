@@ -16,17 +16,22 @@ namespace GraphQL.AspNet.Tests.Logging
     using System.Security.Principal;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.ExecutionEvents;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
+    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Logging.LoggerTestData;
@@ -287,7 +292,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var entry = new SchemaItemAuthorizationStartedLogEntry(authContext);
 
-            Assert.AreEqual(LogEventIds.FieldAuthorizationStarted.Id, entry.EventId);
+            Assert.AreEqual(LogEventIds.SchemaItemAuthorizationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
@@ -312,7 +317,7 @@ namespace GraphQL.AspNet.Tests.Logging
             authContext.Result = SchemaItemSecurityChallengeResult.Fail("test message 1");
             var entry = new SchemaItemAuthorizationCompletedLogEntry(authContext);
 
-            Assert.AreEqual(LogEventIds.FieldAuthorizationCompleted.Id, entry.EventId);
+            Assert.AreEqual(LogEventIds.SchemaItemAuthorizationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
@@ -339,7 +344,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var entry = new SchemaItemAuthenticationStartedLogEntry(authContext);
 
-            Assert.AreEqual(LogEventIds.FieldAuthenticationStarted.Id, entry.EventId);
+            Assert.AreEqual(LogEventIds.SchemaItemAuthenticationStarted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.IsNotNull(entry.ToString());
@@ -373,7 +378,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var entry = new SchemaItemAuthenticationCompletedLogEntry(authContext, authResult.Object);
 
-            Assert.AreEqual(LogEventIds.FieldAuthenticationCompleted.Id, entry.EventId);
+            Assert.AreEqual(LogEventIds.SchemaItemAuthenticationCompleted.Id, entry.EventId);
             Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual("someOtherUser", entry.Username); // ensure its the user from the authResult
@@ -504,7 +509,6 @@ namespace GraphQL.AspNet.Tests.Logging
             var item = new Mock<ISchemaItem>();
             item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.GraphFieldPath(GraphCollection.Types, "path1"));
 
-            var exception = new Exception("inner error");
             var entry = new TypeSystemDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
 
             Assert.AreEqual(LogEventIds.TypeSystemDirectiveApplied.Id, entry.EventId);
@@ -512,6 +516,33 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
             Assert.AreEqual(item.Object.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
+        }
+
+        [Test]
+        public void ExecutionDirectiveAppliedLogEntry()
+        {
+            var directive = new Mock<IDirective>();
+            directive.Setup(x => x.Name).Returns("The Directive");
+            directive.Setup(x => x.InternalName).Returns("The Directive Internal");
+
+            var item = new Mock<IDocumentPart>();
+            item.Setup(x => x.Node).Returns(
+                new FieldNode(
+                    new SourceLocation(999, 33, 5),
+                    "field".AsMemory(),
+                    "field".AsMemory()));
+
+            var path = new GraphFieldPath(GraphCollection.Types, "type1");
+
+            var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
+
+            Assert.AreEqual(LogEventIds.ExecutionDirectiveApplied.Id, entry.EventId);
+            Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
+            Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
+            Assert.AreEqual(DirectiveLocation.FIELD.ToString(), entry.DirectiveLocation);
+            Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
+            Assert.AreEqual(33, entry.SourceLine);
+            Assert.AreEqual(5, entry.SourceLineIndex);
         }
     }
 }

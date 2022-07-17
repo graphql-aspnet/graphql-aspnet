@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A base class defining common elements for different field types within a query

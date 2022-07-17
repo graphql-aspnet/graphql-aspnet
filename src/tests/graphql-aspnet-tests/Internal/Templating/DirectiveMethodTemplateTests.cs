@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphDirectiveMethodTemplateTests
+    public class DirectiveMethodTemplateTests
     {
         [Test]
         public void SimpleDescriptor_AllDefaults_GeneralPropertyCheck()

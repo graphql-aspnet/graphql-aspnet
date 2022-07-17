@@ -122,25 +122,29 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Registers the controller to the growing schema.
+        /// Registers the controller to the schema.
         /// </summary>
         /// <typeparam name="TController">The controller to add.</typeparam>
+        /// <param name="customLifetime">When supplied, the controller will be registered
+        /// with the given service lifetime, otherwise the globally configured controller lifeime will be used.</param>
         /// <returns>SchemaOptions.</returns>
-        public SchemaOptions AddController<TController>()
+        public SchemaOptions AddController<TController>(ServiceLifetime? customLifetime = null)
             where TController : GraphController
         {
-            return this.AddType(typeof(TController));
+            return this.AddType(typeof(TController), customLifetime);
         }
 
         /// <summary>
-        /// Registers the directive to the growing schema.
+        /// Registers the directive to the schema.
         /// </summary>
         /// <typeparam name="TDirective">The directive to add.</typeparam>
+        /// <param name="customLifetime">When supplied, the directive will be registered
+        /// with the given service lifetime, otherwise the globally configured controller lifeime will be used.</param>
         /// <returns>SchemaOptions.</returns>
-        public SchemaOptions AddDirective<TDirective>()
+        public SchemaOptions AddDirective<TDirective>(ServiceLifetime? customLifetime = null)
             where TDirective : GraphDirective
         {
-            return this.AddType(typeof(TDirective));
+            return this.AddType(typeof(TDirective), customLifetime);
         }
 
         /// <summary>
@@ -152,12 +156,17 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddType(Type type)
         {
+            return this.AddType(type, null);
+        }
+
+        private SchemaOptions AddType(Type type, ServiceLifetime? customLifeForServices = null)
+        {
             Validation.ThrowIfNull(type, nameof(type));
             var newAdd = _possibleTypes.Add(new SchemaTypeToRegister(type));
             if (newAdd)
             {
                 if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
-                    this.RegisterTypeAsDependentService(type);
+                    this.RegisterTypeAsDependentService(type, customLifeForServices);
             }
 
             return this;
@@ -175,12 +184,13 @@ namespace GraphQL.AspNet.Configuration
             return this.AddType(typeof(TType));
         }
 
-        private void RegisterTypeAsDependentService(Type type)
+        private void RegisterTypeAsDependentService(Type type, ServiceLifetime? lifeTimeScope = null)
         {
+            lifeTimeScope = lifeTimeScope ?? GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime;
             var serviceToRegister = new ServiceToRegister(
                 type,
                 type,
-                GraphQLProviders.GlobalConfiguration.ControllerServiceLifeTime,
+                lifeTimeScope.Value,
                 false);
 
             _registeredServices.Add(serviceToRegister);

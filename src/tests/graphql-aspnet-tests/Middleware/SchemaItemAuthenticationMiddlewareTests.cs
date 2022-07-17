@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Middleware
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class FieldAuthenticationMiddlewareTests
+    public class SchemaItemAuthenticationMiddlewareTests
     {
         private class TestHandler : IAuthenticationHandler
         {
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         private Mock<IUserSecurityContext> _userSecurityContext;
         private Dictionary<string, ClaimsPrincipal> _usersByScheme;
 
-        public FieldAuthenticationMiddlewareTests()
+        public SchemaItemAuthenticationMiddlewareTests()
         {
             var defaultScheme = new AuthenticationScheme(
                 DEFAULT_SCHEME,

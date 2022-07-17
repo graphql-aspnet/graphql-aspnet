@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating
 {
+    using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -17,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphDirectiveTemplateTests
+    public class DirectiveTemplateTests
     {
         [Test]
         public void Simpletemplate_AllDefaults_GeneralPropertyCheck()
@@ -105,6 +106,24 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.ValidateOrThrow();
 
             Assert.IsTrue(template.IsRepeatable);
+        }
+
+        [Test]
+        public void SecurityPolicices_AreParsedCorrectly()
+        {
+            var template = new GraphDirectiveTemplate(typeof(DirectiveWithSecurityRequirements));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(2, template.SecurityPolicies.Count);
+
+            Assert.IsFalse(template.SecurityPolicies.AllowAnonymous);
+
+            Assert.IsTrue(template.SecurityPolicies.ElementAt(0).IsNamedPolicy);
+            Assert.AreEqual("CustomPolicy", template.SecurityPolicies.ElementAt(0).PolicyName);
+
+            Assert.IsFalse(template.SecurityPolicies.ElementAt(1).IsNamedPolicy);
+            CollectionAssert.AreEquivalent(new string[] {"CustomRole1", "CustomRole2" }, template.SecurityPolicies.ElementAt(1).AllowedRoles);
         }
     }
 }

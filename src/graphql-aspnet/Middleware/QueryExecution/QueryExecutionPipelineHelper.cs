@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public QueryExecutionPipelineHelper<TSchema> AddQueryPlanCacheMiddleware()
         {
-            this.PipelineBuilder.AddMiddleware<QueryPlanCacheMiddleware<TSchema>>();
+            this.PipelineBuilder.AddMiddleware<CacheQueryPlanMiddleware<TSchema>>();
             return this;
         }
 

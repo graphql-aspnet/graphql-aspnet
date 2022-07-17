@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// </summary>
         /// <param name="context">The context.</param>
         public SchemaItemAuthorizationCompletedLogEntry(GraphSchemaItemSecurityContext context)
-            : base(LogEventIds.FieldAuthorizationCompleted)
+            : base(LogEventIds.SchemaItemAuthorizationCompleted)
         {
             this.PipelineRequestId = context?.Request.Id;
             this.SchemaItemPath = context?.Request?.SecureSchemaItem.Route.Path;

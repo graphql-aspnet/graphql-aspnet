@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphControllerTemplateTests
+    public class ControllerTemplateTests
     {
         [Test]
         public void Parse_GraphRootController_UsesEmptyRoutePath()

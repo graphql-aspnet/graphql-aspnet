@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Logging
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.Extensions.Logging;
 
@@ -89,27 +90,27 @@ namespace GraphQL.AspNet.Logging
 
         /// <summary>
         /// A log event that occurs when the security middleware initiates an authentication challenge to evaluate
-        /// field level policies.
+        /// security policies against a schema item (commonly a field or directive).
         /// </summary>
-        public static EventId FieldAuthenticationStarted = new EventId(ROOT_EXECUTION_EVENT_ID + 510, "GraphQL Authentication Started");
+        public static EventId SchemaItemAuthenticationStarted = new EventId(ROOT_EXECUTION_EVENT_ID + 510, "GraphQL Schema Item Authentication Started");
 
         /// <summary>
-        /// A log event that occurs when the security middleware completes an authentication challenge to evaluate
-        /// field level policies.
+        /// A log event that occurs when the security middleware completes an authentication challenge
+        /// against a schema item (commonly a field or directive).
         /// </summary>
-        public static EventId FieldAuthenticationCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 515, "GraphQL Authentication Completed");
+        public static EventId SchemaItemAuthenticationCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 515, "GraphQL Schema Item Authentication Completed");
 
         /// <summary>
         /// A log event that occurs when the security middleware initiates an authorization challenge to evaluate
-        /// field level policies.
+        /// security policies against a schema item (commonly a field or directive).
         /// </summary>
-        public static EventId FieldAuthorizationStarted = new EventId(ROOT_EXECUTION_EVENT_ID + 520, "GraphQL Authorization Started");
+        public static EventId SchemaItemAuthorizationStarted = new EventId(ROOT_EXECUTION_EVENT_ID + 520, "GraphQL Schema Item Authorization Started");
 
         /// <summary>
-        /// A log event that occurs when the security middleware completes an authorization challenge to evaluate
-        /// field level policies.
+        /// A log event that occurs when the security middleware completes an authorization challenge
+        /// against a schema item (commonly a field or directive).
         /// </summary>
-        public static EventId FieldAuthorizationCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 530, "GraphQL Authorization Completed");
+        public static EventId SchemaItemAuthorizationCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 530, "GraphQL SchemaItem Authorization Completed");
 
         /// <summary>
         /// A log event indicating that a single field of data in a query has completed
@@ -158,5 +159,11 @@ namespace GraphQL.AspNet.Logging
         /// during schema generation.
         /// </summary>
         public static EventId TypeSystemDirectiveApplied = new EventId(ROOT_EXECUTION_EVENT_ID + 810, "GraphQL Type System Directive Applied");
+
+        /// <summary>
+        /// A log entry indicating that a directive was applied to a specific <see cref="IDocumentPart"/>
+        /// during query execution.
+        /// </summary>
+        public static EventId ExecutionDirectiveApplied = new EventId(ROOT_EXECUTION_EVENT_ID + 820, "GraphQL Execution Directive Applied");
     }
 }

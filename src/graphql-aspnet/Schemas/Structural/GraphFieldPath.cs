@@ -130,6 +130,10 @@ namespace GraphQL.AspNet.Schemas.Structural
                     case RouteConstants.SCHEMA_ROOT:
                         _rootCollection = GraphCollection.Schemas;
                         break;
+
+                    case RouteConstants.DOCUMENT_ROOT:
+                        _rootCollection = GraphCollection.Document;
+                        break;
                 }
 
                 // ensure each fragment matches the naming specification

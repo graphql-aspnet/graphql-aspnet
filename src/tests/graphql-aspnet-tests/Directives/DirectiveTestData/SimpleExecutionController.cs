@@ -26,5 +26,15 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
                 Property2 = arg2 > int.MaxValue ? int.MaxValue : Convert.ToInt32(arg2),
             };
         }
+
+        [MutationRoot]
+        public TwoPropertyObject ChangeData(int id)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = "str",
+                Property2 = 5,
+            };
+        }
     }
 }

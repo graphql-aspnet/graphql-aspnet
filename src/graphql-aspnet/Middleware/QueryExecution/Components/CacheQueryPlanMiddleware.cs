@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     /// Attempts to retrieve a query plan from the global cache and assign it to the active context.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the pipeline is being constructed for.</typeparam>
-    public class QueryPlanCacheMiddleware<TSchema> : IQueryExecutionMiddleware
+    public class CacheQueryPlanMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
         private readonly IGraphQueryPlanCacheKeyManager _keyManager;
@@ -31,21 +31,21 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         private readonly ISchemaQueryPlanCacheConfiguration _cacheOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryPlanCacheMiddleware{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="CacheQueryPlanMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        public QueryPlanCacheMiddleware(TSchema schema)
+        public CacheQueryPlanMiddleware(TSchema schema)
              : this(schema, null, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryPlanCacheMiddleware{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="CacheQueryPlanMiddleware{TSchema}" /> class.
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="keyManager">The key manager.</param>
         /// <param name="cacheProvider">The cache provider.</param>
-        public QueryPlanCacheMiddleware(TSchema schema, IGraphQueryPlanCacheKeyManager keyManager, IGraphQueryPlanCacheProvider cacheProvider)
+        public CacheQueryPlanMiddleware(TSchema schema, IGraphQueryPlanCacheKeyManager keyManager, IGraphQueryPlanCacheProvider cacheProvider)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             _cacheOptions = schema.Configuration.QueryCacheOptions;

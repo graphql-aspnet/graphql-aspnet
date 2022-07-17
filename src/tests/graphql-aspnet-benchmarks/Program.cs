@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.Benchmarks
             item.SingleObjectQuery().Wait();
             item.TypeExtensionQuery().Wait();
             item.MultiActionMethodQuery().Wait();
+            item.IntrospectionQuery().Wait();
             Console.WriteLine("All benchmark tests completed. Execute in release mode, without the debugger attached to run benchmarks.");
 #endif
 

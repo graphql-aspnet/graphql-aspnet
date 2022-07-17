@@ -58,5 +58,31 @@ namespace GraphQL.AspNet.Tests.Directives
             Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
             Assert.AreEqual("5.3.1", result.Messages[0].MetaData["Rule"]);
         }
+
+        [Test]
+        public async Task WhenDirectiveAltersTheAsignedFragmentOnASpread_DocumentFailsValidation()
+        {
+            var server = new TestServerBuilder()
+             .AddType<SimpleExecutionController>()
+             .AddType<TwoPropertyObjectV2>()
+             .AddType<OperationSwapDirective>()
+             .Build();
+
+            // swap the "mutation" top level operation to be
+            // query via a directive, should fail validation
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                    @"mutation @operationSwap {
+                        changeData(id: 5) {
+                            property1
+                        }
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("invalid referenced operation"));
+        }
     }
 }

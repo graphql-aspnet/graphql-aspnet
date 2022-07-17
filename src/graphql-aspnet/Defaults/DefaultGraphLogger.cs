@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -289,6 +290,17 @@ namespace GraphQL.AspNet.Defaults
 
             var entry = new TypeSystemDirectiveAppliedLogEntry<TSchema>(appliedDirective, appliedTo);
             this.Log(LogLevel.Debug, entry);
+        }
+
+        /// <inheritdoc />
+        public virtual void ExecutionDirectiveApplied<TSchema>(IDirective appliedDirective, IDocumentPart appliedTo)
+            where TSchema : class, ISchema
+        {
+            if (!this.IsEnabled(LogLevel.Trace))
+                return;
+
+            var entry = new ExecutionDirectiveAppliedLogEntry<TSchema>(appliedDirective, appliedTo);
+            this.Log(LogLevel.Trace, entry);
         }
 
         /// <inheritdoc />

@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A base class with common functionality of all <see cref="IDocumentPart" />

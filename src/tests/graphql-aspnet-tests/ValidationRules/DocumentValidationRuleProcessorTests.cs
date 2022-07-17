@@ -189,20 +189,36 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // all variable must be of a valid type (HorizontalMover is an interface)
             AddQuery("5.8.2", "query Operation1($var1: HorizontalMover){ peopleMovers { elevator (id: $var1) { id name } } }");
 
+            // all variable must be of a valid type (HorizontalMover is an interface)
+            AddQuery("5.8.2", "query Operation1($var1: HorizontalMover){ peopleMovers { ...frag1 } } fragment frag1 on Query_PeopleMovers { elevator (id: $var1) { id name }  } ");
+
             // all used variables must be declared ($var2 is not declared)
             AddQuery("5.8.3", "query Operation1($var1: Int!){ peopleMovers { elevator (id: $var1) @restrict(someValue: $var2) { id name } } }");
 
+            // all used variables must be declared ($var2 in referenced fragment is not declared by the operation)
+            AddQuery("5.8.3", "query Operation1($var1: Int!){ peopleMovers { elevator (id: $var1) { id }  ...frag1 } } fragment frag1 on Query_PeopleMovers { ele: elevator(id:$var2) { id } }");
+
             // all variable must be used ($var2 is not referenced)
             AddQuery("5.8.4", "query Operation1($var1: Int!, $var2: String){ peopleMovers { elevator (id: $var1) { id name } } }");
+
+            // all variable must be used ($var2 is not referenced through fragment)
+            AddQuery("5.8.4", "query Operation1($var1: Int!, $var2: String){ peopleMovers { ...frag1 } } fragment frag1 on Query_PeopleMovers { elevator (id: $var1) { id name } } ");
 
             // all variable must be valid where used ($var1 is an int as required by elevator:id)
             AddQuery(
                 "5.8.5",
                 "query Operation1($var1: String){ peopleMovers { elevator (id: $var1) { id name } } }");
 
+            // all variable must be valid where used ($var1 is an int as required by elevator:id but
+            // fragment recieves a string from its operation)
+            AddQuery(
+                "5.8.5",
+                "query Operation1($var1: String){ peopleMovers { ... frag1 } } fragment frag1 on Query_PeopleMovers {elevator (id: $var1) { id name } }");
+
             // all variables must be valid where used
-            // $var1 is declared as a string but "horizontalMover" requires an "ID".  Special case where "ID" is declared as a string as well
-            // but since type names don't match a failure must occur
+            // $var1 is declared as a string but "horizontalMover" requires an "ID".
+            // Special case where "GraphID" is declared as a string as well
+            // but since type expressions don't match a failure must occur
             AddQuery(
                 "5.8.5",
                 "query Operation1($var1: String){ peopleMovers { horizontalMover (id: $var1) { id } } }");

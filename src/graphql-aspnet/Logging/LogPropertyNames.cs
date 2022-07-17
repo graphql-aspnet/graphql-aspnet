@@ -315,5 +315,21 @@ namespace GraphQL.AspNet.Logging
         /// A collection of model items that were validated as a set during the execution of a controller action.
         /// </summary>
         public const string MODEL_ITEMS_COLLECTION = "modelItems";
+
+        /// <summary>
+        /// The line of text in a query document.
+        /// </summary>
+        public const string SOURCE_LINE = "queryTextLine";
+
+        /// <summary>
+        /// The 0-based index of the column in line of text in a query document.
+        /// </summary>
+        public const string SOURCE_LINE_INDEX = "queryTextLineIndex";
+
+        /// <summary>
+        /// Gets the location phrase indicating where the directive was executed.
+        /// </summary>
+        /// <value>The directive location.</value>
+        public const string DIRECTIVE_LOCATION = "directiveLocation";
     }
 }

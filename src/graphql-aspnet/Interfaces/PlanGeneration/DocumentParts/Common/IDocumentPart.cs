@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A general interface describing part of a query document and the document parts it may contain.

@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public override DocumentPartType PartType => DocumentPartType.FragmentSpread;
 
         /// <inheritdoc />
-        public INamedFragmentDocumentPart Fragment { get; private set; }
+        public INamedFragmentDocumentPart Fragment { get; set; }
 
         /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -189,6 +190,16 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="appliedDirective">The directive that has been applied.</param>
         /// <param name="appliedTo">The schema item the directive was applied to.</param>
         void TypeSystemDirectiveApplied<TSchema>(IDirective appliedDirective, ISchemaItem appliedTo)
+            where TSchema : class, ISchema;
+
+        /// <summary>
+        /// Recorded whem, during a query execution, an execution directive is successfully applied
+        /// to its target documnet part.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of the schema the under which the directive was applied.</typeparam>
+        /// <param name="appliedDirective">The applied directive.</param>
+        /// <param name="appliedTo">The part of the query document the directive was applied to.</param>
+        void ExecutionDirectiveApplied<TSchema>(IDirective appliedDirective, IDocumentPart appliedTo)
             where TSchema : class, ISchema;
     }
 }

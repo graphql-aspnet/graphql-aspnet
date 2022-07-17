@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphTypeExtensionFieldTemplateTests
+    public class TypeExtensionFieldTemplateTests
     {
         private AspNet.Internal.TypeTemplates.GraphTypeExtensionFieldTemplate CreateExtensionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController

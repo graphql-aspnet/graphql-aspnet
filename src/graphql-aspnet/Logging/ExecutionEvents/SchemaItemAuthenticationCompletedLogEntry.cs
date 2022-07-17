@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <param name="securityContext">The security context.</param>
         /// <param name="authResult">The authentication result.</param>
         public SchemaItemAuthenticationCompletedLogEntry(GraphSchemaItemSecurityContext securityContext, IAuthenticationResult authResult)
-            : base(LogEventIds.FieldAuthenticationCompleted)
+            : base(LogEventIds.SchemaItemAuthenticationCompleted)
         {
             this.PipelineRequestId = securityContext?.Request?.Id;
             this.SchemaItemPath = securityContext?.Request?.SecureSchemaItem?.Route?.Path;

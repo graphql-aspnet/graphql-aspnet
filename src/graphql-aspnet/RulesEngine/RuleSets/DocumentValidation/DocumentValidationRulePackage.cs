@@ -110,6 +110,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             steps.Add(new Rule_5_5_2_3_2_AbstractFragmentSpreadInObjectCanSpreadInContext());
             steps.Add(new Rule_5_5_2_3_3_ObjectFragmentSpreadInAbstractCanSpreadInContext());
             steps.Add(new Rule_5_5_2_3_4_AbstractFragmentSpreadInAbstractCanSpreadInContext());
+            steps.Add(new Internal_FragmentMustMatchSuppliedName());
 
             _stepCollection.Add(DocumentPartType.FragmentSpread, steps);
         }
@@ -122,9 +123,11 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             steps.Add(new Rule_5_2_3_1_SubscriptionsRequire1RootField());
             steps.Add(new Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField());
 
-            // variable checks, the 5.8 series, are evaluated in context of the operation
+            // variable checks, the 5.8 series, are evaluated together,in context of the operation,
             // due to the nature of fragment spreads and variables used
             steps.Add(new Rule_5_8_VariableDeclarationChecks());
+
+            steps.Add(new Internal_OperationAssignedGraphTypeMustMatchExpectedOperationType());
 
             _stepCollection.Add(DocumentPartType.Operation, steps);
         }

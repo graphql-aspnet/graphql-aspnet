@@ -27,13 +27,13 @@ namespace GraphQL.AspNet.Tests.Middleware
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
-    public class SchemaItemAuthenticationMiddlewareTests
+    public class SchemaItemSecurityRequirementsMiddlewareTests
     {
         private IGraphField _field;
         private Mock<IAuthorizationPolicyProvider> _policyProvider;
         private AuthorizationPolicy _defaultPolicy;
 
-        public SchemaItemAuthenticationMiddlewareTests()
+        public SchemaItemSecurityRequirementsMiddlewareTests()
         {
             _policyProvider = new Mock<IAuthorizationPolicyProvider>();
             _policyProvider.Setup(x => x.GetDefaultPolicyAsync())

@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
                 {
                     this.ValidationError(
                         context,
-                        $"The graph type '{graphType.Name}' requires a field named '{field.Name}'.");
+                        $"The input graph type '{graphType.Name}' requires a field named '{field.Name}'.");
 
                     allFieldsAccountedFor = false;
                 }

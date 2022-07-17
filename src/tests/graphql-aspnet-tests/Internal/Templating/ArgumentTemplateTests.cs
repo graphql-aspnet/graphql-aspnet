@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphArgumentTemplateTests
+    public class ArgumentTemplateTests
     {
         private AspNet.Internal.TypeTemplates.GraphArgumentTemplate ExtractParameterTemplate(string paramName, out ParameterInfo paramInfo)
         {

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphActionTemplateTests
+    public class ActionMethodTemplateTests
     {
         private ControllerActionGraphFieldTemplate CreateActionTemplate<TControllerType>(string actionName)
             where TControllerType : GraphController

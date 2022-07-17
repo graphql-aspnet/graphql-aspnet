@@ -19,7 +19,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
     using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
-    /// A collective rule to evaluate all variable targets (5.8.*) at once.
+    /// A collective rule to evaluate all variable targets (5.8.*) at once in context of
+    /// the operation where they are defined.
     /// <br/>
     /// 5.8.1: All Variable Names must be unique per operation
     /// <br/>
@@ -220,7 +221,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                     continue;
 
                 // don't walk a named fragment more than once
-                // cycles may appear that althogh caught by 5.5.2.2 may carry forward here
+                // cycles may appear that, although caught by 5.5.2.2, may carry forward here
                 if (walkedFragments.Contains(fragmentUsage.Fragment))
                     continue;
 

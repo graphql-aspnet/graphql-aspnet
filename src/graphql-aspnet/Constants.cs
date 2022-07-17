@@ -425,6 +425,11 @@ namespace GraphQL.AspNet
             public const string INTROSPECTION_ROOT = DELIMITER_ROOT_START + "introspection" + DELIMITER_ROOT_END;
 
             /// <summary>
+            /// A phrase, used at the start of a route string, to indicate its part of a document
+            /// </summary>
+            public const string DOCUMENT_ROOT = DELIMITER_ROOT_START + "document" + DELIMITER_ROOT_END;
+
+            /// <summary>
             /// The phrase used to seperate individual elements of a route fragement.
             /// </summary>
             public const string PATH_SEPERATOR = "/";
