@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public VirtualGraphField(
             IGraphType parent,
             string fieldName,
-            GraphFieldPath route,
+            SchemaItemPath route,
             string parentTypeName)
         {
             Validation.ThrowIfNull(route, nameof(route));
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public string Name { get; set; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; set; }

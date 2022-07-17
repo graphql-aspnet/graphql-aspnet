@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Schemas
                     $"special characters (such as carrots for generics) and does not start with an underscore.");
             }
 
-            this.Route = new GraphFieldPath(GraphCollection.Schemas, graphName);
+            this.Route = new SchemaItemPath(GraphCollection.Schemas, graphName);
             this.Name = DEFAULT_NAME;
             this.Description = DEFAULT_DESCRIPTION;
         }
@@ -85,6 +85,6 @@ namespace GraphQL.AspNet.Schemas
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
     }
 }

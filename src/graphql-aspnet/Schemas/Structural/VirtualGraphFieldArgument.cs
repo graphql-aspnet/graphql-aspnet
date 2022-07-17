@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             string name,
             string internalName,
             GraphTypeExpression typeExpression,
-            GraphFieldPath route,
+            SchemaItemPath route,
             Type concreteType,
             bool hasDefaultValue,
             object defaultValue = null,
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public bool HasDefaultValue { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
 
         /// <inheritdoc />
         public ISchemaItem Parent { get; }

@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var server = new TestServerBuilder().Build();
 
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;

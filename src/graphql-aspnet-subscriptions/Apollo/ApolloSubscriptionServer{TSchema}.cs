@@ -153,7 +153,7 @@ namespace GraphQL.AspNet.Apollo
 
         private async Task ExecuteSubscriptionEvent(
             ISubscriptionClientProxy client,
-            GraphFieldPath route,
+            SchemaItemPath route,
             object data,
             CancellationToken cancelToken = default)
         {

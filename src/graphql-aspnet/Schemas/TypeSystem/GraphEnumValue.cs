@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             IEnumGraphType parent,
             string name,
             string description,
-            GraphFieldPath route,
+            SchemaItemPath route,
             object internalValue,
             string internalLabel,
             IAppliedDirectiveCollection directives = null)
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
 
         /// <inheritdoc />
         public IEnumGraphType Parent { get; }

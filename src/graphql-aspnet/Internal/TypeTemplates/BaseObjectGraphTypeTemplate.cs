@@ -212,12 +212,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
-        protected virtual GraphFieldPath GenerateFieldPath()
+        protected virtual SchemaItemPath GenerateFieldPath()
         {
             // a standard graph object cannot contain any route pathing or nesting like controllers can
             // before creating hte route, ensure that the declared name, by itself, is valid for graphql
             var graphName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.OBJECT);
-            return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Types, graphName));
+            return new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Types, graphName));
         }
 
         /// <inheritdoc />

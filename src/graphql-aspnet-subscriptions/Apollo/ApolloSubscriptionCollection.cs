@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Apollo
     {
         private object _syncLock = new object();
         private Dictionary<string, ISubscription<TSchema>> _subsById;
-        private Dictionary<GraphFieldPath,  HashSet<ISubscription<TSchema>>> _subsByRoute;
+        private Dictionary<SchemaItemPath,  HashSet<ISubscription<TSchema>>> _subsByRoute;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApolloSubscriptionCollection{TSchema}"/> class.
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Apollo
         public ApolloSubscriptionCollection()
         {
             _subsById = new Dictionary<string, ISubscription<TSchema>>();
-            _subsByRoute = new Dictionary<GraphFieldPath, HashSet<ISubscription<TSchema>>>(GraphFieldPathComparer.Instance);
+            _subsByRoute = new Dictionary<SchemaItemPath, HashSet<ISubscription<TSchema>>>(SchemaItemPathComparer.Instance);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="route">The route to filter by.</param>
         /// <returns>System.Int32.</returns>
-        public int CountByRoute(GraphFieldPath route)
+        public int CountByRoute(SchemaItemPath route)
         {
             if (route == null || !route.IsValid)
                 return 0;
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Apollo
         /// </summary>
         /// <param name="route">The route.</param>
         /// <returns>IEnumerable&lt;ISubscription&lt;TSchema&gt;&gt;.</returns>
-        public IReadOnlyList<ISubscription<TSchema>> RetreiveByRoute(GraphFieldPath route)
+        public IReadOnlyList<ISubscription<TSchema>> RetreiveByRoute(SchemaItemPath route)
         {
             List<ISubscription<TSchema>> subs = new List<ISubscription<TSchema>>();
             if (route != null)

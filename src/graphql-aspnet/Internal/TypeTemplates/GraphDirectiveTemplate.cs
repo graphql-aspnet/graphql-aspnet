@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.IsRepeatable = this.AttributeProvider.SingleAttributeOrDefault<RepeatableAttribute>() != null;
 
             var routeName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.DIRECTIVE);
-            this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Directives, routeName));
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Directives, routeName));
 
             foreach (var methodInfo in this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {

@@ -451,7 +451,7 @@ namespace GraphQL.AspNet
             public const string DELIMITER_ROOT_END = "]";
 
             /// <summary>
-            /// A single string containing all used special characters in <see cref="GraphFieldPath"/> objects.
+            /// A single string containing all used special characters in <see cref="SchemaItemPath"/> objects.
             /// </summary>
             public const string DELIMITERS_ALL = PATH_SEPERATOR + DELIMITER_ROOT_START + DELIMITER_ROOT_END;
 

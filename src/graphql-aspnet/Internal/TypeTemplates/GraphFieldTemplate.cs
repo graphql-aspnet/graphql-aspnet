@@ -294,7 +294,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
-        protected abstract GraphFieldPath GenerateFieldPath();
+        protected abstract SchemaItemPath GenerateFieldPath();
 
         /// <summary>
         /// Type extensions used as batch methods required a speceial input and output signature for the runtime

@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public MethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
-            GraphFieldPath route,
+            SchemaItemPath route,
             Type objectType = null,
             Type declaredReturnType = null,
             FieldResolutionMode mode = FieldResolutionMode.PerSourceItem,
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public virtual bool Publish { get; set; }
 
         /// <inheritdoc/>
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
 
         /// <inheritdoc/>
         public IGraphFieldResolver Resolver { get; private set; }

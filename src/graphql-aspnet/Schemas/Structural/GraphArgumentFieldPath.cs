@@ -17,15 +17,15 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// An implemention of the route path system with special considering for input arguments
     /// to differentiate them from normal field routes.
     /// </summary>
-    public class GraphArgumentFieldPath : GraphFieldPath
+    public class GraphArgumentFieldPath : SchemaItemPath
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphArgumentFieldPath" /> class.
         /// </summary>
         /// <param name="parentPath">The parent path.</param>
         /// <param name="argumentName">Name of the argument.</param>
-        public GraphArgumentFieldPath(GraphFieldPath parentPath, string argumentName)
-            : base(GraphFieldPath.Join(parentPath.Path, argumentName))
+        public GraphArgumentFieldPath(SchemaItemPath parentPath, string argumentName)
+            : base(SchemaItemPath.Join(parentPath.Path, argumentName))
         {
         }
 

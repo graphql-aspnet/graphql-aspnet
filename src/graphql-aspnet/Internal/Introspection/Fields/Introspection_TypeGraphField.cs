@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Fields
     [DebuggerDisplay("Meta Field: " + Constants.ReservedNames.TYPE_FIELD)]
     internal class Introspection_TypeGraphField : MethodGraphField
     {
-        private static readonly GraphFieldPath FIELD_PATH = new GraphFieldPath(GraphCollection.Query, Constants.ReservedNames.TYPE_FIELD);
+        private static readonly SchemaItemPath FIELD_PATH = new SchemaItemPath(GraphCollection.Query, Constants.ReservedNames.TYPE_FIELD);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Introspection_TypeGraphField"/> class.

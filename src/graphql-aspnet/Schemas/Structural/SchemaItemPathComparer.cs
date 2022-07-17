@@ -12,22 +12,22 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
 
     /// <summary>
-    /// An equality comparer for <see cref="GraphFieldPath"/> objects.
+    /// An equality comparer for <see cref="SchemaItemPath"/> objects.
     /// </summary>
-    public class GraphFieldPathComparer : IEqualityComparer<GraphFieldPath>
+    public class SchemaItemPathComparer : IEqualityComparer<SchemaItemPath>
     {
         /// <summary>
         /// Gets a singleton instance of the comparer declared with default parameters.
         /// </summary>
         /// <value>The instance.</value>
-        public static GraphFieldPathComparer Instance { get; }
+        public static SchemaItemPathComparer Instance { get; }
 
         /// <summary>
-        /// Initializes static members of the <see cref="GraphFieldPathComparer"/> class.
+        /// Initializes static members of the <see cref="SchemaItemPathComparer"/> class.
         /// </summary>
-        static GraphFieldPathComparer()
+        static SchemaItemPathComparer()
         {
-            GraphFieldPathComparer.Instance = new GraphFieldPathComparer();
+            SchemaItemPathComparer.Instance = new SchemaItemPathComparer();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="x">The first object of type T to compare.</param>
         /// <param name="y">The second object of type T to compare.</param>
         /// <returns>true if the specified objects are equal; otherwise, false.</returns>
-        public bool Equals(GraphFieldPath x, GraphFieldPath y)
+        public bool Equals(SchemaItemPath x, SchemaItemPath y)
         {
             return x == y;
         }
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="obj">The <see cref="T:System.Object"></see> for which a hash code is to be returned.</param>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public int GetHashCode(GraphFieldPath obj)
+        public int GetHashCode(SchemaItemPath obj)
         {
             return obj?.GetHashCode() ?? 0;
         }

@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             IAppliedDirectiveCollection directives = null)
             : base(
                   Constants.ReservedNames.FindOperationTypeNameByType(operationType),
-                  new GraphFieldPath(GraphCollection.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
+                  new SchemaItemPath(GraphCollection.Types, Constants.ReservedNames.FindOperationTypeNameByType(operationType)),
                   directives)
         {
             this.OperationType = operationType;

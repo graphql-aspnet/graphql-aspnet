@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Apollo.Logging.ApolloEvents
         /// that will receive the event.</param>
         public ApolloClientSubscriptionEventReceived(
             ApolloClientProxy<TSchema> client,
-            GraphFieldPath fieldPath,
+            SchemaItemPath fieldPath,
             IReadOnlyList<ISubscription> subscriptionsToReceive)
             : base(ApolloLogEventIds.ClientSubscriptionEventRecieved)
         {

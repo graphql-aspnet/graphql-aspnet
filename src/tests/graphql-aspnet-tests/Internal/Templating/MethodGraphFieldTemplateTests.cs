@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         private AspNet.Internal.TypeTemplates.MethodGraphFieldTemplate CreateMethodTemplate<TObject>(string methodName)
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void DefaultValuesCheck()
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void ArrayFromMethod_YieldsTemplate()
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(
@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         public void Parse_AssignedDirective_IsTemplatized()
         {
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var expectedTypeExpression = new GraphTypeExpression(

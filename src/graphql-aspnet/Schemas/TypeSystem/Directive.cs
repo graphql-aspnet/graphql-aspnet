@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string name,
             DirectiveLocation locations,
             Type directiveType,
-            GraphFieldPath route,
+            SchemaItemPath route,
             bool isRepeatable = false,
             IGraphDirectiveResolver resolver = null,
             IEnumerable<AppliedSecurityPolicyGroup> securityGroups = null)
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public virtual IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
 
         /// <inheritdoc />
         public Type ObjectType { get; }

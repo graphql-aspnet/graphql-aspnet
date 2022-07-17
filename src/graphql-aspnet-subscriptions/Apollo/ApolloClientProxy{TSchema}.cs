@@ -533,7 +533,7 @@ namespace GraphQL.AspNet.Apollo
         }
 
         /// <inheritdoc />
-        public async Task ReceiveEvent(GraphFieldPath field, object sourceData, CancellationToken cancelToken = default)
+        public async Task ReceiveEvent(SchemaItemPath field, object sourceData, CancellationToken cancelToken = default)
         {
             await Task.Yield();
 

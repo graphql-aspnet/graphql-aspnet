@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Apollo.Logging
         /// </summary>
         /// <param name="fieldPath">The field path of the event that was received.</param>
         /// <param name="subscriptionsToReceive">The subscriptions set to receive the event.</param>
-        public void SubscriptionEventReceived(GraphFieldPath fieldPath, IReadOnlyList<ISubscription> subscriptionsToReceive)
+        public void SubscriptionEventReceived(SchemaItemPath fieldPath, IReadOnlyList<ISubscription> subscriptionsToReceive)
         {
             _logger.Log(
                 LogLevel.Debug,

@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Controllers
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphFieldPathTests
+    public class SchemaItemPathTests
     {
         [TestCase(GraphCollection.Query, "path1", "path2", "[query]/path1/path2")]
         [TestCase(GraphCollection.Types, "path1", "path2", "[type]/path1/path2")]
@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void Join_WithRoot_JoinsAsExpected(GraphCollection root, string leftSide, string rightSide, string expectedOutput)
         {
             // standard join
-            var fragment = GraphFieldPath.Join(root, leftSide, rightSide);
+            var fragment = SchemaItemPath.Join(root, leftSide, rightSide);
             Assert.AreEqual(expectedOutput, fragment);
         }
 
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("path1", "path2/path3", "path1/path2/path3")]
         public void Join_WithNoRoot_JoinsAsExpected(string leftSide, string rightSide, string expectedOutput)
         {
-            var fragment = GraphFieldPath.Join(leftSide, rightSide);
+            var fragment = SchemaItemPath.Join(leftSide, rightSide);
             Assert.AreEqual(expectedOutput, fragment);
         }
 
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase(null, "")]
         public void NormalizeFragment_CleansUpAsExpected(string input, string expectedOutput)
         {
-            var fragment = GraphFieldPath.NormalizeFragment(input);
+            var fragment = SchemaItemPath.NormalizeFragment(input);
             Assert.AreEqual(expectedOutput, fragment);
         }
 
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("path1/path2", false)]
         public void IsTopLevelField(string input, bool isTopField)
         {
-            var fragment = new GraphFieldPath(input);
+            var fragment = new SchemaItemPath(input);
             Assert.AreEqual(isTopField, fragment.IsTopLevelField);
         }
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void Destructuring_Query_TwoFragmentPathHasADefinedParent()
         {
             var fragment = "[query]/path1/path2";
-            var route = new GraphFieldPath(fragment);
+            var route = new SchemaItemPath(fragment);
 
             // valid path should be untouched
             Assert.IsTrue(route.IsValid);
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void GenerateParentPathSegments_LeafPathReturnsParentList()
         {
             var fragment = "[query]/path1/path2/path3/path4";
-            var route = new GraphFieldPath(fragment);
+            var route = new SchemaItemPath(fragment);
 
             var parents = route.GenerateParentPathSegments();
             Assert.IsNotNull(parents);
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void GenerateParentPathSegments_TopLevelFieldReturnsEmptyList()
         {
             var fragment = "[query]/path1";
-            var route = new GraphFieldPath(fragment);
+            var route = new SchemaItemPath(fragment);
             Assert.IsTrue(route.IsTopLevelField);
 
             var parents = route.GenerateParentPathSegments();
@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Controllers
         public void GenerateParentPathSegments_InvalidPathSegmentReturnsEmptyList()
         {
             var fragment = "pat!$#@%h1";
-            var route = new GraphFieldPath(fragment);
+            var route = new SchemaItemPath(fragment);
             Assert.IsFalse(route.IsValid);
 
             var parents = route.GenerateParentPathSegments();
@@ -133,7 +133,7 @@ namespace GraphQL.AspNet.Tests.Controllers
             bool shouldHaveParent,
             string expectedParentPath)
         {
-            var route = new GraphFieldPath(rawPath);
+            var route = new SchemaItemPath(rawPath);
 
             // valid path should be untouched
             Assert.AreEqual(expectedValidState, route.IsValid);
@@ -165,8 +165,8 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("[query]/path1/path2", "path1/path2", false)]
         public void IsSameRoute(string fragment1, string fragment2, bool areTheSame)
         {
-            var route1 = new GraphFieldPath(fragment1);
-            var route2 = new GraphFieldPath(fragment2);
+            var route1 = new SchemaItemPath(fragment1);
+            var route2 = new SchemaItemPath(fragment2);
 
             // valid path should be untouched
             Assert.AreEqual(areTheSame, route1.IsSameRoute(route2));
@@ -181,8 +181,8 @@ namespace GraphQL.AspNet.Tests.Controllers
         [TestCase("[query]/path1/path2", "[query]/path1/pathQ/path3", false)]
         public void HasChildRoute(string fragment1, string fragment2, bool frag2IsChildof1)
         {
-            var route = new GraphFieldPath(fragment1);
-            var route2 = new GraphFieldPath(fragment2);
+            var route = new SchemaItemPath(fragment1);
+            var route2 = new SchemaItemPath(fragment2);
 
             // route2 is a child of route 1, but not the other way around
             Assert.AreEqual(frag2IsChildof1, route.HasChildRoute(route2));
@@ -191,14 +191,14 @@ namespace GraphQL.AspNet.Tests.Controllers
         [Test]
         public void FromConstructorParts_YieldsCombinedPaths()
         {
-            var route = new GraphFieldPath(GraphCollection.Types, "typeName", "fieldName");
+            var route = new SchemaItemPath(GraphCollection.Types, "typeName", "fieldName");
             Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName", route.Path);
         }
 
         [Test]
         public void GraphRouteArgumentPath_YieldsAlternatePathString()
         {
-            var parent = new GraphFieldPath($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName");
+            var parent = new SchemaItemPath($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName");
             var route = new GraphArgumentFieldPath(parent, "arg1");
             Assert.AreEqual($"{Constants.Routing.TYPE_ROOT}/typeName/fieldName[arg1]", route.Path);
         }

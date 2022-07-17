@@ -258,7 +258,7 @@ namespace GraphQL.AspNet.Schemas
         private IObjectGraphType CreateVirtualFieldOnParent(
             IObjectGraphType parentType,
             string fieldName,
-            GraphFieldPath path,
+            SchemaItemPath path,
             IGraphItemTemplate definition = null)
         {
             var childField = new VirtualGraphField(
@@ -285,7 +285,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>System.String.</returns>
-        private string MakeSafeTypeNameFromRoutePath(GraphFieldPath path)
+        private string MakeSafeTypeNameFromRoutePath(SchemaItemPath path)
         {
             var segments = new List<string>();
             foreach (var pathSegmentName in path)

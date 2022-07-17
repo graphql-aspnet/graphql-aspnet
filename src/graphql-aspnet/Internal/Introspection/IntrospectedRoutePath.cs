@@ -12,10 +12,10 @@ namespace GraphQL.AspNet.Internal.Introspection
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// An internal overload of <see cref="GraphFieldPath"/> that allows reserved names
+    /// An internal overload of <see cref="SchemaItemPath"/> that allows reserved names
     /// as part of the path segment.
     /// </summary>
-    internal sealed class IntrospectedRoutePath : GraphFieldPath
+    internal sealed class IntrospectedRoutePath : SchemaItemPath
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedRoutePath"/> class.

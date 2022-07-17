@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// Gets the unique route within a schema this subscription is pointed at.
         /// </summary>
         /// <value>The route.</value>
-        public GraphFieldPath Route => this.Field?.Route;
+        public SchemaItemPath Route => this.Field?.Route;
 
         /// <summary>
         /// Gets a value indicating whether this subscription has been properly configured.

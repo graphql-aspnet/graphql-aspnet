@@ -18,24 +18,24 @@ namespace GraphQL.AspNet.Schemas.Structural
     using RouteConstants = GraphQL.AspNet.Constants.Routing;
 
     /// <summary>
-    /// A representation of a hierarchical path to a single field in within a graph schema.
+    /// A representation of a hierarchical path to a single item (type, field, argument etc.) within a graph schema.
     /// </summary>
     [DebuggerDisplay("{Path}")]
-    public partial class GraphFieldPath : IEnumerable<string>
+    public partial class SchemaItemPath : IEnumerable<string>
     {
         /// <summary>
         /// Gets a special route path used to identify a "root level" fragment that has no path
         /// but is considered valid.
         /// </summary>
         /// <value>The empty.</value>
-        public static GraphFieldPath Empty { get; }
+        public static SchemaItemPath Empty { get; }
 
         /// <summary>
-        /// Initializes static members of the <see cref="GraphFieldPath"/> class.
+        /// Initializes static members of the <see cref="SchemaItemPath"/> class.
         /// </summary>
-        static GraphFieldPath()
+        static SchemaItemPath()
         {
-            Empty = new GraphFieldPath(string.Empty);
+            Empty = new SchemaItemPath(string.Empty);
             Empty._isValid = true;
             Empty._pathInitialized = true;
         }
@@ -44,26 +44,26 @@ namespace GraphQL.AspNet.Schemas.Structural
         private bool _pathInitialized;
         private GraphCollection _rootCollection;
         private string _path;
-        private GraphFieldPath _parentField;
+        private SchemaItemPath _parentField;
         private string _name;
         private bool _isTopLevelField;
         private bool _isValid;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldPath" /> class.
+        /// Initializes a new instance of the <see cref="SchemaItemPath" /> class.
         /// </summary>
         /// <param name="collection">The collection the route belongs to.</param>
         /// <param name="pathSegments">The individual path segments of the route.</param>
-        public GraphFieldPath(GraphCollection collection, params string[] pathSegments)
-            : this(GraphFieldPath.Join(collection, pathSegments))
+        public SchemaItemPath(GraphCollection collection, params string[] pathSegments)
+            : this(SchemaItemPath.Join(collection, pathSegments))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphFieldPath"/> class.
+        /// Initializes a new instance of the <see cref="SchemaItemPath"/> class.
         /// </summary>
         /// <param name="fullPath">The full path.</param>
-        public GraphFieldPath(string fullPath)
+        public SchemaItemPath(string fullPath)
         {
             this.Raw = fullPath;
 
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Schemas.Structural
                     return;
 
                 _pathInitialized = true;
-                var workingPath = GraphFieldPath.NormalizeFragment(this.Raw);
+                var workingPath = SchemaItemPath.NormalizeFragment(this.Raw);
 
                 // split the path into its fragments
                 List<string> pathFragments = workingPath.Split(new[] { RouteConstants.PATH_SEPERATOR }, StringSplitOptions.None).ToList();
@@ -145,7 +145,7 @@ namespace GraphQL.AspNet.Schemas.Structural
 
                 _name = pathFragments[pathFragments.Count - 1];
                 if (pathFragments.Count > 1)
-                    _parentField = new GraphFieldPath(string.Join(RouteConstants.PATH_SEPERATOR, pathFragments.Take(pathFragments.Count - 1)));
+                    _parentField = new SchemaItemPath(string.Join(RouteConstants.PATH_SEPERATOR, pathFragments.Take(pathFragments.Count - 1)));
 
                 _isTopLevelField = pathFragments.Count == 1 || (pathFragments.Count == 2 && this.RootCollection > GraphCollection.Unknown); // e.g. "[query]/name"
                 _isValid = this.Name.Length > 0;
@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="route">The route.</param>
         /// <returns><c>true</c> if the routes point to the same location; otherwise, <c>false</c>.</returns>
-        public bool IsSameRoute(GraphFieldPath route)
+        public bool IsSameRoute(SchemaItemPath route)
         {
             return (route?.Path?.Length ?? 0) > 0 && route.Path == this.Path;
         }
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="route">The path.</param>
         /// <returns><c>true</c> if this path contains the supplied path; otherwise, <c>false</c>.</returns>
-        public bool HasChildRoute(GraphFieldPath route)
+        public bool HasChildRoute(SchemaItemPath route)
         {
             return (route?.Path?.Length ?? 0) > 0 && route.Path.StartsWith(this.Path);
         }
@@ -242,7 +242,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Gets this item's parent path, if any.
         /// </summary>
         /// <value>The parent.</value>
-        public GraphFieldPath Parent
+        public SchemaItemPath Parent
         {
             get
             {
@@ -350,10 +350,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// Creates a list of all the fully qualified parent paths this path is nested under.
         /// </summary>
         /// <returns>List&lt;GraphRoutePath&gt;.</returns>
-        public List<GraphFieldPath> GenerateParentPathSegments()
+        public List<SchemaItemPath> GenerateParentPathSegments()
         {
             if (this.IsTopLevelField || !this.IsValid)
-                return new List<GraphFieldPath>();
+                return new List<SchemaItemPath>();
 
             var list = this.Parent.GenerateParentPathSegments();
             list.Add(this.Parent);
@@ -364,10 +364,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <summary>
         /// Clones this instance.
         /// </summary>
-        /// <returns>GraphFieldPath.</returns>
-        public GraphFieldPath Clone()
+        /// <returns>SchemaItemPath.</returns>
+        public SchemaItemPath Clone()
         {
-            return new GraphFieldPath(this.Path);
+            return new SchemaItemPath(this.Path);
         }
 
         /// <summary>
@@ -376,13 +376,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="pathSegments">The path segments to append
         /// to the current path.</param>
-        /// <returns>GraphFieldPath.</returns>
-        public virtual GraphFieldPath CreateChild(params string[] pathSegments)
+        /// <returns>SchemaItemPath.</returns>
+        public virtual SchemaItemPath CreateChild(params string[] pathSegments)
         {
             var list = new List<string>();
             list.Add(this.Path);
             list.AddRange(pathSegments);
-            return new GraphFieldPath(GraphFieldPath.Join(list.ToArray()));
+            return new SchemaItemPath(SchemaItemPath.Join(list.ToArray()));
         }
 
         /// <summary>
@@ -392,13 +392,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="pathSegments">The path segments to prepend
         /// to the current path.</param>
-        /// <returns>GraphFieldPath.</returns>
-        public GraphFieldPath ReParent(params string[] pathSegments)
+        /// <returns>SchemaItemPath.</returns>
+        public SchemaItemPath ReParent(params string[] pathSegments)
         {
             var list = new List<string>();
             list.AddRange(pathSegments);
             list.Add(this.Path);
-            return new GraphFieldPath(GraphFieldPath.Join(list.ToArray()));
+            return new SchemaItemPath(SchemaItemPath.Join(list.ToArray()));
         }
 
         /// <summary>
@@ -417,7 +417,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is GraphFieldPath grp)
+            if (obj is SchemaItemPath grp)
                 return grp.Path == this.Path;
 
             return false;

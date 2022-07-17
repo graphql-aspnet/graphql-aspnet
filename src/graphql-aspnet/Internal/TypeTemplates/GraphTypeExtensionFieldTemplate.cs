@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
-        protected override GraphFieldPath GenerateFieldPath()
+        protected override SchemaItemPath GenerateFieldPath()
         {
             // extract the parent name from the global meta data about the type being extended
             var parentName = GraphTypeNames.ParseName(_typeAttrib.TypeToExtend, TypeKind.OBJECT);
@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             var graphName = _typeAttrib.Template?.Trim() ?? Constants.Routing.ACTION_METHOD_META_NAME;
             graphName = graphName.Replace(Constants.Routing.ACTION_METHOD_META_NAME, this.Method.Name).Trim();
 
-            return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Types, parentName, graphName));
+            return new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Types, parentName, graphName));
         }
 
         /// <summary>

@@ -6,14 +6,6 @@
 // --
 // License:  MIT
 // *************************************************************
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
 
 namespace GraphQL.AspNet.Schemas.Structural
 {
@@ -25,7 +17,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     /// <summary>
     /// A representation of a hierarchical path to a single field in within a graph schema.
     /// </summary>
-    public partial class GraphFieldPath
+    public partial class SchemaItemPath
     {
         /// <summary>
         /// Joins a parent and child route segments under the top level field type provided.
@@ -35,7 +27,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public static string Join(params string[] routeSegments)
         {
             var fragment = string.Join(RouteConstants.PATH_SEPERATOR, routeSegments);
-            return GraphFieldPath.NormalizeFragment(fragment);
+            return SchemaItemPath.NormalizeFragment(fragment);
         }
 
         /// <summary>
@@ -46,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <returns>System.String.</returns>
         public static string Join(GraphCollection fieldType, params string[] routeSegments)
         {
-            return GraphFieldPath.Join(fieldType.ToRouteRoot().AsEnumerable().Concat(routeSegments).ToArray());
+            return SchemaItemPath.Join(fieldType.ToRouteRoot().AsEnumerable().Concat(routeSegments).ToArray());
         }
 
         /// <summary>
@@ -55,7 +47,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="left">The left side operand.</param>
         /// <param name="right">The right side operand.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(GraphFieldPath left, GraphFieldPath right)
+        public static bool operator ==(SchemaItemPath left, SchemaItemPath right)
         {
             return left?.Equals(right) ?? right?.Equals(left) ?? true;
         }
@@ -66,7 +58,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <param name="left">The left side operand.</param>
         /// <param name="right">The right side operand.</param>
         /// <returns>The result of the operation.</returns>
-        public static bool operator !=(GraphFieldPath left, GraphFieldPath right)
+        public static bool operator !=(SchemaItemPath left, SchemaItemPath right)
         {
             return !(left == right);
         }

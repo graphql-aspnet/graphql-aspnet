@@ -69,7 +69,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var sub = new Mock<ISubscription>();
             sub.Setup(x => x.Id).Returns("sub1");
-            sub.Setup(x => x.Route).Returns(new GraphFieldPath("[subscription]/bobSub1"));
+            sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
             var entry = new ApolloClientSubscriptionCreatedLogEntry(client.Object, sub.Object);
 
@@ -87,7 +87,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var sub = new Mock<ISubscription>();
             sub.Setup(x => x.Id).Returns("sub1");
-            sub.Setup(x => x.Route).Returns(new GraphFieldPath("[subscription]/bobSub1"));
+            sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
             var entry = new ApolloClientSubscriptionStoppedLogEntry(client.Object, sub.Object);
 
@@ -197,7 +197,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var subs = new List<ISubscription>();
             subs.Add(sub.Object);
 
-            var fieldPath = new GraphFieldPath("[subscription]/bob1");
+            var fieldPath = new SchemaItemPath("[subscription]/bob1");
 
             var entry = new ApolloClientSubscriptionEventReceived<GraphSchema>(
                 proxy,

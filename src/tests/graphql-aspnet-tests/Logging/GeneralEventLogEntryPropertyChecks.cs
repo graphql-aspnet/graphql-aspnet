@@ -507,7 +507,7 @@ namespace GraphQL.AspNet.Tests.Logging
             directive.Setup(x => x.InternalName).Returns("The Directive Internal");
 
             var item = new Mock<ISchemaItem>();
-            item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.GraphFieldPath(GraphCollection.Types, "path1"));
+            item.Setup(x => x.Route).Returns(new AspNet.Schemas.Structural.SchemaItemPath(GraphCollection.Types, "path1"));
 
             var entry = new TypeSystemDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
 
@@ -532,7 +532,7 @@ namespace GraphQL.AspNet.Tests.Logging
                     "field".AsMemory(),
                     "field".AsMemory()));
 
-            var path = new GraphFieldPath(GraphCollection.Types, "type1");
+            var path = new SchemaItemPath(GraphCollection.Types, "type1");
 
             var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
 

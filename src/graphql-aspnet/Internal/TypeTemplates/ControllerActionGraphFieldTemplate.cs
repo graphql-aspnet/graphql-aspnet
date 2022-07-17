@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
-        protected override GraphFieldPath GenerateFieldPath()
+        protected override SchemaItemPath GenerateFieldPath()
         {
             // Various meta data fields about the method
             // -------------------------------------------
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             // remove the parent fragment this method should be nested under if this method is marked as a root entry
             var parentRouteFragment = (graphMethodAttrib?.IsRootFragment ?? false) ? string.Empty : this.Parent.Route.Path;
-            return new GraphFieldPath(GraphFieldPath.Join(fieldType, parentRouteFragment, routeFragment));
+            return new SchemaItemPath(SchemaItemPath.Join(fieldType, parentRouteFragment, routeFragment));
         }
 
         /// <summary>

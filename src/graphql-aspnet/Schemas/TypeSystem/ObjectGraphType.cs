@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public ObjectGraphType(
             string name,
             Type objectType,
-            GraphFieldPath route,
+            SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
             : base(name, route, directives)
         {

@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         internal IGraphField AddField<TSource, TReturn>(
             string fieldName,
             GraphTypeExpression typeExpression,
-            GraphFieldPath route,
+            SchemaItemPath route,
             Func<TSource, Task<TReturn>> resolver,
             string description = null)
             where TSource : class

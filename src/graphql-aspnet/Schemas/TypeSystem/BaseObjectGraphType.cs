@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// when its added to a schema.</param>
         protected BaseObjectGraphType(
             string name,
-            GraphFieldPath route,
+            SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
@@ -92,6 +92,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
     }
 }

@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public SubscriptionMethodGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
-            GraphFieldPath route,
+            SchemaItemPath route,
             Type objectType = null,
             Type declaredReturnType = null,
             Execution.FieldResolutionMode mode = Execution.FieldResolutionMode.PerSourceItem,

@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            Assert.AreEqual(GraphFieldPath.Empty, template.Route);
+            Assert.AreEqual(SchemaItemPath.Empty, template.Route);
         }
 
         [Test]

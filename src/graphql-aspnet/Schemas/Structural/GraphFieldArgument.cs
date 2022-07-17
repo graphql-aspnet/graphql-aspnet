@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             ISchemaItem parent,
             string argumentName,
             GraphTypeExpression typeExpression,
-            GraphFieldPath route,
+            SchemaItemPath route,
             GraphArgumentModifiers modifiers,
             string parameterName,
             string internalname,
@@ -120,7 +120,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public bool HasDefaultValue { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
 
         /// <inheritdoc />
         public ISchemaItem Parent { get; }

@@ -28,7 +28,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
-            var field = new GraphFieldPath("[subscription]/field1");
+            var field = new SchemaItemPath("[subscription]/field1");
             fakeSub.Setup(x => x.Id).Returns("abc123");
             fakeSub.Setup(x => x.Route).Returns(field);
 
@@ -44,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
-            var field = new GraphFieldPath("[subscription]/field1");
+            var field = new SchemaItemPath("[subscription]/field1");
             fakeSub.Setup(x => x.Id).Returns("abc123");
             fakeSub.Setup(x => x.Route).Returns(field);
 
@@ -65,9 +65,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
-            var field = new GraphFieldPath("[subscription]/field1");
-            var field2 = new GraphFieldPath("[subscription]/field2");
-            var field3 = new GraphFieldPath("[subscription]/field3");
+            var field = new SchemaItemPath("[subscription]/field1");
+            var field2 = new SchemaItemPath("[subscription]/field2");
+            var field3 = new SchemaItemPath("[subscription]/field3");
 
             fakeSub.Setup(x => x.Id).Returns("abc123");
             fakeSub.Setup(x => x.Route).Returns(field);
@@ -108,7 +108,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
-            var field = new GraphFieldPath("[subscription]/field1");
+            var field = new SchemaItemPath("[subscription]/field1");
             fakeSub.Setup(x => x.Id).Returns("abc123");
             fakeSub.Setup(x => x.Route).Returns(field);
 
@@ -125,7 +125,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public void AddExistingSubId_ThrowsException()
         {
             var collection = new ApolloSubscriptionCollection<GraphSchema>();
-            var field = new GraphFieldPath("[subscription]/field1");
+            var field = new SchemaItemPath("[subscription]/field1");
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
             fakeSub.Setup(x => x.Id).Returns("abc123");
@@ -160,8 +160,8 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
-            var field = new GraphFieldPath("[subscription]/field1");
-            var field2 = new GraphFieldPath("[wrong]/field2");
+            var field = new SchemaItemPath("[subscription]/field1");
+            var field2 = new SchemaItemPath("[wrong]/field2");
             fakeSub.Setup(x => x.Id).Returns("abc123");
             fakeSub.Setup(x => x.Route).Returns(field);
 
@@ -176,7 +176,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
-            var field = new GraphFieldPath("[subscription]/field1");
+            var field = new SchemaItemPath("[subscription]/field1");
             fakeSub.Setup(x => x.Id).Returns("abc123");
             fakeSub.Setup(x => x.Route).Returns(field);
 

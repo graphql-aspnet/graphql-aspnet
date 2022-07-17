@@ -195,7 +195,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public string Description { get; private set; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; private set; }
+        public SchemaItemPath Route { get; private set; }
 
         /// <inheritdoc />
         public object DefaultValue { get; private set; }

@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
 
         /// <inheritdoc />
         [GraphSkip]
-        public virtual GraphFieldPath Route { get; }
+        public virtual SchemaItemPath Route { get; }
 
         /// <inheritdoc />
         [GraphSkip]

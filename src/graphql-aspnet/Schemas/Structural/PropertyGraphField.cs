@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public PropertyGraphField(
             string fieldName,
             GraphTypeExpression typeExpression,
-            GraphFieldPath route,
+            SchemaItemPath route,
             string declaredPropertyName,
             Type objectType = null,
             Type declaredReturnType = null,

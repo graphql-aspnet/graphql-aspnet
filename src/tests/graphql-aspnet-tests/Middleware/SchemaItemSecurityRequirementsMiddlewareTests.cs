@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         {
             var field = new Mock<IGraphField>();
             field.Setup(x => x.SecurityGroups).Returns(securityGroups);
-            field.Setup(x => x.Route).Returns(new GraphFieldPath(AspNet.Execution.GraphCollection.Query, "some", "path"));
+            field.Setup(x => x.Route).Returns(new SchemaItemPath(AspNet.Execution.GraphCollection.Query, "some", "path"));
             _field = field.Object;
         }
 

@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="enumType">Type of the enum.</param>
         /// <param name="route">The route path that identifies this enum type.</param>
         /// <param name="directives">The directives to apply to this enum type.</param>
-        public EnumGraphType(string name, Type enumType, GraphFieldPath route, IAppliedDirectiveCollection directives = null)
+        public EnumGraphType(string name, Type enumType, SchemaItemPath route, IAppliedDirectiveCollection directives = null)
             : this(name, enumType, route, new EnumLeafValueResolver(enumType), directives)
         {
         }
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public EnumGraphType(
             string name,
             Type enumType,
-            GraphFieldPath route,
+            SchemaItemPath route,
             ILeafValueResolver resolver,
             IAppliedDirectiveCollection directives = null)
         {
@@ -131,6 +131,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
     }
 }

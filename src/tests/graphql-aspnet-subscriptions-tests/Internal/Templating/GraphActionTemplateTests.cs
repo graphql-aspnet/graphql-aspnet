@@ -31,7 +31,7 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
         {
             var mockController = new Mock<IGraphControllerTemplate>();
             mockController.Setup(x => x.InternalFullName).Returns(typeof(TControllerType).Name);
-            mockController.Setup(x => x.Route).Returns(new GraphFieldPath("path0"));
+            mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
             mockController.Setup(x => x.Name).Returns("path0");
             mockController.Setup(x => x.ObjectType).Returns(typeof(TControllerType));
 

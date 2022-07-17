@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly Mock<IGraphOperationRequest> _mockRequest;
-        private readonly List<KeyValuePair<GraphFieldPath, object>> _sourceData;
+        private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
         private IUserSecurityContext _userSecurityContext;
         private IGraphQueryExecutionMetrics _metrics;
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             _userSecurityContext = userSecurityContext;
             _mockRequest = new Mock<IGraphOperationRequest>();
-            _sourceData = new List<KeyValuePair<GraphFieldPath, object>>();
+            _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
         }
 
         /// <summary>
@@ -126,9 +126,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <param name="path">The field path representing the action to accept the parameter.</param>
         /// <param name="sourceData">The source data.</param>
         /// <returns>QueryContextBuilder.</returns>
-        public QueryContextBuilder AddDefaultValue(GraphFieldPath path, object sourceData)
+        public QueryContextBuilder AddDefaultValue(SchemaItemPath path, object sourceData)
         {
-            _sourceData.Add(new KeyValuePair<GraphFieldPath, object>(path, sourceData));
+            _sourceData.Add(new KeyValuePair<SchemaItemPath, object>(path, sourceData));
             return this;
         }
 
