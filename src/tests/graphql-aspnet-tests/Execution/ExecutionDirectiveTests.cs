@@ -96,5 +96,37 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(DirectiveLocation.FIELD, directiveInstance.ValuesReceived[0].Location);
             Assert.AreEqual("variableProvidedValue", directiveInstance.ValuesReceived[0].Value);
         }
+
+        [Test]
+        public async Task ExecutionDirectiveModifiesResolver_NewResolverIsExecuted()
+        {
+            var directiveInstance = new SampleDirective();
+            var builder = new TestServerBuilder();
+            builder.AddSingleton(directiveInstance);
+            builder.AddGraphController<DirectiveTestController>()
+                  .AddDirective<ToUpperCaseExecutionDirective>();
+
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(@"query {
+                    retrieveObject {
+                       property1 @toUpperCaseExecution
+                    }
+                }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""retrieveObject"" : {
+                        ""property1"" : ""VALUE1""
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
     }
 }

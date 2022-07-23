@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.PlanGeneration
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
 
     /// <summary>
@@ -57,7 +56,8 @@ namespace GraphQL.AspNet.PlanGeneration
 
             var topLevelFields = await this.CreateContextsForFieldSelectionSet(
                 operation.GraphType as IObjectGraphType,
-                operation.FieldSelectionSet).ConfigureAwait(false);
+                operation.FieldSelectionSet)
+                .ConfigureAwait(false);
 
             var result = new GraphFieldExecutableOperation(operation);
             foreach (var field in topLevelFields)

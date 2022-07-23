@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
         /// <summary>
         /// Renders a completed query document in the same manner that the graphql server
-        /// would as part of fulfilling a request. This method DOES NOT validate the document
+        /// would as part of fulfilling a request. This method DOES NOT validate the document.
         /// </summary>
         /// <param name="queryText">The query text to generate a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>

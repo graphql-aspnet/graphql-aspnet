@@ -163,5 +163,90 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+
+        [Test]
+        public async Task FragmentSpreadOnOperationLevel_YieldsResults()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                      ... frag1
+                }
+
+                fragment frag1 on Query
+                {
+                    simple  {
+                        simpleQueryMethod {
+                            property1
+                        }
+                        __typename
+                    }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""simpleQueryMethod"" :{
+                                ""property1"" : ""default string"",
+                           },
+                           ""__typename"" : ""Query_Simple""
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+
+        [Test]
+        public async Task InlineFragmentOnOperationLevel_YieldsResults()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                      ... {
+                          simple  {
+                              simpleQueryMethod {
+                                    property1
+                              }
+                              __typename
+                          }
+                     }
+                }
+
+                ");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""simpleQueryMethod"" :{
+                                ""property1"" : ""default string"",
+                           },
+                           ""__typename"" : ""Query_Simple""
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
                     part = part.Parent;
                 }
 
-                if(topDoc != null)
+                if (topDoc != null)
                 {
                     var frag2 = topDoc.NamedFragments["frag2"];
                     fp.Fragment = frag2;

@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual("CustomPolicy", template.SecurityPolicies.ElementAt(0).PolicyName);
 
             Assert.IsFalse(template.SecurityPolicies.ElementAt(1).IsNamedPolicy);
-            CollectionAssert.AreEquivalent(new string[] {"CustomRole1", "CustomRole2" }, template.SecurityPolicies.ElementAt(1).AllowedRoles);
+            CollectionAssert.AreEquivalent(new string[] { "CustomRole1", "CustomRole2" }, template.SecurityPolicies.ElementAt(1).AllowedRoles);
         }
     }
 }

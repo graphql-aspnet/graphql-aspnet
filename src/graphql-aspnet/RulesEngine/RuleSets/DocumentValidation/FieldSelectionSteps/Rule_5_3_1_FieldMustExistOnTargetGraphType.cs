@@ -113,8 +113,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
                 // ensure that the field reference is to the field on the graph type in scope
                 // and not a field with the same name on a different graph type
                 // it is possible, though unlikely, that a directive execution could swap out the field reference
-                var field = fieldContainer.Fields[docPart.Field.Name];
-                if (docPart.Field != field)
+                if (docPart.Field.Parent != fieldContainer)
                 {
                     this.ValidationError(
                         context,

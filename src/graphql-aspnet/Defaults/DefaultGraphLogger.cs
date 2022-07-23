@@ -53,10 +53,18 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// Recorded when the startup services generates a new schema instance.
+        /// Logs the given entry at the provided level. A scope id property is automatically added to the log
+        /// entry indicating this specific logger instance wrote the entry.
         /// </summary>
-        /// <typeparam name="TSchema">The type of the schema that was generated.</typeparam>
-        /// <param name="schema">The schema instance.</param>
+        /// <param name="logLevel">The log level to record the entry at.</param>
+        /// <param name="logEntry">The log entry to record.</param>
+        public virtual void LogEvent(LogLevel logLevel, GraphLogEntry logEntry)
+        {
+            logEntry.AddProperty(LogPropertyNames.SCOPE_ID, _loggerInstanceId);
+            this.Log(logLevel, logEntry);
+        }
+
+        /// <inheritdoc />
         public virtual void SchemaInstanceCreated<TSchema>(TSchema schema)
             where TSchema : class, ISchema
         {
@@ -307,18 +315,6 @@ namespace GraphQL.AspNet.Defaults
         public virtual bool IsEnabled(LogLevel logLevel)
         {
             return _logger.IsEnabled(logLevel);
-        }
-
-        /// <summary>
-        /// Logs the given entry at the provided level. A scope id property is automatically added to the log
-        /// entry indicating this specific logger instance wrote the entry.
-        /// </summary>
-        /// <param name="logLevel">The log level to record the entry at.</param>
-        /// <param name="logEntry">The log entry to record.</param>
-        public virtual void LogEvent(LogLevel logLevel, GraphLogEntry logEntry)
-        {
-            logEntry.AddProperty(LogPropertyNames.SCOPE_ID, _loggerInstanceId);
-            this.Log(logLevel, logEntry);
         }
 
         /// <inheritdoc />

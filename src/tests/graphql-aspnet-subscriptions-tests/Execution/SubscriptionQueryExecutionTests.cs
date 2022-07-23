@@ -44,15 +44,15 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var result = await server.RenderResult(builder);
             var expectedOutput =
-                        @"{
-                            ""data"" : {
-                                ""subscriptionData"" : {
-                                    ""retrieveObject"" : {
-                                        ""property1"" : ""testA""
-                                    }
-                                }
+                @"{
+                    ""data"" : {
+                        ""subscriptionData"" : {
+                            ""retrieveObject"" : {
+                                ""property1"" : ""testA""
                             }
-                        }";
+                        }
+                    }
+                }";
 
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }

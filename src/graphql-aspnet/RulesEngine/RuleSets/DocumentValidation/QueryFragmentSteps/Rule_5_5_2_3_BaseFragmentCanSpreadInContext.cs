@@ -46,6 +46,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
         public override bool Execute(DocumentValidationContext context)
         {
             var str = this.RuleNumber;
+
             // both objects should exist if the rule chain is followed
             // but do a null check just in case
             var targetGraphType = context.ActivePart.GraphType;
