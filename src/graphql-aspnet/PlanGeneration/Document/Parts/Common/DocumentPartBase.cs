@@ -107,6 +107,5 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 
         /// <inheritdoc />
         public abstract string Description { get; }
-
     }
 }

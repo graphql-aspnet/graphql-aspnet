@@ -164,7 +164,6 @@ namespace GraphQL.AspNet.Tests.Execution
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
 
-
         [Test]
         public async Task FragmentSpreadOnOperationLevel_YieldsResults()
         {
@@ -206,7 +205,6 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
-
 
         [Test]
         public async Task InlineFragmentOnOperationLevel_YieldsResults()

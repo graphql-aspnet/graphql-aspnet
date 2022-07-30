@@ -25,30 +25,6 @@
     <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\**" />
-    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\**" />
-    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\**" />
-    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\**" />
-    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\**" />
-    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\**" />
-    <Compile Remove="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\**" />
-    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\**" />
-    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\**" />
-    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\**" />
-    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\**" />
-    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\**" />
-    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\**" />
-    <EmbeddedResource Remove="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\**" />
-    <None Remove="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\**" />
-    <None Remove="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\**" />
-    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\**" />
-    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\**" />
-    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\**" />
-    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\**" />
-    <None Remove="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\**" />
-  </ItemGroup>
-
     <ItemGroup>
       <None Include="..\icon.png">
         <Pack>True</Pack>
@@ -65,50 +41,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\Rule_5_1_1_OnlyExecutableDefinition.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\Rule_5_2_1_1_OperationNamesMustBeUnique.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\DocumentLevelSteps\Rule_5_2_2_1_LoneAnonymousOperation.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_1_FieldMustExistOnTargetGraphType.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\FieldSelection_DocumentPartCheck.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_3_B_NonLeafFieldMustHaveChildField.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_3_3_A_LeafFieldMustNotHaveChildFields.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\FieldSelectionSteps\Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnField.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_4_2_1_RequiredArgumentMustBeSuppliedOrHaveDefaultValueOnDirective.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_1_DirectiveMustBeDefinedInTheSchema.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_2_DirectiveMustBeUsedInValidLocation.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryDirectiveSteps\Rule_5_7_3_NonRepeatableDirectiveIsDefinedNoMoreThanOncePerLocation.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_3_BaseFragmentCanSpreadInContext.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_1_FragmentNamesMustBeUnique.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_2_NamedFragmentGraphTypeMustExistInTheSchema.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_2_InlineFragmentGraphTypeMustExistInTheSchema.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_3_FragmentTargetTypeMustBeOfAllowedKind.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_1_4_AllDeclaredFragmentsMustBeUsed.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_1_SpreadOfNamedFragmentMustExist.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_2_SpreadingANamedFragmentMustNotFormCycles.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_3_1_ObjectFragmentSpreadInObjectCanSpreadInContext.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_3_2_AbstractFragmentSpreadInObjectCanSpreadInContext.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_3_3_ObjectFragmentSpreadInAbstractCanSpreadInContext.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Rule_5_5_2_3_4_AbstractFragmentSpreadInAbstractCanSpreadInContext.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryFragmentSteps\Internal_FragmentMustMatchSuppliedName.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\Rule_5_4_1_ArgumentMustBeDefinedOnTheField.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputArgumentSteps\Rule_5_4_2_ArgumentMustBeUniquePerInvocation.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_1_ValueMustBeCoerceable.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_2_ComplexValueFieldsMustExistOnTargetGraphType.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_3_InputObjectFieldNamesMustBeUnique.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryInputValueSteps\Rule_5_6_4_InputObjectRequiredFieldsMustBeProvided.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Internal_OperationAssignedGraphTypeMustMatchExpectedOperationType.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_1_1_ExecutableOperationDefinition.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_1_SubscriptionsRequire1EncounteredSubscriptionField.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_3_1_SubscriptionsRequire1RootField.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_2_OperationTypeMustBeDefinedOnTheSchema.cs" />
-    <Compile Include="RulesEngine\RuleSets\DocumentValidation\QueryOperationSteps\Rule_5_8_VariableDeclarationChecks.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
-	<PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />

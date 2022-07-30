@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Security
     /// </summary>
     public class GraphSchemaItemSecurityRequest : IGraphSchemaItemSecurityRequest
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphSchemaItemSecurityRequest"/> class.
         /// </summary>

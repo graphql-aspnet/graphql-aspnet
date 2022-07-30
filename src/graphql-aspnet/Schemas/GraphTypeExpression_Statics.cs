@@ -60,9 +60,6 @@ namespace GraphQL.AspNet.Schemas
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] RequiredListRequiredItem { get; } = { MetaGraphTypes.IsNotNull, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull };
 
-
-
-
         /// <summary>
         /// Implements the == operator.
         /// </summary>

@@ -111,12 +111,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             get
             {
-
                 if (this.Attributes.TryGetValue(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, out object item))
                     return item as Func<FieldResolutionContext, CancellationToken, Task>;
 
                 return null;
             }
+
             set
             {
                 this.Attributes.TryRemove(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, out _);

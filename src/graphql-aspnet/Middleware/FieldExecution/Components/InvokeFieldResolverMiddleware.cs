@@ -71,7 +71,6 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 context.Request.Data.Items.ForEach(x => x.Cancel());
             }
 
-
             // validate the resolution of the field in whatever manner that means for its current state
             var completionProcessor = new FieldCompletionRuleProcessor();
             completionProcessor.Execute(validationContexts);
