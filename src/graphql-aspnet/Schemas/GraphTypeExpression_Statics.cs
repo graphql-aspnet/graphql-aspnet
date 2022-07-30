@@ -59,5 +59,30 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] RequiredListRequiredItem { get; } = { MetaGraphTypes.IsNotNull, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull };
+
+
+
+
+        /// <summary>
+        /// Implements the == operator.
+        /// </summary>
+        /// <param name="left">The left side operand.</param>
+        /// <param name="right">The right side operand.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(GraphTypeExpression left, GraphTypeExpression right)
+        {
+            return left?.Equals(right) ?? right?.Equals(left) ?? true;
+        }
+
+        /// <summary>
+        /// Implements the != operator.
+        /// </summary>
+        /// <param name="left">The left side operand.</param>
+        /// <param name="right">The right side operand.</param>
+        /// <returns>The result of the operation.</returns>
+        public static bool operator !=(GraphTypeExpression left, GraphTypeExpression right)
+        {
+            return !(left == right);
+        }
     }
 }

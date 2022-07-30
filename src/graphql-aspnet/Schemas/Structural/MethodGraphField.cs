@@ -29,6 +29,8 @@ namespace GraphQL.AspNet.Schemas.Structural
     [DebuggerDisplay("Field: {Route.Path}")]
     public class MethodGraphField : IGraphField
     {
+        private IGraphType _parent = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodGraphField" /> class.
         /// </summary>
@@ -83,13 +85,14 @@ namespace GraphQL.AspNet.Schemas.Structural
         public void AssignParent(IGraphType parent)
         {
             Validation.ThrowIfNull(parent, nameof(parent));
-            this.Parent = parent;
+            _parent = parent;
         }
 
         /// <inheritdoc/>
         public virtual IGraphField Clone(IGraphType parent)
         {
             Validation.ThrowIfNull(parent, nameof(parent));
+
             var newField = this.CreateNewInstance(parent);
             newField.AssignParent(parent);
 
@@ -170,7 +173,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         public bool IsVirtual => false;
 
         /// <inheritdoc/>
-        public ISchemaItem Parent { get; private set; }
+        public ISchemaItem Parent => _parent;
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }

@@ -19,7 +19,8 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    public class ToUpperDirective : GraphDirective
+    [GraphType("ToUpper")]
+    public class ToUpperFieldDefinitionDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD_DEFINITION)]
         public IGraphActionResult UpdateResolver()

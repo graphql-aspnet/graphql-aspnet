@@ -123,7 +123,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
                         .OfType<IObjectGraphType>();
 
                 case IObjectGraphType ogt:
-                    return ogt.AsEnumerable();
+                    // in case the graph type is a clone
+                    // convert it into the actual registered type
+                    var found = this.FindGraphType(graphType.Name) as IObjectGraphType;
+                    return new[] { found };
 
                 default:
                     return Enumerable.Empty<IObjectGraphType>();
@@ -178,18 +181,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
         /// <inheritdoc />
         public IEnumerable<Type> FindConcreteTypes(params IGraphType[] graphTypes)
         {
-            var list = new List<Type>();
             foreach (var graphType in graphTypes)
             {
                 foreach (var egt in this.ExpandAbstractType(graphType))
                 {
                     var type = this.FindConcreteType(egt);
                     if (type != null)
-                        list.Add(type);
+                        yield return type;
                 }
             }
-
-            return list;
         }
 
         /// <inheritdoc />

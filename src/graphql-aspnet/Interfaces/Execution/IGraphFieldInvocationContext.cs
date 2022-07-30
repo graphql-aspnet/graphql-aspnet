@@ -12,19 +12,20 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A context, containing all the requisite information to properly execute a field request
+    /// A context, containing all the requisite information to properly resolve a field
     /// for single item within an overall <see cref="IGraphOperationRequest"/>.
     /// </summary>
     public interface IGraphFieldInvocationContext
     {
         /// <summary>
-        /// Places a restriction on this context such that it will only be executed if the provided source item can be successfully
-        /// case to the provided type. Pass null to indicate no restrictions.
+        /// Places a restriction on this context such that it will only be executed if the provided
+        /// source item can be successfully cast to the provided type. Pass null to indicate no restrictions.
         /// </summary>
-        /// <param name="restrictToType">Type of the restrict to.</param>
+        /// <param name="restrictToType">A .NEt type to restrict this invocation to.</param>
         void Restrict(Type restrictToType);
 
         /// <summary>
@@ -45,6 +46,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The field.</value>
         IGraphField Field { get; }
+
+        /// <summary>
+        /// Gets the field document part from which this invocation context was generated.
+        /// </summary>
+        /// <value>The field document part.</value>
+        public IFieldDocumentPart FieldDocumentPart { get; }
 
         /// <summary>
         /// Gets the child contexts that are dependent on this context's result in order to execute.

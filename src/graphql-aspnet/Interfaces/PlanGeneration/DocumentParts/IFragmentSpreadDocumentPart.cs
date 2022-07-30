@@ -38,10 +38,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         ReadOnlyMemory<char> FragmentName { get; }
 
         /// <summary>
-        /// Gets or sets a reference to the named fragment in the document this instance is targeting,
+        /// Gets a reference to the named fragment in the document this instance is targeting,
         /// if any.
         /// </summary>
         /// <value>The named fragment in the document.</value>
-        INamedFragmentDocumentPart Fragment { get; set; }
+        INamedFragmentDocumentPart Fragment { get; }
     }
 }

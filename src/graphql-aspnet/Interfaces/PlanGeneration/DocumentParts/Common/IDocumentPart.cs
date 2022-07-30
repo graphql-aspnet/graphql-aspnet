@@ -11,10 +11,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A general interface describing part of a query document and the document parts it may contain.
@@ -67,12 +67,15 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
         SourcePath Path { get; }
 
         /// <summary>
-        /// Gets a set of attributes applied to this document part. This is an arbitrary
-        /// collection of keys that can indicate different things to different consumers. Care
-        /// should be taken to ensure keys are globally unique.
+        /// Gets a set of attributes applied to this document part.
         /// </summary>
-        /// <value>The meta data.</value>
-        ISet<string> Attributes { get; }
+        /// <remarks>
+        /// This is an arbitrary collection of key/value that can indicate different things
+        /// to different consumers. Care should be taken to ensure keys are globally unique for
+        /// all potential key providers.
+        /// </remarks>
+        /// <value>Additional attributes applied to this document part.</value>
+        MetaDataCollection Attributes { get; }
 
         /// <summary>
         /// Gets a common description that accurately identifies this document part. This value is

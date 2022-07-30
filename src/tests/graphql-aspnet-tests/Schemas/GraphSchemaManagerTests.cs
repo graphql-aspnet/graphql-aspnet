@@ -477,7 +477,6 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(string), TypeKind.SCALAR));
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(RandomEnum), TypeKind.ENUM));
             Assert.IsFalse(schema.KnownTypes.Contains(typeof(RandomEnum), TypeKind.OBJECT));
-
         }
 
         [Test]
@@ -856,4 +855,4 @@ namespace GraphQL.AspNet.Tests.Schemas
             Assert.IsTrue(schema.KnownTypes.Contains(typeof(string))); // for __typename
         }
     }
-};
+}

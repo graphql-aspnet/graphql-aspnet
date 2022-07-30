@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -34,11 +35,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         /// <param name="node">The AST node from which this part was created.</param>
         protected DocumentPartBase(IDocumentPart parentPart, SyntaxNode node)
         {
-            this.Attributes = new HashSet<string>();
             this.Parent = Validation.ThrowIfNullOrReturn(parentPart, nameof(Parent));
             this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
 
             this.Children = new DocumentPartsCollection(this);
+            this.Attributes = new MetaDataCollection();
 
             // wire up local events
             this.Children.ChildPartAdded += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart, e.RelativeDepth);
@@ -102,9 +103,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         public SyntaxNode Node { get; }
 
         /// <inheritdoc />
-        public ISet<string> Attributes { get; }
+        public MetaDataCollection Attributes { get; }
 
         /// <inheritdoc />
         public abstract string Description { get; }
+
     }
 }

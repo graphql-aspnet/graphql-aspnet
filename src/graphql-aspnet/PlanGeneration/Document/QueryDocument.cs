@@ -21,7 +21,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A document representing the query text as supplied by the user matched against a schema.
@@ -44,7 +43,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             _operations = new DocumentOperationCollection(this);
 
             this.Children.ChildPartAdded += this.Children_PartAdded;
-            this.Attributes = new HashSet<string>();
+            this.Attributes = new MetaDataCollection();
         }
 
         private void Children_PartAdded(object sender, DocumentPartEventArgs eventArgs)
@@ -92,7 +91,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         public INamedFragmentCollectionDocumentPart NamedFragments => _fragmentCollection;
 
         /// <inheritdoc />
-        public ISet<string> Attributes { get; }
+        public MetaDataCollection Attributes { get; }
 
         /// <inheritdoc />
         public string Description => "Document Root";

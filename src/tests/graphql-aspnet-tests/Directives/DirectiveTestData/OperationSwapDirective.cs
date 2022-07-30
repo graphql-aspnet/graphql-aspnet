@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
         [DirectiveLocations(DirectiveLocation.MUTATION)]
         public IGraphActionResult Execute()
         {
-            // randomly ineject an argument into the active part
+            // swap out the assigned query
             if (this.DirectiveTarget is IOperationDocumentPart op)
             {
                 var query = this.Schema.Operations[GraphOperationType.Query];

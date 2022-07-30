@@ -71,6 +71,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 context.Request.Data.Items.ForEach(x => x.Cancel());
             }
 
+
             // validate the resolution of the field in whatever manner that means for its current state
             var completionProcessor = new FieldCompletionRuleProcessor();
             completionProcessor.Execute(validationContexts);
@@ -111,6 +112,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             context.Messages.AddRange(resolutionContext.Messages);
 
             var continueExecution = !resolutionContext.IsCancelled;
+
+            // execute the post processor assigned via the query document if one exists
+            if (continueExecution)
+            {
+                if (context.InvocationContext.FieldDocumentPart.PostProcessor != null)
+                    await context.InvocationContext.FieldDocumentPart.PostProcessor(resolutionContext, cancelToken);
+            }
+
+            continueExecution = !resolutionContext.IsCancelled;
             context.Logger?.FieldResolutionCompleted(resolutionContext);
 
             this.AssignResults(context, resolutionContext);

@@ -109,26 +109,27 @@ namespace GraphQL.AspNet.PlanGeneration
         /// Creates the appropriate field context from the selection parsed from the user's query document.
         /// </summary>
         /// <param name="sourceGraphType">The graph type from which to extract the data.</param>
-        /// <param name="fieldSelection">The requested field of data from teh graph type.</param>
+        /// <param name="fieldPart">The part of the query document.</param>
         /// <returns>IGraphFieldExecutionContext.</returns>
         private async Task<IGraphFieldInvocationContext> CreateFieldContext(
             IObjectGraphType sourceGraphType,
-            IFieldDocumentPart fieldSelection)
+            IFieldDocumentPart fieldPart)
         {
             var concreteType = _schema.KnownTypes.FindConcreteType(sourceGraphType);
 
             // the fieldSelection could have been declared and carried in context of an interface
             // translate the field reference to that of the target source type (a resolvable object graph type)
-            var targetField = sourceGraphType.Fields[fieldSelection.Field.Name];
+            var targetField = sourceGraphType.Fields[fieldPart.Field.Name];
 
             var fieldContext = new FieldInvocationContext(
                 _schema,
                 concreteType,
-                fieldSelection.Alias.ToString(),
+                fieldPart.Alias.ToString(),
                 targetField,
-                new SourceOrigin(fieldSelection.Node.Location, fieldSelection.Path));
+                fieldPart,
+                new SourceOrigin(fieldPart.Node.Location, fieldPart.Path));
 
-            var arguments = this.CreateArgumentList(targetField, fieldSelection.Arguments);
+            var arguments = this.CreateArgumentList(targetField, fieldPart.Arguments);
             foreach (var argument in arguments)
                 fieldContext.Arguments.Add(argument);
 
@@ -140,19 +141,19 @@ namespace GraphQL.AspNet.PlanGeneration
                     fieldContext.Restrict(typedType.ObjectType);
             }
 
-            if (fieldSelection.FieldSelectionSet != null)
+            if (fieldPart.FieldSelectionSet != null)
             {
                 // resolve the child fields for each possible known return type
                 // since we don't know what the resultant query may produce at runtime we need to account
                 // for all possibilities known to the target schema
-                var allKnownTypes = _schema.KnownTypes.ExpandAbstractType(fieldSelection.GraphType);
+                var allKnownTypes = _schema.KnownTypes.ExpandAbstractType(fieldPart.GraphType);
 
                 // maintain the order of completion to ensure that child contexts are added to this context
                 // in the order they were declared on the query
                 var orderedFieldTasks = new List<Task<IEnumerable<IGraphFieldInvocationContext>>>();
                 foreach (var childGraphType in allKnownTypes)
                 {
-                    var childrenTask = this.CreateContextsForFieldSelectionSet(childGraphType, fieldSelection.FieldSelectionSet);
+                    var childrenTask = this.CreateContextsForFieldSelectionSet(childGraphType, fieldPart.FieldSelectionSet);
                     orderedFieldTasks.Add(childrenTask);
                 }
 

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
 
     public class TestPersonWithResolverExtensionDirectiveByType
     {
-        [ApplyDirective(typeof(ToUpperDirective))]
+        [ApplyDirective(typeof(ToUpperFieldDefinitionDirective))]
         public string Name { get; set; }
 
         public string LastName { get; set; }

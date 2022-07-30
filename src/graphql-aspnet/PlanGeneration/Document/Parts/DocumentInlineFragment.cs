@@ -52,15 +52,15 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             get
             {
-                return this.Attributes.Contains(Constants.DocumentPartAttributes.Included);
+                return this.Attributes.ContainsKey(Constants.DocumentPartAttributes.IsIncluded);
             }
 
             set
             {
                 if (value)
-                    this.Attributes.Add(Constants.DocumentPartAttributes.Included);
+                    this.Attributes.TryAdd(Constants.DocumentPartAttributes.IsIncluded, value);
                 else
-                    this.Attributes.Remove(Constants.DocumentPartAttributes.Included);
+                    this.Attributes.TryRemove(Constants.DocumentPartAttributes.IsIncluded, out _);
             }
         }
 

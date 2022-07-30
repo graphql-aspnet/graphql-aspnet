@@ -254,6 +254,7 @@ namespace GraphQL.AspNet.Tests.Framework
             var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
             var parentContext = new Mock<IGraphExecutionContext>();
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
+            var fieldDocumentPart = new Mock<IFieldDocumentPart>();
 
             parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
@@ -264,6 +265,10 @@ namespace GraphQL.AspNet.Tests.Framework
             parentContext.Setup(x => x.Messages).Returns(() => messages);
             parentContext.Setup(x => x.IsValid).Returns(() => messages.IsSucessful);
 
+            fieldDocumentPart.Setup(x => x.Name).Returns(field.Name.AsMemory());
+            fieldDocumentPart.Setup(x => x.Alias).Returns(field.Name.AsMemory());
+            fieldDocumentPart.Setup(x => x.Field).Returns(field);
+
             fieldInvocationContext.Setup(x => x.ExpectedSourceType).Returns(typeof(TType));
             fieldInvocationContext.Setup(x => x.Field).Returns(field);
             fieldInvocationContext.Setup(x => x.Arguments).Returns(arguments);
@@ -271,6 +276,7 @@ namespace GraphQL.AspNet.Tests.Framework
             fieldInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
             fieldInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
             fieldInvocationContext.Setup(x => x.Schema).Returns(this.Schema);
+            fieldInvocationContext.Setup(x => x.FieldDocumentPart).Returns(fieldDocumentPart.Object);
 
             var resolvedParentDataItem = new GraphDataItem(
                 fieldInvocationContext.Object,

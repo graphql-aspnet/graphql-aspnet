@@ -39,27 +39,6 @@ namespace GraphQL.AspNet.Tests.Directives
         }
 
         [Test]
-        public async Task WhenDirectiveAltersFieldReferenceInAnInvalidWay_DocumentFailsValidation()
-        {
-            var server = new TestServerBuilder()
-             .AddType<SimpleExecutionController>()
-             .AddType<TwoPropertyObjectV2>()
-             .AddType<FieldSwapDirective>()
-             .Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property2 @fieldSwap  } } }")
-                .AddOperationName("Operation1");
-
-            var result = await server.ExecuteQuery(builder);
-
-            Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
-            Assert.AreEqual("5.3.1", result.Messages[0].MetaData["Rule"]);
-        }
-
-        [Test]
         public async Task WhenDirectiveAltersTheAsignedFragmentOnASpread_DocumentFailsValidation()
         {
             var server = new TestServerBuilder()

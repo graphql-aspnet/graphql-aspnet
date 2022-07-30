@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddType<TestPersonWithResolverExtensionDirectiveByType>()
-                .AddType<ToUpperDirective>()
+                .AddType<ToUpperFieldDefinitionDirective>()
                 .Build();
 
             var person = new TestPersonWithResolverExtensionDirectiveByType()
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddType<TestPersonWithResolverExtensionDirectiveByName>()
-                .AddType<ToUpperDirective>()
+                .AddType<ToUpperFieldDefinitionDirective>()
                 .Build();
 
             var person = new TestPersonWithResolverExtensionDirectiveByName()

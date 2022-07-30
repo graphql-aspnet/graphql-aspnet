@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
@@ -66,6 +67,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public void AssignNamedFragment(INamedFragmentDocumentPart targetFragment)
         {
+            if (this.Fragment != null)
+                throw new GraphExecutionException("A named fragment is already assigned and cannot be changed.");
+
             if (targetFragment != null)
             {
                 this.Fragment = targetFragment;
@@ -82,7 +86,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public override DocumentPartType PartType => DocumentPartType.FragmentSpread;
 
         /// <inheritdoc />
-        public INamedFragmentDocumentPart Fragment { get; set; }
+        public INamedFragmentDocumentPart Fragment { get; private set; }
 
         /// <inheritdoc />
         public IDirectiveCollectionDocumentPart Directives => _directives;
@@ -92,15 +96,15 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             get
             {
-                return this.Attributes.Contains(Constants.DocumentPartAttributes.Included);
+                return this.Attributes.ContainsKey(Constants.DocumentPartAttributes.IsIncluded);
             }
 
             set
             {
                 if (value)
-                    this.Attributes.Add(Constants.DocumentPartAttributes.Included);
+                    this.Attributes.TryAdd(Constants.DocumentPartAttributes.IsIncluded, value);
                 else
-                    this.Attributes.Remove(Constants.DocumentPartAttributes.Included);
+                    this.Attributes.TryRemove(Constants.DocumentPartAttributes.IsIncluded, out _);
             }
         }
 

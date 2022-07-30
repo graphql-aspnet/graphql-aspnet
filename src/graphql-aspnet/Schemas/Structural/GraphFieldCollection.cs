@@ -49,9 +49,8 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             if (_fields.ContainsKey(field.Name))
             {
-                var existingField = _fields[field.Name];
                 throw new GraphTypeDeclarationException(
-                    $"Duplciate field name detected. The graph type '{_owner.Name}' already declares a field named '{existingField.Name}'. " +
+                    $"Duplciate field name detected. The graph type '{_owner.Name}' already declares a field named '{field.Name}'. " +
                     "This may occur if a type extension is added with the same name as an existing field or " +
                     "when an attempt is made to extend an OBJECT type through a direct extension and an indirect " +
                     "INTERFACE extension with the same field name.");
@@ -108,7 +107,21 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <inheritdoc />
         public bool ContainsKey(string fieldName)
         {
+            if (fieldName == null)
+                return false;
+
             return _fields.ContainsKey(fieldName);
+        }
+
+        /// <inheritdoc />
+        public bool Contains(IGraphField field)
+        {
+            Validation.ThrowIfNull(field, nameof(field));
+            if (!this.ContainsKey(field.Name))
+                return false;
+
+            var foundField = this[field.Name];
+            return object.ReferenceEquals(field, foundField);
         }
 
         /// <inheritdoc />

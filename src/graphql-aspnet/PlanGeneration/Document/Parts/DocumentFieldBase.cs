@@ -11,7 +11,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -103,6 +106,24 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             }
         }
 
+        /// <inheritdoc cref="IFieldDocumentPart.PostProcessor" />
+        public Func<FieldResolutionContext, CancellationToken, Task> PostProcessor
+        {
+            get
+            {
+
+                if (this.Attributes.TryGetValue(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, out object item))
+                    return item as Func<FieldResolutionContext, CancellationToken, Task>;
+
+                return null;
+            }
+            set
+            {
+                this.Attributes.TryRemove(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, out _);
+                this.Attributes.TryAdd(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, value);
+            }
+        }
+
         /// <inheritdoc cref="IFieldDocumentPart.Field" />
         public IGraphField Field { get; set; }
 
@@ -132,15 +153,15 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             get
             {
-                return this.Attributes.Contains(Constants.DocumentPartAttributes.Included);
+                return this.Attributes.ContainsKey(Constants.DocumentPartAttributes.IsIncluded);
             }
 
             set
             {
                 if (value)
-                    this.Attributes.Add(Constants.DocumentPartAttributes.Included);
+                    this.Attributes.TryAdd(Constants.DocumentPartAttributes.IsIncluded, value);
                 else
-                    this.Attributes.Remove(Constants.DocumentPartAttributes.Included);
+                    this.Attributes.TryRemove(Constants.DocumentPartAttributes.IsIncluded, out _);
             }
         }
     }

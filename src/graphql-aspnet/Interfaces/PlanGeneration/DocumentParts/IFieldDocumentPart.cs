@@ -10,6 +10,9 @@
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -18,6 +21,13 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// </summary>
     public interface IFieldDocumentPart : ISecureDocumentPart, IDirectiveContainerDocumentPart, IResolvableDocumentPart, IDocumentPart
     {
+        /// <summary>
+        /// Gets or sets a function that, when supplied, will be called immediately after this field is resolved
+        /// for a given source object.
+        /// </summary>
+        /// <value>The post processor.</value>
+        Func<FieldResolutionContext, CancellationToken, Task> PostProcessor { get; set; }
+
         /// <summary>
         /// Determines whether this field is capable of resolving itself for the given graph type.
         /// </summary>
@@ -39,10 +49,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         ReadOnlyMemory<char> Alias { get; }
 
         /// <summary>
-        /// Gets or sets the field reference pointed to by this instance as its declared in the schema.
+        /// Gets the field reference pointed to by this instance as its declared in the schema.
         /// </summary>
         /// <value>The field.</value>
-        IGraphField Field { get; set; }
+        IGraphField Field { get; }
 
         /// <summary>
         /// Gets the field selection set, if any, contained in this field.

@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task ExecutionDirectiveModifiesResolver_NewResolverIsExecuted()
+        public async Task ExecutionDirectiveAddsAFieldPostProcessor_ProcessorIsExecutedAsExpected()
         {
             var directiveInstance = new SampleDirective();
             var builder = new TestServerBuilder();

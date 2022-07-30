@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <summary>
         /// Clones this instance to a new field.
         /// </summary>
-        /// <param name="parent">The parent item that will own this new field.</param>
+        /// <param name="parent">The new parent item that will own this new field.</param>
         /// <returns>IGraphField.</returns>
         IGraphField Clone(IGraphType parent);
 

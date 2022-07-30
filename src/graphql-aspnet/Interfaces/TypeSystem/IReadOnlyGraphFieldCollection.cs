@@ -31,12 +31,20 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 
         /// <summary>
         /// Determines whether this collection contains a <see cref="IGraphField" />. Field
-        /// names are case sensitive and should match the public name supplied for introspection
-        /// requests...NOT the internal concrete action name if the field is bound to a method.
+        /// names are case sensitive and should match the public name of the field as its
+        /// represented in the graph schema...NOT the internal name if the
+        /// field is bound to a method.
         /// </summary>
-        /// <param name="fieldName">Name of the field.</param>
+        /// <param name="fieldName">The name of the field.</param>
         /// <returns><c>true</c> if this collection contains the type name; otherwise, <c>false</c>.</returns>
         bool ContainsKey(string fieldName);
+
+        /// <summary>
+        /// Determines whether collection contains the field provided.
+        /// </summary>
+        /// <param name="field">The field to search for.</param>
+        /// <returns><c>true</c> if this instance contains the specified field; otherwise, <c>false</c>.</returns>
+        bool Contains(IGraphField field);
 
         /// <summary>
         /// Gets the <see cref="IGraphField" /> with the specified name.

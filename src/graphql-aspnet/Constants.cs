@@ -137,7 +137,13 @@ namespace GraphQL.AspNet
             /// When present, this attirbute indicates the document part as "included"
             /// or part of the result set the document produces.
             /// </summary>
-            public const string Included = "~GraphQL~ASPNET~IsIncluded~";
+            public const string IsIncluded = "~GraphQL~ASPNET~IsIncluded~";
+
+            /// <summary>
+            /// When present, this attribute may contain a single
+            /// post processor executed after a field is resolved.
+            /// </summary>
+            public const string FieldPostResolutionProcessor = "~GraphQL~ASPNET~FieldPostResolutionProcessor~";
         }
 
         /// <summary>
