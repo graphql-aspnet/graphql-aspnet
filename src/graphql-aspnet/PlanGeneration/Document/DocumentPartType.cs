@@ -26,13 +26,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         Operation                       = 10,
 
         /// <summary>
-        /// A variable declared on an operation.
+        /// A variable declared on an <see cref="Operation"/>.
         /// </summary>
         Variable                        = 20,
 
         /// <summary>
         /// The set of fields to select from the parent <see cref="Field"/>'s resolved value, if any.
-        /// Fields that return leaf types will cannot contain a selection set.
         /// </summary>
         FieldSelectionSet               = 30,
 
@@ -58,12 +57,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         Directive                       = 70,
 
         /// <summary>
-        /// A fragment to be spread, declared inline in the parent <see cref="FieldSelectionSet"/>.
+        /// A fragment to be spread, declared inline within  <see cref="FieldSelectionSet"/>.
         /// </summary>
         InlineFragment                  = 80,
 
         /// <summary>
-        /// A top level, formally declared fragment that can be spread into any allowed
+        /// A top level, formally declared, fragment that can be spread into any allowed
         /// <see cref="FieldSelectionSet"/> within the document.
         /// </summary>
         NamedFragment                   = 90,
@@ -76,8 +75,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document
 
         /// <summary>
         /// The document itself. Represents the top most part from which all other
-        /// parts children or grandchildren etc.
+        /// parts are children or grandchildren etc.
         /// </summary>
-        Document = 110,
+        Document                        = 110,
     }
 }

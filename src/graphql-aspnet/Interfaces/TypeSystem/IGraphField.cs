@@ -39,6 +39,14 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null);
 
         /// <summary>
+        /// Determines whether this field is capable of resolving itself
+        /// for the given graph type.
+        /// </summary>
+        /// <param name="graphType">The graph type to test.</param>
+        /// <returns><c>true</c> if this field can be returned by specified graph type; otherwise, <c>false</c>.</returns>
+        bool CanResolveForGraphType(IGraphType graphType);
+
+        /// <summary>
         /// Clones this instance to a new field.
         /// </summary>
         /// <param name="parent">The new parent item that will own this new field.</param>

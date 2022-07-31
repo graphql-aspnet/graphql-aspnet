@@ -17,11 +17,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
-    using System;
     using System.Diagnostics;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;

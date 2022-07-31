@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document
 {
-    using System.Collections.Generic;
+    using System;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         /// <inheritdoc />
         public void AssignGraphType(IGraphType graphType)
         {
-            throw new System.NotSupportedException("No graph type exists that can used for the document");
+            throw new NotSupportedException("No graph type exists that can be used for the root document");
         }
 
         /// <inheritdoc />

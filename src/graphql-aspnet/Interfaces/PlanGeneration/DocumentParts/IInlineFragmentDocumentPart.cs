@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A document part representing an inlined fragment inside a field selection set.
     /// </summary>
-    public interface IInlineFragmentDocumentPart : IFragmentDocumentPart, IResolvableDocumentPart
+    public interface IInlineFragmentDocumentPart : IFragmentDocumentPart, IIncludeableDocumentPart
     {
     }
 }

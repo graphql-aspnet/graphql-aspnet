@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Directives.Global
         [DirectiveLocations(DirectiveLocation.FIELD | DirectiveLocation.FRAGMENT_SPREAD | DirectiveLocation.INLINE_FRAGMENT)]
         public IGraphActionResult Execute([FromGraphQL("if")] bool ifArgument)
         {
-            if (this.DirectiveTarget is IResolvableDocumentPart rdp)
+            if (this.DirectiveTarget is IIncludeableDocumentPart rdp)
                 rdp.IsIncluded = ifArgument;
 
             return this.Ok();

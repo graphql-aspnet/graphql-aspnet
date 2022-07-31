@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Source;
@@ -20,13 +19,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A base class defining common elements for different field types within a query
     /// document.
     /// </summary>
-    internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>, IResolvableDocumentPart
+    internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>, IIncludeableDocumentPart
     {
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
@@ -59,31 +57,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             var thisPath = path.Clone();
             thisPath.AddFieldName(this.Name.ToString());
             return thisPath;
-        }
-
-        /// <inheritdoc cref="IFieldDocumentPart.CanResolveForGraphType(IGraphType)" />
-        public virtual bool CanResolveForGraphType(IGraphType graphType)
-        {
-            // if the provided graphtype owns this field
-            // then yes it can resolve for it
-            if (graphType is IGraphFieldContainer fieldContainer)
-            {
-                if (fieldContainer.Fields.Contains(this.Field))
-                    return true;
-            }
-
-            // if the target graph type is an object and this field points to
-            // an interface that said object implements, its also allowed.
-            if (graphType is IObjectGraphType obj)
-            {
-                if (this.Field.Parent is IInterfaceGraphType igt)
-                {
-                    if (obj.InterfaceNames.Contains(igt.Name))
-                        return true;
-                }
-            }
-
-            return false;
         }
 
         /// <inheritdoc />

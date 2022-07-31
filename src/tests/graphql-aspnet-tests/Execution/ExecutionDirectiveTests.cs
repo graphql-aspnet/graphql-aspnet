@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task ExecutionDirectiveAddsAFieldPostProcessor_ProcessorIsExecutedAsExpected()
+        public async Task ExecutionDirectiveAddsAFieldPostProcessor_ForSingleField_ProcessorIsExecutedAsExpected()
         {
             var directiveInstance = new SampleDirective();
             var builder = new TestServerBuilder();
@@ -121,6 +121,77 @@ namespace GraphQL.AspNet.Tests.Execution
                     ""retrieveObject"" : {
                         ""property1"" : ""VALUE1""
                     }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task ExecutionDirectiveAddsAFieldPostProcessor_ForTypeExtensionField_ProcessorIsExecutedAsExpected()
+        {
+            var directiveInstance = new SampleDirective();
+            var builder = new TestServerBuilder();
+            builder.AddSingleton(directiveInstance);
+            builder.AddGraphController<DirectiveTestController>()
+                  .AddDirective<ToUpperCaseExecutionDirective>();
+
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(@"query {
+                    retrieveObject {
+                       property3 @toUpperCaseExecution
+                    }
+                }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""retrieveObject"" : {
+                        ""property3"" : ""VALUE1 PROP 3""
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
+        public async Task ExecutionDirectiveAddsAFieldPostProcessor_ForBatchExtensionField_ProcessorIsExecutedAsExpected()
+        {
+            var directiveInstance = new SampleDirective();
+            var builder = new TestServerBuilder();
+            builder.AddSingleton(directiveInstance);
+            builder.AddGraphController<DirectiveTestController>()
+                  .AddDirective<AdjustBatchDataDirective>();
+
+            var server = builder.Build();
+
+            // field "child" is executed as a batch extension
+            // @adjustBatchData will upper case any child items found
+            // via a batch
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(@"query {
+                    retrieveObjects {
+                       child @adjustBatchData {
+                            property1
+                        }
+                    }
+                }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""retrieveObjects"" : [
+                        {  ""child"" : { ""property1"" : ""CHILD PROP VALUE0"" } },
+                        {  ""child"" : { ""property1"" : ""CHILD PROP VALUE1"" } },
+                        {  ""child"" : { ""property1"" : ""CHILD PROP VALUE2"" } },
+                    ]
                 }
             }";
 

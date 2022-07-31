@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
@@ -19,8 +20,9 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class ToUpperCaseExecutionDirective : GraphDirective
+    public class AdjustBatchDataDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD)]
         public IGraphActionResult UpdateResolver()
@@ -28,22 +30,28 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
             var fieldPart = this.DirectiveTarget as IFieldDocumentPart;
             if (fieldPart != null)
             {
-                if (fieldPart.Field?.ObjectType != typeof(string))
-                    throw new System.Exception("ONLY STRINGS!"); // - hulk
+                if (fieldPart.Field?.ObjectType != typeof(TwoPropertyObject))
+                    throw new System.Exception();
 
                 // update the resolver used by the request
                 // resolver then upper case any string result
-                fieldPart.PostProcessor = ConvertToUpper;
+                fieldPart.PostProcessor = AdjustTwoPropData;
             }
 
             return this.Ok();
         }
 
-        private static Task ConvertToUpper(FieldResolutionContext context, CancellationToken token)
+        private static Task AdjustTwoPropData(FieldResolutionContext context, CancellationToken token)
         {
-            var typeName = context.Result?.GetType().FriendlyName();
-            if (context.Result is string)
-                context.Result = context.Result?.ToString().ToUpperInvariant();
+            if (context.Result is IDictionary<TwoPropertyObject, object> dic)
+            {
+                foreach (var kvp in dic)
+                {
+                    var item = kvp.Value as TwoPropertyObject;
+                    if (item != null)
+                        item.Property1 = item.Property1?.ToUpperInvariant();
+                }
+            }
 
             return Task.CompletedTask;
         }

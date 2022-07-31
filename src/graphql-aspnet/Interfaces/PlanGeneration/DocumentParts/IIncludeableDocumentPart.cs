@@ -12,10 +12,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
-    /// A meta-interface identifying document parts that are renderable and contribute
-    /// to the resultant data object.
+    /// A meta-interface identifying document parts that are conditionally included and
+    /// may contribute to the resultant data object.
     /// </summary>
-    public interface IResolvableDocumentPart : IDocumentPart
+    public interface IIncludeableDocumentPart : IDocumentPart
     {
         /// <summary>
         /// Gets or sets a value indicating whether this element is rendered and

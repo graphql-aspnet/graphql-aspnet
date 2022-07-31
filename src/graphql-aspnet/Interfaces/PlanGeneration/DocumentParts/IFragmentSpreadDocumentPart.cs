@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A document part representing the spreading of a named fragment within
     /// the selection set where this spread is defined.
     /// </summary>
-    public interface IFragmentSpreadDocumentPart : IDirectiveContainerDocumentPart, IResolvableDocumentPart, IDocumentPart
+    public interface IFragmentSpreadDocumentPart : IDirectiveContainerDocumentPart, IIncludeableDocumentPart, IDocumentPart
     {
         /// <summary>
         /// Occurs when a fragment matching the requested name is discovered and

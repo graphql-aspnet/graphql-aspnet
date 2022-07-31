@@ -97,6 +97,20 @@ namespace GraphQL.AspNet.Schemas.Structural
             throw new NotImplementedException("Virtual Fields cannot be cloned.");
         }
 
+        /// <inheritdoc />
+        public virtual bool CanResolveForGraphType(IGraphType graphType)
+        {
+            // if the provided graphtype owns this virtual field
+            // then yes it can resolve for it
+            if (graphType is IGraphFieldContainer fieldContainer)
+            {
+                if (fieldContainer.Fields.Contains(this))
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Gets the tracked copy of the graph type that represents this virtual field.
         /// </summary>

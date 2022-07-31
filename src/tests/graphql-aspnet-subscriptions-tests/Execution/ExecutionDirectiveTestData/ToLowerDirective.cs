@@ -7,23 +7,21 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
+namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
 {
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    public class ToUpperCaseExecutionDirective : GraphDirective
+    public class ToLowerDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD)]
-        public IGraphActionResult UpdateResolver()
+        public IGraphActionResult AppendPostProcessor()
         {
             var fieldPart = this.DirectiveTarget as IFieldDocumentPart;
             if (fieldPart != null)
@@ -41,9 +39,8 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
 
         private static Task ConvertToUpper(FieldResolutionContext context, CancellationToken token)
         {
-            var typeName = context.Result?.GetType().FriendlyName();
             if (context.Result is string)
-                context.Result = context.Result?.ToString().ToUpperInvariant();
+                context.Result = context.Result?.ToString().ToLowerInvariant();
 
             return Task.CompletedTask;
         }

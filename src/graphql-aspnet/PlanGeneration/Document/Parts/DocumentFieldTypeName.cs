@@ -16,10 +16,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
-    /// A single field of data requested on a user's query document.
+    /// A specialized implementation of a <see cref="DocumentField"/> for denoting
+    /// the internal __typename metafield.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentFieldTypeName : DocumentFieldBase, IFieldTypeNameDocumentPart
+    internal class DocumentFieldTypeName : DocumentField, IFieldTypeNameDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldTypeName"/> class.

@@ -102,6 +102,31 @@ namespace GraphQL.AspNet.Schemas.Structural
             return newField;
         }
 
+        /// <inheritdoc/>
+        public virtual bool CanResolveForGraphType(IGraphType graphType)
+        {
+            // if the provided graphtype owns this field
+            // then yes it can resolve for it
+            if (graphType is IGraphFieldContainer fieldContainer)
+            {
+                if (fieldContainer.Fields.Contains(this))
+                    return true;
+            }
+
+            // if the target graph type is an object and this field points to
+            // an interface that said object implements, its also allowed.
+            if (graphType is IObjectGraphType obj)
+            {
+                if (this.Parent is IInterfaceGraphType igt)
+                {
+                    if (obj.InterfaceNames.Contains(igt.Name))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Creates a new instance of a graph field from this type.
         /// </summary>

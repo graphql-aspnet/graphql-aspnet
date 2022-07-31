@@ -19,21 +19,14 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A single field of data from a source object selected to be returned as part of a graph query.
     /// </summary>
-    public interface IFieldDocumentPart : ISecureDocumentPart, IDirectiveContainerDocumentPart, IResolvableDocumentPart, IDocumentPart
+    public interface IFieldDocumentPart : ISecureDocumentPart, IDirectiveContainerDocumentPart, IIncludeableDocumentPart, IDocumentPart
     {
         /// <summary>
-        /// Gets or sets a function that, when supplied, will be called immediately after this field is resolved
-        /// for a given source object.
+        /// Gets or sets a function that, when supplied, will be called immediately after
+        /// this field is resolved for a given source object.
         /// </summary>
         /// <value>The post processor.</value>
         Func<FieldResolutionContext, CancellationToken, Task> PostProcessor { get; set; }
-
-        /// <summary>
-        /// Determines whether this field is capable of resolving itself for the given graph type.
-        /// </summary>
-        /// <param name="graphType">the graph type to test.</param>
-        /// <returns><c>true</c> if this field can be returned the specified graph type; otherwise, <c>false</c>.</returns>
-        bool CanResolveForGraphType(IGraphType graphType);
 
         /// <summary>
         /// Gets the name of the field requested, as it exists in the schema.

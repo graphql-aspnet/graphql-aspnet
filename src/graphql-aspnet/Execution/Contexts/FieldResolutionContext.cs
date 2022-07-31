@@ -41,9 +41,9 @@ namespace GraphQL.AspNet.Execution.Contexts
         }
 
         /// <summary>
-        /// Gets or sets the resultant data object created by the resolver.
+        /// Gets or sets the resultant data object rendered by the resolver.
         /// </summary>
-        /// <value>The result.</value>
+        /// <value>The result of executing a field's resolver.</value>
         public object Result { get; set; }
     }
 }

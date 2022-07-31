@@ -160,7 +160,46 @@ namespace GraphQL.AspNet.Tests.Security
             var result = await server.ExecuteQuery(builder);
             Assert.IsNotNull(result.Data);
             Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("access denied"));
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[query]/secured"));
             Assert.AreEqual(1, PerFieldCounterController.NumberOfInvocations);
+            PerFieldCounterController.NumberOfInvocations = 0;
+        }
+
+        [Test]
+        public async Task WhenNotAuthorizedOnDirective_NoDataIsReturned()
+        {
+            PerFieldCounterController.NumberOfInvocations = 0;
+
+            var serverBuilder = new TestServerBuilder()
+                .AddGraphController<PerFieldCounterController>()
+                .AddDirective<SecuredDataDirective>()
+                .AddGraphQL(options =>
+                {
+                    options.AuthorizationOptions.Method = AuthorizationMethod.PerField;
+                });
+
+            // should produce 1 error (access to "secured")
+            // should produce data (the "unsecured" field)
+            // should have incremented the static property on the controller 1 time for the unsecured field
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"
+                    query {
+                        unsecured {
+                            property1 @securedData
+                            property2
+                        }
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.IsNull(result.Data);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("access denied"));
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[directive]/secureddata"));
+            Assert.AreEqual(0, PerFieldCounterController.NumberOfInvocations);
             PerFieldCounterController.NumberOfInvocations = 0;
         }
     }

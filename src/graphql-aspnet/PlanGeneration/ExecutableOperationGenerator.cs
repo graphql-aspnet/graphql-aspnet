@@ -81,14 +81,14 @@ namespace GraphQL.AspNet.PlanGeneration
             var tasks = new List<Task<IGraphFieldInvocationContext>>();
             if (sourceGraphType != null && fieldsToReturn?.ExecutableFields != null)
             {
-                foreach (var field in fieldsToReturn.ExecutableFields.IncludedOnly)
+                foreach (var fieldPart in fieldsToReturn.ExecutableFields.IncludedOnly)
                 {
                     // not all fields in a selection set will target all known source types
                     // like when a fragment is spread into a selection set, the fragment target type will
                     // restrict those fields to a given graph type (or types in the case of a union or interface)
-                    if (field.CanResolveForGraphType(sourceGraphType))
+                    if (fieldPart.Field.CanResolveForGraphType(sourceGraphType))
                     {
-                        var task = this.CreateFieldContext(sourceGraphType, field);
+                        var task = this.CreateFieldContext(sourceGraphType, fieldPart);
                         tasks.Add(task);
                     }
                 }
