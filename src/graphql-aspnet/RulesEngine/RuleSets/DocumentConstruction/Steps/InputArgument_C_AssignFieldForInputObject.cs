@@ -15,12 +15,11 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Common;
-    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// Creats and assigns a <see cref="IInputArgumentDocumentPart"/> to the current node context for the active node.
     /// </summary>
-    internal class InputArgument_C_AssignContextQueryInputArgumentForInputObject
+    internal class InputArgument_C_AssignFieldForInputObject
         : DocumentConstructionStep<InputItemNode>
     {
         /// <inheritdoc />
@@ -36,19 +35,18 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
             var csv = (IComplexSuppliedValueDocumentPart)context.ParentPart;
 
             IGraphType inputItemGraphType = null;
-            GraphTypeExpression expectedTypeExpression = null;
+            IGraphField inputField = null;
 
             if (csv.GraphType is IInputObjectGraphType iio)
             {
-                var inputField = iio.Fields.FindField(node.InputName.ToString());
-                expectedTypeExpression = inputField?.TypeExpression;
-                inputItemGraphType = context.Schema.KnownTypes.FindGraphType(expectedTypeExpression?.TypeName);
+                inputField = iio.Fields.FindField(node.InputName.ToString());
+                inputItemGraphType = context.Schema.KnownTypes.FindGraphType(inputField?.TypeExpression?.TypeName);
             }
 
-            var docPart = new DocumentInputArgument(
+            var docPart = new DocumentInputObjectField(
                 context.ParentPart,
                 node,
-                expectedTypeExpression);
+                inputField);
 
             docPart.AssignGraphType(inputItemGraphType);
 

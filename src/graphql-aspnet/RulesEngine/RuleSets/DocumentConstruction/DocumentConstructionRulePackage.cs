@@ -149,9 +149,9 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction
         private void BuildSingleInputArgSteps()
         {
             var steps = new List<IRuleStep<DocumentConstructionContext>>();
-            steps.Add(new InputArgument_A_AssignContextQueryInputArgumentForField());
-            steps.Add(new InputArgument_B_AssignContextQueryInputArgumentForDirective());
-            steps.Add(new InputArgument_C_AssignContextQueryInputArgumentForInputObject());
+            steps.Add(new InputArgument_A_AssignArgumentForField());
+            steps.Add(new InputArgument_B_AssignInputArgumentForDirective());
+            steps.Add(new InputArgument_C_AssignFieldForInputObject());
 
             _stepCollection.Add(typeof(InputItemNode), steps);
         }

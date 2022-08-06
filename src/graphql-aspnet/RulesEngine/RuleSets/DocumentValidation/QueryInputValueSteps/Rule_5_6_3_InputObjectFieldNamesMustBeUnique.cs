@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
 
             var fieldNames = new HashSet<string>();
             var failedFields = new HashSet<string>();
-            foreach (var field in complexValue.Children.OfType<IInputArgumentDocumentPart>())
+            foreach (var field in complexValue.Children.OfType<IInputObjectFieldDocumentPart>())
             {
                 if (fieldNames.Contains(field.Name))
                 {

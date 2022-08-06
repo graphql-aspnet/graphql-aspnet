@@ -12,6 +12,6 @@ namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
     {
         public int Id { get; set; }
 
-        public Address Address { get; set; }
+        public BuildingAddress Address { get; set; }
     }
 }

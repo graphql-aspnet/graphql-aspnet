@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Variables
         }
 
         /// <inheritdoc />
-        IEnumerable<KeyValuePair<string, IResolvableValueItem>> IResolvableFieldSet.Fields
+        public IEnumerable<KeyValuePair<string, IResolvableValueItem>> ResolvableFields
         {
             get
             {

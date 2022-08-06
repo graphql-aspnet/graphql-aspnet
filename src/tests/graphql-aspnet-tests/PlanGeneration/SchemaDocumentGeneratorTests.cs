@@ -138,12 +138,12 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var complexValue = arg1.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(complexValue);
             Assert.IsTrue(complexValue.Node is ComplexValueNode);
-            Assert.AreEqual(3, complexValue.Arguments.Count);
+            Assert.AreEqual(3, complexValue.Fields.Count);
 
             Assert.AreEqual(graphArg, complexValue.Parent.GraphType);
-            var complexArg1 = complexValue.Arguments["birthDay"];
-            var complexArg2 = complexValue.Arguments["name"];
-            var complexArg3 = complexValue.Arguments["location"];
+            var complexArg1 = complexValue.Fields["birthDay"];
+            var complexArg2 = complexValue.Fields["name"];
+            var complexArg3 = complexValue.Fields["location"];
 
             var value = complexArg1.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.Number, value.ValueType);
@@ -194,19 +194,19 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var arg1Value = arg1.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
             Assert.IsTrue(arg1Value.Node is ComplexValueNode);
-            Assert.AreEqual(3, arg1Value.Arguments.Count);
+            Assert.AreEqual(3, arg1Value.Fields.Count);
 
             Assert.AreEqual(userHomeGraphType, arg1Value.Parent.GraphType);
-            var houseArgUser = arg1Value.Arguments["user"];
-            var houseArgId = arg1Value.Arguments["id"];
-            var houseArgName = arg1Value.Arguments["houseName"];
+            var houseArgUser = arg1Value.Fields["user"];
+            var houseArgId = arg1Value.Fields["id"];
+            var houseArgName = arg1Value.Fields["houseName"];
 
             var childUser = houseArgUser.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(childUser);
             Assert.AreEqual(userGraphType, childUser.Parent.GraphType);
-            var childUserbirthDay = childUser.Arguments["birthDay"];
-            var childUserName = childUser.Arguments["name"];
-            var childUserLocation = childUser.Arguments["location"];
+            var childUserbirthDay = childUser.Fields["birthDay"];
+            var childUserName = childUser.Fields["name"];
+            var childUserLocation = childUser.Fields["location"];
 
             var value = childUserbirthDay.Value as IScalarSuppliedValue;
             Assert.AreEqual(ScalarValueType.Number, value.ValueType);
@@ -495,7 +495,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var defaultValue = var1.DefaultValue as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(defaultValue);
-            Assert.AreEqual(3, defaultValue.Arguments.Count);
+            Assert.AreEqual(3, defaultValue.Fields.Count);
         }
 
         [Test]

@@ -112,9 +112,9 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
                     break;
 
                 case IComplexSuppliedValueDocumentPart civ:
-                    foreach (var argument in civ.Arguments.Values)
+                    foreach (var field in civ.Fields.Values)
                     {
-                        if (this.ShouldDeferResolution(argument.Value))
+                        if (this.ShouldDeferResolution(field.Value))
                             return true;
                     }
 

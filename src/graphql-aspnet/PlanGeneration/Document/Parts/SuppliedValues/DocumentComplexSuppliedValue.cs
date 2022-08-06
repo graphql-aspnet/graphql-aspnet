@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     [DebuggerDisplay("ComplexInputValue (Children = {Children.Count})")]
     internal class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
     {
-        private readonly DocumentInputArgumentCollection _arguments;
+        private readonly DocumentInputObjectFieldCollection _fields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue" /> class.
@@ -33,26 +33,26 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentComplexSuppliedValue(IDocumentPart parentPart, ComplexValueNode node, string key = null)
             : base(parentPart, node, key)
         {
-            _arguments = new DocumentInputArgumentCollection(this);
+            _fields = new DocumentInputObjectFieldCollection(this);
         }
 
         /// <inheritdoc />
         protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
         {
-            if (relativeDepth == 1 && childPart is IInputArgumentDocumentPart iia)
+            if (relativeDepth == 1 && childPart is IInputObjectFieldDocumentPart iia)
             {
-                if (!_arguments.ContainsKey(iia.Name))
-                    _arguments.AddArgument(iia);
+                if (!_fields.ContainsKey(iia.Name))
+                    _fields.AddField(iia);
             }
         }
 
         /// <inheritdoc />
-        public bool TryGetField(string fieldName, out IResolvableValueItem foundField)
+        bool IResolvableFieldSet.TryGetField(string fieldName, out IResolvableValueItem foundField)
         {
             foundField = default;
-            if (this.TryGetArgument(fieldName, out var arg))
+            if (this.TryGetField(fieldName, out IInputObjectFieldDocumentPart field))
             {
-                foundField = arg.Value;
+                foundField = field.Value;
                 return true;
             }
 
@@ -60,9 +60,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        public bool TryGetArgument(string fieldName, out IInputArgumentDocumentPart foundArgument)
+        public bool TryGetField(string fieldName, out IInputObjectFieldDocumentPart foundArgument)
         {
-            return _arguments.TryGetValue(fieldName, out foundArgument);
+            return _fields.TryGetValue(fieldName, out foundArgument);
         }
 
         /// <inheritdoc />
@@ -72,9 +72,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                 return false;
 
             var otherComplexValue = value as IComplexSuppliedValueDocumentPart;
-            foreach (var argument in _arguments.Values)
+            foreach (var argument in _fields.Values)
             {
-                if (!otherComplexValue.TryGetArgument(argument.Name, out var otherArg))
+                if (!otherComplexValue.TryGetField(argument.Name, out var otherArg))
                     return false;
 
                 if (!argument.Value.IsEqualTo(otherArg.Value))
@@ -85,23 +85,23 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        public bool ContainsArgument(string argumentName)
+        public bool ContainsField(string argumentName)
         {
             if (argumentName == null)
                 return false;
 
-            return _arguments.ContainsKey(argumentName);
+            return _fields.ContainsKey(argumentName);
         }
 
         /// <inheritdoc />
-        public IInputArgumentCollectionDocumentPart Arguments => _arguments;
+        public IInputObjectFieldCollectionDocumentPart Fields => _fields;
 
         /// <inheritdoc />
-        public IEnumerable<KeyValuePair<string, IResolvableValueItem>> Fields
+        public IEnumerable<KeyValuePair<string, IResolvableValueItem>> ResolvableFields
         {
             get
             {
-                foreach (var kvp in _arguments)
+                foreach (var kvp in _fields)
                     yield return new KeyValuePair<string, IResolvableValueItem>(kvp.Key, kvp.Value.Value);
             }
         }

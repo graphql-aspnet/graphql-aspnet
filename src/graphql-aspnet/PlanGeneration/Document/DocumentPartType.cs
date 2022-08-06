@@ -46,37 +46,43 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         Argument                        = 50,
 
         /// <summary>
-        /// A supplied value to an <see cref="Argument"/>.
+        /// A field of data supplied to a complex INPUT_OBJECT assigned to an <see cref="Argument"/>.
         /// </summary>
-        SuppliedValue                   = 60,
+        InputField                      = 60,
+
+        /// <summary>
+        /// A supplied value to an <see cref="Argument"/> or <see cref="InputField"/>, this may represent
+        /// a scalar or complex value.
+        /// </summary>
+        SuppliedValue                   = 70,
 
         /// <summary>
         /// A directive attached to its parent document part, to be executed by the runtime prior
         /// to executing the document.
         /// </summary>
-        Directive                       = 70,
+        Directive                       = 80,
 
         /// <summary>
         /// A fragment to be spread, declared inline within  <see cref="FieldSelectionSet"/>.
         /// </summary>
-        InlineFragment                  = 80,
+        InlineFragment                  = 90,
 
         /// <summary>
         /// A top level, formally declared, fragment that can be spread into any allowed
         /// <see cref="FieldSelectionSet"/> within the document.
         /// </summary>
-        NamedFragment                   = 90,
+        NamedFragment                   = 100,
 
         /// <summary>
         /// A spread operation to inject a <see cref="NamedFragment"/> into this items parent
         /// parent <see cref="FieldSelectionSet"/>.
         /// </summary>
-        FragmentSpread                  = 100,
+        FragmentSpread                  = 110,
 
         /// <summary>
         /// The document itself. Represents the top most part from which all other
         /// parts are children or grandchildren etc.
         /// </summary>
-        Document                        = 110,
+        Document                        = 120,
     }
 }

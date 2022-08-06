@@ -30,6 +30,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
         /// Gets the collection of fields defined on this instance.
         /// </summary>
         /// <value>The fields.</value>
-        IEnumerable<KeyValuePair<string, IResolvableValueItem>> Fields { get; }
+        IEnumerable<KeyValuePair<string, IResolvableValueItem>> ResolvableFields { get; }
     }
 }

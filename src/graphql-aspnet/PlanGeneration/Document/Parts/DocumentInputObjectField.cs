@@ -22,36 +22,36 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// An input argument (on a field or directive) that defined in a user's query document.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentInputArgument : DocumentPartBase, IInputArgumentDocumentPart
+    internal class DocumentInputObjectField : DocumentPartBase, IInputObjectFieldDocumentPart
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentInputArgument" /> class.
+        /// Initializes a new instance of the <see cref="DocumentInputObjectField" /> class.
         /// </summary>
         /// <param name="parentPart">The document part(a field or directive) that owns this argument.</param>
         /// <param name="node">The node in the query document creating this entity.</param>
-        /// <param name="argument">The input argument to a directive or field represented
-        /// by this document part.</param>
-        public DocumentInputArgument(
+        /// <param name="field">The field of data on an INPUT_OBJECT represented by this
+        /// document part.</param>
+        public DocumentInputObjectField(
             IDocumentPart parentPart,
             InputItemNode node,
-            IGraphArgument argument)
+            IGraphField field)
             : base(parentPart, node)
         {
             this.Name = node.InputName.ToString();
-            this.Argument = argument;
+            this.Field = field;
         }
 
         /// <inheritdoc />
         public string Name { get; }
 
         /// <inheritdoc />
-        public IGraphArgument Argument { get; }
+        public IGraphField Field { get; }
 
         /// <inheritdoc />
-        public GraphTypeExpression TypeExpression => this.Argument?.TypeExpression;
+        public GraphTypeExpression TypeExpression => this.Field?.TypeExpression;
 
         /// <inheritdoc />
-        public override DocumentPartType PartType => DocumentPartType.Argument;
+        public override DocumentPartType PartType => DocumentPartType.InputField;
 
         /// <inheritdoc />
         public ISuppliedValueDocumentPart Value => this
@@ -60,17 +60,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             .FirstOrDefault();
 
         /// <inheritdoc />
-        public override string Description
-        {
-            get
-            {
-                if (this.Parent is IFieldDocumentPart)
-                    return $"Field Argument: {this.Name}";
-                else if (this.Parent is IComplexSuppliedValueDocumentPart)
-                    return $"Input Object Field: {this.Name}";
-                else
-                    return $"Argument: {this.Name}";
-            }
-        }
+        public override string Description => $"Input Object Field: {this.Name}";
     }
 }

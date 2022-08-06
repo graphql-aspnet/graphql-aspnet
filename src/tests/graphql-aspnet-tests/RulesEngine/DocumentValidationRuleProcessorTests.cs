@@ -160,7 +160,9 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: 5) { id name } } }");
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: \"someString\") { id name } } }");
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: SOMEENUM) { id name } } }");
-            AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: true) { id name } } }");
+
+            // the supplied value of "someString" for input field "id" is not a number
+            AddQuery("5.6.1", "query Operation1{ peopleMovers { elevatorsByBuilding(building: {id: \"someString\"}) { id name } } }");
 
             // INPUT_OBJECT: type must contain no unknown properties for the target graph type
             AddQuery("5.6.2", "query Operation1{ peopleMovers { matchElevator(e: {id: 5, nonExistantProp: 18}) { id name } } }");
@@ -168,11 +170,11 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // INPUT_OBJECT:All properties on an input object must be unique
             AddQuery("5.6.3", "query Operation1{ peopleMovers { matchElevator(e: {id: 5, id: 7, name: \"South Elevator\"} ) { id name } } }");
 
-            // INPUT_OBJECT:fields marked as "not null" must be supplied  (id is marked as not null)
+            // INPUT_OBJECT:fields marked as "not null" must be supplied  (id on field of input argument e is marked as not null)
             AddQuery("5.6.4", "query Operation1{ peopleMovers { matchElevator(e: {name: \"South Elevator\"}) { id name } } }");
 
             // INPUT_OBJECT: checks nested input objects on an input object  (address has a required field of id)
-            // AddQuery("5.6.4", "query Operation1{ peopleMovers { elevatorsByBuilding(building: { id: 5, address: {name: \"shore line\"} }) { id name } } }");
+            AddQuery("5.6.4", "query Operation1{ peopleMovers { elevatorsByBuilding(building: { id: 5, address: {name: \"shore line\"} }) { id name } } }");
 
             // directive must exist (no such directive as @NotARealThing)
             AddQuery("5.7.1", "query Operation1{ peopleMovers @notARealThing { elevator (id: 5) { id name } } }");

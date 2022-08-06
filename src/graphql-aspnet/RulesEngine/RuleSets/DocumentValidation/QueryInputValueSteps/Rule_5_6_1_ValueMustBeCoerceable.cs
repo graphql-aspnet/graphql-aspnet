@@ -21,29 +21,28 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
     /// Ensures that the value of an input argument passed on the query document
     /// can be converted into the type required by the argument definition on the schema.
     /// </summary>
-    internal class Rule_5_6_1_ValueMustBeCoerceable
-        : DocumentPartValidationRuleStep<IInputArgumentDocumentPart>
+    internal class Rule_5_6_1_ValueMustBeCoerceable : DocumentPartValidationRuleStep<IInputValueDocumentPart>
     {
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
             return base.ShouldExecute(context)
-                && !(((IInputArgumentDocumentPart)context.ActivePart).Value is IVariableUsageDocumentPart)
-                && ((IInputArgumentDocumentPart)context.ActivePart).TypeExpression != null;
+                      && !(((IInputValueDocumentPart)context.ActivePart).Value is IVariableUsageDocumentPart)
+                      && ((IInputValueDocumentPart)context.ActivePart).TypeExpression != null;
         }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {
-            var argument = context.ActivePart as IInputArgumentDocumentPart;
+            var inputValue = context.ActivePart as IInputValueDocumentPart;
 
-            if (!this.EvaluateInputValue(argument))
+            if (!this.EvaluateInputValue(inputValue))
             {
                 this.ValidationError(
                     context,
-                    argument.Value?.Node ?? argument.Node,
-                    $"Invalid argument value. The value for the input item named '{argument.Name}' could " +
-                    $"not be coerced to the required type of '{argument.TypeExpression}'.");
+                    inputValue.Value?.Node ?? inputValue.Node,
+                    $"Invalid input value. The value for the input item named '{inputValue.Name}' could " +
+                    $"not be coerced to the required type of '{inputValue.TypeExpression}'.");
 
                 return false;
             }
@@ -54,15 +53,15 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
         /// <summary>
         /// Validates the input value for correctness against the argument's type expression.
         /// </summary>
-        /// <param name="queryArg">The query argument, with an supplied value, to evaluate.</param>
+        /// <param name="queryValue">The query argument, with an supplied value, to evaluate.</param>
         /// <returns><c>true</c> if the data is valid for this rule, <c>false</c> otherwise.</returns>
-        private bool EvaluateInputValue(IInputArgumentDocumentPart queryArg)
+        private bool EvaluateInputValue(IInputValueDocumentPart queryValue)
         {
-            if (queryArg?.TypeExpression == null || queryArg.Value == null)
+            if (queryValue?.TypeExpression == null || queryValue.Value == null)
                 return false;
 
-            var argumentValue = queryArg.Value;
-            var valueTypeExpression = queryArg.TypeExpression.Clone();
+            var argumentValue = queryValue.Value;
+            var valueTypeExpression = queryValue.TypeExpression.Clone();
             var valueSet = new List<ISuppliedValueDocumentPart>();
             valueSet.Add(argumentValue);
 
@@ -120,10 +119,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
                 if (valueToEvaluate is INullSuppliedValueDocumentPart)
                     continue;
 
-                switch (queryArg.GraphType.Kind)
+                switch (queryValue.GraphType.Kind)
                 {
                     case TypeKind.SCALAR:
-                        var scalarType = queryArg.GraphType as IScalarGraphType;
+                        var scalarType = queryValue.GraphType as IScalarGraphType;
                         var scalarValue = valueToEvaluate as IScalarSuppliedValue;
                         if (scalarType == null ||
                             scalarValue == null ||
@@ -135,7 +134,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
                         break;
 
                     case TypeKind.ENUM:
-                        var enumType = queryArg.GraphType as IEnumGraphType;
+                        var enumType = queryValue.GraphType as IEnumGraphType;
                         var enumValue = valueToEvaluate as IEnumSuppliedValueDocumentPart;
 
                         if (enumType == null || enumValue == null)
@@ -147,7 +146,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
                         break;
 
                     case TypeKind.INPUT_OBJECT:
-                        var inputGraphType = queryArg.GraphType as IInputObjectGraphType;
+                        var inputGraphType = queryValue.GraphType as IInputObjectGraphType;
                         var complexValue = valueToEvaluate as IComplexSuppliedValueDocumentPart;
 
                         if (inputGraphType == null || complexValue == null)

@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
             var allFieldsAccountedFor = true;
             foreach (var field in requiredFields)
             {
-                if (!complexValue.TryGetArgument(field.Name, out _))
+                if (!complexValue.TryGetField(field.Name, out _))
                 {
                     this.ValidationError(
                         context,

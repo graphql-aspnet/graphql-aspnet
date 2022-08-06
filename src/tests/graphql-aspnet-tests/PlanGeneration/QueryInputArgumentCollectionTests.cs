@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using System;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Schemas;
@@ -28,10 +29,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
 
+            var graphArg = new Mock<IGraphArgument>();
+            graphArg.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphArg.Setup(x => x.Name).Returns(name.ToString());
+
             var arg = new DocumentInputArgument(
                 owner.Object,
                 new InputItemNode(SourceLocation.None, name),
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+                graphArg.Object);
 
             colllection.AddArgument(arg);
 
@@ -47,10 +52,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
 
+            var graphArg = new Mock<IGraphArgument>();
+            graphArg.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphArg.Setup(x => x.Name).Returns("bob");
+
             var arg = new DocumentInputArgument(
                 owner.Object,
                 new InputItemNode(SourceLocation.None, name),
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+                graphArg.Object);
 
             colllection.AddArgument(arg);
 
@@ -66,10 +75,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
 
+            var graphArg = new Mock<IGraphArgument>();
+            graphArg.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphArg.Setup(x => x.Name).Returns(name.ToString());
+
             var arg = new DocumentInputArgument(
                 owner.Object,
                 new InputItemNode(SourceLocation.None, name),
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+                graphArg.Object);
 
             colllection.AddArgument(arg);
 
@@ -86,10 +99,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
 
+            var graphArg = new Mock<IGraphArgument>();
+            graphArg.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphArg.Setup(x => x.Name).Returns(name.ToString());
+
             var arg = new DocumentInputArgument(
                 owner.Object,
                 new InputItemNode(SourceLocation.None, name),
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+                graphArg.Object);
 
             colllection.AddArgument(arg);
 
@@ -105,10 +122,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
 
+            var graphArg = new Mock<IGraphArgument>();
+            graphArg.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphArg.Setup(x => x.Name).Returns(name.ToString());
+
             var arg = new DocumentInputArgument(
                 owner.Object,
                 new InputItemNode(SourceLocation.None, name),
-                new AspNet.Schemas.GraphTypeExpression("bob"));
+                graphArg.Object);
 
             colllection.AddArgument(arg);
 
@@ -125,10 +146,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
 
+            var graphArg = new Mock<IGraphArgument>();
+            graphArg.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            graphArg.Setup(x => x.Name).Returns(name.ToString());
+
             var arg = new DocumentInputArgument(
                 owner.Object,
                 new InputItemNode(SourceLocation.None, name),
-                new GraphTypeExpression("bob"));
+                graphArg.Object);
 
             colllection.AddArgument(arg);
 

@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             string name,
             string flavor)
         {
-            var idValue = item.Children.OfType<IInputArgumentDocumentPart>()
+            var idValue = item.Children.OfType<IInputObjectFieldDocumentPart>()
                 .SingleOrDefault(x => x.Name == "id")?
                 .Children
                 .OfType<IScalarSuppliedValue>()
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             Assert.AreEqual(id.ToString(), idValue);
 
-            var nameValue = item.Children.OfType<IInputArgumentDocumentPart>()
+            var nameValue = item.Children.OfType<IInputObjectFieldDocumentPart>()
                 .SingleOrDefault(x => x.Name == "name")?
                 .Children
                 .OfType<IScalarSuppliedValue>()
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             Assert.AreEqual(name, nameValue);
 
-            var flavorValue = item.Children.OfType<IInputArgumentDocumentPart>()
+            var flavorValue = item.Children.OfType<IInputObjectFieldDocumentPart>()
                 .SingleOrDefault(x => x.Name == "flavor")?
                 .Children
                 .OfType<IEnumSuppliedValueDocumentPart>()
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             bool isHot,
             int? orderCreated)
         {
-            var idValue = item.Children.OfType<IInputArgumentDocumentPart>()
+            var idValue = item.Children.OfType<IInputObjectFieldDocumentPart>()
                 .SingleOrDefault(x => x.Name == "id")?
                 .Children
                 .OfType<IScalarSuppliedValue>()
@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             Assert.AreEqual(id.ToString(), idValue);
 
-            var nameValue = item.Children.OfType<IInputArgumentDocumentPart>()
+            var nameValue = item.Children.OfType<IInputObjectFieldDocumentPart>()
                 .SingleOrDefault(x => x.Name == "name")?
                 .Children
                 .OfType<IScalarSuppliedValue>()
@@ -119,7 +119,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             Assert.AreEqual(name, nameValue);
 
-            var isHotValue = item.Children.OfType<IInputArgumentDocumentPart>()
+            var isHotValue = item.Children.OfType<IInputObjectFieldDocumentPart>()
                 .SingleOrDefault(x => x.Name == "isHot")?
                 .Children
                 .OfType<IScalarSuppliedValue>()
@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             Assert.AreEqual(isHot.ToString().ToLower(), isHotValue);
 
-            var orderCreatedValue = item.Children.OfType<IInputArgumentDocumentPart>()
+            var orderCreatedValue = item.Children.OfType<IInputObjectFieldDocumentPart>()
                 .SingleOrDefault(x => x.Name == "orderCreated")?
                 .Children
                 .OfType<IScalarSuppliedValue>()
@@ -281,7 +281,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var firstArg = args.First();
             Assert.AreEqual("id", firstArg.Key);
             Assert.AreEqual("id", firstArg.Value.Name);
-            Assert.AreEqual("Int!", firstArg.Value.TypeExpression.ToString());
+            Assert.AreEqual("Int!", firstArg.Value.Argument.TypeExpression.ToString());
 
             var argValue = firstArg.Value.Value as DocumentScalarSuppliedValue;
             Assert.IsNotNull(argValue);
@@ -343,7 +343,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var firstArg = args.First();
             Assert.AreEqual("id", firstArg.Key);
             Assert.AreEqual("id", firstArg.Value.Name);
-            Assert.AreEqual("Int", firstArg.Value.TypeExpression.ToString());
+            Assert.AreEqual("Int", firstArg.Value.Argument.TypeExpression.ToString());
 
             var argValue = firstArg.Value.Value as DocumentNullSuppliedValue;
             Assert.IsNotNull(argValue);
@@ -402,7 +402,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var firstArg = args.First();
             Assert.AreEqual("bagelNumbers", firstArg.Key);
             Assert.AreEqual("bagelNumbers", firstArg.Value.Name);
-            Assert.AreEqual("[Int!]", firstArg.Value.TypeExpression.ToString());
+            Assert.AreEqual("[Int!]", firstArg.Value.Argument.TypeExpression.ToString());
 
             var argValue = firstArg.Value.Value as DocumentListSuppliedValue;
             Assert.IsNotNull(argValue);
@@ -453,18 +453,18 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var firstArg = args.First();
             Assert.AreEqual("newDonut", firstArg.Key);
             Assert.AreEqual("newDonut", firstArg.Value.Name);
-            Assert.AreEqual(_inputDonutGraphType.Name, firstArg.Value.TypeExpression.ToString());
+            Assert.AreEqual(_inputDonutGraphType.Name, firstArg.Value.Argument.TypeExpression.ToString());
 
             var argValue = firstArg.Value.Value as DocumentComplexSuppliedValue;
             Assert.IsNotNull(argValue);
             Assert.AreEqual(_inputDonutGraphType, argValue.GraphType);
 
-            var arguments = argValue.Children.OfType<IInputArgumentDocumentPart>().ToList();
-            Assert.AreEqual(3, arguments.Count);
+            var inputFields = argValue.Children.OfType<IInputObjectFieldDocumentPart>().ToList();
+            Assert.AreEqual(3, inputFields.Count);
 
-            var id = arguments.FirstOrDefault(x => x.Name == "id");
-            var name = arguments.FirstOrDefault(x => x.Name == "name");
-            var flavor = arguments.FirstOrDefault(x => x.Name == "flavor");
+            var id = inputFields.FirstOrDefault(x => x.Name == "id");
+            var name = inputFields.FirstOrDefault(x => x.Name == "name");
+            var flavor = inputFields.FirstOrDefault(x => x.Name == "flavor");
 
             Assert.IsNotNull(id);
             Assert.AreEqual("id", id.Name);
@@ -649,10 +649,10 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             Assert.IsNotNull(args);
             Assert.AreEqual(1, args.Count);
 
-            var firstArg = args.First();
-            Assert.AreEqual("items", firstArg.Name);
+            var firstArgItems = args.First();
+            Assert.AreEqual("items", firstArgItems.Name);
 
-            var values = (IListSuppliedValueDocumentPart)firstArg.Value;
+            var values = (IListSuppliedValueDocumentPart)firstArgItems.Value;
             Assert.AreEqual(2, values.ListItems.Count());
 
             var firstItem = values.First() as DocumentComplexSuppliedValue;
@@ -660,7 +660,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             // Validate first array entry
             var donutsValue = firstItem
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "donuts")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "donuts")
                 .Children.OfType<IListSuppliedValueDocumentPart>().Single()
                 .Children.OfType<IComplexSuppliedValueDocumentPart>()
                 .ToList();
@@ -669,32 +669,32 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             AssertInputDonut(donutsValue[1], 2, "\"Donut2\"", "VANILLA");
 
             var bagelsValue = firstItem
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "bagels")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "bagels")
                 .Children.OfType<IListSuppliedValueDocumentPart>().Single()
                 .Children.OfType<IComplexSuppliedValueDocumentPart>()
                 .ToList();
 
             AssertInputBagel(bagelsValue[0], 3, "\"Bagel3\"", true, 3);
             Assert.AreEqual("4", bagelsValue[1]
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "id")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "id")
                 .Children.OfType<IScalarSuppliedValue>().Single().Value.ToString());
             Assert.AreEqual("\"Bagel4\"", bagelsValue[1]
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "name")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "name")
                 .Children.OfType<IScalarSuppliedValue>().Single().Value.ToString());
             Assert.AreEqual("false", bagelsValue[1]
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "isHot")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "isHot")
                 .Children.OfType<IScalarSuppliedValue>().Single().Value.ToString());
 
             var bagel4VariableRef = bagelsValue[1]
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "orderCreated")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "orderCreated")
                 .Children.OfType<IVariableUsageDocumentPart>().Single();
             Assert.AreEqual("orderCount", bagel4VariableRef.VariableName.ToString());
 
             var singleDonut = firstItem
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "singleDonut")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "singleDonut")
                 .Children.OfType<IComplexSuppliedValueDocumentPart>().Single();
             var singleBagel = firstItem
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "singleBagel")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "singleBagel")
                 .Children.OfType<IComplexSuppliedValueDocumentPart>().Single();
 
             AssertInputDonut(singleDonut, 5, "\"Donut5\"", "CHOCOLATE");
@@ -702,7 +702,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
 
             // Validate second array entry
             singleBagel = secondItem
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "singleBagel")
+                .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "singleBagel")
                 .Children.OfType<IComplexSuppliedValueDocumentPart>().Single();
 
             AssertInputBagel(singleBagel, 12, "\"Bagel12\"", true, 45);
@@ -1084,7 +1084,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             var arg = field.Children.OfType<IInputArgumentDocumentPart>().Single();
 
             Assert.IsNull(arg.GraphType);
-            Assert.IsNull(arg.TypeExpression);
+            Assert.IsNull(arg.Argument);
             Assert.AreEqual("notAnArgument", arg.Name);
         }
 

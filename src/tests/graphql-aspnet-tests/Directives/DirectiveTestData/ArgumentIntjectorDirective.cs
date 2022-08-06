@@ -15,8 +15,10 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using Moq;
 
     [GraphType("argInjector")]
     public class ArgumentIntjectorDirective : GraphDirective
@@ -24,13 +26,17 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
         [DirectiveLocations(AspNet.Schemas.TypeSystem.DirectiveLocation.AllExecutionLocations)]
         public IGraphActionResult Execute()
         {
+            var arg = new Mock<IGraphArgument>();
+            arg.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
+            arg.Setup(x => x.Name).Returns("bobArg");
+
             // randomly ineject an argument into the active part
             if (this.DirectiveTarget is IDocumentPart dp)
             {
                 dp.Children.Add(new DocumentInputArgument(
                     dp,
                     new InputItemNode(SourceLocation.None, string.Empty.AsMemory()),
-                    new AspNet.Schemas.GraphTypeExpression("String")));
+                    arg.Object));
             }
 
             return this.Ok();

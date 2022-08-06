@@ -55,6 +55,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             this.BuildFieldSelectionSteps();
             this.BuildFieldSelectionSetSteps();
             this.BuildArgumentSteps();
+            this.BuildInputFieldSteps();
             this.BuildDirectiveSteps();
             this.BuildSuppliedValueSteps();
         }
@@ -188,6 +189,15 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
 
             _stepCollection.Add(DocumentPartType.Argument, steps);
+        }
+
+
+        private void BuildInputFieldSteps()
+        {
+            var steps = new List<IRuleStep<DocumentValidationContext>>();
+            steps.Add(new Rule_5_6_1_ValueMustBeCoerceable());
+
+            _stepCollection.Add(DocumentPartType.InputField, steps);
         }
     }
 }

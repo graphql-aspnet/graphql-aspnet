@@ -18,24 +18,24 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     public interface IComplexSuppliedValueDocumentPart : ISuppliedValueDocumentPart, IResolvableFieldSet
     {
         /// <summary>
-        /// Determines whether this complex value contains an input value named <paramref name="argumentName"/>.
+        /// Determines whether this complex value contains an input value named <paramref name="fieldName"/>.
         /// </summary>
-        /// <param name="argumentName">Name of the argument to look for.</param>
-        /// <returns><c>true</c> if the specified argument name contains argument; otherwise, <c>false</c>.</returns>
-        bool ContainsArgument(string argumentName);
+        /// <param name="fieldName">Name of the field to look for.</param>
+        /// <returns><c>true</c> if the field exists on this collection; otherwise, <c>false</c>.</returns>
+        bool ContainsField(string fieldName);
 
         /// <summary>
-        /// Attempts to retrieve an named argument on this complex value.
+        /// Attempts to retrieve an named field on this complex value.
         /// </summary>
-        /// <param name="argumentName">Name of the argument to search for.</param>
-        /// <param name="foundArgument">When found, the argument is assigned to this parameter.</param>
+        /// <param name="argumentName">Name of the field to search for.</param>
+        /// <param name="foundField">When found, the field is assigned to this parameter.</param>
         /// <returns><c>true</c> if the argument was found, <c>false</c> otherwise.</returns>
-        bool TryGetArgument(string argumentName, out IInputArgumentDocumentPart foundArgument);
+        bool TryGetField(string argumentName, out IInputObjectFieldDocumentPart foundField);
 
         /// <summary>
-        /// Gets the set of arguments/fields defined on the query document for this complex value.
+        /// Gets the set of fields defined on the query document for this complex value.
         /// </summary>
-        /// <value>The arguments.</value>
-        IInputArgumentCollectionDocumentPart Arguments { get; }
+        /// <value>The supplied fields.</value>
+        IInputObjectFieldCollectionDocumentPart Fields { get; }
     }
 }

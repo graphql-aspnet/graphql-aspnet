@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
     /// <summary>
     /// Creates and assigns a <see cref="IInputArgumentDocumentPart"/> to the current node context for the active node.
     /// </summary>
-    internal class InputArgument_B_AssignContextQueryInputArgumentForDirective
+    internal class InputArgument_B_AssignInputArgumentForDirective
         : DocumentConstructionStep<InputItemNode>
     {
         /// <summary>
@@ -45,15 +45,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
             var node = (InputItemNode)context.ActiveNode;
             var directive = context.ParentPart?.GraphType as IDirective;
 
-            GraphTypeExpression expectedTypeExpression = null;
-            IGraphType argumentGraphType = null;
-            if (directive != null)
-            {
-                expectedTypeExpression = directive.Arguments.FindArgument(node.InputName.ToString())?.TypeExpression;
-                argumentGraphType = context.Schema.KnownTypes.FindGraphType(expectedTypeExpression?.TypeName);
-            }
+            var argument = directive?.Arguments.FindArgument(node.InputName.ToString());
+            var argumentGraphType = context.Schema.KnownTypes.FindGraphType(argument?.TypeExpression?.TypeName);
 
-            var docpart = new DocumentInputArgument(context.ParentPart, node, expectedTypeExpression);
+            var docpart = new DocumentInputArgument(context.ParentPart, node, argument);
             docpart.AssignGraphType(argumentGraphType);
 
             context.AssignPart(docpart);

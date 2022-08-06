@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
 
             // ensures that the field exists in the graphtype assigned to the complex part
             var isSuccessful = true;
-            foreach (var field in docPart.Children.OfType<IInputArgumentDocumentPart>())
+            foreach (var field in docPart.Children.OfType<IInputObjectFieldDocumentPart>())
             {
                 if (!targetGraphType.Fields.ContainsKey(field.Name))
                 {

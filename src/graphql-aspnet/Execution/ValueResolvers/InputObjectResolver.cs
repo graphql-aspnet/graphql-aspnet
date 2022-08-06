@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 return null;
 
             var instance = InstanceFactory.CreateInstance(_objectType);
-            foreach (var argument in fieldSet.Fields)
+            foreach (var argument in fieldSet.ResolvableFields)
             {
                 var argResolver = _fieldResolvers.ContainsKey(argument.Key) ? _fieldResolvers[argument.Key] : null;
 

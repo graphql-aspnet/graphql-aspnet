@@ -283,12 +283,12 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
         {
             // if the usage is not declared on an argument then this rule
             // cant be effectively evaluated
-            var argument = variableUsage.Parent as IInputArgumentDocumentPart;
-            if (argument == null)
+            var argPart = variableUsage.Parent as IInputArgumentDocumentPart;
+            if (argPart == null)
                 return true;
 
             // ensure the type expressions are compatible at the location used
-            if (!variable.TypeExpression.Equals(argument.TypeExpression))
+            if (!variable.TypeExpression.Equals(argPart.Argument.TypeExpression))
             {
                 this.ValidationError(
                     context,
@@ -296,9 +296,9 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                     AnchorTag_585,
                     variableUsage.Node.Location.AsOrigin(),
                     "Invalid Variable Argument. The type expression for the variable used on the argument " +
-                    $"'{argument.Name}' could " +
-                    $"not be successfully coerced to the required type. Expected '{argument.TypeExpression}' but got '{variable.TypeExpression}'. Double check " +
-                    $"the declared graph type of the variable and ensure it matches the required type of '{argument.Name}'.");
+                    $"'{argPart.Name}' could " +
+                    $"not be successfully coerced to the required type. Expected '{argPart.Argument.TypeExpression}' but got '{variable.TypeExpression}'. Double check " +
+                    $"the declared graph type of the variable and ensure it matches the required type of '{argPart.Name}'.");
 
                 return false;
             }

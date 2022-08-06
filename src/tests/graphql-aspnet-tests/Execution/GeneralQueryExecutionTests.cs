@@ -548,6 +548,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // parentObj has a property called  'child' that is passed as null on the query
             // but is required the query should fail
+            // breaks rule 5.6.1
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
                 "      objectWithNonNullChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
