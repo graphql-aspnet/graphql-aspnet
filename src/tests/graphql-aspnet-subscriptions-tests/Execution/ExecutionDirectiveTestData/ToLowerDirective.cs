@@ -31,7 +31,7 @@ namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
 
                 // update the resolver used by the request
                 // resolver then upper case any string result
-                fieldPart.PostProcessor = ConvertToUpper;
+                fieldPart.PostResolver = ConvertToUpper;
             }
 
             return this.Ok();

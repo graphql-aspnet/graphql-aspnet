@@ -143,7 +143,7 @@ namespace GraphQL.AspNet
             /// When present, this attribute may contain a single
             /// post processor executed after a field is resolved.
             /// </summary>
-            public const string FieldPostResolutionProcessor = "~GraphQL~ASPNET~FieldPostResolutionProcessor~";
+            public const string FieldPostResolutionResolver = "~GraphQL~ASPNET~FieldPostResolutionResolver~";
         }
 
         /// <summary>

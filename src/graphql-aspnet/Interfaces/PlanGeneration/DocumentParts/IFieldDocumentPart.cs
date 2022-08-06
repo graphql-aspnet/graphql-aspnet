@@ -23,10 +23,11 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     {
         /// <summary>
         /// Gets or sets a function that, when supplied, will be called immediately after
-        /// this field is resolved for a given source object.
+        /// this primary field resolver for the attached <see cref="Field"/> is executed for any
+        /// given source object.
         /// </summary>
-        /// <value>The post processor.</value>
-        Func<FieldResolutionContext, CancellationToken, Task> PostProcessor { get; set; }
+        /// <value>An optional post processing resolver to execute.</value>
+        Func<FieldResolutionContext, CancellationToken, Task> PostResolver { get; set; }
 
         /// <summary>
         /// Gets the name of the field requested, as it exists in the schema.

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     /// and will return a constant value.
     /// </summary>
     [DebuggerDisplay("{Name}")]
-    public class ResolvedInputArgumentValue : IInputArgumentValue
+    public class ResolvedInputArgumentValue : IInputValue
     {
         private readonly object _preResolvedValue;
 

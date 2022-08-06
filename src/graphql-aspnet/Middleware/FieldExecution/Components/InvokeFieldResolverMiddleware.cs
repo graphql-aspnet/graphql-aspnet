@@ -110,21 +110,37 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             await task.ConfigureAwait(false);
             context.Messages.AddRange(resolutionContext.Messages);
 
-            var continueExecution = !resolutionContext.IsCancelled;
+            await this.OnFieldResolutionComplete(context, resolutionContext, cancelToken);
 
-            // execute the post processor assigned via the query document if one exists
-            if (continueExecution)
-            {
-                if (context.InvocationContext.FieldDocumentPart.PostProcessor != null)
-                    await context.InvocationContext.FieldDocumentPart.PostProcessor(resolutionContext, cancelToken);
-            }
-
-            continueExecution = !resolutionContext.IsCancelled;
             context.Logger?.FieldResolutionCompleted(resolutionContext);
 
             this.AssignResults(context, resolutionContext);
 
-            return continueExecution;
+            return !resolutionContext.IsCancelled;
+        }
+
+        /// <summary>
+        /// A method that executes immediately after the field resolver completes its
+        /// operation. By default this method is used to invoke a fields post resolver but can be
+        /// extended as necessary.
+        /// </summary>
+        /// <param name="fieldExecutionContext">The field execution context governing the
+        /// request.</param>
+        /// <param name="fieldResolutionContext">The specific field resolution context
+        /// that was just resolved.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        protected virtual async Task OnFieldResolutionComplete(
+            GraphFieldExecutionContext fieldExecutionContext,
+            FieldResolutionContext fieldResolutionContext,
+            CancellationToken cancelToken)
+        {
+            // execute the post processor assigned via the query document if one exists
+            if (!fieldResolutionContext.IsCancelled)
+            {
+                if (fieldExecutionContext.InvocationContext.FieldDocumentPart.PostResolver != null)
+                    await fieldExecutionContext.InvocationContext.FieldDocumentPart.PostResolver(fieldResolutionContext, cancelToken);
+            }
         }
 
         /// <summary>

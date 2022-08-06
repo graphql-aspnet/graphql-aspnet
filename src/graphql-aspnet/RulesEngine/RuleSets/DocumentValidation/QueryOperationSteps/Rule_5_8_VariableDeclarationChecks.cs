@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
     using GraphQL.AspNet.RulesEngine;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A collective rule to evaluate all variable targets (5.8.*) at once in context of
@@ -247,7 +248,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
             {
                 if (variables.TryGetValue(variableUsage.VariableName.ToString(), out var variable))
                 {
-                    allValidUsages = this.CheckForValidUsage585(
+                    allValidUsages = this.Check585_IsVariableUsageAllowed(
                         context,
                         variableUsage,
                         variable) && allValidUsages;
@@ -276,29 +277,111 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
             return allValidUsages;
         }
 
-        private bool CheckForValidUsage585(
+
+        /// <summary>
+        /// This method is a direct implementation of the algorithm defined on
+        /// section 5.8.5 of the specification.
+        /// </summary>
+        /// <remarks>
+        /// (https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed).
+        /// </remarks>
+        /// <param name="context">The context being evaluated.</param>
+        /// <param name="variableUsage">The variable usage where the variable
+        /// was applied to the query document.</param>
+        /// <param name="variable">The variable definition that was applied.</param>
+        /// <returns><c>true</c> if the variable can be used where its applied, <c>false</c> otherwise.</returns>
+        private bool Check585_IsVariableUsageAllowed(
             DocumentValidationContext context,
             IVariableUsageDocumentPart variableUsage,
             IVariableDocumentPart variable)
         {
-            // if the usage is not declared on an argument then this rule
-            // cant be effectively evaluated
-            var argPart = variableUsage.Parent as IInputArgumentDocumentPart;
-            if (argPart == null)
+            // can't evaluate this rule if the owner of the usage
+            // is not set
+            if (variableUsage.Parent == null)
                 return true;
 
+            var variableType = variable.TypeExpression;
+
+            string argName;
+            bool hasLocationDefaultValue;
+            GraphTypeExpression originalLocationType;
+            GraphTypeExpression checkedLocationType;
+
+            switch (variableUsage.Parent)
+            {
+                case IInputArgumentDocumentPart argPart:
+                    // this rule can't evaluate for unassigned graph arguments
+                    if (argPart.Argument == null)
+                        return true;
+
+                    hasLocationDefaultValue = argPart.Argument.HasDefaultValue;
+                    originalLocationType = argPart.Argument.TypeExpression;
+                    checkedLocationType = originalLocationType;
+                    argName = argPart.Name;
+                    break;
+                case IInputObjectFieldDocumentPart iof:
+                    // this rule cant evaluate unassigned input object fields
+                    if (iof.Field == null)
+                        return true;
+
+                    // TODO: Add support for default input values on fields (github issue #70)
+                    hasLocationDefaultValue = false;
+                    originalLocationType = iof.Field.TypeExpression;
+                    checkedLocationType = originalLocationType;
+                    argName = iof.Name;
+                    break;
+
+                case IListSuppliedValueDocumentPart lsv:
+                    // this rule can't evaluate untyped input lists
+                    if (lsv.ListItemTypeExpression == null)
+                        return true;
+
+                    hasLocationDefaultValue = false;
+                    originalLocationType = lsv.ListItemTypeExpression;
+                    checkedLocationType = originalLocationType;
+                    argName = "<list>";
+                    break;
+
+                default:
+                    // TODO: Account for list value
+                    this.ValidationError(
+                       context,
+                       RuleNumber_585,
+                       AnchorTag_585,
+                       variableUsage.Node.Location.AsOrigin(),
+                       $"Unsupported Variable Usage. Variable '{variable.Name}' used at " +
+                       $"the target location is not supported.");
+
+                    return false;
+            }
+
+            // acount for allowed default values
+            // on the variable or usage locations
+            var defaultValueChecksPassed = true;
+            if (!originalLocationType.IsNullable && variableType.IsNullable)
+            {
+                // account for nullability and default values between
+                // the target location and the variable
+                var hasNonNullVariableDefaultValue = variable.DefaultValue != null
+                        && !(variable.DefaultValue is INullSuppliedValueDocumentPart);
+
+                if (!hasNonNullVariableDefaultValue && !hasLocationDefaultValue)
+                    defaultValueChecksPassed = false;
+                else
+                    checkedLocationType = originalLocationType.UnWrapExpression();
+            }
+
             // ensure the type expressions are compatible at the location used
-            if (!variable.TypeExpression.Equals(argPart.Argument.TypeExpression))
+            if (!defaultValueChecksPassed || !GraphTypeExpression.AreTypesCompatiable(checkedLocationType, variableType))
             {
                 this.ValidationError(
                     context,
                     RuleNumber_585,
                     AnchorTag_585,
                     variableUsage.Node.Location.AsOrigin(),
-                    "Invalid Variable Argument. The type expression for the variable used on the argument " +
-                    $"'{argPart.Name}' could " +
-                    $"not be successfully coerced to the required type. Expected '{argPart.Argument.TypeExpression}' but got '{variable.TypeExpression}'. Double check " +
-                    $"the declared graph type of the variable and ensure it matches the required type of '{argPart.Name}'.");
+                    "Invalid Variable Usage. The type expression for the variable used at " +
+                    $"'{argName}' could not be successfully coerced to the required type. " +
+                    $"Expected '{originalLocationType}' but got '{variableType}'.");
 
                 return false;
             }

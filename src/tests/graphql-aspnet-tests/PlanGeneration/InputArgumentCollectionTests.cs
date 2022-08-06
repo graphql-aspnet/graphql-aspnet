@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using NUnit.Framework;
 
     [TestFixture]
-    public class QueryInputArgumentCollectionTests
+    public class InputArgumentCollectionTests
     {
         [Test]
         public void FindArgumentByStringName_ForExistingArgument_ReturnsArgument()

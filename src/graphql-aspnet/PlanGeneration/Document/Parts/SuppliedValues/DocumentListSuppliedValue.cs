@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -16,6 +17,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A representation of a list of other input values for a single argument.
@@ -35,6 +37,36 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             : base(parentPart, node, key)
         {
             _listItems = new List<ISuppliedValueDocumentPart>();
+            this.DetermineListItemTypeExpression();
+        }
+
+        private void DetermineListItemTypeExpression()
+        {
+            GraphTypeExpression parentExpression = null;
+            switch (this.Parent)
+            {
+                case IInputValueDocumentPart ivdp:
+                    parentExpression = ivdp.TypeExpression;
+                    break;
+
+                case IListSuppliedValueDocumentPart lsv:
+                    parentExpression = lsv.ListItemTypeExpression;
+                    break;
+            }
+
+            if (parentExpression != null)
+            {
+                // could be a "non-nullable list"
+                // strip the list requirement to determine that the parent is a list
+                // of things then take the internal of that as the item type expression
+                if (parentExpression.IsRequired)
+                    parentExpression = parentExpression.UnWrapExpression();
+
+                if (parentExpression.IsListOfItems)
+                {
+                    this.ListItemTypeExpression = parentExpression.UnWrapExpression();
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -77,5 +109,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         /// <inheritdoc />
         public override string Description => $"ListValue (Count = {_listItems.Count})";
+
+        /// <inheritdoc />
+        public GraphTypeExpression ListItemTypeExpression { get; private set; }
     }
 }

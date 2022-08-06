@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     /// value so that it can provide it to the context.
     /// </summary>
     [DebuggerDisplay("{_coreValue.OwnerArgument.Name}")]
-    public class DeferredInputArgumentValue : IInputArgumentValue
+    public class DeferredInputArgumentValue : IInputValue
     {
         private readonly ISuppliedValueDocumentPart _coreValue;
         private readonly IInputValueResolver _resolver;

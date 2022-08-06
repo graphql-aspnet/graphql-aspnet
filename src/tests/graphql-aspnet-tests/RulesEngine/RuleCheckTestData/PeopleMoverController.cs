@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -63,6 +64,12 @@ namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
         public Escalator RetrieveEscalator(int id)
         {
             return new Escalator(id, "Some Scalator");
+        }
+
+        [QueryRoot("escalators")]
+        public IEnumerable<Escalator> RetrieveEscalatorsById(List<int> ids)
+        {
+            return new Escalator(1, "Some Scalator").AsEnumerable();
         }
 
         [QueryRoot("peopleMover")]

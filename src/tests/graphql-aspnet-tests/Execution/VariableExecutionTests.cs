@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using NUnit.Framework;
 
     [TestFixture]
-    public class InputVariableExecutionTests
+    public class VariableExecutionTests
     {
         [Test]
         public async Task SingleScalarValueVariable_IsUsedInsteadOfDefault()
@@ -89,6 +89,96 @@ namespace GraphQL.AspNet.Tests.Execution
                                         ""property1"" : ""stringPassedValue"",
                                         ""property2"" : 15
                                     }
+                                }
+                            }";
+
+            CommonAssertions.AreEqualJsonStrings(expected, result);
+        }
+
+        [Test]
+        public async Task VariableAsAListItem_ExecutesCorrectly()
+        {
+            var server = new TestServerBuilder()
+                .AddType<InputValueController>()
+                .AddGraphQL(o =>
+                {
+                    o.ResponseOptions.ExposeExceptions = true;
+                })
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddVariableData("{ \"variable1\" : 4 }");
+
+            builder.AddQueryText("query($variable1: Int!){ " +
+                "   sumListValues(arg1: [1,2,$variable1]) " +
+                "}");
+
+            var result = await server.RenderResult(builder);
+
+            var expected = @"{
+                                ""data"" : {
+                                  ""sumListValues"" : 7
+                                }
+                            }";
+
+            CommonAssertions.AreEqualJsonStrings(expected, result);
+        }
+
+        [Test]
+        public async Task VariableAsAListOfListItem_ExecutesCorrectly()
+        {
+            var server = new TestServerBuilder()
+                .AddType<InputValueController>()
+                .AddGraphQL(o =>
+                {
+                    o.ResponseOptions.ExposeExceptions = true;
+                })
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddVariableData("{ \"variable1\" : 86 }");
+
+            builder.AddQueryText("query($variable1: Int!){ " +
+                "   sumListListValues(arg1: [[1,2],[$variable1, 4]]) " +
+                "}");
+
+            var result = await server.RenderResult(builder);
+
+            var expected = @"{
+                                ""data"" : {
+                                  ""sumListListValues"" : 93
+                                }
+                            }";
+
+            CommonAssertions.AreEqualJsonStrings(expected, result);
+        }
+
+        [Test]
+        public async Task DeepNestedListOfListItem_ExecutesCorrectly()
+        {
+            var server = new TestServerBuilder()
+                .AddType<InputValueController>()
+                .AddGraphQL(o =>
+                {
+                    o.ResponseOptions.ExposeExceptions = true;
+                })
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddVariableData("{ \"variable1\" : 74, \"variable2\" : 99 }");
+
+            builder.AddQueryText("query($variable1: Int!,$variable2: Int!){ " +
+                "   stupidDeepListValues(arg1: [[[[[[[1,2],[$variable1, 4]],[[$variable2, 6]]]]]]]) " +
+                "}");
+
+            var result = await server.RenderResult(builder);
+
+            var expected = @"{
+                                ""data"" : {
+                                  ""stupidDeepListValues"" : 186
                                 }
                             }";
 

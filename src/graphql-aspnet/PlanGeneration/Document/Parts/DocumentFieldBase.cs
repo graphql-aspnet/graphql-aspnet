@@ -79,12 +79,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             }
         }
 
-        /// <inheritdoc cref="IFieldDocumentPart.PostProcessor" />
-        public Func<FieldResolutionContext, CancellationToken, Task> PostProcessor
+        /// <inheritdoc cref="IFieldDocumentPart.PostResolver" />
+        public Func<FieldResolutionContext, CancellationToken, Task> PostResolver
         {
             get
             {
-                if (this.Attributes.TryGetValue(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, out object item))
+                if (this.Attributes.TryGetValue(Constants.DocumentPartAttributes.FieldPostResolutionResolver, out object item))
                     return item as Func<FieldResolutionContext, CancellationToken, Task>;
 
                 return null;
@@ -92,8 +92,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
             set
             {
-                this.Attributes.TryRemove(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, out _);
-                this.Attributes.TryAdd(Constants.DocumentPartAttributes.FieldPostResolutionProcessor, value);
+                this.Attributes.TryRemove(Constants.DocumentPartAttributes.FieldPostResolutionResolver, out _);
+                this.Attributes.TryAdd(Constants.DocumentPartAttributes.FieldPostResolutionResolver, value);
             }
         }
 

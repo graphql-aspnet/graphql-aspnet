@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration
     using GraphQL.AspNet.PlanGeneration.InputArguments;
 
     /// <summary>
-    /// A collection of <see cref="IInputArgumentValue"/> to be used to invoke a method or action field type on the graph. Keyed
+    /// A collection of <see cref="IInputValue"/> to be used to invoke a method or action field type on the graph. Keyed
     /// on internal name representations.
     /// </summary>
     public interface IInputArgumentCollection : IEnumerable<InputArgument>

@@ -63,5 +63,27 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
             var human = await _starWarsData.RetrieveHuman(humanId).ConfigureAwait(false);
             return this.Ok(human);
         }
+
+
+
+        /// <summary>
+        /// Searches and retrievs multiple humans by their given ids.
+        /// </summary>
+        /// <param name="ids">The human identifiers.</param>
+        /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
+        [Query("find", typeof(IEnumerable<Human>))]
+        [Description("Retrieves multiple humans by their given ids.")]
+        public async Task<IGraphActionResult> RetrieveHumans(IEnumerable<GraphId> ids)
+        {
+            var foundHumans = new List<Human>();
+            foreach (var id in ids)
+            {
+                var human = await _starWarsData.RetrieveHuman(id).ConfigureAwait(false);
+                if (human != null)
+                    foundHumans.Add(human);
+            }
+
+            return this.Ok(foundHumans);
+        }
     }
 }

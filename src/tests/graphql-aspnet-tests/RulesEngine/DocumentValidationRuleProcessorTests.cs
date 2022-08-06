@@ -209,13 +209,13 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // all variable must be valid where used ($var1 is an int as required by elevator:id)
             AddQuery(
                 "5.8.5",
-                "query Operation1($var1: String){ peopleMovers { elevator (id: $var1) { id name } } }");
+                "query Operation1($var1: String!){ peopleMovers { elevator (id: $var1) { id name } } }");
 
             // all variable must be valid where used ($var1 is an int as required by elevator:id but
             // fragment recieves a string from its operation)
             AddQuery(
                 "5.8.5",
-                "query Operation1($var1: String){ peopleMovers { ... frag1 } } fragment frag1 on Query_PeopleMovers {elevator (id: $var1) { id name } }");
+                "query Operation1($var1: String!){ peopleMovers { ... frag1 } } fragment frag1 on Query_PeopleMovers {elevator (id: $var1) { id name } }");
 
             // all variables must be valid where used
             // $var1 is declared as a string but "horizontalMover" requires an "ID".
@@ -223,7 +223,23 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // but since type expressions don't match a failure must occur
             AddQuery(
                 "5.8.5",
-                "query Operation1($var1: String){ peopleMovers { horizontalMover (id: $var1) { id } } }");
+                "query Operation1($var1: String!){ peopleMovers { horizontalMover (id: $var1) { id } } }");
+
+            // var1 is declared as an Int, id accepts an Int!, value is denied because default is null
+            AddQuery(
+                "5.8.5",
+                "query Operation1($var1: Int = null){ peopleMover (id: $var1) { id } }");
+
+            // var1 is declared as an Int, id accepts an Int!, value is denied because no default
+            // for the variable is declared
+            AddQuery(
+                "5.8.5",
+                "query Operation1($var1: Int){ peopleMover (id: $var1) { id } }");
+
+            // var1 is declared as an String!, the list item type is Int!, value should be denied
+            AddQuery(
+                "5.8.5",
+                "query Operation1($var1: String!){ escalators (ids: [$var1, 3]) { id } }");
         }
 
         [TestCaseSource(nameof(TestQueries))]

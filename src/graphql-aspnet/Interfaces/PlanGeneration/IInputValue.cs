@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration
     /// A represenetation of an input value, resolved from a request, marrying the value provided on the request
     /// and the internal <see cref="IGraphArgument"/> that it represents in a field of target schema.
     /// </summary>
-    public interface IInputArgumentValue
+    public interface IInputValue
     {
         /// <summary>
         /// Resolves the final value of this input argument using the supplied variable for any replacements necessary.
