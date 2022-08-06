@@ -192,7 +192,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation
             _stepCollection.Add(DocumentPartType.Argument, steps);
         }
 
-
         private void BuildInputFieldSteps()
         {
             var steps = new List<IRuleStep<DocumentValidationContext>>();

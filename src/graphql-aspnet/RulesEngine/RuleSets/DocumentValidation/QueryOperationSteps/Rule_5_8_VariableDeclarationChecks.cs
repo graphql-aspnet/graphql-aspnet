@@ -277,7 +277,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
             return allValidUsages;
         }
 
-
         /// <summary>
         /// This method is a direct implementation of the algorithm defined on
         /// section 5.8.5 of the specification.
