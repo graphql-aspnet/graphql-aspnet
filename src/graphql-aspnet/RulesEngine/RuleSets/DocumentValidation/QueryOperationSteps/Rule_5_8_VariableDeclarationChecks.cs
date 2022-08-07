@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                        RuleNumber_582,
                        AnchorTag_582,
                        variable.Node.Location.AsOrigin(),
-                       "Unknown Graph Type. Could not determine the graph type expression of the variable " +
+                       "Unknown Variable Type Expresssion. Could not determine the graph type expression of the variable " +
                        $"named '{variable.Name}'. Double check that your variable declaration is correct.");
 
                     allVariablesPassed = false;
@@ -278,8 +278,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
         }
 
         /// <summary>
-        /// This method is a direct implementation of the algorithm defined on
-        /// section 5.8.5 of the specification.
+        /// This method is a direct implementation of the 'IsVariableUsageAllowed' algorithm
+        /// defined on section 5.8.5 of the specification.
         /// </summary>
         /// <remarks>
         /// (https://spec.graphql.org/October2021/#sec-All-Variable-Usages-are-Allowed).
@@ -315,18 +315,16 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
 
                     hasLocationDefaultValue = argPart.Argument.HasDefaultValue;
                     originalLocationType = argPart.Argument.TypeExpression;
-                    checkedLocationType = originalLocationType;
                     argName = argPart.Name;
                     break;
                 case IInputObjectFieldDocumentPart iof:
-                    // this rule cant evaluate unassigned input object fields
+                    // this rule cant evaluate unassigned graph fields
                     if (iof.Field == null)
                         return true;
 
                     // TODO: Add support for default input values on fields (github issue #70)
                     hasLocationDefaultValue = false;
                     originalLocationType = iof.Field.TypeExpression;
-                    checkedLocationType = originalLocationType;
                     argName = iof.Name;
                     break;
 
@@ -337,12 +335,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
 
                     hasLocationDefaultValue = false;
                     originalLocationType = lsv.ListItemTypeExpression;
-                    checkedLocationType = originalLocationType;
                     argName = "<list>";
                     break;
 
                 default:
-                    // TODO: Account for list value
                     this.ValidationError(
                        context,
                        RuleNumber_585,
@@ -354,10 +350,12 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                     return false;
             }
 
+            checkedLocationType = originalLocationType;
+
             // acount for allowed default values
             // on the variable or usage locations
             var defaultValueChecksPassed = true;
-            if (!originalLocationType.IsNullable && variableType.IsNullable)
+            if (!checkedLocationType.IsNullable && variableType.IsNullable)
             {
                 // account for nullability and default values between
                 // the target location and the variable
@@ -367,7 +365,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                 if (!hasNonNullVariableDefaultValue && !hasLocationDefaultValue)
                     defaultValueChecksPassed = false;
                 else
-                    checkedLocationType = originalLocationType.UnWrapExpression();
+                    checkedLocationType = checkedLocationType.UnWrapExpression();
             }
 
             // ensure the type expressions are compatible at the location used
