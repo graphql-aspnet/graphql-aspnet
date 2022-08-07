@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Execution
         /// executed.
         /// </summary>
         /// <value>The declared variables.</value>
-        public IVariableCollectionDocumentPart DeclaredVariables => _variableCollection;
+        public IVariableCollectionDocumentPart Variables => _variableCollection;
 
         /// <summary>
         /// Gets a collection of the field contexts present in this operation, regardless of level, that have some

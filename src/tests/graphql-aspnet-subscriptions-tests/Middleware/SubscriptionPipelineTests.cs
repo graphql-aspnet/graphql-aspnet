@@ -65,25 +65,29 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             public int Count => this.ComponentsAdded.Count;
         }
 
+        /// <summary>
+        /// A sanity check test to ensure that the base execution pipeline helper
+        /// and the subscription helper differ by only the subscription middleware component.
+        /// </summary>
         [Test]
         public void BasePipelineAndSubscriptionPipelien_DifferByOnlySubscriptionComponent()
         {
             var options = new SchemaOptions(typeof(GraphSchema), new ServiceCollection());
             options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;
 
-            // a sanity check test to ensure that the base execution pipeline helper
-            // and the subscription version differ by only the subscription middleware component
             var basePipeline = new FakePipelineBuilder();
             var baselineHelper = new QueryExecutionPipelineHelper<GraphSchema>(basePipeline);
 
             var subscriptionPipeline = new FakePipelineBuilder();
             var subscriptiohHelper = new SubscriptionQueryExecutionPipelineHelper<GraphSchema>(subscriptionPipeline);
 
+            // populate some fake builders with the default components of each helper
             baselineHelper.AddDefaultMiddlewareComponents(options);
             subscriptiohHelper.AddDefaultMiddlewareComponents(options);
 
+            // ensure that they different in type and order by only the extra subscription
+            // component that gets added
             Assert.AreEqual(basePipeline.Count + 1, subscriptionPipeline.Count);
-
             var indexofBaseLine = 0;
             for (var i = 0; i < subscriptionPipeline.Count; i++)
             {

@@ -9,13 +9,16 @@
 
 namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.Variables;
 
     /// <summary>
@@ -40,39 +43,60 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <inheritdoc />
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context.IsValid && context.Operation != null)
+            if (context.IsValid)
             {
-                // Convert the supplied variable values to usable objects of the type expression
-                // of the chosen operation
-                try
+                if (context.QueryPlan != null)
                 {
-                    var variableResolver = new ResolvedVariableGenerator(_schema, context.Operation.Variables);
-                    context.ResolvedVariables = variableResolver.Resolve(context.ParentRequest.VariableData);
-
-                    // nullability checks for each resolved variable
-                    foreach (var resolvedVariable in context.ResolvedVariables.Values)
-                    {
-                        if (!resolvedVariable.TypeExpression.IsNullable && resolvedVariable.Value == null)
-                        {
-                            context.Messages.Critical(
-                                 "The resolved variable value of <null> is not valid for non-nullable variable " +
-                                 $"'{resolvedVariable.Name}'",
-                                 Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
-                                 context.Operation.Node.Location.AsOrigin());
-                        }
-                    }
+                    this.ResolveVariables(
+                        context,
+                        context.QueryPlan.Operation.Variables,
+                        context.ParentRequest.VariableData);
                 }
-                catch (UnresolvedValueException svce)
+                else if (context.Operation != null)
                 {
-                    context.Messages.Critical(
-                       svce.Message,
-                       Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
-                       context.Operation.Node.Location.AsOrigin(),
-                       exceptionThrown: svce.InnerException);
+                    this.ResolveVariables(
+                        context,
+                        context.Operation.Variables,
+                        context.ParentRequest.VariableData);
                 }
             }
 
             return next(context, cancelToken);
+        }
+
+        private void ResolveVariables(
+            GraphQueryExecutionContext context,
+            IVariableCollectionDocumentPart declaredVariables,
+            IInputVariableCollection suppliedVariableData)
+        {
+            // Convert the supplied variable values to usable objects of the type expression
+            // of the chosen operation
+            try
+            {
+                var variableResolver = new ResolvedVariableGenerator(_schema, declaredVariables);
+                context.ResolvedVariables = variableResolver.Resolve(suppliedVariableData);
+
+                // nullability checks for each resolved variable
+                foreach (var resolvedVariable in context.ResolvedVariables.Values)
+                {
+                    if (!resolvedVariable.TypeExpression.IsNullable && resolvedVariable.Value == null)
+                    {
+                        context.Messages.Critical(
+                             "The resolved variable value of <null> is not valid for non-nullable variable " +
+                             $"'{resolvedVariable.Name}'",
+                             Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
+                             context.Operation.Node.Location.AsOrigin());
+                    }
+                }
+            }
+            catch (UnresolvedValueException svce)
+            {
+                context.Messages.Critical(
+                   svce.Message,
+                   Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
+                   context.Operation.Node.Location.AsOrigin(),
+                   exceptionThrown: svce.InnerException);
+            }
         }
     }
 }
