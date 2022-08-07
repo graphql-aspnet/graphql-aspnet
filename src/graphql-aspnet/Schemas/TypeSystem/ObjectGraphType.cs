@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -36,7 +35,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public ObjectGraphType(
             string name,
             Type objectType,
-            GraphFieldPath route,
+            SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
             : base(name, route, directives)
         {

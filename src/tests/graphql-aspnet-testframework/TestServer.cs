@@ -10,14 +10,11 @@
 namespace GraphQL.AspNet.Tests.Framework
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Text.Encodings.Web;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Controllers;
@@ -31,11 +28,13 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -140,25 +139,40 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <summary>
-        /// Renders a completed query document in the same manner that the graphql server would as part of fulfilling a request.
+        /// Renders a completed query document in the same manner that the graphql server
+        /// would as part of fulfilling a request. This method DOES NOT validate the document.
         /// </summary>
         /// <param name="queryText">The query text to generate a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>
         public IGraphQueryDocument CreateDocument(string queryText)
         {
             var generator = this.ServiceProvider.GetService<IGraphQueryDocumentGenerator<TSchema>>();
-            return generator.CreateDocument(this.CreateSyntaxTree(queryText));
+            var document = generator.CreateDocument(this.CreateSyntaxTree(queryText));
+            return document;
         }
 
         /// <summary>
         /// Renders a qualified query plan in the same manner that the graphql server would as part of fulfilling a request.
         /// </summary>
         /// <param name="queryText">The query text to generate a plan for.</param>
+        /// <param name="operationName">Name of the operation in the query text to formalize
+        /// into the plan.</param>
         /// <returns>Task&lt;IGraphQueryPlan&gt;.</returns>
-        public Task<IGraphQueryPlan> CreateQueryPlan(string queryText)
+        public Task<IGraphQueryPlan> CreateQueryPlan(string queryText, string operationName = null)
         {
+            var documentGenerator = this.ServiceProvider.GetService<IGraphQueryDocumentGenerator<TSchema>>();
             var planGenerator = this.ServiceProvider.GetService<IGraphQueryPlanGenerator<TSchema>>();
-            return planGenerator.CreatePlan(this.CreateSyntaxTree(queryText));
+            var document = this.CreateDocument(queryText);
+
+            documentGenerator.ValidateDocument(document);
+
+            IOperationDocumentPart docPart = null;
+            if (document.Operations.Count == 1)
+                docPart = document.Operations[0];
+            else
+                docPart = document.Operations.RetrieveOperation(operationName);
+
+            return planGenerator.CreatePlan(docPart);
         }
 
         /// <summary>
@@ -240,8 +254,9 @@ namespace GraphQL.AspNet.Tests.Framework
             var fieldInvocationContext = new Mock<IGraphFieldInvocationContext>();
             var parentContext = new Mock<IGraphExecutionContext>();
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
+            var fieldDocumentPart = new Mock<IFieldDocumentPart>();
 
-            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(this.SecurityContext);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
@@ -250,14 +265,18 @@ namespace GraphQL.AspNet.Tests.Framework
             parentContext.Setup(x => x.Messages).Returns(() => messages);
             parentContext.Setup(x => x.IsValid).Returns(() => messages.IsSucessful);
 
+            fieldDocumentPart.Setup(x => x.Name).Returns(field.Name.AsMemory());
+            fieldDocumentPart.Setup(x => x.Alias).Returns(field.Name.AsMemory());
+            fieldDocumentPart.Setup(x => x.Field).Returns(field);
+
             fieldInvocationContext.Setup(x => x.ExpectedSourceType).Returns(typeof(TType));
             fieldInvocationContext.Setup(x => x.Field).Returns(field);
             fieldInvocationContext.Setup(x => x.Arguments).Returns(arguments);
             fieldInvocationContext.Setup(x => x.Name).Returns(field.Name);
-            fieldInvocationContext.Setup(x => x.Directives).Returns(new List<IDirectiveInvocationContext>());
             fieldInvocationContext.Setup(x => x.ChildContexts).Returns(new FieldInvocationContextCollection());
             fieldInvocationContext.Setup(x => x.Origin).Returns(SourceOrigin.None);
             fieldInvocationContext.Setup(x => x.Schema).Returns(this.Schema);
+            fieldInvocationContext.Setup(x => x.FieldDocumentPart).Returns(fieldDocumentPart.Object);
 
             var resolvedParentDataItem = new GraphDataItem(
                 fieldInvocationContext.Object,
@@ -531,9 +550,9 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        public async Task ExecuteFieldAuthorization(GraphFieldSecurityContext context)
+        public async Task ExecuteFieldAuthorization(GraphSchemaItemSecurityContext context)
         {
-            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphFieldSecurityContext>>();
+            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext>>();
             await pipeline.InvokeAsync(context, default).ConfigureAwait(false);
         }
 

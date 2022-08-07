@@ -22,13 +22,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     /// </summary>
     public class ValidateQueryRequestMiddleware : IQueryExecutionMiddleware
     {
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context?.ServiceProvider == null)
@@ -39,7 +33,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     new InvalidOperationException($"The {nameof(GraphQueryExecutionContext)} governing the execution of the pipeline was provided as null. Operation failed."));
             }
 
-            if (context.OperationRequest == null || string.IsNullOrWhiteSpace(context.OperationRequest.QueryText))
+            if (context.ParentRequest == null || string.IsNullOrWhiteSpace(context.ParentRequest.QueryText))
             {
                 // capture execution exceptions, they will relate to the internal processing
                 // of the server and should only be exposed to authorized parties (via exception details)

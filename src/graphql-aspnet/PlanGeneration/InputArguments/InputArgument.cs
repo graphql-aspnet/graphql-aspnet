@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// </summary>
         /// <param name="argument">The field argument defined in a schema.</param>
         /// <param name="value">The value representing this field argument as its defined in a query document.</param>
-        public InputArgument(IGraphArgument argument, IInputArgumentValue value)
+        public InputArgument(IGraphArgument argument, IInputValue value)
         {
             this.Argument = Validation.ThrowIfNullOrReturn(argument, nameof(argument));
             this.Value = Validation.ThrowIfNullOrReturn(value, nameof(value));
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// reference to an input variable which it needs to extract from a variable collection.
         /// </summary>
         /// <value>The value.</value>
-        public IInputArgumentValue Value { get; }
+        public IInputValue Value { get; }
 
         /// <summary>
         /// Gets or sets the underlying field that represents

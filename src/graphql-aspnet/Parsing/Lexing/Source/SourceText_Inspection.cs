@@ -27,8 +27,8 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
         [DebuggerStepThrough]
         public bool PeekNextIsWhitespace()
         {
-            // WhiteSpace: https://graphql.github.io/graphql-spec/June2018/#sec-White-Space
-            // Line Terminators: https://graphql.github.io/graphql-spec/June2018/#sec-Line-Terminators
+            // WhiteSpace: https://graphql.github.io/graphql-spec/October2021/#sec-White-Space
+            // Line Terminators: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
             return CHARS.WhiteSpace.Span.IndexOf(this.Peek()) >= 0;
         }
 
@@ -114,7 +114,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
 
             var slice = this.Slice(absoluteIndex, newLineIndex);
 
-            // \r\n is considered a new line: https://graphql.github.io/graphql-spec/June2018/#sec-Line-Terminators
+            // \r\n is considered a new line: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
             return slice.TrimTrailingCarriageReturn();
         }
 

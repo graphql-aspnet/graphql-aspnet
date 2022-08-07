@@ -12,14 +12,12 @@ namespace GraphQL.AspNet
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Directives.Global;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas.Structural;
@@ -131,6 +129,24 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// A set of known attributes that can be applied to query document part.
+        /// </summary>
+        public static class DocumentPartAttributes
+        {
+            /// <summary>
+            /// When present, this attirbute indicates the document part as "included"
+            /// or part of the result set the document produces.
+            /// </summary>
+            public const string IsIncluded = "~GraphQL~ASPNET~IsIncluded~";
+
+            /// <summary>
+            /// When present, this attribute may contain a single
+            /// post processor executed after a field is resolved.
+            /// </summary>
+            public const string FieldPostResolutionResolver = "~GraphQL~ASPNET~FieldPostResolutionResolver~";
+        }
+
+        /// <summary>
         /// Common error codes used in graph resolution errors.
         /// </summary>
         public static class ErrorCodes
@@ -151,6 +167,7 @@ namespace GraphQL.AspNet
             public const string DEFAULT = "UNKNOWN";
             public const string GENERAL_ERROR = "GENERAL_ERROR";
             public const string INVALID_ARGUMENT = "INVALID_ARGUMENT";
+            public const string INVALID_VARIABLE_VALUE = "INVALID_VARIABLE_VALUE";
         }
 
         /// <summary>
@@ -221,6 +238,12 @@ namespace GraphQL.AspNet
             public const string TYPE_FIELD = "__type";
             public const string TYPENAME_FIELD = "__typename";
 
+            /// <summary>
+            /// Gets a list of approved operation types available on this server. (e.g. query, mutation etc.)
+            /// </summary>
+            /// <value>The operation names.</value>
+            public static IReadOnlyList<string> GRAPH_OPERATION_NAMES { get; }
+
             private static readonly IReadOnlyDictionary<GraphOperationType, string> GRAPH_OPERATION_TYPE_NAME_BY_TYPE;
             private static readonly IReadOnlyDictionary<string, GraphOperationType> GRAPH_OPERATION_TYPE_BY_KEYWORD;
 
@@ -258,6 +281,12 @@ namespace GraphQL.AspNet
             /// </summary>
             static ReservedNames()
             {
+                var list = new List<string>();
+                list.Add(ParserConstants.Keywords.Query.ToString());
+                list.Add(ParserConstants.Keywords.Mutation.ToString());
+                list.Add(ParserConstants.Keywords.Subscription.ToString());
+                GRAPH_OPERATION_NAMES = list;
+
                 var dicOperationType = new Dictionary<string, GraphOperationType>();
                 dicOperationType.Add(ParserConstants.Keywords.Query.ToString(), GraphOperationType.Query);
                 dicOperationType.Add(ParserConstants.Keywords.Mutation.ToString(), GraphOperationType.Mutation);
@@ -403,6 +432,11 @@ namespace GraphQL.AspNet
             public const string INTROSPECTION_ROOT = DELIMITER_ROOT_START + "introspection" + DELIMITER_ROOT_END;
 
             /// <summary>
+            /// A phrase, used at the start of a route string, to indicate its part of a document.
+            /// </summary>
+            public const string DOCUMENT_ROOT = DELIMITER_ROOT_START + "document" + DELIMITER_ROOT_END;
+
+            /// <summary>
             /// The phrase used to seperate individual elements of a route fragement.
             /// </summary>
             public const string PATH_SEPERATOR = "/";
@@ -424,7 +458,7 @@ namespace GraphQL.AspNet
             public const string DELIMITER_ROOT_END = "]";
 
             /// <summary>
-            /// A single string containing all used special characters in <see cref="GraphFieldPath"/> objects.
+            /// A single string containing all used special characters in <see cref="SchemaItemPath"/> objects.
             /// </summary>
             public const string DELIMITERS_ALL = PATH_SEPERATOR + DELIMITER_ROOT_START + DELIMITER_ROOT_END;
 
@@ -441,7 +475,7 @@ namespace GraphQL.AspNet
         {
             /// <summary>
             /// A regex containing the rules for parsing a graphql name.
-            /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
+            /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
             /// </summary>
             public static readonly Regex NameRegex = new Regex(@"^([_A-Za-z][0-9A-Za-z]|[0-9A-Za-z]+)[_0-9A-Za-z]*$");
         }
@@ -491,6 +525,6 @@ namespace GraphQL.AspNet
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.
         /// </summary>
-        public const string SPECIFICATION_URL = "https://spec.graphql.org/June2018/";
+        public const string SPECIFICATION_URL = "https://spec.graphql.org/October2021/";
     }
 }

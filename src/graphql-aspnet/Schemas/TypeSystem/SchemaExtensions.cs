@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             yield return schema;
 
             // all declared operations
-            foreach (var operationEntry in schema.OperationTypes)
+            foreach (var operationEntry in schema.Operations)
                 yield return operationEntry.Value;
 
             // process each graph item except directives

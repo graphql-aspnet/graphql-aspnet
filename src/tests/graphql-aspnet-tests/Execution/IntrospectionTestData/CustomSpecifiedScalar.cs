@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [SpecifiedBy("http://someSiteViaAttribute")]
     public class CustomSpecifiedScalar : BaseScalarType

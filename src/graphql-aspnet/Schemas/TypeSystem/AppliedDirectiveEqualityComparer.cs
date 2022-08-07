@@ -9,7 +9,6 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

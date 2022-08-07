@@ -20,15 +20,14 @@ namespace GraphQL.AspNet.PlanGeneration
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
 
     /// <summary>
-    /// A generator capable of converting a single operation from a query document into an actionable
-    /// "execution context" containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
+    /// A generator capable of converting a single <see cref="IOperationDocumentPart"/> from a query document into an actionable
+    /// execution context containing the necessary data, steps, resolvers, analyzers etc.  to fulfill a
     /// request made from it.
     /// </summary>
-    public class ExecutableOperationGenerator
+    internal class ExecutableOperationGenerator
     {
         private readonly ISchema _schema;
         private IGraphMessageCollection _messages;
@@ -50,14 +49,15 @@ namespace GraphQL.AspNet.PlanGeneration
         /// </summary>
         /// <param name="operation">The query operation to generate an execution context for.</param>
         /// <returns>Task&lt;IGraphFieldExecutableOperation&gt;.</returns>
-        public async Task<IGraphFieldExecutableOperation> Create(QueryOperation operation)
+        public async Task<IGraphFieldExecutableOperation> Create(IOperationDocumentPart operation)
         {
             Validation.ThrowIfNull(operation, nameof(operation));
             _messages = new GraphMessageCollection();
 
             var topLevelFields = await this.CreateContextsForFieldSelectionSet(
-                operation.GraphType,
-                operation.FieldSelectionSet).ConfigureAwait(false);
+                operation.GraphType as IObjectGraphType,
+                operation.FieldSelectionSet)
+                .ConfigureAwait(false);
 
             var result = new GraphFieldExecutableOperation(operation);
             foreach (var field in topLevelFields)
@@ -76,19 +76,19 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <returns>Task.</returns>
         private async Task<IEnumerable<IGraphFieldInvocationContext>> CreateContextsForFieldSelectionSet(
             IObjectGraphType sourceGraphType,
-            FieldSelectionSet fieldsToReturn)
+            IFieldSelectionSetDocumentPart fieldsToReturn)
         {
             var tasks = new List<Task<IGraphFieldInvocationContext>>();
-            if (sourceGraphType != null && fieldsToReturn != null && fieldsToReturn.Count > 0)
+            if (sourceGraphType != null && fieldsToReturn?.ExecutableFields != null)
             {
-                foreach (var field in fieldsToReturn)
+                foreach (var fieldPart in fieldsToReturn.ExecutableFields.IncludedOnly)
                 {
                     // not all fields in a selection set will target all known source types
                     // like when a fragment is spread into a selection set, the fragment target type will
                     // restrict those fields to a given graph type (or types in the case of a union or interface)
-                    if (field.ShouldResolveForGraphType(sourceGraphType))
+                    if (fieldPart.Field.CanResolveForGraphType(sourceGraphType))
                     {
-                        var task = this.CreateFieldContext(sourceGraphType, field);
+                        var task = this.CreateFieldContext(sourceGraphType, fieldPart);
                         tasks.Add(task);
                     }
                 }
@@ -109,32 +109,29 @@ namespace GraphQL.AspNet.PlanGeneration
         /// Creates the appropriate field context from the selection parsed from the user's query document.
         /// </summary>
         /// <param name="sourceGraphType">The graph type from which to extract the data.</param>
-        /// <param name="fieldSelection">The requested field of data from teh graph type.</param>
+        /// <param name="fieldPart">The part of the query document.</param>
         /// <returns>IGraphFieldExecutionContext.</returns>
         private async Task<IGraphFieldInvocationContext> CreateFieldContext(
             IObjectGraphType sourceGraphType,
-            FieldSelection fieldSelection)
+            IFieldDocumentPart fieldPart)
         {
             var concreteType = _schema.KnownTypes.FindConcreteType(sourceGraphType);
 
             // the fieldSelection could have been declared and carried in context of an interface
             // translate the field reference to that of the target source type (a resolvable object graph type)
-            var targetField = sourceGraphType.Fields[fieldSelection.Field.Name];
+            var targetField = sourceGraphType.Fields[fieldPart.Field.Name];
 
             var fieldContext = new FieldInvocationContext(
                 _schema,
                 concreteType,
-                fieldSelection.Alias.ToString(),
+                fieldPart.Alias.ToString(),
                 targetField,
-                new SourceOrigin(fieldSelection.Node.Location, fieldSelection.Path));
+                fieldPart,
+                new SourceOrigin(fieldPart.Node.Location, fieldPart.Path));
 
-            var arguments = this.CreateArgumentList(targetField, fieldSelection.Arguments);
+            var arguments = this.CreateArgumentList(targetField, fieldPart.Arguments);
             foreach (var argument in arguments)
                 fieldContext.Arguments.Add(argument);
-
-            var directives = this.CreateDirectiveContexts(fieldSelection.Directives);
-            foreach (var directive in directives)
-                fieldContext.Directives.Add(directive);
 
             // if the field declares itself as being specifically for a single concrete type
             // enforce that restriction (all user created POCO data types will, most virtual controller based types will not)
@@ -144,19 +141,19 @@ namespace GraphQL.AspNet.PlanGeneration
                     fieldContext.Restrict(typedType.ObjectType);
             }
 
-            if (fieldSelection.FieldSelectionSet != null && fieldSelection.FieldSelectionSet.Count > 0)
+            if (fieldPart.FieldSelectionSet != null)
             {
                 // resolve the child fields for each possible known return type
                 // since we don't know what the resultant query may produce at runtime we need to account
                 // for all possibilities known to the target schema
-                var allKnownTypes = _schema.KnownTypes.ExpandAbstractType(fieldSelection.GraphType);
+                var allKnownTypes = _schema.KnownTypes.ExpandAbstractType(fieldPart.GraphType);
 
                 // maintain the order of completion to ensure that child contexts are added to this context
                 // in the order they were declared on the query
                 var orderedFieldTasks = new List<Task<IEnumerable<IGraphFieldInvocationContext>>>();
                 foreach (var childGraphType in allKnownTypes)
                 {
-                    var childrenTask = this.CreateContextsForFieldSelectionSet(childGraphType, fieldSelection.FieldSelectionSet);
+                    var childrenTask = this.CreateContextsForFieldSelectionSet(childGraphType, fieldPart.FieldSelectionSet);
                     orderedFieldTasks.Add(childrenTask);
                 }
 
@@ -187,7 +184,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <returns>Task&lt;IInputArgumentCollection&gt;.</returns>
         private IInputArgumentCollection CreateArgumentList(
             IGraphArgumentContainer argumentContainer,
-            IQueryInputArgumentCollection querySuppliedArguments)
+            IInputArgumentCollectionDocumentPart querySuppliedArguments)
         {
             var collection = new InputArgumentCollection();
             var argGenerator = new ArgumentGenerator(_schema, querySuppliedArguments);
@@ -202,32 +199,6 @@ namespace GraphQL.AspNet.PlanGeneration
             }
 
             return collection;
-        }
-
-        /// <summary>
-        /// Convert the referenced directives into executable contexts.
-        /// </summary>
-        /// <param name="queryDirectives">The directives parsed from the user supplied query document..</param>
-        private IEnumerable<IDirectiveInvocationContext> CreateDirectiveContexts(IEnumerable<QueryDirective> queryDirectives)
-        {
-            var list = new List<IDirectiveInvocationContext>();
-
-            foreach (var directive in queryDirectives)
-            {
-                var directiveContext = new DirectiveInvocationContext(
-                    directive.Directive,
-                    directive.Location,
-                    directive.Node.Location.AsOrigin());
-
-                // gather arguments
-                var arguments = this.CreateArgumentList(directive.Directive, directive.Arguments);
-                foreach (var arg in arguments)
-                    directiveContext.Arguments.Add(arg);
-
-                list.Add(directiveContext);
-            }
-
-            return list;
         }
     }
 }

@@ -9,50 +9,91 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document
 {
-    using System.Collections.Generic;
+    using System;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
 
     /// <summary>
     /// A document representing the query text as supplied by the user matched against a schema.
     /// </summary>
     internal class QueryDocument : IGraphQueryDocument
     {
+        private readonly DocumentOperationCollection _operations;
+        private readonly DocumentNamedFragmentCollection _fragmentCollection;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryDocument" /> class.
         /// </summary>
-        /// <param name="messages">The messages to preload to the document.</param>
-        /// <param name="operations">the operations to preload to the document.</param>
-        /// <param name="maxDepth">The maximum depth achived by the document.</param>
-        public QueryDocument(IGraphMessageCollection messages = null, IEnumerable<QueryOperation> operations = null, int maxDepth = 0)
+        public QueryDocument()
         {
-            this.MaxDepth = maxDepth;
-            this.Operations = new QueryOperationCollection();
             this.Messages = new GraphMessageCollection();
+            this.Children = new DocumentPartsCollection(this);
 
-            this.Operations.AddRange(operations);
-            this.Messages.AddRange(messages);
+            this.Path = new SourcePath();
+            _fragmentCollection = new DocumentNamedFragmentCollection(this);
+            _operations = new DocumentOperationCollection(this);
+
+            this.Children.ChildPartAdded += this.Children_PartAdded;
+            this.Attributes = new MetaDataCollection();
         }
 
-        /// <summary>
-        /// Gets the set of operations parsed from a user's query text.
-        /// </summary>
-        /// <value>The operations.</value>
-        public IQueryOperationCollection Operations { get; }
+        private void Children_PartAdded(object sender, DocumentPartEventArgs eventArgs)
+        {
+            if (eventArgs.TargetDocumentPart is INamedFragmentDocumentPart nf)
+                _fragmentCollection.AddFragment(nf);
+            else if (eventArgs.TargetDocumentPart is IOperationDocumentPart od)
+                _operations.AddOperation(od);
+        }
 
-        /// <summary>
-        /// Gets the messages generated during the validation run, if any.
-        /// </summary>
-        /// <value>The messages.</value>
+        /// <inheritdoc />
+        public void AssignGraphType(IGraphType graphType)
+        {
+            throw new NotSupportedException("No graph type exists that can be used for the root document");
+        }
+
+        /// <inheritdoc />
         public IGraphMessageCollection Messages { get; }
 
-        /// <summary>
-        /// Gets the field maximum depth of any given operation of this document.
-        /// </summary>
-        /// <value>The maximum depth.</value>
-        public int MaxDepth { get; }
+        /// <inheritdoc />
+        public int MaxDepth { get; set; }
+
+        /// <inheritdoc />
+        public IDocumentPartsCollection Children { get; }
+
+        /// <inheritdoc />
+        public IGraphType GraphType => null;
+
+        /// <inheritdoc />
+        public DocumentPartType PartType => DocumentPartType.Document;
+
+        /// <inheritdoc />
+        public IDocumentPart Parent => null;
+
+        /// <inheritdoc />
+        public SyntaxNode Node => EmptyNode.Instance;
+
+        /// <inheritdoc />
+        public SourcePath Path { get; }
+
+        /// <inheritdoc />
+        public IOperationCollectionDocumentPart Operations => _operations;
+
+        /// <inheritdoc />
+        public INamedFragmentCollectionDocumentPart NamedFragments => _fragmentCollection;
+
+        /// <inheritdoc />
+        public MetaDataCollection Attributes { get; }
+
+        /// <inheritdoc />
+        public string Description => "Document Root";
     }
 }

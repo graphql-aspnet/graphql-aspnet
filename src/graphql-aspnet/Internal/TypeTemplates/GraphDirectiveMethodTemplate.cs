@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 true,
                 false);
 
-            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, this.Name));
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, this.Name));
 
             // parse all input parameters into the method
             foreach (var parameter in this.Method.GetParameters())
@@ -223,7 +223,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public string Description { get; private set; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; private set; }
+        public SchemaItemPath Route { get; private set; }
 
         /// <inheritdoc />
         public IReadOnlyList<IGraphArgumentTemplate> Arguments => _arguments;

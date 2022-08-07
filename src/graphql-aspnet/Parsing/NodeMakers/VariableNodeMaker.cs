@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Parsing.NodeMakers
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -89,9 +90,25 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
                 defaultValue = maker.MakeNode(tokenStream);
             }
 
+            // could be directives with the @ symbol
+            var directives = new List<SyntaxNode>();
+            while (tokenStream.Match(TokenType.AtSymbol))
+            {
+                var maker = NodeMakerFactory.CreateMaker<DirectiveNode>();
+                var directiveNode = maker.MakeNode(tokenStream);
+                directives.Add(directiveNode);
+            }
+
             var variable = new VariableNode(startLocation, variableName, typeExpression);
+
             if (defaultValue != null)
                 variable.AddChild(defaultValue);
+
+            if (directives.Count > 0)
+            {
+                foreach (var d in directives)
+                    variable.AddChild(d);
+            }
 
             return variable;
         }

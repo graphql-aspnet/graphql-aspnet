@@ -21,8 +21,11 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the query is targeting.</typeparam>
         /// <param name="queryText">The query text.</param>
+        /// <param name="requestedOperation">The requested operation name provided
+        /// along side the query text. May be null or empty in the event
+        /// of a single anonymous query.</param>
         /// <returns>System.String.</returns>
-        string CreateKey<TSchema>(string queryText)
+        string CreateKey<TSchema>(string queryText, string requestedOperation)
             where TSchema : class, ISchema;
     }
 }

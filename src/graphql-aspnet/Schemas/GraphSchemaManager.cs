@@ -56,8 +56,12 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         private void EnsureSchemaDependencies()
         {
-            this.Schema.EnsureAppliedDirectives();
+            // all schemas depend on String because of the __typename field
+            // applied to various graphtypes included the required query operation
+            this.EnsureGraphType<string>();
 
+            // ensure top level schema directives are accounted for
+            this.Schema.EnsureAppliedDirectives();
             foreach (var appliedDirective in this.Schema.AppliedDirectives.Where(x => x.DirectiveType != null))
             {
                 this.EnsureGraphType(
@@ -73,11 +77,11 @@ namespace GraphQL.AspNet.Schemas
         private void AddIntrospectionFields()
         {
             this.EnsureGraphOperationType(GraphOperationType.Query);
-            var queryField = this.Schema.OperationTypes[GraphOperationType.Query];
+            var queryField = this.Schema.Operations[GraphOperationType.Query];
 
             // Note: introspection fields are defined by the graphql spec, no custom name or item formatting is allowed
             // for Type and field name formatting.
-            // spec: https://graphql.github.io/graphql-spec/June2018/#sec-Schema-Introspection
+            // spec: https://graphql.github.io/graphql-spec/October2021/#sec-Schema-Introspection
             if (!queryField.Fields.ContainsKey(Constants.ReservedNames.SCHEMA_FIELD))
             {
                 var introspectedSchema = new IntrospectedSchema(this.Schema);
@@ -174,11 +178,11 @@ namespace GraphQL.AspNet.Schemas
                     $"not supported by graphql.");
             }
 
-            if (!this.Schema.OperationTypes.ContainsKey(operationType))
+            if (!this.Schema.Operations.ContainsKey(operationType))
             {
                 var operation = new GraphOperation(operationType);
                 this.Schema.KnownTypes.EnsureGraphType(operation);
-                this.Schema.OperationTypes.Add(operation.OperationType, operation);
+                this.Schema.Operations.Add(operation.OperationType, operation);
             }
         }
 
@@ -194,7 +198,7 @@ namespace GraphQL.AspNet.Schemas
 
             // loop through all parent path parts of this action
             // creating virtual fields as necessary or using existing ones and adding on to them
-            IObjectGraphType parentType = this.Schema.OperationTypes[action.Route.RootCollection.ToGraphOperationType()];
+            IObjectGraphType parentType = this.Schema.Operations[action.Route.RootCollection.ToGraphOperationType()];
 
             for (var i = 0; i < pathSegments.Count; i++)
             {
@@ -254,10 +258,11 @@ namespace GraphQL.AspNet.Schemas
         private IObjectGraphType CreateVirtualFieldOnParent(
             IObjectGraphType parentType,
             string fieldName,
-            GraphFieldPath path,
+            SchemaItemPath path,
             IGraphItemTemplate definition = null)
         {
             var childField = new VirtualGraphField(
+                parentType,
                 fieldName,
                 path,
                 this.MakeSafeTypeNameFromRoutePath(path))
@@ -280,7 +285,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>System.String.</returns>
-        private string MakeSafeTypeNameFromRoutePath(GraphFieldPath path)
+        private string MakeSafeTypeNameFromRoutePath(SchemaItemPath path)
         {
             var segments = new List<string>();
             foreach (var pathSegmentName in path)
@@ -439,7 +444,7 @@ namespace GraphQL.AspNet.Schemas
             this.EnsureGraphOperationType(GraphOperationType.Query);
             this.AddIntrospectionFields();
 
-            var queryType = this.Schema.OperationTypes[GraphOperationType.Query];
+            var queryType = this.Schema.Operations[GraphOperationType.Query];
             if (!queryType.Fields.ContainsKey(Constants.ReservedNames.SCHEMA_FIELD))
                 return;
 

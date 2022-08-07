@@ -23,13 +23,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     /// </summary>
     public class PackageQueryResultMiddleware : IQueryExecutionMiddleware
     {
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             // create and attach the result
@@ -39,7 +33,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 fieldSet = this.CreateFinalDictionary(context);
             }
 
-            context.Result = new GraphOperationResult(context.OperationRequest, context.Messages, fieldSet, context.Metrics);
+            context.Result = new GraphOperationResult(context.ParentRequest, context.Messages, fieldSet, context.Metrics);
             context.Logger?.RequestCompleted(context);
             return next(context, cancelToken);
         }

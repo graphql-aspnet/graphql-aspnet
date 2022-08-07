@@ -66,7 +66,10 @@ namespace GraphQL.AspNet.Parsing
             //    5a) All comments start with '#' and are always only one line
             // ----------------------------------
             var source = new SourceText(queryText);
+
             var tokenStream = Lexer.Tokenize(source);
+            tokenStream.Prime();
+
             var syntaxTree = new SyntaxTree();
 
             // ----------------------------------
@@ -83,7 +86,7 @@ namespace GraphQL.AspNet.Parsing
             // * variables are identified and proper reference is ensured
             // * ..and on and on
             // ----------------------------------
-            while (!tokenStream.EndOfStream)
+            do
             {
                 // offload processing of the queue to a specialized top-level-node "maker"
                 // based on the keyword at the top of the stream .
@@ -111,12 +114,13 @@ namespace GraphQL.AspNet.Parsing
                 }
                 else
                 {
-                    maker = NodeMakerFactory.CreateMaker<OperationTypeNode>();
+                    maker = NodeMakerFactory.CreateMaker<OperationNode>();
                 }
 
                 var node = maker.MakeNode(tokenStream);
-                syntaxTree.AddNode(node);
+                syntaxTree.RootNode.AddChild(node);
             }
+            while (!tokenStream.EndOfStream);
 
             return syntaxTree;
         }

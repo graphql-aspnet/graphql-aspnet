@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -34,14 +33,14 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task ValidationMiddlewareForwardsRequestToRuleSet()
         {
             var server = new TestServerBuilder()
-                .AddType<TwoPropertyObject>()
+              .AddType<TwoPropertyObject>()
               .AddType<PipelineTestDirective>()
               .Build();
 
             var context = server.CreateDirectiveExecutionContext<PipelineTestDirective>(
                 DirectiveLocation.OBJECT,
                 new TwoPropertyObject(),
-                DirectiveInvocationPhase.BeforeFieldResolution,
+                DirectiveInvocationPhase.SchemaGeneration,
                 SourceOrigin.None,
                 new object[] { 5 }); // directive requires 2 argument, only 1 supplied
 
@@ -57,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         public async Task InvocationMiddlewareCallsResolver()
         {
             var server = new TestServerBuilder()
-                .AddType<TwoPropertyObject>()
+              .AddType<TwoPropertyObject>()
               .AddType<PipelineTestDirective>()
               .Build();
 
@@ -66,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             var context = server.CreateDirectiveExecutionContext<PipelineTestDirective>(
                 DirectiveLocation.OBJECT,
                 testObject,
-                DirectiveInvocationPhase.BeforeFieldResolution,
+                DirectiveInvocationPhase.SchemaGeneration,
                 SourceOrigin.None,
                 new object[] { "testValue", 5 });
 

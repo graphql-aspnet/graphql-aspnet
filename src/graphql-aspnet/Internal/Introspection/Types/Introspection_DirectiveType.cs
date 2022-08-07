@@ -9,14 +9,12 @@
 
 namespace GraphQL.AspNet.Internal.Introspection.Types
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Internal.Introspection.Model;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -32,7 +30,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
             : base(Constants.ReservedNames.DIRECTIVE_TYPE)
         {
             // "__Directive" type definition
-            // https://graphql.github.io/graphql-spec/June2018/#sec-Introspection
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
             this.GraphFieldCollection.AddField<IntrospectedDirective, string>(
                 "name",

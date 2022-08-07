@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
@@ -47,7 +46,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
                 return (DateTimeOffset)dt.Value;
             }
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(DateTimeOffset));
         }
 
         /// <inheritdoc />

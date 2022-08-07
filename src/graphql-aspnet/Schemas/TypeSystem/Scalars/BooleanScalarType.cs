@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
@@ -38,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             if (bool.TryParse(data.ToString(), out var i))
                 return i;
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(bool));
         }
 
         /// <inheritdoc />

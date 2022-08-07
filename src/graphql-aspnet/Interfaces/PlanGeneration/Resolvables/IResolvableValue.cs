@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
     /// <summary>
     /// An interface describing a single input value (scalar or enum) that can be resolved to a .NET object.
     /// </summary>
-    public interface IResolvableValue : IResolvableItem
+    public interface IResolvableValue : IResolvableValueItem
     {
         /// <summary>
         /// Gets the value to be used to resolve to some .NET type.

@@ -35,7 +35,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(syntaxTree);
 
-            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet[0].FieldSelectionSet[0].Arguments;
+            var queryInputCollection = document.Operations["TestQuery"]
+                .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
 
@@ -67,7 +68,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(syntaxTree);
 
-            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet[0].FieldSelectionSet[0].Arguments;
+            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
 
@@ -101,7 +102,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(syntaxTree);
 
-            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet[0].FieldSelectionSet[0].Arguments;
+            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
 
@@ -133,7 +134,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(syntaxTree);
 
-            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet[0].FieldSelectionSet[0].Arguments;
+            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
 
@@ -169,7 +170,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(syntaxTree);
 
-            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet[0].FieldSelectionSet[0].Arguments;
+            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
 
@@ -209,7 +210,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(syntaxTree);
 
-            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet[0].FieldSelectionSet[0].Arguments;
+            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
 
@@ -254,7 +255,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(syntaxTree);
 
-            var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet[0].FieldSelectionSet[0].Arguments;
+            var queryInputCollection = document.Operations["TestQuery"]
+                .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
 

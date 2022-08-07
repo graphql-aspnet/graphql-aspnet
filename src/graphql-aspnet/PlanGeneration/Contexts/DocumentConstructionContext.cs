@@ -12,170 +12,71 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A subset of a document context dealing with a single operation definition within a document.
     /// </summary>
     [DebuggerDisplay("Node Type: {ActiveNode.NodeName}")]
-    internal class DocumentConstructionContext : DocumentGenerationContext<SyntaxNode>, IContextGenerator<DocumentConstructionContext>
+    internal class DocumentConstructionContext : IContextGenerator<DocumentConstructionContext>
     {
-        private List<SyntaxNode> _childNodes;
-        private FieldSelectionSet _selectionSet;
-        private IDocumentPart _activePart;
-        private QueryOperation _operation;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentConstructionContext" /> class.
+        /// </summary>
+        /// <param name="syntaxTree">The syntax tree to process for filling the document.</param>
+        /// <param name="rootDocument">The root document to fill from the syntax tree.</param>
+        /// <param name="targetSchema">The target schema to which the document should be paired.</param>
+        public DocumentConstructionContext(
+            ISyntaxTree syntaxTree,
+            IGraphQueryDocument rootDocument,
+            ISchema targetSchema)
+        {
+            this.ActivePart = Validation.ThrowIfNullOrReturn(rootDocument, nameof(rootDocument));
+            this.ActiveNode = Validation.ThrowIfNullOrReturn(syntaxTree, nameof(syntaxTree)).RootNode;
+            this.Messages = Validation.ThrowIfNullOrReturn(rootDocument.Messages, $"{nameof(rootDocument)}.{nameof(rootDocument.Messages)}");
+            this.Schema = Validation.ThrowIfNullOrReturn(targetSchema, nameof(targetSchema));
+            this.ParentContext = null;
+            this.Document = rootDocument;
+            this.Depth = 0;
+            this.Spreads = new List<IFragmentSpreadDocumentPart>();
+            this.ActiveOperation = null;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentConstructionContext" /> class.
         /// </summary>
-        /// <param name="docContext">The document context.</param>
-        /// <param name="node">The currently scoped node.</param>
-        public DocumentConstructionContext(DocumentContext docContext, SyntaxNode node)
-         : base(docContext, node)
+        /// <param name="newNode">The current AST node being processed.</param>
+        /// <param name="parentContext">The parent context form which this
+        /// one inherits, if any.</param>
+        private DocumentConstructionContext(
+            SyntaxNode newNode,
+            DocumentConstructionContext parentContext)
         {
-            this.BeginNewDocumentScope();
-        }
-
-        /// <summary>
-        /// Prevents a default instance of the <see cref="DocumentConstructionContext"/> class from being created.
-        /// </summary>
-        private DocumentConstructionContext()
-         : base()
-        {
-        }
-
-        /// <summary>
-        /// Resets this node context to the scope of the provided new operation. All field sets
-        /// and scopes are reset under this operation.
-        /// </summary>
-        /// <param name="operation">The operation.</param>
-        private void BeginNewOperation(QueryOperation operation)
-        {
-            this.DocumentContext.Operations.AddOperation(operation);
-            _operation = operation;
-            _selectionSet = operation.CreateFieldSelectionSet();
-            this.BeginNewDocumentScope();
-            this.IncreaseMaxDepth();
-        }
-
-        /// <summary>
-        /// Begins a new field selection set off the active field in scope.
-        /// </summary>
-        public void BeginNewFieldSelectionSet()
-        {
-            if (!(_activePart is FieldSelection fs))
-                throw new InvalidOperationException("No field currently in scope, cannot append a new selection set.");
-            _selectionSet = fs.CreateFieldSelectionSet();
-            this.BeginNewDocumentScope();
-            this.IncreaseMaxDepth();
-        }
-
-        /// <summary>
-        /// Increases the maximum depth achieved by this context.
-        /// </summary>
-        private void IncreaseMaxDepth()
-        {
-            this.MaxDepth++;
-            this.DocumentContext.UpdateMaxDepth(this.MaxDepth);
-        }
-
-        /// <summary>
-        /// Begins a new field scope to encapsulate a set of document parts within the current selection set.
-        /// </summary>
-        public void BeginNewDocumentScope()
-        {
-            this.DocumentScope = new DocumentScope();
-        }
-
-        /// <summary>
-        /// Adds a new document part to this context, inserting where appropriate and updating the
-        /// doc scope as necessary.
-        /// </summary>
-        /// <param name="docPart">The document part to add to this context.</param>
-        public void AddDocumentPart(IDocumentPart docPart)
-        {
-            switch (docPart)
+            if (parentContext?.ActivePart == null)
             {
-                case QueryOperation qo:
-                    this.AddOrUpdateContextItem(qo);
-                    this.BeginNewOperation(qo);
-                    _activePart = qo;
-                    break;
-
-                case QueryVariable qv:
-                    this.AddOrUpdateContextItem(qv);
-                    var variables = _operation?.CreateVariableCollection();
-                    variables?.AddVariable(qv);
-                    _activePart = qv;
-                    break;
-
-                case QueryFragment qf:
-                    this.AddOrUpdateContextItem(qf);
-                    this.BeginNewDocumentScope();
-                    break;
-
-                case FieldSelection fs:
-                    this.AddOrUpdateContextItem(fs);
-                    _selectionSet.AddFieldSelection(fs);
-                    this.DocumentScope = new DocumentScope(this.DocumentScope, fs);
-                    _activePart = fs;
-                    break;
-
-                case QueryDirective qd:
-                    // directives never alter the current scope, they just work within it
-                    this.AddOrUpdateContextItem(qd);
-                    this.DocumentScope.InsertDirective(qd);
-                    _activePart = qd;
-                    break;
-
-                case QueryInputArgument qa:
-                    if (_activePart is IQueryArgumentContainerDocumentPart argContainer)
-                        argContainer.AddArgument(qa);
-
-                    // query arguments never retain parent scopes; they are considered independent
-                    this.AddOrUpdateContextItem(qa);
-                    this.DocumentScope = new DocumentScope(part: qa);
-                    _activePart = qa;
-                    break;
-
-                case QueryInputValue qiv:
-                    if (_activePart is IInputValueDocumentPart qia)
-                        qia.AssignValue(qiv);
-                    else if (_activePart is QueryInputValue partQiv)
-                        partQiv.AddChild(qiv);
-
-                    this.AddOrUpdateContextItem(qiv, typeof(QueryInputValue));
-                    _activePart = qiv;
-                    break;
-
-                default:
-                    this.Messages.Critical(
-                        "Unrecognized document element or position. The document element at the current position " +
-                        "could not be processed and the query was terminated. Double check your document and try again.",
-                        Constants.ErrorCodes.INVALID_DOCUMENT,
-                        this.ActiveNode.Location.AsOrigin());
-                    break;
+                throw new InvalidOperationException(
+                     "A parent's active part must be set. Did you forget " +
+                    "to mark a node as skipped?");
             }
-        }
 
-        /// <summary>
-        /// Adds additional <see cref="SyntaxNode" /> that this context should process as though they were
-        /// direct children of it.
-        /// </summary>
-        /// <param name="additionalItems">The additional nodes to process.</param>
-        public void AppendNodes(IEnumerable<SyntaxNode> additionalItems)
-        {
-            if (additionalItems != null)
-            {
-                _childNodes = _childNodes ?? new List<SyntaxNode>();
-                _childNodes.AddRange(additionalItems);
-            }
+            this.ActivePart = null;
+            this.ActiveNode = Validation.ThrowIfNullOrReturn(newNode, nameof(newNode));
+            this.ParentContext = parentContext;
+            this.Document = parentContext.Document;
+            this.Schema = parentContext.Schema;
+            this.Messages = parentContext.Messages;
+            this.Depth = parentContext.Depth;
+            this.Spreads = parentContext.Spreads;
+            parentContext.ActiveOperation = parentContext.ActiveOperation;
         }
 
         /// <summary>
@@ -185,48 +86,47 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// <returns>IEnumerable&lt;TContext&gt;.</returns>
         public IEnumerable<DocumentConstructionContext> CreateChildContexts()
         {
-            foreach (var child in this.ChildNodes)
+            foreach (var child in this.ActiveNode.Children)
             {
-                // use the private constructor
-                yield return new DocumentConstructionContext
-                {
-                    DocumentContext = this.DocumentContext,
-                    Item = child,
-                    ContextItems = new Dictionary<Type, IDocumentPart>(this.ContextItems),
-                    DocumentScope = this.DocumentScope,
-                    _activePart = this._activePart,
-                    _selectionSet = this._selectionSet,
-                    _operation = this._operation,
-                    MaxDepth = this.MaxDepth,
-                    ParentContext = this,
-                };
+                yield return new DocumentConstructionContext(child, this);
             }
         }
 
         /// <summary>
-        /// Gets the graph type currently in scope in the document.
+        /// Flags this context as being a path through context in the document
+        /// creation process. Its depth is skipped in a max depth calculation.
         /// </summary>
-        /// <value>The type of the graph.</value>
-        public IGraphType GraphType => this.DocumentScope?.TargetGraphType ?? _selectionSet.GraphType;
+        public void Skip()
+        {
+            this.ActivePart = this.ParentPart;
+        }
 
         /// <summary>
-        /// Gets the active node on this context.
+        /// Assigns a new created document part to this context. This part is
+        /// automatically set as the <see cref="ActivePart"/> of this context.
         /// </summary>
-        /// <value>The active node.</value>
-        public SyntaxNode ActiveNode => this.Item;
+        /// <param name="docPart">The document part to assign.</param>
+        public void AssignPart(IDocumentPart docPart)
+        {
+            if (this.ActivePart != null)
+                throw new InvalidOperationException("This context already has a part assigned.");
 
-        /// <summary>
-        /// Gets the active scope, within the document, on the context.
-        /// </summary>
-        /// <value>The field scope.</value>
-        public DocumentScope DocumentScope { get; private set; }
+            this.ActivePart = Validation.ThrowIfNullOrReturn(docPart, nameof(docPart));
 
-        /// <summary>
-        /// Gets the currently scoped selection set; the physical container in the document where graph fields
-        /// are placed; irrespective of the current document scope of this context.
-        /// </summary>
-        /// <value>The selection set.</value>
-        public FieldSelectionSet SelectionSet => _selectionSet;
+            this.ParentPart.Children.Add(this.ActivePart);
+
+            if (this.ActivePart is IFieldDocumentPart)
+                this.Depth += 1;
+
+            if (this.Document.MaxDepth < this.Depth)
+                this.Document.MaxDepth = this.Depth;
+
+            if (docPart is IFragmentSpreadDocumentPart lbdp)
+                this.Spreads.Add(lbdp);
+
+            if (docPart is IOperationDocumentPart odp)
+                this.ActiveOperation = odp;
+        }
 
         /// <summary>
         /// Gets the parent context that created this child context, if any. Root contexts will
@@ -236,23 +136,90 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         public DocumentConstructionContext ParentContext { get; private set; }
 
         /// <summary>
-        /// Gets a collection of nodes that should be processed as children of this context.
+        /// Gets the query document being constructed.
         /// </summary>
-        /// <value>The child nodes.</value>
-        internal IEnumerable<SyntaxNode> ChildNodes
+        /// <value>The document.</value>
+        public IGraphQueryDocument Document { get; }
+
+        /// <summary>
+        /// Gets the syntax node this context is processing in order to create a
+        /// document part.
+        /// </summary>
+        /// <value>The active node.</value>
+        public SyntaxNode ActiveNode { get; }
+
+        /// <summary>
+        /// Gets the active part that was constructed with this context. May be null
+        /// if no part has been constructed yet.
+        /// </summary>
+        /// <value>The active part.</value>
+        public IDocumentPart ActivePart { get; private set; }
+
+        /// <summary>
+        /// Gets the parent document part which will own the part created
+        /// by this context.
+        /// </summary>
+        /// <value>The parent part.</value>
+        public IDocumentPart ParentPart => this.ParentContext?.ActivePart;
+
+        /// <summary>
+        /// Gets the set of messages added during the use of this context.
+        /// </summary>
+        /// <value>The messages.</value>
+        public IGraphMessageCollection Messages { get; }
+
+        /// <summary>
+        /// Gets the schema from which the document is constructed. This schema
+        /// will be used for all graph type and directive lookups.
+        /// </summary>
+        /// <value>The schema.</value>
+        public ISchema Schema { get; }
+
+        /// <summary>
+        /// Gets a helpful path to determine where this context is in the document.
+        /// Debug only.
+        /// </summary>
+        /// <value>The path.</value>
+        public string Path
         {
             get
             {
-                return _childNodes != null
-                    ? this.ActiveNode.Children.Concat(_childNodes)
-                    : this.ActiveNode.Children;
+                if (Debugger.IsAttached)
+                {
+                    var str = this.ParentContext?.Path ?? string.Empty;
+                    if (this.ParentContext != null)
+                        str += "|";
+
+                    str += this.ActiveNode.ToString();
+
+                    return str;
+                }
+                else
+                {
+                    return "-Path Inspection Disabled-";
+                }
             }
         }
 
         /// <summary>
-        /// Gets the maximum depth of fields within the document.
+        /// Gets the current depth in the document of the part contained on this context.
+        /// level.
         /// </summary>
         /// <value>The maximum depth.</value>
-        public int MaxDepth { get; private set; }
+        public int Depth { get; private set; }
+
+        /// <summary>
+        /// Gets the fragment spreads targeting named fragments. Since the named fragments
+        /// may not exist when the spread is encountered a second pass must be done
+        /// to link them to their associated named fragment.
+        /// </summary>
+        /// <value>The late bound parts of the document being built.</value>
+        public IList<IFragmentSpreadDocumentPart> Spreads { get; private set; }
+
+        /// <summary>
+        /// Gets the active operation being built, if any.
+        /// </summary>
+        /// <value>The active operation.</value>
+        public IOperationDocumentPart ActiveOperation { get; private set; }
     }
 }

@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Directives
 
         private IDirective _directive;
         private Mock<IInputArgumentCollection> _argCollection;
-        private Mock<IInputArgumentValue> _argValue;
+        private Mock<IInputValue> _argValue;
         private string _url = null;
         private GraphOperationRequest _parentRequest;
         private DirectiveInvocationContext _invocationContext;
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Directives
 
             var arg1 = _directive.Arguments[0];
 
-            _argValue = new Mock<IInputArgumentValue>();
+            _argValue = new Mock<IInputValue>();
             _argValue.Setup(x => x.Resolve(It.IsAny<IResolvedVariableCollection>()))
                 .Returns(() => _url);
 

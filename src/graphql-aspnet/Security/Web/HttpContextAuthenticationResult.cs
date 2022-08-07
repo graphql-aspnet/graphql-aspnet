@@ -8,7 +8,6 @@
 // *************************************************************
 namespace GraphQL.AspNet.Security.Web
 {
-    using System.Linq;
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Security;
     using Microsoft.AspNetCore.Authentication;

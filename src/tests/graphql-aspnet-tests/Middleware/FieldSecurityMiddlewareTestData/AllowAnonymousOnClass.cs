@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Middleware.FildSecurityMiddlewareTestData
+namespace GraphQL.AspNet.Tests.Middleware.FieldSecurityMiddlewareTestData
 {
     using Microsoft.AspNetCore.Authorization;
 

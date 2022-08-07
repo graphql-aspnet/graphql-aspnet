@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A middleware item that will throw an exception if invoked.

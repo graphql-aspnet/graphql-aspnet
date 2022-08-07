@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Parsing
             /// <summary>
             /// Gets the set of characters that can be preceeded by a '\' and will be considered escaped
             /// and in need of translation. All other characters are not valid.
-            /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
+            /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Appendix-Grammar-Summary.Lexical-Tokens .
             /// </summary>
             /// <value>The valid escapable characters.</value>
             public static ReadOnlyMemory<char> ValidEscapableCharacters { get; } = "/bfnrt\\\"".AsMemory();

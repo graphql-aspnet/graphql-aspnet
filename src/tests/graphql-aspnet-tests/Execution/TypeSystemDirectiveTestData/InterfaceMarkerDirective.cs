@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
+namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;

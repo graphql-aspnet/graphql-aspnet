@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -21,7 +22,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
     /// accepted arguments, any nullable or list modifiers and publication and depreciation information.
     /// </summary>
-    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISchemaItem
+    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISecureSchemaItem, ISchemaItem
     {
         /// <summary>
         /// Updates the known graph type this field belongs to.
@@ -38,9 +39,17 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         void UpdateResolver(IGraphFieldResolver newResolver, FieldResolutionMode? mode = null);
 
         /// <summary>
+        /// Determines whether this field is capable of resolving itself
+        /// for the given graph type.
+        /// </summary>
+        /// <param name="graphType">The graph type to test.</param>
+        /// <returns><c>true</c> if this field can be returned by specified graph type; otherwise, <c>false</c>.</returns>
+        bool CanResolveForGraphType(IGraphType graphType);
+
+        /// <summary>
         /// Clones this instance to a new field.
         /// </summary>
-        /// <param name="parent">The parent item that will own this new field.</param>
+        /// <param name="parent">The new parent item that will own this new field.</param>
         /// <returns>IGraphField.</returns>
         IGraphField Clone(IGraphType parent);
 
@@ -95,13 +104,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The field souce.</value>
         GraphFieldSource FieldSource { get; }
-
-        /// <summary>
-        /// Gets the security groups, a collection of policy requirements, of which each must be met,
-        /// in order to access this field.
-        /// </summary>
-        /// <value>The security groups.</value>
-        IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is virtual and added by the runtime to facilitate

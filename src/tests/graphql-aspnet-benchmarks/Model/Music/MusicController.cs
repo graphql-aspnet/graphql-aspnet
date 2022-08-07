@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Benchmarks.Model
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphRoute("music")]
     public class MusicController : GraphController

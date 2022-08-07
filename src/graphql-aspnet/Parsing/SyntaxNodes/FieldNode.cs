@@ -56,5 +56,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         /// </summary>
         /// <value>The field alias.</value>
         public ReadOnlyMemory<char> FieldAlias { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"F-{this.FieldName}";
+        }
     }
 }

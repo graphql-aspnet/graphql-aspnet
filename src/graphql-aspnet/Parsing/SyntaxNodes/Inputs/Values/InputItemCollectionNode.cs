@@ -37,5 +37,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values
         {
             return childNode is InputItemNode;
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"IIC";
+        }
     }
 }

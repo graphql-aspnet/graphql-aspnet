@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         public ShortScalarType()
             : base(Constants.ScalarNames.SHORT, typeof(short))
         {
-            this.Description = $"A short. (Min: {short.MinValue}, Max: {short.MaxValue})";
+            this.Description = $"A 16-bit integer. (Min: {short.MinValue}, Max: {short.MaxValue})";
             this.OtherKnownTypes = new TypeCollection(typeof(short?));
         }
 
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             if (short.TryParse(data.ToString(), out var i))
                 return i;
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(short));
         }
 
         /// <inheritdoc />

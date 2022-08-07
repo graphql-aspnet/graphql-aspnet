@@ -10,14 +10,12 @@
 namespace GraphQL.AspNet
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A schema extension encapsulating the ability for a given schema to publish subscription events from

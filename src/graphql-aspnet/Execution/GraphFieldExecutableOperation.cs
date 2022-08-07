@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -27,25 +26,23 @@ namespace GraphQL.AspNet.Execution
     [DebuggerDisplay("{OperationName} (Type = {OperationType})")]
     public class GraphFieldExecutableOperation : IGraphFieldExecutableOperation
     {
+        private IOperationDocumentPart _operation;
+        private IVariableCollectionDocumentPart _variableCollection;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldExecutableOperation" /> class.
         /// </summary>
         /// <param name="operation">The reference operation to use when constructing this container.</param>
-        public GraphFieldExecutableOperation(QueryOperation operation)
+        public GraphFieldExecutableOperation(IOperationDocumentPart operation)
         {
-            Validation.ThrowIfNull(operation, nameof(operation));
+            _operation = Validation.ThrowIfNullOrReturn(operation, nameof(operation));
 
-            this.OperationName = operation.Name?.Trim() ?? string.Empty;
-            this.OperationType = operation.OperationType;
+            // Create a blank internal collection of variables if none
+            // were defined in the query docuemnt.
+            _variableCollection = _operation.Variables;
+
             this.FieldContexts = new FieldInvocationContextCollection();
             this.Messages = new GraphMessageCollection();
-            this.DeclaredVariables = new QueryVariableCollection();
-
-            if (operation.Variables != null)
-            {
-                foreach (var variable in operation.Variables.Values)
-                    this.DeclaredVariables.AddVariable(variable);
-            }
         }
 
         /// <summary>
@@ -59,14 +56,14 @@ namespace GraphQL.AspNet.Execution
         /// Gets the type of the operation (mutation, query etc.)
         /// </summary>
         /// <value>The type of the operation.</value>
-        public GraphOperationType OperationType { get; }
+        public GraphOperationType OperationType => _operation.OperationType;
 
         /// <summary>
         /// Gets the name of the operation as it was defined in the query document. May be null or empty if
         /// this is an anonymous operation.
         /// </summary>
         /// <value>The name of the operation.</value>
-        public string OperationName { get; }
+        public string OperationName => _operation.Name?.Trim() ?? string.Empty;
 
         /// <summary>
         /// Gets the messages generated during the creation of this operation.
@@ -79,7 +76,7 @@ namespace GraphQL.AspNet.Execution
         /// executed.
         /// </summary>
         /// <value>The declared variables.</value>
-        public IQueryVariableCollection DeclaredVariables { get; }
+        public IVariableCollectionDocumentPart Variables => _variableCollection;
 
         /// <summary>
         /// Gets a collection of the field contexts present in this operation, regardless of level, that have some

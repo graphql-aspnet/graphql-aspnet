@@ -215,7 +215,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var appliedDirective = objectType.AppliedDirectives.FirstOrDefault();
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 12, "object directive" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 12, "object directive" }, appliedDirective.ArgumentValues);
         }
     }
 }

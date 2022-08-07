@@ -15,20 +15,21 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
     /// Represents a resolvable item that is a collection of key/value pairs. This item type is
     /// typically resolved into an object with its KVPs representing properties of the object to be created.
     /// </summary>
-    public interface IResolvableFieldSet : IResolvableItem
+    public interface IResolvableFieldSet : IResolvableValueItem
     {
+        /// <summary>
+        /// Attempts to retrieve a resolvable field with the given name from this set of
+        /// items.
+        /// </summary>
+        /// <param name="fieldName">Name of the field to find.</param>
+        /// <param name="foundField">When found, the field is assigned to this parameter.</param>
+        /// <returns><c>true</c> if the field was found, <c>false</c> otherwise.</returns>
+        bool TryGetField(string fieldName, out IResolvableValueItem foundField);
+
         /// <summary>
         /// Gets the collection of fields defined on this instance.
         /// </summary>
         /// <value>The fields.</value>
-        IEnumerable<KeyValuePair<string, IResolvableItem>> Fields { get; }
-
-        /// <summary>
-        /// Attempts to retrieve a field by its name.
-        /// </summary>
-        /// <param name="fieldName">Name of the field.</param>
-        /// <param name="field">The field that was found, if any.</param>
-        /// <returns><c>true</c> if the field was found and successfully returned, <c>false</c> otherwise.</returns>
-        bool TryGetField(string fieldName, out IResolvableItem field);
+        IEnumerable<KeyValuePair<string, IResolvableValueItem>> ResolvableFields { get; }
     }
 }

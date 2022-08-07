@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.ThirdPartyDll.Model
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     public class CandleMiddleware : IGraphFieldExecutionMiddleware
     {

@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
             : base(Constants.ReservedNames.TYPE_TYPE)
         {
             // "__Type" type definition
-            // https://graphql.github.io/graphql-spec/June2018/#sec-Introspection
+            // https://graphql.github.io/graphql-spec/October2021/#sec-Introspection
             // -------------------------------------------------------------------------
             this.GraphFieldCollection.AddField<IntrospectedType, TypeKind>(
                 "kind",

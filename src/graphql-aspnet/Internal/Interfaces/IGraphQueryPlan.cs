@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
@@ -20,25 +19,10 @@ namespace GraphQL.AspNet.Internal.Interfaces
     public interface IGraphQueryPlan
     {
         /// <summary>
-        /// Adds a parsed executable operation to the plan's operation collection.
+        /// Gets or sets the executable operation that can be carried out by this query plan.
         /// </summary>
-        /// <param name="operation">The completed and validated operation to add.</param>
-        void AddOperation(IGraphFieldExecutableOperation operation);
-
-        /// <summary>
-        /// Retrieves the operation from those contained in this plan. If operationName is empty or null
-        /// and this plan contains only one operation that singular operation will be returned. Otherwise, if the operation
-        /// is not found null will be returned.
-        /// </summary>
-        /// <param name="operationName">Name of the operation.</param>
-        /// <returns>IFieldExecutionContextCollection.</returns>
-        IGraphFieldExecutableOperation RetrieveOperation(string operationName = null);
-
-        /// <summary>
-        /// Gets the collection of field contexts that need to be executed to fulfill an operation of a given name.
-        /// </summary>
-        /// <value>The operations.</value>
-        IReadOnlyDictionary<string, IGraphFieldExecutableOperation> Operations { get; }
+        /// <value>The query operation to execute.</value>
+        IGraphFieldExecutableOperation Operation { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this plan is in a valid and potentially executable state.
@@ -72,9 +56,22 @@ namespace GraphQL.AspNet.Internal.Interfaces
         Type SchemaType { get; }
 
         /// <summary>
+        /// Gets the name of the operation contained within this query plan.
+        /// </summary>
+        /// <value>The name of the operation.</value>
+        string OperationName { get; }
+
+        /// <summary>
         /// Gets the unique identifier assigned to this instance when it was created.
         /// </summary>
         /// <value>The identifier.</value>
         string Id { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this query plan can be cached. In general,
+        /// executable operations that contain directives are not cachable.
+        /// </summary>
+        /// <value><c>true</c> if this instance is cacheable; otherwise, <c>false</c>.</value>
+        bool IsCacheable { get; set; }
     }
 }

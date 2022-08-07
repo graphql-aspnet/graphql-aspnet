@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A result indicating the user executing hte query was not authorized to do so.

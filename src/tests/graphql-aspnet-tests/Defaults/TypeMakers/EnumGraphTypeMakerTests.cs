@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var appliedDirective = graphType.AppliedDirectives.Single();
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 23, "enum arg" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 23, "enum arg" }, appliedDirective.ArgumentValues);
         }
 
         [Test]
@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(value2, value2.AppliedDirectives.Parent);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 33, "enum value arg" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 33, "enum value arg" }, appliedDirective.ArgumentValues);
         }
     }
 }

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -22,8 +21,6 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.QueryExecution;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// The default implementation of the core runtime.
@@ -124,7 +121,7 @@ namespace GraphQL.AspNet.Defaults
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new GraphOperationResult(context.OperationRequest);
+                queryResponse = new GraphOperationResult(context.ParentRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
             }
 

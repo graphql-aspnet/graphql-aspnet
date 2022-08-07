@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         }
 
         /// <summary>
-        /// Gets the <see cref="Type" /> name of the schema instance the pipeline was generated for.
+        /// Gets the <see cref="Type" /> name of the schema the directive was executed against.
         /// </summary>
         /// <value>The name of the schema type.</value>
         public string SchemaTypeName
@@ -45,9 +45,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         }
 
         /// <summary>
-        /// Gets the relative url registered for this schema type to listen on.
+        /// Gets the path identifying the schema item that was targeted by the type system directive.
         /// </summary>
-        /// <value>The name of the schema route.</value>
+        /// <value>The schema item path.</value>
         public string SchemaItemPath
         {
             get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);

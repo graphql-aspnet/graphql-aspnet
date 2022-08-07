@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -30,14 +29,14 @@ namespace GraphQL.AspNet.Schemas
     public static class SchemaSubscriptionEventMap
     {
         private static readonly ConcurrentHashSet<Type> PARSED_SCHEMA_TYPES;
-        private static readonly ConcurrentDictionary<SubscriptionEventName, GraphFieldPath> NAME_CATALOG;
+        private static readonly ConcurrentDictionary<SubscriptionEventName, SchemaItemPath> NAME_CATALOG;
 
         /// <summary>
         /// Initializes static members of the <see cref="SchemaSubscriptionEventMap"/> class.
         /// </summary>
         static SchemaSubscriptionEventMap()
         {
-            NAME_CATALOG = new ConcurrentDictionary<SubscriptionEventName, GraphFieldPath>(SubscriptionEventNameEqualityComparer.Instance);
+            NAME_CATALOG = new ConcurrentDictionary<SubscriptionEventName, SchemaItemPath>(SubscriptionEventNameEqualityComparer.Instance);
             PARSED_SCHEMA_TYPES = new ConcurrentHashSet<Type>();
         }
 
@@ -53,11 +52,11 @@ namespace GraphQL.AspNet.Schemas
         /// Attempts to generate a dictionary of value relating field path to the possible event names.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        /// <returns>Dictionary&lt;System.String, GraphFieldPath&gt;.</returns>
-        public static Dictionary<SubscriptionEventName, GraphFieldPath> CreateEventMap(ISchema schema)
+        /// <returns>Dictionary&lt;System.String, SchemaItemPath&gt;.</returns>
+        public static Dictionary<SubscriptionEventName, SchemaItemPath> CreateEventMap(ISchema schema)
         {
-            var dic = new Dictionary<SubscriptionEventName, GraphFieldPath>(SubscriptionEventNameEqualityComparer.Instance);
-            if (schema == null || !schema.OperationTypes.ContainsKey(GraphOperationType.Subscription))
+            var dic = new Dictionary<SubscriptionEventName, SchemaItemPath>(SubscriptionEventNameEqualityComparer.Instance);
+            if (schema == null || !schema.Operations.ContainsKey(GraphOperationType.Subscription))
                 return dic;
 
             foreach (var field in schema.KnownTypes.OfType<IObjectGraphType>()
@@ -100,12 +99,12 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Attempts to find the fully qualifed <see cref="GraphFieldPath"/> that is pointed at by the supplied event name.
+        /// Attempts to find the fully qualifed <see cref="SchemaItemPath"/> that is pointed at by the supplied event name.
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="eventName">The short or long name of the event.</param>
         /// <returns>System.String.</returns>
-        public static GraphFieldPath RetrieveSubscriptionFieldPath(this ISchema schema, SubscriptionEventName eventName)
+        public static SchemaItemPath RetrieveSubscriptionFieldPath(this ISchema schema, SubscriptionEventName eventName)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             Validation.ThrowIfNull(eventName, nameof(eventName));

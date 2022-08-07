@@ -12,11 +12,14 @@ namespace GraphQL.AspNet.Defaults
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.ValidationRules;
+    using GraphQL.AspNet.PlanGeneration.Document;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
     /// Validates that a lexed syntax tree, intended to execute a query on a target schema,
@@ -39,99 +42,149 @@ namespace GraphQL.AspNet.Defaults
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Interpretes the syntax tree and generates a contextual document that can be transformed into
-        /// a query plan.
-        /// </summary>
-        /// <param name="syntaxTree">The syntax tree to create a document for.</param>
-        /// <returns>IGraphQueryDocument.</returns>
-        public IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree)
+        /// <inheritdoc />
+        public virtual IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree)
         {
             Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
+            Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
+
+            return this.FillDocument(syntaxTree, new QueryDocument());
+        }
+
+        /// <inheritdoc />
+        public bool ValidateDocument(IGraphQueryDocument document)
+        {
+            Validation.ThrowIfNull(document, nameof(document));
+
+            var docProcessor = new DocumentValidationRuleProcessor();
+            var context = new DocumentValidationContext(_schema, document);
+
+            return docProcessor.Execute(context);
+        }
+
+        /// <summary>
+        /// An internal method for populating an existing query document.
+        /// </summary>
+        /// <param name="syntaxTree">The syntax tree to convert.</param>
+        /// <param name="document">The query document to fill.</param>
+        /// <returns>IGraphQueryDocument.</returns>
+        protected virtual IGraphQueryDocument FillDocument(ISyntaxTree syntaxTree, IGraphQueryDocument document)
+        {
+            Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
+            Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
+            Validation.ThrowIfNull(document, nameof(document));
 
             // --------------------------------------------
             // Step 1: Parse the syntax tree
             // --------------------------------------------
             // Walk all nodes of the tree and on a "per node" basis perform actions
-            // that are required of that node be it a specification validation rule or
-            // an incremental addition to the document context being built.
-            //
-            // Note: All packages are rendered and then named fragment nodes are processed first
-            //       as they are required by any operations referenced elsewhere in the document
+            // that are required of that node to create pieces (IDocumentPart) of the
+            // document being constructed
             // --------------------------------------------
             var nodeProcessor = new DocumentConstructionRuleProcessor();
-            var docContext = new DocumentContext(_schema);
-            var nodeContexts = new List<DocumentConstructionContext>();
-            foreach (var node in syntaxTree.Nodes)
-            {
-                var nodeContext = docContext.ForTopLevelNode(node);
-                nodeContexts.Add(nodeContext);
-            }
+            var constructionContext = new DocumentConstructionContext(syntaxTree, document, _schema);
 
-            nodeContexts.Sort(new TopLevelNodeProcessingOrder());
-            var completedAllSteps = nodeProcessor.Execute(nodeContexts);
+            var completedAllSteps = nodeProcessor.Execute(constructionContext);
 
             // --------------------------------------------
-            // Step 2: Validate the document parts
+            // Step 2: Part Linking
             // --------------------------------------------
-            // Inspect the document parts that were generated during part one and, as a whole, run additional
-            // validation rules and perform final changes before constructing the final document.
-            // e.g. ensure all fragments were called, all variables were referenced at least once etc.
+            // Many document parts reference other parts, such as variable references or
+            // fragment spreads. With fragment spreads at the time the parts are constructed
+            // the named fragment may or may not have been parsed yet. As a result we need
+            // ensure that the fragment the spread references is assigned correctly after
+            // the whole document has been parsed
             // --------------------------------------------
             if (completedAllSteps)
             {
-                var documentProcessor = new DocumentValidationRuleProcessor();
-                var validationContexts = new List<DocumentValidationContext>();
-                foreach (var part in docContext.Children)
+                foreach (var spread in constructionContext.Spreads)
                 {
-                    var partContext = new DocumentValidationContext(docContext, part);
-                    validationContexts.Add(partContext);
-                }
+                    if (spread.Fragment != null)
+                    {
+                        spread.Fragment.MarkAsReferenced();
+                    }
+                    else
+                    {
+                        // mark all named fragments of this name as referenced
+                        document.NamedFragments.MarkAsReferenced(spread.FragmentName.ToString());
 
-                documentProcessor.Execute(validationContexts);
+                        // assign the official fragment reference to the spread
+                        if (document.NamedFragments.TryGetValue(spread.FragmentName.ToString(), out var foundFragment))
+                        {
+                            spread.AssignNamedFragment(foundFragment);
+                        }
+                        else
+                        {
+                            completedAllSteps = false;
+                        }
+                    }
+                }
             }
 
             // --------------------------------------------
-            // Step 3: Build out the final document
+            // Step 3: Max Depth Calculation
             // --------------------------------------------
-            return docContext.ConstructDocument();
+            // When Named fragments spread into other field selection sets they can potentially
+            // increase the maximum depth of the operation
+            // --------------------------------------------
+            if (completedAllSteps && document.NamedFragments.Count > 0)
+            {
+                foreach (var operation in document.Operations.Values)
+                {
+                    // no spreads no recomputing of the depth is necessary
+                    if (operation.FragmentSpreads.Count == 0)
+                        continue;
+
+                    var depth = this.RecomputeDepth(
+                        operation.FieldSelectionSet,
+                        new HashSet<INamedFragmentDocumentPart>());
+                    if (depth > document.MaxDepth)
+                        document.MaxDepth = depth;
+                }
+            }
+
+            return document;
         }
 
-        /// <summary>
-        /// Sorts a collection of construction packages such that those referencing a <see cref="NamedFragmentNode"/>
-        /// are at the top of the list.
-        /// </summary>
-        private class TopLevelNodeProcessingOrder : IComparer<DocumentConstructionContext>
+        private int RecomputeDepth(
+            IFieldSelectionSetDocumentPart selectionSet,
+            HashSet<INamedFragmentDocumentPart> walkedNamedFragments)
         {
-            /// <summary>
-            /// Compares the two packages for sortability.
-            /// </summary>
-            /// <param name="x">The first package to compare.</param>
-            /// <param name="y">The second package to compare.</param>
-            /// <returns>System.Int32.</returns>
-            public int Compare(DocumentConstructionContext x, DocumentConstructionContext y)
+            int maxDepth = 0;
+            if (selectionSet != null)
             {
-                if (x?.ActiveNode == null)
+                foreach (var child in selectionSet.Children)
                 {
-                    return y?.ActiveNode is NamedFragmentNode ? 1 : 0;
+                    if (child is IFieldDocumentPart fd)
+                    {
+                        var depth = 1;
+                        if (fd.FieldSelectionSet != null)
+                            depth += this.RecomputeDepth(fd.FieldSelectionSet, walkedNamedFragments);
+                        if (depth > maxDepth)
+                            maxDepth = depth;
+                    }
+                    else if (child is IInlineFragmentDocumentPart iif)
+                    {
+                        var depth = this.RecomputeDepth(iif.FieldSelectionSet, walkedNamedFragments);
+                        if (depth > maxDepth)
+                            maxDepth = depth;
+                    }
+                    else if (child is IFragmentSpreadDocumentPart spread && spread.Fragment != null)
+                    {
+                        if (!walkedNamedFragments.Contains(spread.Fragment))
+                        {
+                            walkedNamedFragments.Add(spread.Fragment);
+                            var depth = this.RecomputeDepth(spread.Fragment.FieldSelectionSet, walkedNamedFragments);
+                            walkedNamedFragments.Remove(spread.Fragment);
+
+                            if (depth > maxDepth)
+                                maxDepth = depth;
+                        }
+                    }
                 }
-
-                if (y?.ActiveNode == null)
-                {
-                    return x?.ActiveNode is NamedFragmentNode ? -1 : 0;
-                }
-
-                if (x.ActiveNode is NamedFragmentNode && y.ActiveNode is NamedFragmentNode)
-                    return 0;
-
-                if (x.ActiveNode is NamedFragmentNode)
-                    return -1;
-
-                if (y.ActiveNode is NamedFragmentNode)
-                    return 1;
-
-                return 0;
             }
+
+            return maxDepth;
         }
     }
 }

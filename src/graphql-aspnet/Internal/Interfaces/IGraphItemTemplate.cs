@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
 
@@ -53,7 +52,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets a the canonical path on the graph where this item sits.
         /// </summary>
         /// <value>The route.</value>
-        GraphFieldPath Route { get; }
+        SchemaItemPath Route { get; }
 
         /// <summary>
         /// Gets the singular concrete type this definition supplies to the object graph any Task or IEnumerable

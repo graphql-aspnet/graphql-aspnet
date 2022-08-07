@@ -9,14 +9,14 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
-    /// Validates that a lexed syntax tree, intended to execute a query on a target schema,
-    /// is valid on that schema such that all field selection sets for all graph types are valid and executable
-    /// ultimately generating a document that can be used to create a query plan from the various resolvers
-    /// that can complete the query.
+    /// Called by the runtime to convert an AST into an unvalidated query document
+    /// targeting a specific schema.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this generator is registered for.</typeparam>
     public interface IGraphQueryDocumentGenerator<TSchema>
@@ -29,5 +29,15 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="syntaxTree">The syntax tree to create a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>
         IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree);
+
+        /// <summary>
+        /// Validates a query document as being valid against the given <typeparamref name="TSchema"/>.
+        /// </summary>
+        /// <remarks>
+        /// Note: A return value of <c>true</c> indicates that the validation completed, not that it was successful.
+        /// Inspect the document's messages collection for any validation failures.</remarks>
+        /// <param name="document">The document.</param>
+        /// <returns><c>true</c> if the validation completed successfully, <c>false</c> otherwise.</returns>
+        bool ValidateDocument(IGraphQueryDocument document);
     }
 }

@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Execution
     {
         // negative numbers represent internally defined collections
         // (not part of  the graph schema)
+        Document = -70,
         Introspection = -60,
         Schemas = -50,
         Directives = -40,

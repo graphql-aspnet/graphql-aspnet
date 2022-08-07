@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
                 return result;
             }
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(Uri));
         }
 
         /// <inheritdoc />

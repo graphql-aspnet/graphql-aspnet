@@ -26,10 +26,10 @@ namespace GraphQL.AspNet.Variables
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
         }
 
-        /// <summary>
-        /// Gets the name of the variable as it was declared in the user's supplied data.
-        /// </summary>
-        /// <value>The name.</value>
+        /// <inheritdoc />
         public string Name { get; }
+
+        /// <inheritdoc />
+        public string Key => this.Name;
     }
 }

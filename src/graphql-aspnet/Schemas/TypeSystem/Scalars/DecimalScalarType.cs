@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             if (decimal.TryParse(data.ToString(), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out var i))
                 return i;
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(decimal));
         }
 
         /// <inheritdoc />

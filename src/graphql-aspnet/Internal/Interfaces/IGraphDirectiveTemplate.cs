@@ -46,13 +46,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         IEnumerable<IGraphArgumentTemplate> Arguments { get; }
 
         /// <summary>
-        /// Gets the invocation phases this directive is allowed to
-        /// execute during.
-        /// </summary>
-        /// <value>The invocation phases.</value>
-        DirectiveInvocationPhase InvocationPhases { get; }
-
-        /// <summary>
         /// Gets a value indicating whether the directive is defined to be repeatable at a
         /// given target location.
         /// </summary>

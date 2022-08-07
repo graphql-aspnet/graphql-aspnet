@@ -26,27 +26,21 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class AuthorizeQueryOperationMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipeline<TSchema, GraphFieldSecurityContext> _authPipeline;
+        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> _authPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeQueryOperationMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="authPipeline">The authentication pipeline.</param>
-        public AuthorizeQueryOperationMiddleware(ISchemaPipeline<TSchema, GraphFieldSecurityContext> authPipeline)
+        public AuthorizeQueryOperationMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> authPipeline)
         {
             _authPipeline = Validation.ThrowIfNullOrReturn(authPipeline, nameof(authPipeline));
         }
 
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context.IsValid && context.QueryOperation != null)
+            if (context.IsValid && context.Operation != null)
             {
                 var anyFieldFailed = await this.AuthorizeOperation(context, cancelToken).ConfigureAwait(false);
                 if (anyFieldFailed)
@@ -69,16 +63,20 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             var authTasks = new List<Task>();
             bool anyFieldFailed = false;
-            foreach (var fieldContext in context.QueryOperation.SecureFieldContexts)
+            foreach (var securePart in context.Operation.SecureItems)
             {
-                var authRequest = new GraphFieldSecurityRequest(fieldContext);
-                var authContext = new GraphFieldSecurityContext(context, authRequest);
+                // should be caught by validation but just in case prevent an auth
+                if (securePart?.SecureItem == null)
+                    continue;
+
+                var authRequest = new GraphSchemaItemSecurityRequest(securePart);
+                var authContext = new GraphSchemaItemSecurityContext(context, authRequest);
 
                 var pipelineTask = _authPipeline.InvokeAsync(authContext, cancelToken)
                     .ContinueWith(
                         (_) =>
                         {
-                            var authResult = authContext.Result ?? FieldSecurityChallengeResult.Default();
+                            var authResult = authContext.Result ?? SchemaItemSecurityChallengeResult.Default();
 
                             // fake the path elements from the field route. since we don't have a full resolution chain
                             // when doing query level authorization (no indexers on potential child fields since
@@ -86,9 +84,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                             if (!authResult.Status.IsAuthorized())
                             {
                                 context.Messages.Critical(
-                                    $"Access Denied to field {fieldContext.Field.Route.Path}",
+                                    $"Access Denied to {securePart.SecureItem.Route.Path}",
                                     Constants.ErrorCodes.ACCESS_DENIED,
-                                    fieldContext.Origin);
+                                    securePart.Node.Location.AsOrigin());
                                 anyFieldFailed = true;
                             }
                         }, cancelToken);

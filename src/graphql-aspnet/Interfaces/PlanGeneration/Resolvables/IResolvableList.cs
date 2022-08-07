@@ -14,12 +14,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
     /// <summary>
     /// Represents a list of "things" that can be resolved into an of objects.
     /// </summary>
-    public interface IResolvableList : IResolvableItem
+    public interface IResolvableList : IEnumerable<IResolvableKeyedItem>, IResolvableValueItem
     {
-        /// <summary>
-        /// Gets the list of other resolvable items contained in this list.
-        /// </summary>
-        /// <value>The list items.</value>
-        IEnumerable<IResolvableItem> ListItems { get; }
     }
 }

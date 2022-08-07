@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public InterfaceGraphType(
             string name,
             Type concreteType,
-            GraphFieldPath route,
+            SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullOrReturn(name, nameof(name));
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
 
         /// <inheritdoc />
         public Type ObjectType { get; }

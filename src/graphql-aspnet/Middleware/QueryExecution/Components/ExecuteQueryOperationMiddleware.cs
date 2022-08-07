@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Variables;
@@ -65,17 +64,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
 
-        /// <summary>
-        /// Invokes the asynchronous.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="next">The next.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             context.Metrics?.StartPhase(ApolloExecutionPhase.EXECUTION);
-            if (context.IsValid && context.QueryOperation != null)
+            if (context.IsValid && context.QueryPlan != null)
             {
                 await this.ExecuteOperation(context).ConfigureAwait(false);
             }
@@ -86,17 +79,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         private async Task ExecuteOperation(GraphQueryExecutionContext context)
         {
-            // create a cancelation sourc irrespective of the required timeout for exeucting this operation
+            // create a cancelation source irrespective of the required timeout for exeucting this operation
             // this allows for indication of why a task was canceled (timeout or other user driven reason)
             // vs just "it was canceled" which allows for tighter error messages in the response.
-            var operation = context.QueryOperation;
+            var operation = context.QueryPlan.Operation;
             var fieldInvocations = new List<FieldPipelineInvocation>();
             var fieldInvocationTasks = new List<Task>();
 
-            // Convert the supplied variable values to usable objects of the type expression
-            // of the chosen operation
-            var variableResolver = new ResolvedVariableGenerator(_schema, operation);
-            var variableData = variableResolver.Resolve(context.OperationRequest.VariableData);
             var cancelSource = new CancellationTokenSource();
 
             try
@@ -113,7 +102,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 {
                     // top level mutation operatons must be executed in sequential order
                     // due to potential side effects on the data
-                    // https://graphql.github.io/graphql-spec/June2018/#sec-Mutation
+                    // https://graphql.github.io/graphql-spec/October2021/#sec-Mutation
                     orderedContextList = operation.FieldContexts
                         .Select(x => (x, true));
                 }
@@ -149,7 +138,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var sourceData = new GraphDataContainer(dataSourceValue, path, topLevelDataItem);
 
                     var fieldRequest = new GraphFieldRequest(
-                        context.OperationRequest,
+                        context.ParentRequest,
                         sortedContext.Context,
                         sourceData,
                         new SourceOrigin(sortedContext.Context.Origin.Location, path),
@@ -158,7 +147,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var fieldContext = new GraphFieldExecutionContext(
                         context,
                         fieldRequest,
-                        variableData,
+                        context.ResolvedVariables,
                         context.DefaultFieldSources);
 
                     var fieldTask = _fieldExecutionPipeline.InvokeAsync(fieldContext, cancelSource.Token);
@@ -275,7 +264,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         /// <returns>System.Object.</returns>
         private object GenerateRootSourceData(GraphOperationType operationType)
         {
-            if (_schema.OperationTypes.TryGetValue(operationType, out var rootOperation))
+            if (_schema.Operations.TryGetValue(operationType, out var rootOperation))
             {
                 return new VirtualResolvedObject(rootOperation.Name);
             }

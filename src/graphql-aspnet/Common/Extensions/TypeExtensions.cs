@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Common.Extensions
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Reflection;
-    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Extension methods for working with .NET <see cref="Type"/>

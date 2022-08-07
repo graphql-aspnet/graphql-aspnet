@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Security.SecurtyGroupData
             };
         }
 
-        [Authorize]
+        [Authorize(Policy = "policy1")]
         [QueryRoot("policySecured")]
         public TwoPropertyObject PolicySecuredMethod()
         {

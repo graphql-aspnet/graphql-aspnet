@@ -26,13 +26,6 @@ steps:
       version: "3.1.x"
       packageType: sdk
     displayName: "Install .NET 3.1.x"
-
-  ## Install .NET 5
-  - task: UseDotNet@2
-    inputs:
-      version: "5.x"
-      packageType: sdk
-    displayName: "Install .NET 5.x"
     
   ## Install .NET 6
   - task: UseDotNet@2

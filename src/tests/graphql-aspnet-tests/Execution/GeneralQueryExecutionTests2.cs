@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputArrayScalarController>();
+                        o.AddType<InputArrayScalarController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputStructController>();
+                        o.AddType<InputStructController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputStructController>();
+                        o.AddType<InputStructController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var server = new TestServerBuilder()
                     .AddGraphQL(o =>
                     {
-                        o.AddGraphType<InputObjectArrayController>();
+                        o.AddType<InputObjectArrayController>();
                         o.ResponseOptions.ExposeExceptions = true;
                     })
                     .Build();
@@ -120,6 +120,126 @@ namespace GraphQL.AspNet.Tests.Execution
                 @"{
                     ""data"": {
                        ""parseArray"" : true
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task TypeNameOnAUnionReturn_YieldsResults()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<UnionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                      retrieveUnion  {
+                         ... on TwoPropertyObject {
+                                property1 
+                                property2
+                         }
+                         __typename
+                      }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""retrieveUnion"" : {
+                            ""property1"" : ""prop1"",
+                            ""property2"" : 5,
+                            ""__typename"" : ""TwoPropertyObject""
+                       }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task FragmentSpreadOnOperationLevel_YieldsResults()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                      ... frag1
+                }
+
+                fragment frag1 on Query
+                {
+                    simple  {
+                        simpleQueryMethod {
+                            property1
+                        }
+                        __typename
+                    }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""simpleQueryMethod"" :{
+                                ""property1"" : ""default string"",
+                           },
+                           ""__typename"" : ""Query_Simple""
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task InlineFragmentOnOperationLevel_YieldsResults()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                      ... {
+                          simple  {
+                              simpleQueryMethod {
+                                    property1
+                              }
+                              __typename
+                          }
+                     }
+                }
+
+                ");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""simpleQueryMethod"" :{
+                                ""property1"" : ""default string"",
+                           },
+                           ""__typename"" : ""Query_Simple""
+                        }
                      }
                   }";
 

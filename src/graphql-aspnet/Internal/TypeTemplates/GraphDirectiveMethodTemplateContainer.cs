@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;

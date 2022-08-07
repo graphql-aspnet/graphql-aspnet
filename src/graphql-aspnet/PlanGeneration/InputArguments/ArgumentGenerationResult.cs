@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// Initializes a new instance of the <see cref="ArgumentGenerationResult"/> class.
         /// </summary>
         /// <param name="argument">The argument that was successfully resolved.</param>
-        public ArgumentGenerationResult(IInputArgumentValue argument)
+        public ArgumentGenerationResult(IInputValue argument)
         {
             this.Argument = argument;
         }
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// Gets the argument that was generated.
         /// </summary>
         /// <value>The argument.</value>
-        public IInputArgumentValue Argument { get; }
+        public IInputValue Argument { get; }
 
         /// <summary>
         /// Gets a message that was generated due to a failure in creating the argument.

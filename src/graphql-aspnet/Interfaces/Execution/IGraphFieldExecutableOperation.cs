@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -51,7 +50,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// executed.
         /// </summary>
         /// <value>The declared variables.</value>
-        IQueryVariableCollection DeclaredVariables { get; }
+        IVariableCollectionDocumentPart Variables { get; }
 
         /// <summary>
         /// Gets a collection of the field contexts present in this operation, regardless of level, that have some

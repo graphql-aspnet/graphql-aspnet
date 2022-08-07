@@ -8,8 +8,6 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
 {
-    using GraphQL.AspNet.Schemas.TypeSystem;
-
     public class ScalarNullOtherTypeCollection : ScalarTestBase
     {
         public ScalarNullOtherTypeCollection()

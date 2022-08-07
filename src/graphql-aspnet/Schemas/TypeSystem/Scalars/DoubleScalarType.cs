@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             if (double.TryParse(data.ToString(), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out var i))
                 return i;
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(double));
         }
 
         /// <inheritdoc />

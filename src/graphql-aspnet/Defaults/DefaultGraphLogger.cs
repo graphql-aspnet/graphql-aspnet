@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -52,10 +53,18 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// Recorded when the startup services generates a new schema instance.
+        /// Logs the given entry at the provided level. A scope id property is automatically added to the log
+        /// entry indicating this specific logger instance wrote the entry.
         /// </summary>
-        /// <typeparam name="TSchema">The type of the schema that was generated.</typeparam>
-        /// <param name="schema">The schema instance.</param>
+        /// <param name="logLevel">The log level to record the entry at.</param>
+        /// <param name="logEntry">The log entry to record.</param>
+        public virtual void LogEvent(LogLevel logLevel, GraphLogEntry logEntry)
+        {
+            logEntry.AddProperty(LogPropertyNames.SCOPE_ID, _loggerInstanceId);
+            this.Log(logLevel, logEntry);
+        }
+
+        /// <inheritdoc />
         public virtual void SchemaInstanceCreated<TSchema>(TSchema schema)
             where TSchema : class, ISchema
         {
@@ -151,62 +160,62 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void FieldAuthorizationChallenge(GraphFieldSecurityContext context)
+        public virtual void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new FieldAuthorizationStartedLogEntry(context);
+            var entry = new SchemaItemAuthorizationStartedLogEntry(context);
             this.LogEvent(LogLevel.Trace, entry);
         }
 
         /// <inheritdoc />
-        public virtual void FieldAuthorizationChallengeResult(GraphFieldSecurityContext context)
+        public virtual void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityContext context)
         {
-            var logLevel = context?.Result == null || context.Result.Status == FieldSecurityChallengeStatus.Unauthorized
+            var logLevel = context?.Result == null || context.Result.Status == SchemaItemSecurityChallengeStatus.Unauthorized
                 ? LogLevel.Warning
                 : LogLevel.Trace;
 
             if (!this.IsEnabled(logLevel))
                 return;
 
-            var entry = new FieldAuthorizationCompletedLogEntry(context);
+            var entry = new SchemaItemAuthorizationCompletedLogEntry(context);
             this.LogEvent(logLevel, entry);
         }
 
         /// <inheritdoc />
-        public void FieldAuthenticationChallenge(GraphFieldSecurityContext context)
+        public void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
-            var entry = new FieldAuthenticationStartedLogEntry(context);
+            var entry = new SchemaItemAuthenticationStartedLogEntry(context);
             this.LogEvent(LogLevel.Trace, entry);
         }
 
         /// <inheritdoc />
-        public void FieldAuthenticationChallengeResult(GraphFieldSecurityContext context, IAuthenticationResult authResult)
+        public void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityContext context, IAuthenticationResult authResult)
         {
             LogLevel logLevel;
-            if (context.AuthenticatedUser != null)
+            if (context?.AuthenticatedUser != null)
             {
                 logLevel = LogLevel.Trace;
             }
-            else if (context.Result != null)
+            else if (context?.Result != null)
             {
-                logLevel = context.Result.Status == FieldSecurityChallengeStatus.Failed
+                logLevel = context.Result.Status == SchemaItemSecurityChallengeStatus.Failed
                 ? LogLevel.Warning
                 : LogLevel.Trace;
             }
             else
             {
-                logLevel = authResult.Suceeded ? LogLevel.Trace : LogLevel.Warning;
+                logLevel = authResult == null || !authResult.Suceeded ? LogLevel.Warning : LogLevel.Trace;
             }
 
             if (!this.IsEnabled(logLevel))
                 return;
 
-            var entry = new FieldAuthenticationCompletedLogEntry(context, authResult);
+            var entry = new SchemaItemAuthenticationCompletedLogEntry(context, authResult);
             this.LogEvent(logLevel, entry);
         }
 
@@ -292,21 +301,20 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
+        public virtual void ExecutionDirectiveApplied<TSchema>(IDirective appliedDirective, IDocumentPart appliedTo)
+            where TSchema : class, ISchema
+        {
+            if (!this.IsEnabled(LogLevel.Trace))
+                return;
+
+            var entry = new ExecutionDirectiveAppliedLogEntry<TSchema>(appliedDirective, appliedTo);
+            this.Log(LogLevel.Trace, entry);
+        }
+
+        /// <inheritdoc />
         public virtual bool IsEnabled(LogLevel logLevel)
         {
             return _logger.IsEnabled(logLevel);
-        }
-
-        /// <summary>
-        /// Logs the given entry at the provided level. A scope id property is automatically added to the log
-        /// entry indicating this specific logger instance wrote the entry.
-        /// </summary>
-        /// <param name="logLevel">The log level to record the entry at.</param>
-        /// <param name="logEntry">The log entry to record.</param>
-        public virtual void LogEvent(LogLevel logLevel, GraphLogEntry logEntry)
-        {
-            logEntry.AddProperty(LogPropertyNames.SCOPE_ID, _loggerInstanceId);
-            this.Log(logLevel, logEntry);
         }
 
         /// <inheritdoc />

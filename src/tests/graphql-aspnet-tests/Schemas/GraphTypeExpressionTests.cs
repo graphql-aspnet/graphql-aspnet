@@ -163,5 +163,37 @@ namespace GraphQL.AspNet.Tests.Schemas
                 Assert.AreEqual(declarationText, declaration.ToString());
             }
         }
+
+        [TestCase(null, "String", false)]
+        [TestCase("String", null, false)]
+        [TestCase(null, null, false)]
+        [TestCase("String", "String", true)]
+        [TestCase("String", "String", true)]
+        [TestCase("[String]", "[String]", true)]
+        [TestCase("[String!]", "[String!]", true)]
+        [TestCase("[String]!", "[String]!", true)]
+        [TestCase("[String!]!", "[String!]!", true)]
+        [TestCase("String", "Int", false)]
+        [TestCase("String", "string", false)]
+        [TestCase("String", "String!", true)]
+        [TestCase("String", "[String]", false)]
+        [TestCase("[String]", "String", false)]
+        [TestCase("[Int]", "[Int]!", true)]
+        [TestCase("[Int!]", "[Int]", false)]
+        [TestCase("[Int]", "[Int!]", true)]
+        [TestCase("[Int]", "[[Int]]", false)]
+        [TestCase("[[[Int]!]]", "[[[Int!]!]!]!", true)]
+        [TestCase("[[[Int]!]]!", "[[[Int!]!]!]!", true)]
+        [TestCase("[[[Int!]]!]", "[[[Int!]!]!]!", true)]
+        [TestCase("[[[String!]]!]", "[[[Float!]!]!]!", false)]
+        public void AreCompatiable(string targetExpression, string suppliedExpression, bool shouldBeCompatiable)
+        {
+            var target = targetExpression == null ? null : GraphTypeExpression.FromDeclaration(targetExpression);
+            var supplied = suppliedExpression == null ? null : GraphTypeExpression.FromDeclaration(suppliedExpression);
+
+            var result = GraphTypeExpression.AreTypesCompatiable(target, supplied);
+
+            Assert.AreEqual(shouldBeCompatiable, result);
+        }
     }
 }

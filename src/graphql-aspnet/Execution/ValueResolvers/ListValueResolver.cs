@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         }
 
         /// <inheritdoc />
-        public object Resolve(IResolvableItem resolvableItem, IResolvedVariableCollection variableData = null)
+        public object Resolve(IResolvableValueItem resolvableItem, IResolvedVariableCollection variableData = null)
         {
             if (resolvableItem is IResolvablePointer pointer)
             {
@@ -46,15 +46,13 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 var variableFound = variableData?.TryGetValue(pointer.PointsTo, out variable) ?? false;
                 if (variableFound)
                     return variable.Value;
-
-                resolvableItem = pointer.DefaultItem;
             }
 
             if (resolvableItem is IResolvableList resolvableList)
             {
                 var listType = typeof(List<>).MakeGenericType(_listItemType);
                 var listInstance = InstanceFactory.CreateInstance(listType) as IList;
-                foreach (var item in resolvableList.ListItems)
+                foreach (var item in resolvableList)
                 {
                     var itemInstance = _itemResolver.Resolve(item, variableData);
                     listInstance.Add(itemInstance);

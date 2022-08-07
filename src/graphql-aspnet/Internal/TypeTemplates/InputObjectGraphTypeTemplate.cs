@@ -64,12 +64,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <inheritdoc />
-        protected override GraphFieldPath GenerateFieldPath()
+        protected override SchemaItemPath GenerateFieldPath()
         {
             // a standard graph object cannot contain any route pathing or nesting like controllers can
             // before creating hte route, ensure that the declared name, by itself, is valid for graphql
             var graphName = GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT);
-            return new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Types, graphName));
+            return new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Types, graphName));
         }
 
         /// <inheritdoc />

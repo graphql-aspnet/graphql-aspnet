@@ -43,7 +43,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
             })
             .AddSubscriptions();
 
@@ -68,7 +68,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var schemaBuilder = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
                 options.AuthorizationOptions.Method = AuthorizationMethod.PerField;
             });
 
@@ -94,7 +94,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
                 options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;
             })
             .AddSubscriptionServer();
@@ -117,7 +117,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
                 options.AuthorizationOptions.Method = null;
                 optionsSaved = options;
             })
@@ -140,7 +140,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
             })
             .AddSubscriptionServer();
 
@@ -155,7 +155,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure schema operation type is/was allowed to be injected to the schema
             var schema = sp.GetService(typeof(GraphSchema)) as ISchema;
             Assert.IsNotNull(schema);
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Subscription));
+            Assert.IsTrue(schema.Operations.ContainsKey(GraphOperationType.Subscription));
 
             // ensure registered services for subscription server
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionServer<GraphSchema>)));
@@ -177,7 +177,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
             })
             .AddSubscriptionPublishing();
 
@@ -192,7 +192,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             // ensure schema operation type is/was allowed to be injected to the schema
             var schema = sp.GetService(typeof(GraphSchema)) as ISchema;
             Assert.IsNotNull(schema);
-            Assert.IsTrue(schema.OperationTypes.ContainsKey(GraphOperationType.Subscription));
+            Assert.IsTrue(schema.Operations.ContainsKey(GraphOperationType.Subscription));
 
             // ensure registered services for subscription server
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventPublisher)));

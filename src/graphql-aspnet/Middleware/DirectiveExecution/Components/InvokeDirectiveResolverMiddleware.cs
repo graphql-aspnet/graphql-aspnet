@@ -10,7 +10,6 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;

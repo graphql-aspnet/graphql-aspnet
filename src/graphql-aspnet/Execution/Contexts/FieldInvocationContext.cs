@@ -10,14 +10,14 @@
 namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
 
     /// <summary>
@@ -35,28 +35,24 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="expectedSourceType">Expected type of the source.</param>
         /// <param name="name">The name to apply to this data set once resolution is complete.</param>
         /// <param name="field">The field.</param>
+        /// <param name="fieldPart">The field document part which declared the field to be resolved.</param>
         /// <param name="origin">The origin, in the source text, that this context was generated from.</param>
-        /// <param name="directives">The directives parsed from a query document that are to be executed as part of this context.</param>
         public FieldInvocationContext(
             ISchema schema,
             Type expectedSourceType,
             string name,
             IGraphField field,
-            SourceOrigin origin,
-            IEnumerable<IDirectiveInvocationContext> directives = null)
+            IFieldDocumentPart fieldPart,
+            SourceOrigin origin)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Field = Validation.ThrowIfNullOrReturn(field, nameof(field));
+            this.FieldDocumentPart = Validation.ThrowIfNullOrReturn(fieldPart, nameof(fieldPart));
             this.ExpectedSourceType = expectedSourceType;
             this.Origin = origin;
             this.ChildContexts = new FieldInvocationContextCollection();
             this.Arguments = new InputArgumentCollection();
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-
-            var list = new List<IDirectiveInvocationContext>();
-            if (directives != null)
-                list.AddRange(directives);
-            this.Directives = list;
         }
 
         /// <inheritdoc />
@@ -75,6 +71,9 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IGraphField Field { get; }
 
         /// <inheritdoc />
+        public IFieldDocumentPart FieldDocumentPart { get; }
+
+        /// <inheritdoc />
         public Type ExpectedSourceType { get; private set; }
 
         /// <summary>
@@ -82,9 +81,6 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The expected name of the source type.</value>
         private string ExpectedSourceTypeName => this.ExpectedSourceType?.FriendlyName() ?? "null";
-
-        /// <inheritdoc />
-        public IList<IDirectiveInvocationContext> Directives { get; }
 
         /// <inheritdoc />
         public string Name { get; }

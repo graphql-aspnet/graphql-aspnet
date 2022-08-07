@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var server = new TestServerBuilder().Build();
 
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -164,7 +164,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             var appliedDirective = field.AppliedDirectives.FirstOrDefault();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 13, "prop field arg" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 13, "prop field arg" }, appliedDirective.ArgumentValues);
         }
 
         [Test]
@@ -188,7 +188,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -204,7 +204,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             var appliedDirective = field.AppliedDirectives.FirstOrDefault();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 14, "method field arg" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 14, "method field arg" }, appliedDirective.ArgumentValues);
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         {
             var server = new TestServerBuilder().Build();
             var obj = new Mock<IObjectGraphTypeTemplate>();
-            obj.Setup(x => x.Route).Returns(new GraphFieldPath("[type]/Item0"));
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
             obj.Setup(x => x.InternalFullName).Returns("Item0");
 
             var parent = obj.Object;
@@ -233,7 +233,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var appliedDirective = field.Arguments["arg1"].AppliedDirectives.FirstOrDefault();
 
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 15, "arg arg" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 15, "arg arg" }, appliedDirective.ArgumentValues);
         }
     }
 }

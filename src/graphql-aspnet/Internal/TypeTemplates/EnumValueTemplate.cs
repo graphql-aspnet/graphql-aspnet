@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
 
@@ -58,7 +57,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 valueName = Constants.Routing.ENUM_VALUE_META_NAME;
 
             valueName = valueName.Replace(Constants.Routing.ENUM_VALUE_META_NAME, this.FieldInfo.Name);
-            this.Route = new GraphFieldPath(GraphFieldPath.Join(this.Parent.Route.Path, valueName));
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, valueName));
         }
 
         /// <inheritdoc />

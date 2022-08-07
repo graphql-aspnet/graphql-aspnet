@@ -8,8 +8,6 @@
 // *************************************************************
 namespace GraphQL.AspNet.Internal.Interfaces
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-
     /// <summary>
     /// An interface describing an ENUM_OPTION templated
     /// from an <see cref="System.Enum"/> value label.

@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -62,7 +61,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             _name = GraphTypeNames.ParseName(this.ObjectType, TypeKind.ENUM);
             this.Description = this.ObjectType.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
-            this.Route = new GraphFieldPath(GraphFieldPath.Join(GraphCollection.Enums, _name));
+            this.Route = new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Enums, _name));
 
             // parse the enum values for later injection
             var labels = Enum.GetNames(this.ObjectType);

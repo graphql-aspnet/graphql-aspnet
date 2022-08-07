@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets the qualified route that points to this method in the object graph.
         /// </summary>
         /// <value>The route.</value>
-        GraphFieldPath Route { get; }
+        SchemaItemPath Route { get; }
 
         /// <summary>
         /// Gets the arguments defined on the method this instance represents.

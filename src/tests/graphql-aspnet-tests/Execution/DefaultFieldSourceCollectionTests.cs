@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void AllowedFieldIsAdded_CanBeRetrieved()
         {
-            var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
+            var path = new SchemaItemPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
             mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void UpdatedFieldIsAdded_CanBeRetrieved()
         {
-            var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
+            var path = new SchemaItemPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
             mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void DisallowedFieldIsNotAdded_CanNotBeRetrieved()
         {
-            var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
+            var path = new SchemaItemPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
             mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Method);
@@ -94,12 +94,12 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void UnFoundField_IsNotReturned()
         {
-            var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
+            var path = new SchemaItemPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
             mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
-            var path1 = new GraphFieldPath(GraphCollection.Subscription, "path1/path3");
+            var path1 = new SchemaItemPath(GraphCollection.Subscription, "path1/path3");
             var mock1 = new Mock<IGraphField>();
             mock1.Setup(x => x.Route).Returns(path1);
             mock1.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
@@ -119,12 +119,12 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void WhenMultipleAllowedSources_AllCanBeRetrieved()
         {
-            var path = new GraphFieldPath(GraphCollection.Subscription, "path1/path2");
+            var path = new SchemaItemPath(GraphCollection.Subscription, "path1/path2");
             var mock = new Mock<IGraphField>();
             mock.Setup(x => x.Route).Returns(path);
             mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Method);
 
-            var path1 = new GraphFieldPath(GraphCollection.Subscription, "path1/path3");
+            var path1 = new SchemaItemPath(GraphCollection.Subscription, "path1/path3");
             var mock1 = new Mock<IGraphField>();
             mock1.Setup(x => x.Route).Returns(path1);
             mock1.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);

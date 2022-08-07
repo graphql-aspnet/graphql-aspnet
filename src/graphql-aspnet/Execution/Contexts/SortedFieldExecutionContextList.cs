@@ -7,12 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution
+namespace GraphQL.AspNet.Execution.Contexts
 {
-    using System.Collections;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>

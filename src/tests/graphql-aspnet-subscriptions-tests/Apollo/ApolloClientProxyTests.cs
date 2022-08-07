@@ -263,7 +263,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             await apolloClient.DispatchMessage(startMessage);
 
-            var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject");
+            var route = new SchemaItemPath("[subscription]/ApolloSubscription/WatchForPropObject");
             await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
             {
                 Property1 = "value1",
@@ -289,7 +289,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         {
             (var socketClient, var apolloClient) = await this.CreateConnection();
 
-            var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject");
+            var route = new SchemaItemPath("[subscription]/ApolloSubscription/WatchForPropObject");
             await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
             {
                 Property1 = "value1",
@@ -317,7 +317,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             await apolloClient.DispatchMessage(startMessage);
 
             // fire an event against a route not tracked, ensure the client skips it.
-            var route = new GraphFieldPath("[subscription]/ApolloSubscription/WatchForPropObject_NotReal");
+            var route = new SchemaItemPath("[subscription]/ApolloSubscription/WatchForPropObject_NotReal");
             await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
             {
                 Property1 = "value1",

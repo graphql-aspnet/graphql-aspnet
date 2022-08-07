@@ -36,9 +36,8 @@ namespace GraphQL.AspNet.Benchmarks
             item.SingleObjectQuery().Wait();
             item.TypeExtensionQuery().Wait();
             item.MultiActionMethodQuery().Wait();
+            item.IntrospectionQuery().Wait();
             Console.WriteLine("All benchmark tests completed. Execute in release mode, without the debugger attached to run benchmarks.");
-            Console.Read();
-            return 0;
 #endif
 
             // results written to the bin directory of this project
@@ -47,15 +46,16 @@ namespace GraphQL.AspNet.Benchmarks
 #if !DEBUG
             if (Debugger.IsAttached)
             {
-                Console.WriteLine("Benchmarks should be executed without the debugger attached.");
-                Console.Read();
+                Console.WriteLine("Benchmarks should be executed without the debugger attached (Choose: \"Debug -> Start Without Debugging\").");
             }
             else
             {
                 var summary = BenchmarkRunner.Run<ExecuteQueries>();
             }
-            return 0;
 #endif
+
+            Console.Read();
+            return 0;
         }
     }
 }

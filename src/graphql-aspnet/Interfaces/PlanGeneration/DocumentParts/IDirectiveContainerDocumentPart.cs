@@ -6,21 +6,20 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
-    /// A general interface reprsenting an item in the query document that can contain directives.
+    /// An interface declaring the implementer as a document part that can contain directives.
     /// </summary>
     public interface IDirectiveContainerDocumentPart : IDocumentPart
     {
         /// <summary>
-        /// Inserts the directive into this document part at the head of its directive set.
+        /// Gets the set of directives defined as direct children on this document part.
         /// </summary>
-        /// <param name="directive">The directive to add to this instance.</param>
-        /// <param name="rank">The relative rank of this directive to others this instance might container.
-        /// Directives are executed in ascending order by the engine.</param>
-        void InsertDirective(QueryDirective directive, int rank);
+        /// <value>The directives.</value>
+        IDirectiveCollectionDocumentPart Directives { get; }
     }
 }

@@ -11,19 +11,16 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.ValidationRules;
+    using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
     /// A middleware component to create a <see cref="GraphController" /> and invoke an action method.
@@ -33,20 +30,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
-        private readonly ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> _directiveExecutionPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvokeFieldResolverMiddleware{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        /// <param name="directiveExecutionPipeline">The directive execution pipeline
-        /// to invoke for any directives attached to this field.</param>
+        /// <param name="schema">The schema targeted by this middleware component.</param>
         public InvokeFieldResolverMiddleware(
-            TSchema schema,
-            ISchemaPipeline<TSchema, GraphDirectiveExecutionContext> directiveExecutionPipeline)
+            TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _directiveExecutionPipeline = Validation.ThrowIfNullOrReturn(directiveExecutionPipeline, nameof(directiveExecutionPipeline));
         }
 
         /// <summary>
@@ -96,115 +88,59 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 
         private async Task<bool> ExecuteContext(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
         {
-            // Step 1: Execute the directives prior to resolution for those
-            // those that can be run.
-            (var continueExecution, object resolvedData) = await this.ExecuteFieldDirectives(
-                  context,
-                  DirectiveInvocationPhase.BeforeFieldResolution,
-                  null).ConfigureAwait(false);
+            // Step 1: Build a collection of arguments from the supplied context that will
+            //         be supplied to teh resolver
+            var executionArguments = context
+                .InvocationContext
+                .Arguments
+                .Merge(context.VariableData)
+                .WithSourceData(context.Request.Data.Value);
 
-            if (continueExecution)
-            {
-                // build a collection of invokable parameters from the supplied context
-                var executionArguments = context
-                    .InvocationContext
-                    .Arguments
-                    .Merge(context.VariableData)
-                    .WithSourceData(context.Request.Data.Value);
+            var resolutionContext = new FieldResolutionContext(
+                _schema,
+                context,
+                context.Request,
+                executionArguments,
+                context.User);
 
-                var resolutionContext = new FieldResolutionContext(
-                    _schema,
-                    context,
-                    context.Request,
-                    executionArguments,
-                    context.User);
+            // Step 2: Resolve the field
+            context.Logger?.FieldResolutionStarted(resolutionContext);
 
-                // Step 2: Resolve the field
-                context.Logger?.FieldResolutionStarted(resolutionContext);
+            var task = context.Field?.Resolver?.Resolve(resolutionContext, cancelToken);
+            await task.ConfigureAwait(false);
+            context.Messages.AddRange(resolutionContext.Messages);
 
-                var task = context.Field?.Resolver?.Resolve(resolutionContext, cancelToken);
-                await task.ConfigureAwait(false);
-                context.Messages.AddRange(resolutionContext.Messages);
+            await this.OnFieldResolutionComplete(context, resolutionContext, cancelToken);
 
-                continueExecution = !resolutionContext.IsCancelled;
-                context.Logger?.FieldResolutionCompleted(resolutionContext);
+            context.Logger?.FieldResolutionCompleted(resolutionContext);
 
-                // Step 3: Execute the directives after resolution for those
-                // those that can be run to give them a chance to alter result data
-                // if necessary.
-                if (continueExecution)
-                {
-                    (continueExecution, resolvedData) = await this.ExecuteFieldDirectives(
-                        context,
-                        DirectiveInvocationPhase.AfterFieldResolution,
-                        resolutionContext.Result,
-                        cancelToken)
-                        .ConfigureAwait(false);
+            this.AssignResults(context, resolutionContext);
 
-                    resolutionContext.Result = resolvedData;
-                }
-
-                this.AssignResults(context, resolutionContext);
-            }
-
-            return continueExecution;
+            return !resolutionContext.IsCancelled;
         }
 
-        private async Task<(bool CompletedSuccessfully, object DataTarget)> ExecuteFieldDirectives(
-            GraphFieldExecutionContext executionContext,
-            DirectiveInvocationPhase invocationPhase,
-            object dataTarget,
-            CancellationToken cancelToken = default)
+        /// <summary>
+        /// A method that executes immediately after the field resolver completes its
+        /// operation. By default this method is used to invoke a fields post resolver but can be
+        /// extended as necessary.
+        /// </summary>
+        /// <param name="fieldExecutionContext">The field execution context governing the
+        /// request.</param>
+        /// <param name="fieldResolutionContext">The specific field resolution context
+        /// that was just resolved.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        protected virtual async Task OnFieldResolutionComplete(
+            GraphFieldExecutionContext fieldExecutionContext,
+            FieldResolutionContext fieldResolutionContext,
+            CancellationToken cancelToken)
         {
-            IEnumerable<IDirectiveInvocationContext> contextSearchResult = executionContext?
-                .Request?
-                .InvocationContext?
-                .Directives?
-                .Where(x => x.Directive.InvocationPhases.HasFlag(invocationPhase));
-
-            var invocationContexts = new List<IDirectiveInvocationContext>();
-            if (contextSearchResult != null)
-                invocationContexts.AddRange(contextSearchResult);
-
-            // generate requests context for each directive to be processed
-            // then process the directive sequentially.
-            //
-            // NOTE: Order matters, they can't be executed in parallel
-            // https://spec.graphql.org/October2021/#sec-Language.Directives
-            bool continueExecution = true;
-            object localDataTarget = dataTarget; // box the data target
-            for (var i = 0; i < invocationContexts.Count; i++)
+            // execute the post processor assigned via the query document if one exists
+            if (!fieldResolutionContext.IsCancelled)
             {
-                var request = new GraphDirectiveRequest(
-                    invocationContexts[i],
-                    invocationPhase,
-                    localDataTarget,
-                    executionContext?.Request?.Items);
-
-                var directiveContext = new GraphDirectiveExecutionContext(
-                    _schema,
-                    executionContext,
-                    request,
-                    executionContext.VariableData,
-                    executionContext.User);
-
-                // directives must be awaited individually
-                // the spec dictates they must be executed in a predictable order
-                await _directiveExecutionPipeline.InvokeAsync(directiveContext, cancelToken)
-                    .ConfigureAwait(false);
-
-                executionContext.Messages.AddRange(directiveContext.Messages);
-
-                localDataTarget = request.DirectiveTarget;
-                continueExecution = !directiveContext.IsCancelled;
-
-                // when one directive fails or cancels
-                // skip the exectuion of other directives in the chain
-                if (!continueExecution)
-                    break;
+                if (fieldExecutionContext.InvocationContext.FieldDocumentPart.PostResolver != null)
+                    await fieldExecutionContext.InvocationContext.FieldDocumentPart.PostResolver(fieldResolutionContext, cancelToken);
             }
-
-            return (continueExecution, localDataTarget);
         }
 
         /// <summary>

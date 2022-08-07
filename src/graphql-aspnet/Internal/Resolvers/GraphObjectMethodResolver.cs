@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Internal.Resolvers
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// A field resolver that will invoke a schema pipeline for whatever schema is beng processed

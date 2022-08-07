@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Middleware;
 
     /// <summary>
     /// A middleware context targeting the field execution pipeline.

@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     {
         private readonly IGraphType _owner;
         private readonly Dictionary<string, IGraphField> _fields;
+        private readonly List<IGraphField> _requiredFields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldCollection" /> class.
@@ -38,6 +39,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         {
             _owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _fields = new Dictionary<string, IGraphField>(StringComparer.Ordinal);
+            _requiredFields = new List<IGraphField>();
         }
 
         /// <inheritdoc />
@@ -47,9 +49,8 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             if (_fields.ContainsKey(field.Name))
             {
-                var existingField = _fields[field.Name];
                 throw new GraphTypeDeclarationException(
-                    $"Duplciate field name detected. The graph type '{_owner.Name}' already declares a field named '{existingField.Name}'. " +
+                    $"Duplciate field name detected. The graph type '{_owner.Name}' already declares a field named '{field.Name}'. " +
                     "This may occur if a type extension is added with the same name as an existing field or " +
                     "when an attempt is made to extend an OBJECT type through a direct extension and an indirect " +
                     "INTERFACE extension with the same field name.");
@@ -57,6 +58,9 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             field.AssignParent(_owner);
             _fields.Add(field.Name, field);
+            if (field.TypeExpression.IsRequired)
+                _requiredFields.Add(field);
+
             return field;
         }
 
@@ -74,7 +78,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         internal IGraphField AddField<TSource, TReturn>(
             string fieldName,
             GraphTypeExpression typeExpression,
-            GraphFieldPath route,
+            SchemaItemPath route,
             Func<TSource, Task<TReturn>> resolver,
             string description = null)
             where TSource : class
@@ -103,7 +107,21 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <inheritdoc />
         public bool ContainsKey(string fieldName)
         {
+            if (fieldName == null)
+                return false;
+
             return _fields.ContainsKey(fieldName);
+        }
+
+        /// <inheritdoc />
+        public bool Contains(IGraphField field)
+        {
+            Validation.ThrowIfNull(field, nameof(field));
+            if (!this.ContainsKey(field.Name))
+                return false;
+
+            var foundField = this[field.Name];
+            return object.ReferenceEquals(field, foundField);
         }
 
         /// <inheritdoc />
@@ -120,6 +138,9 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public IGraphType Owner => _owner;
+
+        /// <inheritdoc />
+        public IReadOnlyList<IGraphField> RequiredFields => _requiredFields;
 
         /// <inheritdoc />
         public IEnumerator<IGraphField> GetEnumerator()

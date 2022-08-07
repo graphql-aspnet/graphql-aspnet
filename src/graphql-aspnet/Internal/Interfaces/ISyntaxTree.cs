@@ -9,19 +9,18 @@
 
 namespace GraphQL.AspNet.Internal.Interfaces
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
-    /// A set of context sensitive nodes that defines a recieved graph ql document.
+    /// A set of context sensitive nodes that defines a recieved graphql document.
     /// This tree forms the foundation of the data used to fulfill a query request.
     /// </summary>
-    public interface ISyntaxTree : IEnumerable<SyntaxNode>
+    public interface ISyntaxTree
     {
         /// <summary>
-        /// Gets a collection of the nodes contained in this document.
+        /// Gets the root node of the AST, all other nodes are children of this root node.
         /// </summary>
-        /// <value>The dictionary, keyed on operation name, of the operations on the recieved query.</value>
-        IReadOnlyList<SyntaxNode> Nodes { get; }
+        /// <value>The root node.</value>
+        DocumentNode RootNode { get; }
     }
 }

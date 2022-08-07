@@ -17,8 +17,8 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
 
     /// <summary>
     /// A validation context used to perform final validation of this context and all its children.

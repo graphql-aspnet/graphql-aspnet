@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// An action result indicating an the requested call to the controller

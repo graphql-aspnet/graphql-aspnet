@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
     /// <summary>
     /// A graph type representing a UNION.
-    /// spec: https://graphql.github.io/graphql-spec/June2018/#sec-Unions .
+    /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-Unions .
     /// </summary>
     [DebuggerDisplay("UNION {Name} (Types = {_types.Count})")]
     public class UnionGraphType : IUnionGraphType
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public UnionGraphType(
             string name,
             IUnionTypeMapper typeResolver,
-            GraphFieldPath route,
+            SchemaItemPath route,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
@@ -107,6 +107,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection AppliedDirectives { get; }
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; }
+        public SchemaItemPath Route { get; }
     }
 }

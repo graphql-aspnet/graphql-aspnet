@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
@@ -41,7 +40,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="sourceData">The source data sent from the publisher when the event was raised.</param>
         /// <param name="cancelToken">A cancellation token.</param>
         /// <returns>Task.</returns>
-        Task ReceiveEvent(GraphFieldPath field, object sourceData, CancellationToken cancelToken = default);
+        Task ReceiveEvent(SchemaItemPath field, object sourceData, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Instructs the client proxy to close its connection from the server side, no additional messages will be sent to it.

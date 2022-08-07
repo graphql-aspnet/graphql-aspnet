@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Response;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// An interface capable of recieving events related to datapoints that can be tracked
@@ -33,15 +32,17 @@ namespace GraphQL.AspNet.Interfaces.Execution
         void End();
 
         /// <summary>
-        /// Marks the start of the given phase. THe metrics package should make note of this to determine
-        /// total duration of the phase if desired.
+        /// Marks the start of the given phase. The metrics package should make note of this to determine
+        /// total duration of the phase if desired. If the supplied phase is already
+        /// started, no action occurs.
         /// </summary>
         /// <param name="phase">The phase to begin.</param>
         void StartPhase(string phase);
 
         /// <summary>
-        /// Marks the end of the given phase. THe metrics package should make note of this to determine
-        /// total duration of the phase if desired.
+        /// Marks the end of the given phase. The metrics package should make note of this to determine
+        /// total duration of the phase if desired. All implementors should ensure
+        /// this method should be idempotent.
         /// </summary>
         /// <param name="phase">The phase to terminate.</param>
         void EndPhase(string phase);

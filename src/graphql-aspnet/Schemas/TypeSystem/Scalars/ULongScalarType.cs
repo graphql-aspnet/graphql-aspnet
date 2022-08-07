@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             if (ulong.TryParse(data.ToString(), out var u))
                 return u;
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(ulong));
         }
 
         /// <inheritdoc />

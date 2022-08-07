@@ -9,8 +9,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests;
+    using GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -22,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddType<TestPersonWithResolverExtensionDirectiveByType>()
-                .AddType<ToUpperDirective>()
+                .AddType<ToUpperFieldDefinitionDirective>()
                 .Build();
 
             var person = new TestPersonWithResolverExtensionDirectiveByType()
@@ -46,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddType<TestPersonWithResolverExtensionDirectiveByName>()
-                .AddType<ToUpperDirective>()
+                .AddType<ToUpperFieldDefinitionDirective>()
                 .Build();
 
             var person = new TestPersonWithResolverExtensionDirectiveByName()

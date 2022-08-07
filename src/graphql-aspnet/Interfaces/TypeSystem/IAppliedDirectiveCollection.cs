@@ -9,7 +9,6 @@
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A collection of directives that have been applied to a schema

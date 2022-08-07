@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
 
     /// <summary>
     /// A maker that can generate a graphql Fragment
-    /// spec: https://graphql.github.io/graphql-spec/June2018/#sec-Language.Fragments .
+    /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-Language.Fragments .
     /// </summary>
     public class NamedFragmentNodeMaker : ISyntaxNodeMaker
     {

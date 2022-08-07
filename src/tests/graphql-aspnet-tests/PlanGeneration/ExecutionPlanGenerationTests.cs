@@ -13,10 +13,10 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData;
@@ -25,28 +25,38 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
     [TestFixture]
     public class ExecutionPlanGenerationTests
-    {
+   {
+        private async Task<IGraphQueryPlan> CreatePlan(GraphSchema schema, string text)
+        {
+            var parser = new GraphQLParser();
+            var syntaxTree = parser.ParseQueryDocument(text.AsMemory());
+
+            var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(schema);
+            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+                schema,
+                new DefaultOperationComplexityCalculator<GraphSchema>());
+
+            var doc = docGenerator.CreateDocument(syntaxTree);
+            docGenerator.ValidateDocument(doc);
+
+            return await planGenerator.CreatePlan(doc.Operations[0]);
+        }
+
         [Test]
         public async Task SingleField_NoExtras_ValidateFields()
         {
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query {  simple {  simpleQueryMethod { property1} } }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var plan = await this.CreatePlan(
                 server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+                "query {  simple {  simpleQueryMethod { property1} } }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // the "simple" virtual field queued to be resolved when the plan
             // is executed
-            var queuedContext = plan.Operations[string.Empty].FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(queuedContext);
             Assert.AreEqual("simple", queuedContext.Name);
             Assert.AreEqual("simple", queuedContext.Origin.Path.DotString());
@@ -84,102 +94,19 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         }
 
         [Test]
-        public async Task SingleField_WithDirective_ValidateFields()
-        {
-            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query {  simple @skip(if: true) {  simpleQueryMethod { property1} } }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
-
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
-
-            // the "simple" virtual field queued to be resolved when the plan
-            // is executed
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
-            Assert.IsNotNull(queuedContext);
-            Assert.AreEqual("simple", queuedContext.Name);
-
-            Assert.AreEqual(1, queuedContext.Directives.Count);
-
-            var directiveContext = queuedContext.Directives[0];
-            Assert.IsNotNull(directiveContext);
-            Assert.AreEqual(DirectiveLocation.FIELD, directiveContext.Location);
-            Assert.AreEqual("skip", directiveContext.Directive.Name);
-
-            Assert.AreEqual(1, directiveContext.Arguments.Count);
-            Assert.AreEqual(true, directiveContext.Arguments["if"].Value.Resolve(ResolvedVariableCollection.Empty));
-        }
-
-        [Test]
-        public async Task MultiOperationDocument_SelectsCorrectOperationInPlan()
-        {
-            var server = new TestServerBuilder()
-            .AddType<SimplePlanGenerationController>()
-                .Build();
-
-            var str = @"
-                            query Operation1{  simple {  simpleQueryMethod { property1} } }
-
-                            query Operation2{  simple {  simpleQueryMethod { property2} } }
-                            ";
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(str.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
-
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(2, plan.Operations.Count);
-
-            // the "simple" virtual field queued to be resolved when the plan
-            // is executed
-            var queuedContext = plan.RetrieveOperation("Operation1").FieldContexts[0];
-            Assert.IsNotNull(queuedContext);
-            Assert.AreEqual("simple", queuedContext.Name);
-
-            // simpleQueryMethod should contain 1 property to be resolved
-            var child = queuedContext.ChildContexts[0];
-            Assert.IsNotNull(child);
-            Assert.AreEqual("simpleQueryMethod", child.Name);
-
-            // "property1"
-            var prop1 = child.ChildContexts[0];
-            Assert.IsNotNull(prop1);
-            Assert.AreEqual("property1", prop1.Name);
-        }
-
-        [Test]
         public async Task SingleField_WithAcceptableArgumentsOnMethod_ValidateFields()
         {
             var server = new TestServerBuilder()
                 .AddType<SimplePlanGenerationController>()
                 .Build();
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query {  simple {  simpleQueryMethod(arg1: \"bob\", arg2: 15) { property1} } }".AsMemory());
+            var plan = await this.CreatePlan(
+              server.Schema,
+              "query {  simple {  simpleQueryMethod(arg1: \"bob\", arg2: 15) { property1} } }");
 
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
-
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             var child = queuedContext.ChildContexts[0];
 
             var arg1 = child.Arguments["arg1"];
@@ -195,27 +122,22 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(@"query($var1 : Long = 22)
-                                                        {
-                                                            simple {
-                                                                simpleQueryMethod(arg1: ""bob"", arg2: $var1) {
-                                                                    property1
-                                                                }
-                                                            }
-                                                        }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var plan = await this.CreatePlan(
                 server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+                @"query($var1 : Long = 22)
+                {
+                    simple {
+                        simpleQueryMethod(arg1: ""bob"", arg2: $var1) {
+                            property1
+                        }
+                    }
+                }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             var child = queuedContext.ChildContexts[0];
 
             // Ensur the variable $var1 used its default value and that arg2 is assigned that value
@@ -227,27 +149,21 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public async Task SingleField_WhenInputArgumentPassesNull_WhenAcceptable_GeneratesArgumentAsNull()
         {
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(@"query {
-                                                            simple {
-                                                                complexQueryMethod(arg1: null) {
-                                                                    property1
-                                                                }
-                                                            }
-                                                        }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var plan = await this.CreatePlan(
                 server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+                @"query {
+                    simple {
+                        complexQueryMethod(arg1: null) {
+                            property1
+                        }
+                    }
+                }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             var child = queuedContext.ChildContexts[0];
 
             // Ensure that arg1 exists and is recieved as null
@@ -262,27 +178,22 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
 
             // arg1 represents a TWoPropertyObjectV2 with a prop1 type of float
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(@"query($var1 : Float! = 15.5)
-                                                        {
-                                                            simple {
-                                                                complexQueryMethod(arg1: { property1: $var1, property2: 0} ) {
-                                                                    property1
-                                                                }
-                                                            }
-                                                        }".AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
+            var plan = await this.CreatePlan(
                 server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+                @"query($var1 : Float! = 15.5)
+                {
+                    simple {
+                        complexQueryMethod(arg1: { property1: $var1, property2: 0} ) {
+                            property1
+                        }
+                    }
+                }");
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
 
             Assert.AreEqual(1, queuedContext.ChildContexts.Count);
             var child = queuedContext.ChildContexts[0];
@@ -312,22 +223,15 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // the "simple" virtual field queued to be resolved when the plan
             // is executed
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
+            var queuedContext = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(queuedContext);
             Assert.AreEqual("simple", queuedContext.Name);
 
@@ -365,71 +269,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         }
 
         [Test]
-        public async Task SingleField_WithFragment_AndMultiLevelDirectives_ValidateDirectiveAssociations()
-        {
-            var server = new TestServerBuilder()
-                .AddType<SimplePlanGenerationController>()
-                .AddType<Sample1Directive>()
-                .AddType<Sample2Directive>()
-                .AddType<Sample3Directive>()
-                .Build();
-
-            var query = @"
-                        query {
-                            simple {
-                                simpleQueryMethod {
-                                    ...methodProperties @sample2
-                                }
-                            }
-                        }
-
-                        fragment methodProperties on TwoPropertyObject @sample1 {
-                            property1 @sample3
-                            property2
-                        }";
-
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
-
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(1, plan.Operations.Count);
-            Assert.AreEqual(0, plan.Messages.Count);
-
-            // the "simple" virtual field queued to be resolved when the plan
-            // is executed
-            var queuedContext = plan.RetrieveOperation().FieldContexts[0];
-            Assert.IsNotNull(queuedContext);
-            Assert.AreEqual("simple", queuedContext.Name);
-
-            // simpleQueryMethod should contain 2 properties to be resolved (the two props on the fragment)
-            var child = queuedContext.ChildContexts[0];
-            Assert.IsNotNull(child);
-            Assert.AreEqual("simpleQueryMethod", child.Name);
-            Assert.AreEqual(2, child.ChildContexts.Count);
-
-            // "property1"
-            var prop1 = child.ChildContexts[0];
-            Assert.IsNotNull(prop1);
-            Assert.AreEqual(3, prop1.Directives.Count);
-            Assert.AreEqual("sample2", prop1.Directives[0].Directive.Name);
-            Assert.AreEqual("sample1", prop1.Directives[1].Directive.Name);
-            Assert.AreEqual("sample3", prop1.Directives[2].Directive.Name);
-
-            // "property2"
-            var prop2 = child.ChildContexts[1];
-            Assert.IsNotNull(prop2);
-            Assert.AreEqual(2, prop2.Directives.Count);
-            Assert.AreEqual("sample2", prop2.Directives[0].Directive.Name);
-            Assert.AreEqual("sample1", prop2.Directives[1].Directive.Name);
-        }
-
-        [Test]
         public async Task MultipleTypeRestrictedFragments_GeneratesCorrectFieldContexts()
         {
             var server = new TestServerBuilder().AddType<FragmentProcessingController>().Build();
@@ -452,20 +291,12 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
+            var plan = await this.CreatePlan(server.Schema, query);
 
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
-
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan?.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
 
-            var fragTester = plan.RetrieveOperation().FieldContexts[0];
+            var fragTester = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(fragTester);
 
             var makeHybridData = fragTester.ChildContexts[0];
@@ -500,20 +331,13 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property1
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
-            Assert.AreEqual(1, plan.Operations.Count);
+            Assert.IsNotNull(plan.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
 
-            var fragTester = plan.RetrieveOperation().FieldContexts[0];
+            var fragTester = plan.Operation.FieldContexts[0];
             Assert.IsNotNull(fragTester);
 
             var makeHybridData = fragTester.ChildContexts[0];
@@ -547,20 +371,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // simple -> SimpleQueryMthod
-            var simpleQueryMethodField = plan.RetrieveOperation().FieldContexts[0].ChildContexts[0];
+            var simpleQueryMethodField = plan.Operation.FieldContexts[0].ChildContexts[0];
 
             Assert.AreEqual(2, simpleQueryMethodField.ChildContexts.Count);
             Assert.IsTrue(simpleQueryMethodField.ChildContexts.Any(x => x.Name == "property1"));
@@ -570,7 +388,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public async Task Union_TypeName_AsAFieldSelectionDirectlyOnAUnion_ProducesTypeNameFieldForAllMembersOfTheUnion()
         {
-            var server = new TestServerBuilder().AddType<SimplePlanGenerationController>().Build();
+            var server = new TestServerBuilder()
+                .AddType<SimplePlanGenerationController>()
+                .Build();
 
             // unionQuery returns a union graphtype of TwoPropObject and TwoPropObjectV2
             // specific fields for V1 are requested but V2 should be included with __typename as well
@@ -589,20 +409,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property2
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
-
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
+            var plan = await this.CreatePlan(server.Schema, query);
 
             Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Messages.Count);
+            Assert.IsNotNull(plan.Operation);
 
             // simple -> SimpleQueryMthod
-            var unionQueryField = plan.RetrieveOperation().FieldContexts[0].ChildContexts[0];
+            var unionQueryField = plan.Operation.FieldContexts[0].ChildContexts[0];
 
             // prop1 for TwoPropObject, prop2 fro TwoPropObject, __typename for TwoPropObject, __typename for TwoPropObjectV2
             Assert.AreEqual(4, unionQueryField.ChildContexts.Count);
@@ -637,20 +451,13 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             property1
                         }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(query.AsMemory());
+            var plan = await this.CreatePlan(server.Schema, query);
 
-            var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
-                server.Schema,
-                new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema),
-                new DefaultOperationComplexityCalculator<GraphSchema>());
-            var plan = await planGenerator.CreatePlan(syntaxTree);
-
-            Assert.IsNotNull(plan);
+            Assert.IsNotNull(plan?.Operation);
             Assert.AreEqual(0, plan.Messages.Count);
 
             // simple -> SimpleQueryMthod
-            var unionQueryField = plan.RetrieveOperation().FieldContexts[0].ChildContexts[0];
+            var unionQueryField = plan.Operation.FieldContexts[0].ChildContexts[0];
 
             // prop1 for TwoPropObject
             Assert.AreEqual(1, unionQueryField.ChildContexts.Count);

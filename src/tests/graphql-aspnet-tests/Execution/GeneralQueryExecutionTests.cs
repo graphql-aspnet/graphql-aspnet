@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -102,53 +101,25 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task SimpleResolution_WithDirective_CallsDirectiveCorrectly()
-        {
-            var server = new TestServerBuilder()
-                   .AddType<SimpleExecutionController>()
-                   .AddType<CallTestDirective>()
-                   .Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText("query Operation1{  simple {  simpleQueryMethod @callTest(arg: 3) { property1} } }")
-                .AddOperationName("Operation1");
-
-            // supply no values, allowing the defaults to take overand returning the single
-            // requested "Property1" with the default string defined on the method.
-            var result = await server.ExecuteQuery(builder);
-            Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(1, CallTestDirective.TotalCalls);
-        }
-
-        [Test]
-        public async Task DirectiveExecution_MaintainsRequestMetaDataCollectionAcrossPhases_CallsDirectiveCorrectly()
-        {
-            var server = new TestServerBuilder()
-            .AddType<SimpleExecutionController>()
-                .AddType<MetaDataShareDirective>()
-                .Build();
-
-            var builder = server.CreateQueryContextBuilder();
-            builder.AddQueryText("query Operation1{  simple {  simpleQueryMethod @metaDataShare(arg: 3) { property1} } }");
-            builder.AddOperationName("Operation1");
-
-            // supply no values, allowing the defaults to take overand returning the single
-            // requested "Property1" with the default string defined on the method.
-            var context = builder.Build();
-            await server.ExecuteQuery(context);
-            Assert.AreEqual(0, context.Messages.Count);
-            Assert.IsTrue(MetaDataShareDirective.FoundInAfterCompletion);
-        }
-
-        [Test]
         public async Task WhenNoLeafValuesAreRequested_ItemIsReturnedAsNullAndPropegated()
         {
             var server = new TestServerBuilder()
-                        .AddType<SimpleExecutionController>()
+                        .AddType<UnionController>()
                         .Build();
 
             var builder = server.CreateQueryContextBuilder();
-            builder.AddQueryText("query Operation1{  simple {  simpleQueryMethod  } }");
+
+            // retrieveUnion only returns TwoPropertyObject
+            // since the declaration does not declare what to do with the value
+            // it should be dropped
+            builder.AddQueryText(@"query Operation1
+            {
+                    retrieveUnion {
+                        ... on TwoPropertyObjectV2 {
+                             property1
+                        }
+                    }
+            }");
             builder.AddOperationName("Operation1");
 
             var result = await server.RenderResult(builder);
@@ -220,7 +191,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 .Build();
 
             var builder = server.CreateQueryContextBuilder()
-                    .AddQueryText("query {  simple {  throwFromController } }");
+                    .AddQueryText("query {  simple {  throwFromController { itemProperty } } }");
 
             // the controller method returns an object with a single mapped method "ExecuteThrow" that throws an exception
             // this is executed through the graphmethod resolver (not the controller action resolver) allowing an internal
@@ -256,50 +227,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(Constants.ErrorCodes.UNHANDLED_EXCEPTION, result.Messages[0].Code);
             Assert.IsNotNull(result.Messages[0].Exception);
             Assert.AreEqual("Failure from ObjectWithThrowMethod", result.Messages[0].Exception.Message);
-        }
-
-        [TestCase(true, "{ \"data\" : { \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\" } } } }")]
-        [TestCase(false, "{ \"data\" : { \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\", \"property2\": 5 } } } }")]
-        public async Task SkipDirective_ResponseAppropriately(bool skipValue, string expectedJson)
-        {
-            var server = new TestServerBuilder()
-            .AddType<SimpleExecutionController>()
-                .AddType<SkipDirective>()
-                .Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 @skip(if: " +
-                    skipValue.ToString().ToLower() +
-                    ") } } }")
-                .AddOperationName("Operation1");
-
-            var result = await server.RenderResult(builder);
-            CommonAssertions.AreEqualJsonStrings(
-                expectedJson,
-                result);
-        }
-
-        [TestCase(true, "{ \"data\" :{ \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\", \"property2\": 5 } } } }")]
-        [TestCase(false, "{ \"data\" :{ \"simple\": {\"simpleQueryMethod\" : { \"property1\" : \"default string\" } } } }")]
-        public async Task IncludeDirective_ResponseAppropriately(bool includeValue, string expectedJson)
-        {
-            var server = new TestServerBuilder()
-             .AddType<SimpleExecutionController>()
-                 .AddType<IncludeDirective>()
-                 .Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText(
-                    "query Operation1{  simple {  simpleQueryMethod { property1, property2 @include(if: " +
-                    includeValue.ToString().ToLower() +
-                    ") } } }")
-                .AddOperationName("Operation1");
-
-            var result = await server.RenderResult(builder);
-            CommonAssertions.AreEqualJsonStrings(
-                expectedJson,
-                result);
         }
 
         [Test]
@@ -621,6 +548,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // parentObj has a property called  'child' that is passed as null on the query
             // but is required the query should fail
+            // breaks rule 5.6.1
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
                 "      objectWithNonNullChild ( parentObj: {property1: \"prop1\", child : null } ) { " +

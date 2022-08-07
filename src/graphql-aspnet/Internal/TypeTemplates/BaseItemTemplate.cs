@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public virtual string Name => this.Route?.Name;
 
         /// <inheritdoc />
-        public GraphFieldPath Route { get; protected set; }
+        public SchemaItemPath Route { get; protected set; }
 
         /// <inheritdoc />
         public abstract string InternalFullName { get; }

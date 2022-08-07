@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
 {
     using System;
     using System.IO;
+    using System.Reflection;
     using System.Threading.Tasks;
     using BenchmarkDotNet.Attributes;
     using GraphQL.AspNet.Benchmarks.Model;
@@ -34,6 +35,8 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     {
         private IServiceProvider _serviceProvider;
 
+        private string _introspectionQuery;
+
         /// <summary>
         /// Initializes the graphql environment/schema to be benchmarked.
         /// </summary>
@@ -49,11 +52,11 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
             // schema setup
             Action<SchemaOptions> configureOptions = (SchemaOptions options) =>
             {
-                options.AddGraphType<Artist>();
-                options.AddGraphType<MusicGenre>();
-                options.AddGraphType<Record>();
-                options.AddGraphType<RecordCompany>();
-                options.AddGraphType<MusicController>();
+                options.AddController<MusicController>();
+                options.AddType<Artist>();
+                options.AddType<MusicGenre>();
+                options.AddType<Record>();
+                options.AddType<RecordCompany>();
             };
 
             var schemaOptions = new SchemaOptions<GraphSchema>(serviceCollection);
@@ -62,6 +65,22 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
             injector.UseSchema(_serviceProvider);
+
+            _introspectionQuery =  this.LoadResourceTexts("GraphQL.AspNet.Benchmarks.QueryText.introspectionQuery.graphql");
+        }
+
+        private string LoadResourceTexts(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+
+            var resourceText = string.Empty;
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                resourceText = reader.ReadToEnd();
+            }
+
+            return resourceText;
         }
 
         /// <summary>
@@ -179,6 +198,19 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                         }
                     }
                 }");
+        }
+
+
+
+        /// <summary>
+        /// Represents a standard introspection query usually submitted by
+        /// graphql tooling like GraphQL Playground or Graphiql.
+        /// </summary>
+        /// <returns>Task.</returns>
+        [Benchmark]
+        public Task IntrospectionQuery()
+        {
+            return ExecuteQuery(_introspectionQuery);
         }
     }
 }

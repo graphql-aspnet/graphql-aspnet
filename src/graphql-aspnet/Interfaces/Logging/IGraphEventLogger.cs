@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -70,7 +71,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// against an <see cref="IUserSecurityContext"/> to produce a <see cref="ClaimsPrincipal"/>.
         /// </summary>
         /// <param name="context">The field security context that contains the request to be authenticated.</param>
-        void FieldAuthenticationChallenge(GraphFieldSecurityContext context);
+        void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityContext context);
 
         /// <summary>
         /// Recorded when the security middleware completes an authentication challenge
@@ -78,21 +79,21 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="context">The field security context that contains the request to be authenticated.</param>
         /// <param name="authResult">The authentication result that was created.</param>
-        void FieldAuthenticationChallengeResult(GraphFieldSecurityContext context, IAuthenticationResult authResult);
+        void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityContext context, IAuthenticationResult authResult);
 
         /// <summary>
         /// Recorded when the security middleware invokes an authorization challenge
         /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
         /// </summary>
         /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
-        void FieldAuthorizationChallenge(GraphFieldSecurityContext context);
+        void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityContext context);
 
         /// <summary>
         /// Recorded when the security middleware completes an authorization challenge
         /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
         /// </summary>
         /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
-        void FieldAuthorizationChallengeResult(GraphFieldSecurityContext context);
+        void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityContext context);
 
         /// <summary>
         /// Recorded when an executor attempts, and succeeds, to retrieve a query plan from its local cache.
@@ -189,6 +190,16 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// <param name="appliedDirective">The directive that has been applied.</param>
         /// <param name="appliedTo">The schema item the directive was applied to.</param>
         void TypeSystemDirectiveApplied<TSchema>(IDirective appliedDirective, ISchemaItem appliedTo)
+            where TSchema : class, ISchema;
+
+        /// <summary>
+        /// Recorded whem, during a query execution, an execution directive is successfully applied
+        /// to its target documnet part.
+        /// </summary>
+        /// <typeparam name="TSchema">The type of the schema the under which the directive was applied.</typeparam>
+        /// <param name="appliedDirective">The applied directive.</param>
+        /// <param name="appliedTo">The part of the query document the directive was applied to.</param>
+        void ExecutionDirectiveApplied<TSchema>(IDirective appliedDirective, IDocumentPart appliedTo)
             where TSchema : class, ISchema;
     }
 }

@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     public class ForceExceptionForProperty1Middlware : IGraphFieldExecutionMiddleware
     {

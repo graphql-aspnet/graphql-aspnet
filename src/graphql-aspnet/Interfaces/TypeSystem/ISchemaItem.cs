@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// in the object graph.
         /// </summary>
         /// <value>The route.</value>
-        GraphFieldPath Route { get; }
+        SchemaItemPath Route { get; }
 
         /// <summary>
         /// Gets a collection of directives applied to this schema item

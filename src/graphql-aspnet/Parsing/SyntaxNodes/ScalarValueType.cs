@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
 
     /// <summary>
     /// An enumeration for defining what type of scalar is being represented
-    /// spec: https://graphql.github.io/graphql-spec/June2018/#sec-Scalars.
+    /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-Scalars.
     /// </summary>
     [Flags]
     public enum ScalarValueType

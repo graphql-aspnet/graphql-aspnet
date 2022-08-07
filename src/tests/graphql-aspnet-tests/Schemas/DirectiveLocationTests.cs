@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using NUnit.Framework;
 
@@ -19,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void Labels_AreUniqueValues()
         {
-            var allValues = Enum.GetValues<DirectiveLocation>();
+            var allValues = Enum.GetValues(typeof(DirectiveLocation)).Cast<DirectiveLocation>().ToList();
             var seenValues = new HashSet<long>();
 
             foreach (DirectiveLocation location in allValues)

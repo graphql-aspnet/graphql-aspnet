@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A template interface representing an enumeration graph type.

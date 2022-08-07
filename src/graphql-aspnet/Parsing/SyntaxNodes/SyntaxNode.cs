@@ -86,5 +86,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         /// </summary>
         /// <value>The location.</value>
         public SourceLocation Location { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return "Unknown";
+        }
     }
 }

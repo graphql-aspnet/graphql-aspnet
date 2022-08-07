@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -212,8 +211,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             // validate each type in the list for "correctness"
             // Possible Types must conform to the rules of those required by sub type declarations of unions and interfaces
-            // interfaces: https://graphql.github.io/graphql-spec/June2018/#sec-Interfaces
-            // unions: https://graphql.github.io/graphql-spec/June2018/#sec-Unions
+            // interfaces: https://graphql.github.io/graphql-spec/October2021/#sec-Interfaces
+            // unions: https://graphql.github.io/graphql-spec/October2021/#sec-Unions
             foreach (var type in this.PossibleTypes)
             {
                 if (enforceUnionRules)
@@ -295,7 +294,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
-        protected abstract GraphFieldPath GenerateFieldPath();
+        protected abstract SchemaItemPath GenerateFieldPath();
 
         /// <summary>
         /// Type extensions used as batch methods required a speceial input and output signature for the runtime

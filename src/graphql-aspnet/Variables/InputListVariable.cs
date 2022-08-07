@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Variables
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
@@ -41,16 +42,19 @@ namespace GraphQL.AspNet.Variables
             _items.Add(variable);
         }
 
-        /// <summary>
-        /// Gets the collection of items contained in this list variable.
-        /// </summary>
-        /// <value>The items.</value>
-        public IReadOnlyList<IInputVariable> Items => _items;
+        /// <inheritdoc />
+        public IEnumerator<IResolvableKeyedItem> GetEnumerator()
+        {
+            return _items.GetEnumerator();
+        }
 
-        /// <summary>
-        /// Gets the list of other resolvable items contained in this list.
-        /// </summary>
-        /// <value>The list items.</value>
-        public IEnumerable<IResolvableItem> ListItems => this.Items;
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        public IReadOnlyList<IInputVariable> Items => _items;
     }
 }

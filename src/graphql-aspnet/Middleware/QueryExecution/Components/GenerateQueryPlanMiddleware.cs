@@ -9,13 +9,20 @@
 
 namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -25,32 +32,38 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class GenerateQueryPlanMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
+        private readonly TSchema _schema;
+        private readonly IGraphQueryDocumentGenerator<TSchema> _documentGenerator;
         private readonly IGraphQueryPlanGenerator<TSchema> _planGenerator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenerateQueryPlanMiddleware{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="GenerateQueryPlanMiddleware{TSchema}" /> class.
         /// </summary>
+        /// <param name="schema">The target schema.</param>
+        /// <param name="documentGenerator">The document generator used to validate
+        /// document instances.</param>
         /// <param name="planGenerator">The plan generator.</param>
-        public GenerateQueryPlanMiddleware(IGraphQueryPlanGenerator<TSchema> planGenerator)
+        public GenerateQueryPlanMiddleware(
+            TSchema schema,
+            IGraphQueryDocumentGenerator<TSchema> documentGenerator,
+            IGraphQueryPlanGenerator<TSchema> planGenerator)
         {
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _documentGenerator = Validation.ThrowIfNullOrReturn(documentGenerator, nameof(documentGenerator));
             _planGenerator = Validation.ThrowIfNullOrReturn(planGenerator, nameof(planGenerator));
         }
 
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context.IsValid && context.QueryPlan == null && context.SyntaxTree != null)
+            if (context.IsValid && context.QueryPlan == null && context.Operation != null)
             {
-                context.Metrics?.StartPhase(ApolloExecutionPhase.VALIDATION);
-                context.QueryPlan = await _planGenerator.CreatePlan(context.SyntaxTree).ConfigureAwait(false);
+                context.QueryPlan = await _planGenerator
+                    .CreatePlan(context.Operation)
+                    .ConfigureAwait(false);
+
+                context.QueryPlan.IsCacheable = context.Operation.AllDirectives.Count == 0;
                 context.Messages.AddRange(context.QueryPlan.Messages);
-                context.Metrics?.EndPhase(ApolloExecutionPhase.VALIDATION);
 
                 if (context.QueryPlan.IsValid)
                     context.Logger?.QueryPlanGenerated(context.QueryPlan);

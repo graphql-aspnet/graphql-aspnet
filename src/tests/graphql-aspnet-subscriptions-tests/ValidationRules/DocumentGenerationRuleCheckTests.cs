@@ -11,6 +11,8 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
 {
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.PlanGeneration.Contexts;
+    using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData;
@@ -61,6 +63,11 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
 
             // parse the query
             var document = server.CreateDocument(queryText);
+
+            // execute the document validation
+            var validationContext = new DocumentValidationContext(server.Schema, document);
+            var processor = new DocumentValidationRuleProcessor();
+            processor.Execute(validationContext);
 
             // inspect for error codes
             if (document.Messages.Count != 1)

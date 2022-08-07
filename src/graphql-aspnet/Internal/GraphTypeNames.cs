@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Internal
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;

@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         /// <returns><c>true</c> if this instance can have the node as a child; otherwise, <c>false</c>.</returns>
         protected override bool CanHaveChild(SyntaxNode childNode)
         {
-            return childNode is InputValueNode;
+            return childNode is InputValueNode || childNode is DirectiveNode;
         }
 
         /// <summary>
@@ -58,5 +58,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         /// </summary>
         /// <value>The type of the variable.</value>
         public ReadOnlyMemory<char> TypeExpression { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"V-{this.Name}";
+        }
     }
 }

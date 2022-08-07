@@ -34,10 +34,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         bool IsCancelled { get; }
 
         /// <summary>
-        /// Gets the original operation request that caused the pipeline to be invoked.
+        /// Gets the original data request that caused the pipeline to be invoked, typically
+        /// generated from an HTTP request.
         /// </summary>
-        /// <value>The operation request.</value>
-        IGraphOperationRequest OperationRequest { get; }
+        /// <value>The top level request.</value>
+        IGraphOperationRequest ParentRequest { get; }
 
         /// <summary>
         /// Gets the service provider to use for any required object instantiations.

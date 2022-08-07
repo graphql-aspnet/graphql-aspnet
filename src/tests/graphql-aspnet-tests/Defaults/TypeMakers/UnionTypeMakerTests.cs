@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var appliedDirective = unionType.AppliedDirectives.FirstOrDefault();
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 121, "union directive" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 121, "union directive" }, appliedDirective.ArgumentValues);
         }
 
         [Test]

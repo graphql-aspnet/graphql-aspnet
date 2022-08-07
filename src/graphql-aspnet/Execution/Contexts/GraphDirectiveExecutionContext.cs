@@ -20,8 +20,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Middleware;
-    using GraphQL.AspNet.ValidationRules.Interfaces;
+    using GraphQL.AspNet.RulesEngine.Interfaces;
     using GraphQL.AspNet.Variables;
 
     /// <summary>
@@ -38,7 +37,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// this context.</param>
         /// <param name="request">The directive request to be completed.</param>
         /// <param name="variableData">A set of variable, parsed from a query document that may be used during processing.</param>
-        /// <param name="user">The user that is in scope, if any, while the directive is being executed.</param>
+        /// <param name="user">The user that has been preauthorized for this execution.</param>
         public GraphDirectiveExecutionContext(
             ISchema schema,
             IGraphExecutionContext parentContext,
@@ -65,8 +64,10 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="metrics">The metrics package to write timing data to.</param>
         /// <param name="logger">The logger to which any event log entries will be written.</param>
         /// <param name="variableData">A set of variable, parsed from a query document that may be used during processing.</param>
-        /// <param name="user">The user that is in scope, if any, while the directive is being executed.</param>
+        /// <param name="userSecurityContext">The user security context from which this directive will
+        /// be authorized.</param>
         /// <param name="items">A collection of user defined items.</param>
+        /// <param name="user">The user that has been preauthorized for this execution.</param>
         public GraphDirectiveExecutionContext(
             ISchema schema,
             IServiceProvider serviceProvider,
@@ -75,12 +76,13 @@ namespace GraphQL.AspNet.Execution.Contexts
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             IResolvedVariableCollection variableData = null,
-            ClaimsPrincipal user = null,
-            MetaDataCollection items = null)
+            IUserSecurityContext userSecurityContext = null,
+            MetaDataCollection items = null,
+            ClaimsPrincipal user = null)
             : base(
                   parentOperationRequest,
                   serviceProvider,
-                  null as IUserSecurityContext,
+                  userSecurityContext,
                   metrics,
                   logger,
                   items)
@@ -123,10 +125,10 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IResolvedVariableCollection VariableData { get; }
 
         /// <summary>
-        /// Gets the user currently in scope for the request. May be null
-        /// during type system construction.
+        /// Gets or sets the user data authenticated and authorized on this directive
+        /// execution.
         /// </summary>
         /// <value>The user.</value>
-        public ClaimsPrincipal User { get; }
+        public ClaimsPrincipal User { get; set; }
     }
 }

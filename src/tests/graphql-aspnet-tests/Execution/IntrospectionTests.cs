@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Introspection.Model;
@@ -1093,7 +1092,7 @@ namespace GraphQL.AspNet.Tests.Execution
                             {
                                __type(name : ""SodaTypes"")
                               {
-                                 name kind possibleTypes { name kind } fields
+                                 name kind possibleTypes { name kind }
                               }
                             }");
 
@@ -1114,8 +1113,7 @@ namespace GraphQL.AspNet.Tests.Execution
                                             ""name"": ""SodaTypeB"",
                                             ""kind"": ""OBJECT""
                                         }
-                                    ],
-                                    ""fields"" : null
+                                    ]
                                 }
                            }
                        } ";

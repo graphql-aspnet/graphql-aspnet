@@ -46,6 +46,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var context = server.CreateHttpContext(
                 new GraphQueryData()
                 {
+                    // use a directive to force the directive pipeline to create
                     Query = "{ field1 }",
                     OperationName = null,
                 });
@@ -54,6 +55,8 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var startupEvents = new Dictionary<EventId, int>();
             startupEvents.Add(LogEventIds.SchemaInstanceCreated, 1);
+
+            // Entries: query, field execution, field authorization, directive
             startupEvents.Add(LogEventIds.SchemaPipelineInstanceCreated, 4);
 
             // can't test schema route regstered due to
@@ -65,10 +68,10 @@ namespace GraphQL.AspNet.Tests.Logging
             requestEvents.Add(LogEventIds.QueryCacheAdd);
             requestEvents.Add(LogEventIds.QueryPlanGenerationCompleted);
             requestEvents.Add(LogEventIds.FieldResolutionStarted);
-            requestEvents.Add(LogEventIds.FieldAuthenticationStarted);
-            requestEvents.Add(LogEventIds.FieldAuthenticationCompleted);
-            requestEvents.Add(LogEventIds.FieldAuthorizationStarted);
-            requestEvents.Add(LogEventIds.FieldAuthorizationCompleted);
+            requestEvents.Add(LogEventIds.SchemaItemAuthenticationStarted);
+            requestEvents.Add(LogEventIds.SchemaItemAuthenticationCompleted);
+            requestEvents.Add(LogEventIds.SchemaItemAuthorizationStarted);
+            requestEvents.Add(LogEventIds.SchemaItemAuthorizationCompleted);
             requestEvents.Add(LogEventIds.FieldResolutionCompleted);
             requestEvents.Add(LogEventIds.ControllerInvocationStarted);
             requestEvents.Add(LogEventIds.ControllerModelValidated);

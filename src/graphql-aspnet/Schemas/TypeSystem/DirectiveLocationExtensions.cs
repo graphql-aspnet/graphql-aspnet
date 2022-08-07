@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
@@ -88,16 +87,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 case FragmentSpreadNode _:
                     return DirectiveLocation.FRAGMENT_SPREAD;
 
-                case FragmentNode _:
+                case InlineFragmentNode _:
                     return DirectiveLocation.INLINE_FRAGMENT;
 
                 case FieldNode _:
                     return DirectiveLocation.FIELD;
 
-                case InputItemNode _:
-                    return DirectiveLocation.INPUT_OBJECT;
+                case VariableNode _:
+                    return DirectiveLocation.VARIABLE_DEFINITION;
 
-                case OperationTypeNode otn:
+                case OperationNode otn:
                     var operationType = Constants.ReservedNames.FindOperationTypeByKeyword(otn.OperationType.ToString());
                     switch (operationType)
                     {

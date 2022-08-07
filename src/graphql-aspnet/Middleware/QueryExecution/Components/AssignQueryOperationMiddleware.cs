@@ -15,27 +15,36 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Middleware;
 
     /// <summary>
-    /// Attempts to extract a valid query operation from the query plan on the context.
+    /// Attempts to select the single operation from the parsed query document
+    /// to execute.
     /// </summary>
     internal class AssignQueryOperationMiddleware : IQueryExecutionMiddleware
     {
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
-            if (context.IsValid && context.QueryPlan != null && context.QueryPlan.IsValid)
+            if (context.IsValid && context.QueryPlan == null && context.QueryDocument != null)
             {
-                context.QueryOperation = context.QueryPlan.RetrieveOperation(context.OperationRequest.OperationName);
-                if (context.QueryOperation == null)
+                if (context.QueryDocument.Operations.Count == 1)
                 {
-                    context.Messages.Critical(
-                        $"No operation found with the name '{context.OperationRequest.OperationName}'.",
-                        Constants.ErrorCodes.BAD_REQUEST);
+                    context.Operation = context.QueryDocument.Operations[0];
+                }
+                else
+                {
+                    var operationToExecute = context.ParentRequest.OperationName?.Trim() ?? string.Empty;
+                    var operation = context.QueryDocument.Operations.RetrieveOperation(operationToExecute);
+                    context.Operation = operation;
+                    if (context.Operation == null)
+                    {
+                        if (string.IsNullOrWhiteSpace(operationToExecute))
+                            operationToExecute = "~anonymous~";
+
+                        context.Messages.Critical(
+                            $"Undeclared operation. An operation with the name '{operationToExecute}' was not " +
+                            "found on the query document.",
+                            Constants.ErrorCodes.BAD_REQUEST,
+                            context.QueryDocument.Node.Location.AsOrigin());
+                    }
                 }
             }
 

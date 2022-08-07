@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Internal
         /// <summary>
         /// Helper method to ensure that parsing of name segment, within a template, is handled
         /// appropriately.
-        /// Spec: https://graphql.github.io/graphql-spec/June2018/#sec-Names .
+        /// Spec: https://graphql.github.io/graphql-spec/October2021/#sec-Names .
         /// </summary>
         /// <param name="nameToTest">The potential graph name to test.</param>
         /// <returns><c>true</c> if the supplied name represents a valid graph name; otherwise, <c>false</c>.</returns>

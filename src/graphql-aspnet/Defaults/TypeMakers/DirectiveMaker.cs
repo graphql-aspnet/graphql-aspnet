@@ -10,10 +10,12 @@
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A "maker" capable of producing a qualified <see cref="IDirective"/> from its related <see cref="IGraphDirectiveTemplate"/>.
@@ -44,16 +46,21 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             if (template == null)
                 return null;
 
+            var securityGroups = new List<AppliedSecurityPolicyGroup>();
+
+            if (template.SecurityPolicies?.Count > 0)
+                securityGroups.Add(template.SecurityPolicies);
+
             var result = new GraphTypeCreationResult();
 
             var directive = new Directive(
                 formatter.FormatFieldName(template.Name),
                 template.Locations,
-                template.InvocationPhases,
                 template.ObjectType,
                 template.Route,
                 template.IsRepeatable,
-                template.CreateResolver())
+                template.CreateResolver(),
+                securityGroups)
             {
                 Description = template.Description,
                 Publish = template.Publish,

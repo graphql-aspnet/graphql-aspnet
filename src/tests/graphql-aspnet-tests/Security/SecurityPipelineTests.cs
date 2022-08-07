@@ -18,31 +18,31 @@ namespace GraphQL.AspNet.Tests.Security
     [TestFixture]
     public class SecurityPipelineTests
     {
-        private static void AssertAuthorizationFails(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationFails(SchemaItemSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Failed, result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Failed, result.Status);
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private static void AssertAuthorizationIsUnAuthorized(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationIsUnAuthorized(SchemaItemSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Unauthorized, result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Unauthorized, result.Status);
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private static void AssertAuthorizationSuccess(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationSuccess(SchemaItemSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Authorized, result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Authorized, result.Status);
             Assert.IsTrue(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 
-        private static void AssertAuthorizationSkipped(FieldSecurityChallengeResult result)
+        private static void AssertAuthorizationSkipped(SchemaItemSecurityChallengeResult result)
         {
             Assert.IsNotNull(result);
-            Assert.AreEqual(FieldSecurityChallengeStatus.Skipped, result.Status);
+            Assert.AreEqual(SchemaItemSecurityChallengeStatus.Skipped, result.Status);
             Assert.IsTrue(string.IsNullOrWhiteSpace(result.LogMessage));
         }
 

@@ -25,13 +25,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     public class AuthorizeFieldMiddleware<TSchema> : IGraphFieldExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipeline<TSchema, GraphFieldSecurityContext> _authPipeline;
+        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> _authPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeFieldMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="authPipeline">The authentication pipeline.</param>
-        public AuthorizeFieldMiddleware(ISchemaPipeline<TSchema, GraphFieldSecurityContext> authPipeline)
+        public AuthorizeFieldMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> authPipeline)
         {
             _authPipeline = Validation.ThrowIfNullOrReturn(authPipeline, nameof(authPipeline));
         }
@@ -46,15 +46,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <returns>Task.</returns>
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken)
         {
-            FieldSecurityChallengeResult result = FieldSecurityChallengeResult.Default();
+            SchemaItemSecurityChallengeResult result = SchemaItemSecurityChallengeResult.Default();
             if (context.IsValid)
             {
                 // execute the authorization pipeline
-                var authRequest = new GraphFieldSecurityRequest(context.Request);
-                var authContext = new GraphFieldSecurityContext(context, authRequest);
+                var authRequest = new GraphSchemaItemSecurityRequest(context.Request);
+                var authContext = new GraphSchemaItemSecurityContext(context, authRequest);
                 await _authPipeline.InvokeAsync(authContext, cancelToken).ConfigureAwait(false);
 
-                result = authContext.Result ?? FieldSecurityChallengeResult.Default();
+                result = authContext.Result ?? SchemaItemSecurityChallengeResult.Default();
 
                 // by default, deny any stati not explicitly declared as "successful" by this component.
                 if (result.Status.IsAuthorized())

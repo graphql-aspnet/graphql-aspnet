@@ -10,20 +10,21 @@ namespace GraphQL.AspNet.Configuration
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A representation of a type that needs to be registered to a schema when its
     /// initialied by the runtime.
     /// </summary>
+    [DebuggerDisplay("Type: {Type.Name}")]
     public class SchemaTypeToRegister
     {
         /// <summary>
         /// Gets a comparer that can properly compare two <see cref="SchemaTypeToRegister"/> objects.
         /// </summary>
         /// <value>The default comparer.</value>
-        public static IEqualityComparer<SchemaTypeToRegister> DefaultComparer { get; } = new TypeToRegisterComparer();
+        public static IEqualityComparer<SchemaTypeToRegister> DefaultEqualityComparer { get; } = new TypeToRegisterComparer();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaTypeToRegister"/> class.
@@ -59,7 +60,7 @@ namespace GraphQL.AspNet.Configuration
             /// <inheritdoc />
             public int GetHashCode(SchemaTypeToRegister obj)
             {
-                return obj.GetHashCode();
+                return obj.Type.GetHashCode();
             }
         }
     }

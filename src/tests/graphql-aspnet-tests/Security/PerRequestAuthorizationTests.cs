@@ -58,15 +58,12 @@ namespace GraphQL.AspNet.Tests.Security
             {
               ""errors"": [
                 {
-                  ""message"": ""Access Denied to field [query]/secured"",
+                  ""message"": ""Access Denied to [query]/secured"",
                   ""locations"": [
                     {
                       ""line"": 7,
                       ""column"": 25
                     }
-                  ],
-                  ""path"": [
-                    ""secured""
                   ],
                   ""extensions"": {
                     ""code"": ""ACCESS_DENIED"",
@@ -74,16 +71,13 @@ namespace GraphQL.AspNet.Tests.Security
                     ""severity"": ""CRITICAL""
                   }
                 },
-{
-                  ""message"": ""Access Denied to field [query]/policySecured"",
+                {
+                  ""message"": ""Access Denied to [query]/policySecured"",
                   ""locations"": [
                     {
                       ""line"": 11,
                       ""column"": 25
                     }
-                  ],
-                  ""path"": [
-                    ""policySecured""
                   ],
                   ""extensions"": {
                     ""code"": ""ACCESS_DENIED"",
@@ -93,6 +87,7 @@ namespace GraphQL.AspNet.Tests.Security
                 }
               ]
             }";
+
             expectedResults = expectedResults.Replace("[TIME_STAMP]", now.ToRfc3339String());
 
             CommonAssertions.AreEqualJsonStrings(expectedResults, result);
@@ -175,6 +170,45 @@ namespace GraphQL.AspNet.Tests.Security
             var result = await server.ExecuteQuery(builder);
             Assert.IsNull(result.Data);
             Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("access denied"));
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[query]/secured"));
+            Assert.AreEqual(0, PerRequestCounterController.NumberOfInvocations);
+            PerRequestCounterController.NumberOfInvocations = 0;
+        }
+
+        [Test]
+        public async Task WhenDirectiveNotAuthorized_NoFieldsAreInvoked()
+        {
+            PerRequestCounterController.NumberOfInvocations = 0;
+
+            var serverBuilder = new TestServerBuilder()
+                .AddGraphController<PerRequestCounterController>()
+                .AddDirective<SecuredDataDirective>()
+                .AddGraphQL(options =>
+                {
+                    options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;
+                });
+
+            // should produce 1 error (access to "secured")
+            // should produce no data
+            // should not have incremented the static property on the controller
+            var server = serverBuilder.Build();
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"
+                    query {
+                        unsecured {
+                            property1 @securedData
+                            property2
+                        }
+                    }");
+
+            var result = await server.ExecuteQuery(builder);
+            Assert.IsNull(result.Data);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.ACCESS_DENIED, result.Messages[0].Code);
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("access denied"));
+            Assert.IsTrue(result.Messages[0].Message.ToLowerInvariant().Contains("[directive]/secureddata"));
             Assert.AreEqual(0, PerRequestCounterController.NumberOfInvocations);
             PerRequestCounterController.NumberOfInvocations = 0;
         }

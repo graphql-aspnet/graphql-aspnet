@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.DirectiveExecution.Components;
+    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// A wrapper for a schema pipeline builder to easily add the default middleware componentry for
@@ -43,7 +44,15 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
         public DirectiveExecutionPipelineHelper<TSchema> AddDefaultMiddlewareComponents(SchemaOptions options = null)
         {
             this.AddValidateContextMiddleware();
-            this.AddResolverDirectiveMiddleware();
+
+            var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
+            if (authOption == AuthorizationMethod.PerField)
+            {
+                this.AddAuthorizationMiddleware();
+            }
+
+            this.AddResolverMiddleware()
+                .AddLoggingMiddleware();
 
             return this;
         }
@@ -52,7 +61,7 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
         /// Adds the middleware component to resolve the field context by invoking the assigned field resolver.
         /// </summary>
         /// <returns>DirectiveExecutionPipelineHelper.</returns>
-        public DirectiveExecutionPipelineHelper<TSchema> AddResolverDirectiveMiddleware()
+        public DirectiveExecutionPipelineHelper<TSchema> AddResolverMiddleware()
         {
             _pipelineBuilder.AddMiddleware<InvokeDirectiveResolverMiddleware<TSchema>>();
             return this;
@@ -65,6 +74,27 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution
         public DirectiveExecutionPipelineHelper<TSchema> AddValidateContextMiddleware()
         {
             _pipelineBuilder.AddMiddleware<ValidateDirectiveExecutionMiddleware<TSchema>>();
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the middleware component to authorize the user on the context to the directive being processed.
+        /// </summary>
+        /// <returns>FieldExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        public DirectiveExecutionPipelineHelper<TSchema> AddAuthorizationMiddleware()
+        {
+            _pipelineBuilder.AddMiddleware<AuthorizeDirectiveMiddleware<TSchema>>();
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the middleware component used to log the successful completion of
+        /// appling a directive to a target.
+        /// </summary>
+        /// <returns>DirectiveExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        public DirectiveExecutionPipelineHelper<TSchema> AddLoggingMiddleware()
+        {
+            _pipelineBuilder.AddMiddleware<LogDirectiveExecutionMiddleware<TSchema>>();
             return this;
         }
     }

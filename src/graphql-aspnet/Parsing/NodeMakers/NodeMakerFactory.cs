@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         static NodeMakerFactory()
         {
-            MAKERS.Add(typeof(OperationTypeNode), OperationTypeNodeMaker.Instance);
+            MAKERS.Add(typeof(OperationNode), OperationNodeMaker.Instance);
             MAKERS.Add(typeof(NamedFragmentNode), NamedFragmentNodeMaker.Instance);
             MAKERS.Add(typeof(VariableNode), VariableNodeMaker.Instance);
             MAKERS.Add(typeof(VariableCollectionNode), VariableCollectionNodeMaker.Instance);

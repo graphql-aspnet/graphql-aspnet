@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Execution.Exceptions
 {
     using System;
+    using GraphQL.AspNet.Common.Extensions;
 
     /// <summary>
     /// An exception thrown when an input value is not valid for its target graph type.
@@ -32,14 +33,16 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// Initializes a new instance of the <see cref="UnresolvedValueException" /> class.
         /// </summary>
         /// <param name="value">The value to pass along with the exception.</param>
+        /// <param name="targetType">The target type the value was being resolved to.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference. If supplied this
         /// exception will be attached to a graphql error message and only supplied if the schema exposes exceptions.</param>
-        public UnresolvedValueException(ReadOnlySpan<char> value, Exception innerException = null)
+        public UnresolvedValueException(ReadOnlySpan<char> value, Type targetType, Exception innerException = null)
              : this(
                    value.ToString(),
-                   $"The value '{value.ToString()}' cannot be resolved for the target graph type.",
+                   $"The value '{value.ToString()}' cannot be coerced or resolved for the target location (System Type: {targetType?.FriendlyName() ?? "unknown"}).",
                    innerException)
         {
+            this.TargetType = targetType;
         }
 
         /// <summary>
@@ -75,5 +78,11 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// </summary>
         /// <value>The value.</value>
         public string Value { get; }
+
+        /// <summary>
+        /// Gets the .NET type the <see cref="Value"/> was attempting to be resolved to.
+        /// </summary>
+        /// <value>The type of the target.</value>
+        public Type TargetType { get; }
     }
 }

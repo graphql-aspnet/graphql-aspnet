@@ -9,13 +9,12 @@
 namespace GraphQL.AspNet.Directives
 {
     using System;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// An enumeration depicting the times when a directive might be invoked
-    /// at runtime.
+    /// An enumeration depicting when a directive might be invoked against a target item.
     /// </summary>
-    [Flags]
     public enum DirectiveInvocationPhase
     {
         /// <summary>
@@ -27,25 +26,12 @@ namespace GraphQL.AspNet.Directives
         /// The directive is being invoked as part of the generation of a schema allowing
         /// the inspection and alteration of various generated <see cref="ISchemaItem"/> objects.
         /// </summary>
-        SchemaGeneration = 1 << 0,
+        SchemaGeneration = 1,
 
         /// <summary>
-        /// The directive is being invoked during the execution of query document
-        /// as part of a field resolution operation. This invocation is BEFORE the
-        /// field of data is resolved.
+        /// The directive is being invoked during the execution of query document allowing
+        /// the inspection and alteration of various <see cref="IDocumentPart"/> objects.
         /// </summary>
-        BeforeFieldResolution = 1 << 1,
-
-        /// <summary>
-        /// The directive is being invoked during the execution of query document
-        /// as part of a field resolution operation. This invocation is AFTER the
-        /// field of data is resolved.
-        /// </summary>
-        AfterFieldResolution = 1 << 2,
-
-        /// <summary>
-        /// The directive phases applied to all directives by default unless changed.
-        /// </summary>
-        DefaultPhases = SchemaGeneration | AfterFieldResolution,
+        QueryDocumentExecution = 2,
     }
 }

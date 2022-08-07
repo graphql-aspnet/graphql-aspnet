@@ -15,15 +15,15 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.QueryInputValues;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
 
     /// <summary>
-    /// An object capable of taking a <see cref="QueryInputValue"/> from a document and converting it into a
+    /// An object capable of taking a <see cref="DocumentSuppliedValue"/> from a document and converting it into a
     /// core .NET type that represents the value within the target schema.
     /// </summary>
     public class ArgumentGenerator
     {
-        private readonly IQueryInputArgumentCollection _suppliedArguments;
+        private readonly IInputArgumentCollectionDocumentPart _suppliedArguments;
         private readonly InputResolverMethodGenerator _inputResolverGenerator;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// <param name="schema">The schema.</param>
         /// <param name="suppliedArguments">A collection of arguments passed on a user's query
         /// to be used first in the chain of object resolution for any created arguments.</param>
-        public ArgumentGenerator(ISchema schema, IQueryInputArgumentCollection suppliedArguments)
+        public ArgumentGenerator(ISchema schema, IInputArgumentCollectionDocumentPart suppliedArguments)
         {
             _suppliedArguments = Validation.ThrowIfNullOrReturn(suppliedArguments, nameof(suppliedArguments));
             Validation.ThrowIfNull(schema, nameof(schema));
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
             }
 
             var coreValue = _suppliedArguments[argument.Name].Value;
-            var resolver = _inputResolverGenerator.CreateResolver(coreValue.OwnerArgument.TypeExpression);
+            var resolver = _inputResolverGenerator.CreateResolver(argument.TypeExpression);
 
             if (this.ShouldDeferResolution(coreValue))
                 return new ArgumentGenerationResult(new DeferredInputArgumentValue(coreValue, resolver));
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
             try
             {
                 var data = resolver.Resolve(coreValue);
-                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(coreValue.OwnerArgument.Name, data));
+                return new ArgumentGenerationResult(new ResolvedInputArgumentValue(argument.Name, data));
             }
             catch (UnresolvedValueException svce)
             {
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
                    GraphMessageSeverity.Critical,
                    svce.Message,
                    Constants.ErrorCodes.INVALID_ARGUMENT,
-                   coreValue.OwnerArgument.Value.ValueNode.Location.AsOrigin(),
+                   coreValue.Parent.Node.Location.AsOrigin(),
                    exception: svce.InnerException);
 
                 return new ArgumentGenerationResult(message);
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
                     GraphMessageSeverity.Critical,
                     "Invalid argument value.",
                     Constants.ErrorCodes.INVALID_ARGUMENT,
-                    coreValue.OwnerArgument.Value.ValueNode.Location.AsOrigin(),
+                    coreValue.Parent.Node.Location.AsOrigin(),
                     ex);
 
                 return new ArgumentGenerationResult(message);
@@ -95,14 +95,14 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if execution should be deferred, <c>false</c> otherwise.</returns>
-        private bool ShouldDeferResolution(QueryInputValue value)
+        private bool ShouldDeferResolution(ISuppliedValueDocumentPart value)
         {
             switch (value)
             {
-                case QueryVariableReferenceInputValue _:
+                case IVariableUsageDocumentPart _:
                     return true;
 
-                case QueryListInputValue liv:
+                case IListSuppliedValueDocumentPart liv:
                     foreach (var child in liv.ListItems)
                     {
                         if (this.ShouldDeferResolution(child))
@@ -111,10 +111,10 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
 
                     break;
 
-                case QueryComplexInputValue civ:
-                    foreach (var argument in civ.Arguments.Values)
+                case IComplexSuppliedValueDocumentPart civ:
+                    foreach (var field in civ.Fields.Values)
                     {
-                        if (this.ShouldDeferResolution(argument.Value))
+                        if (this.ShouldDeferResolution(field.Value))
                             return true;
                     }
 

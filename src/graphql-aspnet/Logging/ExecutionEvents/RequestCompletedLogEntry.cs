@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.Middleware.QueryExecution;
 
     /// <summary>
     /// Recorded by an executor after the entire graphql operation has been completed
@@ -27,7 +26,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public RequestCompletedLogEntry(GraphQueryExecutionContext context)
             : base(LogEventIds.RequestCompleted)
         {
-            this.OperationRequestId = context?.OperationRequest?.Id;
+            this.OperationRequestId = context?.ParentRequest?.Id;
             this.ResultHasErrors = context?.Messages?.Severity.IsCritical();
             this.ResultHasData = context?.Result == null ? null : context.Result.Data != null;
         }

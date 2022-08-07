@@ -98,9 +98,9 @@ namespace GraphQL.AspNet.Logging
         public const string QUERY_PLAN_ID = "queryPlanId";
 
         /// <summary>
-        /// The total number of operations that exist in a query plan.
+        /// The name of the operation on the query plan.
         /// </summary>
-        public const string QUERY_PLAN_OPERATION_COUNT = "operationCount";
+        public const string QUERY_PLAN_OPERATION_NAME = "operationName";
 
         /// <summary>
         /// The calculated complexity of the query plan.
@@ -126,11 +126,6 @@ namespace GraphQL.AspNet.Logging
         /// The unique id assigned to an individual pipele/field resolution request.
         /// </summary>
         public const string PIPELINE_REQUEST_ID = "pipelineRequestId";
-
-        /// <summary>
-        /// The full path of a field of data (e.g. [query]/hero/name).
-        /// </summary>
-        public const string FIELD_PATH = "path";
 
         /// <summary>
         /// The mode the field is being executed in (per item or batch).
@@ -320,5 +315,21 @@ namespace GraphQL.AspNet.Logging
         /// A collection of model items that were validated as a set during the execution of a controller action.
         /// </summary>
         public const string MODEL_ITEMS_COLLECTION = "modelItems";
+
+        /// <summary>
+        /// The line of text in a query document.
+        /// </summary>
+        public const string SOURCE_LINE = "queryTextLine";
+
+        /// <summary>
+        /// The 0-based index of the column in line of text in a query document.
+        /// </summary>
+        public const string SOURCE_LINE_INDEX = "queryTextLineIndex";
+
+        /// <summary>
+        /// Gets the location phrase indicating where the directive was executed.
+        /// </summary>
+        /// <value>The directive location.</value>
+        public const string DIRECTIVE_LOCATION = "directiveLocation";
     }
 }

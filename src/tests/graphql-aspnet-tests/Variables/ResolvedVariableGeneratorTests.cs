@@ -35,10 +35,9 @@ namespace GraphQL.AspNet.Tests.Variables
                 Assert.Fail(plan.Messages[0].Message);
             }
 
-            var operation = plan.Operations.First().Value;
+            var operation = plan.Operation;
 
-            var resolver = new ResolvedVariableGenerator(server.Schema, operation);
-
+            var resolver = new ResolvedVariableGenerator(server.Schema, operation.Variables);
             var variableSet = InputVariableCollection.FromJsonDocument(jsonDoc);
 
             return resolver.Resolve(variableSet);

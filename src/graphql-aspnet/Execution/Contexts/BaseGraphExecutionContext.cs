@@ -7,15 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware
+namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
-    using System.Security.Claims;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Security.Web;
 
     /// <summary>
     /// A base middleware context containing the core items required of all contexts.
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Middleware
         /// <param name="otherContext">The other context.</param>
         protected BaseGraphExecutionContext(IGraphExecutionContext otherContext)
             : this(
-                    otherContext?.OperationRequest,
+                    otherContext?.ParentRequest,
                     otherContext?.ServiceProvider,
                     otherContext?.SecurityContext,
                     otherContext?.Metrics,
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Middleware
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
         {
-            this.OperationRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
+            this.ParentRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
             this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
             this.SecurityContext = securityContext;
             this.Metrics = metrics;
@@ -95,6 +95,6 @@ namespace GraphQL.AspNet.Middleware
         public bool IsValid => !this.Messages.Severity.IsCritical();
 
         /// <inheritdoc />
-        public IGraphOperationRequest OperationRequest { get; }
+        public IGraphOperationRequest ParentRequest { get; }
     }
 }

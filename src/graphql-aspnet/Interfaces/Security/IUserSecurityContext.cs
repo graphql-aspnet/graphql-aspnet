@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Interfaces.Security
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// A context representing the user credentials to be authenticated and used

@@ -12,15 +12,15 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Security.Claims;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware;
 
     /// <summary>
     /// A top level context for the execution of a query through the runtime. Functions similarly to how HttpContext works for
@@ -66,17 +66,19 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IGraphQueryPlan QueryPlan { get; set; }
 
         /// <summary>
-        /// Gets or sets the syntax tree parsed from the provided query text. Will be null if a query plan
-        /// was retrieved from the cache.
+        /// Gets or sets the query document, parsed from the query text supplied by the user
+        /// on the request.
         /// </summary>
-        /// <value>The syntax tree.</value>
-        public ISyntaxTree SyntaxTree { get; set; }
+        /// <value>The completed query document.</value>
+        public IGraphQueryDocument QueryDocument { get; set; }
 
         /// <summary>
-        /// Gets or sets the query operation to execute of the active query plan.
+        /// Gets or sets the chosen operation, parsed from the <see cref="QueryDocument"/> to
+        /// execute. This operation will have its directives applied and a query plan will be generated
+        /// from it.
         /// </summary>
-        /// <value>The query operation.</value>
-        public IGraphFieldExecutableOperation QueryOperation { get; set; }
+        /// <value>The chosen operation to execute.</value>
+        public IOperationDocumentPart Operation { get; set; }
 
         /// <summary>
         /// Gets the collection of top level field results produced by executing the operation on this
@@ -97,5 +99,11 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The default field sources.</value>
         public DefaultFieldSourceCollection DefaultFieldSources { get; }
+
+        /// <summary>
+        /// Gets or sets a collection of resolved variable data used throughout this context.
+        /// </summary>
+        /// <value>The resolved variables.</value>
+        public IResolvedVariableCollection ResolvedVariables { get; set; }
     }
 }

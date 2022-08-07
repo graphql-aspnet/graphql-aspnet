@@ -19,7 +19,6 @@ namespace GraphQL.AspNet.Execution.Metrics
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Response;
 
     /// <summary>
@@ -48,20 +47,14 @@ namespace GraphQL.AspNet.Execution.Metrics
             _resolverEntries = new ConcurrentDictionary<GraphFieldExecutionContext, ApolloMetricsEntry>();
         }
 
-        /// <summary>
-        /// The first method called when the query first begins processing. This method
-        /// is called prior to the start of any execution phase.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void Start()
         {
             _watch = Stopwatch.StartNew();
             this.StartDate = DateTimeOffset.UtcNow;
         }
 
-        /// <summary>
-        /// The last method called when a query is finished processing. This method is the last
-        /// called after the final execution phase is complete.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void End()
         {
             this.TotalTicks = _watch.ElapsedTicks;
@@ -72,39 +65,41 @@ namespace GraphQL.AspNet.Execution.Metrics
             }
         }
 
-        /// <summary>
-        /// Marks the start of the given phase. THe metrics package should make note of this to determine
-        /// total duration of the phase if desired.
-        /// </summary>
-        /// <param name="phase">The phase to begin.</param>
+        /// <inheritdoc />
         public virtual void StartPhase(string phase)
         {
-            var phaseEntry = new ApolloMetricsEntry();
-            phaseEntry.StartOffsetTicks = _watch.ElapsedTicks;
+            if (string.IsNullOrWhiteSpace(phase))
+                return;
 
-            _phaseEntries.TryAdd(phase, phaseEntry);
-        }
-
-        /// <summary>
-        /// Marks the end of the given phase. THe metrics package should make note of this to determine
-        /// total duration of the phase if desired.
-        /// </summary>
-        /// <param name="phase">The phase to terminate.</param>
-        public virtual void EndPhase(string phase)
-        {
-            var endTime = _watch.ElapsedTicks;
-            if (_phaseEntries.TryGetValue(phase, out var entry))
+            if (!_phaseEntries.ContainsKey(phase))
             {
-                entry.EndOffsetTicks = endTime;
+                var phaseEntry = new ApolloMetricsEntry();
+                phaseEntry.StartOffsetTicks = _watch.ElapsedTicks;
+
+                _phaseEntries.TryAdd(phase, phaseEntry);
             }
         }
 
-        /// <summary>
-        /// Marks the start of a single resolver attempting to generate data according to its own specifications.
-        /// </summary>
-        /// <param name="context">The context outlining the resolution that is taking place.</param>
+        /// <inheritdoc />
+        public virtual void EndPhase(string phase)
+        {
+            if (string.IsNullOrWhiteSpace(phase))
+                return;
+
+            var endTime = _watch.ElapsedTicks;
+            if (_phaseEntries.TryGetValue(phase, out var entry))
+            {
+                if (entry.EndOffsetTicks == 0)
+                    entry.EndOffsetTicks = endTime;
+            }
+        }
+
+        /// <inheritdoc />
         public virtual void BeginFieldResolution(GraphFieldExecutionContext context)
         {
+            if (context == null)
+                return;
+
             var startTime = _watch.ElapsedTicks;
             var entry = new ApolloMetricsEntry()
             {
@@ -114,12 +109,12 @@ namespace GraphQL.AspNet.Execution.Metrics
             _resolverEntries.TryAdd(context, entry);
         }
 
-        /// <summary>
-        /// Marks the end of a single resolver attempting to generate data according to its own specifications.
-        /// </summary>
-        /// <param name="context">The context outlining the resolution that is taking place.</param>
+        /// <inheritdoc />
         public virtual void EndFieldResolution(GraphFieldExecutionContext context)
         {
+            if (context == null)
+                return;
+
             var endTime = _watch.ElapsedTicks;
             if (_resolverEntries.TryGetValue(context, out var entry))
             {
@@ -127,12 +122,7 @@ namespace GraphQL.AspNet.Execution.Metrics
             }
         }
 
-        /// <summary>
-        /// Formats the output of the metrics into a set of nested key/value pairs that can be written to a graph
-        /// ql data response. The keys returned will be written directly to the "extensions" section of the graphql response.
-        /// It is recommended to return a single toplevel key containing the entirety of your metrics data.
-        /// </summary>
-        /// <returns>KeyValuePair&lt;System.String, System.Object&gt;.</returns>
+        /// <inheritdoc />
         public virtual IResponseFieldSet GenerateResult()
         {
             var results = new ResponseFieldSet();

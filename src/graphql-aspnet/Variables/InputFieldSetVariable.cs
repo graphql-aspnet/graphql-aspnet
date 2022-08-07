@@ -15,7 +15,8 @@ namespace GraphQL.AspNet.Variables
     using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>
-    /// A variable defined as a set of child key/value pairs (such as those destined to populate an INPUT_OBJECT).
+    /// A variable defined as a set of child key/value pairs
+    /// (such as those destined to populate an INPUT_OBJECT).
     /// </summary>
     [DebuggerDisplay("InputFieldSet: {Name} (Count = {Fields.Count})")]
     public class InputFieldSetVariable : InputVariable, IInputFieldSetVariable, IResolvableFieldSet
@@ -41,19 +42,11 @@ namespace GraphQL.AspNet.Variables
             _fields.Add(variable.Name, variable);
         }
 
-        /// <summary>
-        /// Gets the dictionary of fields defined for this field set variable.
-        /// </summary>
-        /// <value>The fields.</value>
+        /// <inheritdoc />
         public IReadOnlyDictionary<string, IInputVariable> Fields => _fields;
 
-        /// <summary>
-        /// Attempts to retrieve a field by its name.
-        /// </summary>
-        /// <param name="fieldName">Name of the field.</param>
-        /// <param name="field">The field that was found, if any.</param>
-        /// <returns><c>true</c> if the field was found and successfully returned, <c>false</c> otherwise.</returns>
-        public bool TryGetField(string fieldName, out IResolvableItem field)
+        /// <inheritdoc />
+        public bool TryGetField(string fieldName, out IResolvableValueItem field)
         {
             field = null;
             var found = _fields.TryGetValue(fieldName, out var item);
@@ -63,17 +56,14 @@ namespace GraphQL.AspNet.Variables
             return found;
         }
 
-        /// <summary>
-        /// Gets the dictionary of fields defined for this field set variable.
-        /// </summary>
-        /// <value>The fields.</value>
-        IEnumerable<KeyValuePair<string, IResolvableItem>> IResolvableFieldSet.Fields
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, IResolvableValueItem>> ResolvableFields
         {
             get
             {
                 foreach (var kvp in this.Fields)
                 {
-                    yield return new KeyValuePair<string, IResolvableItem>(kvp.Key, kvp.Value);
+                    yield return new KeyValuePair<string, IResolvableValueItem>(kvp.Key, kvp.Value);
                 }
             }
         }

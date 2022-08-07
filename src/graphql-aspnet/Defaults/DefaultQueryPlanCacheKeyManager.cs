@@ -30,16 +30,20 @@ namespace GraphQL.AspNet.Defaults
             _parser = parser;
         }
 
-        /// <summary>
-        /// Creates a garunteed unique key for the query text in context of hte schema.
-        /// </summary>
-        /// <typeparam name="TSchema">The type of the schema the query is targeting.</typeparam>
-        /// <param name="queryText">The query text.</param>
-        /// <returns>System.String.</returns>
-        public string CreateKey<TSchema>(string queryText)
+        /// <inheritdoc />
+        public string CreateKey<TSchema>(string queryText, string operationName)
              where TSchema : class, ISchema
         {
-            return $"{typeof(TSchema).Name}_{_parser.StripInsignificantWhiteSpace(queryText)}";
+            operationName = operationName?.Trim() ?? string.Empty;
+
+            // tilde (~) isn't allowed in an operaiton name
+            // making hte entry unique for a request that doesnt specify an operation name
+            if (!string.IsNullOrEmpty(operationName))
+                operationName = $"Operation-{operationName}";
+            else
+                operationName = "Operation~NONE";
+
+            return $"{typeof(TSchema).Name}_{operationName}_{_parser.StripInsignificantWhiteSpace(queryText)}";
         }
     }
 }

@@ -44,11 +44,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// using the implementation rules of the concrete type.
         /// </summary>
         /// <returns>GraphRoutePath.</returns>
-        protected override GraphFieldPath GenerateFieldPath()
+        protected override SchemaItemPath GenerateFieldPath()
         {
             var skipControllerLevelField = this.ObjectType.SingleAttributeOrDefault<GraphRootAttribute>();
             if (skipControllerLevelField != null)
-                return GraphFieldPath.Empty;
+                return SchemaItemPath.Empty;
 
             string template = null;
             var graphRoute = this.ObjectType.SingleAttributeOrDefault<GraphRouteAttribute>();
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 template = symanticName;
             }
 
-            return new GraphFieldPath(template);
+            return new SchemaItemPath(template);
         }
 
         /// <summary>

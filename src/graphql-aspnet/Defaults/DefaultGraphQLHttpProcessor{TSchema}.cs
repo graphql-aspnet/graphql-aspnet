@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Defaults
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Json;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;

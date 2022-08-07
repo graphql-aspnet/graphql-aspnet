@@ -16,7 +16,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="QueryText\introspectionQuery.graphql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="QueryText\introspectionQuery.graphql" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />

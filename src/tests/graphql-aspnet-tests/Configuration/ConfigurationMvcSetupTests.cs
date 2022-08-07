@@ -21,8 +21,6 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -56,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             var returned = serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
             });
 
             var sp = serviceCollection.BuildServiceProvider();
@@ -66,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IGraphQLHttpProcessor<GraphSchema>)));
 
             Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphFieldExecutionContext>)));
-            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphFieldSecurityContext>)));
+            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphSchemaItemSecurityContext>)));
             Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphQueryExecutionContext>)));
 
             // objects injected for by standard pipeline components
@@ -98,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<FanController>();
+                options.AddType<FanController>();
             });
 
             var sp = serviceCollection.BuildServiceProvider();
@@ -181,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             var provider = serviceCollection.BuildServiceProvider();
@@ -214,7 +212,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQL(options =>
             {
-                options.AddGraphType<Sample1Directive>();
+                options.AddType<Sample1Directive>();
             });
 
             var provider = serviceCollection.BuildServiceProvider();
@@ -256,7 +254,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serverBuilder = new TestServerBuilder<CandleSchema>();
             var builder = serverBuilder.AddGraphQL<CandleSchema>(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             builder.FieldExecutionPipeline.AddMiddleware((req, next, token) =>
@@ -284,7 +282,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serverBuilder = new TestServerBuilder<CandleSchema>();
             var schemaBuilder = serverBuilder.AddGraphQL<CandleSchema>(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             schemaBuilder.FieldExecutionPipeline.AddMiddleware<CandleMiddleware>(ServiceLifetime.Singleton, "Candle middleware");
@@ -323,7 +321,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             var serverBuilder = new TestServerBuilder<CandleSchema>();
             var schemaBuilder = serverBuilder.AddGraphQL<CandleSchema>(options =>
             {
-                options.AddGraphType<CandleController>();
+                options.AddType<CandleController>();
             });
 
             var descriptor = serverBuilder.SchemaOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(CandleController));

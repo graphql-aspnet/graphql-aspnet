@@ -9,8 +9,6 @@
 
 namespace GraphQL.AspNet.Parsing
 {
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -20,50 +18,18 @@ namespace GraphQL.AspNet.Parsing
     /// recieved on the text based query.
     /// </summary>
     /// <seealso cref="ISyntaxTree" />
-    [DebuggerDisplay("Nodes = {Nodes.Count}")]
+    [DebuggerDisplay("Default Syntax Tree")]
     public class SyntaxTree : ISyntaxTree
     {
-        private readonly List<SyntaxNode> _nodes;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxTree"/> class.
         /// </summary>
         public SyntaxTree()
         {
-            _nodes = new List<SyntaxNode>();
+            this.RootNode = new DocumentNode();
         }
 
-        /// <summary>
-        /// Gets a collection of the named operations contained in this document.
-        /// </summary>
-        /// <value>The dictionary, keyed on operation name, of the operations on the recieved query.</value>
-        public IReadOnlyList<SyntaxNode> Nodes => _nodes;
-
-        /// <summary>
-        /// Adds the node to the syntax tree.
-        /// </summary>
-        /// <param name="node">The node.</param>
-        internal void AddNode(SyntaxNode node)
-        {
-            _nodes.Add(node);
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<SyntaxNode> GetEnumerator()
-        {
-            return _nodes.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
+        /// <inheritdoc />
+        public DocumentNode RootNode { get; }
     }
 }

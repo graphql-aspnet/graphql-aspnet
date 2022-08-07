@@ -8,9 +8,7 @@
 // *************************************************************
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;

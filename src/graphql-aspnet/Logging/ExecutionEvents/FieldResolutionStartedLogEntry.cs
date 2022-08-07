@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.Middleware.FieldExecution;
 
     /// <summary>
     /// Recorded by a field resolver when it starts resolving a field context and
@@ -50,8 +49,8 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         /// <value>The field path.</value>
         public string FieldPath
         {
-            get => this.GetProperty<string>(LogPropertyNames.FIELD_PATH);
-            private set => this.SetProperty(LogPropertyNames.FIELD_PATH, value);
+            get => this.GetProperty<string>(LogPropertyNames.SCHEMA_ITEM_PATH);
+            private set => this.SetProperty(LogPropertyNames.SCHEMA_ITEM_PATH, value);
         }
 
         /// <summary>

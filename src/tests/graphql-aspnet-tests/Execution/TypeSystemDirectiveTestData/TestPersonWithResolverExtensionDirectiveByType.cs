@@ -6,13 +6,14 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTests
+
+namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
 {
     using GraphQL.AspNet.Attributes;
 
     public class TestPersonWithResolverExtensionDirectiveByType
     {
-        [ApplyDirective(typeof(ToUpperDirective))]
+        [ApplyDirective(typeof(ToUpperFieldDefinitionDirective))]
         public string Name { get; set; }
 
         public string LastName { get; set; }

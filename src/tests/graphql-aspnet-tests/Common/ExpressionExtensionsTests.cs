@@ -10,7 +10,6 @@ namespace GraphQL.AspNet.Tests.Common
 {
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Tests.Common.ExpressionExtensionTestData;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
 
     [TestFixture]

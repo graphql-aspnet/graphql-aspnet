@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using GraphQL.AspNet.Defaults.TypeMakers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A "maker" that can generate fully qualified graph fields from a given template.

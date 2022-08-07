@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A request, resolved by a <see cref="GraphDirective"/> to perform some augmented
@@ -61,5 +62,8 @@ namespace GraphQL.AspNet.Execution
 
         /// <inheritdoc />
         public SourceOrigin Origin => this.InvocationContext?.Origin ?? SourceOrigin.None;
+
+        /// <inheritdoc />
+        public IDirective Directive => this.InvocationContext.Directive;
     }
 }

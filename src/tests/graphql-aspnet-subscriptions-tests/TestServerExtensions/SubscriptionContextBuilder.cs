@@ -30,7 +30,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     {
         private readonly Mock<IGraphOperationRequest> _mockRequest;
 
-        private readonly List<KeyValuePair<GraphFieldPath, object>> _sourceData;
+        private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
         private IGraphQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
@@ -44,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         {
             _client = client;
             _mockRequest = new Mock<IGraphOperationRequest>();
-            _sourceData = new List<KeyValuePair<GraphFieldPath, object>>();
+            _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
 
             _mockRequest.Setup(x => x.ToDataPackage()).Returns(
                 new AspNet.GraphQueryData()
@@ -117,9 +117,9 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="path">The field path representing the action to accept the parameter.</param>
         /// <param name="sourceData">The source data.</param>
         /// <returns>SubscriptionContextBuilder.</returns>
-        public SubscriptionContextBuilder AddDefaultValue(GraphFieldPath path, object sourceData)
+        public SubscriptionContextBuilder AddDefaultValue(SchemaItemPath path, object sourceData)
         {
-            _sourceData.Add(new KeyValuePair<GraphFieldPath, object>(path, sourceData));
+            _sourceData.Add(new KeyValuePair<SchemaItemPath, object>(path, sourceData));
             return this;
         }
 

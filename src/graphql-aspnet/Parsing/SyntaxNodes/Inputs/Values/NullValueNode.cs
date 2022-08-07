@@ -37,5 +37,11 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values
         {
             return false;
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"NV-{this.Value}";
+        }
     }
 }

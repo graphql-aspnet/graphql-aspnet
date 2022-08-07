@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
 

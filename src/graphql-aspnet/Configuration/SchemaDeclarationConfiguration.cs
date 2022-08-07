@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A set of configurations that will be applied when this  <see cref="ISchema" /> generated from a set of objects.

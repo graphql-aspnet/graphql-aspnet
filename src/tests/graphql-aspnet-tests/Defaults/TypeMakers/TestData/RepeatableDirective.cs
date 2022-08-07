@@ -8,7 +8,6 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 {
-    using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;

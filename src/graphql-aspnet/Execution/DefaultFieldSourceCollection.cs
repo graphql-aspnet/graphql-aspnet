@@ -20,9 +20,9 @@ namespace GraphQL.AspNet.Execution
     /// A collection of objects supplied to a pipeline that can act as an input object for
     /// a <see cref="GraphDataContainer"/>.
     /// </summary>
-    public class DefaultFieldSourceCollection : IEnumerable<KeyValuePair<GraphFieldPath, object>>
+    public class DefaultFieldSourceCollection : IEnumerable<KeyValuePair<SchemaItemPath, object>>
     {
-        private readonly Dictionary<GraphFieldPath, object> _actionSources;
+        private readonly Dictionary<SchemaItemPath, object> _actionSources;
         private readonly GraphFieldSource _sourceTemplateTypes;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution
         /// are allowed to define objects in this collection.</param>
         public DefaultFieldSourceCollection(GraphFieldSource sourcableTemplateTypes = GraphFieldSource.Action)
         {
-            _actionSources = new Dictionary<GraphFieldPath, object>();
+            _actionSources = new Dictionary<SchemaItemPath, object>();
             _sourceTemplateTypes = sourcableTemplateTypes;
         }
 
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Execution
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<KeyValuePair<GraphFieldPath, object>> GetEnumerator()
+        public IEnumerator<KeyValuePair<SchemaItemPath, object>> GetEnumerator()
         {
             return _actionSources.GetEnumerator();
         }

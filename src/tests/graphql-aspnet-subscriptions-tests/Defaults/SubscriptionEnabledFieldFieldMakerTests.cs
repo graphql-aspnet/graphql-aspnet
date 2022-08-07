@@ -26,7 +26,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
         {
             var mockController = new Mock<IGraphControllerTemplate>();
             mockController.Setup(x => x.InternalFullName).Returns(typeof(SubscriptionTestController).Name);
-            mockController.Setup(x => x.Route).Returns(new GraphFieldPath("path0"));
+            mockController.Setup(x => x.Route).Returns(new SchemaItemPath("path0"));
             mockController.Setup(x => x.Name).Returns("path0");
             mockController.Setup(x => x.ObjectType).Returns(typeof(SubscriptionTestController));
 
@@ -46,7 +46,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var appliedDirective = field.AppliedDirectives.FirstOrDefault();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            CollectionAssert.AreEqual(new object[] { 99, "sub action arg" }, appliedDirective.Arguments);
+            CollectionAssert.AreEqual(new object[] { 99, "sub action arg" }, appliedDirective.ArgumentValues);
         }
     }
 }
