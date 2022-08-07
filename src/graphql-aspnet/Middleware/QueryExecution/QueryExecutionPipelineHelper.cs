@@ -49,8 +49,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
                 this.AddQueryPlanCacheMiddleware();
 
             this.AddQueryDocumentParsingMiddleware()
-                .AddAssignOperationMiddleware()
                 .AddValidateQueryDocumentMiddleware()
+                .AddAssignOperationMiddleware()
+                .AddValidateOperationVariableDataMiddleware()
                 .AddApplyOperationDirectivesMiddleware();
 
             var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
@@ -85,6 +86,17 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
         public QueryExecutionPipelineHelper<TSchema> AddValidateQueryDocumentMiddleware()
         {
             this.PipelineBuilder.AddMiddleware<ValidateQueryDocumentMiddleware<TSchema>>();
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the middleware component that will validate a parsed query document to ensure
+        /// its internally consistant and matches the expectations of the target schema.
+        /// </summary>
+        /// <returns>QueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
+        public QueryExecutionPipelineHelper<TSchema> AddValidateOperationVariableDataMiddleware()
+        {
+            this.PipelineBuilder.AddMiddleware<ValidateOperationVariableDataMiddleware<TSchema>>();
             return this;
         }
 

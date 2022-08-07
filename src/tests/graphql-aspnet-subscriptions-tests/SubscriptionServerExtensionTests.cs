@@ -82,7 +82,7 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
 
-            // 11 middleware components in the subscription-swapped primary query pipeline
+            // 12 middleware components in the subscription-swapped primary query pipeline
             //    registered by type
             // 1 middleware component registered by instance
             queryPipeline.Verify(x => x.Clear());
@@ -91,7 +91,7 @@ namespace GraphQL.Subscriptions.Tests
                     x.AddMiddleware<IGraphMiddlewareComponent<GraphQueryExecutionContext>>(
                             It.IsAny<ServiceLifetime>(),
                             It.IsAny<string>()),
-                Times.Exactly(11));
+                Times.Exactly(12));
 
             queryPipeline.Verify(
                 x =>

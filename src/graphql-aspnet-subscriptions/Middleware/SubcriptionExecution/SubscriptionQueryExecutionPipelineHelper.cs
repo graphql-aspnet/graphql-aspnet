@@ -50,9 +50,10 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
                 this.AddQueryPlanCacheMiddleware();
 
             this.AddQueryDocumentParsingMiddleware()
-               .AddAssignOperationMiddleware()
-               .AddValidateQueryDocumentMiddleware()
-               .AddApplyOperationDirectivesMiddleware();
+                .AddValidateQueryDocumentMiddleware()
+                .AddAssignOperationMiddleware()
+                .AddValidateOperationVariableDataMiddleware()
+                .AddApplyOperationDirectivesMiddleware();
 
             var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerRequest;
             if (authOption == AuthorizationMethod.PerRequest)

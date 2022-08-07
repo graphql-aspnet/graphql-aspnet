@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             if (bool.TryParse(data.ToString(), out var i))
                 return i;
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(bool));
         }
 
         /// <inheritdoc />

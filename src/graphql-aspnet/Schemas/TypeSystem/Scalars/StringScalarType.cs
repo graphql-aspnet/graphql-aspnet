@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             var value = GraphQLStrings.UnescapeAndTrimDelimiters(data, true);
             if (value == null)
             {
-                throw new UnresolvedValueException(data);
+                throw new UnresolvedValueException(data, typeof(string));
             }
 
             return value;

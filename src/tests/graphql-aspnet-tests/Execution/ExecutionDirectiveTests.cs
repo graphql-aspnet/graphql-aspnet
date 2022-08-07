@@ -98,6 +98,40 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
+        public async Task VariableBooleanDirectiveInputArgument_ResolvesCorrectlyAndIsReceviedByTheDirective()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphController<DirectiveTestController>()
+                .AddDirective<ToSarcasticCaseExecutionDirective>()
+                .Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(@"query ($startOnLower: Boolean!) {
+                    retrieveObject {
+                       property1 @toSarcasticCase(startOnLowerCase: $startOnLower)
+                    }
+                }");
+
+            queryContext.AddVariableData(@"
+                {
+                ""startOnLower"" : true
+                }");
+
+            var expectedJson = @"
+            {
+                ""data"" : {
+                    ""retrieveObject"" : {
+                        ""property1"" : ""vAlUe1""
+                    }
+                }
+            }";
+
+            var result = await server.RenderResult(queryContext);
+
+            CommonAssertions.AreEqualJsonStrings(expectedJson, result);
+        }
+
+        [Test]
         public async Task ExecutionDirectiveAddsAFieldPostProcessor_ForSingleField_ProcessorIsExecutedAsExpected()
         {
             var directiveInstance = new SampleDirective();

@@ -116,11 +116,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             if (directivesToExecute.Count == 0)
                 return 0;
 
-            // Convert the supplied variable values to usable objects of the type expression
-            // of the chosen operation
-            var variableResolver = new ResolvedVariableGenerator(_schema, operation.Variables);
-            var variableData = variableResolver.Resolve(context.ParentRequest.VariableData);
-
             // Directive order matters we can only execute one at a time
             // to ensure predicatable execution order
             // https://spec.graphql.org/October2021/#sec-Language.Directives
@@ -132,7 +127,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     context,
                     targetPart,
                     directiveDocumentPart,
-                    variableData,
                     cancelToken);
 
                 totalApplied++;
@@ -145,7 +139,6 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             GraphQueryExecutionContext queryContext,
             IDocumentPart targetDocumentPart,
             IDirectiveDocumentPart directiveDocumentPart,
-            IResolvedVariableCollection variableData,
             CancellationToken cancelToken)
         {
             var targetDirective = directiveDocumentPart.GraphType as IDirective;
@@ -185,7 +178,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 _schema,
                 queryContext,
                 request,
-                variableData);
+                queryContext.ResolvedVariables);
 
             Exception causalException = null;
 

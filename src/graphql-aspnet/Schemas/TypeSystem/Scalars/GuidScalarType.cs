@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             if (Guid.TryParse(GraphQLStrings.UnescapeAndTrimDelimiters(data), out var guid))
                 return guid;
 
-            throw new UnresolvedValueException(data);
+            throw new UnresolvedValueException(data, typeof(Guid));
         }
 
         /// <inheritdoc />

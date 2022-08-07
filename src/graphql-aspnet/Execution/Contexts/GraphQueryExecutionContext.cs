@@ -99,5 +99,11 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// </summary>
         /// <value>The default field sources.</value>
         public DefaultFieldSourceCollection DefaultFieldSources { get; }
+
+        /// <summary>
+        /// Gets or sets a collection of resolved variable data used throughout this context.
+        /// </summary>
+        /// <value>The resolved variables.</value>
+        public IResolvedVariableCollection ResolvedVariables { get; set; }
     }
 }

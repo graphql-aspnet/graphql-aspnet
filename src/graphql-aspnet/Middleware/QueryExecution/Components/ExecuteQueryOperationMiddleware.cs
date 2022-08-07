@@ -79,17 +79,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         private async Task ExecuteOperation(GraphQueryExecutionContext context)
         {
-            // create a cancelation sourc irrespective of the required timeout for exeucting this operation
+            // create a cancelation source irrespective of the required timeout for exeucting this operation
             // this allows for indication of why a task was canceled (timeout or other user driven reason)
             // vs just "it was canceled" which allows for tighter error messages in the response.
             var operation = context.QueryPlan.Operation;
             var fieldInvocations = new List<FieldPipelineInvocation>();
             var fieldInvocationTasks = new List<Task>();
 
-            // Convert the supplied variable values to usable objects of the type expression
-            // of the chosen operation
-            var variableResolver = new ResolvedVariableGenerator(_schema, operation.DeclaredVariables);
-            var variableData = variableResolver.Resolve(context.ParentRequest.VariableData);
             var cancelSource = new CancellationTokenSource();
 
             try
@@ -151,7 +147,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var fieldContext = new GraphFieldExecutionContext(
                         context,
                         fieldRequest,
-                        variableData,
+                        context.ResolvedVariables,
                         context.DefaultFieldSources);
 
                     var fieldTask = _fieldExecutionPipeline.InvokeAsync(fieldContext, cancelSource.Token);
