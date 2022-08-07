@@ -233,5 +233,42 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedJson, result);
         }
+
+        [TestCase("query @recordLocation  { retrieveObject { property1 } }", null, DirectiveLocation.QUERY)]
+        [TestCase("mutation @recordLocation  { mutateObject { property1 } }", null, DirectiveLocation.MUTATION)]
+        [TestCase("query { retrieveObject { property1 @recordLocation } }", null, DirectiveLocation.FIELD)]
+        [TestCase("query { retrieveObject { ... frag1 } } fragment frag1 on TwoPropertyObject @recordLocation { property1 } ", null, DirectiveLocation.FRAGMENT_DEFINITION)]
+        [TestCase("query { retrieveObject { ... frag1 } } fragment frag1 on TwoPropertyObject { property1 @recordLocation } ", null, DirectiveLocation.FIELD)]
+        [TestCase("query { retrieveObject { ... frag1 @recordLocation } } fragment frag1 on TwoPropertyObject { property1 } ", null, DirectiveLocation.FRAGMENT_SPREAD)]
+        [TestCase("query { retrieveObject { ... @recordLocation { property1 } } }", null, DirectiveLocation.INLINE_FRAGMENT)]
+        [TestCase("query ($id: String! @recordLocation ){ retrieveSingleObject (id: $id) {  property1  } }", @"{ ""id"" : ""bob"" }", DirectiveLocation.VARIABLE_DEFINITION)]
+        [TestCase("query ($id: String = \"jane\" @recordLocation ){ retrieveSingleObject (id: $id) {  property1  } }", @"{ ""id"" : ""bob"" }", DirectiveLocation.VARIABLE_DEFINITION)]
+
+        public async Task ExpectedDirectiveLocationIsAnExpectedValue(string queryText, string variables, DirectiveLocation expectedLocation)
+        {
+            var directiveInstance = new DirectiveLocationRecorderDirective();
+
+            var builder = new TestServerBuilder();
+            builder.AddSingleton(directiveInstance);
+            builder.AddGraphController<DirectiveTestController>()
+                  .AddDirective<DirectiveLocationRecorderDirective>();
+
+            var server = builder.Build();
+
+            // field "child" is executed as a batch extension
+            // @adjustBatchData will upper case any child items found
+            // via a batch
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(queryText);
+            if (variables != null)
+                queryContext.AddVariableData(variables);
+
+            var result = await server.ExecuteQuery(queryContext);
+
+            Assert.IsNotNull(result.Data);
+            Assert.AreEqual(0, result.Messages.Count);
+
+            Assert.AreEqual(expectedLocation, directiveInstance.RecordedLocation);
+        }
     }
 }

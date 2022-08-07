@@ -7,9 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
+namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
@@ -29,6 +30,16 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
 
         [QueryRoot]
         public TwoPropertyObject RetrieveSingleObject(string id)
+        {
+            return new TwoPropertyObject()
+            {
+                Property1 = "value1",
+                Property2 = 2,
+            };
+        }
+
+        [SubscriptionRoot]
+        public TwoPropertyObject OnChanged(TwoPropertyObject sourceData)
         {
             return new TwoPropertyObject()
             {

@@ -69,7 +69,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             if (context.IsValid && context.QueryPlan == null && context.Operation != null)
             {
-                if (context.Operation.AllDirectives.Count > 0)
+                var directivesToExecute = this.DetermineDirectiveToExecute(context);
+                if (directivesToExecute.Count > 0)
                 {
                     // when there are directives to apply, start the exectuion phase
                     // early
@@ -77,7 +78,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                     var totalDirectivesApplied = await this.ApplyDirectives(
                         context,
-                        context.Operation,
+                        directivesToExecute,
                         cancelToken);
 
                     if (totalDirectivesApplied > 0)
@@ -97,21 +98,34 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             await next(context, cancelToken).ConfigureAwait(false);
         }
 
+        private List<IDirectiveDocumentPart> DetermineDirectiveToExecute(GraphQueryExecutionContext context)
+        {
+            var list = new List<IDirectiveDocumentPart>(context.Operation.AllDirectives.Count);
+            list.AddRange(context.Operation.AllDirectives);
+
+            // fragments may be spread more than once in a single operation
+            // but we dont want to execute the directives of the fragment more than once
+            var includedFragments = new HashSet<string>();
+            foreach (var spread in context.Operation.FragmentSpreads)
+            {
+                if (string.IsNullOrWhiteSpace(spread.Fragment?.Name))
+                    continue;
+
+                if (includedFragments.Contains(spread.Fragment.Name))
+                    continue;
+
+                includedFragments.Add(spread.Fragment.Name);
+                list.AddRange(spread.Fragment.AllDirectives);
+            }
+
+            return list;
+        }
+
         private async Task<int> ApplyDirectives(
             GraphQueryExecutionContext context,
-            IOperationDocumentPart operation,
+            List<IDirectiveDocumentPart> directivesToExecute,
             CancellationToken cancelToken)
         {
-            var directivesToExecute = new List<IDirectiveDocumentPart>(operation.AllDirectives.Count + operation.FragmentSpreads.Count);
-            directivesToExecute.AddRange(operation.AllDirectives);
-
-            // append the directive invaocations on any referenced named fragments
-            directivesToExecute.AddRange(operation
-                .FragmentSpreads
-                .Select(x => x.Fragment)
-                .Distinct()
-                .SelectMany(x => x.AllDirectives));
-
             // no directives? just get out
             if (directivesToExecute.Count == 0)
                 return 0;
