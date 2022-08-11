@@ -147,16 +147,16 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc/>
-        public string Name { get; set; }
+        public string Name { get; protected set; }
 
         /// <inheritdoc />
         public Type ObjectType { get; }
 
         /// <inheritdoc />
-        public Type DeclaredReturnType { get; set; }
+        public Type DeclaredReturnType { get; protected set; }
 
         /// <inheritdoc/>
-        public GraphTypeExpression TypeExpression { get; set; }
+        public GraphTypeExpression TypeExpression { get; protected set; }
 
         /// <inheritdoc/>
         public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
@@ -174,13 +174,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         public SchemaItemPath Route { get; }
 
         /// <inheritdoc/>
-        public IGraphFieldResolver Resolver { get; private set; }
+        public IGraphFieldResolver Resolver { get; protected set; }
 
         /// <inheritdoc/>
-        public FieldResolutionMode Mode { get; private set; }
+        public FieldResolutionMode Mode { get; protected set; }
 
         /// <inheritdoc/>
-        public bool IsLeaf { get; private set; }
+        public bool IsLeaf { get; protected set; }
 
         /// <inheritdoc/>
         public bool IsDeprecated { get; set; }

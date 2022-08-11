@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputObjectFieldCollection(owner.Object);
 
-            var graphField = new Mock<IGraphField>();
+            var graphField = new Mock<IInputGraphField>();
             graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
             graphField.Setup(x => x.Name).Returns(name.ToString());
 
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputObjectFieldCollection(owner.Object);
 
-            var graphField = new Mock<IGraphField>();
+            var graphField = new Mock<IInputGraphField>();
             graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
             graphField.Setup(x => x.Name).Returns(name.ToString());
 
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputObjectFieldCollection(owner.Object);
 
-            var graphField = new Mock<IGraphField>();
+            var graphField = new Mock<IInputGraphField>();
             graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
             graphField.Setup(x => x.Name).Returns(name.ToString());
 
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputObjectFieldCollection(owner.Object);
 
-            var graphField = new Mock<IGraphField>();
+            var graphField = new Mock<IInputGraphField>();
             graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
             graphField.Setup(x => x.Name).Returns(name.ToString());
 
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputObjectFieldCollection(owner.Object);
 
-            var graphField = new Mock<IGraphField>();
+            var graphField = new Mock<IInputGraphField>();
             graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
             graphField.Setup(x => x.Name).Returns(name.ToString());
 
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputObjectFieldCollection(owner.Object);
 
-            var graphField = new Mock<IGraphField>();
+            var graphField = new Mock<IInputGraphField>();
             graphField.Setup(x => x.TypeExpression).Returns(new AspNet.Schemas.GraphTypeExpression("String"));
             graphField.Setup(x => x.Name).Returns(name.ToString());
 

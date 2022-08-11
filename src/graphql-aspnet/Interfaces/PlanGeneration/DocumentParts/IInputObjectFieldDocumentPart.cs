@@ -18,9 +18,9 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     public interface IInputObjectFieldDocumentPart : IInputValueDocumentPart
     {
         /// <summary>
-        /// Gets the field from the schema represented by this document part.
+        /// Gets the input field from the schema represented by this document part.
         /// </summary>
-        /// <value>The type expression.</value>
-        IGraphField Field { get; }
+        /// <value>The field.</value>
+        IInputGraphField Field { get; }
     }
 }

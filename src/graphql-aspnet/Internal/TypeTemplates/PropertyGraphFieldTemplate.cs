@@ -10,6 +10,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Diagnostics;
     using System.Reflection;
     using GraphQL.AspNet.Attributes;
@@ -96,6 +97,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 false,
                 true,
                 false);
+
+            this.InputIsRequired = this.AttributeProvider.SingleAttributeOrDefault<RequiredAttribute>() != null;
         }
 
         /// <summary>

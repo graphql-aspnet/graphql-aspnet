@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -34,10 +35,10 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         }
 
         /// <inheritdoc />
-        public virtual GraphFieldCreationResult CreateField(IGraphTypeFieldTemplate template)
+        public virtual GraphFieldCreationResult<IGraphField> CreateField(IGraphTypeFieldTemplate template)
         {
             var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
-            var result = new GraphFieldCreationResult();
+            var result = new GraphFieldCreationResult<IGraphField>();
 
             // if the owner of this field declared top level objects append them to the
             // field for evaluation
@@ -141,6 +142,29 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                 default:
                     throw new ArgumentOutOfRangeException($"Template field source of {template.FieldSource.ToString()} is not supported by {this.GetType().FriendlyName()}.");
             }
+        }
+
+        /// <inheritdoc />
+        public GraphFieldCreationResult<IInputGraphField> CreateInputField(IGraphTypeFieldTemplate template)
+        {
+            var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
+            var result = new GraphFieldCreationResult<IInputGraphField>();
+
+            var field = new InputGraphField(
+                    formatter.FormatFieldName(template.Name),
+                    template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                    template.Route,
+                    template.DeclaredName,
+                    template.ObjectType,
+                    template.DeclaredReturnType,
+                    template.CreateAppliedDirectives());
+
+            field.Description = template.Description;
+
+            result.AddDependentRange(template.RetrieveRequiredTypes());
+
+            result.Field = field;
+            return result;
         }
 
         /// <summary>

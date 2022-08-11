@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
             foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
             {
-                var fieldResult = fieldMaker.CreateField(fieldTemplate);
+                var fieldResult = fieldMaker.CreateInputField(fieldTemplate);
                 inputObjectType.AddField(fieldResult.Field);
 
                 result.MergeDependents(fieldResult);

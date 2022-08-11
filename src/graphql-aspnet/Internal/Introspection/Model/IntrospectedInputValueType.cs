@@ -41,11 +41,12 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// </summary>
         /// <param name="inputField">The field of an input object used to populate this value.</param>
         /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
-        public IntrospectedInputValueType(IGraphField inputField, IntrospectedType introspectedGraphType)
+        public IntrospectedInputValueType(IInputGraphField inputField, IntrospectedType introspectedGraphType)
             : this(inputField)
         {
             Validation.ThrowIfNull(inputField, nameof(inputField));
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
+            _rawDefaultValue = inputField.DefaultValue;
         }
 
         /// <summary>

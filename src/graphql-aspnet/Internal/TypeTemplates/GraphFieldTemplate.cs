@@ -459,5 +459,8 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public float? Complexity { get; set; }
+
+        /// <inheritdoc />
+        public bool InputIsRequired { get; protected set; }
     }
 }

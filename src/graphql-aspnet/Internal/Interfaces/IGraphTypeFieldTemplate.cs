@@ -70,5 +70,12 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <value>The estimated complexity value for this field.</value>
         float? Complexity { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this field is required on an INPUT_OBJECT field
+        /// made from this template.
+        /// </summary>
+        /// <value><c>true</c> if the field is required on an input object; otherwise, <c>false</c>.</value>
+        bool InputIsRequired { get; }
     }
 }

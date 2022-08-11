@@ -10,26 +10,17 @@
 namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
-    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Security;
 
     /// <summary>
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
     /// accepted arguments, any nullable or list modifiers and publication and depreciation information.
     /// </summary>
-    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISecureSchemaItem, ISchemaItem
+    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISecureSchemaItem, IGraphFieldBase
     {
-        /// <summary>
-        /// Updates the known graph type this field belongs to.
-        /// </summary>
-        /// <param name="parent">The new parent.</param>
-        void AssignParent(IGraphType parent);
-
         /// <summary>
         /// Updates the field resolver used by this graph field.
         /// </summary>
@@ -52,13 +43,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <param name="parent">The new parent item that will own this new field.</param>
         /// <returns>IGraphField.</returns>
         IGraphField Clone(IGraphType parent);
-
-        /// <summary>
-        /// Gets or sets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
-        /// declaration used in schema definition language.)
-        /// </summary>
-        /// <value>The type expression.</value>
-        GraphTypeExpression TypeExpression { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is a leaf field; one capable of generating
@@ -86,13 +70,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         FieldResolutionMode Mode { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphField" /> is published
-        /// in the schema delivered to introspection requests.
-        /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
-        bool Publish { get; set; }
-
-        /// <summary>
         /// Gets or sets an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
         /// See the documentation for an understanding of how query complexity is calculated.
         /// </summary>
@@ -111,25 +88,5 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
         bool IsVirtual { get; }
-
-        /// <summary>
-        /// Gets the core type of the object (or objects) returned by this field. If this field
-        /// is meant to return a list of items, this property represents the type of item in
-        /// that list.
-        /// </summary>
-        /// <value>The type of the object.</value>
-        public Type ObjectType { get; }
-
-        /// <summary>
-        /// Gets .NET type of the method or property that generated this field as it was declared in code.
-        /// </summary>
-        /// <value>The type of the declared return.</value>
-        public Type DeclaredReturnType { get; }
-
-        /// <summary>
-        /// Gets the parent item that owns this field.
-        /// </summary>
-        /// <value>The parent.</value>
-        ISchemaItem Parent { get; }
     }
 }

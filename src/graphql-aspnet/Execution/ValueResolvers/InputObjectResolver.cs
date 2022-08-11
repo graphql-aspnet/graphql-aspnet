@@ -46,18 +46,6 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         }
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="InputObjectResolver" /> class from being created.
-        /// </summary>
-        /// <param name="otherResolver">The other resolver to copy core data from.</param>
-        private InputObjectResolver(InputObjectResolver otherResolver)
-        {
-            _graphType = otherResolver._graphType;
-            _objectType = otherResolver._objectType;
-            _propSetters = otherResolver._propSetters;
-            _fieldResolvers = otherResolver._fieldResolvers;
-        }
-
-        /// <summary>
         /// Adds a field resolver, as deteremined by input fields on a query document, that will be needed
         /// to resolve an object requested of this instance.
         /// </summary>
@@ -83,21 +71,21 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 return null;
 
             var instance = InstanceFactory.CreateInstance(_objectType);
-            foreach (var argument in fieldSet.ResolvableFields)
+            foreach (var inputField in fieldSet.ResolvableFields)
             {
-                var argResolver = _fieldResolvers.ContainsKey(argument.Key) ? _fieldResolvers[argument.Key] : null;
+                var resolver = _fieldResolvers.ContainsKey(inputField.Key) ? _fieldResolvers[inputField.Key] : null;
 
                 PropertySetterInvoker propSetter = null;
-                var field = _graphType.Fields.FindField(argument.Key) as ITypedSchemaItem;
+                var field = _graphType.Fields.FindField(inputField.Key) as ITypedSchemaItem;
                 if (field != null)
                 {
                     propSetter = _propSetters.ContainsKey(field.InternalName) ? _propSetters[field.InternalName] : null;
                 }
 
-                if (argResolver == null || propSetter == null)
+                if (resolver == null || propSetter == null)
                     continue;
 
-                var resolvedValue = argResolver.Resolve(argument.Value, variableData);
+                var resolvedValue = resolver.Resolve(inputField.Value, variableData);
                 propSetter(ref instance, resolvedValue);
             }
 

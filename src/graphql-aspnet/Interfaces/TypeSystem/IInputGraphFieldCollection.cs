@@ -14,13 +14,13 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A collection of fields on a given graph type.
     /// </summary>
-    public interface IGraphFieldCollection : IReadOnlyGraphFieldCollection
+    public interface IInputGraphFieldCollection : IReadOnlyInputGraphFieldCollection
     {
         /// <summary>
-        /// Adds the <see cref="IGraphField" /> to the collection.
+        /// Adds the <see cref="IInputGraphField" /> to the collection.
         /// </summary>
         /// <param name="field">The field to add.</param>
         /// <returns>IGraphTypeField.</returns>
-        IGraphField AddField(IGraphField field);
+        IInputGraphField AddField(IInputGraphField field);
     }
 }
