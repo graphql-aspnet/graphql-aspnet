@@ -25,7 +25,8 @@ namespace GraphQL.AspNet.Common.Generics
     {
         private static readonly ConcurrentDictionary<Tuple<Type, Type, Type, Type>, ObjectActivator> CACHED_OBJECT_CREATORS;
         private static readonly ConcurrentDictionary<MethodInfo, MethodInvoker> CACHED_METHOD_INVOKERS;
-        private static readonly ConcurrentDictionary<Type, PropertySetterCollection> CACHED_PROPERTY_INVOKERS;
+        private static readonly ConcurrentDictionary<Type, PropertySetterCollection> CACHED_PROPERTY_SETTER_INVOKERS;
+        private static readonly ConcurrentDictionary<Type, PropertyGetterCollection> CACHED_PROPERTY_GETTER_INVOKERS;
 
         /// <summary>
         /// Initializes static members of the <see cref="InstanceFactory"/> class.
@@ -34,7 +35,8 @@ namespace GraphQL.AspNet.Common.Generics
         {
             CACHED_OBJECT_CREATORS = new ConcurrentDictionary<Tuple<Type, Type, Type, Type>, ObjectActivator>();
             CACHED_METHOD_INVOKERS = new ConcurrentDictionary<MethodInfo, MethodInvoker>();
-            CACHED_PROPERTY_INVOKERS = new ConcurrentDictionary<Type, PropertySetterCollection>();
+            CACHED_PROPERTY_SETTER_INVOKERS = new ConcurrentDictionary<Type, PropertySetterCollection>();
+            CACHED_PROPERTY_GETTER_INVOKERS = new ConcurrentDictionary<Type, PropertyGetterCollection>();
         }
 
         /// <summary>
@@ -44,7 +46,8 @@ namespace GraphQL.AspNet.Common.Generics
         {
             CACHED_OBJECT_CREATORS.Clear();
             CACHED_METHOD_INVOKERS.Clear();
-            CACHED_PROPERTY_INVOKERS.Clear();
+            CACHED_PROPERTY_SETTER_INVOKERS.Clear();
+            CACHED_PROPERTY_GETTER_INVOKERS.Clear();
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace GraphQL.AspNet.Common.Generics
         public static PropertySetterCollection CreatePropertySetterInvokerCollection(Type type)
         {
             Validation.ThrowIfNull(type, nameof(type));
-            if (CACHED_PROPERTY_INVOKERS.TryGetValue(type, out var collection))
+            if (CACHED_PROPERTY_SETTER_INVOKERS.TryGetValue(type, out var collection))
                 return collection;
 
             collection = new PropertySetterCollection();
@@ -108,14 +111,60 @@ namespace GraphQL.AspNet.Common.Generics
                     copyRecast,
                     copyBackToInput);
 
-                var complete = completeSetter.ToString();
                 var lambda = Expression.Lambda<PropertySetterInvoker>(completeSetter, objectToAssignTo, valueToAssign);
 
                 var invoker = lambda.Compile();
                 collection.Add(propInfo, invoker);
             }
 
-            CACHED_PROPERTY_INVOKERS.TryAdd(type, collection);
+            CACHED_PROPERTY_SETTER_INVOKERS.TryAdd(type, collection);
+            return collection;
+        }
+
+        /// <summary>
+        /// Creates a compiled method invoker that is capable of assigning a value to an object.
+        /// Lambda signature: invoke(object, propValue).
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>DictionaryConversionInvoker.</returns>
+        public static PropertyGetterCollection CreatePropertyGetterInvokerCollection(Type type)
+        {
+            Validation.ThrowIfNull(type, nameof(type));
+            if (CACHED_PROPERTY_GETTER_INVOKERS.TryGetValue(type, out var collection))
+                return collection;
+
+            collection = new PropertyGetterCollection();
+            foreach (var propInfo in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                if (propInfo.GetGetMethod() == null)
+                    continue;
+
+                // incoming object and value to assign
+                var objectToReadFrom = Expression.Parameter(typeof(object).MakeByRefType(), "obj");
+
+                // cast the object to its actual type
+                // For value Types: var castObject  = (Type)objectToAssignTo;
+                // For ref Types:   var castObject= objectToAssignTo as Type;
+                Expression castObjectOperation;
+                if (type.IsValueType)
+                    castObjectOperation = Expression.Unbox(objectToReadFrom, type);
+                else
+                    castObjectOperation = Expression.Convert(objectToReadFrom, type);
+
+                // castObject.Property
+                var getPropOnObject = Expression.Property(castObjectOperation, propInfo);
+
+                var boxedResult = Expression.Variable(typeof(object), "boxedResult");
+                var boxedResultOperation = Expression.Convert(getPropOnObject, typeof(object));
+
+                var complete = getPropOnObject.ToString();
+                var lambda = Expression.Lambda<PropertyGetterInvoker>(boxedResultOperation, objectToReadFrom);
+
+                var invoker = lambda.Compile();
+                collection.Add(propInfo, invoker);
+            }
+
+            CACHED_PROPERTY_GETTER_INVOKERS.TryAdd(type, collection);
             return collection;
         }
 
@@ -418,9 +467,15 @@ namespace GraphQL.AspNet.Common.Generics
         public static IReadOnlyDictionary<MethodInfo,  MethodInvoker> MethodInvokers => CACHED_METHOD_INVOKERS;
 
         /// <summary>
-        /// Gets the collection of cached property invokers for fast invocation in this app instance.
+        /// Gets the collection of cached property setter invokers for fast invocation in this app instance.
         /// </summary>
-        /// <value>The method invokers.</value>
-        public static IReadOnlyDictionary<Type,  PropertySetterCollection> PropertyInvokers => CACHED_PROPERTY_INVOKERS;
+        /// <value>The cached collection of property "setter" invokers.</value>
+        public static IReadOnlyDictionary<Type,  PropertySetterCollection> PropertySetterInvokers => CACHED_PROPERTY_SETTER_INVOKERS;
+
+        /// <summary>
+        /// Gets the collection of cached property getter invokers for fast invocation in this app instance.
+        /// </summary>
+        /// <value>The cached collection of property "getter" invokers.</value>
+        public static IReadOnlyDictionary<Type, PropertyGetterCollection> PropertyGetterInvokers => CACHED_PROPERTY_GETTER_INVOKERS;
     }
 }

@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -207,16 +208,39 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             if (!(this.GraphType is IInputObjectGraphType inputType))
                 return;
 
+            var defaultObject = InstanceFactory.CreateInstance(inputType.ObjectType);
+            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(inputType.ObjectType);
+
             // populate inputFields collection
             // populate the fields for this object type
             var inputFields = new List<IntrospectedInputValueType>();
             foreach (var field in inputType.Fields)
             {
+                object defaultValue;
+                if (field.TypeExpression.IsRequired)
+                {
+                    defaultValue = NoDefaultValue.Instance;
+                }
+                else if (propGetters.ContainsKey(field.InternalName))
+                {
+                    var getter = propGetters[field.InternalName];
+                    defaultValue = getter.Invoke(ref defaultObject);
+                }
+                else
+                {
+                    throw new GraphTypeDeclarationException(
+                        "Unable to determine the expected default value " +
+                        $"for field '{field.TypeExpression}'. The field " +
+                        $"is not required but no getter is defined on the " +
+                        $"owner .NET class from which a default value could be extracted.");
+                }
+
                 var introspectedType = schema.FindIntrospectedType(field.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, field.TypeExpression);
                 var inputField = new IntrospectedInputValueType(
                     field,
-                    introspectedType);
+                    introspectedType,
+                    defaultValue);
 
                 inputField.Initialize(schema);
                 inputFields.Add(inputField);

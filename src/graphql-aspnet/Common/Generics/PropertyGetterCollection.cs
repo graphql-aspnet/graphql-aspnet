@@ -18,16 +18,16 @@ namespace GraphQL.AspNet.Common.Generics
     /// the setters of a given object and apply a value. This is used instead of reflective calls
     /// for speed and performance at the expensive of an initial setup cost.
     /// </summary>
-    public class PropertySetterCollection : IReadOnlyDictionary<string, PropertySetterInvoker>
+    public class PropertyGetterCollection : IReadOnlyDictionary<string, PropertyGetterInvoker>
     {
-        private readonly Dictionary<string, PropertySetterInvoker> _setters;
+        private readonly Dictionary<string, PropertyGetterInvoker> _getters;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertySetterCollection"/> class.
+        /// Initializes a new instance of the <see cref="PropertyGetterCollection"/> class.
         /// </summary>
-        public PropertySetterCollection()
+        public PropertyGetterCollection()
         {
-            _setters = new Dictionary<string, PropertySetterInvoker>();
+            _getters = new Dictionary<string, PropertyGetterInvoker>();
         }
 
         /// <summary>
@@ -35,27 +35,27 @@ namespace GraphQL.AspNet.Common.Generics
         /// </summary>
         /// <param name="propInfo">The property information.</param>
         /// <param name="invoker">The invoker.</param>
-        public void Add(PropertyInfo propInfo, PropertySetterInvoker invoker)
+        public void Add(PropertyInfo propInfo, PropertyGetterInvoker invoker)
         {
-            _setters.Add(propInfo.Name, invoker);
+            _getters.Add(propInfo.Name, invoker);
         }
 
         /// <inheritdoc />
         public bool ContainsKey(string key)
         {
-            return _setters.ContainsKey(key);
+            return _getters.ContainsKey(key);
         }
 
         /// <inheritdoc />
-        public bool TryGetValue(string key, out PropertySetterInvoker value)
+        public bool TryGetValue(string key, out PropertyGetterInvoker value)
         {
-            return _setters.TryGetValue(key, out value);
+            return _getters.TryGetValue(key, out value);
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<string, PropertySetterInvoker>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, PropertyGetterInvoker>> GetEnumerator()
         {
-            return _setters.GetEnumerator();
+            return _getters.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -65,15 +65,15 @@ namespace GraphQL.AspNet.Common.Generics
         }
 
         /// <inheritdoc />
-        public int Count => _setters.Count;
+        public int Count => _getters.Count;
 
         /// <inheritdoc />
-        public PropertySetterInvoker this[string key] => _setters[key];
+        public PropertyGetterInvoker this[string key] => _getters[key];
 
         /// <inheritdoc />
-        public IEnumerable<string> Keys => _setters.Keys;
+        public IEnumerable<string> Keys => _getters.Keys;
 
         /// <inheritdoc />
-        public IEnumerable<PropertySetterInvoker> Values => _setters.Values;
+        public IEnumerable<PropertyGetterInvoker> Values => _getters.Values;
     }
 }

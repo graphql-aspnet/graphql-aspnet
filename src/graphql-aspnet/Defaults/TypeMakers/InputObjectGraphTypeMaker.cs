@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
 {
     using System;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;

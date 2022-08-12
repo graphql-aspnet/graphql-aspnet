@@ -31,5 +31,11 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
         /// <value>value.</value>
         [GraphField]
         public int Property2 { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{Property1}|{Property2}";
+        }
     }
 }

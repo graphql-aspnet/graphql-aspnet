@@ -17,6 +17,12 @@ namespace GraphQL.AspNet.Tests.Common
     [TestFixture]
     public class InstanceFactoryTests
     {
+        public InstanceFactoryTests()
+        {
+            this.GettableOnlyNumber = -15;
+            this.SettableNumber = -30;
+        }
+
         public int AddNumbers(int arg1, int arg2)
         {
             return arg1 + arg2;
@@ -223,7 +229,7 @@ namespace GraphQL.AspNet.Tests.Common
             Assert.AreEqual(13, recast.SettableNumber);
 
             // ensure it was cached.
-            Assert.AreEqual(1, InstanceFactory.PropertyInvokers.Count);
+            Assert.AreEqual(1, InstanceFactory.PropertySetterInvokers.Count);
             InstanceFactory.Clear();
         }
 
@@ -248,7 +254,41 @@ namespace GraphQL.AspNet.Tests.Common
             Assert.AreEqual("prop1Value", recast.Property1);
 
             // ensure it was cached.
-            Assert.AreEqual(1, InstanceFactory.PropertyInvokers.Count);
+            Assert.AreEqual(1, InstanceFactory.PropertySetterInvokers.Count);
+            InstanceFactory.Clear();
+        }
+
+        [Test]
+        public void PropertyGetterInvoker_StandardInvoke_ReturnsValue()
+        {
+            InstanceFactory.Clear();
+
+            var invokerSet = InstanceFactory.CreatePropertyGetterInvokerCollection(typeof(InstanceFactoryTests));
+
+            // both "gettable" and "settable" have setters
+            Assert.AreEqual(2, invokerSet.Count);
+
+            // Test GettableNumber
+            invokerSet.TryGetValue(nameof(GettableOnlyNumber), out var invoker);
+
+            Assert.IsNotNull(invoker);
+            var instance = (object)new InstanceFactoryTests();
+            var result = invoker(ref instance);
+
+            Assert.AreEqual(result, this.GettableOnlyNumber);
+
+            // Test SettableNumber
+            invokerSet.TryGetValue(nameof(SettableNumber), out invoker);
+
+            Assert.IsNotNull(invoker);
+            result = invoker(ref instance);
+
+            Assert.AreEqual(result, this.SettableNumber);
+
+            // ensure it was cached.
+            Assert.AreEqual(1, InstanceFactory.PropertyGetterInvokers.Count);
+            Assert.AreEqual(0, InstanceFactory.PropertySetterInvokers.Count);
+
             InstanceFactory.Clear();
         }
     }

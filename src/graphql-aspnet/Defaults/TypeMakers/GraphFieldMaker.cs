@@ -150,9 +150,17 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IInputGraphField>();
 
+            // if this field was marked as "not required" ensure that the expression of the field
+            // is nullable.  This may not be the case if its something like an int property
+            // which is "non-nullable" from .NETs perspective but can be "skipped" (with a default value of 0)
+            // from .NETs perspective
+            var typeExpression = template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName));
+            if (template.HasDefaultValue && !typeExpression.IsNullable)
+                typeExpression = typeExpression.UnWrapExpression();
+
             var field = new InputGraphField(
                     formatter.FormatFieldName(template.Name),
-                    template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
+                    typeExpression,
                     template.Route,
                     template.DeclaredName,
                     template.ObjectType,

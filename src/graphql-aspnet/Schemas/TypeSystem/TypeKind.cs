@@ -34,5 +34,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         [GraphSkip]
         DIRECTIVE,
+
+        [GraphSkip]
+        CONTROLLER,
     }
 }

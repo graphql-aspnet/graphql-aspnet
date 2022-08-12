@@ -142,8 +142,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             new object[] { typeof(BooleanScalarType), false, false },
 
             new object[] { typeof(ByteScalarType), (byte)1, (byte)1 },
-            new object[] { typeof(DateTimeScalarType), DateTime.Parse("2021-10-11 05:00AM"), DateTime.Parse("2021-10-11 05:00AM") },
-            new object[] { typeof(DateTimeOffsetScalarType), DateTimeOffset.Parse("2021-10-11 05:00AM"), DateTimeOffset.Parse("2021-10-11 05:00AM") },
+            new object[] { typeof(DateTimeScalarType), DateTime.Parse("2021-10-11T05:00:00.000-07:00"), DateTime.Parse("2021-10-11T05:00:00.000-07:00")},
+            new object[] { typeof(DateTimeOffsetScalarType), DateTimeOffset.Parse("2021-10-11T05:00:00.000-07:00"), DateTimeOffset.Parse("2021-10-11T05:00:00.000-07:00") },
 
             new object[] { typeof(DecimalScalarType), 1.234m, 1.234m },
             new object[] { typeof(DoubleScalarType), 1.234d, 1.234d },
@@ -176,7 +176,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var instance = InstanceFactory.CreateInstance(scalarType) as IScalarGraphType;
 
-            var data = instance.Serializer.Serialize(validTestValue);
+            var data = instance.Serialize(validTestValue);
             Assert.AreEqual(expectedOutput, data);
         }
     }

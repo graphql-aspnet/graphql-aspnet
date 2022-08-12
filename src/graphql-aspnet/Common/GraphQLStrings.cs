@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Common
 {
     using System;
+    using System.Text;
     using System.Text.RegularExpressions;
     using GraphQL.AspNet.Parsing;
 
@@ -60,6 +61,35 @@ namespace GraphQL.AspNet.Common
             }
 
             return nullOnFailure ? null : text.ToString();
+        }
+
+        /// <summary>
+        /// Escapes the specified text turing necessary characters into escaped unicode
+        /// representations of themselves.
+        /// </summary>
+        /// <param name="text">The text to escape.</param>
+        /// <remarks>Example:  "endingQuote\""  =>   "endingQuote\\u0022".</remarks>
+        /// <returns>The escaped text.</returns>
+        public static string Escape(string text)
+        {
+            if (text == null)
+                return null;
+
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in text)
+            {
+                if (c > 127 || c == '"')
+                {
+                    string encodedValue = "\\u" + ((int)c).ToString("x4");
+                    sb.Append(encodedValue);
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

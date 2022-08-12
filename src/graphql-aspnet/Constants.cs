@@ -200,6 +200,17 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// A set of constants for various values used in query language syntax.
+        /// </summary>
+        public static class QueryLanguage
+        {
+            public const string NULL = ParserConstants.Keywords.NullString;
+            public const string TRUE = ParserConstants.Keywords.TrueString;
+            public const string FALSE = ParserConstants.Keywords.FalseString;
+            public static readonly string FieldValueSeperator = ParserConstants.Keywords.FieldValueSeperatorString;
+        }
+
+        /// <summary>
         /// The reserved names for various introspection entities in GraphQL.
         /// </summary>
         public static class ReservedNames

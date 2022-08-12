@@ -42,12 +42,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <inheritdoc />
-        public override object Serialize(object item)
-        {
-            return item;
-        }
-
-        /// <inheritdoc />
         public override TypeCollection OtherKnownTypes { get; }
 
         /// <inheritdoc />

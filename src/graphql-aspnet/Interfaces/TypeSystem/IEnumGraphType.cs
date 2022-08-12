@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// Gets the values that can be supplied to this enum.
         /// </summary>
         /// <value>The values.</value>
-        IReadOnlyDictionary<string, IEnumValue> Values { get; }
+        IEnumValueCollection Values { get; }
 
         /// <summary>
         /// Gets or sets an object that will perform a conversion of raw data into a valid

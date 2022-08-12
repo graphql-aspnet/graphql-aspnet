@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -93,7 +94,7 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(assembly, nameof(assembly));
             var typesToAdd = assembly.LocateTypesInAssembly(Constants.AssemblyScanTypes);
             foreach (var type in typesToAdd)
-                this.AddType(type);
+                this.AddType(type, null);
 
             return this;
         }
@@ -103,8 +104,10 @@ namespace GraphQL.AspNet.Configuration
         /// in the type system and queriable via introspection.
         /// </summary>
         /// <typeparam name="TItem">The type to add.</typeparam>
+        /// <param name="typeKind">The kind of graph type to register the type as. Standard POCOs will
+        /// default to OBJECT unless otherwise specified.</param>
         /// <returns>SchemaOptions.</returns>
-        public SchemaOptions AddGraphType<TItem>()
+        public SchemaOptions AddGraphType<TItem>(TypeKind? typeKind = null)
         {
             if (Validation.IsCastable<GraphController>(typeof(TItem)))
             {
@@ -118,7 +121,7 @@ namespace GraphQL.AspNet.Configuration
                     $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a directive.");
             }
 
-            return this.AddType(typeof(TItem));
+            return this.AddType(typeof(TItem), null, null);
         }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace GraphQL.AspNet.Configuration
         public SchemaOptions AddController<TController>(ServiceLifetime? customLifetime = null)
             where TController : GraphController
         {
-            return this.AddType(typeof(TController), customLifetime);
+            return this.AddType(typeof(TController), null, customLifetime);
         }
 
         /// <summary>
@@ -144,7 +147,7 @@ namespace GraphQL.AspNet.Configuration
         public SchemaOptions AddDirective<TDirective>(ServiceLifetime? customLifetime = null)
             where TDirective : GraphDirective
         {
-            return this.AddType(typeof(TDirective), customLifetime);
+            return this.AddType(typeof(TDirective), null, customLifetime);
         }
 
         /// <summary>
@@ -153,23 +156,12 @@ namespace GraphQL.AspNet.Configuration
         /// graph types, controllers and directives.
         /// </summary>
         /// <param name="type">The type to add.</param>
+        /// <param name="typeKind">The kind of graph type to register the type as. Standard POCOs will
+        /// default to OBJECT unless otherwise specified.</param>
         /// <returns>SchemaOptions.</returns>
-        public SchemaOptions AddType(Type type)
+        public SchemaOptions AddType(Type type, TypeKind? typeKind = null)
         {
-            return this.AddType(type, null);
-        }
-
-        private SchemaOptions AddType(Type type, ServiceLifetime? customLifeForServices = null)
-        {
-            Validation.ThrowIfNull(type, nameof(type));
-            var newAdd = _possibleTypes.Add(new SchemaTypeToRegister(type));
-            if (newAdd)
-            {
-                if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
-                    this.RegisterTypeAsDependentService(type, customLifeForServices);
-            }
-
-            return this;
+            return this.AddType(type, typeKind, null);
         }
 
         /// <summary>
@@ -178,10 +170,47 @@ namespace GraphQL.AspNet.Configuration
         /// graph types, controllers and directives.
         /// </summary>
         /// <typeparam name="TType">The type to add.</typeparam>
+        /// <param name="typeKind">The kind of graph type to register the type as. Standard POCOs will
+        /// default to OBJECT unless otherwise specified.</param>
         /// <returns>SchemaOptions.</returns>
-        public SchemaOptions AddType<TType>()
+        public SchemaOptions AddType<TType>(TypeKind? typeKind = null)
         {
-            return this.AddType(typeof(TType));
+            return this.AddType(typeof(TType), typeKind);
+        }
+
+        private SchemaOptions AddType(Type type, TypeKind? typeKind = null, ServiceLifetime? customLifeForServices = null)
+        {
+            Validation.ThrowIfNull(type, nameof(type));
+
+            if (Validation.IsCastable<GraphDirective>(type))
+            {
+                if (typeKind != null && typeKind != TypeKind.DIRECTIVE)
+                {
+                    throw new SchemaConfigurationException($"The type {type.GetType().FriendlyName()} is a directive but " +
+                        $"was attempted to be registered as a '{typeKind.Value}'.");
+                }
+
+                typeKind = null;
+            }
+            else if (Validation.IsCastable<GraphController>(type))
+            {
+                if (typeKind != null && typeKind != TypeKind.CONTROLLER)
+                {
+                    throw new SchemaConfigurationException($"The type {type.GetType().FriendlyName()} is a controller but " +
+                        $"was attempted to be registered as a '{typeKind.Value}'.");
+                }
+
+                typeKind = null;
+            }
+
+            var newAdd = _possibleTypes.Add(new SchemaTypeToRegister(type, typeKind));
+            if (newAdd)
+            {
+                if (Validation.IsCastable<GraphController>(type) || Validation.IsCastable<GraphDirective>(type))
+                    this.RegisterTypeAsDependentService(type, customLifeForServices);
+            }
+
+            return this;
         }
 
         private void RegisterTypeAsDependentService(Type type, ServiceLifetime? lifeTimeScope = null)
@@ -246,7 +275,7 @@ namespace GraphQL.AspNet.Configuration
             Validation.ThrowIfNull(directiveType, nameof(directiveType));
             Validation.ThrowIfNotCastable<GraphDirective>(directiveType, nameof(directiveType));
 
-            this.AddType(directiveType);
+            this.AddType(directiveType, null, null);
             var applicator = new DirectiveApplicator(directiveType);
             this.AddConfigurationExtension(applicator);
 

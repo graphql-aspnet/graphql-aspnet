@@ -43,6 +43,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
+            this.HasDefaultValue = this.TypeExpression.IsNullable;
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
@@ -61,10 +62,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public object DefaultValue { get; set; }
-
-        /// <inheritdoc />
-        public bool HasDefaultValue { get; set; }
+        public bool HasDefaultValue { get; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }

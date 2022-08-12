@@ -37,16 +37,21 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntrospectedInputValueType"/> class.
+        /// Initializes a new instance of the <see cref="IntrospectedInputValueType" /> class.
         /// </summary>
         /// <param name="inputField">The field of an input object used to populate this value.</param>
         /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
-        public IntrospectedInputValueType(IInputGraphField inputField, IntrospectedType introspectedGraphType)
+        /// <param name="rawDefaultValue">The default value that should be supplied for this input value
+        /// when its not supplied on a query.</param>
+        public IntrospectedInputValueType(IInputGraphField inputField, IntrospectedType introspectedGraphType, object rawDefaultValue)
             : this(inputField)
         {
             Validation.ThrowIfNull(inputField, nameof(inputField));
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
-            _rawDefaultValue = inputField.DefaultValue;
+            if (rawDefaultValue != null && rawDefaultValue.GetType() == typeof(NoDefaultValue))
+                _rawDefaultValue = null;
+            else
+                _rawDefaultValue = rawDefaultValue;
         }
 
         /// <summary>

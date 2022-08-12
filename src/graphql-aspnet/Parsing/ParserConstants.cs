@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Parsing
 {
     using System;
+    using GraphQL.AspNet.Parsing.Lexing.Tokens;
 
     /// <summary>
     /// A set of constants scoped to the library.
@@ -45,14 +46,19 @@ namespace GraphQL.AspNet.Parsing
         /// </summary>
         public static class Keywords
         {
-            public static ReadOnlyMemory<char> Null = "null".AsMemory();
+            public const string NullString = "null";
+            public const string TrueString = "true";
+            public const string FalseString = "false";
+            public static readonly string FieldValueSeperatorString = TokenTypeNames.COLON.ToString();
+
+            public static ReadOnlyMemory<char> Null = NullString.AsMemory();
             public static ReadOnlyMemory<char> Query = "query".AsMemory();
             public static ReadOnlyMemory<char> Mutation = "mutation".AsMemory();
             public static ReadOnlyMemory<char> Subscription = "subscription".AsMemory();
             public static ReadOnlyMemory<char> On = "on".AsMemory();
             public static ReadOnlyMemory<char> Fragment = "fragment".AsMemory();
-            public static ReadOnlyMemory<char> True = "true".AsMemory();
-            public static ReadOnlyMemory<char> False = "false".AsMemory();
+            public static ReadOnlyMemory<char> True = TrueString.AsMemory();
+            public static ReadOnlyMemory<char> False = FalseString.AsMemory();
         }
 
         /// <summary>
