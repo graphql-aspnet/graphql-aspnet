@@ -53,7 +53,6 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <returns>IEnumValue.</returns>
         public IEnumValue Remove(string name)
         {
-
             if (_enumValuesByName.ContainsKey(name))
             {
                 var removedOption = _enumValuesByName[name];

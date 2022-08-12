@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Tests.Schemas.QueryLanguageTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -28,18 +29,12 @@ namespace GraphQL.AspNet.Tests.Schemas
         private static List<(object TestObject, string ExpectedResult)> _testValues;
         private static GraphSchema _schema;
 
-        private enum TestEnum
-        {
-            Value1,
-            Value2,
-        }
-
         private static void SetupTestData()
         {
             _testValues = new List<(object, string)>();
-            _testValues.Add((TestEnum.Value1, "VALUE1"));
-            _testValues.Add((TestEnum.Value2, "VALUE2"));
-            _testValues.Add(((TestEnum)45, "null"));
+            _testValues.Add((Happiness.Happy, "HAPPY"));
+            _testValues.Add((Happiness.Sad, "SAD"));
+            _testValues.Add(((Happiness)45, "null"));
 
             _testValues.Add(((sbyte)5, "5"));
             _testValues.Add(((sbyte)-5, "-5"));
@@ -53,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((-5, "-5"));
             _testValues.Add((5000000, "5000000"));
             _testValues.Add((-5000000, "-5000000"));
-            _testValues.Add((0, "0"));;
+            _testValues.Add((0, "0"));
 
             _testValues.Add((5U, "5"));
             _testValues.Add((5000000U, "5000000"));
@@ -126,6 +121,31 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((new TwoPropertyObject() { Property1 = "str", Property2 = 5 }, "{ property1: \"str\" property2: 5 }"));
             _testValues.Add((new TwoPropertyObject() { Property1 = "null", Property2 = 99 }, "{ property1: \"null\" property2: 99 }"));
             _testValues.Add((new TwoPropertyObject() { Property1 = "st\"ring", Property2 = -5 }, "{ property1: \"st\\u0022ring\" property2: -5 }"));
+
+            var parent = new Person("StandardPerson")
+            {
+                Name = "Bob",
+                Child = new Person("standardChild")
+                {
+                    Name = "Jane",
+                },
+            };
+            _testValues.Add((parent, "{ name: \"Bob\" child: { name: \"Jane\" child: null } }"));
+
+            var unicodePerson = new Person("최예나")
+            {
+                Name = "최예나",
+            };
+            _testValues.Add((
+                unicodePerson,
+                "{ name: \"\\ucd5c\\uc608\\ub098\" child: null }"));
+
+            var moodyPerson = new MoodyPerson("moodyPerson")
+            {
+                Name = "Joe",
+                HappinessLevel = Happiness.Sad,
+            };
+            _testValues.Add((moodyPerson, "{ name: \"Joe\" happinessLevel: SAD }"));
         }
 
         static QueryLanguageGeneratorTests()
@@ -139,8 +159,10 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             // add all test types to the schema
             var serverBuilder = new TestServerBuilder();
-            serverBuilder.AddType(typeof(TestEnum));
+            serverBuilder.AddType(typeof(Happiness));
             serverBuilder.AddType(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT);
+            serverBuilder.AddType(typeof(Person), TypeKind.INPUT_OBJECT);
+            serverBuilder.AddType(typeof(MoodyPerson), TypeKind.INPUT_OBJECT);
 
             // ensure all scalars represented
             _unUsedScalarTypes = new List<Type>();
@@ -156,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                     serverBuilder.AddType(type);
             }
 
-            // create the scheam
+            // create the schema
             var server = serverBuilder.Build();
             _schema = server.Schema;
         }

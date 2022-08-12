@@ -20,20 +20,18 @@ namespace GraphQL.AspNet.Common
     public static class GraphQLStrings
     {
         /// <summary>
-        /// <para>
-        /// Helper method that will take a raw, delimited, and UTC escaped block of a query and
+        /// Helper method that will take a raw, double-quoted, and unicode escaped block of characters and
         /// generate a string value devoid of delimiters and unescaped using the rules of string delimiting
         /// for graphql. (supports single and triple quote blocks). An improperly delimited string will be
         /// returned as null.
-        /// </para>
-        /// <para>
-        /// e.g.  Converts  {"Hell\u019f"}  to {HellƟ}.
-        /// </para>
         /// </summary>
         /// <param name="text">The text to manipulate.</param>
         /// <param name="nullOnFailure">if set to <c>true</c> should the string not be correctly delimited null is returned. When
-        /// false and the stirng is not correclty delimited, the original string is returned unaltered.</param>
-        /// <returns>System.String.</returns>
+        /// false and the stirng is not correclty delimited, the original string is returned unaltered.</param>        ///
+        /// <remarks>
+        /// e.g.  Converts  { "Hell\u019f" }  to HellƟ.
+        /// </remarks>
+        /// <returns>The unescaped string or <c>null</c>.</returns>
         public static string UnescapeAndTrimDelimiters(ReadOnlySpan<char> text, bool nullOnFailure = true)
         {
             // the provided text should not be empty
@@ -55,11 +53,10 @@ namespace GraphQL.AspNet.Common
                     text = text.Slice(1, text.Length - 2);
                     return Regex.Unescape(text.ToString());
                 }
-
-                // if this point is reached no delimiters were encountered,  its an invalid string
-                // representation
             }
 
+            // if this point is reached no delimiters were encountered,  its an invalid string
+            // representation
             return nullOnFailure ? null : text.ToString();
         }
 

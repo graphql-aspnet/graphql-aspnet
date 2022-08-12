@@ -26,7 +26,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("ENUM {Name}")]
     public class EnumGraphType : IEnumGraphType
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
