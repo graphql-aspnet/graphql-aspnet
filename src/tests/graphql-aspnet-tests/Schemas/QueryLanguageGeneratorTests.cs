@@ -12,8 +12,10 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -109,6 +111,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add(("test string", "\"test string\""));
             _testValues.Add(("   white\tspace   ", "\"   white\tspace   \""));
             _testValues.Add(("test string", "\"test string\""));
+            _testValues.Add(("있지", "\"\\uc788\\uc9c0\""));
             _testValues.Add((string.Empty, "\"\""));
 
             _testValues.Add((Guid.Parse("80332679-35FB-4FB5-8DF6-A7A8F91E4E05"), "\"80332679-35FB-4FB5-8DF6-A7A8F91E4E05\"".ToLowerInvariant()));
@@ -122,30 +125,23 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((new TwoPropertyObject() { Property1 = "null", Property2 = 99 }, "{ property1: \"null\" property2: 99 }"));
             _testValues.Add((new TwoPropertyObject() { Property1 = "st\"ring", Property2 = -5 }, "{ property1: \"st\\u0022ring\" property2: -5 }"));
 
-            var parent = new Person("StandardPerson")
-            {
-                Name = "Bob",
-                Child = new Person("standardChild")
-                {
-                    Name = "Jane",
-                },
-            };
+            var parent = new Person("StandardPerson") { Name = "Bob", Child = new Person("standardChild") { Name = "Jane" } };
             _testValues.Add((parent, "{ name: \"Bob\" child: { name: \"Jane\" child: null } }"));
 
-            var unicodePerson = new Person("최예나")
-            {
-                Name = "최예나",
-            };
-            _testValues.Add((
-                unicodePerson,
-                "{ name: \"\\ucd5c\\uc608\\ub098\" child: null }"));
+            var unicodePerson = new Person("UnicodePerson") { Name = "최예나" };
+            _testValues.Add((unicodePerson, "{ name: \"\\ucd5c\\uc608\\ub098\" child: null }"));
 
-            var moodyPerson = new MoodyPerson("moodyPerson")
-            {
-                Name = "Joe",
-                HappinessLevel = Happiness.Sad,
-            };
+            var moodyPerson = new MoodyPerson("moodyPerson") { Name = "Joe", HappinessLevel = Happiness.Sad };
             _testValues.Add((moodyPerson, "{ name: \"Joe\" happinessLevel: SAD }"));
+
+            // ensure that same level repeat references are fine
+            var grandParent = new GrandParent("grandparent") { Name = "grando" };
+            var child = new Person("child1") { Name = "child1" };
+            grandParent.Child1 = child;
+            grandParent.Child2 = child;
+            _testValues.Add((
+                grandParent,
+                "{ name: \"grando\" child1: { name: \"child1\" child: null } child2: { name: \"child1\" child: null } }"));
         }
 
         static QueryLanguageGeneratorTests()
@@ -163,6 +159,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             serverBuilder.AddType(typeof(TwoPropertyObject), TypeKind.INPUT_OBJECT);
             serverBuilder.AddType(typeof(Person), TypeKind.INPUT_OBJECT);
             serverBuilder.AddType(typeof(MoodyPerson), TypeKind.INPUT_OBJECT);
+            serverBuilder.AddType(typeof(GrandParent), TypeKind.INPUT_OBJECT);
 
             // ensure all scalars represented
             _unUsedScalarTypes = new List<Type>();
@@ -198,6 +195,18 @@ namespace GraphQL.AspNet.Tests.Schemas
                 _unUsedScalarTypes.Count,
                 "One or more built in scalars is not covered in " +
                 $"the {nameof(SerializeObject)} unit test set.");
+        }
+
+        [Test]
+        public void CircularReference_ThrowsException()
+        {
+            var loopedPerson = new Person("LoopedPerson") { Name = "Bob", Child = null };
+            loopedPerson.Child = loopedPerson;
+
+            Assert.Throws<GraphExecutionException>(() =>
+            {
+                QueryLanguageGenerator.SerializeObject(loopedPerson, _schema);
+            });
         }
     }
 }

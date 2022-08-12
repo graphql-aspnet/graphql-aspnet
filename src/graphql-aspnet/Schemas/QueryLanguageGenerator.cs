@@ -10,10 +10,12 @@
 namespace GraphQL.AspNet.Schemas
 {
     using System;
+    using System.Collections.Generic;
     using System.Text;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -32,6 +34,11 @@ namespace GraphQL.AspNet.Schemas
         /// converted.</param>
         /// <returns>A string representation of the object in graphql query language.</returns>
         public static string SerializeObject(object obj, ISchema schema)
+        {
+            return SerializeObject(obj, schema, null);
+        }
+
+        private static string SerializeObject(object obj, ISchema schema, HashSet<object> recursionStack)
         {
             if (obj == null)
                 return Constants.QueryLanguage.NULL;
@@ -67,16 +74,27 @@ namespace GraphQL.AspNet.Schemas
             }
             else if (graphType is IInputObjectGraphType iogt)
             {
-                return QueryLanguageGenerator.SerializeInputObject(obj, iogt, schema);
+                return QueryLanguageGenerator.SerializeInputObject(obj, iogt, schema, recursionStack);
             }
 
             return Constants.QueryLanguage.NULL;
         }
 
-        private static string SerializeInputObject(object obj, IInputObjectGraphType inputObjectGraphType, ISchema schema)
+        private static string SerializeInputObject(object obj, IInputObjectGraphType inputObjectGraphType, ISchema schema, HashSet<object> recursionStack = null)
         {
             if (obj == null || inputObjectGraphType == null)
                 return Constants.QueryLanguage.NULL;
+
+            recursionStack = recursionStack ?? new HashSet<object>();
+
+            if (recursionStack.Contains(obj))
+            {
+                throw new GraphExecutionException(
+                    $"Circular reference detected. Unable to convert an object of graph type " +
+                    $"'{inputObjectGraphType.Name}'(Kind: {inputObjectGraphType.Kind}) to query language syntax due to a self referencing child.");
+            }
+
+            recursionStack.Add(obj);
 
             var builder = new StringBuilder("{ ");
             var getters = InstanceFactory.CreatePropertyGetterInvokerCollection(obj.GetType());
@@ -89,12 +107,13 @@ namespace GraphQL.AspNet.Schemas
                 builder.Append(field.Name);
                 builder.Append(Constants.QueryLanguage.FieldValueSeperator);
                 builder.Append(" ");
-                builder.Append(SerializeObject(getter.Invoke(ref obj), schema));
+                builder.Append(SerializeObject(getter.Invoke(ref obj), schema, recursionStack));
                 builder.Append(" ");
             }
 
             builder.Append("}");
 
+            recursionStack.Remove(obj);
             return builder.ToString();
         }
     }
