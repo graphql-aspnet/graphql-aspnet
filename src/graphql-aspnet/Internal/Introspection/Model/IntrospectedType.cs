@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.LoadFields(schema);
             this.LoadInterfaces(schema);
             this.LoadEnumValues();
-            this.LoadInputValues(schema);
+            this.LoadInputFields(schema);
             this.LoadPossibleTypes(schema);
             this.LoadUrl(schema);
         }
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.EnumValues = list;
         }
 
-        private void LoadInputValues(IntrospectedSchema introspectedSchema)
+        private void LoadInputFields(IntrospectedSchema introspectedSchema)
         {
             if (!(this.GraphType is IInputObjectGraphType inputType))
                 return;

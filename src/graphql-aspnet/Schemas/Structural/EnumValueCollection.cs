@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -42,6 +43,13 @@ namespace GraphQL.AspNet.Schemas.Structural
         public void Add(IEnumValue value)
         {
             Validation.ThrowIfNull(value, nameof(value));
+            if (_enumValuesByName.ContainsKey(value.Name))
+            {
+                throw new GraphTypeDeclarationException(
+                    $"Duplciate enum value detected. The graph type '{_graphType.Name}' already " +
+                    $"declares an enum value named '{value.Name}'.");
+            }
+
             _enumValuesByName.Add(value.Name, value);
             _enumValuesByInternalLabel.Add(value.InternalLabel, value);
         }

@@ -150,6 +150,8 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IInputGraphField>();
 
+            var directives = template.CreateAppliedDirectives();
+
             var field = new InputGraphField(
                     formatter.FormatFieldName(template.Name),
                     template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
@@ -158,7 +160,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
                     template.ObjectType,
                     template.DeclaredReturnType,
                     template.IsRequired,
-                    template.CreateAppliedDirectives());
+                    directives);
 
             field.Description = template.Description;
 

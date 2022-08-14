@@ -11,12 +11,43 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class DirectiveLocationTests
     {
+        private static List<object[]> _schemaItemToLocationSource;
+
+        static DirectiveLocationTests()
+        {
+            _schemaItemToLocationSource = new List<object[]>();
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<ISchema>().Object, DirectiveLocation.SCHEMA });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IScalarGraphType>().Object, DirectiveLocation.SCALAR });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IObjectGraphType>().Object, DirectiveLocation.OBJECT });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IGraphField>().Object, DirectiveLocation.FIELD_DEFINITION });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IGraphArgument>().Object, DirectiveLocation.ARGUMENT_DEFINITION });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IInterfaceGraphType>().Object, DirectiveLocation.INTERFACE });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IUnionGraphType>().Object, DirectiveLocation.UNION });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IEnumGraphType>().Object, DirectiveLocation.ENUM });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IEnumValue>().Object, DirectiveLocation.ENUM_VALUE });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IInputObjectGraphType>().Object, DirectiveLocation.INPUT_OBJECT });
+            _schemaItemToLocationSource.Add(
+                new object[] { new Mock<IInputGraphField>().Object, DirectiveLocation.INPUT_FIELD_DEFINITION });
+        }
+
         [Test]
         public void Labels_AreUniqueValues()
         {
@@ -88,6 +119,36 @@ namespace GraphQL.AspNet.Tests.Schemas
         {
             var result = location.IsTypeDeclarationLocation();
             Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestCaseSource(nameof(_schemaItemToLocationSource))]
+        public void AsDirectiveLocation(ISchemaItem testItem, DirectiveLocation expectedLocation)
+        {
+            var result = testItem.AsDirectiveLocation();
+            Assert.AreEqual(expectedLocation, result);
+        }
+
+        [Test]
+        public void AsDirectiveLocation_AllSchemaLocationsAccountedFor()
+        {
+            // sanity test to ensure that every defined type system location
+            // is accounted for in AsDirectiveLocation extension
+            var allValues = Enum.GetValues(typeof(DirectiveLocation)).Cast<DirectiveLocation>().ToList();
+            foreach (DirectiveLocation location in allValues)
+            {
+                if (location == DirectiveLocation.AllTypeSystemLocations)
+                    continue;
+
+                if ((location & DirectiveLocation.AllTypeSystemLocations) == 0)
+                    continue;
+
+                if (_schemaItemToLocationSource.All(x => (DirectiveLocation)x[1] != location))
+                {
+                    Assert.Fail($"The directive location {location} is not accounted for " +
+                        $"in the test set for {nameof(DirectiveLocationExtensions.AsDirectiveLocation)}. Ensure " +
+                        $"the value is included and that the extension method is updated.");
+                }
+            }
         }
     }
 }

@@ -81,7 +81,12 @@ namespace GraphQL.AspNet.Tests.Logging
                 var concreteType = server.Schema.KnownTypes.FindConcreteType(type);
                 Assert.AreEqual(concreteType?.FriendlyName(true), logGraphType.GraphTypeType);
 
-                int? totalFields = type is IGraphFieldContainer fc ? fc.Fields.Count : null;
+                int? totalFields = null;
+                if (type is IGraphFieldContainer fc)
+                    totalFields = fc.Fields.Count;
+                else if (type is IInputObjectGraphType iogt)
+                    totalFields = iogt.Fields.Count;
+
                 Assert.AreEqual(totalFields, logGraphType.GraphFieldCount);
             }
         }

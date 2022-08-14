@@ -48,6 +48,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                     foreach (var option in enumType.Values)
                         yield return option.Value;
                 }
+                else if (graphType is IInputObjectGraphType inputObject)
+                {
+                    // each input field
+                    foreach (var inputField in inputObject.Fields)
+                        yield return inputField;
+                }
                 else if (graphType is IGraphFieldContainer fieldContainer)
                 {
                     // each field in each graph type

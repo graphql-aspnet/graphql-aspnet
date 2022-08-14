@@ -55,12 +55,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 case IInputObjectGraphType _:
                     return DirectiveLocation.INPUT_OBJECT;
 
+                case IInputGraphField _:
+                    return DirectiveLocation.INPUT_FIELD_DEFINITION;
+
                 case IGraphField field:
-                    if (field.Parent is IObjectGraphType)
-                        return DirectiveLocation.FIELD_DEFINITION;
-                    if (field.Parent is IInputObjectGraphType)
-                        return DirectiveLocation.INPUT_FIELD_DEFINITION;
-                    break;
+                    return DirectiveLocation.FIELD_DEFINITION;
 
                 case IGraphArgument _:
                     return DirectiveLocation.ARGUMENT_DEFINITION;

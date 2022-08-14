@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Configuration
     /// Helpful filters for navgiating the <see cref="ISchemaItem"/> selection
     /// set when late binding directives.
     /// </summary>
-    public static class SchemaItemExtensions
+    public static class SchemaItemFilterExtensions
     {
         /// <summary>
         /// Determines whether the specified item is one related to introspection objects.
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Determines whether the given schema item is a field on the graph type
+        /// Determines whether the given schema item is a field an OBJECT or INPUT_OBJECT on the graph type
         /// declared by the <typeparamref name="TType"/> parameter.
         /// </summary>
         /// <typeparam name="TType">The model type that declares the target field.</typeparam>
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Configuration
             TypeKind graphTypeKind = TypeKind.OBJECT)
         {
             return schemaItem != null
-                && schemaItem is IGraphField gf
+                && schemaItem is IGraphFieldBase gf
                 && string.Compare(gf.Name, fieldName, !fieldNameIsCaseSensitive) == 0
                 && gf.Parent is IGraphType gt
                 && gt.Kind == graphTypeKind
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Configuration
         }
 
         /// <summary>
-        /// Determines whether the given schema item is a field on a graph type.
+        /// Determines whether the given schema item is a field on an OBJECT or INPUT_OBJECT graph type.
         /// </summary>
         /// <param name="schemaItem">The schema item to inspect.</param>
         /// <param name="graphTypeName">the name of the graph type that owns the field.</param>
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Configuration
             bool graphTypeNameIsCaseSensitive = true)
         {
             return schemaItem != null
-                && schemaItem is IGraphField gf
+                && schemaItem is IGraphFieldBase gf
                 && string.Compare(gf.Name, fieldName, !fieldNameIsCaseSensitive) == 0
                 && gf.Parent is IGraphType gt
                 && string.Compare(gt.Name, graphTypeName, !graphTypeNameIsCaseSensitive) == 0;
@@ -225,7 +225,7 @@ namespace GraphQL.AspNet.Configuration
             return schemaItem != null
                 && schemaItem is IGraphArgument ga
                 && string.Compare(ga.Name, argumentName, !argumentNameIsCaseSensitive) == 0
-                && ga.Parent is IGraphField gf
+                && ga.Parent is IGraphFieldBase gf
                 && string.Compare(gf.Name, fieldName, !fieldNameIsCaseSensitive) == 0
                 && gf.Parent is IGraphType gt
                 && gt.Kind == parentTypeKind
@@ -247,7 +247,7 @@ namespace GraphQL.AspNet.Configuration
             if (item is IGraphType gt)
                 return gt.IsVirtual;
 
-            if (item is IGraphField gf)
+            if (item is IGraphFieldBase gf)
                 return gf.Parent.IsVirtualItem();
 
             if (item is IEnumValue ev)

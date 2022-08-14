@@ -109,19 +109,34 @@ namespace GraphQL.AspNet.Configuration
         /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddGraphType<TItem>(TypeKind? typeKind = null)
         {
-            if (Validation.IsCastable<GraphController>(typeof(TItem)))
+            return this.AddGraphType(typeof(TItem), typeKind);
+        }
+
+        /// <summary>
+        /// Registers the type to the schema when it is instaniated, it will be made available
+        /// in the type system and queriable via introspection.
+        /// </summary>
+        /// <param name="type">The type to add.</param>
+        /// <param name="typeKind">The kind of graph type to register the type as. Standard POCOs will
+        /// default to OBJECT unless otherwise specified.</param>
+        /// <returns>SchemaOptions.</returns>
+        public SchemaOptions AddGraphType(Type type, TypeKind? typeKind = null)
+        {
+            Validation.ThrowIfNull(type, nameof(type));
+
+            if (Validation.IsCastable<GraphController>(type))
             {
                 throw new SchemaConfigurationException(
-                    $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a controller.");
+                    $"The type '{type.FriendlyName()}' cannot be registered as a graph type. It is a controller.");
             }
 
-            if (Validation.IsCastable<GraphDirective>(typeof(TItem)))
+            if (Validation.IsCastable<GraphDirective>(type))
             {
                 throw new SchemaConfigurationException(
-                    $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a directive.");
+                    $"The type '{type.FriendlyName()}' cannot be registered as a graph type. It is a directive.");
             }
 
-            return this.AddType(typeof(TItem), typeKind, null);
+            return this.AddType(type, typeKind, null);
         }
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using NUnit.Framework;
 
     [TestFixture]
-    public class SchemaItemExtensionTests
+    public class SchemaItemFilterExtensionTests
     {
         [Test]
         public void IsField_ByType()
@@ -52,6 +52,42 @@ namespace GraphQL.AspNet.Tests.Configuration
             foreach (var item in server.Schema.AllSchemaItems())
             {
                 if (item.IsField("TwoPropertyObject", "property1"))
+                    foundItems.Add(item);
+            }
+
+            Assert.AreEqual(1, foundItems.Count);
+        }
+
+        [Test]
+        public void IsField_ByType_ForInputField()
+        {
+            var server = new TestServerBuilder()
+                .AddType<TwoPropertyObject>(TypeKind.INPUT_OBJECT)
+                .Build();
+
+            var foundItems = new List<ISchemaItem>();
+
+            foreach (var item in server.Schema.AllSchemaItems())
+            {
+                if (item.IsField<TwoPropertyObject>("property1", graphTypeKind: TypeKind.INPUT_OBJECT))
+                    foundItems.Add(item);
+            }
+
+            Assert.AreEqual(1, foundItems.Count);
+        }
+
+        [Test]
+        public void IsField_ByName_ForInputField()
+        {
+            var server = new TestServerBuilder()
+                .AddType<TwoPropertyObject>(TypeKind.INPUT_OBJECT)
+                .Build();
+
+            var foundItems = new List<ISchemaItem>();
+
+            foreach (var item in server.Schema.AllSchemaItems())
+            {
+                if (item.IsField("Input_TwoPropertyObject", "property1"))
                     foundItems.Add(item);
             }
 
