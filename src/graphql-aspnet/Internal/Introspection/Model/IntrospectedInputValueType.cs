@@ -67,9 +67,9 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             // see spec: https://graphql.github.io/graphql-spec/October2021/#sec-The-__InputValue-Type
             this.DefaultValue = null;
 
-            // case for "no default value supplied"
-            if (_rawDefaultValue == null || _rawDefaultValue.GetType() == typeof(NoDefaultValue))
+            if (_rawDefaultValue != null && _rawDefaultValue.GetType() == typeof(NoDefaultValue))
             {
+                // case for "no default value supplied"
                 this.DefaultValue = null;
             }
             else

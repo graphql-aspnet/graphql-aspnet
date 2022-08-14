@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
 {
     using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
@@ -18,17 +19,32 @@ namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
     {
         public InputTestObject()
         {
-            this.Id = -1;
+            this.NotRequiredButSetId = -1;
 
-            this.TwoProp = new TwoPropertyObject()
+            this.TwoPropWithDefaultValue = new TwoPropertyObject()
             {
                 Property1 = "strvalue",
                 Property2 = 5,
             };
+
+            this.UnrequiredButTrueBool = true;
         }
 
-        public int Id { get; set; }
+        public int NotRequiredButSetId { get; set; }
 
-        public TwoPropertyObject TwoProp { get; set; }
+        [Required]
+        public int RequiredId { get; set; }
+
+        [Required]
+        public bool RequiredBool { get; set; }
+
+        public bool UnrequiredButTrueBool { get; set; }
+
+        public TwoPropertyObject TwoPropWithDefaultValue { get; set; }
+
+        public TwoPropertyObject TwoPropWithNoDefaultValue { get; set; }
+
+        [Required]
+        public TwoPropertyObject RequiredTwoProp { get; set; }
     }
 }

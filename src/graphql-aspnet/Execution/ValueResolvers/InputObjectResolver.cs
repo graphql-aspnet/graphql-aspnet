@@ -101,17 +101,46 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 var resolver = _fieldResolvers.ContainsKey(inputField.Key) ? _fieldResolvers[inputField.Key] : null;
 
                 PropertySetterInvoker propSetter = null;
-                var field = _graphType.Fields.FindField(inputField.Key) as ITypedSchemaItem;
-                if (field != null)
+                var actualField = _graphType.Fields.FindField(inputField.Key);
+                if (actualField != null)
                 {
-                    propSetter = _propSetters.ContainsKey(field.InternalName) ? _propSetters[field.InternalName] : null;
+                    propSetter = _propSetters.ContainsKey(actualField.InternalName) ? _propSetters[actualField.InternalName] : null;
                 }
 
                 if (resolver == null || propSetter == null)
                     continue;
 
                 var resolvedValue = resolver.Resolve(inputField.Value, variableData);
-                propSetter(ref instance, resolvedValue);
+                if (resolvedValue != null || actualField.TypeExpression.IsNullable)
+                {
+                    propSetter(ref instance, resolvedValue);
+                }
+                else if (actualField.TypeExpression.IsNonNullable)
+                {
+                    // if the field is not required (meaning it has a default value)
+                    // the dfault value is already set by the instantiation of the
+                    // input object, no set action is actually required
+                    //
+                    // we just need to validate that hte field does indeed
+                    // have a default value (isRequired == false)
+                    if (actualField.IsRequired)
+                    {
+                        // the document validation rules
+                        // should prevent this scenario from ever happening
+                        // but trap it just in case to give a helpful exception
+                        SourceOrigin origin = null;
+                        if (resolvableItem is IDocumentPart docPart)
+                        {
+                            origin = docPart.Node.Location.AsOrigin();
+                        }
+
+                        throw new GraphExecutionException(
+                            $"Unable to resolve type '{_graphType.Name}'. Field " +
+                            $"'{actualField.Name}' received a null value but is non-nullable " +
+                            $"and has no default value.",
+                            origin);
+                    }
+                }
             }
 
             // check all the fields that "must have a value"
@@ -119,9 +148,27 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
             foreach (var field in _graphType.Fields.NonNullableFields)
             {
                 // if a non-nullable field was supplied on the request
-                // skip it
+                // and processed successfully then skip it
                 if (suppliedFields != null && suppliedFields.TryGetField(field.Name, out _))
                     continue;
+
+                if (field.IsRequired)
+                {
+                    // the document validation rules
+                    // should prevent this scenario from ever happening
+                    // but trap it just in case to give a helpful exception
+                    SourceOrigin origin = null;
+                    if (resolvableItem is IDocumentPart docPart)
+                    {
+                        origin = docPart.Node.Location.AsOrigin();
+                    }
+
+                    throw new GraphExecutionException(
+                        $"Unable to resolve type '{_graphType.Name}'. Field " +
+                        $"'{field.Name}' was not supplied but is non-nullable " +
+                        $"and has no default value.",
+                        origin);
+                }
 
                 var propSetter = _propSetters.ContainsKey(field.InternalName) ? _propSetters[field.InternalName] : null;
                 var resolver = _fieldResolvers.ContainsKey(field.Name) ? _fieldResolvers[field.Name] : null;

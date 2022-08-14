@@ -70,6 +70,9 @@ namespace GraphQL.AspNet.Configuration
             bool fieldNameIsCaseSensitive = true,
             TypeKind graphTypeKind = TypeKind.OBJECT)
         {
+            if (fieldName == null)
+                return false;
+
             return schemaItem != null
                 && schemaItem is IGraphFieldBase gf
                 && string.Compare(gf.Name, fieldName, !fieldNameIsCaseSensitive) == 0
@@ -97,6 +100,9 @@ namespace GraphQL.AspNet.Configuration
             bool fieldNameIsCaseSensitive = true,
             bool graphTypeNameIsCaseSensitive = true)
         {
+            if (graphTypeName == null || fieldName == null)
+                return false;
+
             return schemaItem != null
                 && schemaItem is IGraphFieldBase gf
                 && string.Compare(gf.Name, fieldName, !fieldNameIsCaseSensitive) == 0
@@ -135,6 +141,9 @@ namespace GraphQL.AspNet.Configuration
            string graphTypeName,
            bool graphTypeNameIsCaseSensitive = true)
         {
+            if (graphTypeName == null)
+                return false;
+
             return schemaItem != null
                 && schemaItem is IObjectGraphType gt
                 && gt.Kind == TypeKind.OBJECT
@@ -175,6 +184,9 @@ namespace GraphQL.AspNet.Configuration
            string graphTypeName,
            bool graphTypeNameIsCaseSensitive = true)
         {
+            if (graphTypeName == null)
+                return false;
+
             return schemaItem != null
                 && schemaItem is IGraphType gt
                 && string.Compare(gt.Name, graphTypeName, !graphTypeNameIsCaseSensitive) == 0;
@@ -191,6 +203,9 @@ namespace GraphQL.AspNet.Configuration
         public static bool IsEnumValue<TEnum>(this ISchemaItem schemaItem, TEnum enumValue)
             where TEnum : Enum
         {
+            if (enumValue == null)
+                return false;
+
             return schemaItem != null
                 && schemaItem is IEnumValue ev
                 && ev.Parent.ObjectType == typeof(TEnum)
@@ -222,6 +237,9 @@ namespace GraphQL.AspNet.Configuration
             bool argumentNameIsCaseSensitive = true,
             TypeKind parentTypeKind = TypeKind.OBJECT)
         {
+            if (fieldName == null || argumentName == null)
+                return false;
+
             return schemaItem != null
                 && schemaItem is IGraphArgument ga
                 && string.Compare(ga.Name, argumentName, !argumentNameIsCaseSensitive) == 0
@@ -231,6 +249,71 @@ namespace GraphQL.AspNet.Configuration
                 && gt.Kind == parentTypeKind
                 && gt is ITypedSchemaItem tsi
                 && tsi.ObjectType == typeof(TType);
+        }
+
+        /// <summary>
+        /// Determines whether the schema item is an argument on a directive,
+        /// declared as <typeparamref name="TType" />.
+        /// </summary>
+        /// <typeparam name="TType">The .NET class that represents
+        /// the owning directive of this argument.</typeparam>
+        /// <param name="schemaItem">The schema item to inspect.</param>
+        /// <param name="argumentName">The name of the argument as
+        /// its declared on the directive.</param>
+        /// <param name="argumentNameIsCaseSensitive">if set to <c>true</c>
+        /// the argument name must match the name in the directive exactly.</param>
+        /// <returns><c>true</c> if the specified schema item is a matching argument; otherwise, <c>false</c>.</returns>
+        public static bool IsDirectiveArgument<TType>(
+            this ISchemaItem schemaItem,
+            string argumentName,
+            bool argumentNameIsCaseSensitive = true)
+        {
+            if (argumentName == null)
+                return false;
+
+            return schemaItem != null
+                && schemaItem is IGraphArgument ga
+                && string.Compare(ga.Name, argumentName, !argumentNameIsCaseSensitive) == 0
+                && ga.Parent is IDirective gt
+                && gt.Kind == TypeKind.DIRECTIVE
+                && gt is ITypedSchemaItem tsi
+                && tsi.ObjectType == typeof(TType);
+        }
+
+        /// <summary>
+        /// Determines whether the schema item is an argument on a directive.
+        /// </summary>
+        /// <param name="schemaItem">The schema item to inspect.</param>
+        /// <param name="directiveName">The Name of the directive to match on.</param>
+        /// <param name="argumentName">The name of the argument as
+        /// its declared on the directive.</param>
+        /// <param name="directiveNameIsCaseSensitive">if set to <c>true</c> name of the directive must match exactly
+        /// as its declared in the schema.</param>
+        /// <param name="argumentNameIsCaseSensitive">if set to <c>true</c>
+        /// the argument name must match the name of the argument on the directive exactly.</param>
+        /// <returns><c>true</c> if the specified schema item is a matching argument; otherwise, <c>false</c>.</returns>
+        public static bool IsDirectiveArgument(
+            this ISchemaItem schemaItem,
+            string directiveName,
+            string argumentName,
+            bool directiveNameIsCaseSensitive = true,
+            bool argumentNameIsCaseSensitive = true)
+        {
+            if (directiveName == null || argumentName == null)
+                return false;
+
+            if (directiveName != null)
+            {
+                while (directiveName.StartsWith("@"))
+                    directiveName = directiveName.Substring(1);
+            }
+
+            return schemaItem != null
+                && schemaItem is IGraphArgument ga
+                && string.Compare(ga.Name, argumentName, !argumentNameIsCaseSensitive) == 0
+                && ga.Parent is IDirective gt
+                && gt.Kind == TypeKind.DIRECTIVE
+                && string.Compare(gt.Name, directiveName, !directiveNameIsCaseSensitive) == 0;
         }
 
         /// <summary>

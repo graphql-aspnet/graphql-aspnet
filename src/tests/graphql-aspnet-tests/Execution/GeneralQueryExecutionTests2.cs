@@ -246,5 +246,77 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task NonNullableArgumentWithDefaultValue_WhenNotSupplied_UsesDefaultValue()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            // simple.nonNullableIntArg has a argument of int with a default
+            // value of 3
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query {
+                      ... {
+                          simple  {
+                              nonNullableIntArg
+                          }
+                     }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""nonNullableIntArg"": 22
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task NonNullableInputFieldWithDefaultValue_WhenVariableSuppliedIsNull_UsesDefaultValue()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
+            // but receives null via the variable
+            // however, since the field has a default value defined (because its not required)
+            // the value resolves correctly
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query ($var1: Int = null){
+                      ... {
+                          simple  {
+                              nonNullableInputField(inputField: {id: $var1 })
+                          }
+                     }
+                }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""nonNullableInputField"": 22
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }

@@ -1772,12 +1772,32 @@ namespace GraphQL.AspNet.Tests.Execution
                         ""name"": ""InputObject"",
                         ""inputFields"": [
                             {
-                                ""name"": ""id"",
+                                ""name"": ""notRequiredButSetId"",
                                 ""defaultValue"": ""-1""
                             },
                             {
-                                ""name"": ""twoProp"",
+                                ""name"": ""requiredId"",
+                                ""defaultValue"": null
+                            },
+                            {
+                                ""name"": ""requiredBool"",
+                                ""defaultValue"": null
+                            },
+                            {
+                                ""name"": ""unrequiredButTrueBool"",
+                                ""defaultValue"": ""true""
+                            },
+                            {
+                                ""name"": ""twoPropWithDefaultValue"",
                                 ""defaultValue"": ""{ property1: \""strvalue\"" property2: 5 }""
+                            },
+                            {
+                                ""name"": ""twoPropWithNoDefaultValue"",
+                                ""defaultValue"": ""null""
+                            },
+                            {
+                                ""name"": ""requiredTwoProp"",
+                                ""defaultValue"": null
                             }
                         ]
                     }

@@ -240,6 +240,18 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             AddQuery(
                 "5.8.5",
                 "query Operation1($var1: String!){ escalators (ids: [$var1, 3]) { id } }");
+
+            // var1 is declared as an Int with <null> default, verticalMove.id is declared
+            // as Int!
+            AddQuery(
+                "5.8.5",
+                "query Operation1($var1: Int = null){ peopleMovers { verticalMover (id: $var1) { id } } }");
+
+            // var1 is declared as an Int with <null> default, e.id is declared
+            // as Int!
+            AddQuery(
+                "5.8.5",
+                "query Operation1($var1: Int = null){ peopleMovers { matchElevator (e: {id: $var1 name: \"bob\" }) { id } } }");
         }
 
         [TestCaseSource(nameof(TestQueries))]

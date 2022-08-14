@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Controllers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [GraphRoute("simple")]
@@ -92,6 +93,19 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
         public IGraphActionResult ThrowsException()
         {
             throw new InvalidOperationException("This is an invalid message");
+        }
+
+        [Query("nonNullableIntArg")]
+        public int nonNullableArgumentWithDefaultValue(
+            [FromGraphQL(TypeExpressions.IsNotNull)] int id = 3)
+        {
+            return id == 3 ? 22 : -1;
+        }
+
+        [Query("nonNullableInputField")]
+        public int nonNullableInputFieldWithDefaultValue(NonNullInputField inputField)
+        {
+            return inputField != null && inputField.Id == 33 ? 22 : -1;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Configuration.SchemaItemExtensionTestData;
@@ -226,6 +227,45 @@ namespace GraphQL.AspNet.Tests.Configuration
         }
 
         [Test]
+        public void IsDirectiveArgument()
+        {
+            var server = new TestServerBuilder()
+                .Build();
+
+            var foundItems = new List<ISchemaItem>();
+
+            foreach (var item in server.Schema.AllSchemaItems(true))
+            {
+                if (item.IsDirectiveArgument<IncludeDirective>("if"))
+                    foundItems.Add(item);
+            }
+
+            // skip and include
+            Assert.AreEqual(1, foundItems.Count);
+            Assert.IsTrue(foundItems.Any(x => x is IGraphArgument a && a.Parent.Name == Constants.ReservedNames.INCLUDE_DIRECTIVE));
+        }
+
+        [TestCase("@include")]
+        [TestCase("include")]
+        public void IsDirectiveArgument_ByType(string directiveName)
+        {
+            var server = new TestServerBuilder()
+                .Build();
+
+            var foundItems = new List<ISchemaItem>();
+
+            foreach (var item in server.Schema.AllSchemaItems(true))
+            {
+                if (item.IsDirectiveArgument(directiveName, "if"))
+                    foundItems.Add(item);
+            }
+
+            // skip and include
+            Assert.AreEqual(1, foundItems.Count);
+            Assert.IsTrue(foundItems.Any(x => x is IGraphArgument a && a.Parent.Name == Constants.ReservedNames.INCLUDE_DIRECTIVE));
+        }
+
+        [Test]
         public void NullSchemaItem_IsConsideredVirtual()
         {
             ISchemaItem item = null;
@@ -240,7 +280,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         }
 
         [Test]
-        public void IGraphArugment()
+        public void IsArgument_Any()
         {
             var server = new TestServerBuilder()
             .AddGraphQL(o =>
