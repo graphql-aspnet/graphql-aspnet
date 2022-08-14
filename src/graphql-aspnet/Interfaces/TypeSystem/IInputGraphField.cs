@@ -15,9 +15,10 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     public interface IInputGraphField : IGraphFieldBase, ITypedSchemaItem
     {
         /// <summary>
-        /// Gets a value indicating whether this input field has default value.
+        /// Gets a value indicating whether this instance was explictly marked as required, meaning it
+        /// must be supplied on a query.
         /// </summary>
-        /// <value><c>true</c> if this instance has default value; otherwise, <c>false</c>.</value>
-        bool HasDefaultValue { get; }
+        /// <value><c>true</c> if this instance is required; otherwise, <c>false</c>.</value>
+        bool IsRequired { get; }
     }
 }

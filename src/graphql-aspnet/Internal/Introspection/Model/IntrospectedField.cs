@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A model object containing data for the __Field type of one field in a graph type.
     /// </summary>
     [DebuggerDisplay("field: {Name}")]
-    public class IntrospectedField : IntrospectedItem, ISchemaItem
+    public sealed class IntrospectedField : IntrospectedItem, ISchemaItem
     {
         private readonly IGraphField _field;
 
@@ -38,15 +38,15 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         }
 
         /// <inheritdoc />
-        public override void Initialize(IntrospectedSchema schema)
+        public override void Initialize(IntrospectedSchema introspectedSchema)
         {
             var list = new List<IntrospectedInputValueType>();
             foreach (var arg in _field.Arguments.Where(x => !x.ArgumentModifiers.HasFlag(GraphArgumentModifiers.Internal)))
             {
-                var introspectedType = schema.FindIntrospectedType(arg.TypeExpression.TypeName);
+                var introspectedType = introspectedSchema.FindIntrospectedType(arg.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, arg.TypeExpression);
                 var inputValue = new IntrospectedInputValueType(arg, introspectedType);
-                inputValue.Initialize(schema);
+                inputValue.Initialize(introspectedSchema);
                 list.Add(inputValue);
             }
 

@@ -12,14 +12,13 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A representation of data about a graph type being exposed as an input to another field.
     /// </summary>
     [DebuggerDisplay("Introspected Input Value: {Name}")]
-    public class IntrospectedInputValueType : IntrospectedItem, ISchemaItem
+    public sealed class IntrospectedInputValueType : IntrospectedItem, ISchemaItem
     {
         private readonly object _rawDefaultValue;
 
@@ -48,49 +47,35 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         {
             Validation.ThrowIfNull(inputField, nameof(inputField));
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
-            if (rawDefaultValue != null && rawDefaultValue.GetType() == typeof(NoDefaultValue))
-                _rawDefaultValue = null;
-            else
-                _rawDefaultValue = rawDefaultValue;
+            _rawDefaultValue = rawDefaultValue;
         }
 
         /// <summary>
         /// Prevents a default instance of the <see cref="IntrospectedInputValueType" /> class from being created.
         /// </summary>
-        /// <param name="argument">The argument being introspected.</param>
-        private IntrospectedInputValueType(ISchemaItem argument)
-            : base(argument)
+        /// <param name="schemaItem">The schema item being introspected.</param>
+        private IntrospectedInputValueType(ISchemaItem schemaItem)
+            : base(schemaItem)
         {
         }
 
         /// <inheritdoc />
-        public override void Initialize(IntrospectedSchema schema)
+        public override void Initialize(IntrospectedSchema introspectedSchema)
         {
-            if (_rawDefaultValue == null)
-                return;
+            // graphql requires and defaultValue parameters be encoded as a string
+            // in query language syntax
+            // see spec: https://graphql.github.io/graphql-spec/October2021/#sec-The-__InputValue-Type
+            this.DefaultValue = null;
 
-            if (_rawDefaultValue is bool boolValue)
+            // case for "no default value supplied"
+            if (_rawDefaultValue == null || _rawDefaultValue.GetType() == typeof(NoDefaultValue))
             {
-                // microsoft returns "True" and "False" for boolean conversions to string
-                // #sad face
-                this.DefaultValue = boolValue.ToString().ToLowerInvariant();
-            }
-            else if (_rawDefaultValue is string stringValue)
-            {
-                // graphql requires and defaultValue parameters be encoded as a string
-                // see spec: https://graphql.github.io/graphql-spec/October2021/#sec-The-__InputValue-Type
-                // any strings must be escaped to be treated as a string
-                // e.g. convert "myString" => "\"myString\""
-                var delimiter = stringValue.Contains("\n") ? ParserConstants.BLOCK_STRING_DELIMITER : ParserConstants.NORMAL_STRING_DELIMITER;
-                this.DefaultValue = $"{delimiter}{stringValue}{delimiter}";
-            }
-            else if (this.IntrospectedGraphType.Kind == TypeKind.ENUM)
-            {
-                this.DefaultValue = schema.Schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(_rawDefaultValue?.ToString());
+                this.DefaultValue = null;
             }
             else
             {
-                this.DefaultValue = _rawDefaultValue.ToString();
+                var generator = new QueryLanguageGenerator(introspectedSchema.Schema);
+                this.DefaultValue = generator.SerializeObject(_rawDefaultValue);
             }
         }
 

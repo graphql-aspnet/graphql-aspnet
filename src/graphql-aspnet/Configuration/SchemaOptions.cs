@@ -121,7 +121,7 @@ namespace GraphQL.AspNet.Configuration
                     $"The type '{typeof(TItem).FriendlyName()}' cannot be registered as a graph type. It is a directive.");
             }
 
-            return this.AddType(typeof(TItem), null, null);
+            return this.AddType(typeof(TItem), typeKind, null);
         }
 
         /// <summary>

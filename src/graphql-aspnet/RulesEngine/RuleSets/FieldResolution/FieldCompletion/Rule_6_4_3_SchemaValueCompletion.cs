@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A rule that inspects a completed result to ensure it conforms to the field's type expression
@@ -43,7 +44,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
             // 6.4.3 section 1c
             // This is a quick short cut and customed error message for a common top-level null mismatch.
             var dataItemTypeExpression = context.DataItem.TypeExpression;
-            if (dataItemTypeExpression.IsRequired && dataObject == null)
+            if (dataItemTypeExpression.IsNonNullable && dataObject == null)
             {
                 this.ValidationError(
                 context,
@@ -90,7 +91,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
             if (!mangledTypeExpression.Matches(dataObject))
             {
                 // generate a valid, properly cased type expression reference for the data that was provided
-                var actualExpression = GraphValidation.GenerateTypeExpression(context.ResultData.GetType());
+                var actualExpression = GraphTypeExpression.FromType(context.ResultData.GetType());
 
                 // Fake the type expression against the real graph type
                 // this step only validates the meta graph types the actual type may be different (but castable to the concrete

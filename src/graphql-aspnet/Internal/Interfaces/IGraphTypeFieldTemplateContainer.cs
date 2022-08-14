@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// <summary>
         /// Gets the explicitly and implicitly decalred fields found on this instance.
         /// </summary>
-        /// <value>The methods.</value>
-        IReadOnlyDictionary<string, IGraphTypeFieldTemplate> FieldTemplates { get; }
+        /// <value>The fields declared on this template.</value>
+        IReadOnlyDictionary<string, IGraphFieldTemplate> FieldTemplates { get; }
     }
 }

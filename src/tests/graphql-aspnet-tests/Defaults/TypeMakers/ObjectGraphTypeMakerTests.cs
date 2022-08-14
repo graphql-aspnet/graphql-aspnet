@@ -67,20 +67,23 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var arg2 = method1.Arguments["arg2"];
             var arg3 = method1.Arguments["arg3"];
 
+            // string is nullable by deafult and no alterations exist on the declaration
             Assert.IsNotNull(arg1);
             Assert.AreEqual(typeof(string), arg1.ObjectType);
+            CollectionAssert.AreEqual(GraphTypeExpression.SingleItem, arg1.TypeExpression.Wrappers);
             Assert.IsEmpty(arg1.TypeExpression.Wrappers);
             Assert.AreEqual(null, arg1.DefaultValue);
 
+            // int is "not null" by default
             Assert.IsNotNull(arg2);
             Assert.AreEqual(typeof(int), arg2.ObjectType);
             CollectionAssert.AreEqual(GraphTypeExpression.RequiredSingleItem, arg2.TypeExpression.Wrappers);
             Assert.AreEqual(null, arg2.DefaultValue);
 
-            // arg3 has a default value therefore can be null on request even though the type is not nullable
+            // even though a default arg is declared, int is still "not null" by default
             Assert.IsNotNull(arg3);
             Assert.AreEqual(typeof(int), arg3.ObjectType);
-            CollectionAssert.AreEqual(GraphTypeExpression.SingleItem, arg3.TypeExpression.Wrappers);
+            CollectionAssert.AreEqual(GraphTypeExpression.RequiredSingleItem, arg3.TypeExpression.Wrappers);
             Assert.AreEqual(5, arg3.DefaultValue);
 
             var method2 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(TypeCreationItem.Method2));

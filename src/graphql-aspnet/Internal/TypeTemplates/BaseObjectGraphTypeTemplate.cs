@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
-    using GraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Internal.Interfaces.IGraphTypeFieldTemplate>;
+    using GraphFieldCollection = GraphQL.AspNet.Common.Generics.OrderedDictionary<string, GraphQL.AspNet.Internal.Interfaces.IGraphFieldTemplate>;
 
     /// <summary>
     /// A base representation of a template for an object related graph type containing common elements.
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         private readonly GraphFieldCollection _fields;
         private readonly HashSet<Type> _interfaces;
         private IEnumerable<string> _duplicateNames;
-        private List<IGraphTypeFieldTemplate> _invalidFields;
+        private List<IGraphFieldTemplate> _invalidFields;
         private AppliedSecurityPolicyGroup _securityPolicies;
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             // ------------------------------------
             // Parse the methods on this type for fields to include in the graph
             // ------------------------------------
-            var parsedItems = new List<IGraphTypeFieldTemplate>();
+            var parsedItems = new List<IGraphFieldTemplate>();
 
             var templateMembers = this.ObjectType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsSpecialName).Cast<MemberInfo>()
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                     parsedTemplate?.Parse();
                     if (parsedTemplate?.Route == null || !this.AllowedGraphCollectionTypes.Contains(parsedTemplate.Route.RootCollection))
                     {
-                        _invalidFields = _invalidFields ?? new List<IGraphTypeFieldTemplate>();
+                        _invalidFields = _invalidFields ?? new List<IGraphFieldTemplate>();
                         _invalidFields.Add(parsedTemplate);
                     }
                     else
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="member">The member.</param>
         /// <returns>GraphQL.AspNet.Internal.Interfaces.IGraphFieldTemplate.</returns>
-        protected virtual IGraphTypeFieldTemplate CreateFieldTemplate(MemberInfo member)
+        protected virtual IGraphFieldTemplate CreateFieldTemplate(MemberInfo member)
         {
             switch (member)
             {
@@ -253,9 +253,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// When overridden in a child, allows the class to create custom templates that inherit from <see cref="MethodGraphFieldTemplateBase" />
         /// to provide additional functionality or guarantee a certian type structure for all methods on this object template.
         /// </summary>
-        /// <param name="methodInfo">The method information.</param>
+        /// <param name="methodInfo">The method information to templatize.</param>
         /// <returns>IGraphFieldTemplate.</returns>
-        protected virtual IGraphTypeFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
+        protected virtual IGraphFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
         {
             if (methodInfo == null)
                 return null;
@@ -267,14 +267,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// When overridden in a child, allows the class to create custom templates to provide additional functionality or
         /// guarantee a certian type structure for all properties on this object template.
         /// </summary>
-        /// <param name="prop">The property information.</param>
+        /// <param name="propInfo">The property information to templatize.</param>
         /// <returns>IGraphFieldTemplate.</returns>
-        protected virtual IGraphTypeFieldTemplate CreatePropertyFieldTemplate(PropertyInfo prop)
+        protected virtual IGraphFieldTemplate CreatePropertyFieldTemplate(PropertyInfo propInfo)
         {
-            if (prop == null)
+            if (propInfo == null)
                 return null;
 
-            return new PropertyGraphFieldTemplate(this, prop, this.Kind);
+            return new PropertyGraphFieldTemplate(this, propInfo, this.Kind);
         }
 
         /// <inheritdoc />
@@ -284,7 +284,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the explicitly and implicitly decalred fields found on this instance.
         /// </summary>
         /// <value>The methods.</value>
-        public IReadOnlyDictionary<string, IGraphTypeFieldTemplate> FieldTemplates => _fields;
+        public IReadOnlyDictionary<string, IGraphFieldTemplate> FieldTemplates => _fields;
 
         /// <inheritdoc />
         public override string InternalFullName => this.ObjectType?.FriendlyName(true);

@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         private readonly IInputObjectGraphType _owner;
         private readonly Dictionary<string, IInputGraphField> _fields;
         private readonly List<IInputGraphField> _requiredFields;
+        private readonly List<IInputGraphField> _nonNullableFields;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputGraphFieldCollection" /> class.
@@ -36,6 +37,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             _owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _fields = new Dictionary<string, IInputGraphField>(StringComparer.Ordinal);
             _requiredFields = new List<IInputGraphField>();
+            _nonNullableFields = new List<IInputGraphField>();
         }
 
         /// <summary>
@@ -56,8 +58,10 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             field.AssignParent(_owner);
             _fields.Add(field.Name, field);
-            if (field.TypeExpression.IsRequired)
+            if (field.IsRequired)
                 _requiredFields.Add(field);
+            if (field.TypeExpression.IsNonNullable)
+                _nonNullableFields.Add(field);
 
             return field;
         }
@@ -107,6 +111,9 @@ namespace GraphQL.AspNet.Schemas.Structural
 
         /// <inheritdoc />
         public IReadOnlyList<IInputGraphField> RequiredFields => _requiredFields;
+
+        /// <inheritdoc />
+        public IReadOnlyList<IInputGraphField> NonNullableFields => _nonNullableFields;
 
         /// <inheritdoc />
         public IEnumerator<IInputGraphField> GetEnumerator()

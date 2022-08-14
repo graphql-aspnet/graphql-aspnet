@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Internal
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.Internal.GraphValidationTestData;
     using Moq;
@@ -99,40 +100,6 @@ namespace GraphQL.AspNet.Tests.Internal
                     GraphValidation.IsValidGraphType(inputType, true);
                 });
             }
-        }
-
-        [TestCase(typeof(int), "int!", false, null)]
-        [TestCase(typeof(int), "int", true, null)]
-        [TestCase(typeof(IEnumerable<int>), "[int!]", false, null)]
-        [TestCase(typeof(int[]), "[int!]", false, null)]
-        [TestCase(typeof(IEnumerable<TwoPropertyObject>), "[TwoPropertyObject]", false, null)]
-        [TestCase(typeof(TwoPropertyObject[]), "[TwoPropertyObject]", true, null)]
-        [TestCase(typeof(TwoPropertyObject[]), "[TwoPropertyObject]", false, null)]
-        [TestCase(typeof(int[][]), "[[int!]]", false, null)]
-        [TestCase(typeof(string[]), "[string]", false, null)]
-        [TestCase(typeof(KeyValuePair<string, int>), "KeyValuePair_string_int_!", false, null)]
-        [TestCase(typeof(KeyValuePair<string[], int[][]>), "KeyValuePair_string___int_____!", false, null)]
-        [TestCase(typeof(KeyValuePair<string, int[]>), "KeyValuePair_string_int___!", false, null)]
-        [TestCase(typeof(KeyValuePair<string, int[]>[]), "[KeyValuePair_string_int___!]", false, null)]
-        [TestCase(typeof(KeyValuePair<string[][], int[][][]>[]), "[KeyValuePair_string_____int_______!]", false, null)]
-        [TestCase(typeof(KeyValuePair<string[][], int[][][]>[][]), "[[KeyValuePair_string_____int_______!]]", false, null)]
-        [TestCase(typeof(KeyValuePair<string, int>[]), "[KeyValuePair_string_int_!]", false, null)]
-        [TestCase(typeof(List<KeyValuePair<string, int>>), "[KeyValuePair_string_int_!]", false, null)]
-        [TestCase(typeof(List<KeyValuePair<string, int>>), "[KeyValuePair_string_int_]", true, null)]
-        [TestCase(typeof(IEnumerable<IEnumerable<int>>), "[[int!]]", false, null)]
-        [TestCase(typeof(IEnumerable<IEnumerable<int>>), "int!", false, new GTW[] { GTW.IsNotNull })]
-        public void GenerateTypeExpression(
-            Type type,
-            string expectedExpression,
-            bool definesDefaultValue,
-            GTW[] wrappers)
-        {
-            var mock = new Mock<IGraphTypeExpressionDeclaration>();
-            mock.Setup(x => x.HasDefaultValue).Returns(definesDefaultValue);
-            mock.Setup(x => x.TypeWrappers).Returns(wrappers);
-
-            var typeExpression = GraphValidation.GenerateTypeExpression(type, mock.Object);
-            Assert.AreEqual(expectedExpression, typeExpression.ToString());
         }
 
         [TestCase(typeof(int), typeof(int), true, true, true)]

@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
             {
                 var message = new GraphExecutionMessage(
                     GraphMessageSeverity.Critical,
-                    "Invalid argument value.",
+                    "Invalid argument value. See exception for details.",
                     Constants.ErrorCodes.INVALID_ARGUMENT,
                     coreValue.Parent.Node.Location.AsOrigin(),
                     ex);

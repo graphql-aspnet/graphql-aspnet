@@ -25,27 +25,38 @@ namespace GraphQL.AspNet.Schemas
     /// </summary>
     public class QueryLanguageGenerator
     {
+        private ISchema _schema;
+
         /// <summary>
-        /// Converts the supplied .NET object to a string representing the object as defined
-        /// by the <paramref name="schema"/>.
+        /// Initializes a new instance of the <see cref="QueryLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="obj">The object to convert.</param>
-        /// <param name="schema">The schema to use when determining various values to be
-        /// converted.</param>
-        /// <returns>A string representation of the object in graphql query language.</returns>
-        public static string SerializeObject(object obj, ISchema schema)
+        /// <param name="schema">The schema to use when determining defined fields, serializers and other name
+        /// formatters used during the serialization.</param>
+        public QueryLanguageGenerator(ISchema schema)
         {
-            return SerializeObject(obj, schema, null);
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        private static string SerializeObject(object obj, ISchema schema, HashSet<object> recursionStack)
+        /// <summary>
+        /// Converts the supplied .NET object to a string representing the object as defined
+        /// by the schema.
+        /// </summary>
+        /// <remarks>
+        /// The object must represent a valid SCALAR, ENUM or INPUT_OBJECT type or an <see cref="InvalidOperationException"/> will be thrown.
+        /// </remarks>
+        /// <param name="obj">The object to convert.</param>
+        /// <returns>A string representation of the object in graphql query language.</returns>
+        public string SerializeObject(object obj)
+        {
+            return SerializeObject(obj, null);
+        }
+
+        private string SerializeObject(object obj, HashSet<object> recursionStack)
         {
             if (obj == null)
                 return Constants.QueryLanguage.NULL;
 
-            Validation.ThrowIfNull(schema, nameof(schema));
-
-            var graphType = schema.KnownTypes.FindGraphType(obj.GetType(), TypeKind.INPUT_OBJECT);
+            var graphType = _schema.KnownTypes.FindGraphType(obj.GetType(), TypeKind.INPUT_OBJECT);
 
             switch (graphType)
             {
@@ -56,7 +67,7 @@ namespace GraphQL.AspNet.Schemas
 
                 default:
                     throw new InvalidOperationException(
-                        $"Unable to locate a valid graph type for an object of type '{obj.GetType().FriendlyName()}' on the schema '{schema.Name}'. " +
+                        $"Unable to locate a valid graph type for an item of type '{obj.GetType().FriendlyName()}' on the schema '{_schema.Name}'. " +
                         $"Only {TypeKind.INPUT_OBJECT}, {TypeKind.SCALAR} and {TypeKind.ENUM} types can be converted.");
             }
 
@@ -74,13 +85,13 @@ namespace GraphQL.AspNet.Schemas
             }
             else if (graphType is IInputObjectGraphType iogt)
             {
-                return QueryLanguageGenerator.SerializeInputObject(obj, iogt, schema, recursionStack);
+                return this.SerializeInputObject(obj, iogt, recursionStack);
             }
 
             return Constants.QueryLanguage.NULL;
         }
 
-        private static string SerializeInputObject(object obj, IInputObjectGraphType inputObjectGraphType, ISchema schema, HashSet<object> recursionStack = null)
+        private string SerializeInputObject(object obj, IInputObjectGraphType inputObjectGraphType, HashSet<object> recursionStack = null)
         {
             if (obj == null || inputObjectGraphType == null)
                 return Constants.QueryLanguage.NULL;
@@ -107,7 +118,7 @@ namespace GraphQL.AspNet.Schemas
                 builder.Append(field.Name);
                 builder.Append(Constants.QueryLanguage.FieldValueSeperator);
                 builder.Append(" ");
-                builder.Append(SerializeObject(getter.Invoke(ref obj), schema, recursionStack));
+                builder.Append(this.SerializeObject(getter.Invoke(ref obj), recursionStack));
                 builder.Append(" ");
             }
 

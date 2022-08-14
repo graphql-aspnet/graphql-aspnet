@@ -22,12 +22,12 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the actions that have been parsed and defined for the controller.
         /// </summary>
         /// <value>The fields.</value>
-        IEnumerable<IGraphTypeFieldTemplate> Actions { get; }
+        IEnumerable<IGraphFieldTemplate> Actions { get; }
 
         /// <summary>
         /// Gets the extension methods that have been parsed and defined for the controller.
         /// </summary>
         /// <value>The fields.</value>
-        IEnumerable<IGraphTypeFieldTemplate> Extensions { get; }
+        IEnumerable<IGraphFieldTemplate> Extensions { get; }
     }
 }

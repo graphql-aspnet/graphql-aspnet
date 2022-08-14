@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
     /// <summary>
     /// An interface describing a template that can accurately represent an input argument in the object graph.
     /// </summary>
-    public interface IGraphArgumentTemplate : IGraphItemTemplate, IGraphTypeExpressionDeclaration
+    public interface IGraphArgumentTemplate : IGraphItemTemplate
     {
         /// <summary>
         /// Gets the parent method this parameter belongs to.
@@ -56,5 +56,19 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <value>The type of this argument as declared in the code base.</value>
         Type DeclaredArgumentType { get; }
+
+        /// <summary>
+        /// Gets the list type wrappers, if defined, used to generate a type expression for this field.
+        /// This list represents the type requirements of the field. When null or not supplied, the type
+        /// expression will be inferred by the return type of the field.
+        /// </summary>
+        /// <value>The custom wrappers.</value>
+        MetaGraphTypes[] DeclaredTypeWrappers { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this argument has a default value assigned to it.
+        /// </summary>
+        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
+        bool HasDefaultValue { get; }
     }
 }

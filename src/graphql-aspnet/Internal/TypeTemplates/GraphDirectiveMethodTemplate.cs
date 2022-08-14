@@ -199,7 +199,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public DirectiveLocation Locations { get; private set; }
 
         /// <inheritdoc />
-        public MetaGraphTypes[] TypeWrappers => null; // not used by directives
+        public MetaGraphTypes[] DeclaredTypeWrappers => null; // not used by directives
 
         /// <summary>
         /// Gets declared return type of the method minus any asyncronous wrappers (i.e. the T in Task{T}).
@@ -215,9 +215,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <value>The method signature.</value>
         public string MethodSignature { get; private set; }
-
-        /// <inheritdoc />
-        public bool HasDefaultValue => false;
 
         /// <inheritdoc />
         public string Description { get; private set; }

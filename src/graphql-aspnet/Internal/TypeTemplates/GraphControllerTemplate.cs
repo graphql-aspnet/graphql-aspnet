@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="methodInfo">The method information.</param>
         /// <returns>IGraphFieldTemplate.</returns>
-        protected override IGraphTypeFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
+        protected override IGraphFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
         {
             if (methodInfo == null)
                 return null;
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="prop">The property information.</param>
         /// <returns>IGraphFieldTemplate.</returns>
-        protected override IGraphTypeFieldTemplate CreatePropertyFieldTemplate(PropertyInfo prop)
+        protected override IGraphFieldTemplate CreatePropertyFieldTemplate(PropertyInfo prop)
         {
             // safety check to ensure properites on controllers can never be parsed as fields
             return null;
@@ -151,7 +151,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets the actions that have been parsed and defined for the controller.
         /// </summary>
         /// <value>The fields.</value>
-        public IEnumerable<IGraphTypeFieldTemplate> Actions =>
+        public IEnumerable<IGraphFieldTemplate> Actions =>
             this.FieldTemplates.Values.OfType<ControllerActionGraphFieldTemplate>();
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// Gets an enumeration of the extension methods this controller defines.
         /// </summary>
         /// <value>The extensions.</value>
-        public IEnumerable<IGraphTypeFieldTemplate> Extensions =>
+        public IEnumerable<IGraphFieldTemplate> Extensions =>
             this.FieldTemplates.Values.OfType<GraphTypeExtensionFieldTemplate>();
 
         /// <summary>

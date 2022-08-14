@@ -7,6 +7,7 @@
 // License:  MIT
 // *************************************************************
 
+#pragma warning disable SA1116 // Split parameters should start on line after declaration
 namespace GraphQL.AspNet.Tests.Schemas
 {
     using System;
@@ -27,9 +28,9 @@ namespace GraphQL.AspNet.Tests.Schemas
     [TestFixture]
     public class QueryLanguageGeneratorTests
     {
-        private static List<Type> _unUsedScalarTypes;
+        private List<Type> _unUsedScalarTypes;
         private static List<(object TestObject, string ExpectedResult)> _testValues;
-        private static GraphSchema _schema;
+        private GraphSchema _schema;
 
         private static void SetupTestData()
         {
@@ -97,6 +98,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             _testValues.Add(((GraphId)"123", "\"123\""));
             _testValues.Add(((GraphId)"abc", "\"abc\""));
+            _testValues.Add(((GraphId)"씨엘씨", "\"\\uc528\\uc5d8\\uc528\""));
             _testValues.Add(((GraphId)string.Empty, "\"\""));
 
             _testValues.Add((true, "true"));
@@ -142,12 +144,41 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((
                 grandParent,
                 "{ name: \"grando\" child1: { name: \"child1\" child: null } child2: { name: \"child1\" child: null } }"));
+
+            // additional input field tests
+            var slug = new TestSlug()
+            {
+                DateTime = new DateTime(2022, 08, 12, 1, 2, 3, 4, DateTimeKind.Utc),
+                DateTimeOffset = new DateTimeOffset(2022, 08, 12, 15, 26, 37, 458, TimeSpan.Zero),
+                Int = 33,
+                Double = 123.456789,
+                Uri = new Uri("https://github.com/graphql-aspnet"),
+                GraphId = (GraphId)"에스파-안무",
+                String = null,
+            };
+            _testValues.Add((slug, "{ dateTime: \"2022-08-12T01:02:03.004+00:00\" dateTimeOffset: \"2022-08-12T15:26:37.458+00:00\" int: 33 double: 123.456789 uri: \"https://github.com/graphql-aspnet\" graphId: \"\\uc5d0\\uc2a4\\ud30c-\\uc548\\ubb34\" string: null }"));
+
+            // deep nested object
+            var nestableItem = new NestableObject(0,
+                new NestableObject(1,
+                    new NestableObject(2,
+                        new NestableObject(3,
+                            new NestableObject(4,
+                                new NestableObject(5,
+                                    new NestableObject(6,
+                                        new NestableObject(7,
+                                            new NestableObject(8)))))))));
+
+            _testValues.Add((nestableItem, "{ value: 0 next: { value: 1 next: { value: 2 next: { value: 3 next: { value: 4 next: { value: 5 next: { value: 6 next: { value: 7 next: { value: 8 next: null } } } } } } } } }"));
         }
 
         static QueryLanguageGeneratorTests()
         {
             SetupTestData();
+        }
 
+        public QueryLanguageGeneratorTests()
+        {
             var typesUsed = _testValues
                 .Where(x => x.TestObject != null)
                 .Select(x => x.TestObject.GetType())
@@ -160,6 +191,8 @@ namespace GraphQL.AspNet.Tests.Schemas
             serverBuilder.AddType(typeof(Person), TypeKind.INPUT_OBJECT);
             serverBuilder.AddType(typeof(MoodyPerson), TypeKind.INPUT_OBJECT);
             serverBuilder.AddType(typeof(GrandParent), TypeKind.INPUT_OBJECT);
+            serverBuilder.AddType(typeof(TestSlug), TypeKind.INPUT_OBJECT);
+            serverBuilder.AddType(typeof(NestableObject), TypeKind.INPUT_OBJECT);
 
             // ensure all scalars represented
             _unUsedScalarTypes = new List<Type>();
@@ -183,7 +216,8 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCaseSource(nameof(_testValues))]
         public void SerializeObject((object InputObject, string ExpectedValue) testData)
         {
-            var result = QueryLanguageGenerator.SerializeObject(testData.InputObject, _schema);
+            var generator = new QueryLanguageGenerator(_schema);
+            var result = generator.SerializeObject(testData.InputObject);
             Assert.AreEqual(testData.ExpectedValue, result);
         }
 
@@ -205,7 +239,8 @@ namespace GraphQL.AspNet.Tests.Schemas
 
             Assert.Throws<GraphExecutionException>(() =>
             {
-                QueryLanguageGenerator.SerializeObject(loopedPerson, _schema);
+                var generator = new QueryLanguageGenerator(_schema);
+                generator.SerializeObject(loopedPerson);
             });
         }
     }

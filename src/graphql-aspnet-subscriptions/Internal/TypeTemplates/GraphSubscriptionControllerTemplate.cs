@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         /// <param name="methodInfo">The method information.</param>
         /// <returns>IGraphFieldTemplate.</returns>
-        protected override IGraphTypeFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
+        protected override IGraphFieldTemplate CreateMethodFieldTemplate(MethodInfo methodInfo)
         {
             if (methodInfo == null)
                 return null;

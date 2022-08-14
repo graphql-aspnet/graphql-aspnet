@@ -13,8 +13,12 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Variables;
@@ -31,17 +35,20 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
         private readonly Type _objectType;
         private readonly PropertySetterCollection _propSetters;
         private readonly Dictionary<string, IInputValueResolver> _fieldResolvers;
+        private readonly ISchema _schema;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputObjectResolver" /> class.
         /// </summary>
         /// <param name="graphType">The graph type in the target schema for the object in question.</param>
         /// <param name="concreteType">The concrete type to render the data as.</param>
-        public InputObjectResolver(IInputObjectGraphType graphType, Type concreteType)
+        /// <param name="schema">The schema that owns the supplied <paramref name="graphType"/>.</param>
+        public InputObjectResolver(IInputObjectGraphType graphType, Type concreteType, ISchema schema)
         {
             _graphType = Validation.ThrowIfNullOrReturn(graphType, nameof(graphType));
             _objectType = Validation.ThrowIfNullOrReturn(concreteType, nameof(concreteType));
             _propSetters = InstanceFactory.CreatePropertySetterInvokerCollection(concreteType);
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _fieldResolvers = new Dictionary<string, IInputValueResolver>();
         }
 
@@ -67,11 +74,29 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                     return variable.Value;
             }
 
-            if (!(resolvableItem is IResolvableFieldSet fieldSet))
+            if (resolvableItem is IResolvableNullValue)
                 return null;
 
             var instance = InstanceFactory.CreateInstance(_objectType);
-            foreach (var inputField in fieldSet.ResolvableFields)
+            if (resolvableItem is DefaultInputObjectResolutionValue)
+                return instance;
+
+            if (!(resolvableItem is IResolvableFieldSet suppliedFields))
+            {
+                SourceOrigin origin = null;
+                if (resolvableItem is IDocumentPart docPart)
+                {
+                    origin = docPart.Node.Location.AsOrigin();
+                }
+
+                throw new GraphExecutionException(
+                    $"Unable to resolve type '{_graphType.Name}'. Expected a " +
+                    "set of field values to resolve, but recieved " +
+                    $"{resolvableItem?.GetType().FriendlyName()}",
+                    origin);
+            }
+
+            foreach (var inputField in suppliedFields.ResolvableFields)
             {
                 var resolver = _fieldResolvers.ContainsKey(inputField.Key) ? _fieldResolvers[inputField.Key] : null;
 
@@ -89,7 +114,41 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 propSetter(ref instance, resolvedValue);
             }
 
+            // check all the fields that "must have a value"
+            // to ensure they are put on the input objec being constructed
+            foreach (var field in _graphType.Fields.NonNullableFields)
+            {
+                // if a non-nullable field was supplied on the request
+                // skip it
+                if (suppliedFields != null && suppliedFields.TryGetField(field.Name, out _))
+                    continue;
+
+                var propSetter = _propSetters.ContainsKey(field.InternalName) ? _propSetters[field.InternalName] : null;
+                var resolver = _fieldResolvers.ContainsKey(field.Name) ? _fieldResolvers[field.Name] : null;
+                if (resolver == null || propSetter == null)
+                    continue;
+
+                var resolvedValue = resolver.Resolve(DefaultInputObjectResolutionValue.Instance);
+                propSetter(ref instance, resolvedValue);
+            }
+
             return instance;
+        }
+
+        private class DefaultInputObjectResolutionValue : IResolvableValueItem
+        {
+            /// <summary>
+            /// Gets the single instance of this value.
+            /// </summary>
+            /// <value>The instance.</value>
+            public static IResolvableValueItem Instance { get; } = new DefaultInputObjectResolutionValue();
+
+            /// <summary>
+            /// Prevents a default instance of the <see cref="DefaultInputObjectResolutionValue"/> class from being created.
+            /// </summary>
+            private DefaultInputObjectResolutionValue()
+            {
+            }
         }
     }
 }

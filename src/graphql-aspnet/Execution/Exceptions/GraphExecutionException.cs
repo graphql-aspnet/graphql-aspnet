@@ -22,8 +22,9 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphExecutionException" /> class.
         /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="origin">The origin.</param>
+        /// <param name="message">The message to capture on this exception.</param>
+        /// <param name="origin">The origin in a query document or execution context where this exception
+        /// occured.</param>
         /// <param name="innerException">The exception that is the cause of the current exception if any.</param>
         public GraphExecutionException(
             string message,

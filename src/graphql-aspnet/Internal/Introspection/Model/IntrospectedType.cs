@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A representation of data about an object graph type that can be returned from a field.
     /// </summary>
     [DebuggerDisplay("OBJECT: {Name}")]
-    public class IntrospectedType
+    public sealed class IntrospectedType
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedType"/> class.
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.EnumValues = list;
         }
 
-        private void LoadInputValues(IntrospectedSchema schema)
+        private void LoadInputValues(IntrospectedSchema introspectedSchema)
         {
             if (!(this.GraphType is IInputObjectGraphType inputType))
                 return;
@@ -217,7 +217,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             foreach (var field in inputType.Fields)
             {
                 object defaultValue;
-                if (field.TypeExpression.IsRequired)
+                if (field.IsRequired)
                 {
                     defaultValue = NoDefaultValue.Instance;
                 }
@@ -235,14 +235,14 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
                         $"owner .NET class from which a default value could be extracted.");
                 }
 
-                var introspectedType = schema.FindIntrospectedType(field.TypeExpression.TypeName);
+                var introspectedType = introspectedSchema.FindIntrospectedType(field.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, field.TypeExpression);
                 var inputField = new IntrospectedInputValueType(
                     field,
                     introspectedType,
                     defaultValue);
 
-                inputField.Initialize(schema);
+                inputField.Initialize(introspectedSchema);
                 inputFields.Add(inputField);
             }
 

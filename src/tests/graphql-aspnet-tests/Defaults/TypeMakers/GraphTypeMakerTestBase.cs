@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             return maker.CreateGraphType(type);
         }
 
-        protected IGraphField MakeGraphField(IGraphTypeFieldTemplate fieldTemplate)
+        protected IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
             var maker = new GraphFieldMaker(testServer.Schema);

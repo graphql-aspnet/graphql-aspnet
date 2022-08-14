@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
     using NUnit.Framework;
 
     [TestFixture]
-    public class FieldMakerTests : GraphTypeMakerTestBase
+    public class FieldMaker_StandardFieldTests : GraphTypeMakerTestBase
     {
         [Test]
         public void ActionTemplate_CreateGraphField_WithUnion_UsesUnionNameAsGraphTypeName()
@@ -126,7 +126,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Name));
-            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -146,7 +146,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Age));
-            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -169,7 +169,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             var parent = obj.Object;
             var propInfo = typeof(ObjectDirectiveTestItem).GetProperty(nameof(ObjectDirectiveTestItem.Prop1));
-            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 

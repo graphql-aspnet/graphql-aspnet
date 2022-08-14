@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                 // could be a "non-nullable list"
                 // strip the list requirement to determine that the parent is a list
                 // of things then take the internal of that as the item type expression
-                if (parentExpression.IsRequired)
+                if (parentExpression.IsNonNullable)
                     parentExpression = parentExpression.UnWrapExpression();
 
                 if (parentExpression.IsListOfItems)

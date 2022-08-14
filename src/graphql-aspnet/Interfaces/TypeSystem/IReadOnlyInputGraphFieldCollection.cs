@@ -60,10 +60,16 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         int Count { get; }
 
         /// <summary>
-        /// Gets a subset of fields which are required as indicated by an
-        /// INPUT_OBJECT graph type.
+        /// Gets a subset of fields which are required to be provided on a query document
+        /// when declaring the input object.
         /// </summary>
         /// <value>The required fields.</value>
         public IReadOnlyList<IInputGraphField> RequiredFields { get; }
+
+        /// <summary>
+        /// Gets a subset of fields which MUST have a defined value on an input object.
+        /// </summary>
+        /// <value>The non nullable fields.</value>
+        public IReadOnlyList<IInputGraphField> NonNullableFields { get; }
     }
 }

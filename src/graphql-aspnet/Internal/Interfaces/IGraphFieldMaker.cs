@@ -22,13 +22,13 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <param name="template">The template to generate a field from.</param>
         /// <returns>GraphFieldCreationResult.</returns>
-        GraphFieldCreationResult<IGraphField> CreateField(IGraphTypeFieldTemplate template);
+        GraphFieldCreationResult<IGraphField> CreateField(IGraphFieldTemplate template);
 
         /// <summary>
         /// Creates a single graph field from the provided template using hte rules of this maker and the contained schema.
         /// </summary>
         /// <param name="template">The template to generate a field from.</param>
         /// <returns>GraphFieldCreationResult.</returns>
-        GraphFieldCreationResult<IInputGraphField> CreateInputField(IGraphTypeFieldTemplate template);
+        GraphFieldCreationResult<IInputGraphField> CreateField(IInputGraphFieldTemplate template);
     }
 }

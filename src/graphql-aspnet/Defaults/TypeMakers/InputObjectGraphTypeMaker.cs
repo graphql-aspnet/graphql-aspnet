@@ -10,8 +10,9 @@
 namespace GraphQL.AspNet.Defaults.TypeMakers
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -63,10 +64,17 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
             // account for any potential type system directives
             result.AddDependentRange(template.RetrieveRequiredTypes());
 
+            // gather the fields to include in the graph type
+            var requiredDeclarations = template.DeclarationRequirements
+                ?? _schema.Configuration.DeclarationOptions.FieldDeclarationRequirements;
+            var fieldTemplates = template.FieldTemplates.Values.Where(x =>
+                x.IsExplicitDeclaration || requiredDeclarations.AllowImplicitProperties());
+
+            // create the fields for the graph type
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(_schema);
-            foreach (var fieldTemplate in ObjectGraphTypeMaker.GatherFieldTemplates(template, _schema))
+            foreach (var fieldTemplate in fieldTemplates)
             {
-                var fieldResult = fieldMaker.CreateInputField(fieldTemplate);
+                var fieldResult = fieldMaker.CreateField(fieldTemplate);
                 inputObjectType.AddField(fieldResult.Field);
 
                 result.MergeDependents(fieldResult);

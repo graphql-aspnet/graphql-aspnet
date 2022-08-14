@@ -6,15 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
+
+namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
 {
-    using System.ComponentModel.DataAnnotations;
-
-    public class BuildingAddress
+    /// <summary>
+    /// A resolvable value that indicates null should be resolved.
+    /// </summary>
+    public interface IResolvableNullValue : IResolvableValueItem
     {
-        [Required]
-        public int Id { get; set; }
-
-        public string Name { get; set; }
     }
 }

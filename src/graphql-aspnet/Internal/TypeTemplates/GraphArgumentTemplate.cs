@@ -69,7 +69,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             this.Description = this.Parameter.SingleAttributeOrDefault<DescriptionAttribute>()?.Description?.Trim();
 
-            if (this.Parameter.HasDefaultValue && this.Parameter.DefaultValue != null)
+            this.HasDefaultValue = this.Parameter.HasDefaultValue;
+            this.DefaultValue = null;
+
+            if (this.HasDefaultValue && this.Parameter.DefaultValue != null)
             {
                 // enums will present their default value as a raw int
                 if (this.ObjectType.IsEnum)
@@ -83,7 +86,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
 
             // set appropriate meta data about this parameter for inclusion in the type system
-            this.TypeExpression = GraphValidation.GenerateTypeExpression(this.DeclaredArgumentType, this);
+            this.TypeExpression = GraphTypeExpression.FromType(this.DeclaredArgumentType, this.DeclaredTypeWrappers);
             this.TypeExpression = this.TypeExpression.CloneTo(GraphTypeNames.ParseName(this.ObjectType, TypeKind.INPUT_OBJECT));
 
             // when this argument accepts the same data type as the data returned by its owners target source type
@@ -213,10 +216,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public string DeclaredArgumentName => this.Parameter.Name;
 
         /// <inheritdoc />
-        public bool HasDefaultValue => this.DefaultValue != null;
-
-        /// <inheritdoc />
-        public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
+        public MetaGraphTypes[] DeclaredTypeWrappers => _fieldDeclaration?.TypeDefinition;
 
         /// <inheritdoc />
         public ICustomAttributeProvider AttributeProvider => this.Parameter;
@@ -224,13 +224,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <inheritdoc />
         public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
 
-#if DEBUG
+        /// <inheritdoc />
+        public bool HasDefaultValue { get; private set; }
+
         /// <summary>
         /// Gets a string representing the name of the parameter's concrete type.
         /// This is an an internal helper property for helpful debugging information only.
         /// </summary>
         /// <value>The name of the parameter type friendly.</value>
         public string FriendlyObjectTypeName => this.Parameter.ParameterType.FriendlyName();
-#endif
     }
 }

@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // INPUT_OBJECT:All properties on an input object must be unique
             AddQuery("5.6.3", "query Operation1{ peopleMovers { matchElevator(e: {id: 5, id: 7, name: \"South Elevator\"} ) { id name } } }");
 
-            // INPUT_OBJECT:fields marked as "not null" must be supplied  (id on field of input argument e is marked as not null)
+            // INPUT_OBJECT:fields marked as "required" must be supplied  (id on field is marked required)
             AddQuery("5.6.4", "query Operation1{ peopleMovers { matchElevator(e: {name: \"South Elevator\"}) { id name } } }");
 
             // INPUT_OBJECT: checks nested input objects on an input object  (address has a required field of id)

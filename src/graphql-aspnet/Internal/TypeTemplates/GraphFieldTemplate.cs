@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// <summary>
     /// A base definition for items required to generate a graph field.
     /// </summary>
-    public abstract class GraphFieldTemplate : BaseItemTemplate, IGraphTypeFieldTemplate
+    public abstract class GraphFieldTemplate : BaseItemTemplate, IGraphFieldTemplate
     {
         private AppliedSecurityPolicyGroup _securityPolicies;
         private GraphFieldAttribute _fieldDeclaration;
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
 
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
-            var typeExpression = GraphValidation.GenerateTypeExpression(this.DeclaredReturnType, this);
+            var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
             typeExpression = typeExpression.CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
 
             // ------------------------------------
@@ -125,14 +125,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 else if (_fieldDeclaration != null && _fieldDeclaration.Types.Count > 0)
                 {
                     objectType = _fieldDeclaration.Types[0];
-                    typeExpression = GraphValidation.GenerateTypeExpression(objectType, this)
+                    typeExpression = GraphTypeExpression.FromType(objectType, this.DeclaredTypeWrappers)
                         .CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
                     objectType = GraphValidation.EliminateWrappersFromCoreType(objectType);
                 }
                 else if (this.PossibleTypes.Count > 0)
                 {
                     objectType = this.PossibleTypes[0];
-                    typeExpression = GraphValidation.GenerateTypeExpression(objectType, this)
+                    typeExpression = GraphTypeExpression.FromType(objectType, this.DeclaredTypeWrappers)
                         .CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
                     objectType = GraphValidation.EliminateWrappersFromCoreType(objectType);
                 }
@@ -452,15 +452,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         protected List<Type> PossibleTypes { get; private set; }
 
         /// <inheritdoc />
-        public bool HasDefaultValue => false;
-
-        /// <inheritdoc />
-        public MetaGraphTypes[] TypeWrappers => _fieldDeclaration?.TypeDefinition;
+        public MetaGraphTypes[] DeclaredTypeWrappers => _fieldDeclaration?.TypeDefinition;
 
         /// <inheritdoc />
         public float? Complexity { get; set; }
-
-        /// <inheritdoc />
-        public bool InputIsRequired { get; protected set; }
     }
 }

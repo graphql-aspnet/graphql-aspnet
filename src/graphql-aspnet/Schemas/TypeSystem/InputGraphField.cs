@@ -23,14 +23,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     public class InputGraphField : IInputGraphField
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputGraphField"/> class.
+        /// Initializes a new instance of the <see cref="InputGraphField" /> class.
         /// </summary>
         /// <param name="fieldName">Name of the field in the graph.</param>
         /// <param name="typeExpression">The meta data describing the type of data this field returns.</param>
         /// <param name="route">The formal route to this field in the object graph.</param>
-        /// /// <param name="declaredPropertyName">The name of the property as it was declared on a <see cref="Type" /> (its internal name).</param>
+        /// <param name="declaredPropertyName">The name of the property as it was declared on a <see cref="Type" /> (its internal name).</param>
         /// <param name="objectType">The .NET type of the item or items that represent the graph type returned by this field.</param>
         /// <param name="declaredReturnType">The .NET type as it was declared on the property which generated this field..</param>
+        /// <param name="isRequired">if set to <c>true</c> this field was explicitly marked as being required.</param>
         /// <param name="directives">The directives to apply to this field when its added to a schema.</param>
         public InputGraphField(
             string fieldName,
@@ -39,11 +40,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string declaredPropertyName,
             Type objectType,
             Type declaredReturnType,
+            bool isRequired,
             IAppliedDirectiveCollection directives = null)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
-            this.HasDefaultValue = this.TypeExpression.IsNullable;
+
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
             this.DeclaredReturnType = Validation.ThrowIfNullOrReturn(declaredReturnType, nameof(declaredReturnType));
@@ -51,6 +53,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
             this.InternalName = declaredPropertyName;
+            this.IsRequired = isRequired;
             this.Publish = true;
         }
 
@@ -60,9 +63,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             Validation.ThrowIfNull(parent, nameof(parent));
             this.Parent = parent;
         }
-
-        /// <inheritdoc />
-        public bool HasDefaultValue { get; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression { get; }
@@ -97,5 +97,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// </summary>
         /// <value>The fully qualified name of the proeprty this field was created from.</value>
         public string InternalName { get; }
+
+        /// <inheritdoc />
+        public bool IsRequired { get; }
     }
 }

@@ -10,22 +10,20 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
-    using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A base template definition for the metadata about a graph field belonging to a real type (as opposed to a virutal
     /// type).
     /// </summary>
-    public interface IGraphTypeFieldTemplate : IGraphFieldBaseTemplate, ISecureItem
+    public interface IInputGraphFieldTemplate : IGraphItemTemplate
     {
         /// <summary>
-        /// Creates a resolver capable of resolving this field.
+        /// Gets a value indicating whether this instance is marked as being a required field.
         /// </summary>
-        /// <returns>IGraphFieldResolver.</returns>
-        IGraphFieldResolver CreateResolver();
+        /// <value><c>true</c> if this instance is required; otherwise, <c>false</c>.</value>
+        public bool IsRequired { get;  }
 
         /// <summary>
         /// Gets the return type of this field as its declared in the C# code base with no modifications or
@@ -41,22 +39,10 @@ namespace GraphQL.AspNet.Internal.Interfaces
         string DeclaredName { get; }
 
         /// <summary>
-        /// Gets the mode in which this type extension will be processed by the runtime.
-        /// </summary>
-        /// <value>The mode.</value>
-        FieldResolutionMode Mode { get; }
-
-        /// <summary>
         /// Gets the parent owner of this field.
         /// </summary>
         /// <value>The parent.</value>
         IGraphTypeTemplate Parent { get; }
-
-        /// <summary>
-        /// Gets the union proxy instance delcared as a return of this field. May be null.
-        /// </summary>
-        /// <value>The union proxy.</value>
-        IGraphUnionProxy UnionProxy { get; }
 
         /// <summary>
         /// Gets the kind of graph type that should own fields created from this template.
@@ -65,17 +51,18 @@ namespace GraphQL.AspNet.Internal.Interfaces
         TypeKind OwnerTypeKind { get; }
 
         /// <summary>
-        /// Gets  an estimated weight value of this field in terms of the overall impact it has on the execution of a query.
-        /// See the documentation for an understanding of how query complexity is calculated.
+        /// Gets the type expression that represents the data returned from this field (i.e. the '[SomeType!]'
+        /// declaration used in schema definition language.)
         /// </summary>
-        /// <value>The estimated complexity value for this field.</value>
-        float? Complexity { get; }
+        /// <value>The type expression.</value>
+        GraphTypeExpression TypeExpression { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this field is required on an INPUT_OBJECT field
-        /// made from this template.
+        /// Gets the list type wrappers, if defined, used to generate a type expression for this field.
+        /// This list represents the type requirements of the field. When null or not supplied, the type
+        /// expression will be inferred by the return type of the field.
         /// </summary>
-        /// <value><c>true</c> if the field is required on an input object; otherwise, <c>false</c>.</value>
-        bool InputIsRequired { get; }
+        /// <value>The custom wrappers.</value>
+        MetaGraphTypes[] DeclaredTypeWrappers { get; }
     }
 }

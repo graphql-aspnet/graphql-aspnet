@@ -514,14 +514,14 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task InputWithNonNullableComplexChildObject_HasUndefinedForChildObject_YieldsError()
+        public async Task InputWithNonNullableAndNotRequiredComplexChildObject_WhenNotSuppied_ReceivesDefaultInstance()
         {
             var server = new TestServerBuilder()
                     .AddType<ComplexInputObjectController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is not passed on the query
-            // but is required the query should fail
+            // parentObj has a not-null-property called  'child' that is not passed on the query
+            // a new empty instance shoudl be automaticallya pplied to the parentObj
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
                 "      objectWithNonNullChild ( parentObj: {property1: \"prop1\" } ) { " +
@@ -532,11 +532,20 @@ namespace GraphQL.AspNet.Tests.Execution
                 "      } " +
                 "}");
 
-            var result = await server.ExecuteQuery(builder);
+            var expectedOutput =
+            @"{
+                ""data"": {
+                    ""objectWithNonNullChild"" : {
+                        ""property1"" : ""prop1"",
+                        ""child"" : {
+                                ""property2"" : null
+                        }
+                    }
+                }
+            }";
 
-            Assert.IsFalse(result.Messages.IsSucessful);
-            Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
 
         [Test]

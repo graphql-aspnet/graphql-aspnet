@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var inputField3 = introspectedInputType.InputFields.Single(x => x.Name == "Capacity");
             Assert.AreEqual(null, inputField3.Description);
-            Assert.AreEqual(null, inputField3.DefaultValue);
+            Assert.AreEqual(((CapacityType)0).ToString(), inputField3.DefaultValue);
 
             Assert.AreEqual(TypeKind.NON_NULL, inputField3.IntrospectedGraphType.Kind);
             Assert.AreEqual(TypeKind.ENUM, inputField3.IntrospectedGraphType.OfType.Kind);
@@ -1731,6 +1731,55 @@ namespace GraphQL.AspNet.Tests.Execution
                           ""kind"": ""INTERFACE""
                         }
                       ]
+                    }
+                }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task InputObject_OnArgument_WithDefaultValue()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<InputTestObject>(TypeKind.INPUT_OBJECT);
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                {
+                    query: __type(name: ""InputObject"")
+                    {
+                        kind
+                        name
+                        inputFields{
+                            name
+                            defaultValue
+                        }
+                    }
+                }");
+
+            var response = await server.RenderResult(builder);
+            var output = @"
+            {
+                ""data"": {
+                    ""query"": {
+                        ""kind"": ""INPUT_OBJECT"",
+                        ""name"": ""InputObject"",
+                        ""inputFields"": [
+                            {
+                                ""name"": ""id"",
+                                ""defaultValue"": ""-1""
+                            },
+                            {
+                                ""name"": ""twoProp"",
+                                ""defaultValue"": ""{ property1: \""strvalue\"" property2: 5 }""
+                            }
+                        ]
                     }
                 }
             }";

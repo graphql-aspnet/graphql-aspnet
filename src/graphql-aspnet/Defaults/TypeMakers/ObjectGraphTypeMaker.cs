@@ -95,7 +95,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// <param name="template">The template to generate fields for.</param>
         /// <param name="schema">The schema.</param>
         /// <returns>IEnumerable&lt;IGraphField&gt;.</returns>
-        internal static IEnumerable<IGraphTypeFieldTemplate> GatherFieldTemplates(IGraphTypeFieldTemplateContainer template, ISchema schema)
+        internal static IEnumerable<IGraphFieldTemplate> GatherFieldTemplates(IGraphTypeFieldTemplateContainer template, ISchema schema)
         {
             // gather the fields to include in the graph type
             var requiredDeclarations = template.DeclarationRequirements ?? schema.Configuration.DeclarationOptions.FieldDeclarationRequirements;

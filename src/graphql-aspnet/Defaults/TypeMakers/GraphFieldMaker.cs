@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         }
 
         /// <inheritdoc />
-        public virtual GraphFieldCreationResult<IGraphField> CreateField(IGraphTypeFieldTemplate template)
+        public virtual GraphFieldCreationResult<IGraphField> CreateField(IGraphFieldTemplate template)
         {
             var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IGraphField>();
@@ -106,7 +106,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// <returns>MethodGraphField.</returns>
         protected virtual MethodGraphField InstantiateField(
             GraphNameFormatter formatter,
-            IGraphTypeFieldTemplate template,
+            IGraphFieldTemplate template,
             List<AppliedSecurityPolicyGroup> securityGroups)
         {
             var directives = template.CreateAppliedDirectives();
@@ -145,26 +145,19 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         }
 
         /// <inheritdoc />
-        public GraphFieldCreationResult<IInputGraphField> CreateInputField(IGraphTypeFieldTemplate template)
+        public GraphFieldCreationResult<IInputGraphField> CreateField(IInputGraphFieldTemplate template)
         {
             var formatter = this.Schema.Configuration.DeclarationOptions.GraphNamingFormatter;
             var result = new GraphFieldCreationResult<IInputGraphField>();
 
-            // if this field was marked as "not required" ensure that the expression of the field
-            // is nullable.  This may not be the case if its something like an int property
-            // which is "non-nullable" from .NETs perspective but can be "skipped" (with a default value of 0)
-            // from .NETs perspective
-            var typeExpression = template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName));
-            if (template.HasDefaultValue && !typeExpression.IsNullable)
-                typeExpression = typeExpression.UnWrapExpression();
-
             var field = new InputGraphField(
                     formatter.FormatFieldName(template.Name),
-                    typeExpression,
+                    template.TypeExpression.CloneTo(formatter.FormatGraphTypeName(template.TypeExpression.TypeName)),
                     template.Route,
                     template.DeclaredName,
                     template.ObjectType,
                     template.DeclaredReturnType,
+                    template.IsRequired,
                     template.CreateAppliedDirectives());
 
             field.Description = template.Description;

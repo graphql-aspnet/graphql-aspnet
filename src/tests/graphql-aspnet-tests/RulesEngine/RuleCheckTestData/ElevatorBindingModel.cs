@@ -9,12 +9,14 @@
 
 namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
 {
+    using System.ComponentModel.DataAnnotations;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphType(PreventAutoInclusion = true)]
     public class ElevatorBindingModel
     {
+        [Required]
         public int Id { get; set; }
 
         [GraphField("name", TypeExpression = TypeExpressions.IsNotNull)]

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// </summary>
     [GraphType(Constants.ReservedNames.ENUM_VALUE_TYPE)]
     [DebuggerDisplay("Introspected Enum Value: {Name}")]
-    public class IntrospectedEnumValue : IntrospectedItem, ISchemaItem
+    public sealed class IntrospectedEnumValue : IntrospectedItem, ISchemaItem
     {
         private readonly IEnumValue _enumValue;
 

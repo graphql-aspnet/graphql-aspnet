@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     /// A method template containing the metadata for a controller method flaged as a special type extension
     /// and not a normal controller action.
     /// </summary>
-    public class GraphTypeExtensionFieldTemplate : MethodGraphFieldTemplateBase, IGraphTypeExpressionDeclaration
+    public class GraphTypeExtensionFieldTemplate : MethodGraphFieldTemplateBase
     {
         private Type _sourceType;
         private TypeExtensionAttribute _typeAttrib;
@@ -66,26 +67,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 {
                     returnType = returnType.GetValueTypeOfDictionary();
                     this.ObjectType = GraphValidation.EliminateWrappersFromCoreType(returnType);
-                    this.TypeExpression = GraphValidation.GenerateTypeExpression(returnType, this);
+                    this.TypeExpression = GraphTypeExpression.FromType(returnType, this.DeclaredTypeWrappers);
                     this.PossibleTypes.Insert(0, this.ObjectType);
                 }
             }
         }
 
-        /// <summary>
-        /// Creates a resolver capable of resolving this field.
-        /// </summary>
-        /// <returns>IGraphFieldResolver.</returns>
+        /// <inheritdoc />
         public override IGraphFieldResolver CreateResolver()
         {
             return new GraphControllerActionResolver(this);
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             if (_typeAttrib == null)
@@ -106,11 +100,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             base.ValidateOrThrow();
         }
 
-        /// <summary>
-        /// When overridden in a child class, this method builds the route that will be assigned to this method
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
+        /// <inheritdoc />
         protected override SchemaItemPath GenerateFieldPath()
         {
             // extract the parent name from the global meta data about the type being extended
@@ -124,31 +114,10 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new SchemaItemPath(SchemaItemPath.Join(GraphCollection.Types, parentName, graphName));
         }
 
-        /// <summary>
-        /// Gets the kind of graph type that should own fields created from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind OwnerTypeKind => TypeKind.OBJECT;
 
-        /// <summary>
-        /// Gets the type of the object that owns this field; that is the type which supplies source data
-        /// to this field in the object graph. This is usually the <see cref="GraphFieldTemplate.Parent"/>'s object type but not always; such
-        /// is the case with type extensions.
-        /// </summary>
-        /// <value>The type of the source object.</value>
+        /// <inheritdoc />
         public override Type SourceObjectType => _sourceType;
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has a defined default value.
-        /// </summary>
-        /// <value><c>true</c> if this instance has a default value; otherwise, <c>false</c>.</value>
-        bool IGraphTypeExpressionDeclaration.HasDefaultValue => false;
-
-        /// <summary>
-        /// Gets the actual type wrappers used to generate a type expression for this field.
-        /// This list represents the type requirements  of the field.
-        /// </summary>
-        /// <value>The custom wrappers.</value>
-        MetaGraphTypes[] IGraphTypeExpressionDeclaration.TypeWrappers => _typeAttrib?.TypeDefinition;
     }
 }

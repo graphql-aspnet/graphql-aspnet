@@ -57,7 +57,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         {
             var serialized = this.Serialize(item);
             if (serialized is string)
-                return serialized.ToString().AsQuotedString();
+            {
+                return GraphQLStrings.Escape(serialized.ToString()).AsQuotedString();
+            }
 
             return Constants.QueryLanguage.NULL;
         }
