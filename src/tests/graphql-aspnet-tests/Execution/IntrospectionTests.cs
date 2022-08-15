@@ -1739,7 +1739,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task InputObject_OnArgument_WithDefaultValue()
+        public async Task InputObject_WithFields_ValueChecks()
         {
             var serverBuilder = new TestServerBuilder();
             var server = serverBuilder.AddGraphQL(o =>
@@ -1756,8 +1756,17 @@ namespace GraphQL.AspNet.Tests.Execution
                     {
                         kind
                         name
+                        description
+                        fields(includeDeprecated: true) { name }
+                        interfaces { name }
+                        possibleTypes { name }
+                        enumValues { name }
+                        specifiedByURL
+                        ofType { name }
                         inputFields{
                             name
+                            type { name kind ofType { name kind } }
+                            description
                             defaultValue
                         }
                     }
@@ -1770,33 +1779,97 @@ namespace GraphQL.AspNet.Tests.Execution
                     ""query"": {
                         ""kind"": ""INPUT_OBJECT"",
                         ""name"": ""InputObject"",
+                        ""description"": ""input obj desc"",
+                        ""fields"": null,
+                        ""interfaces"" : null,
+                        ""possibleTypes"": null,
+                        ""enumValues"": null,
+                        ""specifiedByURL"": null,
+                        ""ofType"": null,
                         ""inputFields"": [
                             {
                                 ""name"": ""notRequiredButSetId"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Int"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""not required but set int"",
                                 ""defaultValue"": ""-1""
                             },
                             {
                                 ""name"": ""requiredId"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Int"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""required int"",
                                 ""defaultValue"": null
                             },
                             {
                                 ""name"": ""requiredBool"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Boolean"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""required bool"",
                                 ""defaultValue"": null
                             },
                             {
                                 ""name"": ""unrequiredButTrueBool"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Boolean"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""unrequired but true bool"",
                                 ""defaultValue"": ""true""
                             },
                             {
                                 ""name"": ""twoPropWithDefaultValue"",
+                                ""type"": {
+                                      ""name"": ""Input_TwoPropertyObject"",
+                                      ""kind"": ""INPUT_OBJECT"",
+                                      ""ofType"" : null
+                                 },
+                                ""description"" : ""two prop with default value"",
                                 ""defaultValue"": ""{ property1: \""strvalue\"" property2: 5 }""
                             },
                             {
                                 ""name"": ""twoPropWithNoDefaultValue"",
+                                ""type"": {
+                                      ""name"": ""Input_TwoPropertyObject"",
+                                      ""kind"": ""INPUT_OBJECT"",
+                                      ""ofType"" : null
+                                 },
+                                ""description"" : ""two prop no default value"",
                                 ""defaultValue"": ""null""
                             },
                             {
                                 ""name"": ""requiredTwoProp"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Input_TwoPropertyObject"",
+                                      ""kind"": ""INPUT_OBJECT""
+                                    }
+                                },
+                                ""description"" : ""required two prop"",
                                 ""defaultValue"": null
                             }
                         ]
