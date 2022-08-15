@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task NotInCache_ReturnsFalse()
         {
-            var cache = new DefaultQueryPlanCacheProvider();
+            using var cache = new DefaultQueryPlanCacheProvider();
             var hash = Guid.NewGuid().ToString("N");
             var found = await cache.TryGetPlanAsync(hash, out var plan);
             Assert.IsNull(plan);

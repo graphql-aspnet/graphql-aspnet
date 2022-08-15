@@ -110,11 +110,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             base.ValidateOrThrow();
 
-            if (this.DeclaredReturnType == typeof(void))
-            {
-                throw new GraphTypeDeclarationException($"The input graph field '{this.InternalFullName}' has a void return. All graph fields must return something.");
-            }
-
             if (Validation.IsCastable<Task>(this.DeclaredReturnType))
             {
                 throw new GraphTypeDeclarationException(

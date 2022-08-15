@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(arg1);
             Assert.AreEqual(expectedArg.Name, arg1.Name);
             Assert.AreEqual(expectedArg.Description, arg1.Description);
-            Assert.AreEqual(expectedArg.DefaultValue, arg1.DefaultValue);
+            Assert.AreEqual(Constants.QueryLanguage.NULL, arg1.DefaultValue);
 
             // the type SodaCanBuildingData is used as input type "BuildngInput" for arg1
             var introspectedInputType = schema.FindIntrospectedType("BuildingInput");
@@ -93,12 +93,12 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var inputField1 = introspectedInputType.InputFields.Single(x => x.Name == "Name");
             Assert.AreEqual(null, inputField1.Description);
-            Assert.AreEqual(null, inputField1.DefaultValue);
+            Assert.AreEqual(Constants.QueryLanguage.NULL, inputField1.DefaultValue);
             Assert.AreEqual(TypeKind.SCALAR, inputField1.IntrospectedGraphType.Kind);
 
             var inputField2 = introspectedInputType.InputFields.Single(x => x.Name == "Address");
             Assert.AreEqual(null, inputField2.Description);
-            Assert.AreEqual(null, inputField2.DefaultValue);
+            Assert.AreEqual(Constants.QueryLanguage.NULL, inputField2.DefaultValue);
             Assert.AreEqual(TypeKind.SCALAR, inputField2.IntrospectedGraphType.Kind);
 
             var inputField3 = introspectedInputType.InputFields.Single(x => x.Name == "Capacity");

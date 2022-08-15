@@ -12,7 +12,9 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class SimplePropertyObject
@@ -59,5 +61,13 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData
 
         [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
         public ShoeData Shoes { get; set; }
+
+        public IPropInterface InterfaceProperty { get; set; }
+
+        public Task<int> TaskProperty { get; set; }
+
+        public PropertyProxy UnionProxyProperty { get; set; }
+
+        public ObjectReturnedGraphActionResult ActionResultProperty { get; set; }
     }
 }
