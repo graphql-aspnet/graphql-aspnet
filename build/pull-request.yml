@@ -11,7 +11,7 @@
 # executed against any branch with an open PR against any of the protected branches.
 
 pool:
-  vmImage: ubuntu-18.04
+  vmImage: ubuntu-20.04
 
 steps:
   ## Install dotnetcore 3.1

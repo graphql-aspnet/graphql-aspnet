@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Schemas
         /// by the schema.
         /// </summary>
         /// <remarks>
-        /// The object must represent a valid SCALAR, ENUM or INPUT_OBJECT type or an <see cref="InvalidOperationException"/> will be thrown.
+        /// The object must represent a valid SCALAR, ENUM or INPUT_OBJECT else an <see cref="InvalidOperationException"/> will be thrown.
         /// </remarks>
         /// <param name="obj">The object to convert.</param>
         /// <returns>A string representation of the object in graphql query language.</returns>

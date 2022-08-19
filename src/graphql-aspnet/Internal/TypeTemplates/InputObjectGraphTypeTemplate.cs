@@ -14,9 +14,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
+    using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
+    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
@@ -120,6 +124,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
             foreach (var propInfo in propMembers)
             {
+                if (!this.CanBeInputField(propInfo))
+                    continue;
+
                 var parsedTemplate = new InputGraphFieldTemplate(this, propInfo);
                 parsedTemplate?.Parse();
                 if (parsedTemplate?.Route == null || parsedTemplate.Route.RootCollection != GraphCollection.Types)
@@ -145,10 +152,52 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// Gets the explicitly and implicitly decalred fields found on this instance.
-        /// </summary>
-        /// <value>The methods.</value>
+        private bool CanBeInputField(PropertyInfo propInfo)
+        {
+            if (propInfo == null)
+                return false;
+
+            var type = propInfo.PropertyType;
+            if (Validation.IsCastable<Task>(type))
+                return false;
+
+            var objType = GraphValidation.EliminateWrappersFromCoreType(propInfo.PropertyType);
+            if (objType.IsInterface || Validation.IsCastable<IGraphUnionProxy>(objType) || Validation.IsCastable<IGraphActionResult>(objType))
+                return false;
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override void ValidateOrThrow()
+        {
+            base.ValidateOrThrow();
+
+            if (_duplicateNames != null && _duplicateNames.Any())
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The type '{this.ObjectType.FriendlyName()}' defines multiple children with the same " +
+                    $"global path key ({string.Join(",", _duplicateNames.Select(x => $"'{x}'"))}). All property paths must be unique in the " +
+                    "object graph.",
+                    this.ObjectType);
+            }
+
+            if (_invalidFields != null && _invalidFields.Count > 0)
+            {
+                var fieldNames = string.Join("\n", _invalidFields.Select(x => $"Field: '{x.InternalFullName} ({x.Route.RootCollection.ToString()})'"));
+                throw new GraphTypeDeclarationException(
+                    $"Invalid input field declaration.  The type '{this.InternalFullName}' declares fields belonging to a graph collection not allowed given its context. This type can " +
+                    $"only declare the following graph collections: '{string.Join(", ", this.AllowedGraphCollectionTypes.Select(x => x.ToString()))}'. " +
+                    $"If this field is declared on an object (not a controller) be sure to use '{nameof(GraphFieldAttribute)}' instead " +
+                    $"of '{nameof(QueryAttribute)}' or '{nameof(MutationAttribute)}'.\n---------\n " + fieldNames,
+                    this.ObjectType);
+            }
+
+            foreach (var field in this.FieldTemplates.Values)
+                field.ValidateOrThrow();
+        }
+
+        /// <inheritdoc />
         public IReadOnlyDictionary<string, IInputGraphFieldTemplate> FieldTemplates => _fields;
 
         /// <inheritdoc />
@@ -162,5 +211,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public override string InternalName => this.ObjectType?.FriendlyName();
+
+        private IEnumerable<GraphCollection> AllowedGraphCollectionTypes => GraphCollection.Types.AsEnumerable();
     }
 }
