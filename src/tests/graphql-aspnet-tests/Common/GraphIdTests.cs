@@ -32,14 +32,14 @@ namespace GraphQL.AspNet.Tests.Common
         public void EmptyGraphIdCtor_IsEmptyString()
         {
             GraphId id = new ();
-            Assert.AreEqual(string.Empty, id.Value);
+            Assert.IsNull(id.Value);
         }
 
         [Test]
-        public void NotInitializedGraphId_IsEmptyString()
+        public void NotInitializedGraphId_IsNullString()
         {
             var t = new Test();
-            Assert.AreEqual(string.Empty, t.Prop1.Value);
+            Assert.IsNull(t.Prop1.Value);
         }
 
         [Test]

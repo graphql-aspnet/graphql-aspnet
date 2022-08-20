@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Execution
             _testData.Add(new object[] { typeof(NotRequiredDateTimeObject), $"\"{new DateTime(0).ToRfc3339String()}\"" });
             _testData.Add(new object[] { typeof(RequiredDateTimeObject), null });
 
-            _testData.Add(new object[] { typeof(NotRequiredNotSetGraphIdObject), "\"\"" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetGraphIdObject), "null" });
             _testData.Add(new object[] { typeof(NotRequiredSetGraphIdObject), "\"abc\"" });
             _testData.Add(new object[] { typeof(RequiredGraphIdObject), null });
 

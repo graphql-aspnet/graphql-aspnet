@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
         {
             this.Child = new NullableChildObject()
             {
-                Property2 = "child default value"
+                Property2 = "child default value",
             };
 
             this.Property1 = "prop1 default value";

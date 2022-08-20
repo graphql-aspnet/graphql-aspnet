@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 {
     using System.ComponentModel.DataAnnotations;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class InputTestObject
@@ -26,10 +27,12 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 
         public GraphId GraphIdNotRequired { get; set; }
 
+        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        public GraphId GraphIdNonNullable { get; set; }
+
         public TwoPropertyObject NotRequiredReferenceTypeField { get; set; }
 
         [Required]
-
         public TwoPropertyObject RequiredReferenceTypeField { get; set; }
     }
 }
