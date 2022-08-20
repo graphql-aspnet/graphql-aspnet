@@ -170,6 +170,37 @@ namespace GraphQL.AspNet.Tests.Schemas
                                             new NestableObject(8)))))))));
 
             _testValues.Add((nestableItem, "{ value: 0 next: { value: 1 next: { value: 2 next: { value: 3 next: { value: 4 next: { value: 5 next: { value: 6 next: { value: 7 next: { value: 8 next: null } } } } } } } } }"));
+
+            // scalar list
+            _testValues.Add((new List<int>() { 1, 2, 3 }, "[1, 2, 3]"));
+            _testValues.Add((new List<int>(), "[]"));
+            _testValues.Add((new List<string>() { "a", "b", "c" }, "[\"a\", \"b\", \"c\"]"));
+            _testValues.Add((new List<string>() { "a", "b", null }, "[\"a\", \"b\", null]"));
+            _testValues.Add((new List<int?>() { 1, null, 3 }, "[1, null, 3]"));
+            _testValues.Add((new List<int?>() { 1, null, null, 4 }, "[1, null, null, 4]"));
+            _testValues.Add((new List<int?>(), "[]"));
+            _testValues.Add((new List<IEnumerable<int>>() { new List<int>() { 1, 2, 3 }, new List<int>() { 4, 5, 6 } }, "[[1, 2, 3], [4, 5, 6]]"));
+            _testValues.Add((new List<IEnumerable<int[]>>() { new List<int[]>() { new int[] { 1 }, new int[] { 2, 3 }, new int[] { 4 } }, new List<int[]>() { new int[] { 5 }, new int[] { 6 }, new int[] { 7, 8 } } }, "[[[1], [2, 3], [4]], [[5], [6], [7, 8]]]"));
+            _testValues.Add((new List<IEnumerable<int[]>>(), "[]"));
+            _testValues.Add((new List<IEnumerable<int[]>>() { new List<int[]>() { } }, "[[]]"));
+            _testValues.Add((new List<IEnumerable<int[]>>() { new List<int[]>() { new int[0] } }, "[[[]]]"));
+            _testValues.Add((new List<IEnumerable<int[]>>() { new List<int[]>() { new int[] { 99 } } }, "[[[99]]]"));
+
+            // enum list
+            _testValues.Add((new List<Happiness>() { Happiness.Sad, Happiness.Happy, Happiness.Sad }, "[SAD, HAPPY, SAD]"));
+            _testValues.Add((new List<Happiness>(), "[]"));
+            _testValues.Add((new List<Happiness?>() { Happiness.Sad, null, Happiness.Happy }, "[SAD, null, HAPPY]"));
+            _testValues.Add((new List<Happiness>() { (Happiness)1 }, "[SAD]"));
+
+            // input_object list
+            _testValues.Add(
+                (new List<TwoPropertyObject>() { new TwoPropertyObject() { Property1 = "str", Property2 = 5 }, new TwoPropertyObject() { Property1 = "str1", Property2 = 8 } },
+                    "[{ property1: \"str\" property2: 5 }, { property1: \"str1\" property2: 8 }]"));
+            _testValues.Add(
+                (new List<TwoPropertyObject>() { new TwoPropertyObject() { Property1 = "str", Property2 = 5 }, null },
+                    "[{ property1: \"str\" property2: 5 }, null]"));
+            _testValues.Add((new List<TwoPropertyObject>(), "[]"));
+            _testValues.Add((new List<TwoPropertyObject>() { null, null, null }, "[null, null, null]"));
         }
 
         static QueryLanguageGeneratorTests()
@@ -241,6 +272,60 @@ namespace GraphQL.AspNet.Tests.Schemas
             {
                 var generator = new QueryLanguageGenerator(_schema);
                 generator.SerializeObject(loopedPerson);
+            });
+        }
+
+        [Test]
+        public void InvalidObjectType_ThrowsException()
+        {
+            var dic = new Dictionary<string, string>();
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var generator = new QueryLanguageGenerator(_schema);
+                generator.SerializeObject(dic);
+            });
+        }
+
+        [Test]
+        public void UnknownObjectType_ThrowsException()
+        {
+            // V2 is not registered to the schema
+            var obj = new TwoPropertyObjectV3()
+            {
+                Property1 = "bob",
+                Property2 = DateTime.UtcNow,
+            };
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var generator = new QueryLanguageGenerator(_schema);
+                generator.SerializeObject(obj);
+            });
+        }
+
+        [Test]
+        public void UnknownEnumValue_ThrowsException()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                // melancholy is declared on the enum with [GraphSkip]
+                // the schema won't know of the value, so it can't be serialzied
+                var generator = new QueryLanguageGenerator(_schema);
+                generator.SerializeObject(Happiness.Melancholy);
+            });
+        }
+
+        [Test]
+        public void UnknownInListOfEnumValue_ThrowsException()
+        {
+            var list = new List<Happiness>() { Happiness.Happy, Happiness.Sad, Happiness.Melancholy };
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                // melancholy is declared on the enum with [GraphSkip]
+                // the schema won't know of the value, so it can't be serialzied
+                var generator = new QueryLanguageGenerator(_schema);
+                generator.SerializeObject(list);
             });
         }
     }

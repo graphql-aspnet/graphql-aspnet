@@ -29,41 +29,63 @@ namespace GraphQL.AspNet.Tests.Execution
         {
             _testData = new List<object[]>();
 
-            _testData.Add(new object[] { typeof(NotRequiredIntObject), "0" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetIntObject), "0" });
             _testData.Add(new object[] { typeof(NotRequiredSetIntObject), "2345" });
             _testData.Add(new object[] { typeof(RequiredIntObject), null });
 
-            _testData.Add(new object[] { typeof(NotRequiredNullableIntObject), "null" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetNullableIntObject), "null" });
             _testData.Add(new object[] { typeof(NotRequiredSetNullableIntObject), "567" });
             _testData.Add(new object[] { typeof(RequiredNullableIntObject), null });
 
-            _testData.Add(new object[] { typeof(NotRequiredDoubleObject), "0" });
+            _testData.Add(new object[] { typeof(NotRequiredNonNullableSetNullableIntObject), "3" });
+            _testData.Add(new object[] { typeof(NotRequiredNonNullableNotSetNullableIntObject), "<exception>" });
+            _testData.Add(new object[] { typeof(RequiredNonNullableNullableIntObject), null });
+
+            _testData.Add(new object[] { typeof(NotRequiredNotSetDoubleObject), "0" });
             _testData.Add(new object[] { typeof(NotRequiredSetDoubleObject), "1.2345" });
             _testData.Add(new object[] { typeof(RequiredDoubleObject), null });
 
-            _testData.Add(new object[] { typeof(NotRequiredClassObject), "null" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetClassObject), "null" });
             _testData.Add(new object[] { typeof(NotRequiredSetClassObject), "{ Property1: \"prop 1 default\" Property2: 38 }" });
-            _testData.Add(new object[] { typeof(NotRequiredNonNullableNotSetClassObject), "exception" });
+            _testData.Add(new object[] { typeof(NotRequiredNonNullableNotSetClassObject), "<exception>" });
             _testData.Add(new object[] { typeof(RequiredClassObject), null });
 
-            _testData.Add(new object[] { typeof(NotRequiredDateTimeObject), $"\"{new DateTime(0).ToRfc3339String()}\"" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetDateTimeObject), $"\"{new DateTime(0).ToRfc3339String()}\"" });
             _testData.Add(new object[] { typeof(RequiredDateTimeObject), null });
+
+            _testData.Add(new object[] { typeof(NotRequiredNotSetDatetimeOffsetObject), $"\"{new DateTimeOffset(0, TimeSpan.Zero).ToRfc3339String()}\"" });
+            _testData.Add(new object[] { typeof(NotRequiredSetDatetimeOffsetObject), $"\"{new DateTimeOffset(2022, 8, 20, 11, 59, 0, TimeSpan.Zero).ToRfc3339String()}\"" });
+            _testData.Add(new object[] { typeof(RequiredDateTimeOffsetObject), null });
 
             _testData.Add(new object[] { typeof(NotRequiredNotSetGraphIdObject), "null" });
             _testData.Add(new object[] { typeof(NotRequiredSetGraphIdObject), "\"abc\"" });
             _testData.Add(new object[] { typeof(RequiredGraphIdObject), null });
 
-            _testData.Add(new object[] { typeof(NotRequiredStringObject), "null" });
-            _testData.Add(new object[] { typeof(RequiredStringObject), null });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetStringObject), "null" });
+            _testData.Add(new object[] { typeof(NotRequiredSetStringObject), "\"prop 1 default set\"" });
             _testData.Add(new object[] { typeof(NotRequiredNonNullableSetStringObject), "\"default string value\"" });
-            _testData.Add(new object[] { typeof(NotRequiredNonNullableNotSetStringObject), "exception" });
+            _testData.Add(new object[] { typeof(NotRequiredNonNullableNotSetStringObject), "<exception>" });
+            _testData.Add(new object[] { typeof(RequiredStringObject), null });
 
-            _testData.Add(new object[] { typeof(NotRequiredStructObject), "{ Property1: 0 Property2: null }" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetStructObject), "{ TestStructProp1: 0 TestStructProp2: null }" });
+            _testData.Add(new object[] { typeof(NotRequiredSetStructObject), "{ TestStructProp1: 89 TestStructProp2: \"default value set 89\" }" });
             _testData.Add(new object[] { typeof(RequiredStructObject), null });
 
             _testData.Add(new object[] { typeof(NotRequiredNotSetGuidObject), $"\"{Guid.Empty}\"" });
             _testData.Add(new object[] { typeof(NotRequiredSetGuidObject), $"\"033979ae-0955-4ef6-8a37-50bf0359601f\"" });
             _testData.Add(new object[] { typeof(RequiredGuidObject), null });
+
+            _testData.Add(new object[] { typeof(StructNotRequiredNotSetIntObject), "0" });
+            _testData.Add(new object[] { typeof(StructNotRequiredSetIntObject), "5" });
+            _testData.Add(new object[] { typeof(StructRequiredIntObject), null });
+
+            _testData.Add(new object[] { typeof(StructNotRequiredSetClassObject), "{ Property1: \"struct set prop value\" Property2: 99 }" });
+            _testData.Add(new object[] { typeof(StructNotRequiredNotSetClassObject), "null" });
+            _testData.Add(new object[] { typeof(StructRequiredClassObject), null });
+
+            _testData.Add(new object[] { typeof(NotRequiredSetListIntObject), "[1, 2, 3, 4]" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetListIntObject), "null" });
+            _testData.Add(new object[] { typeof(RequiredListIntObject), null });
         }
 
         [TestCaseSource(nameof(_testData))]
@@ -72,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var serverBuilder = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddType(inputType, TypeKind.INPUT_OBJECT);
 
-            if (expectedDefaultValue == "exception")
+            if (expectedDefaultValue == "<exception>")
             {
                 Assert.Throws<GraphTypeDeclarationException>(() =>
                 {

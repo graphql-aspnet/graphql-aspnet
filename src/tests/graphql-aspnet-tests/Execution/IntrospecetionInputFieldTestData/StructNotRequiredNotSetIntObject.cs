@@ -9,8 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    public class NotRequiredStructObject
+    public struct StructNotRequiredNotSetIntObject
     {
-        public TestStruct Property1 { get; set; }
+        public int Property1 { get; set; }
     }
 }

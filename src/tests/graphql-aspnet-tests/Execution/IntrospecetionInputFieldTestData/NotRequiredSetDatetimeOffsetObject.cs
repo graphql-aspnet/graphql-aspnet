@@ -9,11 +9,15 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    using System.ComponentModel.DataAnnotations;
+    using System;
 
-    public class RequiredStructObject
+    public class NotRequiredSetDatetimeOffsetObject
     {
-        [Required]
-        public PropertyTestStruct Property1 { get; set; }
+        public NotRequiredSetDatetimeOffsetObject()
+        {
+            this.Property1 = new DateTimeOffset(2022, 8, 20, 11, 59, 0, TimeSpan.Zero);
+        }
+
+        public DateTimeOffset Property1 { get; set; }
     }
 }

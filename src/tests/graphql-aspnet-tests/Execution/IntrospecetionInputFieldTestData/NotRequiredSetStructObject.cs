@@ -9,10 +9,17 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-
-    public class NotRequiredClassObject
+    public class NotRequiredSetStructObject
     {
-        public TwoPropertyObject Property1 { get; set; }
+        public NotRequiredSetStructObject()
+        {
+            this.Property1 = new PropertyTestStruct()
+            {
+                TestStructProp1 = 89,
+                TestStructProp2 = "default value set 89",
+            };
+        }
+
+        public PropertyTestStruct Property1 { get; set; }
     }
 }

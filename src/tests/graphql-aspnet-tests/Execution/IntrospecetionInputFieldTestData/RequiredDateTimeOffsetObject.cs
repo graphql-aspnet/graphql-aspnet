@@ -10,9 +10,11 @@
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
 
-    public class NotRequiredDateTimeObject
+    public class RequiredDateTimeOffsetObject
     {
-        public DateTime Property1 { get; set; }
+        [Required]
+        public DateTimeOffset Property1 { get; set; }
     }
 }

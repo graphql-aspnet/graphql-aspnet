@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
 
@@ -18,10 +19,10 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// A qualified option on a published ENUM graph type.
     /// </summary>
     [DebuggerDisplay("Value = {Name}")]
-    public class GraphEnumValue : IEnumValue
+    public class EnumValue : IEnumValue
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphEnumValue" /> class.
+        /// Initializes a new instance of the <see cref="EnumValue" /> class.
         /// </summary>
         /// <param name="parent">The parent enum graph type that owns this value.</param>
         /// <param name="name">The value.</param>
@@ -31,7 +32,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="internalLabel">A string representation of label applied to the enum value in .NET.</param>
         /// <param name="directives">The set of directives to execute
         /// against this option when it is added to the schema.</param>
-        public GraphEnumValue(
+        public EnumValue(
             IEnumGraphType parent,
             string name,
             string description,
@@ -47,6 +48,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
             this.InternalValue = Validation.ThrowIfNullOrReturn(internalValue, nameof(internalValue));
             this.InternalLabel = Validation.ThrowIfNullWhiteSpaceOrReturn(internalLabel, nameof(internalLabel));
+
+            if (Constants.QueryLanguage.IsReservedKeyword(this.Name))
+            {
+                throw new GraphTypeDeclarationException($"The enum value '{this.Name}' is invalid for " +
+                    $"graph type '{this.Parent.Name}'. {this.Name} is a reserved keyword.");
+            }
         }
 
         /// <inheritdoc />

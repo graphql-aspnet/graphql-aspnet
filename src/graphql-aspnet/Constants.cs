@@ -208,6 +208,30 @@ namespace GraphQL.AspNet
             public const string TRUE = ParserConstants.Keywords.TrueString;
             public const string FALSE = ParserConstants.Keywords.FalseString;
             public static readonly string FieldValueSeperator = ParserConstants.Keywords.FieldValueSeperatorString;
+
+            private static HashSet<string> _reservedWords;
+
+            static QueryLanguage()
+            {
+                _reservedWords = new HashSet<string>();
+                _reservedWords.Add(NULL);
+                _reservedWords.Add(TRUE);
+                _reservedWords.Add(FALSE);
+            }
+
+            /// <summary>
+            /// Determines whether the provided <paramref name="word"/> is a reserved
+            /// keyword in the query language.
+            /// </summary>
+            /// <param name="word">The word to check.</param>
+            /// <returns><c>true</c> if the word is reserved; otherwise, <c>false</c>.</returns>
+            public static bool IsReservedKeyword(string word)
+            {
+                if (word == null)
+                    return false;
+
+                return _reservedWords.Contains(word);
+            }
         }
 
         /// <summary>

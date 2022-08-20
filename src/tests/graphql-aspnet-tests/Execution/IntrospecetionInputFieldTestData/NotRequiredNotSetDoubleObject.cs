@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    public class NotRequiredDoubleObject
+    public class NotRequiredNotSetDoubleObject
     {
         public double Property1 { get; set; }
     }

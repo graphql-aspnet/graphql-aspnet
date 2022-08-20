@@ -9,8 +9,12 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    public class NotRequiredIntObject
+    using System.ComponentModel.DataAnnotations;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+
+    public struct StructRequiredClassObject
     {
-        public int Property1 { get; set; }
+        [Required]
+        public TwoPropertyObject Property1 { get; set; }
     }
 }

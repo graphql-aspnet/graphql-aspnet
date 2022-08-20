@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Schemas
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Text;
     using GraphQL.AspNet.Common;
@@ -17,6 +18,7 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -56,8 +58,19 @@ namespace GraphQL.AspNet.Schemas
             if (obj == null)
                 return Constants.QueryLanguage.NULL;
 
-            var graphType = _schema.KnownTypes.FindGraphType(obj.GetType(), TypeKind.INPUT_OBJECT);
+            var objType = obj.GetType();
 
+            if (GraphValidation.IsValidListType(obj.GetType()))
+                return this.SerailizeList(obj as IEnumerable);
+
+            if (!GraphValidation.IsValidGraphType(objType))
+            {
+                throw new InvalidOperationException(
+                    $"The supplied object type '{objType.FriendlyName()}' does not represent an object that could ever be a graph type. " +
+                    $"Only object types that represent an {TypeKind.INPUT_OBJECT}, {TypeKind.SCALAR} or {TypeKind.ENUM} can be converted.");
+            }
+
+            var graphType = _schema.KnownTypes.FindGraphType(objType, TypeKind.INPUT_OBJECT);
             switch (graphType)
             {
                 case IInputObjectGraphType _:
@@ -67,8 +80,8 @@ namespace GraphQL.AspNet.Schemas
 
                 default:
                     throw new InvalidOperationException(
-                        $"Unable to locate a valid graph type for an item of type '{obj.GetType().FriendlyName()}' on the schema '{_schema.Name}'. " +
-                        $"Only {TypeKind.INPUT_OBJECT}, {TypeKind.SCALAR} and {TypeKind.ENUM} types can be converted.");
+                        $"Unable to locate a valid graph type for an entity of type '{obj.GetType().FriendlyName()}' on the schema '{_schema.Name}'. " +
+                        $"Only known {TypeKind.INPUT_OBJECT}, {TypeKind.SCALAR} and {TypeKind.ENUM} types can be converted.");
             }
 
             if (!graphType.ValidateObject(obj))
@@ -82,6 +95,10 @@ namespace GraphQL.AspNet.Schemas
                 var enumValue = egt.Values.FindByEnumValue(obj);
                 if (enumValue != null)
                     return enumValue.Name;
+
+                throw new InvalidOperationException(
+                      $"The enum graph type does not declare a label for the supplied value of '{obj}'. " +
+                      $"Only declared values on the enum graph type can be serialized.");
             }
             else if (graphType is IInputObjectGraphType iogt)
             {
@@ -89,6 +106,28 @@ namespace GraphQL.AspNet.Schemas
             }
 
             return Constants.QueryLanguage.NULL;
+        }
+
+        private string SerailizeList(IEnumerable list)
+        {
+            var builder = new StringBuilder();
+            builder.Append("[");
+
+            if (list != null)
+            {
+                var listStarted = false;
+                foreach (var item in list)
+                {
+                    if (listStarted)
+                        builder.Append(", ");
+
+                    builder.Append(this.SerializeObject(item));
+                    listStarted = true;
+                }
+            }
+
+            builder.Append("]");
+            return builder.ToString();
         }
 
         private string SerializeInputObject(object obj, IInputObjectGraphType inputObjectGraphType, HashSet<object> recursionStack = null)

@@ -7,16 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.QueryLanguageTestData
+namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    public enum Happiness
+    public class NotRequiredNonNullableNotSetNullableIntObject
     {
-        Happy,
-        Sad,
-
-        [GraphSkip]
-        Melancholy,
+        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        public int? Property1 { get; set; }
     }
 }

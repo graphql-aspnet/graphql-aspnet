@@ -10,10 +10,13 @@
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
     using System.ComponentModel.DataAnnotations;
+    using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    public class RequiredStructObject
+    public class RequiredNonNullableNullableIntObject
     {
         [Required]
-        public PropertyTestStruct Property1 { get; set; }
+        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        public int? Property1 { get; set; }
     }
 }

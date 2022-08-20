@@ -7,16 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.QueryLanguageTestData
+namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    using GraphQL.AspNet.Attributes;
-
-    public enum Happiness
+    public class NotRequiredSetStringObject
     {
-        Happy,
-        Sad,
+        public NotRequiredSetStringObject()
+        {
+            this.Property1 = "prop 1 default set";
+        }
 
-        [GraphSkip]
-        Melancholy,
+        public string Property1 { get; set; }
     }
 }

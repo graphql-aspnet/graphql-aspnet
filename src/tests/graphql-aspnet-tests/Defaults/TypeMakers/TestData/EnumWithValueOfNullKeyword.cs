@@ -6,17 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
-
-namespace GraphQL.AspNet.Tests.Schemas.QueryLanguageTestData
+namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 {
     using GraphQL.AspNet.Attributes;
 
-    public enum Happiness
+    public enum EnumWithValueOfNullKeyword
     {
-        Happy,
-        Sad,
-
-        [GraphSkip]
-        Melancholy,
+        [GraphEnumValue("null")]
+        Value1,
     }
 }

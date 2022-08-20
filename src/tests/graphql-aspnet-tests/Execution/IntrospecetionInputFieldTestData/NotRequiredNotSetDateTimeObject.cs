@@ -7,16 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Schemas.QueryLanguageTestData
+namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    using GraphQL.AspNet.Attributes;
+    using System;
 
-    public enum Happiness
+    public class NotRequiredNotSetDateTimeObject
     {
-        Happy,
-        Sad,
-
-        [GraphSkip]
-        Melancholy,
+        public DateTime Property1 { get; set; }
     }
 }

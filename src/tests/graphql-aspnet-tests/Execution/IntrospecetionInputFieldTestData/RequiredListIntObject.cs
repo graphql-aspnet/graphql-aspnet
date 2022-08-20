@@ -9,10 +9,12 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    public struct TestStruct
-    {
-        public int Property1 { get; set; }
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
 
-        public string Property2 { get; set; }
+    public class RequiredListIntObject
+    {
+        [Required]
+        public List<int> Property1 { get; set; }
     }
 }
