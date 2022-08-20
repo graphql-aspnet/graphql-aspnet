@@ -16,6 +16,11 @@ namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
     [GraphType(PreventAutoInclusion = true)]
     public class ElevatorBindingModel
     {
+        public ElevatorBindingModel()
+        {
+            this.Name = string.Empty;
+        }
+
         [Required]
         public int Id { get; set; }
 

@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             AddQuery("5.4.2", "query Operation1{ peopleMovers @restrict(someValue: 1, someValue: 2) { elevator(id: 5){ id name } } }");
 
             // required argument must be provided (id is required on elevator but not provided)
-            AddQuery("5.4.2.1", "query Operation1{ peopleMovers { elevator{ id name } } }");
+            AddQuery("5.4.2.1", "query Operation1{ peopleMovers { elevator(){ id name } } }");
 
             // required argument must be provided ("someValue" required on @Restrict but not provided)
             AddQuery("5.4.2.1", "query Operation1{ peopleMovers @restrict { elevator (id: 5) { id name } } }");
@@ -156,10 +156,15 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // (no object types implement both HorizontalMover and VerticalMover interfaces)
             AddQuery("5.5.2.3.4", "query Operation1{ peopleMovers { horizontalMover(id: \"5\"){ ...on VerticalMover { id } } } }");
 
-            // required argument must be provided (matchElevator accepts in an input object of "Input_Elevator", simulate passing all possible non-object types: number, stirng, enum, bool)
+            // required argument must be provided (matchElevator accepts in an input object 'e' of type
+            // "Input_Elevator", simulate passing all possible non-object types: number, stirng, enum, bool)
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: 5) { id name } } }");
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: \"someString\") { id name } } }");
             AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: SOMEENUM) { id name } } }");
+            AddQuery("5.6.1", "query Operation1{ peopleMovers { matchElevator(e: true) { id name } } }");
+
+            // elevator.id value requires a non-null integer
+            AddQuery("5.6.1", "query Operation1{ peopleMovers { elevator(id: null) { id name } } }");
 
             // the supplied value of "someString" for input field "id" is not a number
             AddQuery("5.6.1", "query Operation1{ peopleMovers { elevatorsByBuilding(building: {id: \"someString\"}) { id name } } }");
@@ -173,7 +178,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
             // INPUT_OBJECT:fields marked as "required" must be supplied  (id on field is marked required)
             AddQuery("5.6.4", "query Operation1{ peopleMovers { matchElevator(e: {name: \"South Elevator\"}) { id name } } }");
 
-            // INPUT_OBJECT: checks nested input objects on an input object  (address has a required field of id)
+            // INPUT_OBJECT: checks nested input objects on an input object  (address has a required field of id (Int!))
             AddQuery("5.6.4", "query Operation1{ peopleMovers { elevatorsByBuilding(building: { id: 5, address: {name: \"shore line\"} }) { id name } } }");
 
             // directive must exist (no such directive as @NotARealThing)

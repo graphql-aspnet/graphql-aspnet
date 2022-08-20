@@ -120,5 +120,53 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
         }
+
+        [Test]
+        public void Parse_RequiredGraphIdPropertyCheck()
+        {
+            var server = new TestServerBuilder().Build();
+            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+
+            var fieldTemplate = template
+                .FieldTemplates
+                .Values
+                .Single(x => x.Name == nameof(InputTestObject.GraphIdRequired));
+
+            var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
+
+            Assert.AreEqual("graphIdRequired", graphField.Name);
+            Assert.IsTrue(graphField.IsRequired);
+
+            Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
+            Assert.AreEqual("[type]/Input_InputTestObject/GraphIdRequired", graphField.Route.ToString());
+            Assert.AreEqual("GraphIdRequired", graphField.InternalName);
+            Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);
+
+            Assert.AreEqual(0, graphField.AppliedDirectives.Count);
+        }
+
+        [Test]
+        public void Parse_NotRequiredGraphIdPropertyCheck()
+        {
+            var server = new TestServerBuilder().Build();
+            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+
+            var fieldTemplate = template
+                .FieldTemplates
+                .Values
+                .Single(x => x.Name == nameof(InputTestObject.GraphIdNotRequired));
+
+            var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
+
+            Assert.AreEqual("graphIdNotRequired", graphField.Name);
+            Assert.IsFalse(graphField.IsRequired);
+
+            Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
+            Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNotRequired", graphField.Route.ToString());
+            Assert.AreEqual("GraphIdNotRequired", graphField.InternalName);
+            Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);
+
+            Assert.AreEqual(0, graphField.AppliedDirectives.Count);
+        }
     }
 }

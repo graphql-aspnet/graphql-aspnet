@@ -7,20 +7,19 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
+namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
-    public class ParentWithNonNullableChildObject
+    public class NotRequiredNonNullableSetStringObject
     {
-        public ParentWithNonNullableChildObject()
+        public NotRequiredNonNullableSetStringObject()
         {
-            this.Child = new NullableChildObject();
+            this.Property1 = string.Empty;
         }
 
+        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
         public string Property1 { get; set; }
-
-        [GraphField(TypeExpression = AspNet.Schemas.TypeSystem.TypeExpressions.IsNotNull)]
-        public NullableChildObject Child { get; set; }
     }
 }

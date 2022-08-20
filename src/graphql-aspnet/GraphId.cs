@@ -10,20 +10,27 @@
 namespace GraphQL.AspNet
 {
     using System;
+    using System.ComponentModel;
+    using System.Diagnostics;
 
     /// <summary>
     /// <para>A scalar representation of the graphql defined "ID" scalar.</para>
     /// <para>spec: https://graphql.github.io/graphql-spec/October2021/#sec-ID .</para>
     /// </summary>
+    [DebuggerDisplay("{Value}")]
     public struct GraphId : IEquatable<GraphId>
     {
+        private bool _explicitlySet = false;
+        private string _value;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphId" /> struct.
         /// </summary>
         /// <param name="id">The identifier to copy from.</param>
         public GraphId(GraphId id)
         {
-            this.Value = id.Value;
+            _value = id.Value;
+            _explicitlySet = true;
         }
 
         /// <summary>
@@ -32,14 +39,33 @@ namespace GraphQL.AspNet
         /// <param name="idValue">The identifier value.</param>
         public GraphId(string idValue)
         {
-            this.Value = idValue;
+            _value = idValue;
+            _explicitlySet = true;
         }
 
         /// <summary>
-        /// Gets the value.
+        /// Initializes a new instance of the <see cref="GraphId"/> struct.
+        /// </summary>
+        public GraphId()
+        {
+            _value = string.Empty;
+            _explicitlySet = true;
+        }
+
+        /// <summary>
+        /// Gets the value of the Id.
         /// </summary>
         /// <value>The value.</value>
-        public string Value { get; }
+        public string Value
+        {
+            get
+            {
+                if (_explicitlySet)
+                    return _value;
+
+                return string.Empty;
+            }
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

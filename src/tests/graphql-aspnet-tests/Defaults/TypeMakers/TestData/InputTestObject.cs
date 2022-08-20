@@ -21,6 +21,11 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
         [Required]
         public int RequiredValueTypeField { get; set; }
 
+        [Required]
+        public GraphId GraphIdRequired { get; set; }
+
+        public GraphId GraphIdNotRequired { get; set; }
+
         public TwoPropertyObject NotRequiredReferenceTypeField { get; set; }
 
         [Required]

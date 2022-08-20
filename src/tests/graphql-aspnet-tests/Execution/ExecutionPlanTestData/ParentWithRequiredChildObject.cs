@@ -9,20 +9,13 @@
 
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
-    public class ParentWithNullableChildObject
+    using System.ComponentModel.DataAnnotations;
+
+    public class ParentWithRequiredChildObject
     {
-        public ParentWithNullableChildObject()
-        {
-            this.Child = new NullableChildObject()
-            {
-                Property2 = "child default value"
-            };
-
-            this.Property1 = "prop1 default value";
-        }
-
         public string Property1 { get; set; }
 
+        [Required]
         public NullableChildObject Child { get; set; }
     }
 }

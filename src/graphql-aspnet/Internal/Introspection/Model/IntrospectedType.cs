@@ -225,12 +225,22 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
                 {
                     var getter = propGetters[field.InternalName];
                     defaultValue = getter.Invoke(ref defaultObject);
+
+                    if (defaultValue == null && field.TypeExpression.IsNonNullable)
+                    {
+                        throw new GraphTypeDeclarationException(
+                            "Unable to determine the expected default value " +
+                            $"for field '{field.Route}'. The field " +
+                            $"is marked as non-nullable but is not required and does not supply a " +
+                            $"non-null default value. Either mark the field as [Required] or " +
+                            $"set its value to a non-null value in the constructor.");
+                    }
                 }
                 else
                 {
                     throw new GraphTypeDeclarationException(
                         "Unable to determine the expected default value " +
-                        $"for field '{field.TypeExpression}'. The field " +
+                        $"for field '{field.Route}'. The field " +
                         $"is not required but no getter is defined on the " +
                         $"owner .NET class from which a default value could be extracted.");
                 }
