@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [TestCase(typeof(EnumWithValueOfNullKeyword), "NULL")]
         [TestCase(typeof(EnumWithValueOfTrueKeyword), "TRUE")]
         [TestCase(typeof(EnumWithValueOfFalseKeyword), "FALSE")]
-        public void EnumValueIsKeyWord_ButFormattingChangesIt_WorksAsExpected(Type enumType, string enumValue)
+        public void EnumValueIsKeyword_ButFormattingDoesNotMatchKeyword_WorksAsExpected(Type enumType, string enumValue)
         {
             var schema = new GraphSchema();
 
@@ -155,7 +155,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [TestCase(typeof(EnumWithValueOfNullKeyword), "NULL")]
         [TestCase(typeof(EnumWithValueOfTrueKeyword), "TRUE")]
         [TestCase(typeof(EnumWithValueOfFalseKeyword), "FALSE")]
-        public void EnumValueIsKeyWord_AndFormattingMatchesKeyWord_ThrowsException(Type enumType, string enumValue)
+        public void EnumValueIsKeyword_AndFormattingMatchesKeyword_ThrowsException(Type enumType, string enumValue)
         {
             var schema = new TestServerBuilder().AddGraphQL(o =>
             {

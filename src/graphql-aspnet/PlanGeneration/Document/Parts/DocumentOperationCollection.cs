@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     internal class DocumentOperationCollection : IOperationCollectionDocumentPart
     {
         private readonly Dictionary<string, IOperationDocumentPart> _operations;
-        private List<IOperationDocumentPart> _operationsInOrder;
+        private readonly List<IOperationDocumentPart> _operationsInOrder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentOperationCollection"/> class.

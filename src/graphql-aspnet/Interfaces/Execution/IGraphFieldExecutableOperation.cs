@@ -51,12 +51,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The declared variables.</value>
         IVariableCollectionDocumentPart Variables { get; }
-
-        /// <summary>
-        /// Gets a collection of the field contexts present in this operation, regardless of level, that have some
-        /// security requirements attached to them.
-        /// </summary>
-        /// <value>The secure fields.</value>
-        IEnumerable<IGraphFieldInvocationContext> SecureFieldContexts { get; }
     }
 }
