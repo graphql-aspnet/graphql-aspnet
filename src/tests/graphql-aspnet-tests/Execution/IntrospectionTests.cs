@@ -1773,7 +1773,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 }");
 
             var response = await server.RenderResult(builder);
-            var output = @"
+            var expectedResponse = @"
             {
                 ""data"": {
                     ""query"": {
@@ -1862,12 +1862,9 @@ namespace GraphQL.AspNet.Tests.Execution
                             {
                                 ""name"": ""requiredTwoProp"",
                                 ""type"": {
-                                    ""name"": null,
-                                    ""kind"": ""NON_NULL"",
-                                    ""ofType"": {
                                       ""name"": ""Input_TwoPropertyObject"",
-                                      ""kind"": ""INPUT_OBJECT""
-                                    }
+                                      ""kind"": ""INPUT_OBJECT"",
+                                      ""ofType"" : null
                                 },
                                 ""description"" : ""required two prop"",
                                 ""defaultValue"": null
@@ -1877,7 +1874,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 }
             }";
 
-            CommonAssertions.AreEqualJsonStrings(output, response);
+            CommonAssertions.AreEqualJsonStrings(expectedResponse, response);
         }
     }
 }

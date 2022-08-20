@@ -64,26 +64,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             typeExpression = typeExpression.CloneTo(GraphTypeNames.ParseName(objectType, this.Parent.Kind));
 
             this.IsRequired = this.AttributeProvider.SingleAttributeOrDefault<RequiredAttribute>() != null;
-            if (this.IsRequired)
-            {
-                // a field being required on a query
-                // is defined as "being non-null with no default value"
-                // from spec rule 5.6.4
-                // as a result if a field defines the [Required] attribute
-                // flag then its type expression MUST be non-null and HasDefaultValue = false
-                if (typeExpression.IsNullable)
-                    typeExpression = typeExpression.WrapExpression(MetaGraphTypes.IsNotNull);
-            }
-            else
-            {
-                // however, a "not required" field may also be "non-nullable" in its type expression
-                // as long as it defines a default value.  Anything "not required" inheritantly
-                // has a default value from default(type)
-                //
-                // this accounts for and allows for the situation where a query document may supply the
-                // optional field but supply the value <null> for the field, which would not be allowed.
-            }
-
             this.TypeExpression = typeExpression;
         }
 

@@ -113,9 +113,35 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             // because its marked as required, even though its a reference type (which is nullable)
             // the type expression is automatically hoisted to be "non-nullable"
-            Assert.AreEqual("Input_TwoPropertyObject!", graphField.TypeExpression.ToString());
+            Assert.AreEqual("Input_TwoPropertyObject", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/RequiredReferenceTypeField", graphField.Route.ToString());
             Assert.AreEqual("RequiredReferenceTypeField", graphField.InternalName);
+            Assert.AreEqual(typeof(TwoPropertyObject), graphField.DeclaredReturnType);
+
+            Assert.AreEqual(0, graphField.AppliedDirectives.Count);
+        }
+
+        [Test]
+        public void Parse_RequiredNonNullableReferenceTypePropertyCheck()
+        {
+            var server = new TestServerBuilder().Build();
+            var template = TemplateHelper.CreateInputObjectTemplate<InputTestObject>();
+
+            var fieldTemplate = template
+                .FieldTemplates
+                .Values
+                .Single(x => x.Name == nameof(InputTestObject.RequiredReferenceExplicitNonNullTypeField));
+
+            var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
+
+            Assert.AreEqual("requiredReferenceExplicitNonNullTypeField", graphField.Name);
+            Assert.IsTrue(graphField.IsRequired);
+
+            // because its marked as required, even though its a reference type (which is nullable)
+            // the type expression is automatically hoisted to be "non-nullable"
+            Assert.AreEqual("Input_TwoPropertyObject!", graphField.TypeExpression.ToString());
+            Assert.AreEqual("[type]/Input_InputTestObject/RequiredReferenceExplicitNonNullTypeField", graphField.Route.ToString());
+            Assert.AreEqual("RequiredReferenceExplicitNonNullTypeField", graphField.InternalName);
             Assert.AreEqual(typeof(TwoPropertyObject), graphField.DeclaredReturnType);
 
             Assert.AreEqual(0, graphField.AppliedDirectives.Count);
@@ -137,7 +163,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual("graphIdRequired", graphField.Name);
             Assert.IsTrue(graphField.IsRequired);
 
-            Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
+            Assert.AreEqual("ID", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdRequired", graphField.Route.ToString());
             Assert.AreEqual("GraphIdRequired", graphField.InternalName);
             Assert.AreEqual(typeof(GraphId), graphField.DeclaredReturnType);

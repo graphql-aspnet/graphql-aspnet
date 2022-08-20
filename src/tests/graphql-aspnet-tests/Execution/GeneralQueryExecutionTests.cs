@@ -516,18 +516,18 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task InputWithRequiredComplexChildObject_WhenNotSuppied_YieldsError()
+        public async Task InputWithRequiredButNullableComplexChildObject_WhenNotSuppied_YieldsError()
         {
             var server = new TestServerBuilder()
                     .AddType<ComplexInputObjectController>()
                     .Build();
 
-            // parentObj has a not-null-no-default-value property called  'child' that is not passed on the query
+            // parentObj has a required property called  'child' that is not passed on the query
             // a error should be thrown as its required on a query
             // breaks rule 5.6.4
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
-                "      objectWithRequiredChild ( parentObj: {property1: \"prop1\" } ) { " +
+                "      objectWithRequiredButNullableChild ( parentObj: {property1: \"prop1\" } ) { " +
                 "           property1 " +
                 "           child {" +
                 "               property2 " +
@@ -544,18 +544,17 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task InputWithRequiredeComplexChildObject_SuppliesNullForChildObject_YieldsError()
+        public async Task InputWithRequiredComplexChildObjectThatAllowsNull_SuppliesNullForChildObject_YieldsSuccess()
         {
             var server = new TestServerBuilder()
                     .AddType<ComplexInputObjectController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as null on the query
-            // but is required the query should fail
-            // breaks rule 5.6.1 (cannot coerce <null> to "Child!")
+            // parentObj has a property called  'child' that is nullable and
+            // passed as null on the query
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
-                "      objectWithRequiredChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
+                "      objectWithRequiredButNullableChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
                 "           property1 " +
                 "           child {" +
                 "               property2 " +
@@ -563,12 +562,18 @@ namespace GraphQL.AspNet.Tests.Execution
                 "      } " +
                 "}");
 
-            var result = await server.ExecuteQuery(builder);
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""objectWithRequiredButNullableChild"" : {
+                            ""property1"" : ""prop1"",
+                            ""child"" : null
+                       }
+                    }
+                  }";
 
-            Assert.IsFalse(result.Messages.IsSucessful);
-            Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
-            Assert.AreEqual("5.6.1", result.Messages[0].MetaData["Rule"]);
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
 
         [Test]
@@ -582,7 +587,7 @@ namespace GraphQL.AspNet.Tests.Execution
             // this is fine and all child properties should be set to their default values
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
-                "      objectWithRequiredChild ( parentObj: {property1: \"prop1\", child : {} } ) { " +
+                "      objectWithRequiredButNullableChild ( parentObj: {property1: \"prop1\", child : {} } ) { " +
                 "           property1 " +
                 "           child {" +
                 "               property2 " +
@@ -593,7 +598,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var expectedOutput =
                 @"{
                     ""data"": {
-                       ""objectWithRequiredChild"" : {
+                       ""objectWithRequiredButNullableChild"" : {
                             ""property1"" : ""prop1"",
                             ""child"" : {
                                  ""property2"" : null

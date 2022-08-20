@@ -233,11 +233,13 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
                             $"for field '{field.Route}'. The field " +
                             $"is marked as non-nullable but is not required and does not supply a " +
                             $"non-null default value. Either mark the field as [Required] or " +
-                            $"set its value to a non-null value in the constructor.");
+                            $"set to a non-null value in the constructor.");
                     }
                 }
                 else
                 {
+                    // via templating this exception would be impossible
+                    // added here as a safeguard in case that is somehow bypassed
                     throw new GraphTypeDeclarationException(
                         "Unable to determine the expected default value " +
                         $"for field '{field.Route}'. The field " +

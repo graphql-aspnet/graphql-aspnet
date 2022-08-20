@@ -43,6 +43,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             _testData.Add(new object[] { typeof(NotRequiredClassObject), "null" });
             _testData.Add(new object[] { typeof(NotRequiredSetClassObject), "{ Property1: \"prop 1 default\" Property2: 38 }" });
+            _testData.Add(new object[] { typeof(NotRequiredNonNullableNotSetClassObject), "exception" });
             _testData.Add(new object[] { typeof(RequiredClassObject), null });
 
             _testData.Add(new object[] { typeof(NotRequiredDateTimeObject), $"\"{new DateTime(0).ToRfc3339String()}\"" });

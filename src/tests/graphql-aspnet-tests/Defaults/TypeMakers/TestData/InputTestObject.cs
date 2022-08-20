@@ -34,5 +34,9 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
 
         [Required]
         public TwoPropertyObject RequiredReferenceTypeField { get; set; }
+
+        [Required]
+        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        public TwoPropertyObject RequiredReferenceExplicitNonNullTypeField { get; set; }
     }
 }
