@@ -17,18 +17,18 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
 
     public class SampleDirective : GraphDirective
     {
-        public List<(DirectiveLocation Location, string Value)> ValuesReceived { get; }
+        public List<(DirectiveLocation Location, DirectiveInvocationPhase Phase, string Value)> ValuesReceived { get; }
 
         public SampleDirective()
         {
-            this.ValuesReceived = new List<(DirectiveLocation, string)>();
+            this.ValuesReceived = new List<(DirectiveLocation, DirectiveInvocationPhase, string)>();
         }
 
         [DirectiveLocations(DirectiveLocation.AllExecutionLocations)]
         public IGraphActionResult Execute([FromGraphQL(TypeExpressions.IsNotNull)] string arg1)
         {
-            this.ValuesReceived.Add((this.DirectiveLocation, arg1));
-            return this.Ok();
+            this.ValuesReceived.Add((this.DirectiveLocation, this.DirectivePhase, arg1));
+            return arg1 == "abort" ? this.Cancel() : this.Ok();
         }
     }
 }

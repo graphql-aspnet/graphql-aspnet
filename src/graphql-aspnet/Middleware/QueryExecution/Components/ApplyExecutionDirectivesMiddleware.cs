@@ -212,58 +212,24 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 // if the directive execution provided meaningful failure messages
                 // such as validation failures use those
                 queryContext.Messages.AddRange(context.Messages);
+                queryContext.Cancel();
             }
             else if (context.IsCancelled)
             {
-                // when the context is just flat out canceled ensure a causal exception
-                // is availabe then throw it
-
-                // attempt to discover the reason for the failure if its contained within the
-                // executed context
-                if (causalException == null)
-                {
-                    // when lots of failures are indicated
-                    // nest them into each other before throwing
-                    foreach (var message in context.Messages.Where(x => x.Severity.IsCritical()))
-                    {
-                        // when an actual exception was encountered
-                        // use it as the causal exception
-                        if (message.Exception != null)
-                        {
-                            causalException = message.Exception;
-                            break;
-                        }
-
-                        // otherwise chain together any failure messages
-                        var errorMessage = message.Message;
-                        if (!string.IsNullOrWhiteSpace(message.Code))
-                            errorMessage = message.Code + " : " + errorMessage;
-
-                        causalException = new GraphExecutionException(
-                            errorMessage,
-                            targetDocumentPart.Node.Location.AsOrigin(),
-                            causalException);
-                    }
-
-                    if (causalException == null)
-                    {
-                        // out of options, cant figure out the issue
-                        // just declare a general failure   ¯\_(ツ)_/¯
-                        causalException = new GraphExecutionException(
-                            $"An Unknown error occured while applying a directive " +
-                            $"to the query document (Directive: '{targetDirective.Name}')",
-                            targetDocumentPart.Node.Location.AsOrigin());
-                    }
-                }
-
-                throw new GraphExecutionException(
-                    $"An exception occured applying the execution directive '{targetDirective.Name}' to the query document. " +
-                    $"See inner exception(s) for details.",
+                // when the context is just flat out canceled (user returns this.Cancel())
+                // just apend a message to the query contex stating such
+                queryContext.Messages.Critical(
+                    $"The request was cancelled while applying the execution directive '{targetDirective.Name}' to the query document. " +
+                    (causalException != null ? "See inner exception(s) for details." : string.Empty),
+                    Constants.ErrorCodes.REQUEST_ABORTED,
                     targetDocumentPart.Node.Location.AsOrigin(),
-                    innerException: causalException);
+                    exceptionThrown: causalException);
+
+                queryContext.Cancel();
             }
 
-            // _eventLogger?.TypeSystemDirectiveApplied<TSchema>(targetDirective, item);
+            if (!context.IsCancelled)
+                queryContext.Logger?.ExecutionDirectiveApplied<TSchema>(context.Directive, directiveDocumentPart);
         }
 
         private IInputArgumentCollection GatherInputArguments(

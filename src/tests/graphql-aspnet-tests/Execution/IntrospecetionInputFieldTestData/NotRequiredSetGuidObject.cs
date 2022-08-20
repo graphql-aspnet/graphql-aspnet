@@ -9,17 +9,15 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
 {
-    using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using System;
 
-    public class NotRequiredNonNullableSetStringObject
+    public class NotRequiredSetGuidObject
     {
-        public NotRequiredNonNullableSetStringObject()
+        public NotRequiredSetGuidObject()
         {
-            this.Property1 = "default string value";
+            this.Property1 = Guid.Parse("033979ae-0955-4ef6-8a37-50bf0359601f");
         }
 
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
-        public string Property1 { get; set; }
+        public Guid Property1 { get; set; }
     }
 }

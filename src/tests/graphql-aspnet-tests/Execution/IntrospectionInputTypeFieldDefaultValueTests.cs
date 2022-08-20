@@ -21,16 +21,25 @@ namespace GraphQL.AspNet.Tests.Execution
     using NUnit.Framework;
 
     [TestFixture]
-    public class IntrospectionInputFieldDefaultValueTests
+    public class IntrospectionInputTypeFieldDefaultValueTests
     {
         private static List<object[]> _testData;
 
-        static IntrospectionInputFieldDefaultValueTests()
+        static IntrospectionInputTypeFieldDefaultValueTests()
         {
             _testData = new List<object[]>();
 
             _testData.Add(new object[] { typeof(NotRequiredIntObject), "0" });
+            _testData.Add(new object[] { typeof(NotRequiredSetIntObject), "2345" });
             _testData.Add(new object[] { typeof(RequiredIntObject), null });
+
+            _testData.Add(new object[] { typeof(NotRequiredNullableIntObject), "null" });
+            _testData.Add(new object[] { typeof(NotRequiredSetNullableIntObject), "567" });
+            _testData.Add(new object[] { typeof(RequiredNullableIntObject), null });
+
+            _testData.Add(new object[] { typeof(NotRequiredDoubleObject), "0" });
+            _testData.Add(new object[] { typeof(NotRequiredSetDoubleObject), "1.2345" });
+            _testData.Add(new object[] { typeof(RequiredDoubleObject), null });
 
             _testData.Add(new object[] { typeof(NotRequiredClassObject), "null" });
             _testData.Add(new object[] { typeof(NotRequiredSetClassObject), "{ Property1: \"prop 1 default\" Property2: 38 }" });
@@ -45,11 +54,15 @@ namespace GraphQL.AspNet.Tests.Execution
 
             _testData.Add(new object[] { typeof(NotRequiredStringObject), "null" });
             _testData.Add(new object[] { typeof(RequiredStringObject), null });
-            _testData.Add(new object[] { typeof(NotRequiredNonNullableSetStringObject), "\"\"" });
+            _testData.Add(new object[] { typeof(NotRequiredNonNullableSetStringObject), "\"default string value\"" });
             _testData.Add(new object[] { typeof(NotRequiredNonNullableNotSetStringObject), "exception" });
 
             _testData.Add(new object[] { typeof(NotRequiredStructObject), "{ Property1: 0 Property2: null }" });
             _testData.Add(new object[] { typeof(RequiredStructObject), null });
+
+            _testData.Add(new object[] { typeof(NotRequiredNotSetGuidObject), $"\"{Guid.Empty}\"" });
+            _testData.Add(new object[] { typeof(NotRequiredSetGuidObject), $"\"033979ae-0955-4ef6-8a37-50bf0359601f\"" });
+            _testData.Add(new object[] { typeof(RequiredGuidObject), null });
         }
 
         [TestCaseSource(nameof(_testData))]
