@@ -161,8 +161,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
                 if (label == null)
                 {
                     throw new GraphTypeDeclarationException(
-                        "Invalid default ENUM value. The default value set " +
-                        $"for schema item '{_inputValuePath}' (Type Expression: {_inputValueTypeExpression}) is '{_rawDefaultValue}' which is not a valid " +
+                        "Invalid default ENUM value. The default value set as part of " +
+                        $"schema item '{_inputValuePath}' is '{valueToCheck}' which is not a valid " +
                         $"value defined on the ENUM type '{enumGraphType.Name}'. Enum labels not included in the " +
                         $"schema cannot be used as default values for input object fields.");
                 }
