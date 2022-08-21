@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A model object containing data for the __schema meta field.
     /// </summary>
     [DebuggerDisplay("Introspected Schema: {Name}")]
-    public class IntrospectedSchema : IntrospectedItem, ISchemaItem
+    public sealed class IntrospectedSchema : IntrospectedItem, ISchemaItem
     {
         private readonly ISchema _schema;
         private OrderedDictionary<string, IntrospectedType> _typeList;

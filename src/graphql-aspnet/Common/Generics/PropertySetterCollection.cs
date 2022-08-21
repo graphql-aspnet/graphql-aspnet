@@ -40,68 +40,40 @@ namespace GraphQL.AspNet.Common.Generics
             _setters.Add(propInfo.Name, invoker);
         }
 
-        /// <summary>
-        /// Determines whether the read-only dictionary contains an element that has the specified key.
-        /// </summary>
-        /// <param name="key">The key to locate.</param>
-        /// <returns>true if the read-only dictionary contains an element that has the specified key; otherwise, false.</returns>
+        /// <inheritdoc />
         public bool ContainsKey(string key)
         {
             return _setters.ContainsKey(key);
         }
 
-        /// <summary>
-        /// Gets the value that is associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key to locate.</param>
-        /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-        /// <returns>true if the object that implements the <see cref="T:System.Collections.Generic.IReadOnlyDictionary`2"></see> interface contains an element that has the specified key; otherwise, false.</returns>
+        /// <inheritdoc />
         public bool TryGetValue(string key, out PropertySetterInvoker value)
         {
             return _setters.TryGetValue(key, out value);
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, PropertySetterInvoker>> GetEnumerator()
         {
             return _setters.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets the number of elements in the collection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _setters.Count;
 
-        /// <summary>
-        /// Gets the <see cref="PropertySetterInvoker"/> with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>PropertySetterInvoker.</returns>
+        /// <inheritdoc />
         public PropertySetterInvoker this[string key] => _setters[key];
 
-        /// <summary>
-        /// Gets an enumerable collection that contains the keys in the read-only dictionary.
-        /// </summary>
-        /// <value>The keys.</value>
+        /// <inheritdoc />
         public IEnumerable<string> Keys => _setters.Keys;
 
-        /// <summary>
-        /// Gets an enumerable collection that contains the values in the read-only dictionary.
-        /// </summary>
-        /// <value>The values.</value>
+        /// <inheritdoc />
         public IEnumerable<PropertySetterInvoker> Values => _setters.Values;
     }
 }

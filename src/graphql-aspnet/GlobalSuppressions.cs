@@ -59,22 +59,8 @@ using System.Diagnostics.CodeAnalysis;
     Target = "~T:GraphQL.AspNet.Schemas.TypeSystem.DirectiveLocation")]
 
 [assembly: SuppressMessage(
-    "StyleCop.CSharp.SpacingRules",
-    "SA1025:Code should not contain multiple whitespace in a row",
-    Justification = "Enum is cleaner to look at with extra white space",
+    "StyleCop.CSharp.DocumentationRules",
+    "SA1600:Elements should be documented",
+    Justification = "Query Language Constants are self explanatory",
     Scope = "type",
-    Target = "~T:GraphQL.AspNet.Directives.ExecutableDirectiveLocation")]
-
-[assembly: SuppressMessage(
-    "StyleCop.CSharp.SpacingRules",
-    "SA1025:Code should not contain multiple whitespace in a row",
-    Justification = "Enum is cleaner to look at with extra white space",
-    Scope = "type",
-    Target = "~T:GraphQL.AspNet.Directives.TypeSystemDirectiveLocation")]
-
-[assembly: SuppressMessage(
-    "StyleCop.CSharp.SpacingRules",
-    "SA1025:Code should not contain multiple whitespace in a row",
-    Justification = "Enum is cleaner to look at with extra white space",
-    Scope = "type",
-    Target = "~T:GraphQL.AspNet.Directives.DirectiveLifeCycleEvent")]
+    Target = "~T:GraphQL.AspNet.Constants.QueryLanguage")]

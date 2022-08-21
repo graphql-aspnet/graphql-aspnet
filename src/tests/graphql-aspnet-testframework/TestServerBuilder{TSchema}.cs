@@ -25,6 +25,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Tests.Framework.ServerBuilders;
     using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.Tests.Framework
         private readonly TestOptions _initialSetup;
 
         // colleciton of types added to this server external to the AddGraphQL call.
-        private readonly HashSet<Type> _additionalTypes = new HashSet<Type>();
+        private readonly List<(Type Type, TypeKind? TypeKind)> _additionalTypes = new List<(Type, TypeKind?)>();
 
         private readonly List<Action<ISchemaBuilder<TSchema>>> _schemaBuilderAdditions;
 
@@ -104,15 +105,15 @@ namespace GraphQL.AspNet.Tests.Framework
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddType<TType>()
+        public ITestServerBuilder<TSchema> AddType<TType>(TypeKind? typeKind = null)
         {
-            return this.AddType(typeof(TType));
+            return this.AddType(typeof(TType), typeKind);
         }
 
         /// <inheritdoc />
-        public ITestServerBuilder<TSchema> AddType(Type type)
+        public ITestServerBuilder<TSchema> AddType(Type type, TypeKind? typeKind = null)
         {
-            _additionalTypes.Add(type);
+            _additionalTypes.Add((type, typeKind));
             return this;
         }
 
@@ -157,8 +158,8 @@ namespace GraphQL.AspNet.Tests.Framework
             _configureOptions = (options) =>
             {
                 this.PerformInitialConfiguration(options);
-                foreach (var type in _additionalTypes)
-                    options.AddType(type);
+                foreach (var addType in _additionalTypes)
+                    options.AddType(addType.Type, addType.TypeKind);
 
                 userProvidedConfigOptions?.Invoke(options);
             };

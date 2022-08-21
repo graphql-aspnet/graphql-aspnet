@@ -307,5 +307,17 @@ namespace GraphQL.AspNet.Common.Extensions
 
             return sb == null ? text : sb.ToString();
         }
+
+        /// <summary>
+        /// Returns a new string consisting of the supplied string surrounded by double quotes.
+        /// </summary>
+        /// <param name="text">The text to quote.</param>
+        /// <returns>System.String.</returns>
+        public static string AsQuotedString(this string text)
+        {
+            if (text == null)
+                return "\"\"";
+            return $"\"{text}\"";
+        }
     }
 }

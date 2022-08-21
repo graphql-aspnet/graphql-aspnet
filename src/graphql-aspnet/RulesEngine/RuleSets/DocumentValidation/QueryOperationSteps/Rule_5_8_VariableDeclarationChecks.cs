@@ -317,13 +317,14 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                     originalLocationType = argPart.Argument.TypeExpression;
                     argName = argPart.Name;
                     break;
+
                 case IInputObjectFieldDocumentPart iof:
-                    // this rule cant evaluate unassigned graph fields
+                    // this rule cant evaluate unassigned input fields
                     if (iof.Field == null)
                         return true;
 
                     // TODO: Add support for default input values on fields (github issue #70)
-                    hasLocationDefaultValue = false;
+                    hasLocationDefaultValue = !iof.Field.IsRequired;
                     originalLocationType = iof.Field.TypeExpression;
                     argName = iof.Name;
                     break;

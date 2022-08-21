@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A supplied value in a query document representing <c>null</c> or nothing.
     /// </summary>
-    public interface INullSuppliedValueDocumentPart : ISuppliedValueDocumentPart, IResolvableValue
+    public interface INullSuppliedValueDocumentPart : ISuppliedValueDocumentPart, IResolvableNullValue
     {
     }
 }

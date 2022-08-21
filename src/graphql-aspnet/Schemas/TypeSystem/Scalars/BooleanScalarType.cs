@@ -41,9 +41,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <inheritdoc />
-        public override object Serialize(object item)
+        public override string SerializeToQueryLanguage(object item)
         {
-            return item;
+            if (item?.GetType() == typeof(bool?))
+            {
+                var b = (bool?)item;
+                if (b.HasValue)
+                    return b.Value ? Constants.QueryLanguage.TRUE : Constants.QueryLanguage.FALSE;
+            }
+
+            if (item?.GetType() == typeof(bool))
+                return (bool)item ? Constants.QueryLanguage.TRUE : Constants.QueryLanguage.FALSE;
+
+            return Constants.QueryLanguage.NULL;
         }
 
         /// <inheritdoc />

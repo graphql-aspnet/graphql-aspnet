@@ -191,7 +191,7 @@ namespace GraphQL.AspNet.Execution
                             // out of options, cant figure out the issue
                             // just declare a general failure   ¯\_(ツ)_/¯
                             causalException = new GraphTypeDeclarationException(
-                                $"An Unknown error occured while applying a directive " +
+                                $"An unknown error occured while applying a directive " +
                                     $"to graph type '{item.Name}' (Directive: '{targetDirective.Name}')",
                                 failedType);
                         }

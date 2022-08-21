@@ -26,8 +26,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("ENUM {Name}")]
     public class EnumGraphType : IEnumGraphType
     {
-        private readonly Dictionary<string, IEnumValue> _options;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
@@ -65,14 +63,20 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
-            _options = new Dictionary<string, IEnumValue>(StringComparer.OrdinalIgnoreCase);
+            _options = new EnumValueCollection(this);
         }
 
         /// <inheritdoc />
         public virtual void AddOption(IEnumValue option)
         {
             Validation.ThrowIfNull(option, nameof(option));
-            _options.Add(option.Name, option);
+            _options.Add(option);
+        }
+
+        /// <inheritdoc />
+        public virtual IEnumValue RemoveOption(string name)
+        {
+            return _options.Remove(name);
         }
 
         /// <inheritdoc />
@@ -88,20 +92,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         }
 
         /// <inheritdoc />
-        public virtual IEnumValue RemoveOption(string name)
-        {
-            if (_options.ContainsKey(name))
-            {
-                var removedOption = _options[name];
-                _options.Remove(name);
-                return removedOption;
-            }
-
-            return null;
-        }
-
-        /// <inheritdoc />
-        public virtual IReadOnlyDictionary<string, IEnumValue> Values => _options;
+        public virtual IEnumValueCollection Values => _options;
 
         /// <inheritdoc />
         public virtual string Name { get; set; }
@@ -129,6 +120,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
+
+        private EnumValueCollection _options;
 
         /// <inheritdoc />
         public SchemaItemPath Route { get; }

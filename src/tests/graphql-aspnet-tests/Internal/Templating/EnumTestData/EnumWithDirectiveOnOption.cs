@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.EnumTestData
     {
         Value1,
 
-        [ApplyDirective(typeof(DirectiveWithArgs), 88, "enum option arg")]
+        [ApplyDirective(typeof(DirectiveWithArgs), 89, "enum option arg")]
         Value2,
     }
 }

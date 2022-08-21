@@ -6,6 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Internal.TypeTemplates
 {
     using System;
@@ -43,11 +44,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.OwnerTypeKind = ownerKind;
         }
 
-        /// <summary>
-        /// When overridden in a child class, this method builds the route that will be assigned to this method
-        /// using the implementation rules of the concrete type.
-        /// </summary>
-        /// <returns>GraphRoutePath.</returns>
+        /// <inheritdoc />
         protected override SchemaItemPath GenerateFieldPath()
         {
             // A class property cannot contain any route pathing or nesting like controllers or actions.
@@ -59,11 +56,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             return new SchemaItemPath(SchemaItemPath.Join(this.Parent.Route.Path, graphName));
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc />
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
@@ -84,9 +77,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             }
         }
 
-        /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
-        /// </summary>
+        /// <inheritdoc />
         protected override void ParseTemplateDefinition()
         {
             base.ParseTemplateDefinition();
@@ -98,45 +89,25 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 false);
         }
 
-        /// <summary>
-        /// Creates a resolver capable of resolving this field.
-        /// </summary>
-        /// <returns>IGraphFieldResolver.</returns>
+        /// <inheritdoc />
         public override IGraphFieldResolver CreateResolver()
         {
             return new GraphObjectPropertyResolver(this);
         }
 
-        /// <summary>
-        /// Gets the actual declared return type of this field before any manipulation has been made to it. For properties and methods
-        /// this should be the actual type returned from the method or property.
-        /// </summary>
-        /// <value>The type of the declared return.</value>
+        /// <inheritdoc />
         public override Type DeclaredReturnType => this.Property.PropertyType;
 
-        /// <summary>
-        /// Gets the type, unwrapped of any tasks, that this graph method should return upon completion. This value
-        /// represents the implementation return type as opposed to the expected graph type.
-        /// </summary>
-        /// <value>The type of the return.</value>
+        /// <inheritdoc />
         public Type ExpectedReturnType { get; private set; }
 
-        /// <summary>
-        /// Gets the name this field is declared as in the C# code (method name or property name).
-        /// </summary>
-        /// <value>The name of the declared.</value>
+        /// <inheritdoc />
         public override string DeclaredName => this.Property.Name;
 
-        /// <summary>
-        /// Gets the source type this field was created from.
-        /// </summary>
-        /// <value>The field souce.</value>
+        /// <inheritdoc />
         public override GraphFieldSource FieldSource => GraphFieldSource.Property;
 
-        /// <summary>
-        /// Gets the kind of graph type that should own fields created from this template.
-        /// </summary>
-        /// <value>The kind.</value>
+        /// <inheritdoc />
         public override TypeKind OwnerTypeKind { get; }
 
         /// <summary>
@@ -145,28 +116,16 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// <value>The property.</value>
         private PropertyInfo Property { get; }
 
-        /// <summary>
-        /// Gets the action method to be called.
-        /// </summary>
-        /// <value>The action method.</value>
+        /// <inheritdoc />
         public MethodInfo Method => this.Property.GetGetMethod();
 
-        /// <summary>
-        /// Gets a list of parameters, in the order they are declared on this field.
-        /// </summary>
-        /// <value>The parameters.</value>
+        /// <inheritdoc />
         public override IReadOnlyList<IGraphArgumentTemplate> Arguments { get; } = new List<IGraphArgumentTemplate>();
 
-        /// <summary>
-        /// Gets the fully qualified name, including namespace, of this item as it exists in the .NET code (e.g. 'Namespace.ObjectType.MethodName').
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalFullName => $"{this.Parent.InternalFullName}.{this.Property.Name}";
 
-        /// <summary>
-        /// Gets the name that defines this item within the .NET code of the application; typically a method name or property name.
-        /// </summary>
-        /// <value>The internal name given to this item.</value>
+        /// <inheritdoc />
         public override string InternalName => this.Property.Name;
     }
 }

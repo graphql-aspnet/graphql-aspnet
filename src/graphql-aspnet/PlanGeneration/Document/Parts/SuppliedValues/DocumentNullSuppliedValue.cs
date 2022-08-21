@@ -39,9 +39,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        public ReadOnlySpan<char> ResolvableValue => ReadOnlySpan<char>.Empty;
-
-        /// <inheritdoc />
         public override string Description => "Null Value";
     }
 }

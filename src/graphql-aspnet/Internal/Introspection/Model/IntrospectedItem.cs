@@ -39,8 +39,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
         /// other references in this instance.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        public virtual void Initialize(IntrospectedSchema schema)
+        /// <param name="introspectedSchema">The schema from which this item is to be initialized.</param>
+        public virtual void Initialize(IntrospectedSchema introspectedSchema)
         {
         }
 

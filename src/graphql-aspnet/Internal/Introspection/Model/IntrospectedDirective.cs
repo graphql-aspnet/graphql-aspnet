@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A model object containing data for the __Directive type.
     /// </summary>
     [DebuggerDisplay("DIRECTIVE: {Name}")]
-    public class IntrospectedDirective : IntrospectedItem
+    public sealed class IntrospectedDirective : IntrospectedItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedDirective" /> class.
@@ -36,14 +36,14 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// When overridden in a child class,populates this introspected type using its parent schema to fill in any details about
         /// other references in this instance.
         /// </summary>
-        /// <param name="schema">The schema.</param>
-        public override void Initialize(IntrospectedSchema schema)
+        /// <param name="introspectedSchema">The schema.</param>
+        public override void Initialize(IntrospectedSchema introspectedSchema)
         {
             var list = new List<IntrospectedInputValueType>();
             var directiveArguments = this.Directive.Arguments.Where(x => !x.ArgumentModifiers.IsInternalParameter());
             foreach (var arg in directiveArguments)
             {
-                var introspectedType = schema.FindIntrospectedType(arg.TypeExpression.TypeName);
+                var introspectedType = introspectedSchema.FindIntrospectedType(arg.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, arg.TypeExpression);
                 var inputValue = new IntrospectedInputValueType(arg, introspectedType);
                 list.Add(inputValue);
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
         /// Gets the directive being introspected.
         /// </summary>
         /// <value>The directive.</value>
-        protected IDirective Directive { get; }
+        private IDirective Directive { get; }
 
         /// <summary>
         /// Gets a collection of arguments this directive can accept on a query.

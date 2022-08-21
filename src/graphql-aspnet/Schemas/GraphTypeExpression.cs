@@ -26,64 +26,6 @@ namespace GraphQL.AspNet.Schemas
     public partial class GraphTypeExpression
     {
         /// <summary>
-        /// Parses an expression in syntax definition language (e.g. '[SomeType!]!') into a usable <see cref="GraphTypeExpression" />.
-        /// </summary>
-        /// <param name="typeExpression">The type expression.</param>
-        /// <returns>GraphTypeDeclaration.</returns>
-        [DebuggerStepperBoundary]
-        public static GraphTypeExpression FromDeclaration(string typeExpression)
-        {
-            ReadOnlySpan<char> data = ReadOnlySpan<char>.Empty;
-            if (!string.IsNullOrWhiteSpace(typeExpression))
-                data = typeExpression.Trim().AsSpan();
-
-            return FromDeclaration(data);
-        }
-
-        /// <summary>
-        /// Parses an expression in syntax definition language (e.g. '[SomeType!]!') into a usable <see cref="GraphTypeExpression" />.
-        /// </summary>
-        /// <param name="typeExpression">The type expression to parse.</param>
-        /// <returns>GraphTypeDeclaration.</returns>
-        [DebuggerStepperBoundary]
-        public static GraphTypeExpression FromDeclaration(ReadOnlySpan<char> typeExpression)
-        {
-            if (typeExpression.IsEmpty)
-                return GraphTypeExpression.Invalid;
-
-            // inspect the first and last characters for type modifiers and extract as necessary
-            if (typeExpression[typeExpression.Length - 1] == TokenTypeNames.BANG)
-            {
-                var ofType = FromDeclaration(typeExpression.Slice(0, typeExpression.Length - 1));
-
-                // the expression 'SomeType!!' is invalid.
-                if (ofType.Wrappers.Any() && ofType.Wrappers[0] == MetaGraphTypes.IsNotNull)
-                    return GraphTypeExpression.Invalid;
-
-                ofType.WrapExpression(MetaGraphTypes.IsNotNull);
-                return ofType;
-            }
-
-            if (typeExpression[0] == TokenTypeNames.BRACKET_LEFT)
-            {
-                // must be at a minimum  '[a]'
-                if (typeExpression.Length < 3 || typeExpression[typeExpression.Length - 1] != TokenTypeNames.BRACKET_RIGHT)
-                    return GraphTypeExpression.Invalid;
-
-                var ofType = FromDeclaration(typeExpression.Slice(1, typeExpression.Length - 2));
-                ofType.WrapExpression(MetaGraphTypes.IsList);
-                return ofType;
-            }
-
-            // account for an erronous close bracket, dont parse for anything else at this stage
-            // meaning typename could be 'BOB![SMITH' and be expected in this method.
-            if (typeExpression[typeExpression.Length - 1] == TokenTypeNames.BRACKET_RIGHT)
-                return GraphTypeExpression.Invalid;
-
-            return new GraphTypeExpression(typeExpression.ToString());
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GraphTypeExpression" /> class.
         /// </summary>
         /// <param name="typeName">Name of the core type.</param>
@@ -109,12 +51,13 @@ namespace GraphQL.AspNet.Schemas
         /// Wraps this instance with a new wrapper.
         /// </summary>
         /// <param name="wrapper">The new modifier.</param>
-        public void WrapExpression(MetaGraphTypes wrapper)
+        /// <returns>The new type expression wrapped in the provided value.</returns>
+        public GraphTypeExpression WrapExpression(MetaGraphTypes wrapper)
         {
             var newArray = new MetaGraphTypes[Wrappers.Length + 1];
             Wrappers.CopyTo(newArray, 1);
             newArray[0] = wrapper;
-            Wrappers = newArray;
+            return new GraphTypeExpression(this.TypeName, newArray);
         }
 
         /// <summary>
@@ -264,10 +207,10 @@ namespace GraphQL.AspNet.Schemas
 
         /// <summary>
         /// Gets a value indicating whether this type expression represents a value that
-        /// MUST be provided (e.g. it cannot be null).
+        /// MUST be not null.
         /// </summary>
-        /// <value><c>true</c> if this instance is required; otherwise, <c>false</c>.</value>
-        public bool IsRequired => !this.IsNullable;
+        /// <value><c>true</c> if this instance is not nullable; otherwise, <c>false</c>.</value>
+        public bool IsNonNullable => !this.IsNullable;
 
         /// <summary>
         /// Gets a value indicating whether this type expression represents a value that, as a whole, can be null.

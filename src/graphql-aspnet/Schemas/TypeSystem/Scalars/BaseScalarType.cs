@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     /// A base class for all scalar types. This base class serves as the scalar type itself, the value resolver and the serializer
     /// with abstract methods that must be implemented for the later two.
     /// </summary>
-    public abstract class BaseScalarType : IScalarGraphType, ILeafValueResolver, IScalarValueSerializer
+    public abstract class BaseScalarType : IScalarGraphType, ILeafValueResolver
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseScalarType" /> class.
@@ -45,7 +45,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
             this.InternalName = this.ObjectType.FriendlyName();
             this.Publish = true;
             this.SourceResolver = this;
-            this.Serializer = this;
             this.AppliedDirectives = new AppliedDirectiveCollection(this);
             this.SpecifiedByUrl = specifiedByUrl?.Trim();
 
@@ -83,7 +82,23 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         }
 
         /// <inheritdoc />
-        public abstract object Serialize(object item);
+        public virtual object Serialize(object item)
+        {
+            return item;
+        }
+
+        /// <inheritdoc />
+        public virtual string SerializeToQueryLanguage(object item)
+        {
+            var serialized = this.Serialize(item);
+            if (serialized == null)
+                return "null";
+
+            if (serialized.GetType() == typeof(string))
+                return $"\"{serialized}\"";
+
+            return serialized.ToString();
+        }
 
         /// <inheritdoc />
         public virtual string Name { get; set; }
@@ -108,9 +123,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
         /// <inheritdoc />
         public virtual ILeafValueResolver SourceResolver { get; set; }
-
-        /// <inheritdoc />
-        public virtual IScalarValueSerializer Serializer { get; set; }
 
         /// <inheritdoc />
         public abstract TypeCollection OtherKnownTypes { get; }

@@ -43,17 +43,28 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         ILeafValueResolver SourceResolver { get; set; }
 
         /// <summary>
-        /// Gets or sets an object that will perform the conversion of internal data value to a span of characters
-        /// that can be written to a response stream.
-        /// </summary>
-        /// <value>The serializer.</value>
-        IScalarValueSerializer Serializer { get; set; }
-
-        /// <summary>
         /// Gets or sets a URL pointing to a specification detailing the behavior
         /// of this scalar.
         /// </summary>
         /// <value>The specified by URL.</value>
         string SpecifiedByUrl { get; set; }
+
+        /// <summary>
+        /// Serializes the scalar from its object representation to a
+        /// value that can be used in JSON serialziation. For most scalars this is
+        /// a conversion to a valid string represnetation.
+        /// </summary>
+        /// <param name="item">The scalar to serialize.</param>
+        /// <returns>System.Object.</returns>
+        object Serialize(object item);
+
+        /// <summary>
+        /// Serializes the scalar from its object representation to its query language representation.
+        /// </summary>
+        /// <param name="item">The scalar to serialize.</param>
+        /// <remarks>
+        /// <b>Note:</b> If the scalar is represented as a quoted string in query language, be sure to return the value as a valid graphql string. (e.g. <c>"\"Value\""</c>).</remarks>
+        /// <returns>System.Object.</returns>
+        string SerializeToQueryLanguage(object item);
     }
 }

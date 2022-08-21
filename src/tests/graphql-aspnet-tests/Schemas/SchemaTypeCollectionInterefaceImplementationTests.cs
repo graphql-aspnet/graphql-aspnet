@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             return maker.CreateGraphType(type).GraphType;
         }
 
-        private IGraphField MakeGraphField(IGraphTypeFieldTemplate fieldTemplate)
+        private IGraphField MakeGraphField(IGraphFieldTemplate fieldTemplate)
         {
             var testServer = new TestServerBuilder().Build();
             var maker = new GraphFieldMaker(testServer.Schema);

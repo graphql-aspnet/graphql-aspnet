@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
 
                 // when the argument is required but the schema defines no value
                 // and it was not on the user query document this rule fails
-                if (argument.TypeExpression.IsRequired &&
+                if (argument.TypeExpression.IsNonNullable &&
                     argument.DefaultValue == null &&
                     !suppliedArguments.ContainsKey(argument.Name.AsMemory()))
                 {

@@ -8,8 +8,11 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class Address
     {
+        [Required]
         public int Id { get; }
 
         public string Name { get; }

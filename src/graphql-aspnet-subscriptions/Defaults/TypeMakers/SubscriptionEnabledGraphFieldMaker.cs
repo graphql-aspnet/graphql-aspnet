@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
         /// <inheritdoc />
         protected override MethodGraphField InstantiateField(
             GraphNameFormatter formatter,
-            IGraphTypeFieldTemplate template,
+            IGraphFieldTemplate template,
             List<AppliedSecurityPolicyGroup> securityGroups)
         {
             var subTemplate = template as ControllerSubscriptionActionGraphFieldTemplate;

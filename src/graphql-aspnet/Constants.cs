@@ -102,6 +102,17 @@ namespace GraphQL.AspNet
         };
 
         /// <summary>
+        /// Gets a set of field names (property or method) that are never parsed by the templating engine
+        /// for any reason.
+        /// </summary>
+        /// <value>The known ignored field names.</value>
+        public static ISet<string> IgnoredFieldNames { get; } = new HashSet<string>()
+        {
+            "Deconstruct",
+            "ToString",
+        };
+
+        /// <summary>
         /// A collection of common suffixes that are semantically handled or removed from naming.
         /// </summary>
         public static class CommonSuffix
@@ -197,6 +208,41 @@ namespace GraphQL.AspNet
             public const string DATEONLY = "DateOnly";
             public const string TIMEONLY = "TimeOnly";
 #endif
+        }
+
+        /// <summary>
+        /// A set of constants for various values used in query language syntax.
+        /// </summary>
+        public static class QueryLanguage
+        {
+            public const string NULL = ParserConstants.Keywords.NullString;
+            public const string TRUE = ParserConstants.Keywords.TrueString;
+            public const string FALSE = ParserConstants.Keywords.FalseString;
+            public static readonly string FieldValueSeperator = ParserConstants.Keywords.FieldValueSeperatorString;
+
+            private static HashSet<string> _reservedWords;
+
+            static QueryLanguage()
+            {
+                _reservedWords = new HashSet<string>();
+                _reservedWords.Add(NULL);
+                _reservedWords.Add(TRUE);
+                _reservedWords.Add(FALSE);
+            }
+
+            /// <summary>
+            /// Determines whether the provided <paramref name="word"/> is a reserved
+            /// keyword in the query language.
+            /// </summary>
+            /// <param name="word">The word to check.</param>
+            /// <returns><c>true</c> if the word is reserved; otherwise, <c>false</c>.</returns>
+            public static bool IsReservedKeyword(string word)
+            {
+                if (word == null)
+                    return false;
+
+                return _reservedWords.Contains(word);
+            }
         }
 
         /// <summary>

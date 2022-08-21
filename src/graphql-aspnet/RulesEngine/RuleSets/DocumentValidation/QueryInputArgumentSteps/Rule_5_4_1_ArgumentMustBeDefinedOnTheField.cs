@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgum
                 this.ValidationError(
                     context,
                     $"The {ownerType} '{ownerName}' does not define an input argument named '{docPart.Name}'. Input arguments " +
-                    "must be defined on their ownering container in the target schema.");
+                    $"must be defined on the {ownerType} in the target schema.");
                 return false;
             }
 

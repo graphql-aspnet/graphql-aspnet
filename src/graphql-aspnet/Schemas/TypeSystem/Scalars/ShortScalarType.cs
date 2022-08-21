@@ -45,11 +45,5 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
 
             throw new UnresolvedValueException(data, typeof(short));
         }
-
-        /// <inheritdoc />
-        public override object Serialize(object item)
-        {
-            return item;
-        }
     }
 }

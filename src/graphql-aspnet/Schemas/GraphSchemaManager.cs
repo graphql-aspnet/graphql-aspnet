@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Schemas
         /// is not registered to the schema the field extension is queued for when it is added (if ever).
         /// </summary>
         /// <param name="extension">The extension to add.</param>
-        private void AddTypeExtension(IGraphTypeFieldTemplate extension)
+        private void AddTypeExtension(IGraphFieldTemplate extension)
         {
             var fieldMaker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(this.Schema);
             var fieldResult = fieldMaker.CreateField(extension);
@@ -147,7 +147,7 @@ namespace GraphQL.AspNet.Schemas
         /// will be automatically created if necessary to ensure proper nesting.
         /// </summary>
         /// <param name="action">The action to add to the schema.</param>
-        private void AddAction(IGraphTypeFieldTemplate action)
+        private void AddAction(IGraphFieldTemplate action)
         {
             if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
             {
@@ -192,7 +192,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="action">The action.</param>
         /// <returns>IGraphField.</returns>
-        private IObjectGraphType AddOrRetrieveControllerRoutePath(IGraphTypeFieldTemplate action)
+        private IObjectGraphType AddOrRetrieveControllerRoutePath(IGraphFieldTemplate action)
         {
             var pathSegments = action.Route.GenerateParentPathSegments();
 
@@ -321,7 +321,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="parentType">The parent which will own the generated action field.</param>
         /// <param name="action">The action.</param>
-        private void AddActionAsField(IObjectGraphType parentType, IGraphTypeFieldTemplate action)
+        private void AddActionAsField(IObjectGraphType parentType, IGraphFieldTemplate action)
         {
             // apend the action as a field on the parent
             var maker = GraphQLProviders.GraphTypeMakerProvider.CreateFieldMaker(this.Schema);

@@ -52,9 +52,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public IEnumerable<IVariableUsageDocumentPart> FindReferences(string variableName)
         {
-            variableName = Validation.ThrowIfNullOrReturn(variableName, nameof(variableName));
-            if (_references.ContainsKey(variableName))
-                return _references[variableName];
+            if (variableName != null)
+            {
+                variableName = variableName.Trim();
+                variableName = Validation.ThrowIfNullOrReturn(variableName, nameof(variableName));
+                if (_references.ContainsKey(variableName))
+                    return _references[variableName];
+            }
 
             return Enumerable.Empty<IVariableUsageDocumentPart>();
         }
@@ -62,8 +66,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc />
         public bool HasUsages(string variableName)
         {
-            variableName = Validation.ThrowIfNullOrReturn(variableName, nameof(variableName));
-            return _references.ContainsKey(variableName);
+            if (variableName == null)
+                return false;
+
+            return _references.ContainsKey(variableName.Trim());
         }
 
         /// <inheritdoc />

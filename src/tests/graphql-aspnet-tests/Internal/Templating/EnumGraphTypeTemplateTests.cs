@@ -231,7 +231,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var appliedDirective = optionTemplate.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
-            Assert.AreEqual(new object[] { 88, "enum option arg" }, appliedDirective.Arguments);
+            Assert.AreEqual(new object[] { 89, "enum option arg" }, appliedDirective.Arguments);
         }
     }
 }

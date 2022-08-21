@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Internal.TypeTemplates;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Internal.Templating.DirectiveTestData;
     using GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests;
     using NUnit.Framework;
@@ -56,6 +57,10 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(null, template.Description);
             Assert.AreEqual(typeof(SimpleObjectNoMethods), template.ObjectType);
             Assert.AreEqual(0, template.FieldTemplates.Count());
+            Assert.AreEqual(TypeKind.INPUT_OBJECT, template.Kind);
+            Assert.AreEqual(nameof(SimpleObjectNoMethods), template.InternalName);
+            Assert.AreEqual("GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests.SimpleObjectNoMethods", template.InternalFullName);
+            Assert.AreEqual(0, template.SecurityPolicies.Count);
         }
 
         [Test]
@@ -304,6 +309,70 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 33, "input object arg" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void Parse_ACtionResultProperties_AreSkipped()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputObjectWithGraphActionProperty));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.FieldTemplates.Count());
+
+            var field = template.FieldTemplates.Values.First();
+            Assert.AreEqual(nameof(InputObjectWithGraphActionProperty.Id), field.Name);
+        }
+
+        [Test]
+        public void Parse_UnionProxyProperties_AreSkipped()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputObjectWithUnionProxyProperty));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.FieldTemplates.Count());
+
+            var field = template.FieldTemplates.Values.First();
+            Assert.AreEqual(nameof(InputObjectWithUnionProxyProperty.Id), field.Name);
+        }
+
+        [Test]
+        public void Parse_InterfaceProperties_AreSkipped()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputObjectWithInterfaceProperty));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.FieldTemplates.Count());
+
+            var field = template.FieldTemplates.Values.First();
+            Assert.AreEqual(nameof(InputObjectWithInterfaceProperty.Id), field.Name);
+        }
+
+        [Test]
+        public void Parse_TaskProperties_AreSkipped()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputObjectIWithTaskProperty));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.FieldTemplates.Count());
+
+            var field = template.FieldTemplates.Values.First();
+            Assert.AreEqual(nameof(InputObjectIWithTaskProperty.Id), field.Name);
+        }
+
+        [Test]
+        public void Parse_DuplicatePropertyPaths_ThrowsException()
+        {
+            var template = new InputObjectGraphTypeTemplate(typeof(InputObjectWithDuplicateProperty));
+            template.Parse();
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
         }
     }
 }

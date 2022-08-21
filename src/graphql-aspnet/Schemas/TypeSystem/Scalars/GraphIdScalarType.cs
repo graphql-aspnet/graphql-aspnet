@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
@@ -45,10 +46,22 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
         /// <inheritdoc />
         public override object Serialize(object item)
         {
-            if (item == null)
-                return item;
+            if (item?.GetType() == typeof(GraphId))
+                return item.ToString();
 
-            return ((GraphId)item).Value;
+            return null;
+        }
+
+        /// <inheritdoc />
+        public override string SerializeToQueryLanguage(object item)
+        {
+            var serialized = this.Serialize(item);
+            if (serialized is string)
+            {
+                return GraphQLStrings.Escape(serialized.ToString()).AsQuotedString();
+            }
+
+            return Constants.QueryLanguage.NULL;
         }
 
         /// <inheritdoc />

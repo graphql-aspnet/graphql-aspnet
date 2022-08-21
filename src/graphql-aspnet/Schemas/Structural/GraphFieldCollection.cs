@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Schemas.Structural
 
             field.AssignParent(_owner);
             _fields.Add(field.Name, field);
-            if (field.TypeExpression.IsRequired)
+            if (field.TypeExpression.IsNonNullable)
                 _requiredFields.Add(field);
 
             return field;

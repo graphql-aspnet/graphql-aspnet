@@ -77,36 +77,5 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <value>The declared variables.</value>
         public IVariableCollectionDocumentPart Variables => _variableCollection;
-
-        /// <summary>
-        /// Gets a collection of the field contexts present in this operation, regardless of level, that have some
-        /// security requirements attached to them.
-        /// </summary>
-        /// <value>The secure fields.</value>
-        public IEnumerable<IGraphFieldInvocationContext> SecureFieldContexts
-        {
-            get
-            {
-                foreach (var context in this.FieldContexts)
-                {
-                    var found = this.YieldSecureContexts(context);
-                    foreach (var secureContext in found)
-                        yield return secureContext;
-                }
-            }
-        }
-
-        private IEnumerable<IGraphFieldInvocationContext> YieldSecureContexts(IGraphFieldInvocationContext context)
-        {
-            if (context.Field.SecurityGroups.Any())
-                yield return context;
-
-            foreach (var child in context.ChildContexts)
-            {
-                var found = this.YieldSecureContexts(child);
-                foreach (var childContext in found)
-                    yield return childContext;
-            }
-        }
     }
 }

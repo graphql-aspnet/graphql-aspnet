@@ -35,6 +35,10 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems
             {
                 this.GraphFieldCount = fieldContainer.Fields?.Count;
             }
+            else if (graphType is IInputObjectGraphType iogt)
+            {
+                this.GraphFieldCount = iogt.Fields.Count;
+            }
 
             this.IsPublished = graphType?.Publish;
         }

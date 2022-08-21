@@ -8,11 +8,14 @@
 // *************************************************************
 namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 {
+    using System;
     using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -46,8 +49,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             {
                 o.DeclarationOptions.FieldDeclarationRequirements = TemplateDeclarationRequirements.None;
             })
-                        .Build()
-                        .Schema;
+                .Build()
+                .Schema;
 
             var maker = new EnumGraphTypeMaker(schema);
             var graphType = maker.CreateGraphType(typeof(EnumWithUndeclaredValues)).GraphType as IEnumGraphType;
@@ -64,9 +67,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void Parse_EnumWithCustomGraphTypeName_YieldsName_InGraphType()
         {
-            var schema = new TestServerBuilder()
-                        .Build()
-                        .Schema;
+            var schema = new GraphSchema();
 
             var maker = new EnumGraphTypeMaker(schema);
             var graphType = maker.CreateGraphType(typeof(EnumWithGraphName)).GraphType as IEnumGraphType;
@@ -100,9 +101,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void AppliedDirectives_TransferFromTemplate()
         {
-            var schema = new TestServerBuilder()
-                           .Build()
-                           .Schema;
+            var schema = new GraphSchema();
 
             var maker = new EnumGraphTypeMaker(schema);
             var graphType = maker.CreateGraphType(typeof(EnumWithDirective)).GraphType as IEnumGraphType;
@@ -118,9 +117,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         [Test]
         public void DirectivesAreTransferedToGraphType()
         {
-            var schema = new TestServerBuilder()
-                           .Build()
-                           .Schema;
+            var schema = new GraphSchema();
 
             var maker = new EnumGraphTypeMaker(schema);
             var graphType = maker.CreateGraphType(typeof(EnumValueWithDirective)).GraphType as IEnumGraphType;
@@ -138,6 +135,47 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(value2, value2.AppliedDirectives.Parent);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 33, "enum value arg" }, appliedDirective.ArgumentValues);
+        }
+
+        [TestCase(typeof(EnumWithValueOfNullKeyword), "NULL")]
+        [TestCase(typeof(EnumWithValueOfTrueKeyword), "TRUE")]
+        [TestCase(typeof(EnumWithValueOfFalseKeyword), "FALSE")]
+        public void EnumValueIsKeyword_ButFormattingDoesNotMatchKeyword_WorksAsExpected(Type enumType, string enumValue)
+        {
+            var schema = new GraphSchema();
+
+            var maker = new EnumGraphTypeMaker(schema);
+
+            var graphType = maker.CreateGraphType(enumType).GraphType as IEnumGraphType;
+
+            var value1 = graphType.Values[enumValue];
+            Assert.IsNotNull(value1);
+        }
+
+        [TestCase(typeof(EnumWithValueOfNullKeyword), "NULL")]
+        [TestCase(typeof(EnumWithValueOfTrueKeyword), "TRUE")]
+        [TestCase(typeof(EnumWithValueOfFalseKeyword), "FALSE")]
+        public void EnumValueIsKeyword_AndFormattingMatchesKeyword_ThrowsException(Type enumType, string enumValue)
+        {
+            var schema = new TestServerBuilder().AddGraphQL(o =>
+            {
+                o.DeclarationOptions.GraphNamingFormatter = new GraphNameFormatter(GraphNameFormatStrategy.LowerCase);
+            })
+            .Build()
+            .Schema;
+
+            var maker = new EnumGraphTypeMaker(schema);
+
+            try
+            {
+                var graphType = maker.CreateGraphType(enumType).GraphType as IEnumGraphType;
+            }
+            catch (GraphTypeDeclarationException)
+            {
+                return;
+            }
+
+            Assert.Fail($"Expected {nameof(GraphTypeDeclarationException)} exception");
         }
     }
 }

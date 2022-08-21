@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         Type ObjectType { get; }
 
         /// <summary>
-        /// <para>Gets a fully-qualified, internall name of schema item as it exists on the server. This name
+        /// <para>Gets a fully-qualified, internal name of schema item as it exists on the server. This name
         /// is used in many exceptions and internal error messages.
         /// </para>
         /// <para>
@@ -34,7 +34,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// .
         /// </para>
         /// </summary>
-        ///
         /// <value>The fully qualiified, internal name of this schema item.</value>
         string InternalName { get; }
     }

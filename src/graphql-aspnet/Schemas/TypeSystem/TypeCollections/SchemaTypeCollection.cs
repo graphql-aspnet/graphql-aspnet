@@ -257,7 +257,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
             if (concreteType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(concreteType))
             {
                 throw new GraphTypeDeclarationException(
-                    $"Graph Type Mismatch, {concreteType.FriendlyName()}. Collections and KeyValuePair enumerable types " +
+                    $"Schema Type Collection search, graph type mismatch, {concreteType.FriendlyName()}. Collections and KeyValuePair enumerable types " +
                     "cannot be directly searched. Instead, search for the types supplied to the generic type declaration. ");
             }
         }

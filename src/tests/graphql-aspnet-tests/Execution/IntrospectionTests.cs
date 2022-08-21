@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsNotNull(arg1);
             Assert.AreEqual(expectedArg.Name, arg1.Name);
             Assert.AreEqual(expectedArg.Description, arg1.Description);
-            Assert.AreEqual(expectedArg.DefaultValue, arg1.DefaultValue);
+            Assert.AreEqual(Constants.QueryLanguage.NULL, arg1.DefaultValue);
 
             // the type SodaCanBuildingData is used as input type "BuildngInput" for arg1
             var introspectedInputType = schema.FindIntrospectedType("BuildingInput");
@@ -93,17 +93,17 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var inputField1 = introspectedInputType.InputFields.Single(x => x.Name == "Name");
             Assert.AreEqual(null, inputField1.Description);
-            Assert.AreEqual(null, inputField1.DefaultValue);
+            Assert.AreEqual(Constants.QueryLanguage.NULL, inputField1.DefaultValue);
             Assert.AreEqual(TypeKind.SCALAR, inputField1.IntrospectedGraphType.Kind);
 
             var inputField2 = introspectedInputType.InputFields.Single(x => x.Name == "Address");
             Assert.AreEqual(null, inputField2.Description);
-            Assert.AreEqual(null, inputField2.DefaultValue);
+            Assert.AreEqual(Constants.QueryLanguage.NULL, inputField2.DefaultValue);
             Assert.AreEqual(TypeKind.SCALAR, inputField2.IntrospectedGraphType.Kind);
 
             var inputField3 = introspectedInputType.InputFields.Single(x => x.Name == "Capacity");
             Assert.AreEqual(null, inputField3.Description);
-            Assert.AreEqual(null, inputField3.DefaultValue);
+            Assert.AreEqual(((CapacityType)0).ToString(), inputField3.DefaultValue);
 
             Assert.AreEqual(TypeKind.NON_NULL, inputField3.IntrospectedGraphType.Kind);
             Assert.AreEqual(TypeKind.ENUM, inputField3.IntrospectedGraphType.OfType.Kind);
@@ -1736,6 +1736,145 @@ namespace GraphQL.AspNet.Tests.Execution
             }";
 
             CommonAssertions.AreEqualJsonStrings(output, response);
+        }
+
+        [Test]
+        public async Task InputObject_WithFields_ValueChecks()
+        {
+            var serverBuilder = new TestServerBuilder();
+            var server = serverBuilder.AddGraphQL(o =>
+            {
+                o.AddGraphType<InputTestObject>(TypeKind.INPUT_OBJECT);
+            })
+            .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+
+            builder.AddQueryText(@"
+                {
+                    query: __type(name: ""InputObject"")
+                    {
+                        kind
+                        name
+                        description
+                        fields(includeDeprecated: true) { name }
+                        interfaces { name }
+                        possibleTypes { name }
+                        enumValues { name }
+                        specifiedByURL
+                        ofType { name }
+                        inputFields{
+                            name
+                            type { name kind ofType { name kind } }
+                            description
+                            defaultValue
+                        }
+                    }
+                }");
+
+            var response = await server.RenderResult(builder);
+            var expectedResponse = @"
+            {
+                ""data"": {
+                    ""query"": {
+                        ""kind"": ""INPUT_OBJECT"",
+                        ""name"": ""InputObject"",
+                        ""description"": ""input obj desc"",
+                        ""fields"": null,
+                        ""interfaces"" : null,
+                        ""possibleTypes"": null,
+                        ""enumValues"": null,
+                        ""specifiedByURL"": null,
+                        ""ofType"": null,
+                        ""inputFields"": [
+                            {
+                                ""name"": ""notRequiredButSetId"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Int"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""not required but set int"",
+                                ""defaultValue"": ""-1""
+                            },
+                            {
+                                ""name"": ""requiredId"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Int"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""required int"",
+                                ""defaultValue"": null
+                            },
+                            {
+                                ""name"": ""requiredBool"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Boolean"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""required bool"",
+                                ""defaultValue"": null
+                            },
+                            {
+                                ""name"": ""unrequiredButTrueBool"",
+                                ""type"": {
+                                    ""name"": null,
+                                    ""kind"": ""NON_NULL"",
+                                    ""ofType"": {
+                                      ""name"": ""Boolean"",
+                                      ""kind"": ""SCALAR""
+                                    }
+                                },
+                                ""description"" : ""unrequired but true bool"",
+                                ""defaultValue"": ""true""
+                            },
+                            {
+                                ""name"": ""twoPropWithDefaultValue"",
+                                ""type"": {
+                                      ""name"": ""Input_TwoPropertyObject"",
+                                      ""kind"": ""INPUT_OBJECT"",
+                                      ""ofType"" : null
+                                 },
+                                ""description"" : ""two prop with default value"",
+                                ""defaultValue"": ""{ property1: \""strvalue\"" property2: 5 }""
+                            },
+                            {
+                                ""name"": ""twoPropWithNoDefaultValue"",
+                                ""type"": {
+                                      ""name"": ""Input_TwoPropertyObject"",
+                                      ""kind"": ""INPUT_OBJECT"",
+                                      ""ofType"" : null
+                                 },
+                                ""description"" : ""two prop no default value"",
+                                ""defaultValue"": ""null""
+                            },
+                            {
+                                ""name"": ""requiredTwoProp"",
+                                ""type"": {
+                                      ""name"": ""Input_TwoPropertyObject"",
+                                      ""kind"": ""INPUT_OBJECT"",
+                                      ""ofType"" : null
+                                },
+                                ""description"" : ""required two prop"",
+                                ""defaultValue"": null
+                            }
+                        ]
+                    }
+                }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResponse, response);
         }
     }
 }

@@ -313,22 +313,17 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            // Key, Value, ToString
-            // ToString is included because it is a declared method on the type
-            Assert.AreEqual(3, template.FieldTemplates.Count());
+            // Key, Value
+            Assert.AreEqual(2, template.FieldTemplates.Count());
             var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
             var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
-            var fieldTemplate2 = template.FieldTemplates.ElementAt(2).Value;
 
             Assert.AreEqual(typeof(string), fieldTemplate0.DeclaredReturnType);
             Assert.AreEqual(typeof(string), fieldTemplate0.ObjectType);
-            Assert.AreEqual("ToString", fieldTemplate0.Name);
-            Assert.AreEqual(typeof(string), fieldTemplate1.DeclaredReturnType);
-            Assert.AreEqual(typeof(string), fieldTemplate1.ObjectType);
-            Assert.AreEqual("Key", fieldTemplate1.Name);
-            Assert.AreEqual(typeof(int), fieldTemplate2.ObjectType);
-            Assert.AreEqual(typeof(int), fieldTemplate2.DeclaredReturnType);
-            Assert.AreEqual("Value", fieldTemplate2.Name);
+            Assert.AreEqual("Key", fieldTemplate0.Name);
+            Assert.AreEqual(typeof(int), fieldTemplate1.ObjectType);
+            Assert.AreEqual(typeof(int), fieldTemplate1.DeclaredReturnType);
+            Assert.AreEqual("Value", fieldTemplate1.Name);
         }
 
         [Test]
@@ -338,7 +333,6 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             template.Parse();
             template.ValidateOrThrow();
 
-            // Key, Value, ToString
             Assert.AreEqual(3, template.FieldTemplates.Count());
             var fieldTemplate0 = template.FieldTemplates.ElementAt(0).Value;
             var fieldTemplate1 = template.FieldTemplates.ElementAt(1).Value;
@@ -391,6 +385,17 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 1, "object arg" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void Parse_DefinedMethodsAreMethodsAreIgnored()
+        {
+            var template = new ObjectGraphTypeTemplate(typeof(ObjectWithDeconstructor));
+            template.Parse();
+            template.ValidateOrThrow();
+
+            Assert.AreEqual(1, template.FieldTemplates.Count);
+            Assert.AreEqual(nameof(ObjectWithDeconstructor.Property1), template.FieldTemplates.First().Value.Name);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <typeparam name="TController">The type of the controller.</typeparam>
         /// <param name="methodName">Name of the method.</param>
         /// <returns>IGraphControllerTemplate.</returns>
-        public static IGraphTypeFieldTemplate CreateActionMethodTemplate<TController>(string methodName)
+        public static IGraphFieldTemplate CreateActionMethodTemplate<TController>(string methodName)
              where TController : GraphController
         {
             var template = new MockGraphControllerTemplate<TController>(methodName);
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <typeparam name="TType">The graph type or controller where the field is defined.</typeparam>
         /// <param name="fieldOrMethodName">Name of the field as defined in the object graph or the name of the method/property.</param>
         /// <returns>IGraphTypeFieldTemplate.</returns>
-        public static IGraphTypeFieldTemplate CreateFieldTemplate<TType>(string fieldOrMethodName)
+        public static IGraphFieldTemplate CreateFieldTemplate<TType>(string fieldOrMethodName)
         {
             var template = CreateGraphTypeTemplate<TType>() as IGraphTypeFieldTemplateContainer;
 

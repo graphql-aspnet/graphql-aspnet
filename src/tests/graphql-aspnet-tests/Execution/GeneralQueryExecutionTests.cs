@@ -418,11 +418,11 @@ namespace GraphQL.AspNet.Tests.Execution
                     .Build();
 
             // parentObj has a property called  'child' that is not passed on the query
-            // the controller should recieve a null child object (not an empty one)
-            // and thus return null
+            // the controller should recieve a default child object for the instance (not an empty one, not null)
+            // and thus return the default property
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
-                "      objectWithNullChild ( parentObj: {property1: \"prop1\" } ) { " +
+                "      objectWithNullChild ( parentObj: {property1: \"prop1 supplied value\" } ) { " +
                 "           property1 " +
                 "           child {" +
                 "               property2 " +
@@ -434,8 +434,10 @@ namespace GraphQL.AspNet.Tests.Execution
                 @"{
                     ""data"": {
                        ""objectWithNullChild"" : {
-                            ""property1"" : ""prop1"",
-                            ""child"" : null
+                            ""property1"" : ""prop1 supplied value"",
+                            ""child"" : {
+                                ""property2"" : ""child default value""
+                            }
                        }
                     }
                   }";
@@ -451,8 +453,8 @@ namespace GraphQL.AspNet.Tests.Execution
                     .AddType<ComplexInputObjectController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is not passed on the query
-            // the controller should recieve a null child object (not an empty one)
+            // parentObj has a property called  'child' that is passed on the query as null
+            // the controller should recieve a <null> child object (not an empty one, not a default instance)
             // and thus return null
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
@@ -479,7 +481,7 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task InputWithNullableComplexChildObject_WhenChildObjectDefinedWithNoFieldsForChildObject_HasChildWithNullFields()
+        public async Task InputWithNullableComplexChildObject_WhenEmptyChildObjectSupplied_HasChildWithDefaultValues()
         {
             var server = new TestServerBuilder()
                     .AddType<ComplexInputObjectController>()
@@ -514,17 +516,18 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task InputWithNonNullableComplexChildObject_HasUndefinedForChildObject_YieldsError()
+        public async Task InputWithRequiredButNullableComplexChildObject_WhenNotSuppied_YieldsError()
         {
             var server = new TestServerBuilder()
                     .AddType<ComplexInputObjectController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is not passed on the query
-            // but is required the query should fail
+            // parentObj has a required property called  'child' that is not passed on the query
+            // a error should be thrown as its required on a query
+            // breaks rule 5.6.4
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
-                "      objectWithNonNullChild ( parentObj: {property1: \"prop1\" } ) { " +
+                "      objectWithRequiredButNullableChild ( parentObj: {property1: \"prop1\" } ) { " +
                 "           property1 " +
                 "           child {" +
                 "               property2 " +
@@ -537,21 +540,21 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.IsFalse(result.Messages.IsSucessful);
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+            Assert.AreEqual("5.6.4", result.Messages[0].MetaData["Rule"]);
         }
 
         [Test]
-        public async Task InputWithNonNullableComplexChildObject_HasNullForChildObject_YieldsError()
+        public async Task InputWithRequiredComplexChildObjectThatAllowsNull_SuppliesNullForChildObject_YieldsSuccess()
         {
             var server = new TestServerBuilder()
                     .AddType<ComplexInputObjectController>()
                     .Build();
 
-            // parentObj has a property called  'child' that is passed as null on the query
-            // but is required the query should fail
-            // breaks rule 5.6.1
+            // parentObj has a property called  'child' that is nullable and
+            // passed as null on the query
             var builder = server.CreateQueryContextBuilder()
                 .AddQueryText("mutation  { " +
-                "      objectWithNonNullChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
+                "      objectWithRequiredButNullableChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
                 "           property1 " +
                 "           child {" +
                 "               property2 " +
@@ -559,11 +562,53 @@ namespace GraphQL.AspNet.Tests.Execution
                 "      } " +
                 "}");
 
-            var result = await server.ExecuteQuery(builder);
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""objectWithRequiredButNullableChild"" : {
+                            ""property1"" : ""prop1"",
+                            ""child"" : null
+                       }
+                    }
+                  }";
 
-            Assert.IsFalse(result.Messages.IsSucessful);
-            Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task InputWithRequiredeComplexChildObject_SuppliesEmptyObjectForChild_YieldsSuccess()
+        {
+            var server = new TestServerBuilder()
+                    .AddType<ComplexInputObjectController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as with no params on the query
+            // this is fine and all child properties should be set to their default values
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithRequiredButNullableChild ( parentObj: {property1: \"prop1\", child : {} } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""objectWithRequiredButNullableChild"" : {
+                            ""property1"" : ""prop1"",
+                            ""child"" : {
+                                 ""property2"" : null
+                            }
+                       }
+                    }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
 
         [Test]
@@ -599,6 +644,34 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [Test]
+        public async Task InputWithNonNullableComplexChildObject_HasNullChildObject_YieldsError()
+        {
+            var server = new TestServerBuilder()
+                    .AddType<ComplexInputObjectController>()
+                    .Build();
+
+            // parentObj has a property called  'child' that is passed as <null> on the query
+            // but is marked as non-null in the graph
+            // breaks rule 5.6.1   (cannot coerce <null> to Child!)
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText("mutation  { " +
+                "      objectWithNonNullChild ( parentObj: {property1: \"prop1\", child : null } ) { " +
+                "           property1 " +
+                "           child {" +
+                "               property2 " +
+                "           }" +
+                "      } " +
+                "}");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsFalse(result.Messages.IsSucessful);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+            Assert.AreEqual("5.6.1", result.Messages[0].MetaData["Rule"]);
         }
 
         [Test]

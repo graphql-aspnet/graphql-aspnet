@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
             var csv = (IComplexSuppliedValueDocumentPart)context.ParentPart;
 
             IGraphType inputItemGraphType = null;
-            IGraphField inputField = null;
+            IInputGraphField inputField = null;
 
             if (csv.GraphType is IInputObjectGraphType iio)
             {

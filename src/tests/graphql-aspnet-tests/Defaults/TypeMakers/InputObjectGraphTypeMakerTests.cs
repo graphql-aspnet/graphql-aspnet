@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
         }
 
         [Test]
-        public void InputObject_CreateGraphType_ParsesCorrectly()
+        public void InputObject_CreateGraphType_OnlyPropertiesAreRead()
         {
             var template = TemplateHelper.CreateInputObjectTemplate<TypeCreationItem>();
 
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             // Prop1  (there is no __typename on input objects like there is on its object counterpart)
             Assert.AreEqual(1, objectGraphType.Fields.Count);
 
-            // Method1, Method2 are on the type but should not be created as a field for an input type
+            // Method1, Method2 should not be parsed on the type at all.
             var method1 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(TypeCreationItem.Method1));
             Assert.IsNull(method1);
 
@@ -101,8 +101,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.DeclaredProperty)));
+            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.UndeclaredProperty)));
         }
 
         [Test]
@@ -113,8 +113,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var inputType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(inputType);
-            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.DeclaredProperty)));
+            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.UndeclaredProperty)));
         }
 
         [Test]

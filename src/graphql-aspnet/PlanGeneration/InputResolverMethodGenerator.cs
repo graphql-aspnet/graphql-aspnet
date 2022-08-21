@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.PlanGeneration
         /// <returns>IQueryInputValueResolver.</returns>
         private IInputValueResolver CreateObjectResolver(IInputObjectGraphType inputType, Type type)
         {
-            var inputObjectResolver = new InputObjectResolver(inputType, type);
+            var inputObjectResolver = new InputObjectResolver(inputType, type, _schema);
 
             foreach (var field in inputType.Fields)
             {

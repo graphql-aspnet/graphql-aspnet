@@ -9,19 +9,24 @@
 
 namespace GraphQL.AspNet.Internal.Introspection.Model
 {
+    using System.Collections;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A representation of data about a graph type being exposed as an input to another field.
     /// </summary>
     [DebuggerDisplay("Introspected Input Value: {Name}")]
-    public class IntrospectedInputValueType : IntrospectedItem, ISchemaItem
+    public sealed class IntrospectedInputValueType : IntrospectedItem, ISchemaItem
     {
         private readonly object _rawDefaultValue;
+        private readonly GraphTypeExpression _inputValueTypeExpression;
+        private readonly SchemaItemPath _inputValuePath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedInputValueType" /> class.
@@ -32,59 +37,143 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             : this(argument)
         {
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
+
             Validation.ThrowIfNull(argument, nameof(argument));
-            _rawDefaultValue = argument.DefaultValue;
+            _rawDefaultValue = argument.HasDefaultValue ? argument.DefaultValue : IntrospectionNoDefaultValue.Instance;
+            _inputValueTypeExpression = argument.TypeExpression;
+            _inputValuePath = argument.Route;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntrospectedInputValueType"/> class.
+        /// Initializes a new instance of the <see cref="IntrospectedInputValueType" /> class.
         /// </summary>
         /// <param name="inputField">The field of an input object used to populate this value.</param>
         /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
-        public IntrospectedInputValueType(IGraphField inputField, IntrospectedType introspectedGraphType)
+        public IntrospectedInputValueType(IInputGraphField inputField, IntrospectedType introspectedGraphType)
             : this(inputField)
         {
             Validation.ThrowIfNull(inputField, nameof(inputField));
             this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
+            _rawDefaultValue = IntrospectionNoDefaultValue.Instance;
+            _inputValueTypeExpression = inputField.TypeExpression;
+            _inputValuePath = inputField.Route;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntrospectedInputValueType" /> class.
+        /// </summary>
+        /// <param name="inputField">The field of an input object used to populate this value.</param>
+        /// <param name="introspectedGraphType">The meta data representing the type of this argument.</param>
+        /// <param name="rawDefaultValue">The default value that should be supplied for this input value
+        /// when its not supplied on a query.</param>
+        public IntrospectedInputValueType(IInputGraphField inputField, IntrospectedType introspectedGraphType, object rawDefaultValue)
+            : this(inputField)
+        {
+            Validation.ThrowIfNull(inputField, nameof(inputField));
+            this.IntrospectedGraphType = Validation.ThrowIfNullOrReturn(introspectedGraphType, nameof(introspectedGraphType));
+            _rawDefaultValue = rawDefaultValue;
+            _inputValueTypeExpression = inputField.TypeExpression;
+            _inputValuePath = inputField.Route;
         }
 
         /// <summary>
         /// Prevents a default instance of the <see cref="IntrospectedInputValueType" /> class from being created.
         /// </summary>
-        /// <param name="argument">The argument being introspected.</param>
-        private IntrospectedInputValueType(ISchemaItem argument)
-            : base(argument)
+        /// <param name="schemaItem">The schema item being introspected.</param>
+        private IntrospectedInputValueType(ISchemaItem schemaItem)
+            : base(schemaItem)
         {
         }
 
         /// <inheritdoc />
-        public override void Initialize(IntrospectedSchema schema)
+        public override void Initialize(IntrospectedSchema introspectedSchema)
         {
-            if (_rawDefaultValue == null)
+            // graphql requires and defaultValue parameters be encoded as a string
+            // in query language syntax
+            // see spec: https://graphql.github.io/graphql-spec/October2021/#sec-The-__InputValue-Type
+            this.DefaultValue = null;
+
+            // case for "no default value supplied"
+            if (_rawDefaultValue != null && _rawDefaultValue.GetType() == typeof(IntrospectionNoDefaultValue))
                 return;
 
-            if (_rawDefaultValue is bool boolValue)
+            this.ValidateDefaultValueOrThrow(introspectedSchema.Schema, _rawDefaultValue, _inputValueTypeExpression);
+
+            var generator = new QueryLanguageGenerator(introspectedSchema.Schema);
+            this.DefaultValue = generator.SerializeObject(_rawDefaultValue);
+        }
+
+        private void ValidateDefaultValueOrThrow(ISchema schema, object valueToCheck, GraphTypeExpression typeExpression)
+        {
+            if (typeExpression.IsNonNullable)
             {
-                // microsoft returns "True" and "False" for boolean conversions to string
-                // #sad face
-                this.DefaultValue = boolValue.ToString().ToLowerInvariant();
+                if (valueToCheck == null)
+                {
+                    if (typeExpression.IsListOfItems)
+                    {
+                        throw new GraphTypeDeclarationException(
+                             $"An item in the list of supplied values for schema item '{_inputValuePath}' was <null> when " +
+                             $"the type expression indicated non-null (Type Expression: {typeExpression}).");
+                    }
+                    else
+                    {
+                        throw new GraphTypeDeclarationException(
+                             $"The supplied default value for schema item '{_inputValuePath}' was <null> when " +
+                             $"the type expression indicated non-null (Type Expression: {typeExpression}).");
+                    }
+                }
+
+                typeExpression = typeExpression.UnWrapExpression();
             }
-            else if (_rawDefaultValue is string stringValue)
+
+            if (valueToCheck == null)
+                return;
+
+            if (typeExpression.IsListOfItems)
             {
-                // graphql requires and defaultValue parameters be encoded as a string
-                // see spec: https://graphql.github.io/graphql-spec/October2021/#sec-The-__InputValue-Type
-                // any strings must be escaped to be treated as a string
-                // e.g. convert "myString" => "\"myString\""
-                var delimiter = stringValue.Contains("\n") ? ParserConstants.BLOCK_STRING_DELIMITER : ParserConstants.NORMAL_STRING_DELIMITER;
-                this.DefaultValue = $"{delimiter}{stringValue}{delimiter}";
+                if (!GraphValidation.IsValidListType(valueToCheck.GetType()))
+                {
+                    throw new GraphTypeDeclarationException(
+                         $"Invalid Default Value. A list of items was expected for the default value of schema item '{_inputValuePath}' " +
+                         $"(Type Expression: {typeExpression}). " +
+                         $"The provided value of type '{valueToCheck.GetType().FriendlyName()}' is not a valid list.");
+                }
+
+                foreach (var item in (IEnumerable)valueToCheck)
+                    this.ValidateDefaultValueOrThrow(schema, item, typeExpression.UnWrapExpression());
+
+                return;
             }
-            else if (this.IntrospectedGraphType.Kind == TypeKind.ENUM)
+
+            var graphType = schema.KnownTypes.FindGraphType(typeExpression.TypeName);
+            if (graphType == null)
             {
-                this.DefaultValue = schema.Schema.Configuration.DeclarationOptions.GraphNamingFormatter.FormatEnumValueName(_rawDefaultValue?.ToString());
+                // via templating this exception would be impossible
+                // added here as a safeguard in case that is somehow bypassed
+                throw new GraphTypeDeclarationException(
+                    $"Invalid Default Value. Unable to locate a graph type named '{typeExpression.TypeName}' in the schema " +
+                    $"for field '{_inputValuePath}' (Type Expression: {_inputValueTypeExpression}).");
             }
-            else
+
+            if (graphType is IEnumGraphType enumGraphType)
             {
-                this.DefaultValue = _rawDefaultValue.ToString();
+                var label = enumGraphType.Values.FindByEnumValue(_rawDefaultValue);
+                if (label == null)
+                {
+                    throw new GraphTypeDeclarationException(
+                        "Invalid default ENUM value. The default value set as part of " +
+                        $"schema item '{_inputValuePath}' is '{valueToCheck}' which is not a valid " +
+                        $"value defined on the ENUM type '{enumGraphType.Name}'. Enum labels not included in the " +
+                        $"schema cannot be used as default values for input object fields.");
+                }
+            }
+
+            if (!graphType.ValidateObject(valueToCheck))
+            {
+                throw new GraphTypeDeclarationException(
+                      $"Invalid default value. The default value for schema item {_inputValuePath} of type '{valueToCheck.GetType().FriendlyName()}' " +
+                      $"could not be validated by the graph type '{graphType.Name}'. The supplied default value for the schema item " +
+                      $"must be coercible by its associated graph type.");
             }
         }
 

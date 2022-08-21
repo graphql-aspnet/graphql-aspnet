@@ -35,7 +35,6 @@ namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
             this.SpecifiedByUrl = null;
 
             this.SourceResolver = new Mock<ILeafValueResolver>().Object;
-            this.Serializer = new Mock<IScalarValueSerializer>().Object;
         }
 
         public TypeCollection OtherKnownTypes { get; set; }
@@ -43,8 +42,6 @@ namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
         public ScalarValueType ValueType { get; set; }
 
         public ILeafValueResolver SourceResolver { get; set; }
-
-        public IScalarValueSerializer Serializer { get; set; }
 
         public TypeKind Kind { get; set; }
 
@@ -65,6 +62,16 @@ namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
         public string Description { get; set; }
 
         public string SpecifiedByUrl { get; set; }
+
+        public object Serialize(object item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string SerializeToQueryLanguage(object item)
+        {
+            throw new NotImplementedException();
+        }
 
         public bool ValidateObject(object item)
         {

@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Execution
                     if (typeDeclaration != null && typeDeclaration.PreventAutoInclusion)
                         continue;
 
-                    manager.EnsureGraphType(registration.Type);
+                    manager.EnsureGraphType(registration.Type, registration.TypeKind);
                 }
 
                 // execute any assigned schema configuration extensions

@@ -7,7 +7,6 @@
     <RootNamespace>GraphQL.AspNet.Tests.ThirdPartyDll</RootNamespace>
     <AssemblyName>graphql-aspnet-tests-thirdpartydll</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,13 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.7.0" />
-    <PackageReference Include="FluentAssertions.Json" Version="5.0.0" />
     <PackageReference Include="Moq" Version="4.11.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
   </ItemGroup>
 
   <ItemGroup>

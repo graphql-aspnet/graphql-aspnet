@@ -10,11 +10,13 @@
 namespace GraphQL.AspNet
 {
     using System;
+    using System.Diagnostics;
 
     /// <summary>
     /// <para>A scalar representation of the graphql defined "ID" scalar.</para>
     /// <para>spec: https://graphql.github.io/graphql-spec/October2021/#sec-ID .</para>
     /// </summary>
+    [DebuggerDisplay("{Value}")]
     public struct GraphId : IEquatable<GraphId>
     {
         /// <summary>
@@ -36,7 +38,7 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
-        /// Gets the value.
+        /// Gets the value of the Id.
         /// </summary>
         /// <value>The value.</value>
         public string Value { get; }

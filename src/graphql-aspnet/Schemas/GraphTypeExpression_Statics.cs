@@ -9,6 +9,13 @@
 
 namespace GraphQL.AspNet.Schemas
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
@@ -59,6 +66,131 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <value>A set of wrappers.</value>
         public static MetaGraphTypes[] RequiredListRequiredItem { get; } = { MetaGraphTypes.IsNotNull, MetaGraphTypes.IsList, MetaGraphTypes.IsNotNull };
+
+        /// <summary>
+        /// Parses an expression in syntax definition language (e.g. '[SomeType!]!') into a usable <see cref="GraphTypeExpression" />.
+        /// </summary>
+        /// <param name="typeExpression">The type expression.</param>
+        /// <returns>GraphTypeDeclaration.</returns>
+        [DebuggerStepperBoundary]
+        public static GraphTypeExpression FromDeclaration(string typeExpression)
+        {
+            ReadOnlySpan<char> data = ReadOnlySpan<char>.Empty;
+            if (!string.IsNullOrWhiteSpace(typeExpression))
+                data = typeExpression.Trim().AsSpan();
+
+            return FromDeclaration(data);
+        }
+
+        /// <summary>
+        /// Parses an expression in syntax definition language (e.g. '[SomeType!]!') into a usable <see cref="GraphTypeExpression" />.
+        /// </summary>
+        /// <param name="typeExpression">The type expression to parse.</param>
+        /// <returns>GraphTypeDeclaration.</returns>
+        [DebuggerStepperBoundary]
+        public static GraphTypeExpression FromDeclaration(ReadOnlySpan<char> typeExpression)
+        {
+            if (typeExpression.IsEmpty)
+                return GraphTypeExpression.Invalid;
+
+            // inspect the first and last characters for type modifiers and extract as necessary
+            if (typeExpression[typeExpression.Length - 1] == TokenTypeNames.BANG)
+            {
+                var ofType = FromDeclaration(typeExpression.Slice(0, typeExpression.Length - 1));
+
+                // the expression 'SomeType!!' is invalid.
+                if (ofType.Wrappers.Any() && ofType.Wrappers[0] == MetaGraphTypes.IsNotNull)
+                    return GraphTypeExpression.Invalid;
+
+                ofType = ofType.WrapExpression(MetaGraphTypes.IsNotNull);
+                return ofType;
+            }
+
+            if (typeExpression[0] == TokenTypeNames.BRACKET_LEFT)
+            {
+                // must be at a minimum  '[a]'
+                if (typeExpression.Length < 3 || typeExpression[typeExpression.Length - 1] != TokenTypeNames.BRACKET_RIGHT)
+                    return GraphTypeExpression.Invalid;
+
+                var ofType = FromDeclaration(typeExpression.Slice(1, typeExpression.Length - 2))
+                             .WrapExpression(MetaGraphTypes.IsList);
+                return ofType;
+            }
+
+            // account for an erronous close bracket, dont parse for anything else at this stage
+            // meaning typename could be 'BOB![SMITH' and be expected in this method.
+            if (typeExpression[typeExpression.Length - 1] == TokenTypeNames.BRACKET_RIGHT)
+                return GraphTypeExpression.Invalid;
+
+            return new GraphTypeExpression(typeExpression.ToString());
+        }
+
+        /// <summary>
+        /// Inspects the provided type and generates a type expression to represent it in the object grpah.
+        /// </summary>
+        /// <param name="typeToCheck">The complete type specification to check.</param>
+        /// <param name="typeWrappers">An optional set of wrappers to use as a set of overrides on the type provided.</param>
+        /// <returns>GraphFieldOptions.</returns>
+        public static GraphTypeExpression FromType(Type typeToCheck, MetaGraphTypes[] typeWrappers = null)
+        {
+            Validation.ThrowIfNull(typeToCheck, nameof(typeToCheck));
+
+            if (typeWrappers != null)
+            {
+                typeToCheck = GraphValidation.EliminateWrappersFromCoreType(
+                    typeToCheck,
+                    eliminateEnumerables: true,
+                    eliminateTask: true,
+                    eliminateNullableT: true);
+
+                return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), typeWrappers);
+            }
+
+            // strip out Task{T} before doin any type inspections
+            typeToCheck = GraphValidation.EliminateWrappersFromCoreType(
+                typeToCheck,
+                eliminateEnumerables: false,
+                eliminateTask: true,
+                eliminateNullableT: false);
+
+            var wrappers = new List<MetaGraphTypes>();
+            if (GraphValidation.IsValidListType(typeToCheck))
+            {
+                // auto generated type expressions will always allow for a nullable list (since class references can be null)
+                // unwrap any nested lists as necessary:  e.g.  IEnumerable<IEnumerable<IEnumerable<T>>>
+                while (true)
+                {
+                    var unwrappedType = GraphValidation.EliminateNextWrapperFromCoreType(
+                        typeToCheck,
+                        eliminateEnumerables: true,
+                        eliminateTask: false,
+                        eliminateNullableT: false);
+
+                    if (unwrappedType == typeToCheck)
+                        break;
+
+                    wrappers.Add(MetaGraphTypes.IsList);
+                    typeToCheck = unwrappedType;
+                }
+
+                if (GraphValidation.IsNotNullable(typeToCheck))
+                {
+                    wrappers.Add(MetaGraphTypes.IsNotNull);
+                }
+            }
+            else if (GraphValidation.IsNotNullable(typeToCheck))
+            {
+                wrappers.Add(MetaGraphTypes.IsNotNull);
+            }
+
+            typeToCheck = GraphValidation.EliminateWrappersFromCoreType(
+                typeToCheck,
+                eliminateEnumerables: false,
+                eliminateTask: false,
+                eliminateNullableT: true);
+
+            return new GraphTypeExpression(typeToCheck.FriendlyGraphTypeName(), wrappers);
+        }
 
         /// <summary>
         /// Implements the == operator.

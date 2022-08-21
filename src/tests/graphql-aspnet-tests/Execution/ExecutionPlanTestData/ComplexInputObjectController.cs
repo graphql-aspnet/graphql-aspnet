@@ -32,5 +32,11 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
         {
             return this.Ok(parentObj);
         }
+
+        [MutationRoot(typeof(ParentWithRequiredChildObject))]
+        public IGraphActionResult ObjectWithRequiredButNullableChild(ParentWithRequiredChildObject parentObj)
+        {
+            return this.Ok(parentObj);
+        }
     }
 }

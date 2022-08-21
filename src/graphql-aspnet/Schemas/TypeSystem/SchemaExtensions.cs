@@ -48,9 +48,15 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                     foreach (var option in enumType.Values)
                         yield return option.Value;
                 }
+                else if (graphType is IInputObjectGraphType inputObject)
+                {
+                    // each input field
+                    foreach (var inputField in inputObject.Fields)
+                        yield return inputField;
+                }
                 else if (graphType is IGraphFieldContainer fieldContainer)
                 {
-                    // each field in each graph type
+                    // each field on OBJECT and INTERFACE graph type
                     foreach (var field in fieldContainer.Fields)
                     {
                         yield return field;
@@ -59,6 +65,12 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                         foreach (var argument in field.Arguments)
                             yield return argument;
                     }
+                }
+                else if (graphType is IDirective directive)
+                {
+                    // directive arguments
+                    foreach (var argument in directive.Arguments)
+                        yield return argument;
                 }
             }
         }

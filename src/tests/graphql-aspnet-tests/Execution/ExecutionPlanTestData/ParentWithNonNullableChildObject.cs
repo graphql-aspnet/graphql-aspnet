@@ -10,13 +10,17 @@
 namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class ParentWithNonNullableChildObject
     {
+        public ParentWithNonNullableChildObject()
+        {
+            this.Child = new NullableChildObject();
+        }
+
         public string Property1 { get; set; }
 
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = AspNet.Schemas.TypeSystem.TypeExpressions.IsNotNull)]
         public NullableChildObject Child { get; set; }
     }
 }

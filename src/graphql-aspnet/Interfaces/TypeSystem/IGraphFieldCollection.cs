@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A collection of fields on a given graph type.
     /// </summary>
-    public interface IGraphFieldCollection : IReadOnlyGraphFieldCollection, IEnumerable<IGraphField>
+    public interface IGraphFieldCollection : IReadOnlyGraphFieldCollection
     {
         /// <summary>
         /// Adds the <see cref="IGraphField" /> to the collection.

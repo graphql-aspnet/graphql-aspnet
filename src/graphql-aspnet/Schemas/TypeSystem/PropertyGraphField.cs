@@ -72,10 +72,10 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <summary>
-        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName). This name
+        /// Gets a fully qualified name of the type as it exists on the server (i.e.  Namespace.ClassName.PropertyName). This name
         /// is used in many exceptions and internal error messages.
         /// </summary>
-        /// <value>The name of the internal.</value>
+        /// <value>The fully qualified name of the proeprty this field was created from.</value>
         public string InternalName { get; }
     }
 }

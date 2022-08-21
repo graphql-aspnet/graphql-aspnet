@@ -14,6 +14,11 @@ namespace GraphQL.AspNet.Tests.Common
     [TestFixture]
     public class GraphIdTests
     {
+        private class Test
+        {
+            public GraphId Prop1 { get; set; }
+        }
+
         [Test]
         public void GeneralPropertyCheck()
         {
@@ -21,6 +26,20 @@ namespace GraphQL.AspNet.Tests.Common
             Assert.AreEqual("abc", id.Value);
             Assert.AreEqual("abc", id.ToString());
             Assert.AreEqual("abc".GetHashCode(), id.GetHashCode());
+        }
+
+        [Test]
+        public void EmptyGraphIdCtor_IsEmptyString()
+        {
+            GraphId id = new ();
+            Assert.IsNull(id.Value);
+        }
+
+        [Test]
+        public void NotInitializedGraphId_IsNullString()
+        {
+            var t = new Test();
+            Assert.IsNull(t.Prop1.Value);
         }
 
         [Test]

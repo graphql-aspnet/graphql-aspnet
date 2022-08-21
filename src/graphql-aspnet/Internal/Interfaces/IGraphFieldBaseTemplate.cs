@@ -12,12 +12,13 @@ namespace GraphQL.AspNet.Internal.Interfaces
     using System.Collections.Generic;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An interface defining a field that may have some source data supplied to it to perform its
     /// resolution. (e.g. A property or method field of a model object).
     /// </summary>
-    public interface IGraphFieldBaseTemplate : IGraphItemTemplate, IGraphTypeExpressionDeclaration
+    public interface IGraphFieldBaseTemplate : IGraphItemTemplate
     {
         /// <summary>
         /// Gets a list of arguments this field can accept.
@@ -44,5 +45,13 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <value>The field souce.</value>
         GraphFieldSource FieldSource { get; }
+
+        /// <summary>
+        /// Gets the list type wrappers, if defined, used to generate a type expression for this field.
+        /// This list represents the type requirements of the field. When null or not supplied, the type
+        /// expression will be inferred by the return type of the field.
+        /// </summary>
+        /// <value>The custom wrappers.</value>
+        MetaGraphTypes[] DeclaredTypeWrappers { get; }
     }
 }

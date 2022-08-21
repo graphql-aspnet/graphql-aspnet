@@ -412,7 +412,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                 var graphType = this.Schema.KnownTypes.FindGraphType(type);
                 if (graphType is IScalarGraphType sgt)
                 {
-                    resultData = sgt.Serializer.Serialize(resultData);
+                    resultData = sgt.Serialize(resultData);
                 }
             }
 

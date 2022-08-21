@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public DocumentInputObjectField(
             IDocumentPart parentPart,
             InputItemNode node,
-            IGraphField field)
+            IInputGraphField field)
             : base(parentPart, node)
         {
             this.Name = node.InputName.ToString();
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public string Name { get; }
 
         /// <inheritdoc />
-        public IGraphField Field { get; }
+        public IInputGraphField Field { get; }
 
         /// <inheritdoc />
         public GraphTypeExpression TypeExpression => this.Field?.TypeExpression;

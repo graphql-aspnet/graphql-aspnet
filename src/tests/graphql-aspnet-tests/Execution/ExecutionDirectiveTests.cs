@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
@@ -20,6 +21,35 @@ namespace GraphQL.AspNet.Tests.Execution
     [TestFixture]
     public class ExecutionDirectiveTests
     {
+        [Test]
+        public async Task DirectiveReturnsCancelled_QueryIsAborted()
+        {
+            var directiveInstance = new SampleDirective();
+            var builder = new TestServerBuilder();
+            builder.AddSingleton(directiveInstance);
+            builder.AddGraphController<DirectiveTestController>()
+                  .AddDirective<SampleDirective>();
+
+            var server = builder.Build();
+
+            var queryContext = server.CreateQueryContextBuilder();
+            queryContext.AddQueryText(@"query @sample(arg1: ""abort"") {
+                    retrieveObject  {
+                       property1
+                    }
+                }");
+
+            var result = await server.ExecuteQuery(queryContext);
+
+            Assert.AreEqual(1, directiveInstance.ValuesReceived.Count);
+            Assert.AreEqual(DirectiveLocation.QUERY, directiveInstance.ValuesReceived[0].Location);
+            Assert.AreEqual(DirectiveInvocationPhase.QueryDocumentExecution, directiveInstance.ValuesReceived[0].Phase);
+            Assert.AreEqual("abort", directiveInstance.ValuesReceived[0].Value);
+
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.REQUEST_ABORTED, result.Messages[0].Code);
+        }
+
         [Test]
         public async Task DirectiveInputArgument_ResolvesCorrectlyAndIsReceviedByTheDirective()
         {
@@ -53,6 +83,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             Assert.AreEqual(1, directiveInstance.ValuesReceived.Count);
             Assert.AreEqual(DirectiveLocation.FIELD, directiveInstance.ValuesReceived[0].Location);
+            Assert.AreEqual(DirectiveInvocationPhase.QueryDocumentExecution, directiveInstance.ValuesReceived[0].Phase);
             Assert.AreEqual("arg1Value", directiveInstance.ValuesReceived[0].Value);
         }
 
@@ -94,6 +125,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             Assert.AreEqual(1, directiveInstance.ValuesReceived.Count);
             Assert.AreEqual(DirectiveLocation.FIELD, directiveInstance.ValuesReceived[0].Location);
+            Assert.AreEqual(DirectiveInvocationPhase.QueryDocumentExecution, directiveInstance.ValuesReceived[0].Phase);
             Assert.AreEqual("variableProvidedValue", directiveInstance.ValuesReceived[0].Value);
         }
 

@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
     using GTW = GraphQL.AspNet.Schemas.TypeSystem.MetaGraphTypes;
 
@@ -194,6 +195,32 @@ namespace GraphQL.AspNet.Tests.Schemas
             var result = GraphTypeExpression.AreTypesCompatiable(target, supplied);
 
             Assert.AreEqual(shouldBeCompatiable, result);
+        }
+
+        [TestCase(typeof(int), "int!", null)]
+        [TestCase(typeof(IEnumerable<int>), "[int!]", null)]
+        [TestCase(typeof(int[]), "[int!]", null)]
+        [TestCase(typeof(IEnumerable<TwoPropertyObject>), "[TwoPropertyObject]", null)]
+        [TestCase(typeof(TwoPropertyObject[]), "[TwoPropertyObject]", null)]
+        [TestCase(typeof(int[][]), "[[int!]]", null)]
+        [TestCase(typeof(string[]), "[string]", null)]
+        [TestCase(typeof(KeyValuePair<string, int>), "KeyValuePair_string_int_!", null)]
+        [TestCase(typeof(KeyValuePair<string[], int[][]>), "KeyValuePair_string___int_____!", null)]
+        [TestCase(typeof(KeyValuePair<string, int[]>), "KeyValuePair_string_int___!", null)]
+        [TestCase(typeof(KeyValuePair<string, int[]>[]), "[KeyValuePair_string_int___!]", null)]
+        [TestCase(typeof(KeyValuePair<string[][], int[][][]>[]), "[KeyValuePair_string_____int_______!]", null)]
+        [TestCase(typeof(KeyValuePair<string[][], int[][][]>[][]), "[[KeyValuePair_string_____int_______!]]", null)]
+        [TestCase(typeof(KeyValuePair<string, int>[]), "[KeyValuePair_string_int_!]", null)]
+        [TestCase(typeof(List<KeyValuePair<string, int>>), "[KeyValuePair_string_int_!]", null)]
+        [TestCase(typeof(IEnumerable<IEnumerable<int>>), "[[int!]]", null)]
+        [TestCase(typeof(IEnumerable<IEnumerable<int>>), "int!", new GTW[] { GTW.IsNotNull })]
+        public void GenerateTypeExpression(
+            Type type,
+            string expectedExpression,
+            GTW[] wrappers)
+        {
+            var typeExpression = GraphTypeExpression.FromType(type, wrappers);
+            Assert.AreEqual(expectedExpression, typeExpression.ToString());
         }
     }
 }

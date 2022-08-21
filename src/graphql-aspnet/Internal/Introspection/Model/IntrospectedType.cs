@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -22,7 +23,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
     /// A representation of data about an object graph type that can be returned from a field.
     /// </summary>
     [DebuggerDisplay("OBJECT: {Name}")]
-    public class IntrospectedType
+    public sealed class IntrospectedType
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IntrospectedType"/> class.
@@ -92,7 +93,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.LoadFields(schema);
             this.LoadInterfaces(schema);
             this.LoadEnumValues();
-            this.LoadInputValues(schema);
+            this.LoadInputFields(schema);
             this.LoadPossibleTypes(schema);
             this.LoadUrl(schema);
         }
@@ -202,23 +203,38 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             this.EnumValues = list;
         }
 
-        private void LoadInputValues(IntrospectedSchema schema)
+        private void LoadInputFields(IntrospectedSchema introspectedSchema)
         {
             if (!(this.GraphType is IInputObjectGraphType inputType))
                 return;
+
+            var defaultObject = InstanceFactory.CreateInstance(inputType.ObjectType);
+            var propGetters = InstanceFactory.CreatePropertyGetterInvokerCollection(inputType.ObjectType);
 
             // populate inputFields collection
             // populate the fields for this object type
             var inputFields = new List<IntrospectedInputValueType>();
             foreach (var field in inputType.Fields)
             {
-                var introspectedType = schema.FindIntrospectedType(field.TypeExpression.TypeName);
+                object defaultValue = null;
+                if (field.IsRequired)
+                {
+                    defaultValue = IntrospectionNoDefaultValue.Instance;
+                }
+                else if (propGetters.ContainsKey(field.InternalName))
+                {
+                    var getter = propGetters[field.InternalName];
+                    defaultValue = getter.Invoke(ref defaultObject);
+                }
+
+                var introspectedType = introspectedSchema.FindIntrospectedType(field.TypeExpression.TypeName);
                 introspectedType = Introspection.WrapBaseTypeWithModifiers(introspectedType, field.TypeExpression);
                 var inputField = new IntrospectedInputValueType(
                     field,
-                    introspectedType);
+                    introspectedType,
+                    defaultValue);
 
-                inputField.Initialize(schema);
+                inputField.Initialize(introspectedSchema);
                 inputFields.Add(inputField);
             }
 

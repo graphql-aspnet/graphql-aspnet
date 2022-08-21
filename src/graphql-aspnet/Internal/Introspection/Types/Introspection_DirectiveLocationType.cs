@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Types
 
                 var name = value.ToString();
                 var description = fi.SingleAttributeOrDefault<DescriptionAttribute>()?.Description;
-                var option = new GraphEnumValue(
+                var option = new EnumValue(
                     this,
                     name,
                     description,

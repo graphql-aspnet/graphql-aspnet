@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
     public class SodaCanBuildingController : GraphController
     {
         [Query]
-        public int AddNewBuilding(SodaCanBuildingData building)
+        public int AddNewBuilding(SodaCanBuildingData building = null)
         {
             return 0;
         }
