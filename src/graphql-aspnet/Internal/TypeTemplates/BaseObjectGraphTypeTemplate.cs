@@ -179,6 +179,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (memberInfo.HasAttribute<GraphSkipAttribute>())
                 return false;
 
+            if (Constants.IgnoredFieldNames.Contains(memberInfo.Name))
+                return false;
+
             // when the member declares any known attribute in the library include it
             // and allow it to generate validation failures if its not properly constructed
             if (memberInfo.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>() != null)

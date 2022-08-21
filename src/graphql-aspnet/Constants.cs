@@ -102,6 +102,17 @@ namespace GraphQL.AspNet
         };
 
         /// <summary>
+        /// Gets a set of field names (property or method) that are never parsed by the templating engine
+        /// for any reason.
+        /// </summary>
+        /// <value>The known ignored field names.</value>
+        public static ISet<string> IgnoredFieldNames { get; } = new HashSet<string>()
+        {
+            "Deconstruct",
+            "ToString",
+        };
+
+        /// <summary>
         /// A collection of common suffixes that are semantically handled or removed from naming.
         /// </summary>
         public static class CommonSuffix

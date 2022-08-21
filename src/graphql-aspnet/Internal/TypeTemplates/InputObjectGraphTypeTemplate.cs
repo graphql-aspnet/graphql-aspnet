@@ -157,6 +157,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (propInfo == null)
                 return false;
 
+            if (propInfo.Attributes.SingleAttributeOrDefault<GraphSkipAttribute>() != null)
+                return false;
+
+            if (Constants.IgnoredFieldNames.Contains(propInfo.Name))
+                return false;
+
             var type = propInfo.PropertyType;
             if (Validation.IsCastable<Task>(type))
                 return false;
