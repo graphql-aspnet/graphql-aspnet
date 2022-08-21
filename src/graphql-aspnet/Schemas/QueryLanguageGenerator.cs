@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Schemas
 
             if (recursionStack.Contains(obj))
             {
-                throw new GraphExecutionException(
+                throw new InvalidOperationException(
                     $"Circular reference detected. Unable to convert an object of graph type " +
                     $"'{inputObjectGraphType.Name}'(Kind: {inputObjectGraphType.Kind}) to query language syntax due to a self referencing child.");
             }

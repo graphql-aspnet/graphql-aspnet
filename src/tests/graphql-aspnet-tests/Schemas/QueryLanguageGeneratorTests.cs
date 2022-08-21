@@ -35,6 +35,9 @@ namespace GraphQL.AspNet.Tests.Schemas
         private static void SetupTestData()
         {
             _testValues = new List<(object, string)>();
+
+            _testValues.Add((null, "null"));
+
             _testValues.Add((Happiness.Happy, "HAPPY"));
             _testValues.Add((Happiness.Sad, "SAD"));
             _testValues.Add(((Happiness)45, "null"));
@@ -116,7 +119,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add(("있지", "\"\\uc788\\uc9c0\""));
             _testValues.Add((string.Empty, "\"\""));
 
-            _testValues.Add((Guid.Parse("80332679-35FB-4FB5-8DF6-A7A8F91E4E05"), "\"80332679-35FB-4FB5-8DF6-A7A8F91E4E05\"".ToLowerInvariant()));
+            _testValues.Add((Guid.Parse("80332679-35FB-4FB5-8DF6-A7A8F91E4E05"), "\"80332679-35fb-4fb5-8df6-a7a8f91e4e05\""));
 
 #if NET6_0_OR_GREATER
             _testValues.Add((new DateOnly(2022, 8, 11), "\"2022-08-11\""));
@@ -178,6 +181,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add((new List<string>() { "a", "b", null }, "[\"a\", \"b\", null]"));
             _testValues.Add((new List<int?>() { 1, null, 3 }, "[1, null, 3]"));
             _testValues.Add((new List<int?>() { 1, null, null, 4 }, "[1, null, null, 4]"));
+            _testValues.Add((new List<int?>() { null, null, null, null }, "[null, null, null, null]"));
             _testValues.Add((new List<int?>(), "[]"));
             _testValues.Add((new List<IEnumerable<int>>() { new List<int>() { 1, 2, 3 }, new List<int>() { 4, 5, 6 } }, "[[1, 2, 3], [4, 5, 6]]"));
             _testValues.Add((new List<IEnumerable<int[]>>() { new List<int[]>() { new int[] { 1 }, new int[] { 2, 3 }, new int[] { 4 } }, new List<int[]>() { new int[] { 5 }, new int[] { 6 }, new int[] { 7, 8 } } }, "[[[1], [2, 3], [4]], [[5], [6], [7, 8]]]"));
@@ -268,7 +272,7 @@ namespace GraphQL.AspNet.Tests.Schemas
             var loopedPerson = new Person("LoopedPerson") { Name = "Bob", Child = null };
             loopedPerson.Child = loopedPerson;
 
-            Assert.Throws<GraphExecutionException>(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
                 var generator = new QueryLanguageGenerator(_schema);
                 generator.SerializeObject(loopedPerson);
@@ -290,7 +294,7 @@ namespace GraphQL.AspNet.Tests.Schemas
         [Test]
         public void UnknownObjectType_ThrowsException()
         {
-            // V2 is not registered to the schema
+            // V3 is not registered to the schema
             var obj = new TwoPropertyObjectV3()
             {
                 Property1 = "bob",

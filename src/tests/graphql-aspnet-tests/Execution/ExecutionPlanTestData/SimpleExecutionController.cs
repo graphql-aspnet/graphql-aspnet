@@ -107,5 +107,24 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
         {
             return inputField != null && inputField.Id == 33 ? 22 : -1;
         }
+
+        [Query("numberFromEnum")]
+        public int ReturnNumber(ReturnValueTypeEnum numberType)
+        {
+            switch (numberType)
+            {
+                case ReturnValueTypeEnum.Five:
+                    return 5;
+
+                case ReturnValueTypeEnum.Six:
+                    return 6;
+
+                case ReturnValueTypeEnum.Seven:
+                    return 7;
+
+                default:
+                    return 0;
+            }
+        }
     }
 }

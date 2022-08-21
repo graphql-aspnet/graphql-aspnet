@@ -318,5 +318,41 @@ namespace GraphQL.AspNet.Tests.Execution
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
         }
+
+        [Test]
+        public async Task ResolveEnumFromVariable_YieldsData()
+        {
+            var server = new TestServerBuilder()
+                  .AddGraphQL(o =>
+                  {
+                      o.AddType<SimpleExecutionController>();
+                      o.ResponseOptions.ExposeExceptions = true;
+                  })
+                  .Build();
+
+            // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
+            // but receives null via the variable
+            // however, since the field has a default value defined (because its not required)
+            // the value resolves correctly
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(@"query ($enumValue: ReturnValueTypeEnum!){
+                    simple  {
+                        numberFromEnum(numberType: $enumValue)
+                    }
+                }")
+                .AddVariableData("{\"enumValue\" : \"SEVEN\" }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""simple"" : {
+                            ""numberFromEnum"": 7
+                        }
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
     }
 }
