@@ -72,16 +72,20 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.HasDefaultValue = this.Parameter.HasDefaultValue;
             this.DefaultValue = null;
 
-            if (this.HasDefaultValue && this.Parameter.DefaultValue != null)
+            if (this.HasDefaultValue)
             {
-                // enums will present their default value as a raw int
-                if (this.ObjectType.IsEnum)
+                if (this.Parameter.DefaultValue != null)
                 {
-                    this.DefaultValue = Enum.ToObject(this.ObjectType, this.Parameter.DefaultValue);
-                }
-                else
-                {
-                    this.DefaultValue = this.Parameter.DefaultValue;
+                    // enums will present their default value as a raw int
+                    // convert it to a labelled value
+                    if (this.ObjectType.IsEnum)
+                    {
+                        this.DefaultValue = Enum.ToObject(this.ObjectType, this.Parameter.DefaultValue);
+                    }
+                    else
+                    {
+                        this.DefaultValue = this.Parameter.DefaultValue;
+                    }
                 }
             }
 

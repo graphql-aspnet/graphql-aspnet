@@ -21,11 +21,11 @@ namespace GraphQL.AspNet.Tests.Execution
     using NUnit.Framework;
 
     [TestFixture]
-    public class IntrospectionInputTypeFieldDefaultValueTests
+    public class IntrospectionInputTypeFieldDefaultValueQueryTests
     {
         private static List<object[]> _testData;
 
-        static IntrospectionInputTypeFieldDefaultValueTests()
+        static IntrospectionInputTypeFieldDefaultValueQueryTests()
         {
             _testData = new List<object[]>();
 
@@ -74,6 +74,13 @@ namespace GraphQL.AspNet.Tests.Execution
             _testData.Add(new object[] { typeof(NotRequiredNotSetGuidObject), $"\"{Guid.Empty}\"" });
             _testData.Add(new object[] { typeof(NotRequiredSetGuidObject), $"\"033979ae-0955-4ef6-8a37-50bf0359601f\"" });
             _testData.Add(new object[] { typeof(RequiredGuidObject), null });
+
+            _testData.Add(new object[] { typeof(NotRequiredSetInvalidValueEnumObject), "<exception>" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetInvalidDefaultValueEnumObject), "<exception>" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetDefaultNotDefinedLabelEnumObject), "<exception>" });
+            _testData.Add(new object[] { typeof(NotRequiredNotSetValidDefaultEnumObject), nameof(InputEnum.Value1) });
+            _testData.Add(new object[] { typeof(NotRequiredSetEnumObject), nameof(InputEnum.Value2) });
+            _testData.Add(new object[] { typeof(RequiredEnumObject), null });
 
             _testData.Add(new object[] { typeof(StructNotRequiredNotSetIntObject), "0" });
             _testData.Add(new object[] { typeof(StructNotRequiredSetIntObject), "5" });

@@ -7,18 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
+namespace GraphQL.AspNet.Tests.Internal.IntrospectionDefaultValueTestData
 {
     using GraphQL.AspNet.Attributes;
-    using GraphQL.AspNet.Controllers;
 
-    [GraphRoute("buildings")]
-    public class SodaCanBuildingController : GraphController
+    public enum TestEnumNotIncludedDefault
     {
-        [Query]
-        public int AddNewBuilding(SodaCanBuildingData building = null)
-        {
-            return 0;
-        }
+        [GraphSkip]
+        Value1,
+        Value2,
+        Value3,
     }
 }

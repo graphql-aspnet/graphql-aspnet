@@ -216,35 +216,15 @@ namespace GraphQL.AspNet.Internal.Introspection.Model
             var inputFields = new List<IntrospectedInputValueType>();
             foreach (var field in inputType.Fields)
             {
-                object defaultValue;
+                object defaultValue = null;
                 if (field.IsRequired)
                 {
-                    defaultValue = NoDefaultValue.Instance;
+                    defaultValue = IntrospectionNoDefaultValue.Instance;
                 }
                 else if (propGetters.ContainsKey(field.InternalName))
                 {
                     var getter = propGetters[field.InternalName];
                     defaultValue = getter.Invoke(ref defaultObject);
-
-                    if (defaultValue == null && field.TypeExpression.IsNonNullable)
-                    {
-                        throw new GraphTypeDeclarationException(
-                            "Unable to determine the expected default value " +
-                            $"for field '{field.Route}' (Type Expression: {field.TypeExpression}). The field " +
-                            $"is marked as non-nullable but is not required and does not supply a " +
-                            $"non-null default value. Either mark the field as [Required] or " +
-                            $"set it to a non-null value in the constructor.");
-                    }
-                }
-                else
-                {
-                    // via templating this exception would be impossible
-                    // added here as a safeguard in case that is somehow bypassed
-                    throw new GraphTypeDeclarationException(
-                        "Unable to determine the expected default value " +
-                        $"for field '{field.Route}' (Type Expression: {field.TypeExpression}). The field " +
-                        $"is not marked as required but no getter is defined from which a " +
-                        $"default value could be extracted.");
                 }
 
                 var introspectedType = introspectedSchema.FindIntrospectedType(field.TypeExpression.TypeName);

@@ -19,6 +19,24 @@ namespace GraphQL.AspNet.Tests.Framework.CommonHelpers
     public class TwoPropertyObject : ITwoPropertyObject
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="TwoPropertyObject"/> class.
+        /// </summary>
+        public TwoPropertyObject()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TwoPropertyObject"/> class.
+        /// </summary>
+        /// <param name="prop1">The value for <see cref="Property1"/>.</param>
+        /// <param name="prop2">The value for <see cref="Property2"/>.</param>
+        public TwoPropertyObject(string prop1, int prop2)
+        {
+            this.Property1 = prop1;
+            this.Property2 = prop2;
+        }
+
+        /// <summary>
         /// Gets or sets the value.
         /// </summary>
         /// <value>value.</value>
