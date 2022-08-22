@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
-    /// A graph type representing a unsigned short.
+    /// A graph type representing a 16-bit unsigned integer.
     /// </summary>
     [DebuggerDisplay("SCALAR: {Name}")]
     public sealed class UShortScalarType : BaseScalarType
