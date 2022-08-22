@@ -203,6 +203,7 @@ namespace GraphQL.AspNet
             public const string URI = "Uri";
             public const string ID = "ID";
             public const string SHORT = "Short";
+            public const string USHORT = "UShort";
 
 #if NET6_0_OR_GREATER
             public const string DATEONLY = "DateOnly";

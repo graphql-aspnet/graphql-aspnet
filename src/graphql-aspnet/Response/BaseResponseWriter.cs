@@ -213,6 +213,10 @@ namespace GraphQL.AspNet.Response
                     writer.WriteNumberValue(sh);
                     break;
 
+                case ushort ush:
+                    writer.WriteNumberValue(ush);
+                    break;
+
 #if NET6_0_OR_GREATER
                 case DateOnly dateOnly:
                     this.WritePreEncodedStringValue(writer, dateOnly.ToRfc3339String());

@@ -66,6 +66,10 @@ namespace GraphQL.AspNet.Tests.Schemas
             _testValues.Add(((short)-5000, "-5000"));
             _testValues.Add(((short)0, "0"));
 
+            _testValues.Add(((ushort)5, "5"));
+            _testValues.Add(((ushort)5000, "5000"));
+            _testValues.Add(((ushort)0, "0"));
+
             _testValues.Add((5L, "5"));
             _testValues.Add((-5L, "-5"));
             _testValues.Add((5000000L, "5000000"));
