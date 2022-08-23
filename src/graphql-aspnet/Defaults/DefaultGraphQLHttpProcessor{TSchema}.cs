@@ -140,8 +140,6 @@ namespace GraphQL.AspNet.Defaults
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         protected virtual async Task ExecuteGraphQLQuery(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
-            using var cancelSource = new CancellationTokenSource();
-
             try
             {
                 // *******************************
