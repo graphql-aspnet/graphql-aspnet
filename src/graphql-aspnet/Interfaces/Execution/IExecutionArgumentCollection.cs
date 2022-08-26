@@ -22,9 +22,9 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Augments the collection with a source data object for a specific field execution and returns
         /// a copy of itself with that data attached.
         /// </summary>
-        /// <param name="sourceData">The source data.</param>
+        /// <param name="fieldRequest">The field request to attach to the collection.</param>
         /// <returns>IExecutionArgumentCollection.</returns>
-        IExecutionArgumentCollection WithSourceData(object sourceData);
+        IExecutionArgumentCollection ForRequest(IGraphFieldRequest fieldRequest);
 
         /// <summary>
         /// Adds the specified argument to the collection.

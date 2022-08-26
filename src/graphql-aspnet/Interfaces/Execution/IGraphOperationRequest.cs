@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
+    using System.Threading;
     using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>
@@ -39,5 +40,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The variables.</value>
         IInputVariableCollection VariableData { get; }
+
+        /// <summary>
+        /// Gets or sets a cancellation token that the request should obey as well as provide
+        /// to developer code for various operations.
+        /// </summary>
+        /// <value>The cancel token.</value>
+        CancellationToken CancelToken { get; set; }
     }
 }

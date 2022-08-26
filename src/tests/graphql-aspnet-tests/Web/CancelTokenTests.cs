@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Web
     public class CancelTokenTests
     {
         [Test]
-        public async Task DoThing()
+        public async Task ControllerWithCancelToken_ReceivesCancelTokenOfReuqest()
         {
             var mathController = new MathController();
 
@@ -56,6 +56,10 @@ namespace GraphQL.AspNet.Tests.Web
                     Body = stream,
                     ContentLength = stream.Length,
                 },
+                Response =
+                {
+                    Body = new MemoryStream(),
+                },
             };
 
             var cancelSource = new CancellationTokenSource();
@@ -65,7 +69,9 @@ namespace GraphQL.AspNet.Tests.Web
             httpContext.RequestServices = scope.ServiceProvider;
 
             await processor.Invoke(httpContext, httpContext.RequestAborted);
+            await httpContext.Response.Body.FlushAsync();
 
+            httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
             var reader = new StreamReader(httpContext.Response.Body);
             var text = reader.ReadToEnd();
 
@@ -76,7 +82,7 @@ namespace GraphQL.AspNet.Tests.Web
                     }
                 }";
 
-            Assert.AreEqual(cancelSource.Token, mathController.RetrievedToken);
+            Assert.AreEqual(cancelSource.Token, mathController.PassedToken);
             CommonAssertions.AreEqualJsonStrings(expectedResult, text);
             Assert.AreEqual(200, httpContext.Response.StatusCode);
         }

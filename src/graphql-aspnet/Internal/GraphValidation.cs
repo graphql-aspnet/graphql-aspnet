@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Internal
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -42,6 +43,19 @@ namespace GraphQL.AspNet.Internal
                 return Enumerable.Empty<IAuthorizeData>();
 
             return attributeProvider.GetCustomAttributes(false).OfType<IAuthorizeData>();
+        }
+
+        /// <summary>
+        /// Determines whether the given type is parsable and usable by this graphql library.
+        /// </summary>
+        /// <param name="type">The type to parse.</param>
+        /// <returns><c>true</c> if the type is parsable; otherwise, <c>false</c>.</returns>
+        public static bool IsParseableType(Type type)
+        {
+            if (Validation.IsCastable<IGraphUnionProxy>(type))
+                return false;
+
+            return GraphValidation.IsValidGraphType(type);
         }
 
         /// <summary>

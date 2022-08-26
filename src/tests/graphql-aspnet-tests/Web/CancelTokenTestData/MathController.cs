@@ -15,12 +15,12 @@ namespace GraphQL.AspNet.Tests.Web.CancelTokenTestData
 
     public class MathController : GraphController
     {
-        public CancellationToken RetrievedToken { get; private set; }
+        public CancellationToken PassedToken { get; private set; }
 
         [QueryRoot]
         public int Add(int a, int b, CancellationToken cancelToken)
         {
-            this.RetrievedToken = cancelToken;
+            this.PassedToken = cancelToken;
             return a + b;
         }
     }

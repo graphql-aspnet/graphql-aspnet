@@ -219,7 +219,7 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
                 .InvocationContext
                 .Arguments
                 .Merge(context.VariableData)
-                .WithSourceData(context.Request.Data.Value);
+                .ForRequest(context.Request);
 
             return new FieldResolutionContext(
                 _schema,

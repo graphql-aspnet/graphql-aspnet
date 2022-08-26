@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Execution
     public class ExecutionArgumentCollection : IExecutionArgumentCollection
     {
         private readonly Dictionary<string, ExecutionArgument> _arguments;
+        private readonly IGraphFieldRequest _fieldRequest;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionArgumentCollection"/> class.
@@ -36,14 +37,14 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutionArgumentCollection"/> class.
+        /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
         /// </summary>
         /// <param name="argumentList">The argument list.</param>
-        /// <param name="sourceData">The source data.</param>
-        private ExecutionArgumentCollection(IDictionary<string, ExecutionArgument> argumentList, object sourceData)
+        /// <param name="fieldRequest">The field request.</param>
+        private ExecutionArgumentCollection(IDictionary<string, ExecutionArgument> argumentList, IGraphFieldRequest fieldRequest)
         {
             _arguments = new Dictionary<string, ExecutionArgument>(argumentList);
-            this.SourceData = sourceData;
+            _fieldRequest = fieldRequest;
         }
 
         /// <summary>
@@ -56,15 +57,10 @@ namespace GraphQL.AspNet.Execution
             _arguments.Add(argument.Name, argument);
         }
 
-        /// <summary>
-        /// Augments the collection with a source data object for a specific field execution and returns
-        /// a copy of itself with that data attached.
-        /// </summary>
-        /// <param name="sourceData">The source data.</param>
-        /// <returns>IExecutionArgumentCollection.</returns>
-        public IExecutionArgumentCollection WithSourceData(object sourceData)
+        /// <inheritdoc />
+        public IExecutionArgumentCollection ForRequest(IGraphFieldRequest fieldRequest)
         {
-            return new ExecutionArgumentCollection(_arguments, sourceData);
+            return new ExecutionArgumentCollection(_arguments, fieldRequest);
         }
 
         /// <summary>
@@ -145,73 +141,45 @@ namespace GraphQL.AspNet.Execution
             if (argDefinition.ArgumentModifiers.IsSourceParameter())
                 return this.SourceData;
 
+            if (argDefinition.ArgumentModifiers.IsCancellationToken())
+                return _fieldRequest?.OperationRequest?.CancelToken ?? default;
+
             return this.ContainsKey(argDefinition.DeclaredArgumentName)
                 ? this[argDefinition.DeclaredArgumentName].Value
                 : argDefinition.DefaultValue;
         }
 
-        /// <summary>
-        /// Determines whether the read-only dictionary contains an element that has the specified key.
-        /// </summary>
-        /// <param name="key">The key to locate.</param>
-        /// <returns>true if the read-only dictionary contains an element that has the specified key; otherwise, false.</returns>
+        /// <inheritdoc />
         public bool ContainsKey(string key) => _arguments.ContainsKey(key);
 
-        /// <summary>
-        /// Gets the value that is associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key to locate.</param>
-        /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-        /// <returns>true if the object that implements the <see cref="T:System.Collections.Generic.IReadOnlyDictionary`2"></see> interface contains an element that has the specified key; otherwise, false.</returns>
+        /// <inheritdoc />
         public bool TryGetValue(string key, out ExecutionArgument value)
         {
             return _arguments.TryGetValue(key, out value);
         }
 
-        /// <summary>
-        /// Gets the <see cref="ExecutionArgument"/> with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>ExecutionArgument.</returns>
+        /// <inheritdoc />
         public ExecutionArgument this[string key] => _arguments[key];
 
-        /// <summary>
-        /// Gets an enumerable collection that contains the keys in the read-only dictionary.
-        /// </summary>
-        /// <value>The keys.</value>
+        /// <inheritdoc />
         public IEnumerable<string> Keys => _arguments.Keys;
 
-        /// <summary>
-        /// Gets an enumerable collection that contains the values in the read-only dictionary.
-        /// </summary>
-        /// <value>The values.</value>
+        /// <inheritdoc />
         public IEnumerable<ExecutionArgument> Values => _arguments.Values;
 
-        /// <summary>
-        /// Gets the number of elements in the collection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _arguments.Count;
 
-        /// <summary>
-        /// Gets the source data, if any, that is supplying values for this execution run.
-        /// </summary>
-        /// <value>The source data.</value>
-        public object SourceData { get; private set; }
+        /// <inheritdoc />
+        public object SourceData => _fieldRequest?.Data.Value;
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, ExecutionArgument>> GetEnumerator()
         {
             return _arguments.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
