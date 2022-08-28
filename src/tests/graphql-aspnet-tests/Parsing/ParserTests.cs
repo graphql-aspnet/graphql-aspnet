@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Parsing
             Assert.IsNotNull(syntaxTree);
         }
 
-        [TestCase("abc", "ab")]
+        [TestCase("abc", "abc")]
         [TestCase("a\rb\nc\t", "a b c ")]
         [TestCase("abc ", "abc ")]
         [TestCase("abc    \r\n\t", "abc ")]
