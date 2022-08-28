@@ -34,7 +34,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
         [Test]
         public void SubscriptionAttribute_TemplateConstructor_PropertyCheck()
         {
-            var attrib = new SubscriptionAttribute("mySubscriptionRout");
+            var attrib = new SubscriptionAttribute("mySubscriptionRoute");
             Assert.AreEqual(GraphCollection.Subscription, attrib.FieldType);
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
