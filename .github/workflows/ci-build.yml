@@ -1,0 +1,65 @@
+# This action executes on every push to master (usually as a result of a PR)
+# and commit to a branch that is a PR against master 
+# to ensure the code base is up to standards
+#
+# Expected Standards 
+# -----------------------------
+# 0 failed units
+# 0 Build Errors, 0 Build Warnings
+
+
+name: CI-CD
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+      
+env: 
+  SLN_PATH: ./src/graphql-aspnet.sln
+  DOTNET_CURRENT: 6.x
+  DOTNET_LTS: 3.1.x
+
+jobs:
+  build:
+    name:  Sanity Build
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout Code
+      
+      # ---------------------------------------
+      # Install .NET Versions
+      # ---------------------------------------
+      - uses: actions/setup-dotnet@v2
+        name: Install .NET (${{ env.DOTNET_LTS }})
+        with:
+          dotnet-version: ${{ env.DOTNET_LTS }}
+
+      - uses: actions/setup-dotnet@v2
+        name: Install .NET (${{ env.DOTNET_CURRENT }})
+        with:
+          dotnet-version: ${{ env.DOTNET_CURRENT }}
+
+      # ---------------------------------------
+      # Configure the build environment
+      # ---------------------------------------
+      - name: Configure Build
+        run: ./build/configure-ci-build.ps1
+        shell: pwsh
+
+      # ---------------------------------------        
+      # Restore, Build and Test
+      # ---------------------------------------
+      - name: Nuget Restore
+        run: dotnet restore ${{ env.SLN_PATH }}
+
+      - name: Build Solution
+        run: dotnet build ${{ env.SLN_PATH }} --configuration Release --no-restore
+
+      - name: Test Solution
+        run: dotnet test ${{ env.SLN_PATH }} --no-restore
