@@ -20,16 +20,14 @@
     <PackageDescription>GraphQL ASP.NET is a fully functional GraphQL library that utilizes a controller/action programming model similar to ASP.NET.</PackageDescription>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
     <PackageTags>GraphQL ASPNET graphql ASP.NET mvc dotnet core</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/graphql-aspnet/graphql-aspnet</RepositoryUrl>
-    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
     <ItemGroup>
-      <None Include="..\icon.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+			<None Include="..\icon.png" Pack="true" PackagePath="\" />
+			<None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md"/>
     </ItemGroup>
 
   <PropertyGroup>

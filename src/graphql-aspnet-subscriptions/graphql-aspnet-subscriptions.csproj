@@ -20,17 +20,15 @@
     <PackageDescription>A package to support subscriptions for GraphQL ASP.NET. Provides the required functionality to setup a websocket connection and perform graphql subscriptions over web sockets.</PackageDescription>
     <PackageProjectUrl>https://graphql-aspnet.github.io/</PackageProjectUrl>
     <PackageTags>GraphQL ASPNET graphql ASP.NET mvc dotnet core</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/graphql-aspnet/graphql-aspnet</RepositoryUrl>
-    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-<ItemGroup>
-  <None Include="..\icon.png">
-    <Pack>True</Pack>
-    <PackagePath></PackagePath>
-  </None>
-</ItemGroup>
+	<ItemGroup>
+		<None Include="..\icon.png" Pack="true" PackagePath="\" />
+		<None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md"/>
+	</ItemGroup>
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\styles.ruleset</CodeAnalysisRuleSet>
