@@ -8,7 +8,7 @@ GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/a
 
 | Recent Builds |                                                                                                                                                                                                                                                                    |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Master        | [![CI-CD](https://github.com/graphql-aspnet/graphql-aspnet/actions/workflows/ci-build.yml/badge.svg)](https://github.com/graphql-aspnet/graphql-aspnet/actions/workflows/ci-build.yml)   |
+| Master        | [![CI-CD](https://github.com/graphql-aspnet/graphql-aspnet/actions/workflows/ci-build.yml/badge.svg?branch=master)](https://github.com/graphql-aspnet/graphql-aspnet/actions/workflows/ci-build.yml) |
 
 #### Example Usage:
 
