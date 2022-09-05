@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
         private readonly TSchema _schema;
-        private readonly ResolverIsolationOptions _resolversToIsolate;
+        private readonly ResolverIsolationOptions _isolationOptions;
         private readonly bool _debugMode;
         private readonly TimeSpan? _queryTimeout;
 
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         public ExecuteQueryOperationMiddleware(TSchema schema, ISchemaPipeline<TSchema, GraphFieldExecutionContext> fieldExecutionPipeline)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _resolversToIsolate = _schema.Configuration.ExecutionOptions.ResolverIsolation;
+            _isolationOptions = _schema.Configuration.ExecutionOptions.ResolverIsolation;
             _debugMode = _schema.Configuration.ExecutionOptions.DebugMode;
             _queryTimeout = _schema.Configuration.ExecutionOptions.QueryTimeout;
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
@@ -79,13 +79,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
         private async Task ExecuteOperation(GraphQueryExecutionContext context)
         {
-            using var monitor = new QueryTimeoutManager(context, _queryTimeout);
+            // create a manager that will monitor both the governing token passed
+            // on the context as well as the configured timeout for the schema
+            using var monitor = new QueryCancellationMonitor(context, _queryTimeout);
 
-            // create a cancelation source irrespective of the required timeout for exeucting this operation
-            // this allows for indication of why a task was canceled (timeout or other user driven reason)
-            // vs just "it was canceled" which allows for tighter error messages in the response.
             var operation = context.QueryPlan.Operation;
-
             var fieldInvocations = new List<FieldPipelineInvocation>();
             var fieldInvocationTasks = new List<Task>();
 
@@ -94,14 +92,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
             // Step 0
             // --------------------------
-            // Sort the top level queries of this operation such that
+            // Sort the top level requested fields of this operation such that
             // those contexts that should be isolated execute first and all others
             // run in paralell
             IEnumerable<(IGraphFieldInvocationContext Context, bool ExecuteIsolated)> orderedContextList;
             if (operation.OperationType == GraphOperationType.Mutation)
             {
                 // top level mutation operatons must be executed in sequential order
-                // due to potential side effects on the data
+                // due to potential side effects on the underlying data
                 // https://graphql.github.io/graphql-spec/October2021/#sec-Mutation
                 orderedContextList = operation.FieldContexts
                     .Select(x => (x, true));
@@ -109,11 +107,11 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             else
             {
                 // with non-mutation queries, order the contexts such that the isolated ones (as determined by
-                // the configuration for this schema) are on top. All contexts are ran in isolation
-                // when in debug mode (always).
+                // the configuration for this schema) are on top. All contexts are ran in isolation.
+                // However, when in debug mode all top level queries are run in isolation.
                 orderedContextList = operation
                    .FieldContexts
-                   .Select(x => (x, _debugMode || _resolversToIsolate.ShouldIsolateFieldSource(x.Field.FieldSource)))
+                   .Select(x => (x, _debugMode || _isolationOptions.ShouldIsolateFieldSource(x.Field.FieldSource)))
                    .OrderByDescending(x => x.Item2);
             }
 
@@ -121,31 +119,32 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // --------------------------
             // Begin a field execution pipeline for each top level field
             // those fields will then call their child fields in turn
-            foreach (var sortedContext in orderedContextList)
+            foreach (var item in orderedContextList)
             {
+                monitor.AbortIfCancelled();
                 if (!monitor.IsRunning)
                     break;
 
                 var path = new SourcePath();
-                path.AddFieldName(sortedContext.Context.Name);
+                path.AddFieldName(item.Context.Name);
 
                 object dataSourceValue;
 
                 // fetch the source data value to use for the field invocation
                 // attempt to retrieve from the master context if it was supplied by the pipeline
                 // invoker, otherwise generate a root source
-                if (!context.DefaultFieldSources.TryRetrieveSource(sortedContext.Context.Field, out dataSourceValue))
+                if (!context.DefaultFieldSources.TryRetrieveSource(item.Context.Field, out dataSourceValue))
                     dataSourceValue = this.GenerateRootSourceData(operation.OperationType);
 
-                var topLevelDataItem = new GraphDataItem(sortedContext.Context, dataSourceValue, path);
+                var topLevelDataItem = new GraphDataItem(item.Context, dataSourceValue, path);
 
                 var sourceData = new GraphDataContainer(dataSourceValue, path, topLevelDataItem);
 
                 var fieldRequest = new GraphFieldRequest(
                     context.ParentRequest,
-                    sortedContext.Context,
+                    item.Context,
                     sourceData,
-                    new SourceOrigin(sortedContext.Context.Origin.Location, path),
+                    new SourceOrigin(item.Context.Origin.Location, path),
                     context.Items);
 
                 var fieldContext = new GraphFieldExecutionContext(
@@ -172,7 +171,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 {
                     await fieldTask.ConfigureAwait(false);
                 }
-                else if (sortedContext.ExecuteIsolated)
+                else if (item.ExecuteIsolated)
                 {
                     // await the isolated task to prevent any potential paralellization
                     // by the task system but not in such a way that a faulted task would
@@ -188,10 +187,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // Step 2
             // -----------------------------------------
             // await all outstanding task and hope they finish before the timer
+            monitor.AbortIfCancelled();
             if (monitor.IsRunning)
             {
                 var fieldPipelineTasksWrapper = Task.WhenAll(fieldInvocationTasks);
                 await Task.WhenAny(fieldPipelineTasksWrapper, monitor.TimeoutTask).ConfigureAwait(false);
+
+                // finalize the process, indicating all outstanding tasks
+                // are completed, cancelled or timed out
                 monitor.Complete();
             }
 
@@ -231,17 +234,21 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             }
 
             // log an appropriate error message if needed
-            if (monitor.CancellationRequested)
+            if (monitor.IsCancelled)
             {
                 context.Messages.Critical(
                     "The execution was canceled prior to completion of the requested query.",
                     Constants.ErrorCodes.OPERATION_CANCELED);
+
+                context.Logger?.RequestCancelled(context);
             }
             else if (monitor.IsTimedOut)
             {
                 context.Messages.Critical(
-                    $"The execution timed out prior to completion of the requested query. (Total Time: {_queryTimeout}ms)",
+                    $"The execution timed out prior to completion of the requested query. (Allowed Time: {_queryTimeout.Value.TotalSeconds} seconds)",
                     Constants.ErrorCodes.OPERATION_TIMEOUT);
+
+                context.Logger?.RequestTimedOut(context);
             }
         }
 

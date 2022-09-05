@@ -496,7 +496,7 @@ namespace GraphQL.AspNet.Apollo
                 }
                 else
                 {
-                    var response = GraphOperationRequest.FromMessages(subscription.Messages, subscription.QueryData);
+                    var response = GraphOperationResult.FromMessages(subscription.Messages, subscription.QueryData);
                     await subscription.Client
                         .SendMessage(new ApolloServerDataMessage(subscription.Id, response))
                         .ConfigureAwait(false);

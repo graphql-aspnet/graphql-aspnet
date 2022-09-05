@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Web
             httpContext.Request.Method = "POST";
             httpContext.RequestServices = scope.ServiceProvider;
 
-            await processor.Invoke(httpContext, httpContext.RequestAborted);
+            await processor.Invoke(httpContext);
             await httpContext.Response.Body.FlushAsync();
 
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Web
             httpContext.Request.Method = "POST";
             httpContext.RequestServices = scope.ServiceProvider;
 
-            await processor.Invoke(httpContext, httpContext.RequestAborted);
+            await processor.Invoke(httpContext);
             await httpContext.Response.Body.FlushAsync();
 
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);

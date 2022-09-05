@@ -128,7 +128,6 @@ namespace GraphQL.AspNet.Controllers
                         return new RouteNotFoundGraphActionResult(_action, ex);
 
                     default:
-
                         // total failure by the user's action code.
                         // record and bubble
                         _logger?.ActionMethodUnhandledException(_action, this.Request, ex);

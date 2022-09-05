@@ -44,6 +44,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
+    using Newtonsoft.Json.Serialization;
     using NUnit.Framework;
 
     /// <summary>
@@ -489,6 +490,7 @@ namespace GraphQL.AspNet.Tests.Framework
 
             if (context != null)
                 context.CancellationToken = cancelToken;
+
             await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
         }
 

@@ -138,6 +138,9 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// <returns>GraphQueryContext.</returns>
         public virtual GraphQueryExecutionContext Build()
         {
+            var startDate = DateTimeOffset.UtcNow;
+            _mockRequest.Setup(x => x.StartTimeUTC).Returns(startDate);
+
             var metaData = new MetaDataCollection();
 
             // unchangable items about the request

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -93,6 +94,6 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// greater than this value will be rejected and not executed. See documentation for further details. (Default: Not Set / Unlimited).
         /// </summary>
         /// <value>An integer representing the maximum calculated query complexity of a single query plan before its rejected.</value>
-        float? MaxQueryComplexity { get;  }
+        float? MaxQueryComplexity { get; }
     }
 }

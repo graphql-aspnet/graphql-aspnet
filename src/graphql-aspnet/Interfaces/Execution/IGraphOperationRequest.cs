@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using System.Threading;
+    using System;
     using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>
@@ -40,5 +40,11 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The variables.</value>
         IInputVariableCollection VariableData { get; }
+
+        /// <summary>
+        /// Gets the start time, in UTC-0, when this operation began.
+        /// </summary>
+        /// <value>The start time UTC.</value>
+        DateTimeOffset StartTimeUTC { get; }
     }
 }

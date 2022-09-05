@@ -23,24 +23,6 @@ namespace GraphQL.AspNet.Execution
     public class GraphOperationRequest : IGraphOperationRequest
     {
         /// <summary>
-        /// Creates a new operation result from a collection of generated messages and optional raw data
-        /// provided by a requestor. If no error level messages are supplied a generic one is created.
-        /// </summary>
-        /// <param name="errorMessages">The collection of messages. Must be not null and contain at least one message.</param>
-        /// <param name="queryData">The original query data.</param>
-        /// <returns>GraphOperationResult.</returns>
-        public static GraphOperationResult FromMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
-        {
-            Validation.ThrowIfNull(errorMessages, nameof(errorMessages));
-            if (errorMessages.Count < 1)
-                errorMessages.Critical("An unknown error occured.");
-
-            return new GraphOperationResult(
-                new GraphOperationRequest(queryData),
-                errorMessages);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GraphOperationRequest"/> class.
         /// </summary>
         /// <param name="queryData">The query data.</param>
@@ -50,6 +32,8 @@ namespace GraphQL.AspNet.Execution
             this.OperationName = queryData.OperationName?.Trim();
             this.QueryText = queryData.Query;
             this.VariableData = queryData.Variables ?? new InputVariableCollection();
+
+            this.StartTimeUTC = DateTimeOffset.UtcNow;
         }
 
         /// <summary>
@@ -63,6 +47,8 @@ namespace GraphQL.AspNet.Execution
             this.OperationName = request.OperationName;
             this.QueryText = request.QueryText;
             this.VariableData = request.VariableData;
+
+            this.StartTimeUTC = request.StartTimeUTC;
         }
 
         /// <inheritdoc />
@@ -93,5 +79,8 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <value>The length of the query.</value>
         protected int QueryLength => QueryText?.Length ?? 0;
+
+        /// <inheritdoc />
+        public DateTimeOffset StartTimeUTC { get; }
     }
 }
