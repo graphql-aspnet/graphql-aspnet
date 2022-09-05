@@ -161,29 +161,6 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public async Task RunnerTimeout_ErrorMessagesAreSetCorrect()
-        {
-            var serverBuilder = new TestServerBuilder()
-                        .AddType<SimpleExecutionController>();
-
-            serverBuilder.AddGraphQL(o =>
-            {
-                o.ExecutionOptions.QueryTimeout = TimeSpan.FromMilliseconds(15);
-            });
-
-            var server = serverBuilder.Build();
-
-            var builder = server.CreateQueryContextBuilder()
-                .AddQueryText("query {  simple {  timedOutMethod  } }");
-
-            var result = await server.ExecuteQuery(builder);
-
-            Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(GraphMessageSeverity.Critical, result.Messages.Severity);
-            Assert.AreEqual(Constants.ErrorCodes.OPERATION_CANCELED, result.Messages[0].Code);
-        }
-
-        [Test]
         public async Task UnhandledException_InUserCode_OnActionMethod_ResultsInErrorMessageOnResponse()
         {
             var server = new TestServerBuilder()

@@ -110,7 +110,7 @@ namespace GraphQL.AspNet.Defaults
         {
             Validation.ThrowIfNull(context, nameof(context));
 
-            context.ParentRequest.CancelToken = cancelToken;
+            context.CancellationToken = cancelToken;
 
             // *******************************
             // Primary query execution

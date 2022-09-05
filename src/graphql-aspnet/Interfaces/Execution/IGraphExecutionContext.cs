@@ -10,12 +10,13 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
+    using System.Threading;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
-    /// A base context defining a set of items supported by all middleware pipelines.
+    /// A base execution context defining a set of items supported by all middleware pipelines.
     /// </summary>
     public interface IGraphExecutionContext
     {
@@ -27,8 +28,10 @@ namespace GraphQL.AspNet.Interfaces.Execution
 
         /// <summary>
         /// Gets a value indicating whether this resolution context has been put in a canceled
-        /// state. Each pipeline component must choose to react to the cancelation state or not. The final data result
-        /// of the pipeline, however; will not be rendered to the requestor.
+        /// state either by the runtime itself, via a call to <see cref="Cancel"/> or via the governing
+        /// <see cref="CancellationToken"/>. Each pipeline component must choose to react to
+        /// the cancelation state or not. The final data result of the pipeline, however; will
+        /// not be rendered to the requestor when the execution context is in a cancelled state.
         /// </summary>
         /// <value><c>true</c> if execution of the context has been canceled; otherwise, <c>false</c>.</value>
         bool IsCancelled { get; }
@@ -59,9 +62,10 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IGraphQueryExecutionMetrics Metrics { get; }
 
         /// <summary>
-        /// Gets the logger instance assigned to this context.
+        /// Gets the logger instance assigned to this context. All events written to the logger will
+        /// be automatically contextualized to the same request.
         /// </summary>
-        /// <value>The logger.</value>
+        /// <value>The logger instance this context should write events to, if any.</value>
         IGraphEventLogger Logger { get; }
 
         /// <summary>
@@ -83,5 +87,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
         bool IsValid { get; }
+
+        /// <summary>
+        /// Gets or sets a cancellation token that context should obey as well as provide
+        /// to developer code for various operations.
+        /// </summary>
+        /// <value>The governing cancellation token.</value>
+        CancellationToken CancellationToken { get; set; }
     }
 }

@@ -54,13 +54,6 @@ namespace GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData
         }
 
         [Query]
-        public async Task<string> TimedOutMethod()
-        {
-            await Task.Delay(2000);
-            return "Task complete";
-        }
-
-        [Query]
         public Task<ObjectWithThrowMethod> ThrowFromController()
         {
             throw new Exception("Failure from Controller");

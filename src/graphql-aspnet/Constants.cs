@@ -173,6 +173,7 @@ namespace GraphQL.AspNet
             public const string UNHANDLED_EXCEPTION = "UNHANDLED_EXCEPTION";
             public const string ACCESS_DENIED = "ACCESS_DENIED";
             public const string OPERATION_CANCELED = "OPERATION_CANCELED";
+            public const string OPERATION_TIMEOUT = "OPERATION_TIMEOUT";
             public const string INVALID_DOCUMENT = "INVALID_DOCUMENT";
             public const string INVALID_OBJECT = "INVALID_OBJECT";
             public const string DEFAULT = "UNKNOWN";

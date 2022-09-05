@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Execution
 {
     using System;
     using System.Diagnostics;
-    using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Variables;
@@ -51,7 +50,6 @@ namespace GraphQL.AspNet.Execution
             this.OperationName = queryData.OperationName?.Trim();
             this.QueryText = queryData.Query;
             this.VariableData = queryData.Variables ?? new InputVariableCollection();
-            this.CancelToken = default;
         }
 
         /// <summary>
@@ -65,7 +63,6 @@ namespace GraphQL.AspNet.Execution
             this.OperationName = request.OperationName;
             this.QueryText = request.QueryText;
             this.VariableData = request.VariableData;
-            this.CancelToken = default;
         }
 
         /// <inheritdoc />
@@ -96,8 +93,5 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <value>The length of the query.</value>
         protected int QueryLength => QueryText?.Length ?? 0;
-
-        /// <inheritdoc />
-        public CancellationToken CancelToken { get; set; }
     }
 }

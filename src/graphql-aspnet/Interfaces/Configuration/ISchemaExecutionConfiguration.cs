@@ -32,10 +32,10 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// Gets a value indicating the amount of time before a query (or mutation),
         /// executed against this <see cref="ISchema"/>, timesout and is abandoned. A timeout will issue a
         /// cancelation request via a <see cref="CancellationToken"/> but does not garuntee that any running tasks will stop
-        /// processing (Default: 1 minute).
+        /// processing (Default: Not Set).
         /// </summary>
         /// <value>The total amount of time to wait for a query to finish before issuing a cancellation.</value>
-        TimeSpan QueryTimeout { get; }
+        TimeSpan? QueryTimeout { get; }
 
         /// <summary>
         /// <para>Gets a value indicating whether ALL field, when they are resolved, is individually executed.</para>

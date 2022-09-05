@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Contexts;
 
     /// <summary>
     /// A collection of resolved arguments that can be directly used in the invocation of an action method,
@@ -22,9 +23,9 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Augments the collection with a source data object for a specific field execution and returns
         /// a copy of itself with that data attached.
         /// </summary>
-        /// <param name="fieldRequest">The field request to attach to the collection.</param>
+        /// <param name="fieldExecutionContext">The field context being executed.</param>
         /// <returns>IExecutionArgumentCollection.</returns>
-        IExecutionArgumentCollection ForRequest(IGraphFieldRequest fieldRequest);
+        IExecutionArgumentCollection ForContext(GraphFieldExecutionContext fieldExecutionContext);
 
         /// <summary>
         /// Adds the specified argument to the collection.

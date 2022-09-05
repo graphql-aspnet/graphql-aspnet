@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Execution
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Execution
     public class ExecutionArgumentCollection : IExecutionArgumentCollection
     {
         private readonly Dictionary<string, ExecutionArgument> _arguments;
-        private readonly IGraphFieldRequest _fieldRequest;
+        private readonly GraphFieldExecutionContext _fieldContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionArgumentCollection"/> class.
@@ -40,17 +41,16 @@ namespace GraphQL.AspNet.Execution
         /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
         /// </summary>
         /// <param name="argumentList">The argument list.</param>
-        /// <param name="fieldRequest">The field request.</param>
-        private ExecutionArgumentCollection(IDictionary<string, ExecutionArgument> argumentList, IGraphFieldRequest fieldRequest)
+        /// <param name="fieldContext">The field context.</param>
+        private ExecutionArgumentCollection(
+            IDictionary<string, ExecutionArgument> argumentList,
+            GraphFieldExecutionContext fieldContext)
         {
             _arguments = new Dictionary<string, ExecutionArgument>(argumentList);
-            _fieldRequest = fieldRequest;
+            _fieldContext = fieldContext;
         }
 
-        /// <summary>
-        /// Adds the specified argument.
-        /// </summary>
-        /// <param name="argument">The argument.</param>
+        /// <inheritdoc />
         public void Add(ExecutionArgument argument)
         {
             Validation.ThrowIfNull(argument, nameof(argument));
@@ -58,18 +58,12 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <inheritdoc />
-        public IExecutionArgumentCollection ForRequest(IGraphFieldRequest fieldRequest)
+        public IExecutionArgumentCollection ForContext(GraphFieldExecutionContext fieldContext)
         {
-            return new ExecutionArgumentCollection(_arguments, fieldRequest);
+            return new ExecutionArgumentCollection(_arguments, fieldContext);
         }
 
-        /// <summary>
-        /// Tries the get argument.
-        /// </summary>
-        /// <typeparam name="TType">The type of the t type.</typeparam>
-        /// <param name="argumentName">Name of the argument.</param>
-        /// <param name="argumentValue">The argument value.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
         public bool TryGetArgument<TType>(string argumentName, out TType argumentValue)
         {
             argumentValue = default;
@@ -87,12 +81,7 @@ namespace GraphQL.AspNet.Execution
             }
         }
 
-        /// <summary>
-        /// Prepares this colleciton of arguments for use in the provided method invocation generating
-        /// a set of values that can be used to invoke the method.
-        /// </summary>
-        /// <param name="graphMethod">The graph method.</param>
-        /// <returns>System.Object[].</returns>
+        /// <inheritdoc />
         public object[] PrepareArguments(IGraphMethod graphMethod)
         {
             var preparedParams = new List<object>();
@@ -142,7 +131,7 @@ namespace GraphQL.AspNet.Execution
                 return this.SourceData;
 
             if (argDefinition.ArgumentModifiers.IsCancellationToken())
-                return _fieldRequest?.OperationRequest?.CancelToken ?? default;
+                return _fieldContext?.CancellationToken ?? default;
 
             return this.ContainsKey(argDefinition.DeclaredArgumentName)
                 ? this[argDefinition.DeclaredArgumentName].Value
@@ -171,7 +160,7 @@ namespace GraphQL.AspNet.Execution
         public int Count => _arguments.Count;
 
         /// <inheritdoc />
-        public object SourceData => _fieldRequest?.Data.Value;
+        public object SourceData => _fieldContext?.Request?.Data?.Value;
 
         /// <inheritdoc />
         public IEnumerator<KeyValuePair<string, ExecutionArgument>> GetEnumerator()

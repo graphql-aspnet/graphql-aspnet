@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 .InvocationContext
                 .Arguments
                 .Merge(context.VariableData)
-                .ForRequest(context.Request);
+                .ForContext(context);
 
             var resolutionContext = new FieldResolutionContext(
                 _schema,

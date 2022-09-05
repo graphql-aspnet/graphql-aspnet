@@ -10,18 +10,20 @@
 namespace GraphQL.AspNet.Execution.Contexts
 {
     using System;
+    using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Security.Web;
 
     /// <summary>
     /// A base middleware context containing the core items required of all contexts.
     /// </summary>
     public abstract class BaseGraphExecutionContext : IGraphExecutionContext
     {
+        private bool _isCancelled;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseGraphExecutionContext"/> class.
         /// </summary>
@@ -33,7 +35,8 @@ namespace GraphQL.AspNet.Execution.Contexts
                     otherContext?.SecurityContext,
                     otherContext?.Metrics,
                     otherContext?.Logger,
-                    otherContext?.Items)
+                    otherContext?.Items,
+                    otherContext?.CancellationToken ?? default)
         {
         }
 
@@ -47,13 +50,15 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="items">A key/value pair collection for random access data.</param>
+        /// <param name="cancelToken">The cancel token governing this execution context.</param>
         protected BaseGraphExecutionContext(
             IGraphOperationRequest operationRequest,
             IServiceProvider serviceProvider,
             IUserSecurityContext securityContext,
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
-            MetaDataCollection items = null)
+            MetaDataCollection items = null,
+            CancellationToken cancelToken = default)
         {
             this.ParentRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
             this.ServiceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
@@ -62,16 +67,17 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.Items = items ?? new MetaDataCollection();
             this.Messages = new GraphMessageCollection();
             this.Logger = logger;
+            this.CancellationToken = cancelToken;
         }
 
         /// <inheritdoc />
         public void Cancel()
         {
-            this.IsCancelled = true;
+            _isCancelled = true;
         }
 
         /// <inheritdoc />
-        public bool IsCancelled { get; private set; }
+        public bool IsCancelled => _isCancelled || this.CancellationToken.IsCancellationRequested;
 
         /// <inheritdoc />
         public IServiceProvider ServiceProvider { get; }
@@ -96,5 +102,8 @@ namespace GraphQL.AspNet.Execution.Contexts
 
         /// <inheritdoc />
         public IGraphOperationRequest ParentRequest { get; }
+
+        /// <inheritdoc />
+        public CancellationToken CancellationToken { get; set; }
     }
 }
