@@ -133,6 +133,12 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
             return Task.FromResult(string.Empty);
         }
 
+        [GraphField]
+        public Task<string> DefaultNonNullableParameter(int arg1 = 5)
+        {
+            return Task.FromResult(string.Empty);
+        }
+
         public string UnTaggedMethod()
         {
             return string.Empty;

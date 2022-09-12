@@ -198,5 +198,24 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 44, "method arg" }, appliedDirective.Arguments);
         }
+
+        [Test]
+        public void DefaultNonNullableParameter_NotMarkedRequired()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var parent = obj.Object;
+            var template = this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.DefaultNonNullableParameter));
+
+            Assert.AreEqual(0, template.AppliedDirectives.Count());
+
+            Assert.AreEqual(1, template.Arguments.Count);
+
+            var arg = template.Arguments[0];
+            Assert.IsTrue(arg.HasDefaultValue);
+            Assert.AreEqual(5, arg.DefaultValue);
+        }
     }
 }
