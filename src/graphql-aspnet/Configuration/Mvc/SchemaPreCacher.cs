@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
@@ -63,7 +64,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
                 return;
 
             // can't preparse union proxies (they aren't parsable graph types)
-            if (Validation.IsCastable<IGraphUnionProxy>(type))
+            if (!GraphValidation.IsParseableType(type))
                 return;
 
             var template = GraphQLProviders.TemplateProvider.ParseType(type);

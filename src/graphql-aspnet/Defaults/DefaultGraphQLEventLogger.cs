@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Defaults
     /// this has an effect of attaching a unique id to all messages generated for each graphql request coming
     /// through the system for easy tracking.
     /// </summary>
-    public class DefaultGraphLogger : IGraphEventLogger
+    public class DefaultGraphQLEventLogger : IGraphEventLogger
     {
         private readonly ILogger _logger;
 
@@ -42,10 +42,10 @@ namespace GraphQL.AspNet.Defaults
         private readonly string _loggerInstanceId;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultGraphLogger" /> class.
+        /// Initializes a new instance of the <see cref="DefaultGraphQLEventLogger" /> class.
         /// </summary>
         /// <param name="loggerFactory">The logger factory from which to generate the underlying <see cref="ILogger" />.</param>
-        public DefaultGraphLogger(ILoggerFactory loggerFactory)
+        public DefaultGraphQLEventLogger(ILoggerFactory loggerFactory)
         {
             Validation.ThrowIfNull(loggerFactory, nameof(loggerFactory));
             _logger = loggerFactory.CreateLogger(Constants.Logging.LOG_CATEGORY);
@@ -282,11 +282,31 @@ namespace GraphQL.AspNet.Defaults
         /// <inheritdoc />
         public virtual void RequestCompleted(GraphQueryExecutionContext queryContext)
         {
-            if (!this.IsEnabled(LogLevel.Debug))
+            if (!this.IsEnabled(LogLevel.Trace))
                 return;
 
             var entry = new RequestCompletedLogEntry(queryContext);
             this.LogEvent(LogLevel.Trace, entry);
+        }
+
+        /// <inheritdoc />
+        public void RequestTimedOut(GraphQueryExecutionContext queryContext)
+        {
+            if (!this.IsEnabled(LogLevel.Warning))
+                return;
+
+            var entry = new RequestTimedOutLogEntry(queryContext);
+            this.LogEvent(LogLevel.Warning, entry);
+        }
+
+        /// <inheritdoc />
+        public void RequestCancelled(GraphQueryExecutionContext queryContext)
+        {
+            if (!this.IsEnabled(LogLevel.Information))
+                return;
+
+            var entry = new RequestCancelledLogEntry(queryContext);
+            this.LogEvent(LogLevel.Information, entry);
         }
 
         /// <inheritdoc />

@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Web
         public async Task InvokeWithHttpContext_IsPassedToProcessor()
         {
             var mock = new Mock<IGraphQLHttpProcessor<GraphSchema>>();
-            mock.Setup(x => x.Invoke(It.IsAny<HttpContext>(), It.IsAny<CancellationToken>()))
+            mock.Setup(x => x.Invoke(It.IsAny<HttpContext>()))
                 .Verifiable();
 
             var collection = new ServiceCollection();
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.Web
             await handler.TestInvoke(context);
 
             mock.Verify(
-                x => x.Invoke(It.IsAny<HttpContext>(), It.IsAny<CancellationToken>()),
+                x => x.Invoke(It.IsAny<HttpContext>()),
                 Times.Once());
         }
 

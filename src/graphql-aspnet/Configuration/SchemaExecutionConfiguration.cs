@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Configuration
         public bool EnableMetrics { get; set; }
 
         /// <inheritdoc />
-        public TimeSpan QueryTimeout { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan? QueryTimeout { get; set; }
 
         /// <inheritdoc />
         [Obsolete("The 'AwaitEachRequestedField' configuration setting will be removed in a future release. Use 'ResolverIsolation' instead.")]

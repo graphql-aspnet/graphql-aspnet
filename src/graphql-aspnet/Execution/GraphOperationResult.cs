@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Response;
 
@@ -21,6 +22,24 @@ namespace GraphQL.AspNet.Execution
     [DebuggerDisplay("Messages = {Messages.Count}, Has Data = {HasData}")]
     public class GraphOperationResult : IGraphOperationResult
     {
+        /// <summary>
+        /// Creates a new operation result from a collection of generated messages and optional raw data
+        /// provided by a requestor. If no error level messages are supplied a generic one is created.
+        /// </summary>
+        /// <param name="errorMessages">The collection of messages. Must be not null and contain at least one message.</param>
+        /// <param name="queryData">The original query data.</param>
+        /// <returns>GraphOperationResult.</returns>
+        public static GraphOperationResult FromMessages(IGraphMessageCollection errorMessages, GraphQueryData queryData = null)
+        {
+            Validation.ThrowIfNull(errorMessages, nameof(errorMessages));
+            if (errorMessages.Count < 1)
+                errorMessages.Critical("An unknown error occured.");
+
+            return new GraphOperationResult(
+                new GraphOperationRequest(queryData),
+                errorMessages);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphOperationResult" /> class.
         /// </summary>

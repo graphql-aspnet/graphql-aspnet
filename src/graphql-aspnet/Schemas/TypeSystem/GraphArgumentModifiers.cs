@@ -32,5 +32,11 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// This parameter is declared to contain the result of the resolved parent field.
         /// </summary>
         ParentFieldResult = 2,
+
+        /// <summary>
+        /// This parameter is declared to be populated with the overall cancellation token
+        /// governing the request or the default token if none was supplied on said request.
+        /// </summary>
+        CancellationToken = 4,
     }
 }

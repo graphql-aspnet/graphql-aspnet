@@ -327,9 +327,14 @@ namespace GraphQL.AspNet.Logging
         public const string SOURCE_LINE_INDEX = "queryTextLineIndex";
 
         /// <summary>
-        /// Gets the location phrase indicating where the directive was executed.
+        /// The location phrase indicating where the directive was executed.
         /// </summary>
         /// <value>The directive location.</value>
         public const string DIRECTIVE_LOCATION = "directiveLocation";
+
+        /// <summary>
+        /// The total amount of time the operation executed for.
+        /// </summary>
+        public const string TOTAL_EXECUTION_TIME = "totalExecutionTimeMs";
     }
 }

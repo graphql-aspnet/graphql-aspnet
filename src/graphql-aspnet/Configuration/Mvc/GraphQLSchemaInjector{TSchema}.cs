@@ -172,7 +172,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
                 if (factory == null)
                     return null;
 
-                return new DefaultGraphLogger(factory);
+                return new DefaultGraphQLEventLogger(factory);
             });
         }
 

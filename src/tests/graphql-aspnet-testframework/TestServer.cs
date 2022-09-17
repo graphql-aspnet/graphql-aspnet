@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Linq;
     using System.Text.Encodings.Web;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
@@ -34,7 +35,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -467,11 +467,12 @@ namespace GraphQL.AspNet.Tests.Framework
         /// operation result to be inspected. This method executes the parsing and execution phases only.
         /// </summary>
         /// <param name="builder">The builder from which to generate the required query cotnext.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<IGraphOperationResult> ExecuteQuery(QueryContextBuilder builder)
+        public async Task<IGraphOperationResult> ExecuteQuery(QueryContextBuilder builder, CancellationToken cancelToken = default)
         {
             var context = builder.Build();
-            await this.ExecuteQuery(context).ConfigureAwait(false);
+            await this.ExecuteQuery(context, cancelToken).ConfigureAwait(false);
             return context.Result;
         }
 
@@ -479,33 +480,42 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Executes the provided query context through the engine. This method executes the parsing and execution phases only.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task ExecuteQuery(GraphQueryExecutionContext context)
+        public async Task ExecuteQuery(GraphQueryExecutionContext context, CancellationToken cancelToken = default)
         {
             var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphQueryExecutionContext>>();
 
-            await pipeline.InvokeAsync(context, default).ConfigureAwait(false);
+            if (context != null)
+                context.CancellationToken = cancelToken;
+
+            await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Executes the field pipeline for the given request, returning the raw, unaltered response.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;IGraphPipelineResponse&gt;.</returns>
-        public async Task ExecuteField(GraphFieldExecutionContext context)
+        public async Task ExecuteField(GraphFieldExecutionContext context, CancellationToken cancelToken = default)
         {
             var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphFieldExecutionContext>>();
-            await pipeline.InvokeAsync(context, default).ConfigureAwait(false);
+
+            if (context != null)
+                context.CancellationToken = cancelToken;
+            await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Renders the provided operation request through the engine and generates a JSON string output.
         /// </summary>
         /// <param name="builder">The builder.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<string> RenderResult(QueryContextBuilder builder)
+        public async Task<string> RenderResult(QueryContextBuilder builder, CancellationToken cancelToken = default)
         {
-            var result = await this.ExecuteQuery(builder).ConfigureAwait(false);
+            var result = await this.ExecuteQuery(builder, cancelToken).ConfigureAwait(false);
             return await this.RenderResult(result).ConfigureAwait(false);
         }
 
@@ -513,10 +523,11 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Renders the provided operation request through the engine and generates a JSON string output.
         /// </summary>
         /// <param name="context">The query context to render out to a json string.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.String&gt;.</returns>
-        public async Task<string> RenderResult(GraphQueryExecutionContext context)
+        public async Task<string> RenderResult(GraphQueryExecutionContext context, CancellationToken cancelToken = default)
         {
-            await this.ExecuteQuery(context).ConfigureAwait(false);
+            await this.ExecuteQuery(context, cancelToken).ConfigureAwait(false);
             return await this.RenderResult(context.Result).ConfigureAwait(false);
         }
 
@@ -549,11 +560,12 @@ namespace GraphQL.AspNet.Tests.Framework
         /// Executes the field authorization pipeline against the provided context.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        public async Task ExecuteFieldAuthorization(GraphSchemaItemSecurityContext context)
+        public async Task ExecuteFieldAuthorization(GraphSchemaItemSecurityContext context, CancellationToken cancelToken = default)
         {
             var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext>>();
-            await pipeline.InvokeAsync(context, default).ConfigureAwait(false);
+            await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>

@@ -19,42 +19,52 @@ namespace GraphQL.AspNet.Logging
     public static class LogEventIds
     {
         /// <summary>
-        /// The base number indicating an event is of a general or misc. variety.
+        /// Gets or sets the base event number indicating an event is of a general or misc. variety.
+        /// <remarks>
+        /// The value is global for all schemas and should be set prior to calling any graphql
+        /// setup functions.
+        /// </remarks>
         /// </summary>
-        private const int GENERAL_EVENT_ID = 85000;
+        /// <value>The root general event identifier.</value>
+        public static int ROOT_GENERAL_EVENT_ID { get; set; } = 85000;
 
         /// <summary>
-        /// The base number indicating an event specifically relates to the execution/completion
-        /// of a graphql query.
+        /// Gets or sets the base number indicating an event that specifically relates to the
+        /// execution/completion of a graphql query.
+        /// <remarks>
+        /// The value is global for all schemas and should be set prior to calling any graphql
+        /// setup functions.
+        /// </remarks>
         /// </summary>
-        private const int ROOT_EXECUTION_EVENT_ID = 86000;
+        /// <value>The root execution event identifier.</value>
+        public static int ROOT_EXECUTION_EVENT_ID { get; set; } = 86000;
 
         /// <summary>
         /// An general, untyped log event not relating to any specific execution event. Typically
         /// raised by developer code.
         /// </summary>
-        public static EventId General = new EventId(GENERAL_EVENT_ID, "GraphQL General Event");
+        public static EventId General = new EventId(ROOT_GENERAL_EVENT_ID, "GraphQL General Event");
 
         /// <summary>
         /// A log event indicating a DI container generated a new instance of a graph schema.
         /// </summary>
-        public static EventId SchemaInstanceCreated = new EventId(GENERAL_EVENT_ID + 100, "GraphQL Schema Instance Created");
+        public static EventId SchemaInstanceCreated = new EventId(ROOT_GENERAL_EVENT_ID + 100, "GraphQL Schema Instance Created");
 
         /// <summary>
         /// A log event indicating a DI container generated a new instance of a graph schema's execution pipeline.
         /// </summary>
-        public static EventId SchemaPipelineInstanceCreated = new EventId(GENERAL_EVENT_ID + 110, "GraphQL Schema Pipeline Instance Created");
+        public static EventId SchemaPipelineInstanceCreated = new EventId(ROOT_GENERAL_EVENT_ID + 110, "GraphQL Schema Pipeline Instance Created");
 
         /// <summary>
         /// A log event indicating the runtime successfully registered an ASP.NET route to serve requests for a graph schema.
         /// </summary>
-        public static EventId SchemaRouteRegistered = new EventId(GENERAL_EVENT_ID + 120, "GraphQL Schema Route Registered");
+        public static EventId SchemaRouteRegistered = new EventId(ROOT_GENERAL_EVENT_ID + 120, "GraphQL Schema Route Registered");
 
         /// <summary>
         /// A log event indicating an unhandled exception was logged out of context of any other
         /// event or execution phase.
         /// </summary>
-        public static EventId UnhandledException = new EventId(GENERAL_EVENT_ID + 200, "GraphQL Unhandled Exception");
+        public static EventId UnhandledException = new EventId(ROOT_GENERAL_EVENT_ID + 200, "GraphQL Unhandled Exception");
 
         /// <summary>
         /// A log event indicating a new graphql request was recieved and needs to be processed.
@@ -153,6 +163,18 @@ namespace GraphQL.AspNet.Logging
         /// generated to be sent to a client.
         /// </summary>
         public static EventId RequestCompleted = new EventId(ROOT_EXECUTION_EVENT_ID + 700, "GraphQL Request Completed");
+
+        /// <summary>
+        /// A log evnet indicating that a given request took longer than the allowed query time
+        /// for the schema was dropped.
+        /// </summary>
+        public static EventId RequestTimeout = new EventId(ROOT_EXECUTION_EVENT_ID + 710, "GraphQL Request Timed Out");
+
+        /// <summary>
+        /// A log event indicating that a given request was cancelled or dropped by an external actor
+        /// (such as an HTTP request).
+        /// </summary>
+        public static EventId RequestCancelled = new EventId(ROOT_EXECUTION_EVENT_ID + 720, "GraphQL Request Cancelled");
 
         /// <summary>
         /// A log entry indicating that a directive was applied to a specific <see cref="ISchemaItem"/>

@@ -9,7 +9,9 @@
 
 namespace GraphQL.AspNet.Tests.Execution
 {
+    using System.Linq;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -353,6 +355,117 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var result = await server.RenderResult(builder);
             CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [TestCase("ID!", "\"3\"")]
+        [TestCase("ID", "\"3\"")]
+        public async Task SingleValueVariableInDeclaredArray_IsCoercableToArrayOfValidType(
+            string variableType,
+            string value)
+        {
+            var server = new TestServerBuilder()
+             .AddGraphQL(o =>
+             {
+                 o.AddType<ArrayOfGraphIdController>();
+                 o.ResponseOptions.ExposeExceptions = true;
+             })
+             .Build();
+
+            // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
+            // but receives null via the variable
+            // however, since the field has a default value defined (because its not required)
+            // the value resolves correctly
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                "query ($additionalId: " + variableType + @"){
+                        idsAccepted(ids: [""1"", ""2"", $additionalId])
+                }")
+                .AddVariableData(
+                @"{
+                    ""additionalId"" : " + value + @"
+                  }");
+
+            var expectedOutput =
+                @"{
+                    ""data"": {
+                       ""idsAccepted"" : true
+                     }
+                  }";
+
+            var result = await server.RenderResult(builder);
+            CommonAssertions.AreEqualJsonStrings(expectedOutput, result);
+        }
+
+        [TestCase("Int", "3")]
+        [TestCase("Int!", "3")]
+        [TestCase("String", "\"3\"")]
+        public async Task SingleValueVariableInDeclaredArray_OfWrongType_IsNotCoercableToArrayOfValidType(
+            string variableType,
+            string value)
+        {
+            var server = new TestServerBuilder()
+             .AddGraphQL(o =>
+             {
+                 o.AddType<ArrayOfGraphIdController>();
+                 o.ResponseOptions.ExposeExceptions = true;
+             })
+             .Build();
+
+            // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
+            // but receives null via the variable
+            // however, since the field has a default value defined (because its not required)
+            // the value resolves correctly
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                "query ($additionalId: " + variableType + @"){
+                        idsAccepted(ids: [""1"", ""2"", $additionalId])
+                }")
+                .AddVariableData(
+                @"{
+                    ""additionalId"" : " + value + @"
+                  }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsFalse(result.Data != null);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_DOCUMENT, result.Messages[0].Code);
+        }
+
+        [TestCase("ID", "3")]
+        [TestCase("ID!", "3")]
+        [TestCase("ID", "null")]
+        public async Task SingleValueVariableInDeclaredArray_OfWrongValue_IsNotCoercableToArrayOfValidType(
+            string variableType,
+            string value)
+        {
+            var server = new TestServerBuilder()
+             .AddGraphQL(o =>
+             {
+                 o.AddType<ArrayOfGraphIdController>();
+                 o.ResponseOptions.ExposeExceptions = true;
+             })
+             .Build();
+
+            // simple.nonNullableInputField.inputFIeld.id has a argument of type Int!
+            // but receives null via the variable
+            // however, since the field has a default value defined (because its not required)
+            // the value resolves correctly
+            var builder = server.CreateQueryContextBuilder()
+                .AddQueryText(
+                "query ($additionalId: " + variableType + @"){
+                        idsAccepted(ids: [""1"", ""2"", $additionalId])
+                }")
+                .AddVariableData(
+                @"{
+                    ""additionalId"" : " + value + @"
+                  }");
+
+            var result = await server.ExecuteQuery(builder);
+
+            Assert.IsFalse(result.Data != null);
+            Assert.AreEqual(1, result.Messages.Count);
+            Assert.AreEqual(Constants.ErrorCodes.INVALID_VARIABLE_VALUE, result.Messages[0].Code);
         }
     }
 }

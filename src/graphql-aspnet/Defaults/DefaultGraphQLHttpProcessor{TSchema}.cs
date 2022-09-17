@@ -85,12 +85,12 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual async Task Invoke(HttpContext context, CancellationToken cancelToken = default)
+        public virtual async Task Invoke(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
             if (!string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase))
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_USE_POST, cancelToken).ConfigureAwait(false);
+                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_USE_POST, context.RequestAborted).ConfigureAwait(false);
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Defaults
             options.ReadCommentHandling = JsonCommentHandling.Skip;
 
             var data = await JsonSerializer.DeserializeAsync<GraphQueryData>(context.Request.Body, options).ConfigureAwait(false);
-            await this.SubmitGraphQLQuery(data, cancelToken).ConfigureAwait(false);
+            await this.SubmitGraphQLQuery(data, context.RequestAborted).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -140,8 +140,6 @@ namespace GraphQL.AspNet.Defaults
         /// <returns>Task&lt;IGraphOperationResult&gt;.</returns>
         protected virtual async Task ExecuteGraphQLQuery(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
-            using var cancelSource = new CancellationTokenSource();
-
             try
             {
                 // *******************************

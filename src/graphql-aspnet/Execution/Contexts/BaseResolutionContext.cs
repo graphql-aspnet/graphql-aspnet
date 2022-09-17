@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// extract is base data values.</param>
         /// <param name="request">The resolution request to carry with the context.</param>
         /// <param name="arguments">The arguments to be passed to the resolver when its executed.</param>
-        /// <param name="user">Optional. The user context that authenticated and authorized for this
+        /// <param name="user">(Optional) The user context that authenticated and authorized for this
         /// resolution context.</param>
         protected BaseResolutionContext(
             ISchema targetSchema,

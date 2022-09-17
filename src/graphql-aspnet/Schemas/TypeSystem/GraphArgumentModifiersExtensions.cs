@@ -32,5 +32,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             return modifiers.HasFlag(GraphArgumentModifiers.Internal);
         }
+
+        /// <summary>
+        /// Determines whether the modifers indicate the argument is a reference
+        /// to the cancellation token governing the overall request.
+        /// </summary>
+        /// <param name="modifiers">The modifiers set to check.</param>
+        /// <returns><c>true</c> if the modifers set declares the internal modifer.</returns>
+        public static bool IsCancellationToken(this GraphArgumentModifiers modifiers)
+        {
+            return modifiers.HasFlag(GraphArgumentModifiers.CancellationToken);
+        }
     }
 }

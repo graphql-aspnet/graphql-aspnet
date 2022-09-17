@@ -183,6 +183,19 @@ namespace GraphQL.AspNet.Interfaces.Logging
         void RequestCompleted(GraphQueryExecutionContext queryContext);
 
         /// <summary>
+        /// Recorded by an executor after the query failed to complete within the expected
+        /// amount of time.
+        /// </summary>
+        /// <param name="queryContext">The query context.</param>
+        void RequestTimedOut(GraphQueryExecutionContext queryContext);
+
+        /// <summary>
+        /// Recorded by an executor after the request was cancelled by an external actor.
+        /// </summary>
+        /// <param name="queryContext">The query context.</param>
+        void RequestCancelled(GraphQueryExecutionContext queryContext);
+
+        /// <summary>
         /// Recorded when, during schema generation, a type system directive is successfully applied
         /// to a targeted schema item.
         /// </summary>

@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -100,8 +101,14 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             if (this.IsSourceDataArgument())
             {
                 this.ArgumentModifiers = this.ArgumentModifiers
-                                         | GraphArgumentModifiers.ParentFieldResult
-                                         | GraphArgumentModifiers.Internal;
+                                        | GraphArgumentModifiers.Internal
+                                        | GraphArgumentModifiers.ParentFieldResult;
+            }
+            else if (this.IsCancellationTokenArgument())
+            {
+                this.ArgumentModifiers = this.ArgumentModifiers
+                                        | GraphArgumentModifiers.Internal
+                                        | GraphArgumentModifiers.CancellationToken;
             }
         }
 
@@ -130,14 +137,30 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         }
 
         /// <summary>
+        /// Determines whether this argument is (or can be) the cancellation token for this
+        /// argument's parent field.
+        /// </summary>
+        /// <returns><c>true</c> if this argument is the dedicated cancellation token; otherwise, <c>false</c>.</returns>
+        protected virtual bool IsCancellationTokenArgument()
+        {
+            if (this.ObjectType == typeof(CancellationToken))
+            {
+                if (this.Parent.Arguments.All(x => !x.ArgumentModifiers.IsCancellationToken()))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Retrieves the concrete types that this instance may return or make use of in a graph query.
         /// </summary>
         /// <returns>IEnumerable&lt;Type&gt;.</returns>
         public IEnumerable<DependentType> RetrieveRequiredTypes()
         {
-            if (this.ArgumentModifiers.IsSourceParameter())
+            if (this.ArgumentModifiers.IsInternalParameter())
             {
-                // source parameters should not be injected into the object graph
+                // internal parameters should not be injected into the object graph
                 // so they have no dependents
                 return Enumerable.Empty<DependentType>();
             }
