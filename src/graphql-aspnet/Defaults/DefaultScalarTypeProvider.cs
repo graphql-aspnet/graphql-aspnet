@@ -58,6 +58,7 @@ namespace GraphQL.AspNet.Defaults
             this.RegisterScalar(typeof(UriScalarType));
             this.RegisterScalar(typeof(GraphIdScalarType));
             this.RegisterScalar(typeof(ShortScalarType));
+            this.RegisterScalar(typeof(UShortScalarType));
 
 #if NET6_0_OR_GREATER
             this.RegisterScalar(typeof(DateOnlyScalarType));
