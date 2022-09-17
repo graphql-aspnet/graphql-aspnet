@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Web
     public class CancelTokenTests
     {
         [Test]
-        public async Task ControllerWithCancelToken_WithNoRuntimeTimout_RecievesTheHttpToken()
+        public async Task ControllerActionWithCancelToken_WithNoRuntimeTimout_RecievesTheHttpToken()
         {
             var mathController = new MathController();
 

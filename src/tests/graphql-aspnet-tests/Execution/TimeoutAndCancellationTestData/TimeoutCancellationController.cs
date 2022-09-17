@@ -18,13 +18,13 @@ namespace GraphQL.AspNet.Tests.Execution.TimeoutAndCancellationTestData
     {
         public bool MethodInvoked { get; private set; } = false;
 
-        public Action MethodCalled { get; set; }
+        public Action MethodToInvokeDuringControllerAction { get; set; }
 
         [QueryRoot]
         public async Task<string> TimedOutMethod(int ms)
         {
             this.MethodInvoked = true;
-            this.MethodCalled?.Invoke();
+            this.MethodToInvokeDuringControllerAction?.Invoke();
 
             await Task.Delay(ms);
             return "Task complete";

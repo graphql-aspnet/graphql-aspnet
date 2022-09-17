@@ -80,17 +80,19 @@ namespace GraphQL.AspNet.Tests.Execution
                 .AddLogger(logger.Object)
                 .Build();
 
+            // simulated HttpContext supplied CancelToken
+            var externalCancelSource = new CancellationTokenSource();
+
             // trigger an external cancellation once the controller
             // method is invoked
-            var externalCancelSource = new CancellationTokenSource();
-            instance.MethodCalled = () =>
+            instance.MethodToInvokeDuringControllerAction = () =>
             {
                 externalCancelSource.Cancel();
             };
 
             await server.ExecuteQuery(context, externalCancelSource.Token);
 
-            // when truely cancelled there is no result
+            // when truely cancelled there is no result/data
             Assert.IsNull(context.Result);
 
             // the context should get a failure message
