@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
                 var nextValueSet = new List<ISuppliedValueDocumentPart>();
                 foreach (var item in valueSet)
                 {
-                    // variable usage expression are evaluated as part of
+                    // variable usage expressions are evaluated as part of
                     // 5.8.5.
                     if (item is IVariableUsageDocumentPart)
                         continue;
@@ -112,11 +112,24 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputValue
             }
 
             // at this point, the object set has been "expression checked" and the value (and children)
-            // is garunteed to be reduced to a set of core graph types. Evaluate that the values are of the correct core graph type.
+            // is guaranteed to be reduced to a set of core graph types.
+            // Evaluate that the values are of the correct core graph type.
+            //
             // Null values are valid for all types at this stage
+            // "null usability" is evalated in context of usage above
+
+            // variable references against allowed expressions
+            // are evaluated as aprt of the collective 5.8.* rule set
+            // and are also skipped.
+            //
+            // this loop is only checking actual supplied leaf values in the document
+            // against the coercability of those values against their intended targets
             foreach (var valueToEvaluate in valueSet)
             {
                 if (valueToEvaluate is INullSuppliedValueDocumentPart)
+                    continue;
+
+                if (valueToEvaluate is IVariableUsageDocumentPart)
                     continue;
 
                 switch (queryValue.GraphType.Kind)
