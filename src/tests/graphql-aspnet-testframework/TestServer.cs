@@ -35,7 +35,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -44,7 +43,6 @@ namespace GraphQL.AspNet.Tests.Framework
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
-    using Newtonsoft.Json.Serialization;
     using NUnit.Framework;
 
     /// <summary>
