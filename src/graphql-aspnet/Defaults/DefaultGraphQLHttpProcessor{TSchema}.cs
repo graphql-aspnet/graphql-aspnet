@@ -171,11 +171,11 @@ namespace GraphQL.AspNet.Defaults
                 return this.DecodeAsGetRequest(context);
 
             // if the content-type is set to graphql treat
-            // the whole POST bady as the query string
+            // the whole POST body as the query string
             // -----
             // See: https://graphql.org/learn/serving-over-http/#http-methods-headers-and-body
             // -----
-            if (context.Request.ContentType == Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER)
+            if (context.Request.ContentType == Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE)
             {
                 using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true);
                 var query = await reader.ReadToEndAsync();

@@ -214,7 +214,7 @@ namespace GraphQL.AspNet.Tests.Web
 
             var request = httpContext.Request as DefaultHttpRequest;
             request.Method = "POST";
-            request.ContentType = Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER;
+            request.ContentType = Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE;
             httpContext.RequestServices = scope.ServiceProvider;
 
             await processor.Invoke(httpContext);

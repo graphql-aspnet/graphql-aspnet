@@ -595,7 +595,7 @@ namespace GraphQL.AspNet
             /// A 'content-type' header value that indicates the body of a POST request
             /// should be treated entirely as a graphql query string.
             /// </summary>
-            public const string GRAPHQL_CONTENT_TYPE_HEADER = "application/graphql";
+            public const string GRAPHQL_CONTENT_TYPE_HEADER_VALUE = "application/graphql";
         }
 
         /// <summary>
