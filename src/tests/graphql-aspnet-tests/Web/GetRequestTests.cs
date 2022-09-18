@@ -11,6 +11,8 @@ namespace GraphQL.AspNet.Tests.Web
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using System.Web;
     using GraphQL.AspNet.Defaults;
@@ -108,6 +110,167 @@ namespace GraphQL.AspNet.Tests.Web
 
             CommonAssertions.AreEqualJsonStrings(expectedResult, text);
             Assert.AreEqual(200, httpContext.Response.StatusCode);
+        }
+
+        [Test]
+        public async Task POSTRequest_TreatedAsGETRequest_WhenQueryStringPresent()
+        {
+            var serverBuilder = new TestServerBuilder();
+            serverBuilder.AddGraphController<MathController>();
+            serverBuilder.AddTransient<DefaultGraphQLHttpProcessor<GraphSchema>>();
+            serverBuilder.AddGraphQL((o) =>
+            {
+                o.ExecutionOptions.QueryTimeout = null;
+            });
+
+            var server = serverBuilder.Build();
+
+            using var scope = server.ServiceProvider.CreateScope();
+            var processor = scope.ServiceProvider.GetRequiredService<DefaultGraphQLHttpProcessor<GraphSchema>>();
+
+            var postBodyQuery = "{add(a: 5, b:5)}";  // post would render 10
+            var queryStringQuery = "{add(a: 5, b:3)}"; // query string would render 8
+
+            // expected to parse 8
+            var expectedResult = @"
+                {
+                    ""data"" : {
+                        ""add"" : 8
+                    }
+                }";
+
+            var requestData = new Dictionary<string, string>()
+            {
+                { "query", postBodyQuery },
+            };
+
+            var json = JsonSerializer.Serialize(requestData);
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            var httpContext = new DefaultHttpContext()
+            {
+                Request =
+                {
+                    Body = stream,
+                    ContentLength = stream.Length,
+                },
+                Response =
+                {
+                    Body = new MemoryStream(),
+                },
+            };
+
+            var request = httpContext.Request as DefaultHttpRequest;
+            request.Method = "POST";
+            httpContext.RequestServices = scope.ServiceProvider;
+
+            var queryText = $"?{Constants.Web.QUERYSTRING_QUERY_KEY}={queryStringQuery}";
+            request.QueryString = new QueryString(queryText);
+
+            await processor.Invoke(httpContext);
+            await httpContext.Response.Body.FlushAsync();
+
+            httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(httpContext.Response.Body);
+            var text = reader.ReadToEnd();
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, text);
+            Assert.AreEqual(200, httpContext.Response.StatusCode);
+        }
+
+        [Test]
+        public async Task POSTRequest_WithGraphQLContentType_TreatsBodyAsQuery()
+        {
+            var serverBuilder = new TestServerBuilder();
+            serverBuilder.AddGraphController<MathController>();
+            serverBuilder.AddTransient<DefaultGraphQLHttpProcessor<GraphSchema>>();
+
+            var server = serverBuilder.Build();
+
+            using var scope = server.ServiceProvider.CreateScope();
+            var processor = scope.ServiceProvider.GetRequiredService<DefaultGraphQLHttpProcessor<GraphSchema>>();
+
+            var postBodyQuery = "{add(a: 5, b:3)}";
+            var expectedResult = @"
+                {
+                    ""data"" : {
+                        ""add"" : 8
+                    }
+                }";
+
+            // use the query directly as the post body (not json encoded)
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(postBodyQuery));
+            var httpContext = new DefaultHttpContext()
+            {
+                Request =
+                {
+                    Body = stream,
+                    ContentLength = stream.Length,
+                },
+                Response =
+                {
+                    Body = new MemoryStream(),
+                },
+            };
+
+            var request = httpContext.Request as DefaultHttpRequest;
+            request.Method = "POST";
+            request.ContentType = Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER;
+            httpContext.RequestServices = scope.ServiceProvider;
+
+            await processor.Invoke(httpContext);
+            await httpContext.Response.Body.FlushAsync();
+
+            httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(httpContext.Response.Body);
+            var text = reader.ReadToEnd();
+
+            CommonAssertions.AreEqualJsonStrings(expectedResult, text);
+            Assert.AreEqual(200, httpContext.Response.StatusCode);
+        }
+
+        [Test]
+        public async Task POSTRequest_WithQueryAsBody_WithoutGraphQLContentType_Fails()
+        {
+            var serverBuilder = new TestServerBuilder();
+            serverBuilder.AddGraphController<MathController>();
+            serverBuilder.AddTransient<DefaultGraphQLHttpProcessor<GraphSchema>>();
+
+            var server = serverBuilder.Build();
+
+            using var scope = server.ServiceProvider.CreateScope();
+            var processor = scope.ServiceProvider.GetRequiredService<DefaultGraphQLHttpProcessor<GraphSchema>>();
+
+            var postBodyQuery = "{add(a: 5, b:3)}";
+
+            // use the query directly as the post body (not json encoded)
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(postBodyQuery));
+            var httpContext = new DefaultHttpContext()
+            {
+                Request =
+                {
+                    Body = stream,
+                    ContentLength = stream.Length,
+                },
+                Response =
+                {
+                    Body = new MemoryStream(),
+                },
+            };
+
+            var request = httpContext.Request as DefaultHttpRequest;
+            request.Method = "POST";
+            httpContext.RequestServices = scope.ServiceProvider;
+
+            // context will attempt to be deserialized as json and fail
+            // should return status 400
+            await processor.Invoke(httpContext);
+            await httpContext.Response.Body.FlushAsync();
+
+            httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(httpContext.Response.Body);
+            var text = reader.ReadToEnd();
+
+            Assert.AreEqual(400, httpContext.Response.StatusCode);
         }
     }
 }

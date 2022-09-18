@@ -569,7 +569,7 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
-        /// A collection of constants related to the web processing of a queryr.
+        /// A collection of constants related to the web processing of a query.
         /// </summary>
         public static class Web
         {
@@ -590,6 +590,12 @@ namespace GraphQL.AspNet
             /// when processing a GET request.
             /// </summary>
             public const string QUERYSTRING_VARIABLES_KEY = "variables";
+
+            /// <summary>
+            /// A 'content-type' header value that indicates the body of a POST request
+            /// should be treated entirely as a graphql query string.
+            /// </summary>
+            public const string GRAPHQL_CONTENT_TYPE_HEADER = "application/graphql";
         }
 
         /// <summary>

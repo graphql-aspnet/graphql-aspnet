@@ -10,9 +10,11 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System;
+    using System.IO;
     using System.Net;
     using System.Net.Http;
     using System.Security.Claims;
+    using System.Text;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -60,6 +62,12 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         protected const string ERROR_NO_REQUEST_CREATED = "GraphQL Operation Request is null. Unable to execute the query.";
 
+        /// <summary>
+        /// An error message format constant, in english, providing the text to return to teh caller
+        /// when an attempt to deserailize a json payload on a POST request fails.
+        /// </summary>
+        protected const string ERROR_SERIALIZATION_ISSUE_FORMAT = "Unable to deserialize the POST body as a JSON object: {0}";
+
         private readonly IGraphEventLogger _logger;
         private readonly TSchema _schema;
         private readonly IGraphQLRuntime<TSchema> _runtime;
@@ -93,11 +101,20 @@ namespace GraphQL.AspNet.Defaults
 
             if (string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase))
             {
-                queryData = await this.DecodePostRequest(context);
+                try
+                {
+                    queryData = await this.DecodeAsPostRequest(context);
+                }
+                catch (JsonException jex)
+                {
+                    var message = string.Format(ERROR_SERIALIZATION_ISSUE_FORMAT, jex.Message);
+                    await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, message, context.RequestAborted).ConfigureAwait(false);
+                    return;
+                }
             }
             else if (string.Equals(context.Request.Method, nameof(HttpMethod.Get), StringComparison.OrdinalIgnoreCase))
             {
-                queryData = this.DecodeGetRequest(context);
+                queryData = this.DecodeAsGetRequest(context);
             }
             else
             {
@@ -114,7 +131,7 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         /// <param name="context">The http context to deserialize.</param>
         /// <returns>GraphQueryData.</returns>
-        private GraphQueryData DecodeGetRequest(HttpContext context)
+        private GraphQueryData DecodeAsGetRequest(HttpContext context)
         {
             var queryString = string.Empty;
             var variables = string.Empty;
@@ -143,17 +160,43 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         /// <param name="context">The http context to deserialize.</param>
         /// <returns>GraphQueryData.</returns>
-        protected async Task<GraphQueryData> DecodePostRequest(HttpContext context)
+        protected async Task<GraphQueryData> DecodeAsPostRequest(HttpContext context)
         {
-            // accepting a parsed object causes havoc with any variables collection
+            // if a "query" parameter appears in the query string treat the request like a get
+            // request and parse parameters from the query string
+            // -----
+            // See: https://graphql.org/learn/serving-over-http/#http-methods-headers-and-body
+            // -----
+            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_QUERY_KEY))
+                return this.DecodeAsGetRequest(context);
+
+            // if the content-type is set to graphql treat
+            // the whole POST bady as the query string
+            // -----
+            // See: https://graphql.org/learn/serving-over-http/#http-methods-headers-and-body
+            // -----
+            if (context.Request.ContentType == Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER)
+            {
+                using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true);
+                var query = await reader.ReadToEndAsync();
+                return new GraphQueryData()
+                {
+                    Query = query,
+                };
+            }
+
+            // accepting a preparsed object (i.e. allowing .NET to decode it)
+            // can cause havoc with any variables collection
             // ------
             // By default:
             // netcoreapp2.2 and older would auto parse to JObject (Newtonsoft)
             // netcoreapp3.0 and later will parse to JsonElement (System.Text.Json).
+            //
+            // and the developer may have some unexpected defaults configured as well
             // ------
-            // in lue of supporting deserialization from both generic json object types
-            // we accept the raw data and parse the json document
-            // using System.Text.Json on all clients (netstandard2.0 compatiable)
+            // instead of supporting deserialization from both generic json object types
+            // we accept the raw text and parse the json document
+            // using System.Text.Json on all clients
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
             options.AllowTrailingCommas = true;
@@ -279,7 +322,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// writes directly to the <see cref="HttpResponse" /> stream with the given status code
+        /// Writes directly to the <see cref="HttpResponse" /> stream with the given status code
         /// and message.
         /// </summary>
         /// <param name="statusCode">The status code to deliver on the response.</param>
@@ -288,6 +331,11 @@ namespace GraphQL.AspNet.Defaults
         /// <returns>Task.</returns>
         protected async Task WriteStatusCodeResponse(HttpStatusCode statusCode, string message, CancellationToken cancelToken = default)
         {
+            if (_schema.Configuration.ResponseOptions.AppendServerHeader)
+            {
+                this.Response.Headers.Add(Constants.ServerInformation.SERVER_INFORMATION_HEADER, Constants.ServerInformation.ServerData);
+            }
+
             this.Response.StatusCode = (int)statusCode;
             await this.Response.WriteAsync(message, cancelToken).ConfigureAwait(false);
         }
