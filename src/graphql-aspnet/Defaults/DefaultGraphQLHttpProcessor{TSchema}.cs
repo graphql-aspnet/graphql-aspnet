@@ -26,6 +26,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Security.Web;
+    using GraphQL.AspNet.Variables;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http;
 
@@ -88,12 +89,62 @@ namespace GraphQL.AspNet.Defaults
         public virtual async Task Invoke(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
-            if (!string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase))
+            GraphQueryData queryData = null;
+
+            if (string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase))
+            {
+                queryData = await this.DecodePostRequest(context);
+            }
+            else if (string.Equals(context.Request.Method, nameof(HttpMethod.Get), StringComparison.OrdinalIgnoreCase))
+            {
+                queryData = this.DecodeGetRequest(context);
+            }
+            else
             {
                 await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_USE_POST, context.RequestAborted).ConfigureAwait(false);
                 return;
             }
 
+            await this.SubmitGraphQLQuery(queryData, context.RequestAborted).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Attempts to extract the necessary keys from the query string of the <paramref name="context"/>
+        /// and create a <see cref="GraphQueryData"/> object that can be processed by the GraphQL runtime.
+        /// </summary>
+        /// <param name="context">The http context to deserialize.</param>
+        /// <returns>GraphQueryData.</returns>
+        private GraphQueryData DecodeGetRequest(HttpContext context)
+        {
+            var queryString = string.Empty;
+            var variables = string.Empty;
+            var operationName = string.Empty;
+
+            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_QUERY_KEY))
+                queryString = context.Request.Query[Constants.Web.QUERYSTRING_QUERY_KEY];
+
+            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_OPERATIONNAME_KEY))
+                operationName = context.Request.Query[Constants.Web.QUERYSTRING_OPERATIONNAME_KEY];
+
+            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_VARIABLES_KEY))
+                variables = context.Request.Query[Constants.Web.QUERYSTRING_VARIABLES_KEY];
+
+            return new GraphQueryData()
+            {
+                Query = queryString,
+                OperationName = operationName,
+                Variables = InputVariableCollection.FromJsonDocument(variables),
+            };
+        }
+
+        /// <summary>
+        /// Attempts to deserialize the POST body of the <paramref name="context"/>
+        /// into a <see cref="GraphQueryData"/> object that can be processed by the GraphQL runtime.
+        /// </summary>
+        /// <param name="context">The http context to deserialize.</param>
+        /// <returns>GraphQueryData.</returns>
+        protected async Task<GraphQueryData> DecodePostRequest(HttpContext context)
+        {
             // accepting a parsed object causes havoc with any variables collection
             // ------
             // By default:
@@ -108,8 +159,7 @@ namespace GraphQL.AspNet.Defaults
             options.AllowTrailingCommas = true;
             options.ReadCommentHandling = JsonCommentHandling.Skip;
 
-            var data = await JsonSerializer.DeserializeAsync<GraphQueryData>(context.Request.Body, options).ConfigureAwait(false);
-            await this.SubmitGraphQLQuery(data, context.RequestAborted).ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<GraphQueryData>(context.Request.Body, options).ConfigureAwait(false);
         }
 
         /// <summary>

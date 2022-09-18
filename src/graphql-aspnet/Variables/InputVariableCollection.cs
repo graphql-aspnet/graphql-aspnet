@@ -32,6 +32,9 @@ namespace GraphQL.AspNet.Variables
         /// <returns>IInputVariableCollection.</returns>
         public static InputVariableCollection FromJsonDocument(string jsonDocument)
         {
+            if (string.IsNullOrWhiteSpace(jsonDocument))
+                return InputVariableCollection.Empty;
+
             var options = new JsonSerializerOptions()
             {
                 AllowTrailingCommas = true,

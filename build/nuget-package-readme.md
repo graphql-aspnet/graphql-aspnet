@@ -1,13 +1,8 @@
 ## GraphQL ASP.NET
 
-<br/>
-
 ### Documentation: [https://graphql-aspnet.github.io](https://graphql-aspnet.github.io)
 
-<br />
-
-GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/action programming model similar to ASP.NET. 
-
+GraphQL ASP.NET is a fully featured graphql library that utilizes a controller/action programming model similar to ASP.NET.
 
 **This Controller**
 
