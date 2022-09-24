@@ -35,5 +35,11 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// </summary>
         /// <value>The arguments.</value>
         object[] ArgumentValues { get; }
+
+        /// <summary>
+        /// Clones this instance and creates an independent copy.
+        /// </summary>
+        /// <returns>IAppliedDirective.</returns>
+        IAppliedDirective Clone();
     }
 }

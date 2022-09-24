@@ -94,6 +94,14 @@ namespace GraphQL.AspNet.Schemas.Structural
             Validation.ThrowIfNull(parent, nameof(parent));
 
             var newField = this.CreateNewInstance(parent);
+
+            newField.Description = this.Description;
+            newField.Publish = this.Publish;
+            newField.Complexity = this.Complexity;
+            newField.IsDeprecated = this.IsDeprecated;
+            newField.DeprecationReason = this.DeprecationReason;
+            newField.FieldSource = this.FieldSource;
+
             newField.AssignParent(parent);
 
             foreach (var argument in this.Arguments)
@@ -132,11 +140,11 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="parent">The item to assign as the parent of the new field.</param>
         /// <returns>IGraphField.</returns>
-        protected virtual IGraphField CreateNewInstance(IGraphType parent)
+        protected virtual MethodGraphField CreateNewInstance(IGraphType parent)
         {
             return new MethodGraphField(
                 this.Name,
-                this.TypeExpression,
+                this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
                 this.ObjectType,
                 this.DeclaredReturnType,

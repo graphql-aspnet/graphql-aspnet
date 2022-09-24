@@ -1914,7 +1914,7 @@ namespace GraphQL.AspNet.Tests.Execution
                             {
                                 ""name"": ""property2"",
                                 ""description"": null
-                            }
+                            },
                             {
                                 ""name"": ""property3"",
                                 ""description"": ""Property3 is a boolean""
@@ -1926,8 +1926,6 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedResponse, response);
         }
-
-
 
         [Test]
         public async Task Descriptions_OnInheritedInterfaces_AreRetrievedViaIntrospection()

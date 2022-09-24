@@ -9,10 +9,10 @@
 
 namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
 {
+    using System.ComponentModel;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using NUnit.Framework;
 
     public class TypeExtensionDescriptionController : GraphController
     {
