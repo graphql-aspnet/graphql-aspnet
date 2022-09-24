@@ -33,9 +33,9 @@ namespace GraphQL.AspNet.Configuration
 
         /// <summary>
         /// Gets or sets a value indicating whether the default query processing controller
-        /// should be registered to the application. If disabled, the application will not register
+        /// should be registered to the application. When disabled, the application will not register
         /// its internal handler as a public end point; the application will need to handle
-        /// HTTP request routing manually (Default: false).
+        /// HTTP request routing manually (Default: false, "do include the default route").
         /// </summary>
         /// <value><c>true</c> if the route should be disabled; otherwise, <c>false</c>.</value>
         public bool DisableDefaultRoute { get; set; } = false;
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Configuration
         /// <summary>
         /// <para>
         /// Gets or sets the route to which the internal controller registered for the schema will listen.
-        /// The route is automatically registered as a POST request. (Default: '/graphql').
+        /// The route is automatically registered as a POST and GET request. (Default: '/graphql').
         /// </para>
         /// <para>
         /// NOTE: If this application registers more than one <see cref="ISchema"/> this value must be unique

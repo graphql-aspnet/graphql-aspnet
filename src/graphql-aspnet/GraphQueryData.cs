@@ -12,7 +12,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Variables;
 
     /// <summary>
-    /// An binding model representing an incoming, structured GraphQL query on a HTTP request.
+    /// A raw data package representing the various inputs to the graphql runtime.
     /// </summary>
     public class GraphQueryData
     {
@@ -33,6 +33,13 @@ namespace GraphQL.AspNet
                 Query = null,
                 Variables = new InputVariableCollection(),
             };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphQueryData"/> class.
+        /// </summary>
+        public GraphQueryData()
+        {
         }
 
         /// <summary>

@@ -10,12 +10,8 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System;
-    using System.IO;
     using System.Net;
-    using System.Net.Http;
     using System.Security.Claims;
-    using System.Text;
-    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -28,8 +24,8 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Security.Web;
-    using GraphQL.AspNet.Variables;
     using GraphQL.AspNet.Web;
+    using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -46,12 +42,6 @@ namespace GraphQL.AspNet.Defaults
         protected const string ERROR_NO_QUERY_PROVIDED = "No query received on the request";
 
         /// <summary>
-        /// An error message constant, in english, providing the text  to return to the caller when they use any HTTP action verb
-        /// other than post.
-        /// </summary>
-        protected const string ERROR_USE_POST = "GraphQL queries should be executed as a POST request";
-
-        /// <summary>
         /// An error message constant, in english, providing the text to return to the caller when a 500 error is generated.
         /// </summary>
         protected const string ERROR_INTERNAL_SERVER_ISSUE = "Unknown internal server error.";
@@ -62,12 +52,6 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         protected const string ERROR_NO_REQUEST_CREATED = "GraphQL Operation Request is null. Unable to execute the query.";
 
-        /// <summary>
-        /// An error message format constant, in english, providing the text to return to teh caller
-        /// when an attempt to deserailize a json payload on a POST request fails.
-        /// </summary>
-        protected const string ERROR_SERIALIZATION_ISSUE_FORMAT = "Unable to deserialize the POST body as a JSON object: {0}";
-
         private readonly IGraphEventLogger _logger;
         private readonly TSchema _schema;
         private readonly IGraphQLRuntime<TSchema> _runtime;
@@ -76,10 +60,10 @@ namespace GraphQL.AspNet.Defaults
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpProcessor{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The singleton instance of <typeparamref name="TSchema"/> representing this processor works against.</param>
-        /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema"/>.</param>
-        /// <param name="writer">The result writer capable of converting a <see cref="IGraphOperationResult"/> into a serialized payload
-        /// for the given <typeparamref name="TSchema"/>.</param>
+        /// <param name="schema">The singleton instance of <typeparamref name="TSchema" /> representing this processor works against.</param>
+        /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema" />.</param>
+        /// <param name="writer">The result writer capable of converting a <see cref="IGraphOperationResult" /> into a serialized payload
+        /// for the given <typeparamref name="TSchema" />.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public DefaultGraphQLHttpProcessor(
             TSchema schema,
@@ -90,6 +74,7 @@ namespace GraphQL.AspNet.Defaults
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _runtime = Validation.ThrowIfNullOrReturn(runtime, nameof(runtime));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
+
             _logger = logger;
         }
 
@@ -97,28 +82,15 @@ namespace GraphQL.AspNet.Defaults
         public virtual async Task Invoke(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
-            GraphQueryData queryData = null;
 
-            if (string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase))
+            GraphQueryData queryData;
+            try
             {
-                try
-                {
-                    queryData = await this.DecodeAsPostRequest(context);
-                }
-                catch (JsonException jex)
-                {
-                    var message = string.Format(ERROR_SERIALIZATION_ISSUE_FORMAT, jex.Message);
-                    await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, message, context.RequestAborted).ConfigureAwait(false);
-                    return;
-                }
+                queryData = await this.ParseHttpContext();
             }
-            else if (string.Equals(context.Request.Method, nameof(HttpMethod.Get), StringComparison.OrdinalIgnoreCase))
+            catch (HttpContextParsingException ex)
             {
-                queryData = this.DecodeAsGetRequest(context);
-            }
-            else
-            {
-                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_USE_POST, context.RequestAborted).ConfigureAwait(false);
+                await this.WriteStatusCodeResponse(ex.StatusCode, ex.Message, context.RequestAborted).ConfigureAwait(false);
                 return;
             }
 
@@ -126,83 +98,19 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// Attempts to extract the necessary keys from the query string of the <paramref name="context"/>
-        /// and create a <see cref="GraphQueryData"/> object that can be processed by the GraphQL runtime.
+        /// When overriden in a child class, allows for the alteration of the method by which the various query
+        /// parameters are extracted from the <see cref="HttpContext"/> for input to the graphql runtime.
         /// </summary>
-        /// <param name="context">The http context to deserialize.</param>
-        /// <returns>GraphQueryData.</returns>
-        private GraphQueryData DecodeAsGetRequest(HttpContext context)
+        /// <remarks>
+        /// Throw an <see cref="HttpContextParsingException"/> to stop execution and quickly write
+        /// an error back to the requestor.
+        /// </remarks>
+        /// <returns>A parsed query data object containing the input parameters for the
+        /// graphql runtime or <c>null</c>.</returns>
+        protected virtual async Task<GraphQueryData> ParseHttpContext()
         {
-            var queryString = string.Empty;
-            var variables = string.Empty;
-            var operationName = string.Empty;
-
-            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_QUERY_KEY))
-                queryString = context.Request.Query[Constants.Web.QUERYSTRING_QUERY_KEY];
-
-            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_OPERATIONNAME_KEY))
-                operationName = context.Request.Query[Constants.Web.QUERYSTRING_OPERATIONNAME_KEY];
-
-            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_VARIABLES_KEY))
-                variables = context.Request.Query[Constants.Web.QUERYSTRING_VARIABLES_KEY];
-
-            return new GraphQueryData()
-            {
-                Query = queryString,
-                OperationName = operationName,
-                Variables = InputVariableCollection.FromJsonDocument(variables),
-            };
-        }
-
-        /// <summary>
-        /// Attempts to deserialize the POST body of the <paramref name="context"/>
-        /// into a <see cref="GraphQueryData"/> object that can be processed by the GraphQL runtime.
-        /// </summary>
-        /// <param name="context">The http context to deserialize.</param>
-        /// <returns>GraphQueryData.</returns>
-        protected async Task<GraphQueryData> DecodeAsPostRequest(HttpContext context)
-        {
-            // if a "query" parameter appears in the query string treat the request like a get
-            // request and parse parameters from the query string
-            // -----
-            // See: https://graphql.org/learn/serving-over-http/#http-methods-headers-and-body
-            // -----
-            if (context.Request.Query.ContainsKey(Constants.Web.QUERYSTRING_QUERY_KEY))
-                return this.DecodeAsGetRequest(context);
-
-            // if the content-type is set to graphql treat
-            // the whole POST body as the query string
-            // -----
-            // See: https://graphql.org/learn/serving-over-http/#http-methods-headers-and-body
-            // -----
-            if (context.Request.ContentType == Constants.Web.GRAPHQL_CONTENT_TYPE_HEADER_VALUE)
-            {
-                using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true);
-                var query = await reader.ReadToEndAsync();
-                return new GraphQueryData()
-                {
-                    Query = query,
-                };
-            }
-
-            // accepting a preparsed object (i.e. allowing .NET to decode it)
-            // can cause havoc with any variables collection
-            // ------
-            // By default:
-            // netcoreapp2.2 and older would auto parse to JObject (Newtonsoft)
-            // netcoreapp3.0 and later will parse to JsonElement (System.Text.Json).
-            //
-            // and the developer may have some unexpected defaults configured as well
-            // ------
-            // instead of supporting deserialization from both generic json object types
-            // we accept the raw text and parse the json document
-            // using System.Text.Json on all clients
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
-
-            return await JsonSerializer.DeserializeAsync<GraphQueryData>(context.Request.Body, options).ConfigureAwait(false);
+            var dataGenerator = new HttpContextParser(this.HttpContext);
+            return await dataGenerator.Parse();
         }
 
         /// <summary>
