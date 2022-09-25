@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.ValidationRules
+namespace GraphQL.AspNet.Tests.RulesEngine
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Response;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData;
+    using GraphQL.AspNet.Tests.RulesEngine.RuleCheckTestData;
     using NUnit.Framework;
 
     [TestFixture]

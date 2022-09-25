@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Defaults
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.ValidationRules.DocumentConstructionTestData;
+    using GraphQL.AspNet.Tests.RulesEngine.DocumentConstructionTestData;
     using NUnit.Framework;
 
     [TestFixture]

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldSecurity
+namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
 {
     using System;
     using GraphQL.AspNet.Common;
@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldSecurity.Components;
+    using GraphQL.AspNet.Middleware.SchemaItemSecurity.Components;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;

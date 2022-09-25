@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
+namespace GraphQL.AspNet.Tests.RulesEngine.RuleCheckTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;

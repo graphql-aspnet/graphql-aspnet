@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var defaultRouter = CreateDefaultSubscriptionRouterDescriptor();
             schemaBuilder.Options.ServiceCollection.TryAdd(defaultRouter);
 
-            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
+            var extension = new GQLWSSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
             schemaBuilder.Options.RegisterExtension(extension);
 
             return schemaBuilder;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.ValidationRules
+namespace GraphQL.AspNet.Tests.RulesEngine
 {
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.ValidationRules.DirectiveTestData;
+    using GraphQL.AspNet.Tests.RulesEngine.DirectiveTestData;
     using Moq;
     using NUnit.Framework;
 

@@ -11,7 +11,6 @@ namespace GraphQL.Subscriptions.Tests.Configuration
 {
     using System;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Apollo.Exceptions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
@@ -21,6 +20,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Exceptions;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
@@ -73,7 +73,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             });
 
             // server should value to generate
-            Assert.Throws<ApolloSubscriptionServerException>(
+            Assert.Throws<GQLWSSubscriptionServerException>(
                 () =>
                 {
                     schemaBuilder.AddSubscriptionServer();

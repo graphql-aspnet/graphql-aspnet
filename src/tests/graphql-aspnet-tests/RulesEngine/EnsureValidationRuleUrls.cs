@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.ValidationRules
+namespace GraphQL.AspNet.Tests.RulesEngine
 {
     using System;
     using System.Collections.Generic;

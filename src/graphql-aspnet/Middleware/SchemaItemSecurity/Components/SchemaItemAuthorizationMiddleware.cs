@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
+namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 {
     using System.Linq;
     using System.Threading;

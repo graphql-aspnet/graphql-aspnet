@@ -26,8 +26,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Middleware.DirectiveExecution;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.FieldSecurity;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Middleware.SchemaItemSecurity;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Builder;

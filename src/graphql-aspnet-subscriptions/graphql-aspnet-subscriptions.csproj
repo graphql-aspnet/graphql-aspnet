@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <None Include="..\icon.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md"/>
+    <None Include="..\..\build\nuget-package-readme.md" Pack="true" PackagePath="\README.md" />
   </ItemGroup>
 
   <PropertyGroup>

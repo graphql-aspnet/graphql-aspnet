@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Fields
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Represents the meta-field called '__schema' allowing for introspection into any schema. This field

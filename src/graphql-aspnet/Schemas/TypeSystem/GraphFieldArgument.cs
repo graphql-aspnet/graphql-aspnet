@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.Structural
+namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// An argument defined on the object graph but not tied to any concrete item. It exists as a result

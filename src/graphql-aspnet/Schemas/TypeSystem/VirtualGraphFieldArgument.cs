@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.Structural
+namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Diagnostics;
     using System.Reflection;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A field argument not based on a <see cref="ParameterInfo"/> reference from a method or property.

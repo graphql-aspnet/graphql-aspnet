@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An object returned by resolving a field not bound to a concrete type (commonly <see cref="VirtualGraphField"/>). This

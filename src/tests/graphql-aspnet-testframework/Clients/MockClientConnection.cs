@@ -14,12 +14,12 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Apollo.Messages.Common;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
     using Moq;
 
     /// <summary>
@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         // a queue of message sent by the server to the client
         private readonly Queue<MockClientMessage> _outgoingMessageQueue;
+
         private readonly bool _autoCloseOnReadCloseMessage;
         private MockClientMessage _currentMessage;
 
@@ -85,11 +86,11 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             }
         }
 
-               /// <summary>
+        /// <summary>
         /// Simulates a client message being sent to the server.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void QueueClientMessage(ApolloMessage message)
+        public void QueueClientMessage(GQLWSMessage message)
         {
             Validation.ThrowIfNull(message, nameof(message));
             this.QueueClientMessage(new MockClientMessage(message));
@@ -102,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <param name="queryText">The query text.</param>
         public void QueueNewSubscription(string id, string queryText)
         {
-            this.QueueClientMessage(new ApolloClientStartMessage()
+            this.QueueClientMessage(new GQLWSClientStartMessage()
             {
                 Id = id,
                 Payload = new GraphQueryData()

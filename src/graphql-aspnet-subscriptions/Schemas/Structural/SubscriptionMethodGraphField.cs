@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>

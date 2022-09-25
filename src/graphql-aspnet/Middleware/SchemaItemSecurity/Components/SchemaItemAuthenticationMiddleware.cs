@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
+namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 {
     using System;
     using System.Collections.Immutable;
@@ -231,7 +231,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <inheritdoc />
         public void Dispose()
         {
-            Dispose(disposing: true);
+            this.Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
     }
