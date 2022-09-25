@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
     /// from its server component and begins processing said event against its subscription list.
     /// </summary>
     /// <typeparam name="TSchema">The type of schema the event is being raised against.</typeparam>
-    public class GQLWSClientSubscriptionEventReceived<TSchema> : GraphLogEntry
+    internal class GQLWSClientSubscriptionEventReceived<TSchema> : GraphLogEntry
         where TSchema : class, ISchema
     {
         /// <summary>

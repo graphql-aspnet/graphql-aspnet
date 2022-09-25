@@ -44,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task SubscribedReceiver_ReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
+            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
 
             var router = new DefaultSubscriptionEventRouter();
 
@@ -66,7 +66,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task SubscribedReceiveer_TwoEvents_DoesReceiveBothEventsOnce()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
+            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
 
             var router = new DefaultSubscriptionEventRouter();
 
@@ -101,7 +101,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task UnsubscribedReceiver_DoesNotReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
+            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
 
             var router = new DefaultSubscriptionEventRouter();
 
@@ -137,7 +137,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task UnsubscribedAllReceiver_DoesNotReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
+            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
 
             var router = new DefaultSubscriptionEventRouter();
 

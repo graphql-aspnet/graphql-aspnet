@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// A collection of event ids for log entries related to the <see cref="GQLWSSubscriptionServer{TSchema}"/>.
+    /// A collection of event ids for log entries related to the <see cref="GQLWSClientProxy{TSchema}"/>.
     /// </summary>
     public static class GQLWSLogEventIds
     {
@@ -51,23 +51,5 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
         /// against any monitored subscriptions for its connected client.
         /// </summary>
         public static EventId ClientSubscriptionEventRecieved = new EventId(ROOT_GRAPHQLWS_EVENT_ID + 150, "GraphQL-WS Client Subscription Event Received");
-
-        /// <summary>
-        /// A graphql-ws server component registered a request with the listener to start
-        /// receiving events for a given subscription event.
-        /// </summary>
-        public static EventId ServerSubscriptionEventMonitorStarted = new EventId(ROOT_GRAPHQLWS_EVENT_ID + 200, "GraphQL-WS Server Subscription Event Monitor Started");
-
-        /// <summary>
-        /// A graphql-ws server component unregistered a request with the listener and will stop
-        /// receiving events for a given subscription event.
-        /// </summary>
-        public static EventId ServerSubscriptionEventMonitorStopped = new EventId(ROOT_GRAPHQLWS_EVENT_ID + 210, "GraphQL-WS Server Subscription Event Monitor Stopped");
-
-        /// <summary>
-        /// A graphql-ws server component received a dispatched subscription event from this ASP.NET server
-        /// instance's global listener.
-        /// </summary>
-        public static EventId ServerSubcriptionEventReceived = new EventId(ROOT_GRAPHQLWS_EVENT_ID + 300, "GraphQL-WS Server Subscription Event Received");
     }
 }

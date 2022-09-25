@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
     /// <summary>
     /// Creates an appropriate json message converter for the given graphql-ws message and client.
     /// </summary>
-    public class GQLWSMessageConverterFactory
+    internal class GQLWSMessageConverterFactory
     {
         /// <summary>
         /// Creates an appropriate message converter to properly serialize the given graphql-ws message
@@ -45,16 +45,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
             {
                 switch (message.Type)
                 {
-                    case GQLWSMessageType.DATA:
+                    case GQLWSMessageType.NEXT:
                         schema = client.ServiceProvider.GetService<TSchema>();
                         var writer = client.ServiceProvider.GetService<IGraphResponseWriter<TSchema>>();
                         converter = new GQLWSServerDataMessageConverter(schema, writer);
-                        matchedType = typeof(GQLWSServerDataMessage);
+                        matchedType = typeof(GQLWSServerNextDataMessage);
                         break;
 
                     case GQLWSMessageType.COMPLETE:
                         converter = new GQLWSServerCompleteMessageConverter();
-                        matchedType = typeof(GQLWSServerCompleteMessage);
+                        matchedType = typeof(GQLWSSubscriptionCompleteMessage);
                         break;
 
                     case GQLWSMessageType.ERROR:

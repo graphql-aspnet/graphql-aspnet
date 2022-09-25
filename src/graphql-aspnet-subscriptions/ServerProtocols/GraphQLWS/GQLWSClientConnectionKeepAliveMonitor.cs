@@ -14,11 +14,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
 
     /// <summary>
-    /// Sends a periodic keep-alive message that conforms to the expectations of the graphql-ws
-    /// spec.
+    /// Sends a periodic keep-alive message down the wire to the connected client
+    /// that conforms to the expectations of the graphql-ws spec.
     /// </summary>
     internal class GQLWSClientConnectionKeepAliveMonitor : IDisposable
     {
@@ -30,8 +30,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         /// <summary>
         /// Initializes a new instance of the <see cref="GQLWSClientConnectionKeepAliveMonitor"/> class.
         /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="interval">The interval.</param>
+        /// <param name="connection">The connection to keep alive.</param>
+        /// <param name="interval">The interval on which to inititate the PING/PONG cycle.</param>
         public GQLWSClientConnectionKeepAliveMonitor(ISubscriptionClientProxy connection, TimeSpan interval)
         {
             _connection = Validation.ThrowIfNullOrReturn(connection, nameof(connection));
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
             }
             else
             {
-                _connection.SendMessage(new GQLWSKeepAliveOperationMessage());
+                _connection.SendMessage(new GQLWSPingMessage());
             }
         }
 

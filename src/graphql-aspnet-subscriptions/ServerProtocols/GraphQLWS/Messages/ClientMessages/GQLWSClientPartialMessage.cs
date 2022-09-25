@@ -10,7 +10,9 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
 {
     using System.Diagnostics;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
 
     /// <summary>
     /// A partially deserialized operation message recieved from the client. Converts the actual paylaod
@@ -18,7 +20,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
     /// double deserialization of a message via json deserializer.
     /// </summary>
     [DebuggerDisplay("Message Type: {Type}")]
-    internal class GQLWSClientPartialMessage : GQLWSMessage<GraphQueryData>
+    public class GQLWSClientPartialMessage : GQLWSMessage<GraphQueryData>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GQLWSClientPartialMessage"/> class.
@@ -42,26 +44,24 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
                         Payload = null, // TODO: connection may have params, need to handle it
                     };
 
-                case GQLWSMessageType.START:
-                    return new GQLWSClientStartMessage()
+                case GQLWSMessageType.SUBSCRIBE:
+                    return new GQLWSClientSubscribeMessage()
                     {
                         Id = this.Id,
                         Payload = this.Payload,
                     };
 
-                case GQLWSMessageType.STOP:
-                    return new GQLWSClientStopMessage()
+                case GQLWSMessageType.COMPLETE:
+                    return new GQLWSSubscriptionCompleteMessage(this.Id)
                     {
-                        Id = this.Id,
                         Payload = null, // stop message has no expected payload
                     };
 
-                case GQLWSMessageType.CONNECTION_TERMINATE:
-                    return new GQLWSClientConnectionTerminateMessage()
-                    {
-                        Id = this.Id,
-                        Payload = null, // terminate message has no expected
-                    };
+                case GQLWSMessageType.PING:
+                    return new GQLWSPingMessage();
+
+                case GQLWSMessageType.PONG:
+                    return new GQLWSPongMessage();
 
                 default:
                     return new GQLWSUnknownMessage()

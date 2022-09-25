@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
@@ -47,7 +48,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
     [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
-    public class GQLWSClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
+    internal class GQLWSClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
         where TSchema : class, ISchema
     {
         private readonly bool _enableKeepAlive;
@@ -56,7 +57,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly GQLWSMessageConverterFactory _messageConverter;
         private readonly ClientTrackedMessageIdSet _reservedMessageIds;
-        private readonly GQLWSSubscriptionCollection<TSchema> _subscriptions;
+        private readonly SubscriptionCollection<TSchema> _subscriptions;
         private IClientConnection _connection;
         private bool _connectionClosedForever;
 
@@ -81,12 +82,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         /// <summary>
         /// Raised by a client when it starts monitoring a subscription for a given route.
         /// </summary>
-        public event EventHandler<GQLWSSubscriptionFieldEventArgs> SubscriptionRouteAdded;
+        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteAdded;
 
         /// <summary>
         /// Raised by a client when it is no longer monitoring a given subscription route.
         /// </summary>
-        public event EventHandler<GQLWSSubscriptionFieldEventArgs> SubscriptionRouteRemoved;
+        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteRemoved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GQLWSClientProxy{TSchema}" /> class.
@@ -109,7 +110,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _messageConverter = Validation.ThrowIfNullOrReturn(messageConverter, nameof(messageConverter));
             _reservedMessageIds = new ClientTrackedMessageIdSet();
-            _subscriptions = new GQLWSSubscriptionCollection<TSchema>();
+            _subscriptions = new SubscriptionCollection<TSchema>();
             _enableKeepAlive = options.KeepAliveInterval != TimeSpan.Zero;
 
             _logger = logger != null ? new GQLWSClientEventLogger<TSchema>(this, logger) : null;
@@ -140,7 +141,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
             // and acknowledge the terminate request
             var fields = _subscriptions.Select(x => x.Field).Distinct();
             foreach (var field in fields)
-                this.SubscriptionRouteRemoved?.Invoke(this, new GQLWSSubscriptionFieldEventArgs(field));
+                this.SubscriptionRouteRemoved?.Invoke(this, new SubscriptionFieldEventArgs(field));
 
             _subscriptions.Clear();
             _reservedMessageIds.Clear();
@@ -160,6 +161,10 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
 
             this.ConnectionOpening?.Invoke(this, EventArgs.Empty);
 
+            // accept the connection and begin lisening
+            // for messages related to the protocol known to this specific client type
+            await _connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+
             // register the socket with an "graphql-ws level" keep alive monitor
             // that will send structured keep alive messages down the pipe
             GQLWSClientConnectionKeepAliveMonitor keepAliveTimer = null;
@@ -172,7 +177,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                     keepAliveTimer.Start();
                 }
 
-                // message dispatch loop
+                // --------------------------------
+                // Client message receive and dispatch loop
+                // --------------------------------
                 IClientConnectionReceiveResult result = null;
                 IEnumerable<byte> bytes = null;
 
@@ -187,8 +194,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                         if (result.MessageType == ClientMessageType.Text)
                         {
                             var message = this.DeserializeMessage(bytes);
-                            await this.DispatchMessage(message)
-                                .ConfigureAwait(false);
+                            await this.ProcessReceivedMessage(message).ConfigureAwait(false);
                         }
                     }
                     while (!result.CloseStatus.HasValue && _connection.State == ClientConnectionState.Open);
@@ -264,6 +270,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
 
             try
             {
+                // partially deserailize the message to extract the "type" field
+                // to determine how to fully deserialize this message
                 var partialMessage = JsonSerializer.Deserialize<GQLWSClientPartialMessage>(text, options);
                 recievedMessage = partialMessage.Convert();
             }
@@ -314,12 +322,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         }
 
         /// <summary>
-        /// Handles the MessageRecieved event of a connected client. The client raises this event
-        /// whenever a message is recieved and successfully parsed from the under lying websocket.
+        /// Handles the MessageRecieved event of a connected client. The connected client
+        /// raises this event whenever a message is recieved and successfully parsed from
+        /// the under lying websocket.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">The message that was recieved on the socket.</param>
         /// <returns>TaskMethodBuilder.</returns>
-        internal Task DispatchMessage(GQLWSMessage message)
+        internal Task ProcessReceivedMessage(GQLWSMessage message)
         {
             if (message == null)
                 return Task.CompletedTask;
@@ -330,16 +339,18 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                 case GQLWSMessageType.CONNECTION_INIT:
                     return this.AcknowledgeNewConnection();
 
-                case GQLWSMessageType.START:
-                    return this.ExecuteStartRequest(message as GQLWSClientStartMessage);
+                case GQLWSMessageType.PING:
+                    return this.AcknowledgePing();
 
-                case GQLWSMessageType.STOP:
-                    return this.ExecuteStopRequest(message as GQLWSClientStopMessage);
+                // do nothing with a recevied pong message
+                case GQLWSMessageType.PONG:
+                    return Task.CompletedTask;
 
-                case GQLWSMessageType.CONNECTION_TERMINATE:
-                    return this.CloseConnection(
-                        ClientConnectionCloseStatus.NormalClosure,
-                        $"Recieved closure request via message '{GQLWSMessageTypeExtensions.Serialize(GQLWSMessageType.CONNECTION_TERMINATE)}'.");
+                case GQLWSMessageType.SUBSCRIBE:
+                    return this.ExecuteSubscriptionStartRequest(message as GQLWSClientSubscribeMessage);
+
+                case GQLWSMessageType.COMPLETE:
+                    return this.ExecuteSubscriptionStopRequest(message as GQLWSSubscriptionCompleteMessage);
 
                 default:
                     return this.UnknownMessageRecieved(message);
@@ -351,7 +362,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         /// </summary>
         /// <param name="lastMessage">The last message that was received that was unprocessable.</param>
         /// <returns>Task.</returns>
-        private Task UnknownMessageRecieved(GQLWSMessage lastMessage)
+        private async Task UnknownMessageRecieved(GQLWSMessage lastMessage)
         {
             var error = new GQLWSServerErrorMessage(
                     "The last message recieved was unknown or could not be processed " +
@@ -369,7 +380,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                 Constants.Messaging.REFERENCE_RULE_URL,
                 "https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md");
 
-            return this.SendMessage(error);
+            await this.SendMessage(error);
+            await this.CloseConnection(ClientConnectionCloseStatus.InvalidMessageType);
         }
 
         /// <summary>
@@ -377,7 +389,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         /// </summary>
         /// <param name="message">The message containing the subscription id to stop.</param>
         /// <returns>Task.</returns>
-        private async Task ExecuteStopRequest(GQLWSClientStopMessage message)
+        private async Task ExecuteSubscriptionStopRequest(GQLWSSubscriptionCompleteMessage message)
         {
             var totalRemaining = _subscriptions.Remove(message.Id, out var subFound);
 
@@ -385,12 +397,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
             {
                 _reservedMessageIds.ReleaseMessageId(subFound.Id);
                 if (totalRemaining == 0)
-                    this.SubscriptionRouteRemoved?.Invoke(this, new GQLWSSubscriptionFieldEventArgs(subFound.Field));
+                    this.SubscriptionRouteRemoved?.Invoke(this, new SubscriptionFieldEventArgs(subFound.Field));
 
                 _logger?.SubscriptionStopped(subFound);
 
                 await this
-                    .SendMessage(new GQLWSServerCompleteMessage(subFound.Id))
+                    .SendMessage(new GQLWSSubscriptionCompleteMessage(subFound.Id))
                     .ConfigureAwait(false);
             }
             else
@@ -412,7 +424,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         /// set for this instance.
         /// </summary>
         /// <param name="message">The message with the subscription details.</param>
-        private async Task ExecuteStartRequest(GQLWSClientStartMessage message)
+        private async Task ExecuteSubscriptionStartRequest(GQLWSClientSubscribeMessage message)
         {
             // ensure the id isnt already in use
             if (!_reservedMessageIds.ReserveMessageId(message.Id))
@@ -466,14 +478,15 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                 }
                 else
                 {
-                    responseMessage = new GQLWSServerDataMessage(message.Id, result);
+                    responseMessage = new GQLWSServerNextDataMessage(message.Id, result);
                 }
 
                 await this
                     .SendMessage(responseMessage)
                     .ConfigureAwait(false);
+
                 await this
-                    .SendMessage(new GQLWSServerCompleteMessage(message.Id))
+                    .SendMessage(new GQLWSSubscriptionCompleteMessage(message.Id))
                     .ConfigureAwait(false);
             }
 
@@ -498,19 +511,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                 {
                     var response = GraphOperationResult.FromMessages(subscription.Messages, subscription.QueryData);
                     await subscription.Client
-                        .SendMessage(new GQLWSServerDataMessage(subscription.Id, response))
+                        .SendMessage(new GQLWSServerNextDataMessage(subscription.Id, response))
                         .ConfigureAwait(false);
                 }
 
                 await subscription.Client
-                    .SendMessage(new GQLWSServerCompleteMessage(subscription.Id))
+                    .SendMessage(new GQLWSSubscriptionCompleteMessage(subscription.Id))
                     .ConfigureAwait(false);
             }
             else
             {
                 var totalTracked = _subscriptions.Add(subscription);
                 if (totalTracked == 1)
-                    this.SubscriptionRouteAdded?.Invoke(this, new GQLWSSubscriptionFieldEventArgs(subscription.Field));
+                    this.SubscriptionRouteAdded?.Invoke(this, new SubscriptionFieldEventArgs(subscription.Field));
 
                 _logger?.SubscriptionCreated(subscription);
                 registrationComplete = true;
@@ -520,16 +533,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         }
 
         /// <summary>
-        /// Sends the required startup messages down to the connected client to acknowledge the connection/protocol.
+        /// Sends the required startup messages down to the connected client to
+        /// acknowledge the connection/protocol.
         /// </summary>
         private async Task AcknowledgeNewConnection()
         {
-            // protocol dictates the messages must be sent in this order
-            // await each send before attempting the next one
             await this.SendMessage(new GQLWSServerAckOperationMessage()).ConfigureAwait(false);
+        }
 
-            if (_enableKeepAlive)
-                await this.SendMessage(new GQLWSKeepAliveOperationMessage()).ConfigureAwait(false);
+        /// <summary>
+        /// Sends a PONG message down to the connected client to acknowledge a received
+        /// PING messsage.
+        /// </summary>
+        private async Task AcknowledgePing()
+        {
+            await this.SendMessage(new GQLWSPongMessage()).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -580,7 +598,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                                 return task;
 
                             // send the message with the resultant data package
-                            var message = new GQLWSServerDataMessage(subscription.Id, task.Result);
+                            var message = new GQLWSServerNextDataMessage(subscription.Id, task.Result);
                             return this.SendMessage(message);
                         },
                         cancelToken));
@@ -590,7 +608,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         }
 
         /// <inheritdoc />
-        public ClientConnectionState State => _connection.State;
+        public async Task SendErrorMessage(IGraphMessage graphMessage)
+        {
+            await this.SendMessage(new GQLWSServerErrorMessage(graphMessage));
+        }
+
+        /// <inheritdoc />
+        public ClientConnectionState State => _connection?.State ?? ClientConnectionState.None;
 
         /// <inheritdoc />
         public IServiceProvider ServiceProvider => _connection.ServiceProvider;

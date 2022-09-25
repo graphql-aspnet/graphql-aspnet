@@ -41,6 +41,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         private bool _connectionClosed;
         private bool _connectionClosedByServer;
+        private bool _wasOpened;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MockClientConnection" /> class.
@@ -49,10 +50,12 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <param name="securityContext">The security context.</param>
         /// <param name="autoCloseOnReadCloseMessage">if set to <c>true</c> when the connection
         /// reads a close message, it will shut it self down.</param>
+        /// <param name="requestedProtocol">The requested protocol this client should show.</param>
         public MockClientConnection(
             IServiceProvider serviceProvider = null,
             IUserSecurityContext securityContext = null,
-            bool autoCloseOnReadCloseMessage = true)
+            bool autoCloseOnReadCloseMessage = true,
+            string requestedProtocol = null)
         {
             this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
             this.SecurityContext = securityContext;
@@ -62,6 +65,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             this.State = ClientConnectionState.Open;
 
             _autoCloseOnReadCloseMessage = autoCloseOnReadCloseMessage;
+            this.RequestedProtocol = requestedProtocol;
         }
 
         /// <summary>
@@ -103,7 +107,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <param name="queryText">The query text.</param>
         public void QueueNewSubscription(string id, string queryText)
         {
-            this.QueueClientMessage(new GQLWSClientStartMessage()
+            this.QueueClientMessage(new GQLWSClientSubscribeMessage()
             {
                 Id = id,
                 Payload = new GraphQueryData()
@@ -133,16 +137,19 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                 return _outgoingMessageQueue.Peek();
         }
 
-        /// <summary>
-        /// Closes the connection as an asynchronous operation using the close handshake defined by the underlying implementation.
-        /// </summary>
-        /// <param name="closeStatus">Indicates the reason for closing the connection.</param>
-        /// <param name="statusDescription">Specifies a human readable explanation as to why the connection is closed.</param>
-        /// <param name="cancellationToken">The token that can be used to propagate notification that operations should be
-        /// canceled.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
+        public Task OpenAsync(string subProtocol)
+        {
+            _wasOpened = true;
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
         public Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
+            if (!_wasOpened)
+                throw new InvalidOperationException("Cant close a non-open connection");
+
             _connectionClosed = true;
             _connectionClosedByServer = true;
             this.CloseStatusDescription = statusDescription;
@@ -154,6 +161,9 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <inheritdoc />
         public async Task<IClientConnectionReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancelToken = default)
         {
+            if (!_wasOpened)
+                throw new InvalidOperationException("Cant receive a never-opened connection");
+
             if (_connectionClosed)
             {
                 throw new InvalidOperationException("can't recieve on a closed connection");
@@ -201,6 +211,9 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <inheritdoc />
         public Task SendAsync(ArraySegment<byte> buffer, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
+            if (!_wasOpened)
+                throw new InvalidOperationException("Cant send on a never-opened connection");
+
             var message = new MockClientMessage(buffer.ToArray(), messageType, endOfMessage);
             lock (_outgoingMessageQueue)
             {
@@ -244,5 +257,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         /// <inheritdoc />
         public IUserSecurityContext SecurityContext { get; }
+
+        /// <inheritdoc />
+        public string RequestedProtocol { get; }
     }
 }

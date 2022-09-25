@@ -73,7 +73,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             });
 
             // server should value to generate
-            Assert.Throws<GQLWSSubscriptionServerException>(
+            Assert.Throws<SubscriptionServerException>(
                 () =>
                 {
                     schemaBuilder.AddSubscriptionServer();

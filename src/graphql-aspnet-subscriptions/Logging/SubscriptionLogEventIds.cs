@@ -47,5 +47,23 @@ namespace GraphQL.AspNet.Logging
         /// A new event was received by an ASP.NET server instance.
         /// </summary>
         public static EventId GlobalEventReceived = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 510, "GraphQL Event Received");
+
+        /// <summary>
+        /// A server component registered a request with the listener to start
+        /// receiving events for a given subscription event.
+        /// </summary>
+        public static EventId ServerSubscriptionEventMonitorStarted = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 520, "GraphQL Server Subscription Event Monitor Started");
+
+        /// <summary>
+        /// A graphql-ws server component received a dispatched subscription event from this ASP.NET server
+        /// instance's global listener.
+        /// </summary>
+        public static EventId ServerSubcriptionEventReceived = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 530, "GraphQL Server Subscription Event Received");
+
+        /// <summary>
+        /// A server component unregistered a request with the listener and will stop
+        /// receiving events for a given subscription event.
+        /// </summary>
+        public static EventId ServerSubscriptionEventMonitorStopped = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 540, "GraphQL Server Subscription Event Monitor Stopped");
     }
 }

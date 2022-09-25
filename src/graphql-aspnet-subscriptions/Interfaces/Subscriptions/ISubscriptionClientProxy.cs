@@ -13,6 +13,8 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas.Structural;
 
@@ -22,6 +24,34 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     /// </summary>
     public interface ISubscriptionClientProxy
     {
+        /// <summary>
+        /// Occurs just before the underlying websocket is opened. Once completed messages
+        /// may be dispatched immedately.
+        /// </summary>
+        public event EventHandler ConnectionOpening;
+
+        /// <summary>
+        /// Raised by a client just after the underlying websocket is shut down. No further messages will be sent.
+        /// </summary>
+        public event EventHandler ConnectionClosed;
+
+        /// <summary>
+        /// Raised by the client as it begins to shut down. The underlying websocket may
+        /// already be closed if the close is client initiated. This event occurs before
+        /// any subscriptions are stopped or removed.
+        /// </summary>
+        public event EventHandler ConnectionClosing;
+
+        /// <summary>
+        /// Raised by a client when it starts monitoring a subscription for a given route.
+        /// </summary>
+        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteAdded;
+
+        /// <summary>
+        /// Raised by a client when it is no longer monitoring a given subscription route.
+        /// </summary>
+        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteRemoved;
+
         /// <summary>
         /// Performs acknowledges the setup of the subscription through the websocket and brokers messages
         /// between the client and the graphql runtime for its lifetime. When this method completes the socket is
@@ -79,6 +109,14 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <value>The state.</value>
         ClientConnectionState State { get; }
+
+        /// <summary>
+        /// Sends the given text as an "error level" message appropriate
+        /// for this client's given protocol.
+        /// </summary>
+        /// <param name="graphMessage">The graph message.</param>
+        /// <returns>Task.</returns>
+        Task SendErrorMessage(IGraphMessage graphMessage);
 
         /// <summary>
         /// Serializes, encodes and sends the given message down to the client.

@@ -7,35 +7,36 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
+namespace GraphQL.AspNet.Logging.SubscriptionServerEvents
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded when an graphql-ws server component unregistered a subscription event on the configured
+    /// Recorded when a server component unregistered a subscription event on the configured
     /// listener for this ASP.NET server instance. This log entry is recorded when the last connected client
     /// stops its last subscription for a given event.
     /// </summary>
     /// <typeparam name="TSchema">The type of schema the event is being raised against.</typeparam>
-    public class GQLWSServerEventMonitorEndedLogEntry<TSchema> : GraphLogEntry
+    public class SubscriptionServerEventMonitorEndedLogEntry<TSchema> : GraphLogEntry
         where TSchema : class, ISchema
     {
         private readonly string _schemaTypeShortName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSServerEventMonitorEndedLogEntry{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionServerEventMonitorEndedLogEntry{TSchema}" /> class.
         /// </summary>
         /// <param name="server">The server that registered with the listener.</param>
         /// <param name="eventName">Name of the event that is no longer being monitored.</param>
-        public GQLWSServerEventMonitorEndedLogEntry(
-            GQLWSSubscriptionServer<TSchema> server,
+        public SubscriptionServerEventMonitorEndedLogEntry(
+            ISubscriptionServer<TSchema> server,
             SubscriptionEventName eventName)
-            : base(GQLWSLogEventIds.ServerSubscriptionEventMonitorStopped)
+            : base(SubscriptionLogEventIds.ServerSubscriptionEventMonitorStopped)
         {
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
@@ -69,8 +70,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The name of the event.</value>
         public string SubscriptionEventName
         {
-            get => this.GetProperty<string>(GQLWSLogPropertyNames.SUBSCRIPTION_EVENT_NAME);
-            private set => this.SetProperty(GQLWSLogPropertyNames.SUBSCRIPTION_EVENT_NAME, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_NAME);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_NAME, value);
         }
 
         /// <summary>

@@ -13,17 +13,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads;
 
     /// <summary>
-    /// A keep alive message sent periodically by the server to keep the connection
-    /// open a the application level.
+    /// A message sent by the client or server when a given subscription (indicated by its client provided id)
+    /// will be dropped and no more data will be sent for it.
     /// </summary>
-    public class GQLWSKeepAliveOperationMessage : GQLWSMessage<GQLWSNullPayload>
+    public class GQLWSSubscriptionCompleteMessage : GQLWSMessage<GQLWSNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSKeepAliveOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="GQLWSSubscriptionCompleteMessage"/> class.
         /// </summary>
-        public GQLWSKeepAliveOperationMessage()
-            : base(GQLWSMessageType.CONNECTION_KEEP_ALIVE)
+        /// <param name="id">The identifier.</param>
+        public GQLWSSubscriptionCompleteMessage(string id = "")
+            : base(GQLWSMessageType.COMPLETE)
         {
+            this.Id = id;
         }
     }
 }

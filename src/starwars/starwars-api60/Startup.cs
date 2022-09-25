@@ -114,11 +114,14 @@ namespace GraphQL.AspNet.StarWarsAPI6X
                 options.AllowedOrigins.Add("http://localhost:5000");
                 options.AllowedOrigins.Add("http://localhost:4000");
                 options.AllowedOrigins.Add("http://localhost:3000");
+                options.AllowedOrigins.Add("null");
 
                 // some electron-based graphql tools send a file reference
                 // as their origin
                 // do not add these in a production app
                 options.AllowedOrigins.Add("file://");
+                options.AllowedOrigins.Add("ws://");
+
             });
         }
 

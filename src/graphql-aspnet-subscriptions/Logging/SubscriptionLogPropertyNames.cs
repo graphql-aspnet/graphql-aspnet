@@ -68,5 +68,20 @@ namespace GraphQL.AspNet.Logging
         /// The physical name of the ASP.NET server hosting subscriptions.
         /// </summary>
         public const string ASPNET_SERVER_INSTANCE_NAME = "machineName";
+
+        /// <summary>
+        /// The total number of clients being reported on.
+        /// </summary>
+        public const string CLIENT_COUNT = "clientCount";
+
+        /// <summary>
+        /// The total number of subscriptions being reported on.
+        /// </summary>
+        public const string SUBSCRIPTION_COUNT = "subscriptionCount";
+
+        /// <summary>
+        /// A collection of client ids being reported on.
+        /// </summary>
+        public const string CLIENT_IDS = "clientIds";
     }
 }

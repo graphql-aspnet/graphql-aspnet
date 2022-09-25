@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
+namespace GraphQL.AspNet.Logging.SubscriptionServerEvents
 {
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
@@ -21,21 +22,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
     /// from the router configured for this ASP.NET server instance.
     /// </summary>
     /// <typeparam name="TSchema">The type of schema the event is being raised against.</typeparam>
-    public class GQLWSServerSubscriptionEventReceived<TSchema> : GraphLogEntry
+    public class SubscriptionServerSubscriptionEventReceived<TSchema> : GraphLogEntry
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSServerSubscriptionEventReceived{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionServerSubscriptionEventReceived{TSchema}" /> class.
         /// </summary>
         /// <param name="server">The server instance that received the event.</param>
         /// <param name="eventRecieved">The event that was recieved from the global listener.</param>
         /// <param name="clientsToReceive">The filtered list of clients that will receive the event
         /// from the server.</param>
-        public GQLWSServerSubscriptionEventReceived(
-            GQLWSSubscriptionServer<TSchema> server,
+        public SubscriptionServerSubscriptionEventReceived(
+            ISubscriptionServer<TSchema> server,
             SubscriptionEvent eventRecieved,
-            IReadOnlyList<GQLWSClientProxy<TSchema>> clientsToReceive)
-            : base(GQLWSLogEventIds.ServerSubcriptionEventReceived)
+            IReadOnlyList<ISubscriptionClientProxy<TSchema>> clientsToReceive)
+            : base(SubscriptionLogEventIds.ServerSubcriptionEventReceived)
         {
             this.SchemaTypeName = eventRecieved?.SchemaTypeName;
             this.SubscriptionEventName = eventRecieved?.EventName;
@@ -61,8 +62,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The name of the event.</value>
         public string SubscriptionEventName
         {
-            get => this.GetProperty<string>(GQLWSLogPropertyNames.SUBSCRIPTION_EVENT_NAME);
-            private set => this.SetProperty(GQLWSLogPropertyNames.SUBSCRIPTION_EVENT_NAME, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_NAME);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_NAME, value);
         }
 
         /// <summary>
@@ -72,8 +73,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The name of the schema type.</value>
         public int? ClientCount
         {
-            get => this.GetProperty<int?>(GQLWSLogPropertyNames.CLIENT_COUNT);
-            private set => this.SetProperty(GQLWSLogPropertyNames.CLIENT_COUNT, value);
+            get => this.GetProperty<int?>(SubscriptionLogPropertyNames.CLIENT_COUNT);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.CLIENT_COUNT, value);
         }
 
         /// <summary>
@@ -83,8 +84,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The name of the schema type.</value>
         public IList<string> ClientIds
         {
-            get => this.GetProperty<IList<string>>(GQLWSLogPropertyNames.CLIENT_IDS);
-            private set => this.SetProperty(GQLWSLogPropertyNames.CLIENT_IDS, value);
+            get => this.GetProperty<IList<string>>(SubscriptionLogPropertyNames.CLIENT_IDS);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.CLIENT_IDS, value);
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         {
             var idTruncated = this.SubscriptionEventId?.Length > 8 ? this.SubscriptionEventId.Substring(0, 8) : this.SubscriptionEventId;
             var serverId = this.ServerId?.Length > 8 ? this.ServerId.Substring(0, 8) : this.ServerId;
-            return $"GraphQL-WS Server Event Received | Server: {serverId}, EventName: '{this.SubscriptionEventName}' (Id: {idTruncated}), Subscribed Clients: {this.ClientCount}";
+            return $"Subscription Server Event Received | Server: {serverId}, EventName: '{this.SubscriptionEventName}' (Id: {idTruncated}), Subscribed Clients: {this.ClientCount}";
         }
     }
 }

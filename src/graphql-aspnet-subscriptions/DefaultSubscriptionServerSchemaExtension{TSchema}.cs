@@ -7,15 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-
 namespace GraphQL.AspNet
 {
     using System;
@@ -33,7 +24,6 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Exceptions;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -43,7 +33,7 @@ namespace GraphQL.AspNet
     /// subscription events for connected clients.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class GQLWSSubscriptionServerSchemaExtension<TSchema> : IGraphQLServerExtension
+    public class DefaultSubscriptionServerSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -55,12 +45,12 @@ namespace GraphQL.AspNet
         private SchemaOptions _primaryOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSSubscriptionServerSchemaExtension{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="DefaultSubscriptionServerSchemaExtension{TSchema}" /> class.
         /// </summary>
         /// <param name="schemaBuilder">The schema builder created when adding graphql to the server
         /// originally.</param>
         /// <param name="options">The options.</param>
-        public GQLWSSubscriptionServerSchemaExtension(ISchemaBuilder<TSchema> schemaBuilder, SubscriptionServerOptions<TSchema> options)
+        public DefaultSubscriptionServerSchemaExtension(ISchemaBuilder<TSchema> schemaBuilder, SubscriptionServerOptions<TSchema> options)
         {
             _schemaBuilder = Validation.ThrowIfNullOrReturn(schemaBuilder, nameof(schemaBuilder));
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
@@ -91,8 +81,8 @@ namespace GraphQL.AspNet
             var authMethod = _primaryOptions.AuthorizationOptions.Method;
             if (!authMethod.HasValue || authMethod != REQUIRED_AUTH_METHOD)
             {
-                throw new GQLWSSubscriptionServerException(
-                    $"Invalid Authorization Method. The default, graphql-ws compliant, subscription server requires a \"{REQUIRED_AUTH_METHOD}\" " +
+                throw new SubscriptionServerException(
+                    $"Invalid Authorization Method. The default subscription server requires a \"{REQUIRED_AUTH_METHOD}\" " +
                     $"authorization method. (Current authorization method is \"{_schemaBuilder.Options.AuthorizationOptions.Method}\")");
             }
 
@@ -116,7 +106,7 @@ namespace GraphQL.AspNet
             // because the authorization method may have changed
             // rebuild the field execution pipeline as well.
             // This may happen when no method is declared for 'options.AuthorizationOptions.Method'
-            // allowing the defaults to propegate during pipeline creation.            //
+            // allowing the defaults to propegate during pipeline creation.
             // The default for the basic server is "per field"
             // The required value for subscriptions is "per request"
             _schemaBuilder.FieldExecutionPipeline.Clear();
@@ -126,13 +116,10 @@ namespace GraphQL.AspNet
             // the primary subscription options for the schema
             _schemaBuilder.Options.ServiceCollection.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
 
-            _schemaBuilder.Options.ServiceCollection.Add(
-                new ServiceDescriptor(
-                    typeof(GQLWSMessageConverterFactory),
-                    typeof(GQLWSMessageConverterFactory),
-                    ServiceLifetime.Singleton));
+            // register dependencies for built-in protocols
+            _schemaBuilder.Options.ServiceCollection.AddGQLWSProtocol();
 
-            // add the needed graphql-ws classes as optional services
+            // add the needed classes as optional services
             // if the user has already added support for their own handlers
             // they will be safely ignored
             _schemaBuilder.Options.ServiceCollection.TryAdd(
@@ -140,10 +127,16 @@ namespace GraphQL.AspNet
                     typeof(ISubscriptionServer<TSchema>),
                     this.CreateSubscriptionServer,
                     ServiceLifetime.Singleton));
+
+            _schemaBuilder.Options.ServiceCollection.TryAdd(
+             new ServiceDescriptor(
+                 typeof(ISubscriptionServerClientFactory<TSchema>),
+                 typeof(DefaultSubscriptionClientFactory<TSchema>),
+                 ServiceLifetime.Singleton));
         }
 
         /// <summary>
-        /// Creates the graphql-ws subscription server and logs its creation.
+        /// Creates the default subscription server and logs its creation.
         /// </summary>
         /// <param name="sp">The service provider to create the server from.</param>
         /// <returns>ISubscriptionServer&lt;TSchema&gt;.</returns>
@@ -153,8 +146,15 @@ namespace GraphQL.AspNet
             var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
             var eventListener = scope.ServiceProvider.GetRequiredService<ISubscriptionEventRouter>();
             var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
+            var factory = scope.ServiceProvider.GetService<ISubscriptionServerClientFactory<TSchema>>();
 
-            var server = new GQLWSSubscriptionServer<TSchema>(schema, this.SubscriptionOptions, eventListener, logger);
+            var server = new DefaultSubscriptionServer<TSchema>(
+                schema,
+                this.SubscriptionOptions,
+                eventListener,
+                factory,
+                logger);
+
             logger?.SubscriptionServerCreated(server);
             return server;
         }

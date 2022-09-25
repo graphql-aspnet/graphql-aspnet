@@ -6,12 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
 {
     /// <summary>
     /// A set of constants related to the graphql-ws server.
     /// </summary>
-    public static class GQLWSConstants
+    internal static class GQLWSConstants
     {
         /// <summary>
         /// A set of constants relating to graphql-ws messaging protocol.

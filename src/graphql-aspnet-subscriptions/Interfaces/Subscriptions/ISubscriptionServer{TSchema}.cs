@@ -16,10 +16,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     /// The subscription server component is a protocol-agonistic, internal abstraction between the known
     /// subscription-related operations (such as publishing events) and the method through which they are
     /// invoked. Commonly used to swap out in-process vs. out-of-process subscription management. Typically there is
-    /// one subscription server instance (a singleton).
+    /// one subscription server instance (a singleton) per schema per kestral server.
     /// </summary>
     /// <typeparam name="TSchema">The schema type this server is registered to handle.</typeparam>
-    public interface ISubscriptionServer<TSchema>
+    public interface ISubscriptionServer<TSchema> : ISubscriptionEventReceiver
         where TSchema : class, ISchema
     {
         /// <summary>

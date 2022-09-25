@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
     /// events to the log stream.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the logger exists for.</typeparam>
-    public class GQLWSClientEventLogger<TSchema>
+    internal class GQLWSClientEventLogger<TSchema>
         where TSchema : class, ISchema
     {
         private readonly GQLWSClientProxy<TSchema> _client;

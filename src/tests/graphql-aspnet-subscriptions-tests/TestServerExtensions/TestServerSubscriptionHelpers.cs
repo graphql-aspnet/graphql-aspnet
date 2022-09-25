@@ -90,12 +90,13 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <typeparam name="TSchema">The type of the schema the server is hosting.</typeparam>
         /// <param name="server">The server.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public static MockClientConnection CreateClient<TSchema>(this TestServer<TSchema> server)
+        public static MockClientConnection CreateClient<TSchema>(this TestServer<TSchema> server, string requestedProtocol = "")
             where TSchema : class, ISchema
         {
             return new MockClientConnection(
                 server.ServiceProvider.CreateScope().ServiceProvider,
-                server.SecurityContext);
+                server.SecurityContext,
+                requestedProtocol: requestedProtocol);
         }
 
         /// <summary>

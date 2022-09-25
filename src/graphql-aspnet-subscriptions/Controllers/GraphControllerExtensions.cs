@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Controllers
     /// <summary>
     /// Extension methods to expose subscription to graph controllers.
     /// </summary>
-    public static class GraphQLControllerExtensions
+    public static class GraphControllerExtensions
     {
         /// <summary>
         /// Publishes the supplied data to the well-known internal event name, informing

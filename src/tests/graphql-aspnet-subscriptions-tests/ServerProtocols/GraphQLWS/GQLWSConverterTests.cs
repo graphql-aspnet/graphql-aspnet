@@ -34,7 +34,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void CompleteMessage_WithId_SerializesCorrectly()
         {
-            var message = new GQLWSServerCompleteMessage("abc123");
+            var message = new GQLWSSubscriptionCompleteMessage("abc123");
 
             var converter = new GQLWSServerCompleteMessageConverter();
 
@@ -54,7 +54,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void CompleteMessage_WithoutId_SerializesWithNoIdParameter()
         {
-            var message = new GQLWSServerCompleteMessage(null);
+            var message = new GQLWSSubscriptionCompleteMessage(null);
             var converter = new GQLWSServerCompleteMessageConverter();
 
             var options = new JsonSerializerOptions();
@@ -89,7 +89,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 Constants.ErrorCodes.BAD_REQUEST,
                 GraphMessageSeverity.Warning,
                 "prev123",
-                lastMessageType: GQLWSMessageType.START,
+                lastMessageType: GQLWSMessageType.SUBSCRIBE,
                 clientProvidedId: "abc123");
 
             var options = new JsonSerializerOptions();
@@ -141,7 +141,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 Constants.ErrorCodes.BAD_REQUEST,
                 GraphMessageSeverity.Warning,
                 "prev123",
-                lastMessageType: GQLWSMessageType.START);
+                lastMessageType: GQLWSMessageType.SUBSCRIBE);
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
@@ -186,7 +186,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                     .Build();
             await server.ExecuteQuery(context);
 
-            var message = new GQLWSServerDataMessage("abc111", context.Result);
+            var message = new GQLWSServerNextDataMessage("abc111", context.Result);
 
             var converter = new GQLWSServerDataMessageConverter(
                 server.Schema,

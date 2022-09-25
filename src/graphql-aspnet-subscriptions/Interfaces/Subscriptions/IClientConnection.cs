@@ -51,7 +51,16 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task SendAsync(ArraySegment<byte> buffer, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Getsa description applied by the remote endpoint to describe the why the connection was closed.
+        /// Instructs this client connection to accept any pending requests and begin listening
+        /// for messages.
+        /// </summary>
+        /// <param name="subProtocol">The sub protocol the server wishes to tell
+        /// the client that it will accept for messaging standards.</param>
+        /// <returns>Task.</returns>
+        Task OpenAsync(string subProtocol);
+
+        /// <summary>
+        /// Gets a description applied by the remote endpoint to describe the why the connection was closed.
         /// </summary>
         /// <value>The description applied when this connection was closed.</value>
         string CloseStatusDescription { get; }
@@ -80,5 +89,11 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <value>The user.</value>
         IUserSecurityContext SecurityContext { get; }
+
+        /// <summary>
+        /// Gets the sub-protocol requested by this client connection.
+        /// </summary>
+        /// <value>The requested protocol.</value>
+        string RequestedProtocol { get; }
     }
 }

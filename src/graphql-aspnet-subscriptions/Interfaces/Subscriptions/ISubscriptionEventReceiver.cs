@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Receives a new event that was seen by a listener.
         /// </summary>
         /// <param name="eventData">The event data.</param>
-        /// <returns>Task.</returns>
-        Task ReceiveEvent(SubscriptionEvent eventData);
+        /// <returns>The number of entities the event was forwarded to, if any.</returns>
+        Task<int> ReceiveEvent(SubscriptionEvent eventData);
     }
 }

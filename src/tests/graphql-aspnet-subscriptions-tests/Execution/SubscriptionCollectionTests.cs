@@ -19,12 +19,12 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using NUnit.Framework;
 
     [TestFixture]
-    public class GQLWSSubscriptionCollectionTests
+    public class SubscriptionCollectionTests
     {
         [Test]
         public void AddNewSub_ReflectsInCollectionCount()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
@@ -40,7 +40,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void AddNewSub_OfSameRouteButDiffererntId_ReflectsInCollectionCount()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
@@ -61,7 +61,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void AddNewSub_OfDifferentRoute_ReflectsInCollectionCount()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
@@ -104,7 +104,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void RemoveExistingSub_ReflectsInCollectionCount()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
@@ -124,7 +124,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void AddExistingSubId_ThrowsException()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
             var field = new SchemaItemPath("[subscription]/field1");
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
@@ -143,7 +143,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void RemoveNonExistingSub_NoSubReturned()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
@@ -156,7 +156,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void AddNewSub_NotReturnedOnInvalidRoute()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 
@@ -172,7 +172,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void AddNewSub_NotReturnedOnNullRoute()
         {
-            var collection = new GQLWSSubscriptionCollection<GraphSchema>();
+            var collection = new SubscriptionCollection<GraphSchema>();
 
             var fakeSub = new Mock<ISubscription<GraphSchema>>();
 

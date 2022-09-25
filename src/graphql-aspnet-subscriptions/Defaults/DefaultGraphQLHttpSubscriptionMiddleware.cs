@@ -76,13 +76,9 @@ namespace GraphQL.AspNet.Defaults
 
                 try
                 {
-                    var webSocket = await context.WebSockets.AcceptWebSocketAsync(
-                        SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL)
-                        .ConfigureAwait(false);
-
-                    IClientConnection socketProxy = new WebSocketClientConnection(webSocket, context);
+                    IClientConnection clientConnectionProxy = new WebSocketClientConnection(context);
                     var subscriptionClient = await _subscriptionServer
-                            .RegisterNewClient(socketProxy)
+                            .RegisterNewClient(clientConnectionProxy)
                             .ConfigureAwait(false);
 
                     if (subscriptionClient != null)

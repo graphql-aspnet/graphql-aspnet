@@ -22,7 +22,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
     using NUnit.Framework;
 
     [TestFixture]
-    public class WebSocketClientConnectionTests
+    public class FakeableWebSocketClientConnectionTests
     {
         [Test]
         public void GeneralPropertyCheck()
@@ -43,7 +43,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             context.User = user;
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, context);
+            var client = new FakeableWebSocketClientConnection(fakeSocket, context);
 
             Assert.AreEqual(ClientConnectionState.Aborted, client.State);
             Assert.AreEqual(ClientConnectionCloseStatus.EndpointUnavailable, client.CloseStatus.Value);
@@ -61,7 +61,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             fakeSocket.ThrowExceptionOnReceieve(exceptionThrown);
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as WebSocketFailureResult;
@@ -78,7 +78,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             fakeSocket.ThrowExceptionOnReceieve(exceptionThrown);
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as ClientConnectionFailureResult;
@@ -96,7 +96,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             fakeSocket.ThrowExceptionOnReceieve(aggregate);
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as ClientConnectionFailureResult;
@@ -114,7 +114,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             fakeSocket.ThrowExceptionOnReceieve(aggregate);
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as WebSocketFailureResult;
@@ -128,7 +128,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             var fakeSocket = new FakeWebSocket();
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
             var result = await client.ReceiveAsync(array, default);
 
             Assert.AreEqual(1, fakeSocket.TotalCallsToReceive);
@@ -140,7 +140,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             var fakeSocket = new FakeWebSocket();
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
             await client.SendAsync(array, ClientMessageType.Binary, true, default);
 
             Assert.AreEqual(1, fakeSocket.TotalCallsToSend);
@@ -152,7 +152,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             var fakeSocket = new FakeWebSocket();
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new WebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
             await client.CloseAsync(ClientConnectionCloseStatus.Empty, string.Empty, default);
 
             Assert.AreEqual(1, fakeSocket.TotalCloseCalls);

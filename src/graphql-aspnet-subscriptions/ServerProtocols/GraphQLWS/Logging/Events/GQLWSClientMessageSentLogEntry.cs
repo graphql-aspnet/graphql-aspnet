@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
     /// <summary>
     /// Recorded when an graphql-ws client proxy sends a message down to its connected client.
     /// </summary>
-    public class GQLWSClientMessageSentLogEntry : GraphLogEntry
+    internal class GQLWSClientMessageSentLogEntry : GraphLogEntry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GQLWSClientMessageSentLogEntry"/> class.

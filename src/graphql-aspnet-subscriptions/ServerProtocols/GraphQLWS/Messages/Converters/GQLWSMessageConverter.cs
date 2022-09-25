@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
     /// <summary>
     /// A general converter for serializing an <see cref="GQLWSMessage" /> to json.
     /// </summary>
-    public class GQLWSMessageConverter : JsonConverter<GQLWSMessage>
+    internal class GQLWSMessageConverter : JsonConverter<GQLWSMessage>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GQLWSMessageConverter"/> class.

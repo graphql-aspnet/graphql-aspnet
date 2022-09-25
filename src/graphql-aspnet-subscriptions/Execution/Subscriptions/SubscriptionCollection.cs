@@ -21,17 +21,17 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     /// A collection of subscriptions tracked by a single client.
     /// </summary>
     /// <typeparam name="TSchema">The type of the t schema.</typeparam>
-    internal class GQLWSSubscriptionCollection<TSchema> : IEnumerable<ISubscription<TSchema>>
+    internal class SubscriptionCollection<TSchema> : IEnumerable<ISubscription<TSchema>>
         where TSchema : class, ISchema
     {
         private object _syncLock = new object();
         private Dictionary<string, ISubscription<TSchema>> _subsById;
-        private Dictionary<SchemaItemPath,  HashSet<ISubscription<TSchema>>> _subsByRoute;
+        private Dictionary<SchemaItemPath, HashSet<ISubscription<TSchema>>> _subsByRoute;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSSubscriptionCollection{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionCollection{TSchema}"/> class.
         /// </summary>
-        public GQLWSSubscriptionCollection()
+        public SubscriptionCollection()
         {
             _subsById = new Dictionary<string, ISubscription<TSchema>>();
             _subsByRoute = new Dictionary<SchemaItemPath, HashSet<ISubscription<TSchema>>>(SchemaItemPathComparer.Instance);

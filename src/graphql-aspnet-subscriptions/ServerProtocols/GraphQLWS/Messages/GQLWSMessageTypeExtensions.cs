@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
     /// <summary>
     /// Helper methods for the <see cref="GQLWSMessageType"/>.
     /// </summary>
-    public static class GQLWSMessageTypeExtensions
+    internal static class GQLWSMessageTypeExtensions
     {
         /// <summary>
         /// A helper message to create a valid <see cref="GQLWSMessageType"/> accounting
@@ -28,12 +28,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
                 return GQLWSMessageType.UNKNOWN;
 
             text = text.ToLowerInvariant();
-
-            // quirk of the graphql-ws client. uses a shortened version of keep alive
-            // for message transfer optimization
-            // https://github.com/apollographql/subscriptions-transport-ws/blob/master/src/message-types.ts
-            if (text == "ka")
-                return GQLWSMessageType.CONNECTION_KEEP_ALIVE;
 
             if (Enum.TryParse<GQLWSMessageType>(text, true, out var result))
                 return result;
@@ -57,10 +51,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
         /// <returns>System.String.</returns>
         public static string Serialize(GQLWSMessageType messageType)
         {
-            if (messageType == GQLWSMessageType.CONNECTION_KEEP_ALIVE)
-                return "ka";
-            else
-                return messageType.ToString().ToLowerInvariant();
+            return messageType.ToString().ToLowerInvariant();
         }
     }
 }

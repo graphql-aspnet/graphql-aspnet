@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Connections.WebSockets
 {
     using System;
+    using System.Net.Http;
     using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
@@ -25,28 +26,40 @@ namespace GraphQL.AspNet.Connections.WebSockets
     /// </summary>
     public class WebSocketClientConnection : IClientConnection
     {
-        private readonly WebSocket _webSocket;
         private readonly HttpContext _httpContext;
         private readonly IUserSecurityContext _securityContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketClientConnection" /> class.
         /// </summary>
-        /// <param name="webSocket">The web socket.</param>
         /// <param name="context">The context.</param>
-        public WebSocketClientConnection(WebSocket webSocket, HttpContext context)
+        public WebSocketClientConnection(HttpContext context)
         {
-            _webSocket = Validation.ThrowIfNullOrReturn(webSocket, nameof(WebSocket));
             _httpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
             _securityContext = new HttpUserSecurityContext(_httpContext);
+
+            this.RequestedProtocol = this.DeteremineRequestedProtocol();
+        }
+
+        private string DeteremineRequestedProtocol()
+        {
+            if (_httpContext.Request.Headers.ContainsKey(SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER))
+            {
+                return _httpContext.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER][0];
+            }
+
+            return string.Empty;
         }
 
         /// <inheritdoc />
         public async Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
+            if (this.WebSocket == null)
+                return;
+
             try
             {
-                await _webSocket.CloseAsync(
+                await this.WebSocket.CloseAsync(
                     closeStatus.ToWebSocketCloseStatus(),
                     statusDescription,
                     cancellationToken)
@@ -70,9 +83,15 @@ namespace GraphQL.AspNet.Connections.WebSockets
             ArraySegment<byte> buffer,
             CancellationToken cancelToken = default)
         {
+            if (this.WebSocket == null)
+            {
+                throw new InvalidOperationException("Unable to receive a data packet, " +
+                    "this connection is not currently open.");
+            }
+
             try
             {
-                var result = await _webSocket.ReceiveAsync(buffer, cancelToken);
+                var result = await this.WebSocket.ReceiveAsync(buffer, cancelToken);
                 return new WebSocketReceiveResultProxy(result);
             }
             catch (WebSocketException webSocketException)
@@ -96,29 +115,57 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// <inheritdoc />
         public Task SendAsync(ArraySegment<byte> buffer, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
-            return _webSocket.SendAsync(
+            if (this.WebSocket == null)
+            {
+                throw new InvalidOperationException("Unable to send data packet, this connection is not currently " +
+                    "open.");
+            }
+
+            return this.WebSocket.SendAsync(
                 buffer,
                 messageType.ToWebSocketMessageType(),
                 endOfMessage,
                 cancellationToken);
         }
 
+        /// <inheritdoc />
+        public virtual async Task OpenAsync(string protocol)
+        {
+            if (this.WebSocket != null)
+            {
+                throw new InvalidOperationException("Unable to open the connection " +
+                    "it is already open.");
+            }
+
+            this.WebSocket = await _httpContext.WebSockets.AcceptWebSocketAsync(protocol)
+                .ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Getsa description applied by the remote endpoint to describe the why the connection was closed.
         /// </summary>
         /// <value>The description applied when this connection was closed.</value>
-        public string CloseStatusDescription => _webSocket.CloseStatusDescription;
+        public string CloseStatusDescription => this.WebSocket.CloseStatusDescription;
 
         /// <inheritdoc />
-        public ClientConnectionCloseStatus? CloseStatus => _webSocket.CloseStatus?.ToClientConnectionCloseStatus();
+        public ClientConnectionCloseStatus? CloseStatus => this.WebSocket.CloseStatus?.ToClientConnectionCloseStatus();
 
         /// <inheritdoc />
-        public ClientConnectionState State => _webSocket.State.ToClientState();
+        public ClientConnectionState State => this.WebSocket.State.ToClientState();
 
         /// <inheritdoc />
         public IServiceProvider ServiceProvider => _httpContext.RequestServices;
 
         /// <inheritdoc />
         public IUserSecurityContext SecurityContext => _securityContext;
+
+        /// <inheritdoc />
+        public string RequestedProtocol { get; }
+
+        /// <summary>
+        /// Gets or sets the web socket used by this instance.
+        /// </summary>
+        /// <value>The web socket.</value>
+        protected WebSocket WebSocket { get; set; }
     }
 }

@@ -85,10 +85,28 @@ namespace GraphQL.AspNet
         public static class WebSockets
         {
             /// <summary>
-            /// The the key value used as the default sub protocol this subscription
-            /// server can support.
+            /// The name of the header on an http request that will contain the requested
+            /// graphql messaging protocol.
             /// </summary>
-            public const string DEFAULT_SUB_PROTOCOL = "graphql-ws";
+            public const string WEBSOCKET_PROTOCOL_HEADER = "sec-websocket-protocol";
+
+            /// <summary>
+            /// The default default sub protocol this subscription server will use
+            /// when no specific protocol is identified.
+            /// </summary>
+            public const string DEFAULT_SUB_PROTOCOL = GRAPHQL_WS_PROTOCOL;
+
+            /// <summary>
+            /// The modern "graphql-ws" protcol as detailed by:
+            /// (https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md) .
+            /// </summary>
+            public const string GRAPHQL_WS_PROTOCOL = "graphql-transport-ws";
+
+            /// <summary>
+            /// A legacy version of "graphql-ws" protcol previously maintained by apollo as detailed by:
+            /// (https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md) .
+            /// </summary>
+            public const string APOLLO_SUBSCRIPTION_TRANSPORT = "graphql-ws";
         }
     }
 }

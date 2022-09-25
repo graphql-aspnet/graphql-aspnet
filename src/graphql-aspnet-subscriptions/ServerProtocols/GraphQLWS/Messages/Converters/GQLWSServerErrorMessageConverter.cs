@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
     /// <summary>
     /// A json converter for the <see cref="GQLWSServerErrorMessage"/> type.
     /// </summary>
-    public class GQLWSServerErrorMessageConverter : JsonConverter<GQLWSServerErrorMessage>
+    internal class GQLWSServerErrorMessageConverter : JsonConverter<GQLWSServerErrorMessage>
     {
         private readonly ISchema _schema;
 
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
         }
 
         /// <summary>
-        /// Reads and converts the JSON to type <see cref="GQLWSServerDataMessage"/>.
+        /// Reads and converts the JSON to type <see cref="GQLWSServerNextDataMessage"/>.
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="typeToConvert">The type to convert.</param>

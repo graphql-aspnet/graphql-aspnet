@@ -16,9 +16,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
 
     /// <summary>
-    /// A json converter for the <see cref="GQLWSServerCompleteMessage"/>.
+    /// A json converter for the <see cref="GQLWSSubscriptionCompleteMessage"/>.
     /// </summary>
-    public class GQLWSServerCompleteMessageConverter : JsonConverter<GQLWSServerCompleteMessage>
+    internal class GQLWSServerCompleteMessageConverter : JsonConverter<GQLWSSubscriptionCompleteMessage>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GQLWSServerCompleteMessageConverter" /> class.
@@ -28,13 +28,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
         }
 
         /// <summary>
-        /// Reads and converts the JSON to type <see cref="GQLWSServerDataMessage"/>.
+        /// Reads and converts the JSON to type <see cref="GQLWSServerNextDataMessage"/>.
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="typeToConvert">The type to convert.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
         /// <returns>The converted value.</returns>
-        public override GQLWSServerCompleteMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override GQLWSSubscriptionCompleteMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             throw new NotSupportedException($"{typeof(GQLWSServerErrorMessage).FriendlyName()} cannot be deserialized.");
         }
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
         /// <param name="writer">The writer to write to.</param>
         /// <param name="value">The value to convert to JSON.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
-        public override void Write(Utf8JsonWriter writer, GQLWSServerCompleteMessage value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, GQLWSSubscriptionCompleteMessage value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
             writer.WriteString(GQLWSConstants.Messaging.MESSAGE_TYPE, GQLWSMessageTypeExtensions.Serialize(value.Type));

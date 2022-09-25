@@ -19,20 +19,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
 
         // Client -> Server Messages
         CONNECTION_INIT = 10,
-        START = 20,
-        STOP = 30,
-        CONNECTION_TERMINATE = 40,
+        SUBSCRIBE = 20,
 
         // Server -> Client Messages
-        CONNECTION_ERROR = 100,
         CONNECTION_ACK = 110,
-        DATA = 120,
+        NEXT = 120,
         ERROR = 130,
-        COMPLETE = 140,
-        CONNECTION_KEEP_ALIVE = 150,
 
         // Client <-> Server Messages
         PING = 200,
         PONG = 210,
+        COMPLETE = 220,
     }
 }

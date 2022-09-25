@@ -12,16 +12,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Exceptions
     using System;
 
     /// <summary>
-    /// A general exception thrown when something related to the graphql-ws subscription
+    /// A general exception thrown when something related to subscription
     /// server component was unhandled.
     /// </summary>
-    public class GQLWSSubscriptionServerException : Exception
+    public class SubscriptionServerException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSSubscriptionServerException"/> class.
+        /// Initializes a new instance of the <see cref="SubscriptionServerException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public GQLWSSubscriptionServerException(string message)
+        public SubscriptionServerException(string message)
             : base(message)
         {
         }

@@ -70,7 +70,7 @@ namespace GraphQL.Subscriptions.Tests
 
             (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
 
-            var extension = new GQLWSSubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new DefaultSubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
             extension.Configure(primaryOptions);
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
