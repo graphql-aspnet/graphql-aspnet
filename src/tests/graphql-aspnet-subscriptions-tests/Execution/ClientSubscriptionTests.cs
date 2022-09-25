@@ -22,6 +22,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
+    using Microsoft.VisualStudio.TestPlatform.TestExecutor;
     using Moq;
     using NUnit.Framework;
 
@@ -46,7 +47,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var field = queryPlan.Operation.FieldContexts[0].Field;
             var name = field.GetType().FullName;
 
-            (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
+            var testClient = testServer.CreateSubscriptionClient();
 
             var queryData = new GraphQueryData();
 
@@ -66,7 +67,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         }
 
         [Test]
-        public async Task ClientSubscription_NotASubscriptionOperation_ReturnsError()
+        public void ClientSubscription_NotASubscriptionOperation_ReturnsError()
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
@@ -78,7 +79,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Query);
 
-            (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
+            var testClient = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
                 testClient,
@@ -94,7 +95,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         }
 
         [Test]
-        public async Task ClientSubscription_NoFieldContextFound_ReturnsError()
+        public void ClientSubscription_NoFieldContextFound_ReturnsError()
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
@@ -112,7 +113,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Subscription);
             fakeOp.Setup(x => x.FieldContexts).Returns(fakeFieldContexts.Object);
 
-            (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
+            var testClient = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
                 testClient,

@@ -42,7 +42,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var server = serverBuilder.Build();
 
-            (var socketClient, var subClient) = await server.CreateSubscriptionClient();
+            var subClient = server.CreateSubscriptionClient();
 
             var builder = server.CreateSubcriptionContextBuilder(subClient)
                 .AddQueryText(queryText);

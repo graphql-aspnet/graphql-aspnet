@@ -25,9 +25,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <summary>
         /// Register a newly connected subscription with the server so that it can start sending messages.
         /// </summary>
-        /// <param name="client">The abstracted client connection to host in this server instance.</param>
-        /// <returns>Task.</returns>
-        Task<ISubscriptionClientProxy> RegisterNewClient(IClientConnection client);
+        /// <param name="clientProxy">The client proxy through which the server will
+        /// communicate events to the connected client.</param>
+        /// <returns>A value indicating if the client was successfully registered.</returns>
+        Task<bool> RegisterNewClient(ISubscriptionClientProxy<TSchema> clientProxy);
 
         /// <summary>
         /// Gets an Id that uniquely identifies this server instance.

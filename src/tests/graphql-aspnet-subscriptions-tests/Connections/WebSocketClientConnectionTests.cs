@@ -13,6 +13,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
     using System.Net.WebSockets;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Interfaces.Security;
@@ -22,18 +23,13 @@ namespace GraphQL.Subscriptions.Tests.Connections
     using NUnit.Framework;
 
     [TestFixture]
-    public class FakeableWebSocketClientConnectionTests
+    public class WebSocketClientConnectionTests
     {
         [Test]
-        public void GeneralPropertyCheck()
+        public async Task GeneralPropertyCheck()
         {
-            var fakeSocket = new FakeWebSocket(
-                WebSocketState.Aborted,
-                WebSocketCloseStatus.EndpointUnavailable,
-                "close desc",
-                "sub proto");
-
             var context = new DefaultHttpContext();
+            context.Request.Headers.Add(SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER, "sub proto");
 
             var provider = new Mock<IServiceProvider>().Object;
             var securityContext = new Mock<IUserSecurityContext>().Object;
@@ -42,26 +38,54 @@ namespace GraphQL.Subscriptions.Tests.Connections
             context.RequestServices = provider;
             context.User = user;
 
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    var socket = new FakeWebSocket(
+                        WebSocketState.Aborted,
+                        WebSocketCloseStatus.EndpointUnavailable,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    return Task.FromResult(socket as WebSocket);
+                });
+
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, context);
+            var client = new WebSocketClientConnection(context, fakeSocketManager.Object);
+            await client.OpenAsync("actual protocol");
 
             Assert.AreEqual(ClientConnectionState.Aborted, client.State);
             Assert.AreEqual(ClientConnectionCloseStatus.EndpointUnavailable, client.CloseStatus.Value);
             Assert.AreEqual("close desc", client.CloseStatusDescription);
             Assert.AreEqual(provider, client.ServiceProvider);
             Assert.AreEqual(user, client.SecurityContext.DefaultUser);
+            Assert.AreEqual("sub proto", client.RequestedProtocol);
+            Assert.AreEqual("actual protocol", client.Protocol);
         }
 
         [Test]
         public async Task Receive_ThrowsSocketException_ReturnsSocketFailureResult()
         {
-            var fakeSocket = new FakeWebSocket();
-
             var exceptionThrown = new WebSocketException("total failure");
-            fakeSocket.ThrowExceptionOnReceieve(exceptionThrown);
+
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    var socket = new FakeWebSocket(
+                        WebSocketState.Open,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    socket.ThrowExceptionOnReceieve(exceptionThrown);
+                    return Task.FromResult(socket as WebSocket);
+                });
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
+
+            await client.OpenAsync("protocol");
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as WebSocketFailureResult;
@@ -72,13 +96,25 @@ namespace GraphQL.Subscriptions.Tests.Connections
         [Test]
         public async Task Receive_ThrowsGeneralException_ReturnsConnectionFailureResult()
         {
-            var fakeSocket = new FakeWebSocket();
-
             var exceptionThrown = new Exception("total failure");
-            fakeSocket.ThrowExceptionOnReceieve(exceptionThrown);
+
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    var socket = new FakeWebSocket(
+                        WebSocketState.Open,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    socket.ThrowExceptionOnReceieve(exceptionThrown);
+                    return Task.FromResult(socket as WebSocket);
+                });
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
+
+            await client.OpenAsync("protocol");
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as ClientConnectionFailureResult;
@@ -89,14 +125,26 @@ namespace GraphQL.Subscriptions.Tests.Connections
         [Test]
         public async Task Receive_ThrowsAggregateException_UnwindsAggregateException_ToClientFailureResult()
         {
-            var fakeSocket = new FakeWebSocket();
-
             var exceptionThrown = new Exception("total failure");
             var aggregate = new AggregateException(exceptionThrown);
-            fakeSocket.ThrowExceptionOnReceieve(aggregate);
+
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    var socket = new FakeWebSocket(
+                        WebSocketState.Open,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    socket.ThrowExceptionOnReceieve(aggregate);
+                    return Task.FromResult(socket as WebSocket);
+                });
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
+
+            await client.OpenAsync("protocol");
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as ClientConnectionFailureResult;
@@ -107,14 +155,27 @@ namespace GraphQL.Subscriptions.Tests.Connections
         [Test]
         public async Task Receive_ThrowsAggregateException_UnwindsAggregateException_ToWebSocketFailureResult()
         {
-            var fakeSocket = new FakeWebSocket();
-
             var exceptionThrown = new WebSocketException("total failure");
             var aggregate = new AggregateException(exceptionThrown);
-            fakeSocket.ThrowExceptionOnReceieve(aggregate);
+
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    var socket = new FakeWebSocket(
+                        WebSocketState.Aborted,
+                        WebSocketCloseStatus.EndpointUnavailable,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    socket.ThrowExceptionOnReceieve(aggregate);
+                    return Task.FromResult(socket as WebSocket);
+                });
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
+
+            await client.OpenAsync("protocol");
             var result = await client.ReceiveAsync(array, default);
 
             var failureResult = result as WebSocketFailureResult;
@@ -125,22 +186,49 @@ namespace GraphQL.Subscriptions.Tests.Connections
         [Test]
         public async Task SuccessfulRecieve_HasRecievedFromSocket()
         {
-            var fakeSocket = new FakeWebSocket();
+            FakeWebSocket fakeSocket = null;
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    fakeSocket = new FakeWebSocket(
+                        WebSocketState.Open,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    return Task.FromResult(fakeSocket as WebSocket);
+                });
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
+
+            await client.OpenAsync("protocol");
             var result = await client.ReceiveAsync(array, default);
 
+            Assert.IsNotNull(fakeSocket);
             Assert.AreEqual(1, fakeSocket.TotalCallsToReceive);
         }
 
         [Test]
         public async Task SuccessfulSend_HasSentToSocket()
         {
-            var fakeSocket = new FakeWebSocket();
+            FakeWebSocket fakeSocket = null;
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    fakeSocket = new FakeWebSocket(
+                        WebSocketState.Open,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    return Task.FromResult(fakeSocket as WebSocket);
+                });
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
+
+            await client.OpenAsync("protocol");
             await client.SendAsync(array, ClientMessageType.Binary, true, default);
 
             Assert.AreEqual(1, fakeSocket.TotalCallsToSend);
@@ -149,10 +237,23 @@ namespace GraphQL.Subscriptions.Tests.Connections
         [Test]
         public async Task SuccessfulCLose_HasSentToSocket()
         {
-            var fakeSocket = new FakeWebSocket();
+            FakeWebSocket fakeSocket = null;
+            var fakeSocketManager = new Mock<WebSocketManager>();
+            fakeSocketManager.Setup(x => x.AcceptWebSocketAsync(It.IsAny<string>()))
+                .Returns((string protocolName) =>
+                {
+                    fakeSocket = new FakeWebSocket(
+                        WebSocketState.Open,
+                        closeDescription: "close desc",
+                        subProtocol: protocolName);
+
+                    return Task.FromResult(fakeSocket as WebSocket);
+                });
 
             var array = new ArraySegment<byte>(new byte[500]);
-            var client = new FakeableWebSocketClientConnection(fakeSocket, new DefaultHttpContext());
+            var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
+
+            await client.OpenAsync("protocol");
             await client.CloseAsync(ClientConnectionCloseStatus.Empty, string.Empty, default);
 
             Assert.AreEqual(1, fakeSocket.TotalCloseCalls);

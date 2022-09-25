@@ -29,12 +29,10 @@ namespace GraphQL.Subscriptions.Tests.Logging
         public void GraphQLWSEventMonitorEnded_PropertyCheck()
         {
             var router = new Mock<ISubscriptionEventRouter>();
-            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
             var server = new DefaultSubscriptionServer<GraphSchema>(
                 new GraphSchema(),
                 new SubscriptionServerOptions<GraphSchema>(),
-                router.Object,
-                factory.Object);
+                router.Object);
 
             var eventName = new SubscriptionEventName("schema", "event");
 
@@ -50,12 +48,10 @@ namespace GraphQL.Subscriptions.Tests.Logging
         public void GraphQLWSEventMonitorStarted_PropertyCheck()
         {
             var router = new Mock<ISubscriptionEventRouter>();
-            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
             var server = new DefaultSubscriptionServer<GraphSchema>(
                 new GraphSchema(),
                 new SubscriptionServerOptions<GraphSchema>(),
-                router.Object,
-                factory.Object);
+                router.Object);
 
             var eventName = new SubscriptionEventName("schema", "event");
 
@@ -71,12 +67,10 @@ namespace GraphQL.Subscriptions.Tests.Logging
         public void GraphQLWSServerSubscriptionEventReceived_PropertyCheck()
         {
             var router = new Mock<ISubscriptionEventRouter>();
-            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
             var server = new DefaultSubscriptionServer<GraphSchema>(
                 new GraphSchema(),
                 new SubscriptionServerOptions<GraphSchema>(),
-                router.Object,
-                factory.Object);
+                router.Object);
 
             var eventData = new SubscriptionEvent()
             {

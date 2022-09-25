@@ -16,12 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ServerProtocols\GraphQLWS\**" />
-    <EmbeddedResource Remove="ServerProtocols\GraphQLWS\**" />
-    <None Remove="ServerProtocols\GraphQLWS\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
 

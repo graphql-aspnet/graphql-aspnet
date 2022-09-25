@@ -57,9 +57,11 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
+            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
+                factory.Object,
                 options);
 
             var context = new DefaultHttpContext();
@@ -86,9 +88,11 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
+            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
+                factory.Object,
                 options);
 
             var context = new DefaultHttpContext();
@@ -117,12 +121,20 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             connection.Setup(x => x.StartConnection()).Returns(Task.CompletedTask);
 
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            server.Setup(x => x.RegisterNewClient(It.IsAny<IClientConnection>())).ReturnsAsync(connection.Object);
+            server.Setup(x => x.RegisterNewClient(It.IsAny<ISubscriptionClientProxy<GraphSchema>>()))
+                .ReturnsAsync(true);
+
+            var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+
+            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
+            factory.Setup(x => x.CreateSubscriptionClient(It.IsAny<IClientConnection>()))
+                .ReturnsAsync(client.Object);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
+                factory.Object,
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -147,12 +159,16 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var next = new RequestDelegate(CallNext);
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            server.Setup(x => x.RegisterNewClient(It.IsAny<IClientConnection>())).Throws(new InvalidOperationException("failed"));
+            server.Setup(x => x.RegisterNewClient(It.IsAny<ISubscriptionClientProxy<GraphSchema>>()))
+                .Throws(new InvalidOperationException("failed"));
+
+            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
+                factory.Object,
                 options);
 
             var context = new FakeWebSocketHttpContext();

@@ -53,9 +53,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteRemoved;
 
         /// <summary>
-        /// Performs acknowledges the setup of the subscription through the websocket and brokers messages
-        /// between the client and the graphql runtime for its lifetime. When this method completes the socket is
-        /// closed.
+        /// Performs the initial setup of the client proxy and begins brokering messages
+        /// between the client and the graphql runtime for its lifetime. When this method
+        /// completes the connected client is considered permanantly disconnected.
         /// </summary>
         /// <returns>Task.</returns>
         Task StartConnection();

@@ -51,11 +51,13 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <param name="autoCloseOnReadCloseMessage">if set to <c>true</c> when the connection
         /// reads a close message, it will shut it self down.</param>
         /// <param name="requestedProtocol">The requested protocol this client should show.</param>
+        /// <param name="actualProtocol">The actual protocol this client would have negoiated.</param>
         public MockClientConnection(
             IServiceProvider serviceProvider = null,
             IUserSecurityContext securityContext = null,
             bool autoCloseOnReadCloseMessage = true,
-            string requestedProtocol = null)
+            string requestedProtocol = null,
+            string actualProtocol = null)
         {
             this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
             this.SecurityContext = securityContext;
@@ -66,6 +68,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
             _autoCloseOnReadCloseMessage = autoCloseOnReadCloseMessage;
             this.RequestedProtocol = requestedProtocol;
+            this.Protocol = actualProtocol;
         }
 
         /// <summary>
@@ -260,5 +263,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         /// <inheritdoc />
         public string RequestedProtocol { get; }
+
+        /// <inheritdoc />
+        public string Protocol { get; }
     }
 }

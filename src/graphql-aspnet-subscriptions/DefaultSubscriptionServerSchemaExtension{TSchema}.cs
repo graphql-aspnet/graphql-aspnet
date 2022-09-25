@@ -146,13 +146,11 @@ namespace GraphQL.AspNet
             var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
             var eventListener = scope.ServiceProvider.GetRequiredService<ISubscriptionEventRouter>();
             var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
-            var factory = scope.ServiceProvider.GetService<ISubscriptionServerClientFactory<TSchema>>();
 
             var server = new DefaultSubscriptionServer<TSchema>(
                 schema,
                 this.SubscriptionOptions,
                 eventListener,
-                factory,
                 logger);
 
             logger?.SubscriptionServerCreated(server);

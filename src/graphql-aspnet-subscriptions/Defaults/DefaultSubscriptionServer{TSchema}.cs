@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Defaults
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -38,9 +39,8 @@ namespace GraphQL.AspNet.Defaults
     {
         private readonly TSchema _schema;
         private readonly ISubscriptionEventRouter _eventRouter;
-        private readonly ISubscriptionServerClientFactory<TSchema> _clientFactory;
         private readonly SubscriptionServerOptions<TSchema> _serverOptions;
-        private readonly HashSet<ISubscriptionClientProxy<TSchema>> _clients;
+        private readonly HashSet<ISubscriptionClientProxy<TSchema>> _activeClients;
         private readonly SubscriptionServerEventLogger<TSchema> _logger;
 
         private readonly object _syncLock = new object();
@@ -54,13 +54,11 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="serverOptions">The subscription options used to configure the server instnace.</param>
         /// <param name="eventRouter">The event listener through which
         /// raised subscription events will be communicated to this instance for dispatch to its connected clients.</param>
-        /// <param name="clientFactory">The client factory.</param>
         /// <param name="logger">The logger instance to record entries against.</param>
         public DefaultSubscriptionServer(
             TSchema schema,
             SubscriptionServerOptions<TSchema> serverOptions,
             ISubscriptionEventRouter eventRouter,
-            ISubscriptionServerClientFactory<TSchema> clientFactory,
             IGraphEventLogger logger = null)
         {
             this.Id = Guid.NewGuid().ToString();
@@ -69,8 +67,7 @@ namespace GraphQL.AspNet.Defaults
             _serverOptions = Validation.ThrowIfNullOrReturn(serverOptions, nameof(serverOptions));
             _eventRouter = Validation.ThrowIfNullOrReturn(eventRouter, nameof(eventRouter));
 
-            _clientFactory = Validation.ThrowIfNullOrReturn(clientFactory, nameof(clientFactory));
-            _clients = new HashSet<ISubscriptionClientProxy<TSchema>>();
+            _activeClients = new HashSet<ISubscriptionClientProxy<TSchema>>();
             _eventSendSemaphore = new SemaphoreSlim(_serverOptions.MaxConcurrentClientNotifications);
             _subCountByName = new Dictionary<SubscriptionEventName, HashSet<ISubscriptionClientProxy<TSchema>>>(
                 SubscriptionEventNameEqualityComparer.Instance);
@@ -79,43 +76,37 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public async Task<ISubscriptionClientProxy> RegisterNewClient(IClientConnection connection)
+        public async Task<bool> RegisterNewClient(ISubscriptionClientProxy<TSchema> clientProxy)
         {
-            Validation.ThrowIfNull(connection, nameof(connection));
+            Validation.ThrowIfNull(clientProxy, nameof(clientProxy));
 
-            var client = await _clientFactory.CreateSubscriptionClient(connection);
-
-            if (client == null)
-                throw new InvalidOperationException($"No client could be generated for sub protocol '{connection.RequestedProtocol}'");
-
-            var isAuthenticated = connection.SecurityContext.DefaultUser != null
-                                && connection.SecurityContext
-                                             .DefaultUser
-                                             .Identities
-                                             .Any(x => x.IsAuthenticated);
+            var isAuthenticated = clientProxy.SecurityContext.DefaultUser != null &&
+                                  clientProxy.SecurityContext
+                                    .DefaultUser
+                                    .Identities
+                                    .Any(x => x.IsAuthenticated);
 
             if (_serverOptions.AuthenticatedRequestsOnly && !isAuthenticated)
             {
-                await client.SendErrorMessage(
+                await clientProxy.SendErrorMessage(
                     new GraphExecutionMessage(
                         GraphMessageSeverity.Critical,
                         message: "Unauthorized request.",
                         code: Constants.ErrorCodes.ACCESS_DENIED));
 
-                await client.CloseConnection(
+                await clientProxy.CloseConnection(
                     ClientConnectionCloseStatus.ProtocolError,
                     "Unauthorized Request",
                     default);
 
-                return null;
+                return false;
             }
 
-            client.ConnectionOpening += this.SubscriptionClient_ConnectionOpening;
-            client.ConnectionClosed += this.SubscriptionClient_ConnectionClosed;
-            client.SubscriptionRouteAdded += this.SubscriptionClient_SubscriptionRouteAdded;
-            client.SubscriptionRouteRemoved += this.SubscriptionClient_SubscriptionRouteRemoved;
-
-            return client;
+            clientProxy.ConnectionOpening += this.SubscriptionClient_ConnectionOpening;
+            clientProxy.ConnectionClosed += this.SubscriptionClient_ConnectionClosed;
+            clientProxy.SubscriptionRouteAdded += this.SubscriptionClient_SubscriptionRouteAdded;
+            clientProxy.SubscriptionRouteRemoved += this.SubscriptionClient_SubscriptionRouteRemoved;
+            return true;
         }
 
         private void SubscriptionClient_SubscriptionRouteRemoved(object sender, SubscriptionFieldEventArgs e)
@@ -176,7 +167,7 @@ namespace GraphQL.AspNet.Defaults
             if (client == null)
                 return;
 
-            _clients.Add(client);
+            _activeClients.Add(client);
         }
 
         private void SubscriptionClient_ConnectionClosed(object sender, EventArgs e)
@@ -185,7 +176,7 @@ namespace GraphQL.AspNet.Defaults
             if (client == null)
                 return;
 
-            _clients.Remove(client);
+            _activeClients.Remove(client);
             client.ConnectionClosed -= this.SubscriptionClient_ConnectionClosed;
         }
 

@@ -35,6 +35,7 @@ namespace GraphQL.AspNet.Defaults
         private readonly RequestDelegate _next;
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly string _routePath;
+        private readonly ISubscriptionServerClientFactory<TSchema> _clientFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> class.
@@ -43,16 +44,20 @@ namespace GraphQL.AspNet.Defaults
         /// in the pipeline.</param>
         /// <param name="subscriptionServer">The subscription server configured for
         /// this web host.</param>
+        /// <param name="clientFactory">The client factory from which
+        /// a valid client proxy can be generated.</param>
         /// <param name="options">The options.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
             ISubscriptionServer<TSchema> subscriptionServer,
+            ISubscriptionServerClientFactory<TSchema> clientFactory,
             SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _subscriptionServer = Validation.ThrowIfNullOrReturn(subscriptionServer, nameof(subscriptionServer));
             _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
+            _clientFactory = Validation.ThrowIfNullOrReturn(clientFactory, nameof(clientFactory));
         }
 
         /// <summary>
@@ -77,11 +82,11 @@ namespace GraphQL.AspNet.Defaults
                 try
                 {
                     IClientConnection clientConnectionProxy = new WebSocketClientConnection(context);
-                    var subscriptionClient = await _subscriptionServer
-                            .RegisterNewClient(clientConnectionProxy)
-                            .ConfigureAwait(false);
 
-                    if (subscriptionClient != null)
+                    var subscriptionClient = await _clientFactory.CreateSubscriptionClient(clientConnectionProxy);
+                    var wasRegistered = await _subscriptionServer.RegisterNewClient(subscriptionClient).ConfigureAwait(false);
+
+                    if (wasRegistered)
                     {
                         logger?.SubscriptionClientRegistered(_subscriptionServer, subscriptionClient);
 

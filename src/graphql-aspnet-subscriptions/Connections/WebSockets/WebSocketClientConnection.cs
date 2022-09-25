@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Connections.WebSockets
 {
     using System;
-    using System.Net.Http;
     using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
@@ -28,15 +27,20 @@ namespace GraphQL.AspNet.Connections.WebSockets
     {
         private readonly HttpContext _httpContext;
         private readonly IUserSecurityContext _securityContext;
+        private readonly WebSocketManager _socketManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketClientConnection" /> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public WebSocketClientConnection(HttpContext context)
+        /// <param name="socketManager">The socket manager from which to
+        /// accept and process sockets. Defaults to <paramref name="context"/> socket manager
+        /// when not supplied.</param>
+        public WebSocketClientConnection(HttpContext context, WebSocketManager socketManager = null)
         {
             _httpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
             _securityContext = new HttpUserSecurityContext(_httpContext);
+            _socketManager = socketManager ?? _httpContext.WebSockets;
 
             this.RequestedProtocol = this.DeteremineRequestedProtocol();
         }
@@ -137,7 +141,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
                     "it is already open.");
             }
 
-            this.WebSocket = await _httpContext.WebSockets.AcceptWebSocketAsync(protocol)
+            this.WebSocket = await _socketManager.AcceptWebSocketAsync(protocol)
                 .ConfigureAwait(false);
         }
 
@@ -148,10 +152,10 @@ namespace GraphQL.AspNet.Connections.WebSockets
         public string CloseStatusDescription => this.WebSocket.CloseStatusDescription;
 
         /// <inheritdoc />
-        public ClientConnectionCloseStatus? CloseStatus => this.WebSocket.CloseStatus?.ToClientConnectionCloseStatus();
+        public ClientConnectionCloseStatus? CloseStatus => this.WebSocket?.CloseStatus?.ToClientConnectionCloseStatus();
 
         /// <inheritdoc />
-        public ClientConnectionState State => this.WebSocket.State.ToClientState();
+        public ClientConnectionState State => this.WebSocket?.State.ToClientState() ?? ClientConnectionState.None;
 
         /// <inheritdoc />
         public IServiceProvider ServiceProvider => _httpContext.RequestServices;
@@ -161,6 +165,9 @@ namespace GraphQL.AspNet.Connections.WebSockets
 
         /// <inheritdoc />
         public string RequestedProtocol { get; }
+
+        /// <inheritdoc />
+        public string Protocol => this.WebSocket?.SubProtocol;
 
         /// <summary>
         /// Gets or sets the web socket used by this instance.

@@ -33,7 +33,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
                 this.CloseStatusDescription = closeDescription;
             }
 
-            this.SubProtocol = SubProtocol;
+            this.SubProtocol = subProtocol;
         }
 
         public void ThrowExceptionOnReceieve(Exception ex)
@@ -81,12 +81,12 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
         public override WebSocketState State { get; }
 
-        public override string SubProtocol { get; }
-
         public int TotalCallsToSend { get; private set; }
 
         public int TotalCallsToReceive { get; private set; }
 
         public int TotalCloseCalls { get; private set; }
+
+        public override string SubProtocol { get; }
     }
 }

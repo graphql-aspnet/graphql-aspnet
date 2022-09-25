@@ -14,6 +14,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -89,8 +90,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the server is hosting.</typeparam>
         /// <param name="server">The server.</param>
+        /// <param name="requestedProtocol">The requested protocol to assign to the connection, mimicing
+        /// a value parsed from a websocket connection.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public static MockClientConnection CreateClient<TSchema>(this TestServer<TSchema> server, string requestedProtocol = "")
+        public static MockClientConnection CreateClientConnection<TSchema>(this TestServer<TSchema> server, string requestedProtocol = "")
             where TSchema : class, ISchema
         {
             return new MockClientConnection(
@@ -104,16 +107,22 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema to create the client for.</typeparam>
         /// <param name="server">The server.</param>
-        /// <returns>GraphQL.AspNet.Interfaces.Subscriptions.ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public static async Task<(MockClientConnection, ISubscriptionClientProxy<TSchema>)> CreateSubscriptionClient<TSchema>(this TestServer<TSchema> server)
+        /// <param name="stateOfConnection">The state of underlying connection that the client should report.</param>
+        /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
+        public static MockSubscriptionClientProxy<TSchema> CreateSubscriptionClient<TSchema>(
+            this TestServer<TSchema> server,
+            ClientConnectionState stateOfConnection = ClientConnectionState.Open)
                     where TSchema : class, ISchema
         {
             var subServer = server.ServiceProvider.GetService<ISubscriptionServer<TSchema>>();
             var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
-            var connection = server.CreateClient();
-            var subClient = await subServer.RegisterNewClient(connection) as ISubscriptionClientProxy<TSchema>;
-            return (connection, subClient);
+            var client = new MockSubscriptionClientProxy<TSchema>(
+                server.ServiceProvider.CreateScope().ServiceProvider,
+                server.SecurityContext,
+                stateOfConnection);
+
+            return client;
         }
 
         /// <summary>

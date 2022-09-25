@@ -13,11 +13,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -29,8 +32,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     [TestFixture]
     public class GQLWSProtocolTests
     {
-        private async Task<(ISubscriptionServer<GraphSchema>, MockClientConnection, ISubscriptionClientProxy<GraphSchema>)>
-            CreateConnection()
+        private async Task<(ISubscriptionServer<GraphSchema>, MockClientConnection, GQLWSClientProxy<GraphSchema>)> CreateConnection()
         {
             var server = new TestServerBuilder()
                 .AddGraphController<GQLWSSubscriptionController>()
@@ -40,19 +42,25 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 })
                 .Build();
 
-            var socketClient = server.CreateClient(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+            var connection = server.CreateClientConnection();
+            var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
             var subServer = server.ServiceProvider.GetRequiredService<ISubscriptionServer<GraphSchema>>();
 
-            var graphqlWsClient = await subServer.RegisterNewClient(socketClient);
+            var subClient = new GQLWSClientProxy<GraphSchema>(
+                connection,
+                serverOptions,
+                new GQLWSMessageConverterFactory());
+
+            var graphqlWsClient = await subServer.RegisterNewClient(subClient);
             return (subServer,
-                socketClient,
-                graphqlWsClient as ISubscriptionClientProxy<GraphSchema>);
+                connection,
+                subClient);
         }
 
         [Test]
         public async Task ReceiveEvent_WithNoClients_YieldsNothing()
         {
-            (var server, var socketClient, var graphqlWsClient) = await this.CreateConnection();
+            (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
 
             var evt = new SubscriptionEvent()
             {
@@ -69,7 +77,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public async Task ReceiveEvent_WithNoData_YieldsNothing()
         {
-            (var server, var socketClient, var graphqlWsClient) = await this.CreateConnection();
+            (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
             var count = await server.ReceiveEvent(null);
             Assert.AreEqual(0, count);
         }
@@ -77,7 +85,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public async Task ReceiveEvent_WithARegisteredClient_ClientRecievesEvent()
         {
-            (var server, var socketClient, var graphqlWsClient) = await this.CreateConnection();
+            (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
 
             // start the sub on the client
             var startMessage = new GQLWSClientSubscribeMessage()
@@ -89,6 +97,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 },
             };
 
+            await connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
             await graphqlWsClient.ProcessReceivedMessage(startMessage);
 
             var evt = new SubscriptionEvent()
@@ -102,7 +111,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             var count = await server.ReceiveEvent(evt);
             Assert.AreEqual(1, count);
 
-            socketClient.AssertGQLWSResponse(GQLWSMessageType.NEXT, "abc");
+            connection.AssertGQLWSResponse(GQLWSMessageType.NEXT, "abc");
         }
     }
 }

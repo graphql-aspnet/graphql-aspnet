@@ -27,7 +27,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            (var socketClient, var subClient) = await server.CreateSubscriptionClient();
+            var subClient = server.CreateSubscriptionClient();
 
             var builder = server.CreateSubcriptionContextBuilder(subClient)
                 .AddQueryText("subscription  { subscriptionData {  retrieveObject { property1 } } }");
@@ -57,7 +57,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            (var socketClient, var subClient) = await server.CreateSubscriptionClient();
+            var subClient = server.CreateSubscriptionClient();
 
             var builder = server.CreateSubcriptionContextBuilder(subClient)
                 .AddQueryText("subscription  { subscriptionData {  notAField { property1 } } }");
@@ -78,7 +78,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            (var socketClient, var subClient) = await server.CreateSubscriptionClient();
+            var subClient = server.CreateSubscriptionClient();
 
             // Add a default value for the "retrieveObject" method, which is a subscription action
             // this mimics recieving an subscription event data source and executing the default, normal pipeline

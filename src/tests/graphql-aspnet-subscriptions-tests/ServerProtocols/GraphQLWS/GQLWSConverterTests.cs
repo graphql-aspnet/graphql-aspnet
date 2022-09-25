@@ -110,7 +110,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                         ""severity"":""WARNING"",
                         ""metaData"":{
                             ""lastMessage_id"":""prev123"",
-                            ""lastMessage_type"":""start""
+                            ""lastMessage_type"":""subscribe""
                         }
                     }
                 }
@@ -160,7 +160,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                         ""severity"":""WARNING"",
                         ""metaData"":{
                             ""lastMessage_id"":""prev123"",
-                            ""lastMessage_type"":""start""
+                            ""lastMessage_type"":""subscribe""
                         }
                     }
                 }
@@ -198,7 +198,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
 
             var expected = @"
             {
-                ""type"" : ""data"",
+                ""type"" : ""next"",
                 ""id"" : ""abc111"",
                 ""payload"": {
                     ""data"": {
