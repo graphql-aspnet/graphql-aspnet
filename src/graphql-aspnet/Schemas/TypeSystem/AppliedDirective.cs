@@ -57,10 +57,14 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <inheritdoc />
         public IAppliedDirective Clone()
         {
+            var arr = new object[this.ArgumentValues.Length];
+            if (arr.Length > 0)
+                Array.Copy(this.ArgumentValues, arr, arr.Length);
+
             if (this.DirectiveType != null)
-                return new AppliedDirective(this.DirectiveType, this.ArgumentValues.Clone());
+                return new AppliedDirective(this.DirectiveType, arr);
             else
-                return new AppliedDirective(this.DirectiveName, this.ArgumentValues.Clone());
+                return new AppliedDirective(this.DirectiveName, arr);
         }
 
         /// <inheritdoc />

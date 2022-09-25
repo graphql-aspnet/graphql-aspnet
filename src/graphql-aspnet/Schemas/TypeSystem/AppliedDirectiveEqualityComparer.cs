@@ -34,12 +34,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         {
             if (x != null && y != null)
             {
-                if (x.DirectiveType != null && y.DirectiveType != null)
-                    return x.DirectiveType == y.DirectiveType;
-                else if (!string.IsNullOrWhiteSpace(x.DirectiveName) && !string.IsNullOrWhiteSpace(y.DirectiveName))
-                    return x.DirectiveName == y.DirectiveName;
-
-                return false;
+                return object.ReferenceEquals(x, y);
             }
             else if (x == null && y == null)
             {
