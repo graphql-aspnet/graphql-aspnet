@@ -13,13 +13,10 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
     using Moq;
 
     /// <summary>
@@ -73,7 +70,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         /// <summary>
         /// Queues a fake "connection closed" message to tell this mock connection to "close itself" mimicing
-        /// a websocket disconnecting. that will close the underlying "socket" when dequeued.
+        /// a websocket disconnecting.
         /// </summary>
         public void QueueConnectionCloseMessage()
         {
@@ -97,27 +94,10 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// Simulates a client message being sent to the server.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void QueueClientMessage(GQLWSMessage message)
+        public void QueueClientMessage(object message)
         {
             Validation.ThrowIfNull(message, nameof(message));
             this.QueueClientMessage(new MockClientMessage(message));
-        }
-
-        /// <summary>
-        /// Simulates a client message that starts a new subscription on the server.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="queryText">The query text.</param>
-        public void QueueNewSubscription(string id, string queryText)
-        {
-            this.QueueClientMessage(new GQLWSClientSubscribeMessage()
-            {
-                Id = id,
-                Payload = new GraphQueryData()
-                {
-                    Query = queryText,
-                },
-            });
         }
 
         /// <summary>
