@@ -24,6 +24,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.SubscriptionTransportWs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -117,6 +118,7 @@ namespace GraphQL.AspNet
             _schemaBuilder.Options.ServiceCollection.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
 
             // register dependencies for built-in protocols
+            _schemaBuilder.Options.ServiceCollection.AddApollosProtocol();
             _schemaBuilder.Options.ServiceCollection.AddGqltwsProtocol();
 
             // add the needed classes as optional services

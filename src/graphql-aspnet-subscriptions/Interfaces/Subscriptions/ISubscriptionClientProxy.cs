@@ -116,6 +116,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// terminate the connection as a result of this message being sent.
         /// </summary>
         /// <param name="graphMessage">The graph message to send.</param>
+        /// <remarks>
+        /// This method may not be supported by all clients.
+        /// </remarks>
         /// <returns>Task.</returns>
         Task SendErrorMessage(IGraphMessage graphMessage);
 

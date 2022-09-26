@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
+namespace GraphQL.AspNet.Apollo
 {
     using System;
     using System.Collections.Generic;
@@ -17,6 +17,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Apollo.Logging;
+    using GraphQL.AspNet.Apollo.Messages;
+    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
+    using GraphQL.AspNet.Apollo.Messages.Common;
+    using GraphQL.AspNet.Apollo.Messages.Converters;
+    using GraphQL.AspNet.Apollo.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
@@ -33,29 +39,23 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide
-    /// subscription support for the graphql-ws protocol.
+    /// GraphQL subscription support for Apollo's graphql-over-websockets protocol.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
     [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
-    internal sealed class GqltwsClientProxy<TSchema> : GqltwsClientProxy, ISubscriptionClientProxy<TSchema>
+    public class ApolloClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
         where TSchema : class, ISchema
     {
         private readonly bool _enableKeepAlive;
-        private readonly GqltwsClientEventLogger<TSchema> _logger;
+        private readonly ApolloClientEventLogger<TSchema> _logger;
         private readonly bool _enableMetrics;
         private readonly SubscriptionServerOptions<TSchema> _options;
-        private readonly GqltwsMessageConverterFactory _messageConverter;
+        private readonly ApolloMessageConverterFactory _messageConverter;
         private readonly ClientTrackedMessageIdSet _reservedMessageIds;
         private readonly SubscriptionCollection<TSchema> _subscriptions;
         private IClientConnection _connection;
@@ -90,19 +90,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteRemoved;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GqltwsClientProxy{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ApolloClientProxy{TSchema}" /> class.
         /// </summary>
-        /// <param name="clientConnection">The underlying client connection for graphql-ws to manage.</param>
+        /// <param name="clientConnection">The underlying client connection for apollo to manage.</param>
         /// <param name="options">The options used to configure the registration.</param>
         /// <param name="messageConverter">The message converter factory that will generate
-        /// json converters for the various <see cref="GqltwsMessage" /> the proxy shuttles to the client.</param>
+        /// json converters for the various <see cref="ApolloMessage" /> the proxy shuttles to the client.</param>
         /// <param name="logger">The logger to record client level events to, if any.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>
-        public GqltwsClientProxy(
+        public ApolloClientProxy(
             IClientConnection clientConnection,
             SubscriptionServerOptions<TSchema> options,
-            GqltwsMessageConverterFactory messageConverter,
+            ApolloMessageConverterFactory messageConverter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
         {
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             _subscriptions = new SubscriptionCollection<TSchema>();
             _enableKeepAlive = options.KeepAliveInterval != TimeSpan.Zero;
 
-            _logger = logger != null ? new GqltwsClientEventLogger<TSchema>(this, logger) : null;
+            _logger = logger != null ? new ApolloClientEventLogger<TSchema>(this, logger) : null;
             _enableMetrics = enableMetrics;
         }
 
@@ -163,23 +163,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 
             // accept the connection and begin lisening
             // for messages related to the protocol known to this specific client type
-            await _connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
+            await _connection.OpenAsync(ApolloConstants.PROTOCOL_NAME);
 
-            // register the socket with an "graphql-ws level" keep alive monitor
+            // register the socket with an "apollo level" keep alive monitor
             // that will send structured keep alive messages down the pipe
-            GqltwsClientConnectionKeepAliveMonitor keepAliveTimer = null;
+            ApolloClientConnectionKeepAliveMonitor<TSchema> keepAliveTimer = null;
 
             try
             {
                 if (_enableKeepAlive)
                 {
-                    keepAliveTimer = new GqltwsClientConnectionKeepAliveMonitor(this, _options.KeepAliveInterval);
+                    keepAliveTimer = new ApolloClientConnectionKeepAliveMonitor<TSchema>(this, _options.KeepAliveInterval);
                     keepAliveTimer.Start();
                 }
 
-                // --------------------------------
-                // Client message receive and dispatch loop
-                // --------------------------------
+                // message dispatch loop
                 IClientConnectionReceiveResult result = null;
                 IEnumerable<byte> bytes = null;
 
@@ -194,7 +192,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                         if (result.MessageType == ClientMessageType.Text)
                         {
                             var message = this.DeserializeMessage(bytes);
-                            await this.ProcessReceivedMessage(message).ConfigureAwait(false);
+                            await this.ProcessReceivedMessage(message)
+                                .ConfigureAwait(false);
                         }
                     }
                     while (!result.CloseStatus.HasValue && _connection.State == ClientConnectionState.Open);
@@ -202,7 +201,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 
                 this.ConnectionClosing?.Invoke(this, EventArgs.Empty);
 
-                // shut down the socket and the graphql-ws-protocol-specific keep alive
+                // shut down the socket and the apollo-protocol-specific keep alive
                 keepAliveTimer?.Stop();
                 keepAliveTimer = null;
 
@@ -253,11 +252,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 
         /// <summary>
         /// Deserializes the text message (represneted as a UTF-8 encoded byte array) into an
-        /// appropriate <see cref="GqltwsMessage"/>.
+        /// appropriate <see cref="ApolloMessage"/>.
         /// </summary>
         /// <param name="bytes">The bytes.</param>
         /// <returns>IGraphQLOperationMessage.</returns>
-        private GqltwsMessage DeserializeMessage(IEnumerable<byte> bytes)
+        private ApolloMessage DeserializeMessage(IEnumerable<byte> bytes)
         {
             var text = Encoding.UTF8.GetString(bytes.ToArray());
 
@@ -266,31 +265,36 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             options.AllowTrailingCommas = true;
             options.ReadCommentHandling = JsonCommentHandling.Skip;
 
-            GqltwsMessage recievedMessage;
+            ApolloMessage recievedMessage;
 
             try
             {
-                // partially deserailize the message to extract the "type" field
-                // to determine how to fully deserialize this message
-                var partialMessage = JsonSerializer.Deserialize<GqltwsClientPartialMessage>(text, options);
+                var partialMessage = JsonSerializer.Deserialize<ApolloClientPartialMessage>(text, options);
                 recievedMessage = partialMessage.Convert();
             }
             catch (Exception ex)
             {
                 // TODO: Capture deserialization errors as a structured event
-                _logger?.EventLogger?.UnhandledExceptionEvent(ex);
-                recievedMessage = new GqltwsUnknownMessage(text);
+                (_logger as IGraphLogger)?.UnhandledExceptionEvent(ex);
+                recievedMessage = new ApolloUnknownMessage(text);
             }
 
             return recievedMessage;
         }
 
+        /// <inheritdoc />
+        public Task SendErrorMessage(IGraphMessage message)
+        {
+            Validation.ThrowIfNull(message, nameof(message));
+            return this.SendMessage(new ApolloServerErrorMessage(message));
+        }
+
         /// <summary>
-        /// Sends the given message down the wire to the connected client.
+        /// Sends a given message down to the connected client.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">The message to send.</param>
         /// <returns>Task.</returns>
-        public override Task SendMessage(GqltwsMessage message)
+        public Task SendMessage(ApolloMessage message)
         {
             Validation.ThrowIfNull(message, nameof(message));
 
@@ -317,13 +321,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <summary>
-        /// Handles the MessageRecieved event of a connected client. The connected client
-        /// raises this event whenever a message is recieved and successfully parsed from
-        /// the under lying websocket.
+        /// Handles the MessageRecieved event of the ApolloClient control. The client raises this event
+        /// whenever a message is recieved and successfully parsed from the under lying websocket.
         /// </summary>
-        /// <param name="message">The message that was recieved on the socket.</param>
+        /// <param name="message">The message.</param>
         /// <returns>TaskMethodBuilder.</returns>
-        internal Task ProcessReceivedMessage(GqltwsMessage message)
+        internal Task ProcessReceivedMessage(ApolloMessage message)
         {
             if (message == null)
                 return Task.CompletedTask;
@@ -331,21 +334,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             _logger?.MessageReceived(message);
             switch (message.Type)
             {
-                case GqltwsMessageType.CONNECTION_INIT:
+                case ApolloMessageType.CONNECTION_INIT:
                     return this.AcknowledgeNewConnection();
 
-                case GqltwsMessageType.PING:
-                    return this.AcknowledgePing();
+                case ApolloMessageType.START:
+                    return this.ExecuteStartRequest(message as ApolloClientStartMessage);
 
-                // do nothing with a recevied pong message
-                case GqltwsMessageType.PONG:
-                    return Task.CompletedTask;
+                case ApolloMessageType.STOP:
+                    return this.ExecuteStopRequest(message as ApolloClientStopMessage);
 
-                case GqltwsMessageType.SUBSCRIBE:
-                    return this.ExecuteSubscriptionStartRequest(message as GqltwsClientSubscribeMessage);
-
-                case GqltwsMessageType.COMPLETE:
-                    return this.ExecuteSubscriptionStopRequest(message as GqltwsSubscriptionCompleteMessage);
+                case ApolloMessageType.CONNECTION_TERMINATE:
+                    return this.CloseConnection(
+                        ClientConnectionCloseStatus.NormalClosure,
+                        $"Recieved closure request via message '{ApolloMessageTypeExtensions.Serialize(ApolloMessageType.CONNECTION_TERMINATE)}'.");
 
                 default:
                     return this.UnknownMessageRecieved(message);
@@ -357,26 +358,25 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         /// <param name="lastMessage">The last message that was received that was unprocessable.</param>
         /// <returns>Task.</returns>
-        private async Task UnknownMessageRecieved(GqltwsMessage lastMessage)
+        private Task UnknownMessageRecieved(ApolloMessage lastMessage)
         {
-            var error = new GqltwsServerErrorMessage(
+            var apolloError = new ApolloServerErrorMessage(
                     "The last message recieved was unknown or could not be processed " +
-                    "by this server. This GrapQL server is configured to use the graphql-ws " +
+                    "by this server. This graph ql is configured to use Apollo's GraphQL over websockets " +
                     "message schema.",
                     Constants.ErrorCodes.BAD_REQUEST,
                     lastMessage: lastMessage,
                     clientProvidedId: lastMessage.Id);
 
-            error.Payload.MetaData.Add(
+            apolloError.Payload.MetaData.Add(
                 Constants.Messaging.REFERENCE_RULE_NUMBER,
                 "Unknown Message Type");
 
-            error.Payload.MetaData.Add(
+            apolloError.Payload.MetaData.Add(
                 Constants.Messaging.REFERENCE_RULE_URL,
-                "https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md");
+                "https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md");
 
-            await this.SendMessage(error);
-            await this.CloseConnection(ClientConnectionCloseStatus.InvalidMessageType);
+            return this.SendMessage(apolloError);
         }
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         /// <param name="message">The message containing the subscription id to stop.</param>
         /// <returns>Task.</returns>
-        private async Task ExecuteSubscriptionStopRequest(GqltwsSubscriptionCompleteMessage message)
+        private async Task ExecuteStopRequest(ApolloClientStopMessage message)
         {
             var totalRemaining = _subscriptions.Remove(message.Id, out var subFound);
 
@@ -397,12 +397,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 _logger?.SubscriptionStopped(subFound);
 
                 await this
-                    .SendMessage(new GqltwsSubscriptionCompleteMessage(subFound.Id))
+                    .SendMessage(new ApolloServerCompleteMessage(subFound.Id))
                     .ConfigureAwait(false);
             }
             else
             {
-                var errorMessage = new GqltwsServerErrorMessage(
+                var errorMessage = new ApolloServerErrorMessage(
                     $"No active subscription exists with id '{message.Id}'",
                     Constants.ErrorCodes.BAD_REQUEST,
                     lastMessage: message,
@@ -419,13 +419,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// set for this instance.
         /// </summary>
         /// <param name="message">The message with the subscription details.</param>
-        private async Task ExecuteSubscriptionStartRequest(GqltwsClientSubscribeMessage message)
+        private async Task ExecuteStartRequest(ApolloClientStartMessage message)
         {
             // ensure the id isnt already in use
             if (!_reservedMessageIds.ReserveMessageId(message.Id))
             {
                 await this
-                    .SendMessage(new GqltwsServerErrorMessage(
+                    .SendMessage(new ApolloServerErrorMessage(
                         $"The message id {message.Id} is already reserved for an outstanding request and cannot " +
                         "be processed against. Allow the in-progress request to complete or stop the associated subscription.",
                         SubscriptionConstants.ErrorCodes.DUPLICATE_MESSAGE_ID,
@@ -446,37 +446,42 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 message.Id,
                 metricsPackage);
 
-            var result = await runtime.ExecuteRequest(context).ConfigureAwait(false);
+            var result = await runtime
+                            .ExecuteRequest(context)
+                            .ConfigureAwait(false);
 
             if (context.IsSubscriptionOperation)
             {
-                retainMessageId = await this.RegisterSubscriptionOrRespond(context.Subscription as ISubscription<TSchema>)
+                retainMessageId = await this
+                    .RegisterSubscriptionOrRespond(context.Subscription as ISubscription<TSchema>)
                     .ConfigureAwait(false);
             }
             else
             {
                 // not a subscription, just send back the generated response and close out the id
+                ApolloMessage responseMessage;
 
                 // report syntax errors as error messages
-                // allow others to bubble into a result
+                // allow others to bubble into a fully reslt (per apollo spec)
                 if (result.Messages.Count == 1
                     && result.Messages[0].Code == Constants.ErrorCodes.SYNTAX_ERROR)
                 {
-                    var responseMessage = new GqltwsServerErrorMessage(
+                    responseMessage = new ApolloServerErrorMessage(
                           result.Messages[0],
                           message,
                           message.Id);
-
-                    await this.SendMessage(responseMessage).ConfigureAwait(false);
                 }
                 else
                 {
-                    var responseMessage = new GqltwsServerNextDataMessage(message.Id, result);
-                    var completedMessage = new GqltwsSubscriptionCompleteMessage(message.Id);
-
-                    await this.SendMessage(responseMessage).ConfigureAwait(false);
-                    await this.SendMessage(completedMessage).ConfigureAwait(false);
+                    responseMessage = new ApolloServerDataMessage(message.Id, result);
                 }
+
+                await this
+                    .SendMessage(responseMessage)
+                    .ConfigureAwait(false);
+                await this
+                    .SendMessage(new ApolloServerCompleteMessage(message.Id))
+                    .ConfigureAwait(false);
             }
 
             if (!retainMessageId)
@@ -491,7 +496,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 if (subscription.Messages.Count == 1)
                 {
                     await this.SendMessage(
-                        new GqltwsServerErrorMessage(
+                        new ApolloServerErrorMessage(
                             subscription.Messages[0],
                             clientProvidedId: subscription.Id))
                         .ConfigureAwait(false);
@@ -499,15 +504,14 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 else
                 {
                     var response = GraphOperationResult.FromMessages(subscription.Messages, subscription.QueryData);
-
                     await this
-                        .SendMessage(new GqltwsServerNextDataMessage(subscription.Id, response))
-                        .ConfigureAwait(false);
-
-                    await this
-                        .SendMessage(new GqltwsSubscriptionCompleteMessage(subscription.Id))
+                        .SendMessage(new ApolloServerDataMessage(subscription.Id, response))
                         .ConfigureAwait(false);
                 }
+
+                await this
+                    .SendMessage(new ApolloServerCompleteMessage(subscription.Id))
+                    .ConfigureAwait(false);
             }
             else
             {
@@ -523,21 +527,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <summary>
-        /// Sends the required startup messages down to the connected client to
-        /// acknowledge the connection/protocol.
+        /// Sends the required startup messages down to the connected client to acknowledge the connection/protocol.
         /// </summary>
         private async Task AcknowledgeNewConnection()
         {
-            await this.SendMessage(new GqltwsServerConnectionAckMessage()).ConfigureAwait(false);
-        }
+            // protocol dictates the messages must be sent in this order
+            // await each send before attempting the next one
+            await this.SendMessage(new ApolloServerAckOperationMessage()).ConfigureAwait(false);
 
-        /// <summary>
-        /// Sends a PONG message down to the connected client to acknowledge a received
-        /// PING messsage.
-        /// </summary>
-        private async Task AcknowledgePing()
-        {
-            await this.SendMessage(new GqltwsPongMessage()).ConfigureAwait(false);
+            if (_enableKeepAlive)
+                await this.SendMessage(new ApolloKeepAliveOperationMessage()).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -588,7 +587,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                                 return task;
 
                             // send the message with the resultant data package
-                            var message = new GqltwsServerNextDataMessage(subscription.Id, task.Result);
+                            var message = new ApolloServerDataMessage(subscription.Id, task.Result);
                             return this.SendMessage(message);
                         },
                         cancelToken));
@@ -598,14 +597,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        public Task SendErrorMessage(IGraphMessage graphMessage)
-        {
-            // not supported on graphql-transport-ws
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        public override ClientConnectionState State => _connection?.State ?? ClientConnectionState.None;
+        public ClientConnectionState State => _connection.State;
 
         /// <inheritdoc />
         public IServiceProvider ServiceProvider => _connection.ServiceProvider;
@@ -616,10 +608,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// <inheritdoc />
         public string Id { get; } = Guid.NewGuid().ToString();
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets an enumeration of all the currently tracked subscriptions for this client.
+        /// </summary>
+        /// <value>The subscriptions.</value>
         public IEnumerable<ISubscription<TSchema>> Subscriptions => _subscriptions;
 
-        /// <inheritdoc />
-        public string Protocol => GqltwsConstants.PROTOCOL_NAME;
+        public string Protocol { get; }
     }
 }

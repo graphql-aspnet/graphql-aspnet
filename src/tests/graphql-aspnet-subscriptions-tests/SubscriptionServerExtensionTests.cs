@@ -11,6 +11,7 @@ namespace GraphQL.Subscriptions.Tests
 {
     using System.Linq;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Apollo.Messages.Converters;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
@@ -21,6 +22,7 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +60,7 @@ namespace GraphQL.Subscriptions.Tests
         }
 
         [Test]
-        public void GeneralPropertyCheck()
+        public void Verify_Default_InjectedObjects()
         {
             using var restorePoint = new GraphQLProviderRestorePoint();
 
@@ -75,14 +77,39 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
 
-            Assert.AreEqual(5, primaryOptions.ServiceCollection.Count);
+            Assert.AreEqual(7, primaryOptions.ServiceCollection.Count);
+
+            // primary server objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(GqltwsMessageConverterFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServerClientFactory)));
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionClientProxyFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServer<GraphSchema>)));
 
+            // graphql-transport-ws objects
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(GqltwsMessageConverterFactory)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqltwsSubscriptionClientProxyFactory)));
+
+            // legacy graphql-ws objects
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ApolloMessageConverterFactory)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(ApolloSubscriptionClientProxyFactory)));
+
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
+        }
+
+        [Test]
+        public void GeneralPropertyCheck()
+        {
+            using var restorePoint = new GraphQLProviderRestorePoint();
+
+            var serviceCollection = new ServiceCollection();
+            GraphQLProviders.TemplateProvider = null;
+
+            var primaryOptions = new SchemaOptions<GraphSchema>(serviceCollection);
+            var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
+
+            (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
+
+            var extension = new DefaultSubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            extension.Configure(primaryOptions);
 
             // 12 middleware components in the subscription-swapped primary query pipeline
             //    registered by type

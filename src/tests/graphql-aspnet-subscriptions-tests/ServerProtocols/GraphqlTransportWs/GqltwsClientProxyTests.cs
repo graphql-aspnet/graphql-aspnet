@@ -609,7 +609,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         }
 
         [Test]
-        public async Task SendingAErrorMessage_WriteAppropriateErrorToConnection()
+        public async Task SendingAErrorMessage_NoMessageSent()
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
@@ -621,7 +621,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
             await graphqlWsClient.SendErrorMessage(error);
 
-            connection.AssertGqltwsResponse(GqltwsMessageType.ERROR);
+            Assert.AreEqual(0, connection.QueuedMessageCount);
         }
     }
 }
