@@ -130,8 +130,8 @@ namespace GraphQL.AspNet
 
             _schemaBuilder.Options.ServiceCollection.TryAdd(
              new ServiceDescriptor(
-                 typeof(ISubscriptionServerClientFactory<TSchema>),
-                 typeof(DefaultSubscriptionClientFactory<TSchema>),
+                 typeof(ISubscriptionServerClientFactory),
+                 typeof(DefaultSubscriptionServerClientFactory),
                  ServiceLifetime.Singleton));
         }
 

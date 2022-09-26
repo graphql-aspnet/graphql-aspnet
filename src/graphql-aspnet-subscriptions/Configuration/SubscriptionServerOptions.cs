@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -112,5 +113,25 @@ namespace GraphQL.AspNet.Configuration
         /// <value><c>true</c> if an authenticated request is required to complete
         /// a subscription client connection; otherwise, <c>false</c>.</value>
         public bool AuthenticatedRequestsOnly { get; set; } = false;
+
+        /// <summary>
+        /// <para>Gets or sets the string representing the default messaging protocol to use
+        /// when a connected client does not specify which protocol they wish to communicate with.
+        /// </para>
+        /// <para>(Default: 'graphql-transport-ws').</para>
+        /// </summary>
+        /// <value>The default communication protocol for this schema.</value>
+        public string DefaultProtocol { get; set; } = SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL;
+
+        /// <summary>
+        /// <para>
+        /// Gets or sets a list of communication protocols supported by this schema when set. If
+        /// this value is null, all protocols registered with the server instance are allowed.
+        /// </para>
+        /// <para>(Default: null).</para>
+        /// </summary>
+        ///
+        /// <value>The supported protocols.</value>
+        public ISet<string> SupportedProtocols { get; set; }
     }
 }

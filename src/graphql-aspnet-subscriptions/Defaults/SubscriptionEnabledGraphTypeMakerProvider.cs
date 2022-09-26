@@ -18,11 +18,7 @@ namespace GraphQL.AspNet.Defaults
     /// </summary>
     public class SubscriptionEnabledGraphTypeMakerProvider : DefaultGraphTypeMakerProvider
     {
-        /// <summary>
-        /// Creates "maker" that can generate graph fields.
-        /// </summary>
-        /// <param name="schema">The schema to which the created fields should belong.</param>
-        /// <returns>IGraphFieldMaker.</returns>
+        /// <inheritdoc />
         public override IGraphFieldMaker CreateFieldMaker(ISchema schema)
         {
             return new SubscriptionEnabledGraphFieldMaker(schema);

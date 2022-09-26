@@ -16,16 +16,16 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     /// A factory responsible for creating protocol-specific client proxies
     /// overtop of a given persistant connection.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the schema this factory creates clients for.</typeparam>
-    public interface ISubscriptionServerClientFactory<TSchema>
-        where TSchema : class, ISchema
+    public interface ISubscriptionServerClientFactory
     {
         /// <summary>
         /// Creates a new subscription client proxy for the given connection and protocol.
         /// </summary>
+        /// <typeparam name="TSchema">The type of the schema this factory creates clients for.</typeparam>
         /// <param name="connection">The underlying connection the client will
         /// monitor.</param>
         /// <returns>Task&lt;ISubscriptionClientProxy&gt;.</returns>
-        Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClient(IClientConnection connection);
+        Task<ISubscriptionClientProxy<TSchema>> CreateSubscriptionClient<TSchema>(IClientConnection connection)
+        where TSchema : class, ISchema;
     }
 }

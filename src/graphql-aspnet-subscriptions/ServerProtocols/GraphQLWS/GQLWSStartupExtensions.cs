@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
 {
+    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -32,6 +33,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                     new ServiceDescriptor(
                         typeof(GQLWSMessageConverterFactory),
                         typeof(GQLWSMessageConverterFactory),
+                        ServiceLifetime.Singleton));
+
+                serviceCollection.Add(
+                    new ServiceDescriptor(
+                        typeof(ISubscriptionClientProxyFactory),
+                        typeof(GQLWSSubscriptionClientProxyFactory),
                         ServiceLifetime.Singleton));
             }
 

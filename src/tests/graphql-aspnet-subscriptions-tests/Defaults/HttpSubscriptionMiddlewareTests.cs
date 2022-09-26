@@ -57,7 +57,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
+            var factory = new Mock<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
@@ -88,7 +88,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
+            var factory = new Mock<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 server.Object,
@@ -126,8 +126,8 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
 
-            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
-            factory.Setup(x => x.CreateSubscriptionClient(It.IsAny<IClientConnection>()))
+            var factory = new Mock<ISubscriptionServerClientFactory>();
+            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
                 .ReturnsAsync(client.Object);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
@@ -162,7 +162,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             server.Setup(x => x.RegisterNewClient(It.IsAny<ISubscriptionClientProxy<GraphSchema>>()))
                 .Throws(new InvalidOperationException("failed"));
 
-            var factory = new Mock<ISubscriptionServerClientFactory<GraphSchema>>();
+            var factory = new Mock<ISubscriptionServerClientFactory>();
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(

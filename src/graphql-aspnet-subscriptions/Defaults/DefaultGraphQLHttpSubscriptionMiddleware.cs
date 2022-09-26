@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.WebSockets;
+    using GraphQL.AspNet.Exceptions;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -35,7 +36,7 @@ namespace GraphQL.AspNet.Defaults
         private readonly RequestDelegate _next;
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly string _routePath;
-        private readonly ISubscriptionServerClientFactory<TSchema> _clientFactory;
+        private readonly ISubscriptionServerClientFactory _clientFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> class.
@@ -50,7 +51,7 @@ namespace GraphQL.AspNet.Defaults
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
             ISubscriptionServer<TSchema> subscriptionServer,
-            ISubscriptionServerClientFactory<TSchema> clientFactory,
+            ISubscriptionServerClientFactory clientFactory,
             SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
@@ -83,7 +84,7 @@ namespace GraphQL.AspNet.Defaults
                 {
                     IClientConnection clientConnectionProxy = new WebSocketClientConnection(context);
 
-                    var subscriptionClient = await _clientFactory.CreateSubscriptionClient(clientConnectionProxy);
+                    var subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnectionProxy);
                     var wasRegistered = await _subscriptionServer.RegisterNewClient(subscriptionClient).ConfigureAwait(false);
 
                     if (wasRegistered)
@@ -95,6 +96,14 @@ namespace GraphQL.AspNet.Defaults
 
                         logger?.SubscriptionClientDropped(subscriptionClient);
                     }
+                }
+                catch (UnknownClientProtocolException ukpe)
+                {
+                    // TODO log entrys for protocols
+                }
+                catch (UnsupportedClientProtocolException uspe)
+                {
+
                 }
                 catch (Exception ex)
                 {
