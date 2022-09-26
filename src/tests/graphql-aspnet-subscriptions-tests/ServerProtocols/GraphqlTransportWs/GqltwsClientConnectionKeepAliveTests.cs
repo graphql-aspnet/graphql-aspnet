@@ -17,61 +17,66 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class GqltwsClientConnectionKeepAliveTests
     {
+        internal class FakeClient : GqltwsClientProxy
+        {
+            public FakeClient(ClientConnectionState state)
+            {
+                this.State = state;
+                this.Messages = new List<GqltwsMessage>();
+            }
+
+            public override Task SendMessage(GqltwsMessage message)
+            {
+                this.Messages.Add(message);
+                return Task.CompletedTask;
+            }
+
+            public List<GqltwsMessage> Messages { get; }
+
+            public override ClientConnectionState State { get; }
+        }
+
         [Test]
         public async Task AppropriateKeepAlivesAreSentWhenActive()
         {
-            var messages = new List<object>();
-            var proxy = new Mock<ISubscriptionClientProxy>();
-            proxy.Setup(x => x.State).Returns(ClientConnectionState.Open);
-
-            proxy.Setup(x => x.SendMessage(It.IsAny<object>()))
-                .Callback((object message) =>
-                {
-                    messages.Add(message);
-                });
+            var proxy = new FakeClient(ClientConnectionState.Open);
 
             using var monitor = new GqltwsClientConnectionKeepAliveMonitor(
-                proxy.Object,
+                proxy,
                 TimeSpan.FromMilliseconds(40));
+
             monitor.Start();
             await Task.Delay(110);
             monitor.Stop();
 
             // ensure some messages were written
-            Assert.IsTrue(messages.Count > 0);
+            Assert.IsTrue(proxy.Messages.Count > 0);
 
             // ensure that they are all ping messages
-            Assert.AreEqual(messages.Count, messages.Cast<GqltwsPingMessage>().Count());
+            Assert.AreEqual(proxy.Messages.Count, proxy.Messages.Cast<GqltwsPingMessage>().Count());
         }
 
         [Test]
         public async Task KeepAlives_ForClosedClient_SendsNoMessages()
         {
-            var messages = new List<object>();
-            var proxy = new Mock<ISubscriptionClientProxy>();
-            proxy.Setup(x => x.State).Returns(ClientConnectionState.Closed);
-
-            proxy.Setup(x => x.SendMessage(It.IsAny<object>()))
-                .Callback((object message) =>
-                {
-                    messages.Add(message);
-                });
+            var proxy = new FakeClient(ClientConnectionState.Closed);
 
             using var monitor = new GqltwsClientConnectionKeepAliveMonitor(
-                proxy.Object,
+                proxy,
                 TimeSpan.FromMilliseconds(40));
             monitor.Start();
             await Task.Delay(110);
             monitor.Stop();
 
             // ensure that they are all ping messages
-            Assert.AreEqual(0, messages.Count);
+            Assert.AreEqual(0, proxy.Messages.Count);
         }
     }
 }

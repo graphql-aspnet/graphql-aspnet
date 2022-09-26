@@ -557,26 +557,10 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueConnectionCloseMessage();
 
             // execute the connection sequence
-            var client = graphqlWsClient as ISubscriptionClientProxy;
-
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await client.SendMessage(new GqltwsServerAckOperationMessage());
+            await graphqlWsClient.SendMessage(new GqltwsServerConnectionAckMessage());
 
             Assert.AreEqual(1, connection.ResponseMessageCount);
-        }
-
-        [Test]
-        public async Task SendMessage_AsInterface_WithNonGqltwsMessage_ThrowsException()
-        {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
-            connection.QueueConnectionCloseMessage();
-
-            // execute the connection sequence
-            var client = graphqlWsClient as ISubscriptionClientProxy;
-            Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                await client.SendMessage(new object());
-            });
         }
 
         [Test]

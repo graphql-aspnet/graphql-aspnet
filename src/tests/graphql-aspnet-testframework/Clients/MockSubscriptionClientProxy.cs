@@ -82,14 +82,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <inheritdoc />
         public Task SendErrorMessage(IGraphMessage graphMessage)
         {
-            return this.SendMessage(graphMessage);
-        }
-
-        /// <inheritdoc />
-        public Task SendMessage(object message)
-        {
-            Validation.ThrowIfNull(message, nameof(message));
-            this.SentMessages.Add(message);
+            Validation.ThrowIfNull(graphMessage, nameof(graphMessage));
+            this.SentMessages.Add(graphMessage);
             return Task.CompletedTask;
         }
 

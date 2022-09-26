@@ -111,19 +111,13 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         ClientConnectionState State { get; }
 
         /// <summary>
-        /// Sends the given text as an "error level" message appropriate
-        /// for this client's given protocol.
+        /// Sends the given message as an "error level" message appropriate
+        /// for this client's given protocol. The client may or may not
+        /// terminate the connection as a result of this message being sent.
         /// </summary>
-        /// <param name="graphMessage">The graph message.</param>
+        /// <param name="graphMessage">The graph message to send.</param>
         /// <returns>Task.</returns>
         Task SendErrorMessage(IGraphMessage graphMessage);
-
-        /// <summary>
-        /// Serializes, encodes and sends the given message down to the client.
-        /// </summary>
-        /// <param name="message">The message to be serialized and sent to the client.</param>
-        /// <returns>Task.</returns>
-        Task SendMessage(object message);
 
         /// <summary>
         /// Gets the messaing protocol supported by this client.

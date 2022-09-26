@@ -13,15 +13,15 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessa
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads;
 
     /// <summary>
-    /// A message sent by the server to a client to acknowledge receipt of a message when no other
-    /// specific message is warranted.
+    /// A message sent by the server to a client acknowledging the start of a connection. This
+    /// message is sent in response to CONNECTION_INIT being received.
     /// </summary>
-    public class GqltwsServerAckOperationMessage : GqltwsMessage<GqltwsNullPayload>
+    public class GqltwsServerConnectionAckMessage : GqltwsMessage<GqltwsNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GqltwsServerAckOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsServerConnectionAckMessage"/> class.
         /// </summary>
-        public GqltwsServerAckOperationMessage()
+        public GqltwsServerConnectionAckMessage()
             : base(GqltwsMessageType.CONNECTION_ACK)
         {
         }

@@ -225,7 +225,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public void GeneralMessage_WithId_SerializesCorrectly()
         {
-            var message = new GqltwsServerAckOperationMessage();
+            var message = new GqltwsServerConnectionAckMessage();
             message.Id = "abc";
 
             var converter = new GqltwsMessageConverter();
@@ -246,7 +246,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public void GeneralMessage_WithoutId_SerializesCorrectly()
         {
-            var message = new GqltwsServerAckOperationMessage();
+            var message = new GqltwsServerConnectionAckMessage();
             var converter = new GqltwsMessageConverter();
 
             var options = new JsonSerializerOptions();

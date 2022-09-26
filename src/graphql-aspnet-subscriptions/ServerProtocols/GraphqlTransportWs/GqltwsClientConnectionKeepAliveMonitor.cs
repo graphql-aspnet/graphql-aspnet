@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
 
     /// <summary>
@@ -22,7 +21,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     /// </summary>
     internal class GqltwsClientConnectionKeepAliveMonitor : IDisposable
     {
-        private readonly ISubscriptionClientProxy _client;
+        private readonly GqltwsClientProxy _client;
         private readonly TimeSpan _interval;
         private Timer _timer;
         private bool disposedValue;
@@ -32,7 +31,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         /// <param name="client">The connection to keep alive.</param>
         /// <param name="interval">The interval on which to inititate the PING/PONG cycle.</param>
-        public GqltwsClientConnectionKeepAliveMonitor(ISubscriptionClientProxy client, TimeSpan interval)
+        public GqltwsClientConnectionKeepAliveMonitor(GqltwsClientProxy client, TimeSpan interval)
         {
             _client = Validation.ThrowIfNullOrReturn(client, nameof(client));
             _interval = interval;
