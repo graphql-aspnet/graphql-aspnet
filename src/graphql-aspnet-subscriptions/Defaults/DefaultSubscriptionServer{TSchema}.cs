@@ -59,7 +59,6 @@ namespace GraphQL.AspNet.Defaults
             ISubscriptionEventRouter eventRouter,
             IGraphEventLogger logger = null)
         {
-
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _serverOptions = Validation.ThrowIfNullOrReturn(serverOptions, nameof(serverOptions));
             _eventRouter = Validation.ThrowIfNullOrReturn(eventRouter, nameof(eventRouter));

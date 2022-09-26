@@ -44,6 +44,7 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         /// <param name="next">The delegate pointing to the next middleware component
         /// in the pipeline.</param>
+        /// <param name="schema">The schema targeted by this middleware component.</param>
         /// <param name="subscriptionServer">The subscription server configured for
         /// this web host.</param>
         /// <param name="clientFactory">The client factory from which
