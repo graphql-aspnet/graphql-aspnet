@@ -13,7 +13,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS.GraphQLWSData
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class GQLWSDataMessageController : GraphController
+    public class GqltwsDataMessageController : GraphController
     {
         [QueryRoot]
         public TwoPropertyObject GetValue()

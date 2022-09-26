@@ -20,13 +20,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
     /// double deserialization of a message via json deserializer.
     /// </summary>
     [DebuggerDisplay("Message Type: {Type}")]
-    public class GQLWSClientPartialMessage : GQLWSMessage<GraphQueryData>
+    public class GqltwsClientPartialMessage : GqltwsMessage<GraphQueryData>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSClientPartialMessage"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsClientPartialMessage"/> class.
         /// </summary>
-        public GQLWSClientPartialMessage()
-            : base(GQLWSMessageType.UNKNOWN)
+        public GqltwsClientPartialMessage()
+            : base(GqltwsMessageType.UNKNOWN)
         {
         }
 
@@ -34,37 +34,37 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
         /// Converts this instance into its final, payload focused message.
         /// </summary>
         /// <returns>IGraphQLOperationMessage.</returns>
-        public GQLWSMessage Convert()
+        public GqltwsMessage Convert()
         {
             switch (this.Type)
             {
-                case GQLWSMessageType.CONNECTION_INIT:
-                    return new GQLWSClientConnectionInitMessage()
+                case GqltwsMessageType.CONNECTION_INIT:
+                    return new GqltwsClientConnectionInitMessage()
                     {
                         Payload = null, // TODO: connection may have params, need to handle it
                     };
 
-                case GQLWSMessageType.SUBSCRIBE:
-                    return new GQLWSClientSubscribeMessage()
+                case GqltwsMessageType.SUBSCRIBE:
+                    return new GqltwsClientSubscribeMessage()
                     {
                         Id = this.Id,
                         Payload = this.Payload,
                     };
 
-                case GQLWSMessageType.COMPLETE:
-                    return new GQLWSSubscriptionCompleteMessage(this.Id)
+                case GqltwsMessageType.COMPLETE:
+                    return new GqltwsSubscriptionCompleteMessage(this.Id)
                     {
                         Payload = null, // stop message has no expected payload
                     };
 
-                case GQLWSMessageType.PING:
-                    return new GQLWSPingMessage();
+                case GqltwsMessageType.PING:
+                    return new GqltwsPingMessage();
 
-                case GQLWSMessageType.PONG:
-                    return new GQLWSPongMessage();
+                case GqltwsMessageType.PONG:
+                    return new GqltwsPongMessage();
 
                 default:
-                    return new GQLWSUnknownMessage()
+                    return new GqltwsUnknownMessage()
                     {
                         Id = this.Id,
                     };

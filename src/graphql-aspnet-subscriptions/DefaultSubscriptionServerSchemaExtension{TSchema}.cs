@@ -117,7 +117,7 @@ namespace GraphQL.AspNet
             _schemaBuilder.Options.ServiceCollection.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
 
             // register dependencies for built-in protocols
-            _schemaBuilder.Options.ServiceCollection.AddGQLWSProtocol();
+            _schemaBuilder.Options.ServiceCollection.AddGqltwsProtocol();
 
             // add the needed classes as optional services
             // if the user has already added support for their own handlers

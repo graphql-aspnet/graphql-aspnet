@@ -14,26 +14,26 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Handles conversion of <see cref="GQLWSMessageType"/> to and from json to handle potential casing
+    /// Handles conversion of <see cref="GqltwsMessageType"/> to and from json to handle potential casing
     /// issues with connected clients.
     /// </summary>
-    internal class GQLWSMessageTypeConverter : JsonConverter<GQLWSMessageType>
+    internal class GqltwsMessageTypeConverter : JsonConverter<GqltwsMessageType>
     {
         /// <summary>
-        /// Reads and converts the JSON to type <see cref="GQLWSMessageType"/>.
+        /// Reads and converts the JSON to type <see cref="GqltwsMessageType"/>.
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="typeToConvert">The type to convert.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
         /// <returns>The converted value.</returns>
-        public override GQLWSMessageType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override GqltwsMessageType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)
             {
                 throw new JsonException($"Expected {nameof(JsonTokenType.String)} but got {reader.TokenType.ToString()}");
             }
 
-            return GQLWSMessageTypeExtensions.FromString(reader.GetString());
+            return GqltwsMessageTypeExtensions.FromString(reader.GetString());
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
         /// <param name="writer">The writer to write to.</param>
         /// <param name="value">The value to convert to JSON.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
-        public override void Write(Utf8JsonWriter writer, GQLWSMessageType value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, GqltwsMessageType value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(GQLWSMessageTypeExtensions.Serialize(value));
+            writer.WriteStringValue(GqltwsMessageTypeExtensions.Serialize(value));
         }
     }
 }

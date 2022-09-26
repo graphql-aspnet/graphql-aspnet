@@ -17,16 +17,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common
     /// An implementation of the required operation message interface.
     /// </summary>
     /// <typeparam name="TPayloadType">The type of the payload this message expects.</typeparam>
-    public abstract class GQLWSMessage<TPayloadType> : GQLWSMessage
+    public abstract class GqltwsMessage<TPayloadType> : GqltwsMessage
         where TPayloadType : class
     {
         private TPayloadType _payload;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSMessage{TPayload}"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsMessage{TPayload}"/> class.
         /// </summary>
         /// <param name="messageType">Type of the message.</param>
-        protected GQLWSMessage(GQLWSMessageType messageType)
+        protected GqltwsMessage(GqltwsMessageType messageType)
             : base(messageType)
         {
         }
@@ -35,12 +35,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common
         /// Gets or sets the payload of the message.
         /// </summary>
         /// <value>The payload.</value>
-        [JsonPropertyName(GQLWSConstants.Messaging.MESSAGE_PAYLOAD)]
+        [JsonPropertyName(GqltwsConstants.Messaging.MESSAGE_PAYLOAD)]
         public TPayloadType Payload
         {
             get
             {
-                if (typeof(TPayloadType) == typeof(GQLWSNullPayload))
+                if (typeof(TPayloadType) == typeof(GqltwsNullPayload))
                     return null;
 
                 return _payload;

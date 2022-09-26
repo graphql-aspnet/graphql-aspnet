@@ -15,13 +15,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessage
     /// A representation of the PONG message sent by a client or server to the other
     /// end of the connection after receiving a PING message.
     /// </summary>
-    public class GQLWSPongMessage : GQLWSMessage<string>
+    public class GqltwsPongMessage : GqltwsMessage<string>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSPongMessage"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsPongMessage"/> class.
         /// </summary>
-        public GQLWSPongMessage()
-            : base(GQLWSMessageType.PONG)
+        public GqltwsPongMessage()
+            : base(GqltwsMessageType.PONG)
         {
         }
     }

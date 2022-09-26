@@ -14,20 +14,20 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common
     /// <summary>
     /// A common base class for all graphql-ws messages.
     /// </summary>
-    public abstract class GQLWSMessage
+    public abstract class GqltwsMessage
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSMessage"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsMessage"/> class.
         /// </summary>
-        public GQLWSMessage()
+        public GqltwsMessage()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSMessage" /> class.
+        /// Initializes a new instance of the <see cref="GqltwsMessage" /> class.
         /// </summary>
         /// <param name="messageType">Type of the message.</param>
-        protected GQLWSMessage(GQLWSMessageType messageType)
+        protected GqltwsMessage(GqltwsMessageType messageType)
         {
             this.Type = messageType;
             this.Id = null;
@@ -37,16 +37,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common
         /// Gets or sets the identifier for the scoped operation started by a client.
         /// </summary>
         /// <value>The identifier.</value>
-        [JsonPropertyName(GQLWSConstants.Messaging.MESSAGE_ID)]
+        [JsonPropertyName(GqltwsConstants.Messaging.MESSAGE_ID)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the message, indicating expected payload types.
         /// </summary>
         /// <value>The type.</value>
-        [JsonConverter(typeof(GQLWSMessageTypeConverter))]
-        [JsonPropertyName(GQLWSConstants.Messaging.MESSAGE_TYPE)]
-        public GQLWSMessageType Type { get; set; }
+        [JsonConverter(typeof(GqltwsMessageTypeConverter))]
+        [JsonPropertyName(GqltwsConstants.Messaging.MESSAGE_TYPE)]
+        public GqltwsMessageType Type { get; set; }
 
         /// <summary>
         /// Gets the payload of the message as a general object.

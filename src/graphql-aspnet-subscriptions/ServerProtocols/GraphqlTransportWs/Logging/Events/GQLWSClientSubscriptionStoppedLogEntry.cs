@@ -17,15 +17,15 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
     /// <summary>
     /// Recorded whenever an graphql-ws client proxy drops a subscription registration.
     /// </summary>
-    internal class GQLWSClientSubscriptionStoppedLogEntry : GraphLogEntry
+    internal class GqltwsClientSubscriptionStoppedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSClientSubscriptionStoppedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="GqltwsClientSubscriptionStoppedLogEntry" /> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="subscription">The subscription that was created.</param>
-        public GQLWSClientSubscriptionStoppedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
-            : base(GQLWSLogEventIds.ClientSubscriptionStopped)
+        public GqltwsClientSubscriptionStoppedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
+            : base(GqltwsLogEventIds.ClientSubscriptionStopped)
         {
             this.ClientId = client?.Id;
             this.SubscriptionId = subscription?.Id;
@@ -48,8 +48,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The subscription identifier.</value>
         public string SubscriptionId
         {
-            get => this.GetProperty<string>(GQLWSLogPropertyNames.SUBSCRIPTION_ID);
-            private set => this.SetProperty(GQLWSLogPropertyNames.SUBSCRIPTION_ID, value);
+            get => this.GetProperty<string>(GqltwsLogPropertyNames.SUBSCRIPTION_ID);
+            private set => this.SetProperty(GqltwsLogPropertyNames.SUBSCRIPTION_ID, value);
         }
 
         /// <summary>
@@ -58,8 +58,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The message identifier.</value>
         public string Route
         {
-            get => this.GetProperty<string>(GQLWSLogPropertyNames.SUBSCRIPTION_ROUTE);
-            private set => this.SetProperty(GQLWSLogPropertyNames.SUBSCRIPTION_ROUTE, value);
+            get => this.GetProperty<string>(GqltwsLogPropertyNames.SUBSCRIPTION_ROUTE);
+            private set => this.SetProperty(GqltwsLogPropertyNames.SUBSCRIPTION_ROUTE, value);
         }
 
         /// <summary>

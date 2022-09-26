@@ -23,21 +23,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
     /// from its server component and begins processing said event against its subscription list.
     /// </summary>
     /// <typeparam name="TSchema">The type of schema the event is being raised against.</typeparam>
-    internal class GQLWSClientSubscriptionEventReceived<TSchema> : GraphLogEntry
+    internal class GqltwsClientSubscriptionEventReceived<TSchema> : GraphLogEntry
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSClientSubscriptionEventReceived{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="GqltwsClientSubscriptionEventReceived{TSchema}" /> class.
         /// </summary>
         /// <param name="client">The client proxy that received the event.</param>
         /// <param name="fieldPath">The field path of the event recieved.</param>
         /// <param name="subscriptionsToReceive">The filtered set of subscriptions for this client
         /// that will receive the event.</param>
-        public GQLWSClientSubscriptionEventReceived(
-            GQLWSClientProxy<TSchema> client,
+        public GqltwsClientSubscriptionEventReceived(
+            GqltwsClientProxy<TSchema> client,
             SchemaItemPath fieldPath,
             IReadOnlyList<ISubscription> subscriptionsToReceive)
-            : base(GQLWSLogEventIds.ClientSubscriptionEventRecieved)
+            : base(GqltwsLogEventIds.ClientSubscriptionEventRecieved)
         {
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.SubscriptionRoute = fieldPath?.Path;
@@ -62,8 +62,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The subscription count.</value>
         public int? SubscriptionCount
         {
-            get => this.GetProperty<int?>(GQLWSLogPropertyNames.SUBSCRIPTION_COUNT);
-            private set => this.SetProperty(GQLWSLogPropertyNames.SUBSCRIPTION_COUNT, value);
+            get => this.GetProperty<int?>(GqltwsLogPropertyNames.SUBSCRIPTION_COUNT);
+            private set => this.SetProperty(GqltwsLogPropertyNames.SUBSCRIPTION_COUNT, value);
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The subscription ids.</value>
         public IList<string> SubscriptionIds
         {
-            get => this.GetProperty<IList<string>>(GQLWSLogPropertyNames.SUBSCRIPTION_IDS);
-            private set => this.SetProperty(GQLWSLogPropertyNames.SUBSCRIPTION_IDS, value);
+            get => this.GetProperty<IList<string>>(GqltwsLogPropertyNames.SUBSCRIPTION_IDS);
+            private set => this.SetProperty(GqltwsLogPropertyNames.SUBSCRIPTION_IDS, value);
         }
 
         /// <summary>

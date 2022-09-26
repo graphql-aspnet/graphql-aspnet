@@ -16,13 +16,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
     /// A message sent by the server to a client to acknowledge receipt of a message when no other
     /// specific message is warranted.
     /// </summary>
-    public class GQLWSServerAckOperationMessage : GQLWSMessage<GQLWSNullPayload>
+    public class GqltwsServerAckOperationMessage : GqltwsMessage<GqltwsNullPayload>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSServerAckOperationMessage"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsServerAckOperationMessage"/> class.
         /// </summary>
-        public GQLWSServerAckOperationMessage()
-            : base(GQLWSMessageType.CONNECTION_ACK)
+        public GqltwsServerAckOperationMessage()
+            : base(GqltwsMessageType.CONNECTION_ACK)
         {
         }
     }

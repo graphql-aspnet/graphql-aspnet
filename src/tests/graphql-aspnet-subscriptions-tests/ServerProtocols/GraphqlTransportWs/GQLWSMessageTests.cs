@@ -15,12 +15,12 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using NUnit.Framework;
 
     [TestFixture]
-    public class GQLWSMessageTests
+    public class GqltwsMessageTests
     {
-        private class TestNullPayloadMessage : GQLWSMessage<GQLWSNullPayload>
+        private class TestNullPayloadMessage : GqltwsMessage<GqltwsNullPayload>
         {
             public TestNullPayloadMessage()
-                : base(GQLWSMessageType.UNKNOWN)
+                : base(GqltwsMessageType.UNKNOWN)
             {
             }
         }
@@ -31,7 +31,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             var message = new TestNullPayloadMessage();
 
             Assert.IsNull(message.Payload);
-            message.Payload = new GQLWSNullPayload();
+            message.Payload = new GqltwsNullPayload();
             Assert.IsNull(message.Payload);
         }
     }

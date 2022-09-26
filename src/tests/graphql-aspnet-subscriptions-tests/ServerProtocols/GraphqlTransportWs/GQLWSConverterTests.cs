@@ -30,12 +30,12 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using NUnit.Framework;
 
     [TestFixture]
-    public class GQLWSConverterTests
+    public class GqltwsConverterTests
     {
-        public class GQWSCustomMessage : GQLWSMessage<string>
+        public class GQWSCustomMessage : GqltwsMessage<string>
         {
             public GQWSCustomMessage()
-                : base(GQLWSMessageType.COMPLETE)
+                : base(GqltwsMessageType.COMPLETE)
             {
             }
         }
@@ -43,9 +43,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void CompleteMessage_WithId_SerializesCorrectly()
         {
-            var message = new GQLWSSubscriptionCompleteMessage("abc123");
+            var message = new GqltwsSubscriptionCompleteMessage("abc123");
 
-            var converter = new GQLWSServerCompleteMessageConverter();
+            var converter = new GqltwsServerCompleteMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
@@ -63,8 +63,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void CompleteMessage_WithoutId_SerializesWithNoIdParameter()
         {
-            var message = new GQLWSSubscriptionCompleteMessage(null);
-            var converter = new GQLWSServerCompleteMessageConverter();
+            var message = new GqltwsSubscriptionCompleteMessage(null);
+            var converter = new GqltwsServerCompleteMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
@@ -83,7 +83,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             var dt = DateTime.UtcNow;
             var server = new TestServerBuilder()
-                .AddGraphController<GQLWSDataMessageController>()
+                .AddGraphController<GqltwsDataMessageController>()
                 .AddSubscriptionServer()
                 .AddGraphQL(options =>
                 {
@@ -91,14 +91,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 })
                 .Build();
 
-            var converter = new GQLWSServerErrorMessageConverter(server.Schema);
+            var converter = new GqltwsServerErrorMessageConverter(server.Schema);
 
-            var message = new GQLWSServerErrorMessage(
+            var message = new GqltwsServerErrorMessage(
                 "an error occured",
                 Constants.ErrorCodes.BAD_REQUEST,
                 GraphMessageSeverity.Warning,
                 "prev123",
-                lastMessageType: GQLWSMessageType.SUBSCRIBE,
+                lastMessageType: GqltwsMessageType.SUBSCRIBE,
                 clientProvidedId: "abc123");
 
             var options = new JsonSerializerOptions();
@@ -135,7 +135,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             var dt = DateTime.UtcNow;
             var server = new TestServerBuilder()
-                .AddGraphController<GQLWSDataMessageController>()
+                .AddGraphController<GqltwsDataMessageController>()
                 .AddSubscriptionServer()
                 .AddGraphQL(options =>
                 {
@@ -143,14 +143,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 })
                 .Build();
 
-            var converter = new GQLWSServerErrorMessageConverter(server.Schema);
+            var converter = new GqltwsServerErrorMessageConverter(server.Schema);
 
-            var message = new GQLWSServerErrorMessage(
+            var message = new GqltwsServerErrorMessage(
                 "an error occured",
                 Constants.ErrorCodes.BAD_REQUEST,
                 GraphMessageSeverity.Warning,
                 "prev123",
-                lastMessageType: GQLWSMessageType.SUBSCRIBE);
+                lastMessageType: GqltwsMessageType.SUBSCRIBE);
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
@@ -184,7 +184,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         public async Task DataMessage_WithData_SerializesCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<GQLWSDataMessageController>()
+                .AddGraphController<GqltwsDataMessageController>()
                 .AddSubscriptionServer()
                 .Build();
 
@@ -195,9 +195,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                     .Build();
             await server.ExecuteQuery(context);
 
-            var message = new GQLWSServerNextDataMessage("abc111", context.Result);
+            var message = new GqltwsServerNextDataMessage("abc111", context.Result);
 
-            var converter = new GQLWSServerDataMessageConverter(
+            var converter = new GqltwsServerDataMessageConverter(
                 server.Schema,
                 server.ServiceProvider.GetRequiredService<IGraphResponseWriter<GraphSchema>>());
 
@@ -225,14 +225,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void GeneralMessage_WithId_SerializesCorrectly()
         {
-            var message = new GQLWSServerAckOperationMessage();
+            var message = new GqltwsServerAckOperationMessage();
             message.Id = "abc";
 
-            var converter = new GQLWSMessageConverter();
+            var converter = new GqltwsMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, typeof(GQLWSMessage), options);
+            var response = JsonSerializer.Serialize((object)message, typeof(GqltwsMessage), options);
 
             var expected = @"
             {
@@ -246,12 +246,12 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         [Test]
         public void GeneralMessage_WithoutId_SerializesCorrectly()
         {
-            var message = new GQLWSServerAckOperationMessage();
-            var converter = new GQLWSMessageConverter();
+            var message = new GqltwsServerAckOperationMessage();
+            var converter = new GqltwsMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize((object)message, typeof(GQLWSMessage), options);
+            var response = JsonSerializer.Serialize((object)message, typeof(GqltwsMessage), options);
 
             var expected = @"
             {
@@ -265,7 +265,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         public void GeneralMessage_WithNoData_SerializesCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<GQLWSDataMessageController>()
+                .AddGraphController<GqltwsDataMessageController>()
                 .AddSubscriptionServer()
                 .Build();
 
@@ -273,11 +273,11 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             message.Payload = null;
             message.Id = "abc";
 
-            var converter = new GQLWSMessageConverter();
+            var converter = new GqltwsMessageConverter();
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
 
-            var response = JsonSerializer.Serialize(message, typeof(GQLWSMessage), options);
+            var response = JsonSerializer.Serialize(message, typeof(GqltwsMessage), options);
 
             // expect no payload attribute
             var expected = @"
@@ -293,7 +293,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         public void GeneralMessage_WithData_SerializesCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<GQLWSDataMessageController>()
+                .AddGraphController<GqltwsDataMessageController>()
                 .AddSubscriptionServer()
                 .Build();
 
@@ -301,11 +301,11 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             message.Payload = "mydata";
             message.Id = "abc";
 
-            var converter = new GQLWSMessageConverter();
+            var converter = new GqltwsMessageConverter();
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
 
-            var response = JsonSerializer.Serialize(message, typeof(GQLWSMessage), options);
+            var response = JsonSerializer.Serialize(message, typeof(GqltwsMessage), options);
 
             // expect no payload attribute
             var expected = @"

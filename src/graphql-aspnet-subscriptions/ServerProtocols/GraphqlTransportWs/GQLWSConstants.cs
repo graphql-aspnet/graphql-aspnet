@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     /// <summary>
     /// A set of constants related to the graphql-ws server.
     /// </summary>
-    internal static class GQLWSConstants
+    internal static class GqltwsConstants
     {
         /// <summary>
         /// A graphql over websocket messaging protcol.

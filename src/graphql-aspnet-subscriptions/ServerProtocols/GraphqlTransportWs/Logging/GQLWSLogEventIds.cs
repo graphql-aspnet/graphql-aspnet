@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// A collection of event ids for log entries related to the <see cref="GQLWSClientProxy{TSchema}"/>.
+    /// A collection of event ids for log entries related to the <see cref="GqltwsClientProxy{TSchema}"/>.
     /// </summary>
-    public static class GQLWSLogEventIds
+    public static class GqltwsLogEventIds
     {
         /// <summary>
         /// Gets or sets the base event number indicating an event is from the graphql-ws server implementation.

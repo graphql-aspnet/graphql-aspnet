@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     /// Extension methods used to register and startup the 'graphql-transport-ws'
     /// protocol.
     /// </summary>
-    internal static class GQLWSStartupExtensions
+    internal static class GqltwsStartupExtensions
     {
         /// <summary>
         /// Adds the necessary components to properly handle the 'graphql-transport-ws' protocol
@@ -25,20 +25,20 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         /// </summary>
         /// <param name="serviceCollection">The service collection.</param>
         /// <returns>IServiceCollection.</returns>
-        public static IServiceCollection AddGQLWSProtocol(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddGqltwsProtocol(this IServiceCollection serviceCollection)
         {
             if (serviceCollection != null)
             {
                 serviceCollection.Add(
                     new ServiceDescriptor(
-                        typeof(GQLWSMessageConverterFactory),
-                        typeof(GQLWSMessageConverterFactory),
+                        typeof(GqltwsMessageConverterFactory),
+                        typeof(GqltwsMessageConverterFactory),
                         ServiceLifetime.Singleton));
 
                 serviceCollection.Add(
                     new ServiceDescriptor(
                         typeof(ISubscriptionClientProxyFactory),
-                        typeof(GQLWSSubscriptionClientProxyFactory),
+                        typeof(GqltwsSubscriptionClientProxyFactory),
                         ServiceLifetime.Singleton));
             }
 

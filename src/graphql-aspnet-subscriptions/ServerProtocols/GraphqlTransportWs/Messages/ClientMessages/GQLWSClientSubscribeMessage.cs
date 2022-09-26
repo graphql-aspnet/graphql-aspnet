@@ -16,13 +16,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
     /// A message sent by the client when it wants to start a new subscription operation.
     /// </summary>
     [DebuggerDisplay("graphql-ws: Subscription Start (Id: {Id})")]
-    public class GQLWSClientSubscribeMessage : GQLWSMessage<GraphQueryData>
+    public class GqltwsClientSubscribeMessage : GqltwsMessage<GraphQueryData>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSClientSubscribeMessage"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsClientSubscribeMessage"/> class.
         /// </summary>
-        public GQLWSClientSubscribeMessage()
-            : base(GQLWSMessageType.SUBSCRIBE)
+        public GqltwsClientSubscribeMessage()
+            : base(GqltwsMessageType.SUBSCRIBE)
         {
         }
     }

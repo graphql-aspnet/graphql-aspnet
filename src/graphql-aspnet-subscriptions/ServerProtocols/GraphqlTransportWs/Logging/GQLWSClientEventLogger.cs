@@ -24,18 +24,18 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
     /// events to the log stream.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the logger exists for.</typeparam>
-    internal class GQLWSClientEventLogger<TSchema>
+    internal class GqltwsClientEventLogger<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly GQLWSClientProxy<TSchema> _client;
+        private readonly GqltwsClientProxy<TSchema> _client;
         private readonly IGraphEventLogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSClientEventLogger{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="GqltwsClientEventLogger{TSchema}" /> class.
         /// </summary>
         /// <param name="client">The client being logged.</param>
         /// <param name="logger">The root graph logger to send graphql-ws events to.</param>
-        public GQLWSClientEventLogger(GQLWSClientProxy<TSchema> client, IGraphEventLogger logger)
+        public GqltwsClientEventLogger(GqltwsClientProxy<TSchema> client, IGraphEventLogger logger)
         {
             _client = Validation.ThrowIfNullOrReturn(client, nameof(client));
             _logger = Validation.ThrowIfNullOrReturn(logger, nameof(logger));
@@ -46,11 +46,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
         /// actual client.
         /// </summary>
         /// <param name="message">The message that was received.</param>
-        public void MessageReceived(GQLWSMessage message)
+        public void MessageReceived(GqltwsMessage message)
         {
             _logger.Log(
                 LogLevel.Trace,
-                () => new GQLWSClientMessageReceivedLogEntry(_client, message));
+                () => new GqltwsClientMessageReceivedLogEntry(_client, message));
         }
 
         /// <summary>
@@ -58,11 +58,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
         /// actual client.
         /// </summary>
         /// <param name="message">The message that was sent.</param>
-        public void MessageSent(GQLWSMessage message)
+        public void MessageSent(GqltwsMessage message)
         {
             _logger.Log(
                 LogLevel.Trace,
-                () => new GQLWSClientMessageSentLogEntry(_client, message));
+                () => new GqltwsClientMessageSentLogEntry(_client, message));
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new GQLWSClientSubscriptionCreatedLogEntry(_client, subscription));
+                () => new GqltwsClientSubscriptionCreatedLogEntry(_client, subscription));
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new GQLWSClientSubscriptionEventReceived<TSchema>(_client, fieldPath, subscriptionsToReceive));
+                () => new GqltwsClientSubscriptionEventReceived<TSchema>(_client, fieldPath, subscriptionsToReceive));
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new GQLWSClientSubscriptionStoppedLogEntry(_client, subscription));
+                () => new GqltwsClientSubscriptionStoppedLogEntry(_client, subscription));
         }
 
         /// <summary>

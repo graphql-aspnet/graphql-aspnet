@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GqltwsMessaging
 {
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
@@ -15,10 +15,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging
     /// <summary>
     /// A general message to deserialize server sent messages into for inspection in testing.
     /// </summary>
-    public class GQLWSResponseMessage : GQLWSMessage<string>
+    public class GqltwsResponseMessage : GqltwsMessage<string>
     {
-        public GQLWSResponseMessage()
-            : base(GQLWSMessageType.UNKNOWN)
+        public GqltwsResponseMessage()
+            : base(GqltwsMessageType.UNKNOWN)
         {
         }
     }

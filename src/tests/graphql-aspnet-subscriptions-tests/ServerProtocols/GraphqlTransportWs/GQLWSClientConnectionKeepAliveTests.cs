@@ -21,7 +21,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using NUnit.Framework;
 
     [TestFixture]
-    public class GQLWSClientConnectionKeepAliveTests
+    public class GqltwsClientConnectionKeepAliveTests
     {
         [Test]
         public async Task AppropriateKeepAlivesAreSentWhenActive()
@@ -36,7 +36,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                     messages.Add(message);
                 });
 
-            using var monitor = new GQLWSClientConnectionKeepAliveMonitor(
+            using var monitor = new GqltwsClientConnectionKeepAliveMonitor(
                 proxy.Object,
                 TimeSpan.FromMilliseconds(40));
             monitor.Start();
@@ -47,7 +47,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             Assert.IsTrue(messages.Count > 0);
 
             // ensure that they are all ping messages
-            Assert.AreEqual(messages.Count, messages.Cast<GQLWSPingMessage>().Count());
+            Assert.AreEqual(messages.Count, messages.Cast<GqltwsPingMessage>().Count());
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                     messages.Add(message);
                 });
 
-            using var monitor = new GQLWSClientConnectionKeepAliveMonitor(
+            using var monitor = new GqltwsClientConnectionKeepAliveMonitor(
                 proxy.Object,
                 TimeSpan.FromMilliseconds(40));
             monitor.Start();

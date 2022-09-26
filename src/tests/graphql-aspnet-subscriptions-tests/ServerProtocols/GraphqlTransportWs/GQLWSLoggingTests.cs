@@ -28,7 +28,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using NUnit.Framework;
 
     [TestFixture]
-    public class GQLWSLoggingTests
+    public class GqltwsLoggingTests
     {
         [Test]
         public void ClientMessageReceived_PropertyCheck()
@@ -36,9 +36,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             var client = new Mock<ISubscriptionClientProxy>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new GQLWSClientConnectionInitMessage();
+            var message = new GqltwsClientConnectionInitMessage();
 
-            var entry = new GQLWSClientMessageReceivedLogEntry(client.Object, message);
+            var entry = new GqltwsClientMessageReceivedLogEntry(client.Object, message);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual(message.Type.ToString(), entry.MessageType);
@@ -53,9 +53,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             var result = new Mock<IGraphOperationResult>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new GQLWSServerNextDataMessage("123", result.Object);
+            var message = new GqltwsServerNextDataMessage("123", result.Object);
 
-            var entry = new GQLWSClientMessageSentLogEntry(client.Object, message);
+            var entry = new GqltwsClientMessageSentLogEntry(client.Object, message);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual(message.Type.ToString(), entry.MessageType);
@@ -73,7 +73,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             sub.Setup(x => x.Id).Returns("sub1");
             sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new GQLWSClientSubscriptionCreatedLogEntry(client.Object, sub.Object);
+            var entry = new GqltwsClientSubscriptionCreatedLogEntry(client.Object, sub.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
@@ -91,7 +91,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             sub.Setup(x => x.Id).Returns("sub1");
             sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new GQLWSClientSubscriptionStoppedLogEntry(client.Object, sub.Object);
+            var entry = new GqltwsClientSubscriptionStoppedLogEntry(client.Object, sub.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
@@ -103,10 +103,10 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         public void GraphQLWSClientSubscriptionEventReceived_PropertyCheck()
         {
             var connection = new Mock<IClientConnection>();
-            var proxy = new GQLWSClientProxy<GraphSchema>(
+            var proxy = new GqltwsClientProxy<GraphSchema>(
                 connection.Object,
                 new SubscriptionServerOptions<GraphSchema>(),
-                new GQLWSMessageConverterFactory());
+                new GqltwsMessageConverterFactory());
 
             var sub = new Mock<ISubscription>();
             sub.Setup(x => x.Id).Returns("sub1");
@@ -116,7 +116,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
 
             var fieldPath = new SchemaItemPath("[subscription]/bob1");
 
-            var entry = new GQLWSClientSubscriptionEventReceived<GraphSchema>(
+            var entry = new GqltwsClientSubscriptionEventReceived<GraphSchema>(
                 proxy,
                 fieldPath,
                 subs);

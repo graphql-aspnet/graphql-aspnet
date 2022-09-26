@@ -19,18 +19,18 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
     /// An graphql-ws specific message containing one error that occured outside of any
     /// given graph query execution. This message terminates the connection.
     /// </summary>
-    public class GQLWSServerErrorMessage : GQLWSMessage<IGraphMessage>
+    public class GqltwsServerErrorMessage : GqltwsMessage<IGraphMessage>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSServerErrorMessage" /> class.
+        /// Initializes a new instance of the <see cref="GqltwsServerErrorMessage" /> class.
         /// </summary>
         /// <param name="message">The message to put into the generated error.</param>
         /// <param name="lastMessage">The last message received by the server, generally the message
         /// that resulted in this error being generated.</param>
         /// <param name="clientProvidedId">The client provided identifier of the failed operation.</param>
-        public GQLWSServerErrorMessage(
+        public GqltwsServerErrorMessage(
             IGraphMessage message,
-            GQLWSMessage lastMessage = null,
+            GqltwsMessage lastMessage = null,
             string clientProvidedId = null)
             : this(
                   message?.Message,
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSServerErrorMessage" /> class.
+        /// Initializes a new instance of the <see cref="GqltwsServerErrorMessage" /> class.
         /// </summary>
         /// <param name="message">The message to put into the generated error.</param>
         /// <param name="code">The custom code to apply to the error message.</param>
@@ -53,11 +53,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
         /// that resulted in this error being generated.</param>
         /// <param name="exception">An internal exception that was thrown that should be carried with this message.</param>
         /// <param name="clientProvidedId">The client provided identifier of the failed operation.</param>
-        public GQLWSServerErrorMessage(
+        public GqltwsServerErrorMessage(
             string message,
             string code = Constants.ErrorCodes.DEFAULT,
             GraphMessageSeverity severity = GraphMessageSeverity.Critical,
-            GQLWSMessage lastMessage = null,
+            GqltwsMessage lastMessage = null,
             Exception exception = null,
             string clientProvidedId = null)
             : this(
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSServerErrorMessage" /> class.
+        /// Initializes a new instance of the <see cref="GqltwsServerErrorMessage" /> class.
         /// </summary>
         /// <param name="message">The message to put into the generated error.</param>
         /// <param name="code">The custom code to apply to the error message.</param>
@@ -83,27 +83,27 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
         /// as a meta data item for reference to the client.</param>
         /// <param name="exception">An internal exception that was thrown that should be carried with this message.</param>
         /// <param name="clientProvidedId">The client provided identifier of the failed operation.</param>
-        public GQLWSServerErrorMessage(
+        public GqltwsServerErrorMessage(
             string message,
             string code = Constants.ErrorCodes.DEFAULT,
             GraphMessageSeverity severity = GraphMessageSeverity.Critical,
             string lastMessageId = null,
-            GQLWSMessageType? lastMessageType = null,
+            GqltwsMessageType? lastMessageType = null,
             Exception exception = null,
             string clientProvidedId = null)
-            : base(GQLWSMessageType.ERROR)
+            : base(GqltwsMessageType.ERROR)
         {
             this.Id = clientProvidedId;
             this.Payload = new GraphExecutionMessage(severity, message, code, SourceOrigin.None, exception);
 
             if (!string.IsNullOrWhiteSpace(lastMessageId))
-                this.Payload.MetaData.Add(GQLWSConstants.Messaging.LAST_RECEIVED_MESSAGE_ID, lastMessageId);
+                this.Payload.MetaData.Add(GqltwsConstants.Messaging.LAST_RECEIVED_MESSAGE_ID, lastMessageId);
 
             if (lastMessageType.HasValue)
             {
                 this.Payload.MetaData.Add(
-                    GQLWSConstants.Messaging.LAST_RECEIVED_MESSAGE_TYPE,
-                    GQLWSMessageTypeExtensions.Serialize(lastMessageType.Value));
+                    GqltwsConstants.Messaging.LAST_RECEIVED_MESSAGE_TYPE,
+                    GqltwsMessageTypeExtensions.Serialize(lastMessageType.Value));
             }
         }
     }

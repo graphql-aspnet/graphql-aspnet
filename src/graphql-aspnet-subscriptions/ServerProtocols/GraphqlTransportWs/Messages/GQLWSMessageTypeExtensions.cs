@@ -12,24 +12,24 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
     using System;
 
     /// <summary>
-    /// Helper methods for the <see cref="GQLWSMessageType"/>.
+    /// Helper methods for the <see cref="GqltwsMessageType"/>.
     /// </summary>
-    internal static class GQLWSMessageTypeExtensions
+    internal static class GqltwsMessageTypeExtensions
     {
         /// <summary>
-        /// A helper message to create a valid <see cref="GQLWSMessageType"/> accounting
+        /// A helper message to create a valid <see cref="GqltwsMessageType"/> accounting
         /// for various idiosyncrasies and possibilities of the message types as implemented by graphql-ws.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns>GraphQLOperationMessageType.</returns>
-        public static GQLWSMessageType FromString(string text)
+        public static GqltwsMessageType FromString(string text)
         {
             if (text == null || text.Length == 0)
-                return GQLWSMessageType.UNKNOWN;
+                return GqltwsMessageType.UNKNOWN;
 
             text = text.ToLowerInvariant();
 
-            if (Enum.TryParse<GQLWSMessageType>(text, true, out var result))
+            if (Enum.TryParse<GqltwsMessageType>(text, true, out var result))
                 return result;
 
             // just in case, by some random fluke, someone transmits a string with "GQL_" appended
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
                 return result;
 
             // dunno what the message type is
-            return GQLWSMessageType.UNKNOWN;
+            return GqltwsMessageType.UNKNOWN;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages
         /// </summary>
         /// <param name="messageType">Type of the message.</param>
         /// <returns>System.String.</returns>
-        public static string Serialize(GQLWSMessageType messageType)
+        public static string Serialize(GqltwsMessageType messageType)
         {
             return messageType.ToString().ToLowerInvariant();
         }

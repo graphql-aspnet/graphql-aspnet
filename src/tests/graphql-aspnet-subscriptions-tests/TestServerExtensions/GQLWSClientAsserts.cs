@@ -14,10 +14,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging;
+    using GraphQL.Subscriptions.Tests.TestServerExtensions.GqltwsMessaging;
     using NUnit.Framework;
 
-    public static class GQLWSClientAsserts
+    public static class GqltwsClientAsserts
     {
         /// <summary>
         /// Asserts that a response message from the server queued and that it is of the supplied type.
@@ -25,12 +25,12 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="connection">The connection.</param>
         /// <param name="type">The type of message to check for.</param>
         /// <param name="dequeue">if true, the message is removed from the queue.</param>
-        internal static void AssertGQLWSResponse(
+        internal static void AssertGqltwsResponse(
             this MockClientConnection connection,
-            GQLWSMessageType type,
+            GqltwsMessageType type,
             bool dequeue = true)
         {
-            AssertGQLWSResponse(connection, type, null, false, null, false, dequeue);
+            AssertGqltwsResponse(connection, type, null, false, null, false, dequeue);
         }
 
         /// <summary>
@@ -40,13 +40,13 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="type">The type of message to check for.</param>
         /// <param name="id">The id returned by the server, if supplied.</param>
         /// <param name="dequeue">if true, the message is removed from the queue.</param>
-        internal static void AssertGQLWSResponse(
+        internal static void AssertGqltwsResponse(
             this MockClientConnection connection,
-            GQLWSMessageType type,
+            GqltwsMessageType type,
             string id,
             bool dequeue = true)
         {
-            AssertGQLWSResponse(connection, type, id, true, null, false, dequeue);
+            AssertGqltwsResponse(connection, type, id, true, null, false, dequeue);
         }
 
         /// <summary>
@@ -58,19 +58,19 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="id">The expected identifier of the subscription that rendered the data.</param>
         /// <param name="expectedPayloadJson">The expected payload of the message, converted to a json string.</param>
         /// <param name="dequeue">if set to <c>true</c> if the message should be removed from the queue.</param>
-        internal static void AssertGQLWSResponse(
+        internal static void AssertGqltwsResponse(
             this MockClientConnection connection,
-            GQLWSMessageType type,
+            GqltwsMessageType type,
             string id,
             string expectedPayloadJson,
             bool dequeue = true)
         {
-            AssertGQLWSResponse(connection, type, id, true, expectedPayloadJson, true, dequeue);
+            AssertGqltwsResponse(connection, type, id, true, expectedPayloadJson, true, dequeue);
         }
 
-        private static void AssertGQLWSResponse(
+        private static void AssertGqltwsResponse(
             this MockClientConnection connection,
-            GQLWSMessageType type,
+            GqltwsMessageType type,
             string id,
             bool compareId,
             string expectedPayloadJson,
@@ -86,9 +86,9 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
             options.AllowTrailingCommas = true;
-            options.Converters.Add(new GQLWSResponseMessageConverter());
+            options.Converters.Add(new GqltwsResponseMessageConverter());
 
-            var convertedMessage = JsonSerializer.Deserialize<GQLWSResponseMessage>(str, options);
+            var convertedMessage = JsonSerializer.Deserialize<GqltwsResponseMessage>(str, options);
 
             Assert.IsNotNull(convertedMessage, "Could not deserialize response message");
             Assert.AreEqual(type, convertedMessage.Type, $"Expected message type of {type.ToString()} but got {convertedMessage.Type.ToString()}");

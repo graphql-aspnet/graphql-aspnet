@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     /// A factory for generating instance of <see cref="ISubscriptionClientProxy{TSchema}"/>
     /// that supports the 'graphql-transport-ws' protocol.
     /// </summary>
-    internal class GQLWSSubscriptionClientProxyFactory : ISubscriptionClientProxyFactory
+    internal class GqltwsSubscriptionClientProxyFactory : ISubscriptionClientProxyFactory
     {
         /// <inheritdoc />
         public Task<ISubscriptionClientProxy<TSchema>> CreateClient<TSchema>(IClientConnection connection)
@@ -30,9 +30,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
             var schema = connection.ServiceProvider.GetService<TSchema>();
             var serverOptions = connection.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
             var logger = connection.ServiceProvider.GetService<IGraphEventLogger>();
-            var converterFactory = connection.ServiceProvider.GetService<GQLWSMessageConverterFactory>();
+            var converterFactory = connection.ServiceProvider.GetService<GqltwsMessageConverterFactory>();
 
-            var client = new GQLWSClientProxy<TSchema>(
+            var client = new GqltwsClientProxy<TSchema>(
                 connection,
                 serverOptions,
                 converterFactory,
@@ -43,6 +43,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
         }
 
         /// <inheritdoc />
-        public string Protocol => GQLWSConstants.PROTOCOL_NAME;
+        public string Protocol => GqltwsConstants.PROTOCOL_NAME;
     }
 }

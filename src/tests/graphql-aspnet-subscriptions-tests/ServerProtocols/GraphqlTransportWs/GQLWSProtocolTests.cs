@@ -30,12 +30,12 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using NUnit.Framework;
 
     [TestFixture]
-    public class GQLWSProtocolTests
+    public class GqltwsProtocolTests
     {
-        private async Task<(ISubscriptionServer<GraphSchema>, MockClientConnection, GQLWSClientProxy<GraphSchema>)> CreateConnection()
+        private async Task<(ISubscriptionServer<GraphSchema>, MockClientConnection, GqltwsClientProxy<GraphSchema>)> CreateConnection()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<GQLWSSubscriptionController>()
+                .AddGraphController<GqltwsSubscriptionController>()
                 .AddSubscriptionServer((options) =>
                 {
                     options.KeepAliveInterval = TimeSpan.FromMinutes(15);
@@ -46,10 +46,10 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
             var subServer = server.ServiceProvider.GetRequiredService<ISubscriptionServer<GraphSchema>>();
 
-            var subClient = new GQLWSClientProxy<GraphSchema>(
+            var subClient = new GqltwsClientProxy<GraphSchema>(
                 connection,
                 serverOptions,
-                new GQLWSMessageConverterFactory());
+                new GqltwsMessageConverterFactory());
 
             var graphqlWsClient = await subServer.RegisterNewClient(subClient);
             return (subServer,
@@ -88,16 +88,16 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
 
             // start the sub on the client
-            var startMessage = new GQLWSClientSubscribeMessage()
+            var startMessage = new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  gQLWSSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  gqltwsSubscription { watchForPropObject { property1 } } }",
                 },
             };
 
-            await connection.OpenAsync(GQLWSConstants.PROTOCOL_NAME);
+            await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
             await graphqlWsClient.ProcessReceivedMessage(startMessage);
 
             var evt = new SubscriptionEvent()
@@ -105,13 +105,13 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 Data = new TwoPropertyObject(),
                 DataTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(TwoPropertyObject)),
                 SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(GraphSchema)),
-                EventName = "[subscription]/GQLWSSubscription/WatchForPropObject",
+                EventName = "[subscription]/GqltwsSubscription/WatchForPropObject",
             };
 
             var count = await server.ReceiveEvent(evt);
             Assert.AreEqual(1, count);
 
-            connection.AssertGQLWSResponse(GQLWSMessageType.NEXT, "abc");
+            connection.AssertGqltwsResponse(GqltwsMessageType.NEXT, "abc");
         }
     }
 }

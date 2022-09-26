@@ -11,7 +11,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS.GraphQLWSData
 {
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
 
-    public class FakeGQLWSMessage : GQLWSMessage
+    public class FakeGqltwsMessage : GqltwsMessage
     {
         public new string Type { get; set; }
 

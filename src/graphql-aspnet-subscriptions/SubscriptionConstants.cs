@@ -11,7 +11,6 @@ namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
 
     /// <summary>
     /// A set of constants related to the configuration and processing of subscriptions
@@ -19,12 +18,6 @@ namespace GraphQL.AspNet
     /// </summary>
     public static class SubscriptionConstants
     {
-        /// <summary>
-        /// The default messaging protocol assignd to a schema when no default protocol
-        /// is assigned during application startup.
-        /// </summary>
-        public const string DEFAULT_MESSAGE_PROTOCOL = GQLWSConstants.PROTOCOL_NAME;
-
         /// <summary>
         /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
         /// any events that were raised during the query execution.

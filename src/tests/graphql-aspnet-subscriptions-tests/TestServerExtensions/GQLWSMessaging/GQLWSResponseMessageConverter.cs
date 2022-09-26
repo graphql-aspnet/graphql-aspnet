@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GqltwsMessaging
 {
     using System;
     using System.Text.Json;
@@ -16,11 +16,11 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class GQLWSResponseMessageConverter : JsonConverter<GQLWSResponseMessage>
+    public class GqltwsResponseMessageConverter : JsonConverter<GqltwsResponseMessage>
     {
-        public override GQLWSResponseMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override GqltwsResponseMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var message = new GQLWSResponseMessage();
+            var message = new GqltwsResponseMessage();
 
             if (reader.TokenType == JsonTokenType.StartObject)
                 reader.Read();
@@ -35,17 +35,17 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging
 
                 switch (propName.ToLower())
                 {
-                    case GQLWSConstants.Messaging.MESSAGE_ID:
+                    case GqltwsConstants.Messaging.MESSAGE_ID:
                         message.Id = reader.GetString();
                         reader.Read();
                         break;
 
-                    case GQLWSConstants.Messaging.MESSAGE_TYPE:
-                        message.Type = GQLWSMessageTypeExtensions.FromString(reader.GetString());
+                    case GqltwsConstants.Messaging.MESSAGE_TYPE:
+                        message.Type = GqltwsMessageTypeExtensions.FromString(reader.GetString());
                         reader.Read();
                         break;
 
-                    case GQLWSConstants.Messaging.MESSAGE_PAYLOAD:
+                    case GqltwsConstants.Messaging.MESSAGE_PAYLOAD:
                         if (reader.TokenType == JsonTokenType.Null)
                             reader.Read();
                         else
@@ -58,7 +58,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging
             return message;
         }
 
-        public override void Write(Utf8JsonWriter writer, GQLWSResponseMessage value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, GqltwsResponseMessage value, JsonSerializerOptions options)
         {
             throw new NotSupportedException();
         }

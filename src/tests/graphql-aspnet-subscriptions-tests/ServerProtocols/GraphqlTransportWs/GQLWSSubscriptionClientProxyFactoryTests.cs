@@ -21,13 +21,13 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using NUnit.Framework;
 
     [TestFixture]
-    public class GQLWSSubscriptionClientProxyFactoryTests
+    public class GqltwsSubscriptionClientProxyFactoryTests
     {
         [Test]
         public void ProtocolAssignmentCheck()
         {
-            var factory = new GQLWSSubscriptionClientProxyFactory();
-            Assert.AreEqual(GQLWSConstants.PROTOCOL_NAME, factory.Protocol);
+            var factory = new GqltwsSubscriptionClientProxyFactory();
+            Assert.AreEqual(GqltwsConstants.PROTOCOL_NAME, factory.Protocol);
         }
 
         [Test]
@@ -37,12 +37,12 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             collection.AddSingleton(new GraphSchema());
             collection.AddSingleton(new SubscriptionServerOptions<GraphSchema>());
             collection.AddSingleton(new Mock<IGraphEventLogger>().Object);
-            collection.AddSingleton(new GQLWSMessageConverterFactory());
+            collection.AddSingleton(new GqltwsMessageConverterFactory());
 
             var connect = new Mock<IClientConnection>();
             connect.Setup(x => x.ServiceProvider).Returns(collection.BuildServiceProvider());
 
-            var factory = new GQLWSSubscriptionClientProxyFactory();
+            var factory = new GqltwsSubscriptionClientProxyFactory();
 
             var instance = await factory.CreateClient<GraphSchema>(connect.Object);
 

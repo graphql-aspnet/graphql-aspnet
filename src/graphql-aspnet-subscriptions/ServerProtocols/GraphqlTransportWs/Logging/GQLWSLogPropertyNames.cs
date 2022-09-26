@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
     /// <summary>
     /// A set of known property names for graphql-ws related log entries.
     /// </summary>
-    public static class GQLWSLogPropertyNames
+    public static class GqltwsLogPropertyNames
     {
         /// <summary>
         /// The 'type' field of an graphql-ws message.

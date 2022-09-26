@@ -19,15 +19,15 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
     /// <summary>
     /// Recorded when an graphql-ws client proxy receives a new message from its connected client.
     /// </summary>
-    internal class GQLWSClientMessageReceivedLogEntry : GraphLogEntry
+    internal class GqltwsClientMessageReceivedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GQLWSClientMessageReceivedLogEntry"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsClientMessageReceivedLogEntry"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="message">The message.</param>
-        public GQLWSClientMessageReceivedLogEntry(ISubscriptionClientProxy client, GQLWSMessage message)
-            : base(GQLWSLogEventIds.ClientMessageReceived)
+        public GqltwsClientMessageReceivedLogEntry(ISubscriptionClientProxy client, GqltwsMessage message)
+            : base(GqltwsLogEventIds.ClientMessageReceived)
         {
             this.ClientId = client?.Id;
             this.MessageType = message?.Type.ToString();
@@ -45,13 +45,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         }
 
         /// <summary>
-        /// Gets the <see cref="GQLWSMessageType"/> of the message that was received.
+        /// Gets the <see cref="GqltwsMessageType"/> of the message that was received.
         /// </summary>
         /// <value>The type of the message.</value>
         public string MessageType
         {
-            get => this.GetProperty<string>(GQLWSLogPropertyNames.MESSAGE_TYPE);
-            private set => this.SetProperty(GQLWSLogPropertyNames.MESSAGE_TYPE, value);
+            get => this.GetProperty<string>(GqltwsLogPropertyNames.MESSAGE_TYPE);
+            private set => this.SetProperty(GqltwsLogPropertyNames.MESSAGE_TYPE, value);
         }
 
         /// <summary>
@@ -60,8 +60,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
         /// <value>The message identifier.</value>
         public string MessageId
         {
-            get => this.GetProperty<string>(GQLWSLogPropertyNames.MESSAGE_ID);
-            private set => this.SetProperty(GQLWSLogPropertyNames.MESSAGE_ID, value);
+            get => this.GetProperty<string>(GqltwsLogPropertyNames.MESSAGE_ID);
+            private set => this.SetProperty(GqltwsLogPropertyNames.MESSAGE_ID, value);
         }
 
         /// <summary>
