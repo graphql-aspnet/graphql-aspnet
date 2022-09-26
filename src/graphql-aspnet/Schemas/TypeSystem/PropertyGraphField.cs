@@ -18,8 +18,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A representation of a object field as it would be defined in the graph type system. Contains
-    /// special logic for handling graph fields generating from object properties.
+    /// A representation of a field as it would be defined in an object graph that originated
+    /// from a .NET property getter.
     /// </summary>
     public class PropertyGraphField : MethodGraphField, ITypedSchemaItem
     {

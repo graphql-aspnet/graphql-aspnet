@@ -15,6 +15,14 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     internal static class GQLWSConstants
     {
         /// <summary>
+        /// A graphql over websocket messaging protcol.
+        /// </summary>
+        /// <remarks>
+        /// Details: (https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md).
+        /// </remarks>
+        public const string PROTOCOL_NAME = "graphql-transport-ws";
+
+        /// <summary>
         /// A set of constants relating to graphql-ws messaging protocol.
         /// </summary>
         public static class Messaging

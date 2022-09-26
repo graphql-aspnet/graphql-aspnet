@@ -61,7 +61,6 @@ namespace GraphQL.AspNet.Defaults
             ISubscriptionEventRouter eventRouter,
             IGraphEventLogger logger = null)
         {
-            this.Id = Guid.NewGuid().ToString();
 
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _serverOptions = Validation.ThrowIfNullOrReturn(serverOptions, nameof(serverOptions));
@@ -73,6 +72,8 @@ namespace GraphQL.AspNet.Defaults
                 SubscriptionEventNameEqualityComparer.Instance);
 
             _logger = logger != null ? new SubscriptionServerEventLogger<TSchema>(this, logger) : null;
+
+            this.Id = "default-subscription-server-" + _schema.Name;
         }
 
         /// <inheritdoc />
@@ -128,7 +129,7 @@ namespace GraphQL.AspNet.Defaults
                             if (clients.Count == 0)
                             {
                                 _subCountByName.Remove(name);
-                                _eventRouter.RemoveReceiver(name, this);
+                                _eventRouter.RemoveReceiver(this, name);
                                 _logger?.EventMonitorEnded(name);
                             }
                         }
@@ -154,7 +155,7 @@ namespace GraphQL.AspNet.Defaults
                     _subCountByName[name].Add(client);
                     if (_subCountByName[name].Count == 1)
                     {
-                        _eventRouter.AddReceiver(name, this);
+                        _eventRouter.AddReceiver(this, name);
                         _logger?.EventMonitorStarted(name);
                     }
                 }

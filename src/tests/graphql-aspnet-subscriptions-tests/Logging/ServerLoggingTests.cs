@@ -9,7 +9,9 @@
 
 namespace GraphQL.Subscriptions.Tests.Logging
 {
+    using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
@@ -28,49 +30,40 @@ namespace GraphQL.Subscriptions.Tests.Logging
         [Test]
         public void GraphQLWSEventMonitorEnded_PropertyCheck()
         {
-            var router = new Mock<ISubscriptionEventRouter>();
-            var server = new DefaultSubscriptionServer<GraphSchema>(
-                new GraphSchema(),
-                new SubscriptionServerOptions<GraphSchema>(),
-                router.Object);
+            var server = new Mock<ISubscriptionServer<GraphSchema>>();
+            server.Setup(x => x.Id).Returns(Guid.NewGuid().ToString());
 
             var eventName = new SubscriptionEventName("schema", "event");
 
-            var entry = new SubscriptionServerEventMonitorEndedLogEntry<GraphSchema>(server, eventName);
+            var entry = new SubscriptionServerEventMonitorEndedLogEntry<GraphSchema>(server.Object, eventName);
 
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
             Assert.AreEqual(eventName.ToString(), entry.SubscriptionEventName);
-            Assert.AreEqual(server.Id, entry.ServerId);
+            Assert.AreEqual(server.Object.Id, entry.ServerId);
             Assert.AreNotEqual(entry.GetType().Name, entry.ToString());
         }
 
         [Test]
         public void GraphQLWSEventMonitorStarted_PropertyCheck()
         {
-            var router = new Mock<ISubscriptionEventRouter>();
-            var server = new DefaultSubscriptionServer<GraphSchema>(
-                new GraphSchema(),
-                new SubscriptionServerOptions<GraphSchema>(),
-                router.Object);
+            var server = new Mock<ISubscriptionServer<GraphSchema>>();
+            server.Setup(x => x.Id).Returns(Guid.NewGuid().ToString());
 
             var eventName = new SubscriptionEventName("schema", "event");
 
-            var entry = new SubscriptionServerEventMonitorStartedLogEntry<GraphSchema>(server, eventName);
+            var entry = new SubscriptionServerEventMonitorStartedLogEntry<GraphSchema>(server.Object, eventName);
 
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
             Assert.AreEqual(eventName.ToString(), entry.SubscriptionEventName);
-            Assert.AreEqual(server.Id, entry.ServerId);
+            Assert.AreEqual(server.Object.Id, entry.ServerId);
             Assert.AreNotEqual(entry.GetType().Name, entry.ToString());
         }
 
         [Test]
         public void GraphQLWSServerSubscriptionEventReceived_PropertyCheck()
         {
-            var router = new Mock<ISubscriptionEventRouter>();
-            var server = new DefaultSubscriptionServer<GraphSchema>(
-                new GraphSchema(),
-                new SubscriptionServerOptions<GraphSchema>(),
-                router.Object);
+            var server = new Mock<ISubscriptionServer<GraphSchema>>();
+            server.Setup(x => x.Id).Returns(Guid.NewGuid().ToString());
 
             var eventData = new SubscriptionEvent()
             {
@@ -89,7 +82,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
             clients.Add(proxy.Object);
 
             var entry = new SubscriptionServerSubscriptionEventReceived<GraphSchema>(
-                server,
+                server.Object,
                 eventData,
                 clients);
 
@@ -98,7 +91,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
             Assert.AreEqual(1, entry.ClientCount);
             Assert.AreEqual("id1", entry.SubscriptionEventId);
             CollectionAssert.AreEquivalent(clients.Select(x => x.Id).ToList<string>(), entry.ClientIds);
-            Assert.AreEqual(server.Id, entry.ServerId);
+            Assert.AreEqual(server.Object.Id, entry.ServerId);
             Assert.AreNotEqual(entry.GetType().Name, entry.ToString());
         }
     }

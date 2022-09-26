@@ -75,9 +75,9 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
                             var eventData = new SubscriptionEvent()
                             {
                                 Id = Guid.NewGuid().ToString(),
-                                SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedSchemaTypeName(typeof(TSchema)),
+                                SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(TSchema)),
                                 Data = proxy.DataObject,
-                                DataTypeName = SchemaExtensions.RetrieveFullyQualifiedDataObjectTypeName(proxy.DataObject?.GetType()),
+                                DataTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(proxy.DataObject?.GetType()),
                                 EventName = proxy.EventName?.Trim(),
                             };
 

@@ -33,14 +33,10 @@ namespace GraphQL.AspNet.Defaults
         public DefaultSubscriptionEventRouter(IGraphEventLogger logger = null)
         {
             _logger = logger;
-            _receivers = new SubscribedEventRecievers(SubscriptionEventNameEqualityComparer.Instance);
+            _receivers = new SubscribedEventRecievers();
         }
 
-        /// <summary>
-        /// Forces this listener to raise the given event. May not be invocable by all listeners.
-        /// </summary>
-        /// <param name="eventData">The event data.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task RaiseEvent(SubscriptionEvent eventData)
         {
             Validation.ThrowIfNull(eventData, nameof(eventData));
@@ -66,12 +62,8 @@ namespace GraphQL.AspNet.Defaults
             await Task.WhenAll(tasks);
         }
 
-        /// <summary>
-        /// Registers a new receiver to receive any raised events of the given type.
-        /// </summary>
-        /// <param name="eventName">Name of the event.</param>
-        /// <param name="receiver">The receiver to add.</param>
-        public void AddReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver)
+        /// <inheritdoc />
+        public void AddReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
         {
             Validation.ThrowIfNull(eventName, nameof(eventName));
             Validation.ThrowIfNull(receiver, nameof(receiver));
@@ -85,12 +77,8 @@ namespace GraphQL.AspNet.Defaults
             }
         }
 
-        /// <summary>
-        /// Removes the receiver from the list of events to be delivered for the given event type.
-        /// </summary>
-        /// <param name="eventName">Type of the event.</param>
-        /// <param name="receiver">The receiver to remove.</param>
-        public void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver)
+        /// <inheritdoc />
+        public void RemoveReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
         {
             if (receiver == null || eventName == null)
                 return;
@@ -107,10 +95,7 @@ namespace GraphQL.AspNet.Defaults
             }
         }
 
-        /// <summary>
-        /// Removes the receiver from the list of events to be delivered for any event type.
-        /// </summary>
-        /// <param name="receiver">The receiver to remove.</param>
+        /// <inheritdoc />
         public void RemoveReceiver(ISubscriptionEventReceiver receiver)
         {
             if (receiver == null)

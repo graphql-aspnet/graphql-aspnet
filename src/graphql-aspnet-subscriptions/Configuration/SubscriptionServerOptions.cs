@@ -118,10 +118,10 @@ namespace GraphQL.AspNet.Configuration
         /// <para>Gets or sets the string representing the default messaging protocol to use
         /// when a connected client does not specify which protocol they wish to communicate with.
         /// </para>
-        /// <para>(Default: 'graphql-transport-ws').</para>
+        /// <para>(Default: null).</para>
         /// </summary>
         /// <value>The default communication protocol for this schema.</value>
-        public string DefaultProtocol { get; set; } = SubscriptionConstants.WebSockets.DEFAULT_SUB_PROTOCOL;
+        public string DefaultProtocol { get; set; } = null;
 
         /// <summary>
         /// <para>

@@ -55,26 +55,56 @@ namespace GraphQL.AspNet.Defaults
 
             var subscriptionOptions = connection.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
-            // validate the expected protocol
-            var expectedProtocol = connection.RequestedProtocol;
-            if (string.IsNullOrWhiteSpace(expectedProtocol))
-                expectedProtocol = subscriptionOptions.DefaultProtocol;
+            // if the client didnt specify a protocol they can accept
+            // use the default for the schema (assuming one exists)
+            var protocolData = connection.RequestedProtocols;
+            if (string.IsNullOrWhiteSpace(protocolData))
+                protocolData = subscriptionOptions?.DefaultProtocol;
 
-            expectedProtocol = expectedProtocol?.Trim() ?? string.Empty;
+            protocolData = protocolData?.Trim();
+            if (string.IsNullOrWhiteSpace(protocolData))
+                throw new UnsupportedClientProtocolException("~none~");
 
-            // ensure the protocol exists and is registered on the server
-            if (!_clientFactories.ContainsKey(expectedProtocol))
-                throw new UnknownClientProtocolException(expectedProtocol);
+            var requestedProtocols = protocolData.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-            // ensure the protocol is supported by the target schema.
-            if (subscriptionOptions.SupportedProtocols != null)
+            string protocolToUse = null;
+            HashSet<string> unsupportedProtocols = null;
+
+            // search for the first requested protocol that
+            // matches those loaded to this server instance
+            // and approved by the target schema
+            foreach (var protocol in requestedProtocols)
             {
-                if (!subscriptionOptions.SupportedProtocols.Contains(expectedProtocol))
-                    throw new UnsupportedClientProtocolException(expectedProtocol);
+                var testProtocol = protocol.Trim();
+
+                // ensure the protocol exists and is registered on the server
+                if (!_clientFactories.ContainsKey(testProtocol))
+                {
+                    unsupportedProtocols = unsupportedProtocols ?? new HashSet<string>();
+                    unsupportedProtocols.Add(testProtocol);
+                    continue;
+                }
+
+                // ensure the protocol is allowed by the target schema
+                if (subscriptionOptions?.SupportedProtocols != null)
+                {
+                    if (!subscriptionOptions.SupportedProtocols.Contains(testProtocol))
+                    {
+                        unsupportedProtocols = unsupportedProtocols ?? new HashSet<string>();
+                        unsupportedProtocols.Add(testProtocol);
+                        continue;
+                    }
+                }
+
+                protocolToUse = testProtocol;
+                break;
             }
 
             // generate the appropriate client
-            return await _clientFactories[expectedProtocol].CreateClient<TSchema>(connection);
+            if (!string.IsNullOrWhiteSpace(protocolToUse))
+                return await _clientFactories[protocolToUse].CreateClient<TSchema>(connection);
+
+            throw new UnsupportedClientProtocolException(string.Join(", ", unsupportedProtocols));
         }
     }
 }

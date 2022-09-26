@@ -17,7 +17,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging;
     using NUnit.Framework;
 
-    public static class MockClientAsserts
+    public static class GQLWSClientAsserts
     {
         /// <summary>
         /// Asserts that a response message from the server queued and that it is of the supplied type.
@@ -90,7 +90,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             var convertedMessage = JsonSerializer.Deserialize<GQLWSResponseMessage>(str, options);
 
-            Assert.IsNotNull(convertedMessage, "Could not deserialized response message");
+            Assert.IsNotNull(convertedMessage, "Could not deserialize response message");
             Assert.AreEqual(type, convertedMessage.Type, $"Expected message type of {type.ToString()} but got {convertedMessage.Type.ToString()}");
 
             if (compareJson)

@@ -60,7 +60,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             Assert.AreEqual("close desc", client.CloseStatusDescription);
             Assert.AreEqual(provider, client.ServiceProvider);
             Assert.AreEqual(user, client.SecurityContext.DefaultUser);
-            Assert.AreEqual("sub proto", client.RequestedProtocol);
+            Assert.AreEqual("sub proto", client.RequestedProtocols);
             Assert.AreEqual("actual protocol", client.Protocol);
         }
 

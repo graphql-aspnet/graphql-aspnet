@@ -267,7 +267,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 },
             };
 
-            await connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+            await connection.OpenAsync(GQLWSConstants.PROTOCOL_NAME);
             await graphqlWsClient.ProcessReceivedMessage(startMessage);
 
             connection.AssertGQLWSResponse(
@@ -298,7 +298,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 },
             };
 
-            await connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+            await connection.OpenAsync(GQLWSConstants.PROTOCOL_NAME);
             await graphqlWsClient.ProcessReceivedMessage(startMessage);
 
             // mimic new data for the registered subscription being processed by some
@@ -559,7 +559,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             // execute the connection sequence
             var client = graphqlWsClient as ISubscriptionClientProxy;
 
-            await connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+            await connection.OpenAsync(GQLWSConstants.PROTOCOL_NAME);
             await client.SendMessage(new GQLWSServerAckOperationMessage());
 
             Assert.AreEqual(1, connection.ResponseMessageCount);
@@ -634,7 +634,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 "Error Message",
                 "ERROR_CODE");
 
-            await connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+            await connection.OpenAsync(GQLWSConstants.PROTOCOL_NAME);
             await graphqlWsClient.SendErrorMessage(error);
 
             connection.AssertGQLWSResponse(GQLWSMessageType.ERROR);

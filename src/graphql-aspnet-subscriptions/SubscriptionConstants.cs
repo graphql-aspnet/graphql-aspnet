@@ -11,6 +11,7 @@ namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
 
     /// <summary>
     /// A set of constants related to the configuration and processing of subscriptions
@@ -18,6 +19,12 @@ namespace GraphQL.AspNet
     /// </summary>
     public static class SubscriptionConstants
     {
+        /// <summary>
+        /// The default messaging protocol assignd to a schema when no default protocol
+        /// is assigned during application startup.
+        /// </summary>
+        public const string DEFAULT_MESSAGE_PROTOCOL = GQLWSConstants.PROTOCOL_NAME;
+
         /// <summary>
         /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
         /// any events that were raised during the query execution.
@@ -89,18 +96,6 @@ namespace GraphQL.AspNet
             /// graphql messaging protocol.
             /// </summary>
             public const string WEBSOCKET_PROTOCOL_HEADER = "sec-websocket-protocol";
-
-            /// <summary>
-            /// The default default sub protocol this subscription server will use
-            /// when no specific protocol is identified.
-            /// </summary>
-            public const string DEFAULT_SUB_PROTOCOL = GRAPHQL_WS_PROTOCOL;
-
-            /// <summary>
-            /// The modern "graphql-ws" protcol as detailed by:
-            /// (https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md) .
-            /// </summary>
-            public const string GRAPHQL_WS_PROTOCOL = "graphql-transport-ws";
 
             /// <summary>
             /// A legacy version of "graphql-ws" protcol previously maintained by apollo as detailed by:

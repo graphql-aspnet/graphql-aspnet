@@ -63,6 +63,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common
         /// Gets the payload of the message as a general object.
         /// </summary>
         /// <value>The payload object.</value>
+        [JsonIgnore]
         public override object PayloadObject => this.Payload;
     }
 }

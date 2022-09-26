@@ -42,14 +42,15 @@ namespace GraphQL.AspNet.Connections.WebSockets
             _securityContext = new HttpUserSecurityContext(_httpContext);
             _socketManager = socketManager ?? _httpContext.WebSockets;
 
-            this.RequestedProtocol = this.DeteremineRequestedProtocol();
+            this.RequestedProtocols = this.DeteremineRequestedProtocol();
         }
 
         private string DeteremineRequestedProtocol()
         {
             if (_httpContext.Request.Headers.ContainsKey(SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER))
             {
-                return _httpContext.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER][0];
+                var protocolHeaders = _httpContext.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER];
+                return string.Join(",", protocolHeaders);
             }
 
             return string.Empty;
@@ -164,7 +165,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         public IUserSecurityContext SecurityContext => _securityContext;
 
         /// <inheritdoc />
-        public string RequestedProtocol { get; }
+        public string RequestedProtocols { get; }
 
         /// <inheritdoc />
         public string Protocol => this.WebSocket?.SubProtocol;

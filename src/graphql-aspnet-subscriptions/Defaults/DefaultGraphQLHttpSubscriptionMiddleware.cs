@@ -34,6 +34,7 @@ namespace GraphQL.AspNet.Defaults
     {
         private readonly ISubscriptionServer<TSchema> _subscriptionServer;
         private readonly RequestDelegate _next;
+        private readonly TSchema _schema;
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly string _routePath;
         private readonly ISubscriptionServerClientFactory _clientFactory;
@@ -50,11 +51,13 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="options">The options.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
+            TSchema schema,
             ISubscriptionServer<TSchema> subscriptionServer,
             ISubscriptionServerClientFactory clientFactory,
             SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _subscriptionServer = Validation.ThrowIfNullOrReturn(subscriptionServer, nameof(subscriptionServer));
             _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
@@ -97,13 +100,16 @@ namespace GraphQL.AspNet.Defaults
                         logger?.SubscriptionClientDropped(subscriptionClient);
                     }
                 }
-                catch (UnknownClientProtocolException ukpe)
-                {
-                    // TODO log entrys for protocols
-                }
                 catch (UnsupportedClientProtocolException uspe)
                 {
-
+                    logger?.UnsupportedClientProtocol(_subscriptionServer, _schema, uspe.Protocol);
+                    if (!context.Response.HasStarted)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        await context.Response.WriteAsync(
+                            $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported " +
+                            $"by the target schema.").ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {

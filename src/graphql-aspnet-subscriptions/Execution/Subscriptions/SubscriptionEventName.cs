@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <param name="schemaType">Type of the schema which owns this name.</param>
         /// <param name="eventName">Name the event.</param>
         public SubscriptionEventName(Type schemaType, string eventName)
-            : this(SchemaExtensions.RetrieveFullyQualifiedSchemaTypeName(schemaType), eventName)
+            : this(SchemaExtensions.RetrieveFullyQualifiedTypeName(schemaType), eventName)
         {
         }
 

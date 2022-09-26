@@ -83,7 +83,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         }
 
         [Test]
-        public async Task ReceiveEvent_WithARegisteredClient_ClientRecievesEvent()
+        public async Task WhenTheServerReceivesAnEvent_WithARegisteredClient_ClientRecievesEvent()
         {
             (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
 
@@ -97,14 +97,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 },
             };
 
-            await connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+            await connection.OpenAsync(GQLWSConstants.PROTOCOL_NAME);
             await graphqlWsClient.ProcessReceivedMessage(startMessage);
 
             var evt = new SubscriptionEvent()
             {
                 Data = new TwoPropertyObject(),
-                DataTypeName = SchemaExtensions.RetrieveFullyQualifiedDataObjectTypeName(typeof(TwoPropertyObject)),
-                SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedSchemaTypeName(typeof(GraphSchema)),
+                DataTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(TwoPropertyObject)),
+                SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(GraphSchema)),
                 EventName = "[subscription]/GQLWSSubscription/WatchForPropObject",
             };
 

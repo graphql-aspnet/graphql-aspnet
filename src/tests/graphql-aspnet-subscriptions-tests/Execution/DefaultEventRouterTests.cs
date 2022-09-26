@@ -56,7 +56,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 Data = new TwoPropertyObject(),
             };
 
-            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
+            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
             await router.RaiseEvent(evt);
 
             receiver.Verify(x => x.ReceiveEvent(evt));
@@ -88,8 +88,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             // add two events but remove the one being raised
             // to ensure its not processed
-            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            router.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
+            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
             await router.RaiseEvent(evt);
             await router.RaiseEvent(evt2);
 
@@ -123,9 +123,9 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             // add two events but remove the one being raised
             // to ensure its not processed
-            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            router.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
-            router.RemoveReceiver(evt.ToSubscriptionEventName(), receiver.Object);
+            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
+            router.RemoveReceiver(receiver.Object, evt.ToSubscriptionEventName());
             await router.RaiseEvent(evt);
             await router.RaiseEvent(evt2);
 
@@ -158,8 +158,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
             };
 
             // add two events and ensure both are removed when not directly named
-            router.AddReceiver(evt.ToSubscriptionEventName(), receiver.Object);
-            router.AddReceiver(evt2.ToSubscriptionEventName(), receiver.Object);
+            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
             router.RemoveReceiver(receiver.Object);
             await router.RaiseEvent(evt);
             await router.RaiseEvent(evt2);

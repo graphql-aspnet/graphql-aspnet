@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A representation of a object field as it would be defined in the graph type system.
+    /// A representation of a field as it would be defined in an object graph that originated
+    /// from a .NET method invocation.
     /// </summary>
-    /// <seealso cref="IGraphField" />
     [DebuggerDisplay("Field: {Route.Path}")]
     public class MethodGraphField : IGraphField
     {

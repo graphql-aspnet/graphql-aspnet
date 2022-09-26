@@ -14,12 +14,15 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using System.Net;
     using System.Net.WebSockets;
     using System.Threading.Tasks;
+    using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Exceptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Http.Features;
     using Moq;
     using NUnit.Framework;
 
@@ -60,6 +63,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
+                new GraphSchema(),
                 server.Object,
                 factory.Object,
                 options);
@@ -91,6 +95,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
+                new GraphSchema(),
                 server.Object,
                 factory.Object,
                 options);
@@ -133,6 +138,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
+                new GraphSchema(),
                 server.Object,
                 factory.Object,
                 options);
@@ -167,6 +173,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
+                new GraphSchema(),
                 server.Object,
                 factory.Object,
                 options);
@@ -181,6 +188,43 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             Assert.IsFalse(nextCalled);
 
             Assert.AreEqual((int)HttpStatusCode.InternalServerError, context.Response.StatusCode);
+        }
+
+        [Test]
+        public async Task UnsupportedProtcol_Yields400Error()
+        {
+            Task CallNext(HttpContext context)
+            {
+                return Task.CompletedTask;
+            }
+
+            var next = new RequestDelegate(CallNext);
+
+            var options = new SubscriptionServerOptions<GraphSchema>();
+            var server = new Mock<ISubscriptionServer<GraphSchema>>();
+            var factory = new Mock<ISubscriptionServerClientFactory>();
+            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+                .Throws(new UnsupportedClientProtocolException("unknown"));
+
+            var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
+                next,
+                new GraphSchema(),
+                server.Object,
+                factory.Object,
+                options);
+
+            var context = new FakeWebSocketHttpContext();
+            context.Request.Host = new HostString("localhost:3000");
+            context.Request.Path = "/graphql";
+            context.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER] = "unknown-protocl";
+            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.Request.Path = options.Route;
+
+            // not a socket request aginst the route
+            // should be skipped
+            await middleware.InvokeAsync(context);
+
+            Assert.AreEqual((int)HttpStatusCode.BadRequest, context.Response.StatusCode);
         }
     }
 }

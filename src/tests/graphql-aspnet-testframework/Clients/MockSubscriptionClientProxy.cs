@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -124,5 +125,11 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value>The sent messages.</value>
         public List<object> SentMessages { get; }
+
+        /// <inheritdoc />
+        public IEnumerable<ISubscription<TSchema>> Subscriptions => Enumerable.Empty<ISubscription<TSchema>>();
+
+        /// <inheritdoc />
+        public string Protocol => "fake-protocol";
     }
 }

@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Logging
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.SubscriptionEvents;
+    using GraphQL.AspNet.Logging.SubscriptionServerEvents;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -118,6 +119,25 @@ namespace GraphQL.AspNet.Logging
             logger.Log(
                 LogLevel.Debug,
                 () => new SubscriptionEventPublishedLogEntry(eventData));
+        }
+
+        /// <summary>
+        /// Recorded when a client attempts to connect to a subscription server, for a specific schema,
+        /// using a protocol explicitly not supported by that schema.
+        /// </summary>
+        /// <param name="logger">The logger doing the logging.</param>
+        /// <param name="server">The server that was connected to.</param>
+        /// <param name="schema">The schema requested.</param>
+        /// <param name="protocol">The protocol that was attempted.</param>
+        public static void UnsupportedClientProtocol(
+            this IGraphEventLogger logger,
+            ISubscriptionServer server,
+            ISchema schema,
+            string protocol)
+        {
+            logger.Log(
+                LogLevel.Warning,
+                () => new SubscriptionServerUnsupportClientProtocolLogEntry(server, schema, protocol));
         }
     }
 }

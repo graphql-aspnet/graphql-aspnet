@@ -83,5 +83,10 @@ namespace GraphQL.AspNet.Logging
         /// A collection of client ids being reported on.
         /// </summary>
         public const string CLIENT_IDS = "clientIds";
+
+        /// <summary>
+        /// The name of a client messaging protocol.
+        /// </summary>
+        public const string CLIENT_PROTOCOL = "clientProtocol";
     }
 }

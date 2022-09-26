@@ -32,6 +32,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     [TestFixture]
     public class GQLWSConverterTests
     {
+        public class GQWSCustomMessage : GQLWSMessage<string>
+        {
+            public GQWSCustomMessage()
+                : base(GQLWSMessageType.COMPLETE)
+            {
+            }
+        }
+
         [Test]
         public void CompleteMessage_WithId_SerializesCorrectly()
         {
@@ -248,6 +256,63 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             var expected = @"
             {
                 ""type"" : ""connection_ack""
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expected, response);
+        }
+
+        [Test]
+        public void GeneralMessage_WithNoData_SerializesCorrectly()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphController<GQLWSDataMessageController>()
+                .AddSubscriptionServer()
+                .Build();
+
+            var message = new GQWSCustomMessage();
+            message.Payload = null;
+            message.Id = "abc";
+
+            var converter = new GQLWSMessageConverter();
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(converter);
+
+            var response = JsonSerializer.Serialize(message, typeof(GQLWSMessage), options);
+
+            // expect no payload attribute
+            var expected = @"
+            {
+                ""id"": ""abc"",
+                ""type"" : ""complete""
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expected, response);
+        }
+
+        [Test]
+        public void GeneralMessage_WithData_SerializesCorrectly()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphController<GQLWSDataMessageController>()
+                .AddSubscriptionServer()
+                .Build();
+
+            var message = new GQWSCustomMessage();
+            message.Payload = "mydata";
+            message.Id = "abc";
+
+            var converter = new GQLWSMessageConverter();
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(converter);
+
+            var response = JsonSerializer.Serialize(message, typeof(GQLWSMessage), options);
+
+            // expect no payload attribute
+            var expected = @"
+            {
+                ""id"": ""abc"",
+                ""type"" : ""complete"",
+                ""payload"" : ""mydata""
             }";
 
             CommonAssertions.AreEqualJsonStrings(expected, response);

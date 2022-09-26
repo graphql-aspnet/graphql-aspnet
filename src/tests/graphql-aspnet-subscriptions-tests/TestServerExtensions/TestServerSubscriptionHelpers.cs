@@ -44,8 +44,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             serverBuilder.AddSchemaBuilderAction(schemaBuilder =>
             {
-                DefaultSubscriptionBuilderExtensions
-                .AddSubscriptionServer(schemaBuilder, options);
+                DefaultSubscriptionBuilderExtensions.AddSubscriptionServer(schemaBuilder, options);
             });
 
             return serverBuilder;

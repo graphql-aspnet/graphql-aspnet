@@ -91,13 +91,14 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         IUserSecurityContext SecurityContext { get; }
 
         /// <summary>
-        /// Gets the communications protocol requested by this client connection.
+        /// Gets a comma delimited list of communications protocol requested by this client connection.
         /// </summary>
-        /// <value>The requested protocol.</value>
-        string RequestedProtocol { get; }
+        /// <value>The requested set of protocols.</value>
+        string RequestedProtocols { get; }
 
         /// <summary>
-        /// Gets the actual communications protocol neogiated by this client connection.
+        /// Gets the actual communications protocol neogiated by this client connection
+        /// when it was opened.
         /// </summary>
         /// <value>The protocol.</value>
         string Protocol { get; }

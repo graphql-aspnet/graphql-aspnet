@@ -124,5 +124,11 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="message">The message to be serialized and sent to the client.</param>
         /// <returns>Task.</returns>
         Task SendMessage(object message);
+
+        /// <summary>
+        /// Gets the messaing protocol supported by this client.
+        /// </summary>
+        /// <value>The client's chosen messaging protocol.</value>
+        string Protocol { get; }
     }
 }

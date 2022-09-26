@@ -101,5 +101,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
                 LogLevel.Debug,
                 () => new GQLWSClientSubscriptionStoppedLogEntry(_client, subscription));
         }
+
+        /// <summary>
+        /// Gets the underlying event logger this logger is based on.
+        /// </summary>
+        /// <value>The event logger.</value>
+        public IGraphEventLogger EventLogger => _logger;
     }
 }

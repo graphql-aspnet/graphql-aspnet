@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
                 logger,
                 schema.Configuration.ExecutionOptions.EnableMetrics);
 
-            return Task.FromResult(client as ISubscriptionClientProxy<TSchema>);
+            return Task.FromResult((ISubscriptionClientProxy<TSchema>)client);
         }
 
         /// <inheritdoc />
-        public string Protocol => SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL;
+        public string Protocol => GQLWSConstants.PROTOCOL_NAME;
     }
 }

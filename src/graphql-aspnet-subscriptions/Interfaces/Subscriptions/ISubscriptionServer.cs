@@ -18,16 +18,12 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     /// invoked. Commonly used to swap out in-process vs. out-of-process subscription management. Typically there is
     /// one subscription server instance (a singleton) per schema per kestral server.
     /// </summary>
-    /// <typeparam name="TSchema">The schema type this server is registered to handle.</typeparam>
-    public interface ISubscriptionServer<TSchema> : ISubscriptionServer
-        where TSchema : class, ISchema
+    public interface ISubscriptionServer : ISubscriptionEventReceiver
     {
         /// <summary>
-        /// Register a newly connected subscription with the server so that it can start sending messages.
+        /// Gets an Id that uniquely identifies this server instance.
         /// </summary>
-        /// <param name="clientProxy">The client proxy through which the server will
-        /// communicate events to the connected client.</param>
-        /// <returns>A value indicating if the client was successfully registered.</returns>
-        Task<bool> RegisterNewClient(ISubscriptionClientProxy<TSchema> clientProxy);
+        /// <value>The identifier.</value>
+        string Id { get; }
     }
 }

@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             this.State = ClientConnectionState.Open;
 
             _autoCloseOnReadCloseMessage = autoCloseOnReadCloseMessage;
-            this.RequestedProtocol = requestedProtocol;
+            this.RequestedProtocols = requestedProtocol;
             this.Protocol = actualProtocol;
         }
 
@@ -242,7 +242,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public IUserSecurityContext SecurityContext { get; }
 
         /// <inheritdoc />
-        public string RequestedProtocol { get; }
+        public string RequestedProtocols { get; }
 
         /// <inheritdoc />
         public string Protocol { get; }
