@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 {
     using System;
     using System.Collections.Generic;
@@ -33,13 +33,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

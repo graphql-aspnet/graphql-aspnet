@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages
 {
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads;
 
     /// <summary>
     /// A message sent by the client or server when a given subscription (indicated by its client provided id)

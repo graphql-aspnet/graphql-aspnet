@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages
 {
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads;
 
     /// <summary>
     /// A message sent by the server to a client to acknowledge receipt of a message when no other

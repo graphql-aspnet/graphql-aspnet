@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads;
     using NUnit.Framework;
 
     [TestFixture]

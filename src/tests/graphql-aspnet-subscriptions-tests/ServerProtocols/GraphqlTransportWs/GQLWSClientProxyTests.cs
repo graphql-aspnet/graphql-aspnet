@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
     using System;
     using System.Linq;
@@ -19,17 +19,17 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS.GraphQLWSData;
+    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
@@ -166,7 +166,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
             // init a connection then close the socket
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueConnectionCloseMessage();
 
             Assert.AreEqual(2, connection.QueuedMessageCount);
@@ -188,7 +188,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueConnectionCloseMessage(); // socket level close message
 
             Assert.AreEqual(2, connection.QueuedMessageCount);
@@ -205,8 +205,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
             // startup the connection then register a subscription
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -235,7 +235,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
             void ConnectionClosing(object o, EventArgs e)
             {
                 closeCalled = true;
-                Assert.AreEqual(1, graphqlWsClient.Subscriptions.Count());
+                Assert.AreEqual(1, Enumerable.Count<ISubscription<GraphSchema>>(graphqlWsClient.Subscriptions));
             }
 
             graphqlWsClient.SubscriptionRouteAdded += RouteAdded;
@@ -375,8 +375,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -385,7 +385,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                 },
             });
 
-            connection.QueueClientMessage(new GqltwsSubscriptionCompleteMessage()
+            connection.QueueClientMessage((object)new GqltwsSubscriptionCompleteMessage()
             {
                 Id = "abc",
             });
@@ -431,11 +431,11 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
 
             // mimic the client sending a complete message for a subscription
             // not currently registered
-            connection.QueueClientMessage(new GqltwsSubscriptionCompleteMessage()
+            connection.QueueClientMessage((object)new GqltwsSubscriptionCompleteMessage()
             {
                 Id = "abc123",
             });
@@ -454,8 +454,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -463,7 +463,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                     Query = "subscription {  gqltwsSubscription { watchForPropObject { property1 } } }",
                 },
             });
-            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc1",
                 Payload = new GraphQueryData()
@@ -493,8 +493,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -502,7 +502,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                     Query = "subscription {  gqltwsSubscription { watchForPropObject { property1 } } }",
                 },
             });
-            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -535,8 +535,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage((GqltwsMessage)new FakeGqltwsMessage()
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)(GqltwsMessage)new FakeGqltwsMessage()
             {
                 Type = "invalid_type",
             });
@@ -583,8 +583,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         public async Task ExecuteQueryThroughStartMessage_YieldsQueryResult()
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage(new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -614,8 +614,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            connection.QueueClientMessage(new GqltwsClientConnectionInitMessage());
-            connection.QueueClientMessage(new GqltwsPingMessage());
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsPingMessage());
             connection.QueueConnectionCloseMessage();
 
             await graphqlWsClient.StartConnection();

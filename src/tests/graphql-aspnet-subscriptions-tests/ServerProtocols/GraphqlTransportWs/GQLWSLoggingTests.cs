@@ -7,23 +7,20 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
     using Moq;
     using NUnit.Framework;
 

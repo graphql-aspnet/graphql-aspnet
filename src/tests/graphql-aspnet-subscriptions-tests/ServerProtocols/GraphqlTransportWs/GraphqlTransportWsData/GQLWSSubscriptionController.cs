@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS.GraphQLWSData
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;

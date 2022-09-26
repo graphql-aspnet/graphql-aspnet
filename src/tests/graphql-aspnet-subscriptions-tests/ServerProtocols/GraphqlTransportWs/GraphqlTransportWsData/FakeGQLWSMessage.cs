@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS.GraphQLWSData
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData
 {
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
 
     public class FakeGqltwsMessage : GqltwsMessage
     {

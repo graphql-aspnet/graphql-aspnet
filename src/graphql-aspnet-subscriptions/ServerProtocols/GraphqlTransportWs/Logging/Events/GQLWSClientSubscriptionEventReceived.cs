@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events
 {
     using System.Collections.Generic;
     using System.Linq;

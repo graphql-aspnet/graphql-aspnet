@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 {
     /// <summary>
     /// A set of constants related to the graphql-ws server.

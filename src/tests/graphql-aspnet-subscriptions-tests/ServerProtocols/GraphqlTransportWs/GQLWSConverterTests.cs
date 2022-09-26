@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
     using System;
     using System.Text.Json;
@@ -17,14 +17,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS.GraphQLWSData;
+    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;

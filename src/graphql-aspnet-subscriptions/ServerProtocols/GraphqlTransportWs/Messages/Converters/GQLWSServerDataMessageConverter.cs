@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
 {
     using System;
     using System.Text.Json;
@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Response;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
 
     /// <summary>
     /// A json converter for the <see cref="GqltwsServerNextDataMessage"/>.

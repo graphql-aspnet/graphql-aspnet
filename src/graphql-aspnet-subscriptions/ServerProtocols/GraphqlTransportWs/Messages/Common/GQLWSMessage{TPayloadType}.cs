@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common
 {
     using System;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads;
 
     /// <summary>
     /// An implementation of the required operation message interface.

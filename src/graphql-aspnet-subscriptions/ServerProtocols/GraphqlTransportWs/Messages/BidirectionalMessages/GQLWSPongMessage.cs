@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages
 {
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
 
     /// <summary>
     /// A representation of the PONG message sent by a client or server to the other

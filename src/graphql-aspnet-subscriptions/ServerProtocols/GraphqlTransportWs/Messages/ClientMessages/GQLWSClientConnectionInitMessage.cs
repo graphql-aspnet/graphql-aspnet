@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads;
 
     /// <summary>
     /// A message recieved from the client after the establishment of the websocket to initialize the graphql

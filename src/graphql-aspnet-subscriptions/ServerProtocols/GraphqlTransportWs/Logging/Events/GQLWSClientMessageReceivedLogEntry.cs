@@ -7,14 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events
 {
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
 
     /// <summary>
     /// Recorded when an graphql-ws client proxy receives a new message from its connected client.

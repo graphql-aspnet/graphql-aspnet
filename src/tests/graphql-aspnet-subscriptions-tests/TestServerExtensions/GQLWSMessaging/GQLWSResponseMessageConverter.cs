@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GqltwsMessaging
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class GqltwsResponseMessageConverter : JsonConverter<GqltwsResponseMessage>

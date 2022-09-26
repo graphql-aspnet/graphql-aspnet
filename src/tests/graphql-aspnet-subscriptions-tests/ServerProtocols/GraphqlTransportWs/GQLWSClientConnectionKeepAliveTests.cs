@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
     using System;
     using System.Collections.Generic;
@@ -15,8 +15,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
     using Moq;
     using NUnit.Framework;
 

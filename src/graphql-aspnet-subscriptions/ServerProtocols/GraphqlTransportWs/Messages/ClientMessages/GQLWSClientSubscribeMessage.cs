@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
 
     /// <summary>
     /// A message sent by the client when it wants to start a new subscription operation.

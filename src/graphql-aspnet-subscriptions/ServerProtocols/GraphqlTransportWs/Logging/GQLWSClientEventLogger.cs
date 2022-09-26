@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

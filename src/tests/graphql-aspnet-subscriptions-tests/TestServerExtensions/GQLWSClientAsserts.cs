@@ -11,10 +11,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 {
     using System.Text;
     using System.Text.Json;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions.GqltwsMessaging;
+    using GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging;
     using NUnit.Framework;
 
     public static class GqltwsClientAsserts

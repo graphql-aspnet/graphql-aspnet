@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging.Events
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events
 {
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging;
 
     /// <summary>
     /// Recorded whenever an graphql-ws client proxy drops a subscription registration.

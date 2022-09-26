@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging
 {
     /// <summary>
     /// A set of known property names for graphql-ws related log entries.

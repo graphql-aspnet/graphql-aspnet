@@ -26,8 +26,6 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

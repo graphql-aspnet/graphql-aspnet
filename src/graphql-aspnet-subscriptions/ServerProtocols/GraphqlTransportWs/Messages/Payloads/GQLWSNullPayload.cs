@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads
 {
     /// <summary>
     /// An object representing a state such that no payload was or should be supplied with a message.

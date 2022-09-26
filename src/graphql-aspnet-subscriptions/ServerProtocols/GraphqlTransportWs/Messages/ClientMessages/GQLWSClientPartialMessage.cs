@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
 
     /// <summary>
     /// A partially deserialized operation message recieved from the client. Converts the actual paylaod

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Logging
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging
 {
     using Microsoft.Extensions.Logging;
 

@@ -21,7 +21,7 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;

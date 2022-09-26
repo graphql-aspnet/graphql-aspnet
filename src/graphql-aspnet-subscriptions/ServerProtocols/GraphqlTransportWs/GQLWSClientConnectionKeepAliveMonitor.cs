@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
+namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 {
     using System;
     using System.Threading;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
 
     /// <summary>
     /// Sends a periodic keep-alive message down the wire to the connected client
