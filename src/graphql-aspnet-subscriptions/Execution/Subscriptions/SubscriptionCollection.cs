@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
+namespace GraphQL.AspNet.Execution.Subscriptions
 {
     using System;
     using System.Collections;
@@ -24,9 +24,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS
     internal class SubscriptionCollection<TSchema> : IEnumerable<ISubscription<TSchema>>
         where TSchema : class, ISchema
     {
-        private object _syncLock = new object();
-        private Dictionary<string, ISubscription<TSchema>> _subsById;
-        private Dictionary<SchemaItemPath, HashSet<ISubscription<TSchema>>> _subsByRoute;
+        private readonly object _syncLock = new object();
+        private readonly Dictionary<string, ISubscription<TSchema>> _subsById;
+        private readonly Dictionary<SchemaItemPath, HashSet<ISubscription<TSchema>>> _subsByRoute;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionCollection{TSchema}"/> class.

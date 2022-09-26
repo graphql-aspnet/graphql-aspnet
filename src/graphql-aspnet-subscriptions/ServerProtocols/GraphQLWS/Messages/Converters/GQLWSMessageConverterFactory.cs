@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
     using Microsoft.Extensions.DependencyInjection;

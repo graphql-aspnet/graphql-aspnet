@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Exceptions
+namespace GraphQL.AspNet.Exceptions
 {
     using System;
 

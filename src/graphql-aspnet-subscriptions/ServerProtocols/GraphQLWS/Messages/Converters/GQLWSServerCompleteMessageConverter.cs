@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;
 
     /// <summary>

@@ -14,12 +14,14 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ClientMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
@@ -605,6 +607,37 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
                         }
                     }
                 }");
+        }
+
+        [Test]
+        public async Task RecievedPingMessages_ResponsesWithAPong()
+        {
+            (var connection, var graphqlWsClient) = await this.CreateConnection();
+
+            connection.QueueClientMessage(new GQLWSClientConnectionInitMessage());
+            connection.QueueClientMessage(new GQLWSPingMessage());
+            connection.QueueConnectionCloseMessage();
+
+            await graphqlWsClient.StartConnection();
+
+            connection.AssertGQLWSResponse(GQLWSMessageType.CONNECTION_ACK);
+            connection.AssertGQLWSResponse(GQLWSMessageType.PONG);
+        }
+
+        [Test]
+        public async Task SendingAErrorMessage_WriteAppropriateErrorToConnection()
+        {
+            (var connection, var graphqlWsClient) = await this.CreateConnection();
+
+            var error = new GraphExecutionMessage(
+                GraphMessageSeverity.Warning,
+                "Error Message",
+                "ERROR_CODE");
+
+            await connection.OpenAsync(SubscriptionConstants.WebSockets.GRAPHQL_WS_PROTOCOL);
+            await graphqlWsClient.SendErrorMessage(error);
+
+            connection.AssertGQLWSResponse(GQLWSMessageType.ERROR);
         }
     }
 }

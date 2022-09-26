@@ -37,7 +37,6 @@
 
   <ItemGroup>
     <Folder Include="Execution\ClientSubscriptionTestData\" />
-    <Folder Include="ServerProtocols\" />
   </ItemGroup>
 
 </Project>

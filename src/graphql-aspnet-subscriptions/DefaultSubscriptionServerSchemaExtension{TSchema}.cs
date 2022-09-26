@@ -13,6 +13,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Exceptions;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -23,7 +24,6 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS;
-    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Exceptions;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

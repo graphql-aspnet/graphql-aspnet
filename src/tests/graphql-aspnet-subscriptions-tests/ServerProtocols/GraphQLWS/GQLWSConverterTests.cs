@@ -18,6 +18,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphQLWS
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Converters;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages;

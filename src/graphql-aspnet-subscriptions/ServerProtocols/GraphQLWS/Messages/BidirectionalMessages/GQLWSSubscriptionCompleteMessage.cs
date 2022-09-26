@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.ServerMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.BidirectionalMessages
 {
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphQLWS.Messages.Payloads;
