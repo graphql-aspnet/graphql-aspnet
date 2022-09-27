@@ -38,24 +38,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 
-        /// <summary>
-        /// Reads and converts the JSON to type <see cref="GqltwsServerNextDataMessage"/>.
-        /// </summary>
-        /// <param name="reader">The reader.</param>
-        /// <param name="typeToConvert">The type to convert.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
-        /// <returns>The converted value.</returns>
+        /// <inheritdoc />
         public override GqltwsServerNextDataMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             throw new NotSupportedException($"{typeof(GqltwsServerNextDataMessage).FriendlyName()} cannot be deserialized.");
         }
 
-        /// <summary>
-        /// Writes a specified value as JSON.
-        /// </summary>
-        /// <param name="writer">The writer to write to.</param>
-        /// <param name="value">The value to convert to JSON.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
+        /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, GqltwsServerNextDataMessage value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();

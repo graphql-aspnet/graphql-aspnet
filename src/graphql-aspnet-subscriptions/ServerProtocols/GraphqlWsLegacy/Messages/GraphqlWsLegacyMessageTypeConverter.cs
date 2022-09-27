@@ -19,13 +19,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages
     /// </summary>
     internal class GraphqlWsLegacyMessageTypeConverter : JsonConverter<GraphqlWsLegacyMessageType>
     {
-        /// <summary>
-        /// Reads and converts the JSON to type <see cref="GraphqlWsLegacyMessageType"/>.
-        /// </summary>
-        /// <param name="reader">The reader.</param>
-        /// <param name="typeToConvert">The type to convert.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
-        /// <returns>The converted value.</returns>
+        /// <inheritdoc />
         public override GraphqlWsLegacyMessageType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)
@@ -36,12 +30,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages
             return GraphqlWsLegacyMessageTypeExtensions.FromString(reader.GetString());
         }
 
-        /// <summary>
-        /// Writes a specified value as JSON.
-        /// </summary>
-        /// <param name="writer">The writer to write to.</param>
-        /// <param name="value">The value to convert to JSON.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
+        /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, GraphqlWsLegacyMessageType value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(GraphqlWsLegacyMessageTypeExtensions.Serialize(value));

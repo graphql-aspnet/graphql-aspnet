@@ -19,13 +19,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages
     /// </summary>
     internal class GqltwsMessageTypeConverter : JsonConverter<GqltwsMessageType>
     {
-        /// <summary>
-        /// Reads and converts the JSON to type <see cref="GqltwsMessageType"/>.
-        /// </summary>
-        /// <param name="reader">The reader.</param>
-        /// <param name="typeToConvert">The type to convert.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
-        /// <returns>The converted value.</returns>
+        /// <inheritdoc />
         public override GqltwsMessageType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)
@@ -36,12 +30,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages
             return GqltwsMessageTypeExtensions.FromString(reader.GetString());
         }
 
-        /// <summary>
-        /// Writes a specified value as JSON.
-        /// </summary>
-        /// <param name="writer">The writer to write to.</param>
-        /// <param name="value">The value to convert to JSON.</param>
-        /// <param name="options">An object that specifies serialization options to use.</param>
+        /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, GqltwsMessageType value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(GqltwsMessageTypeExtensions.Serialize(value));
