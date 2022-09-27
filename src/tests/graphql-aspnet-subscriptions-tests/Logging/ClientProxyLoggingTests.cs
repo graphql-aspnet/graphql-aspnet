@@ -11,16 +11,11 @@ namespace GraphQL.Subscriptions.Tests.Logging
 {
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Logging.ClientProxyLogEntries;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents;
     using Moq;
     using NUnit.Framework;
 
@@ -33,13 +28,15 @@ namespace GraphQL.Subscriptions.Tests.Logging
             var client = new Mock<ISubscriptionClientProxy>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new GqltwsClientConnectionInitMessage();
+            var message = new Mock<ILoggableClientProxyMessage>();
+            message.Setup(x => x.Type).Returns("typeABC");
+            message.Setup(x => x.Id).Returns("idABC");
 
-            var entry = new ClientProxyMessageReceivedLogEntry(client.Object, message);
+            var entry = new ClientProxyMessageReceivedLogEntry(client.Object, message.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
-            Assert.AreEqual(message.Type.ToString(), entry.MessageType);
-            Assert.AreEqual(message.Id, entry.MessageId);
+            Assert.AreEqual("typeABC", entry.MessageType);
+            Assert.AreEqual("idABC", entry.MessageId);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
 
@@ -50,13 +47,15 @@ namespace GraphQL.Subscriptions.Tests.Logging
             var result = new Mock<IGraphOperationResult>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new GqltwsServerNextDataMessage("123", result.Object);
+            var message = new Mock<ILoggableClientProxyMessage>();
+            message.Setup(x => x.Type).Returns("typeABC");
+            message.Setup(x => x.Id).Returns("idABC");
 
-            var entry = new ClientProxyMessageSentLogEntry(client.Object, message);
+            var entry = new ClientProxyMessageSentLogEntry(client.Object, message.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
-            Assert.AreEqual(message.Type.ToString(), entry.MessageType);
-            Assert.AreEqual(message.Id, entry.MessageId);
+            Assert.AreEqual("typeABC", entry.MessageType);
+            Assert.AreEqual("idABC", entry.MessageId);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
 
@@ -100,10 +99,8 @@ namespace GraphQL.Subscriptions.Tests.Logging
         public void GraphQLWSClientSubscriptionEventReceived_PropertyCheck()
         {
             var connection = new Mock<IClientConnection>();
-            var proxy = new GqltwsClientProxy<GraphSchema>(
-                connection.Object,
-                new SubscriptionServerOptions<GraphSchema>(),
-                new GqltwsMessageConverterFactory());
+            var proxy = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+            proxy.Setup(x => x.Id).Returns("abc");
 
             var sub = new Mock<ISubscription>();
             sub.Setup(x => x.Id).Returns("sub1");
@@ -114,11 +111,11 @@ namespace GraphQL.Subscriptions.Tests.Logging
             var fieldPath = new SchemaItemPath("[subscription]/bob1");
 
             var entry = new ClientProxySubscriptionEventReceived<GraphSchema>(
-                proxy,
+                proxy.Object,
                 fieldPath,
                 subs);
 
-            Assert.AreEqual(proxy.Id, entry.ClientId);
+            Assert.AreEqual("abc", entry.ClientId);
             Assert.AreEqual(fieldPath.ToString(), entry.SubscriptionRoute);
             Assert.AreEqual(1, entry.SubscriptionCount);
             CollectionAssert.AreEquivalent(subs.Select(x => x.Id).ToList(), entry.SubscriptionIds);

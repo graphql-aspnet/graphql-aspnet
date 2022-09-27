@@ -30,10 +30,10 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;

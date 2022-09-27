@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
+namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
 {
     using System.Collections.Generic;
     using System.Linq;

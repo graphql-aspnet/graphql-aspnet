@@ -30,6 +30,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
@@ -39,7 +40,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
