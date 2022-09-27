@@ -88,5 +88,25 @@ namespace GraphQL.AspNet.Logging
         /// The name of a client messaging protocol.
         /// </summary>
         public const string CLIENT_PROTOCOL = "clientProtocol";
+
+        /// <summary>
+        /// The 'type' field of an GraphqlWsLegacy message.
+        /// </summary>
+        public const string MESSAGE_TYPE = "GraphqlWsLegacyMessageType";
+
+        /// <summary>
+        /// The 'id' field of an GraphqlWsLegacy message.
+        /// </summary>
+        public const string MESSAGE_ID = "GraphqlWsLegacyMessageId";
+
+        /// <summary>
+        /// The client supplied identifer assigned to the subscription.
+        /// </summary>
+        public const string SUBSCRIPTION_ID = "GraphqlWsLegacySubscriptionId";
+
+        /// <summary>
+        /// A collection of subscription ids being reported on.
+        /// </summary>
+        public const string SUBSCRIPTION_IDS = "subscriptionIds";
     }
 }

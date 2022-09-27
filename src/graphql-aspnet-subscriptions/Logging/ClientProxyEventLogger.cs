@@ -16,26 +16,25 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// A decorator for the <see cref="IGraphLogger" /> to capture GraphqlWsLegacy specific
+    /// A decorator for the <see cref="IGraphEventLogger" /> to capture client proxy specific
     /// events to the log stream.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema the client exists for.</typeparam>
-    public class GraphqlWsLegacyClientEventLogger<TSchema>
+    public class ClientProxyEventLogger<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly GraphqlWsLegacyClientProxy<TSchema> _client;
+        private readonly ISubscriptionClientProxy<TSchema> _client;
         private readonly IGraphEventLogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientEventLogger{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ClientProxyEventLogger{TSchema}" /> class.
         /// </summary>
         /// <param name="client">The client being logged.</param>
         /// <param name="logger">The root graph logger to send GraphqlWsLegacy events to.</param>
-        public GraphqlWsLegacyClientEventLogger(GraphqlWsLegacyClientProxy<TSchema> client, IGraphEventLogger logger)
+        public ClientProxyEventLogger(ISubscriptionClientProxy<TSchema> client, IGraphEventLogger logger)
         {
             _client = Validation.ThrowIfNullOrReturn(client, nameof(client));
             _logger = Validation.ThrowIfNullOrReturn(logger, nameof(logger));
@@ -46,11 +45,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
         /// actual client.
         /// </summary>
         /// <param name="message">The message that was received.</param>
-        public void MessageReceived(GraphqlWsLegacyMessage message)
+        public void MessageReceived(ILoggableClientProxyMessage message)
         {
             _logger.Log(
                 LogLevel.Trace,
-                () => new GraphqlWsLegacyClientMessageReceivedLogEntry(_client, message));
+                () => new ClientProxyMessageReceivedLogEntry(_client, message));
         }
 
         /// <summary>
@@ -58,11 +57,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
         /// actual client.
         /// </summary>
         /// <param name="message">The message that was sent.</param>
-        public void MessageSent(GraphqlWsLegacyMessage message)
+        public void MessageSent(ILoggableClientProxyMessage message)
         {
             _logger.Log(
                 LogLevel.Trace,
-                () => new GraphqlWsLegacyClientMessageSentLogEntry(_client, message));
+                () => new ClientProxyMessageSentLogEntry(_client, message));
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new GraphqlWsLegacyClientSubscriptionCreatedLogEntry(_client, subscription));
+                () => new ClientProxySubscriptionCreatedLogEntry(_client, subscription));
         }
 
         /// <summary>
@@ -87,7 +86,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new GraphqlWsLegacyClientSubscriptionEventReceived<TSchema>(_client, fieldPath, subscriptionsToReceive));
+                () => new ClientProxySubscriptionEventReceived<TSchema>(_client, fieldPath, subscriptionsToReceive));
         }
 
         /// <summary>
@@ -99,7 +98,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
         {
             _logger.Log(
                 LogLevel.Debug,
-                () => new GraphqlWsLegacyClientSubscriptionStoppedLogEntry(_client, subscription));
+                () => new ClientProxySubscriptionStoppedLogEntry(_client, subscription));
         }
+
+        /// <summary>
+        /// Gets the underlying event logger.
+        /// </summary>
+        /// <value>The event logger.</value>
+        public IGraphEventLogger EventLogger => _logger;
     }
 }

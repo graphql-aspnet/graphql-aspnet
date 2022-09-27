@@ -7,19 +7,25 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.Logging
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
-    public class GraphqlWsLegacyLoggingTests
+    public class ClientProxyLoggingTests
     {
         [Test]
         public void ClientMessageReceived_PropertyCheck()
@@ -27,9 +33,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             var client = new Mock<ISubscriptionClientProxy>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new GraphqlWsLegacyClientConnectionInitMessage();
+            var message = new GqltwsClientConnectionInitMessage();
 
-            var entry = new GraphqlWsLegacyClientMessageReceivedLogEntry(client.Object, message);
+            var entry = new ClientProxyMessageReceivedLogEntry(client.Object, message);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual(message.Type.ToString(), entry.MessageType);
@@ -44,9 +50,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             var result = new Mock<IGraphOperationResult>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new GraphqlWsLegacyServerDataMessage("123", result.Object);
+            var message = new GqltwsServerNextDataMessage("123", result.Object);
 
-            var entry = new GraphqlWsLegacyClientMessageSentLogEntry(client.Object, message);
+            var entry = new ClientProxyMessageSentLogEntry(client.Object, message);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual(message.Type.ToString(), entry.MessageType);
@@ -64,7 +70,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             sub.Setup(x => x.Id).Returns("sub1");
             sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new GraphqlWsLegacyClientSubscriptionCreatedLogEntry(client.Object, sub.Object);
+            var entry = new ClientProxySubscriptionCreatedLogEntry(client.Object, sub.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
@@ -82,12 +88,41 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             sub.Setup(x => x.Id).Returns("sub1");
             sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new GraphqlWsLegacyClientSubscriptionStoppedLogEntry(client.Object, sub.Object);
+            var entry = new ClientProxySubscriptionStoppedLogEntry(client.Object, sub.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
             Assert.AreEqual("[subscription]/bobSub1", entry.Route);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
+        }
+
+        [Test]
+        public void GraphQLWSClientSubscriptionEventReceived_PropertyCheck()
+        {
+            var connection = new Mock<IClientConnection>();
+            var proxy = new GqltwsClientProxy<GraphSchema>(
+                connection.Object,
+                new SubscriptionServerOptions<GraphSchema>(),
+                new GqltwsMessageConverterFactory());
+
+            var sub = new Mock<ISubscription>();
+            sub.Setup(x => x.Id).Returns("sub1");
+
+            var subs = new List<ISubscription>();
+            subs.Add(sub.Object);
+
+            var fieldPath = new SchemaItemPath("[subscription]/bob1");
+
+            var entry = new ClientProxySubscriptionEventReceived<GraphSchema>(
+                proxy,
+                fieldPath,
+                subs);
+
+            Assert.AreEqual(proxy.Id, entry.ClientId);
+            Assert.AreEqual(fieldPath.ToString(), entry.SubscriptionRoute);
+            Assert.AreEqual(1, entry.SubscriptionCount);
+            CollectionAssert.AreEquivalent(subs.Select(x => x.Id).ToList(), entry.SubscriptionIds);
+            Assert.AreNotEqual(entry.GetType().Name, entry.ToString());
         }
     }
 }

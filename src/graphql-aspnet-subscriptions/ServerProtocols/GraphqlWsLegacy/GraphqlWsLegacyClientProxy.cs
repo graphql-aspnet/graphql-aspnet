@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         where TSchema : class, ISchema
     {
         private readonly bool _enableKeepAlive;
-        private readonly GraphqlWsLegacyClientEventLogger<TSchema> _logger;
+        private readonly ClientProxyEventLogger<TSchema> _logger;
         private readonly bool _enableMetrics;
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly GraphqlWsLegacyMessageConverterFactory _messageConverter;
@@ -112,7 +112,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             _subscriptions = new SubscriptionCollection<TSchema>();
             _enableKeepAlive = options.KeepAliveInterval != TimeSpan.Zero;
 
-            _logger = logger != null ? new GraphqlWsLegacyClientEventLogger<TSchema>(this, logger) : null;
+            _logger = logger != null ? new ClientProxyEventLogger<TSchema>(this, logger) : null;
             _enableMetrics = enableMetrics;
         }
 

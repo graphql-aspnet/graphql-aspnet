@@ -33,13 +33,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         where TSchema : class, ISchema
     {
         private readonly bool _enableKeepAlive;
-        private readonly GqltwsClientEventLogger<TSchema> _logger;
+        private readonly ClientProxyEventLogger<TSchema> _logger;
         private readonly bool _enableMetrics;
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly GqltwsMessageConverterFactory _messageConverter;
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             _subscriptions = new SubscriptionCollection<TSchema>();
             _enableKeepAlive = options.KeepAliveInterval != TimeSpan.Zero;
 
-            _logger = logger != null ? new GqltwsClientEventLogger<TSchema>(this, logger) : null;
+            _logger = logger != null ? new ClientProxyEventLogger<TSchema>(this, logger) : null;
             _enableMetrics = enableMetrics;
         }
 

@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Logging
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Logging.SubscriptionEvents;
-    using GraphQL.AspNet.Logging.SubscriptionServerEvents;
+    using GraphQL.AspNet.Logging.SubscriptionEventLogEntries;
+    using GraphQL.AspNet.Logging.SubscriptionServerLogEntries;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

@@ -14,17 +14,18 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded whenever an GraphqlWsLegacy client proxy drops a subscription registration.
+    /// Recorded whenever an client proxy registers a new subscription
+    /// and can send data to the connected client when events are raised.
     /// </summary>
-    internal class GraphqlWsLegacyClientSubscriptionStoppedLogEntry : GraphLogEntry
+    internal class ClientProxySubscriptionCreatedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientSubscriptionStoppedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="ClientProxySubscriptionCreatedLogEntry" /> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="subscription">The subscription that was created.</param>
-        public GraphqlWsLegacyClientSubscriptionStoppedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
-            : base(GraphqlWsLegacyLogEventIds.ClientSubscriptionStopped)
+        public ClientProxySubscriptionCreatedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
+            : base(SubscriptionLogEventIds.ClientSubscriptionStarted)
         {
             this.ClientId = client?.Id;
             this.SubscriptionId = subscription?.Id;
@@ -47,8 +48,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
         /// <value>The subscription identifier.</value>
         public string SubscriptionId
         {
-            get => this.GetProperty<string>(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_ID);
-            private set => this.SetProperty(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_ID, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_ID);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_ID, value);
         }
 
         /// <summary>
@@ -57,18 +58,15 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
         /// <value>The message identifier.</value>
         public string Route
         {
-            get => this.GetProperty<string>(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_ROUTE);
-            private set => this.SetProperty(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_ROUTE, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
-            return $"Subscription Stopped | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
+            return $"Client Subscription Started | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
         }
     }
 }

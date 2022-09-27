@@ -10,11 +10,12 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common
 {
     using System.Text.Json.Serialization;
+    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// A common base class for all graphql-ws messages.
     /// </summary>
-    public abstract class GqltwsMessage
+    public abstract class GqltwsMessage : ILoggableClientProxyMessage
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsMessage"/> class.
@@ -54,5 +55,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common
         /// <value>The payload object.</value>
         [JsonIgnore]
         public abstract object PayloadObject { get; }
+
+        /// <inheritdoc />
+        [JsonIgnore]
+        string ILoggableClientProxyMessage.Type => this.Type.ToString();
     }
 }

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Logging.SubscriptionEvents
+namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;

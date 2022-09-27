@@ -7,24 +7,24 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
 {
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded whenever an graphql-ws client proxy drops a subscription registration.
+    /// Recorded whenever an client proxy drops a subscription registration.
     /// </summary>
-    internal class GqltwsClientSubscriptionStoppedLogEntry : GraphLogEntry
+    internal class ClientProxySubscriptionStoppedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GqltwsClientSubscriptionStoppedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="ClientProxySubscriptionStoppedLogEntry" /> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="subscription">The subscription that was created.</param>
-        public GqltwsClientSubscriptionStoppedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
-            : base(GqltwsLogEventIds.ClientSubscriptionStopped)
+        public ClientProxySubscriptionStoppedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
+            : base(SubscriptionLogEventIds.ClientSubscriptionStopped)
         {
             this.ClientId = client?.Id;
             this.SubscriptionId = subscription?.Id;
@@ -47,28 +47,25 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events
         /// <value>The subscription identifier.</value>
         public string SubscriptionId
         {
-            get => this.GetProperty<string>(GqltwsLogPropertyNames.SUBSCRIPTION_ID);
-            private set => this.SetProperty(GqltwsLogPropertyNames.SUBSCRIPTION_ID, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_ID);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_ID, value);
         }
 
         /// <summary>
-        /// Gets the id that was supplied by the client with the graphql-ws message, if any.
+        /// Gets the id that was supplied by the client with the GraphqlWsLegacy message, if any.
         /// </summary>
         /// <value>The message identifier.</value>
         public string Route
         {
-            get => this.GetProperty<string>(GqltwsLogPropertyNames.SUBSCRIPTION_ROUTE);
-            private set => this.SetProperty(GqltwsLogPropertyNames.SUBSCRIPTION_ROUTE, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
-            return $"Subscription Stopped | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
+            return $"Client Subscription Stopped | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
         }
     }
 }

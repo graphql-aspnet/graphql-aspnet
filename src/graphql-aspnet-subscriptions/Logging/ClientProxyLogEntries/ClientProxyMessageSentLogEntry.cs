@@ -7,26 +7,24 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
 {
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
 
     /// <summary>
-    /// Recorded when an graphql-ws client proxy sends a message down to its connected client.
+    /// Recorded when an GraphqlWsLegacy client proxy sends a message down to its connected client.
     /// </summary>
-    internal class GqltwsClientMessageSentLogEntry : GraphLogEntry
+    public class ClientProxyMessageSentLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GqltwsClientMessageSentLogEntry"/> class.
+        /// Initializes a new instance of the <see cref="ClientProxyMessageSentLogEntry"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="message">The message.</param>
-        public GqltwsClientMessageSentLogEntry(ISubscriptionClientProxy client, GqltwsMessage message)
-            : base(GqltwsLogEventIds.ClientMessageSent)
+        public ClientProxyMessageSentLogEntry(ISubscriptionClientProxy client, ILoggableClientProxyMessage message)
+            : base(SubscriptionLogEventIds.ClientMessageSent)
         {
             this.ClientId = client?.Id;
             this.MessageType = message?.Type.ToString();
@@ -44,36 +42,33 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Logging.Events
         }
 
         /// <summary>
-        /// Gets the <see cref="GqltwsMessageType"/> of the message that was received.
+        /// Gets the type of the message that was received.
         /// </summary>
         /// <value>The type of the message.</value>
         public string MessageType
         {
-            get => this.GetProperty<string>(GqltwsLogPropertyNames.MESSAGE_TYPE);
-            private set => this.SetProperty(GqltwsLogPropertyNames.MESSAGE_TYPE, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.MESSAGE_TYPE);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.MESSAGE_TYPE, value);
         }
 
         /// <summary>
-        /// Gets the id that was supplied by the client with the graphql-ws message, if any.
+        /// Gets the id that was supplied by the client with the GraphqlWsLegacy message, if any.
         /// </summary>
         /// <value>The message identifier.</value>
         public string MessageId
         {
-            get => this.GetProperty<string>(GqltwsLogPropertyNames.MESSAGE_ID);
-            private set => this.SetProperty(GqltwsLogPropertyNames.MESSAGE_ID, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.MESSAGE_ID);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.MESSAGE_ID, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
             if (this.MessageId == null)
-                return $"GraphQL-WS Message Sent | Client Id: {idTruncated} (Type: '{this.MessageType}')";
+                return $"Client Message Sent | Client Id: {idTruncated} (Type: '{this.MessageType}')";
             else
-                return $"GraphQL-WS Message Sent | Client Id: {idTruncated}, Message Id: {this.MessageId} (Type: '{this.MessageType}')";
+                return $"Client Message Sent | Client Id: {idTruncated}, Message Id: {this.MessageId} (Type: '{this.MessageType}')";
         }
     }
 }

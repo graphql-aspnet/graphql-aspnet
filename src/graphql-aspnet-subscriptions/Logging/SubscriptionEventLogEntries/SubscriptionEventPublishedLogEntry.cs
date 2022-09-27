@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Logging.SubscriptionEvents
+namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
 {
     using System;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -15,30 +15,30 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// An event was recieved by the <see cref="ISubscriptionEventRouter"/> for this instance and will
-    /// be sent to any requesting receivers.
+    /// An subscription event was recieved and successfully published from the internal event queue
+    /// to the configured <see cref="ISubscriptionEventPublisher"/>.
     /// </summary>
-    public class SubscriptionEventReceivedLogEntry : GraphLogEntry
+    public class SubscriptionEventPublishedLogEntry : GraphLogEntry
     {
-        private readonly string _eventName;
+        private readonly string _shortEventName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionEventReceivedLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionEventPublishedLogEntry" /> class.
         /// </summary>
-        /// <param name="eventRecieved">The event that was recieved.</param>
-        public SubscriptionEventReceivedLogEntry(SubscriptionEvent eventRecieved)
-            : base(SubscriptionLogEventIds.GlobalEventReceived)
+        /// <param name="eventPublished">The event that was recieved.</param>
+        public SubscriptionEventPublishedLogEntry(SubscriptionEvent eventPublished)
+            : base(SubscriptionLogEventIds.GlobalEventPublished)
         {
-            _eventName = eventRecieved?.EventName;
-            this.SchemaType = eventRecieved?.SchemaTypeName;
-            this.SubscriptionEventName = eventRecieved?.EventName;
-            this.DataType = eventRecieved?.DataTypeName;
-            this.SubscriptionEventId = eventRecieved?.Id;
+            _shortEventName = eventPublished?.EventName;
+            this.SchemaType = eventPublished?.SchemaTypeName;
+            this.DataType = eventPublished?.DataTypeName;
+            this.SubscriptionEventId = eventPublished?.Id;
+            this.SubscriptionEventName = eventPublished?.EventName;
             this.MachineName = Environment.MachineName;
         }
 
         /// <summary>
-        /// Gets the qualfied name of the schema type the event targets.
+        /// Gets the qualified name of the event that was recieved.
         /// </summary>
         /// <value>The name of the schema type.</value>
         public string SchemaType
@@ -68,16 +68,6 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         }
 
         /// <summary>
-        /// Gets the unique id of the event that was received.
-        /// </summary>
-        /// <value>The identifier.</value>
-        public string SubscriptionEventId
-        {
-            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_ID);
-            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_ID, value);
-        }
-
-        /// <summary>
         /// Gets the name of the physical machine that generated this log entry.
         /// </summary>
         /// <value>The server name of the computer hosting the subscription service.</value>
@@ -88,13 +78,23 @@ namespace GraphQL.AspNet.Logging.SubscriptionEvents
         }
 
         /// <summary>
+        /// Gets the unique id of the event that was received.
+        /// </summary>
+        /// <value>The identifier.</value>
+        public string SubscriptionEventId
+        {
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_ID);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_EVENT_ID, value);
+        }
+
+        /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
         public override string ToString()
         {
             var idTruncated = this.SubscriptionEventId?.Length > 8 ? this.SubscriptionEventId.Substring(0, 8) : this.SubscriptionEventId;
-            return $"Subscription Event Received | Server: {this.MachineName}, EventName: '{_eventName}' (Id: {idTruncated})";
+            return $"Subscription Event Published | Server: {this.MachineName}, EventName: '{_shortEventName}' (Id: {idTruncated})";
         }
     }
 }

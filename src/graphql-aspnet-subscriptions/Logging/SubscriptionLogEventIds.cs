@@ -71,5 +71,31 @@ namespace GraphQL.AspNet.Logging
         /// for the target schema.
         /// </summary>
         public static EventId UnsupportedClientProtocol = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 640, "GraphQL Server Unsupported Client Protocol");
+
+        /// <summary>
+        /// An GraphqlWsLegacy client proxy received a new GraphqlWsLegacy formatted message from its connected client.
+        /// </summary>
+        public static EventId ClientMessageReceived = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 710, "GraphqlWsLegacy Client Message Received");
+
+        /// <summary>
+        /// An GraphqlWsLegacy client proxy generated a GraphqlWsLegacy message and sent it to its connected client.
+        /// </summary>
+        public static EventId ClientMessageSent = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 720, "GraphqlWsLegacy Client Message Sent");
+
+        /// <summary>
+        /// An GraphqlWsLegacy client proxy began a monitoring a new subscription.
+        /// </summary>
+        public static EventId ClientSubscriptionStarted = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 730, "GraphqlWsLegacy Client Subscription Started");
+
+        /// <summary>
+        /// An GraphqlWsLegacy client proxy stopped monitoring an existing subscription.
+        /// </summary>
+        public static EventId ClientSubscriptionStopped = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 740, "GraphqlWsLegacy Client Subscription Stopped");
+
+        /// <summary>
+        /// An GraphqlWsLegacy client proxy has received an event from its server component and is executing it
+        /// against any monitored subscriptions for its connected client.
+        /// </summary>
+        public static EventId ClientSubscriptionEventRecieved = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 750, "GraphqlWsLegacy Client Subscription Event Received");
     }
 }

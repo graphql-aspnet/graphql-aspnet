@@ -12,24 +12,22 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
 
     /// <summary>
-    /// Recorded when an GraphqlWsLegacy client proxy sends a message down to its connected client.
+    /// Recorded when an GraphqlWsLegacy client proxy receives a new message from its connected client.
     /// </summary>
-    public class GraphqlWsLegacyClientMessageSentLogEntry : GraphLogEntry
+    public class ClientProxyMessageReceivedLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientMessageSentLogEntry"/> class.
+        /// Initializes a new instance of the <see cref="ClientProxyMessageReceivedLogEntry"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="message">The message.</param>
-        public GraphqlWsLegacyClientMessageSentLogEntry(ISubscriptionClientProxy client, GraphqlWsLegacyMessage message)
-            : base(GraphqlWsLegacyLogEventIds.ClientMessageSent)
+        public ClientProxyMessageReceivedLogEntry(ISubscriptionClientProxy client, ILoggableClientProxyMessage message)
+            : base(SubscriptionLogEventIds.ClientMessageReceived)
         {
             this.ClientId = client?.Id;
-            this.MessageType = message?.Type.ToString();
+            this.MessageType = message?.Type;
             this.MessageId = message?.Id;
         }
 
@@ -44,13 +42,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
         }
 
         /// <summary>
-        /// Gets the <see cref="GraphqlWsLegacyMessageType"/> of the message that was received.
+        /// Gets the type of the message that was received.
         /// </summary>
         /// <value>The type of the message.</value>
         public string MessageType
         {
-            get => this.GetProperty<string>(GraphqlWsLegacyLogPropertyNames.MESSAGE_TYPE);
-            private set => this.SetProperty(GraphqlWsLegacyLogPropertyNames.MESSAGE_TYPE, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.MESSAGE_TYPE);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.MESSAGE_TYPE, value);
         }
 
         /// <summary>
@@ -59,21 +57,18 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
         /// <value>The message identifier.</value>
         public string MessageId
         {
-            get => this.GetProperty<string>(GraphqlWsLegacyLogPropertyNames.MESSAGE_ID);
-            private set => this.SetProperty(GraphqlWsLegacyLogPropertyNames.MESSAGE_ID, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.MESSAGE_ID);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.MESSAGE_ID, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
             if (this.MessageId == null)
-                return $"GraphqlWsLegacy Message Sent | Client Id: {idTruncated} (Type: '{this.MessageType}')";
+                return $"Client Message Received | Client Id: {idTruncated} (Type: '{this.MessageType}')";
             else
-                return $"GraphqlWsLegacy Message Sent | Client Id: {idTruncated}, Message Id: {this.MessageId} (Type: '{this.MessageType}')";
+                return $"Client Message Received | Client Id: {idTruncated}, Message Id: {this.MessageId} (Type: '{this.MessageType}')";
         }
     }
 }

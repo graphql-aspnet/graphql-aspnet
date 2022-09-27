@@ -19,25 +19,25 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
-    /// Recorded when an GraphqlWsLegacy client proxy instance receives an event
+    /// Recorded when an client proxy instance receives an event
     /// from its server component and begins processing said event against its subscription list.
     /// </summary>
     /// <typeparam name="TSchema">The type of schema the event is being raised against.</typeparam>
-    public class GraphqlWsLegacyClientSubscriptionEventReceived<TSchema> : GraphLogEntry
+    public class ClientProxySubscriptionEventReceived<TSchema> : GraphLogEntry
         where TSchema : class, ISchema
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientSubscriptionEventReceived{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="ClientProxySubscriptionEventReceived{TSchema}" /> class.
         /// </summary>
         /// <param name="client">The client proxy that received the event.</param>
         /// <param name="fieldPath">The field path of the event recieved.</param>
         /// <param name="subscriptionsToReceive">The filtered set of subscriptions for this client
         /// that will receive the event.</param>
-        public GraphqlWsLegacyClientSubscriptionEventReceived(
-            GraphqlWsLegacyClientProxy<TSchema> client,
+        public ClientProxySubscriptionEventReceived(
+            ISubscriptionClientProxy client,
             SchemaItemPath fieldPath,
             IReadOnlyList<ISubscription> subscriptionsToReceive)
-            : base(GraphqlWsLegacyLogEventIds.ClientSubscriptionEventRecieved)
+            : base(SubscriptionLogEventIds.ClientSubscriptionEventRecieved)
         {
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.SubscriptionRoute = fieldPath?.Path;
@@ -62,8 +62,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
         /// <value>The subscription count.</value>
         public int? SubscriptionCount
         {
-            get => this.GetProperty<int?>(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_COUNT);
-            private set => this.SetProperty(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_COUNT, value);
+            get => this.GetProperty<int?>(SubscriptionLogPropertyNames.SUBSCRIPTION_COUNT);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_COUNT, value);
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
         /// <value>The subscription ids.</value>
         public IList<string> SubscriptionIds
         {
-            get => this.GetProperty<IList<string>>(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_IDS);
-            private set => this.SetProperty(GraphqlWsLegacyLogPropertyNames.SUBSCRIPTION_IDS, value);
+            get => this.GetProperty<IList<string>>(SubscriptionLogPropertyNames.SUBSCRIPTION_IDS);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_IDS, value);
         }
 
         /// <summary>
@@ -96,14 +96,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
             private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_ID, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             var clientId = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
-            return $"GraphqlWsLegacy Client Event Received | Client: {clientId}, Route: '{this.SubscriptionRoute}', Subscription Count: {this.SubscriptionCount}";
+            return $"Client Event Received | Client: {clientId}, Route: '{this.SubscriptionRoute}', Subscription Count: {this.SubscriptionCount}";
         }
     }
 }
