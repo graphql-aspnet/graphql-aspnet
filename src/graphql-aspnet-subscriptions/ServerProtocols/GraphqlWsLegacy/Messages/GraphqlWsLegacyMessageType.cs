@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages
 {
     /// <summary>
     /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>

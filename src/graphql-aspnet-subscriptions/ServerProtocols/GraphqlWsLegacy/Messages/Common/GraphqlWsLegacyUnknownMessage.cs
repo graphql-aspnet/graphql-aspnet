@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.Common
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common
 {
     /// <summary>
     /// A message representing an unknown message type.

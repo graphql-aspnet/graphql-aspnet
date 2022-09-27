@@ -24,7 +24,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
-    using GraphQL.AspNet.ServerProtocols.SubscriptionTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

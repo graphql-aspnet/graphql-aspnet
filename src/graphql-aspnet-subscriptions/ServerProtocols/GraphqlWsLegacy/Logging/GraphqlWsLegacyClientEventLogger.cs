@@ -7,16 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Logging
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.GraphqlWsLegacy.Logging.GraphqlWsLegacyEvents;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

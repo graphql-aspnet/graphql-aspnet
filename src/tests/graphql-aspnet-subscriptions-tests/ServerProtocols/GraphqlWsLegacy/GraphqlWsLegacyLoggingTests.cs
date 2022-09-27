@@ -7,23 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
-    using GraphQL.AspNet.GraphqlWsLegacy.Logging.GraphqlWsLegacyEvents;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ClientMessages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
     using Moq;
     using NUnit.Framework;
 

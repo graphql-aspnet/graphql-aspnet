@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     using System;
     using System.Collections.Generic;
@@ -17,12 +17,6 @@ namespace GraphQL.AspNet.GraphqlWsLegacy
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.GraphqlWsLegacy.Logging;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ClientMessages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
@@ -39,7 +33,12 @@ namespace GraphQL.AspNet.GraphqlWsLegacy
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -614,6 +613,7 @@ namespace GraphQL.AspNet.GraphqlWsLegacy
         /// <value>The subscriptions.</value>
         public IEnumerable<ISubscription<TSchema>> Subscriptions => _subscriptions;
 
+        /// <inheritdoc />
         public string Protocol { get; }
     }
 }

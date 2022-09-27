@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.Payloads
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Payloads
 {
     /// <summary>
     /// An object representing that no payload was or should be supplied with a message.

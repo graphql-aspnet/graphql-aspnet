@@ -7,15 +7,15 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
 {
     using System;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

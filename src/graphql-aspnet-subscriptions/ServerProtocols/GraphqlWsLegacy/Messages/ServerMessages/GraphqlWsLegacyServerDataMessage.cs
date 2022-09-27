@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages
 {
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
 
     /// <summary>
     /// A representation of the 'GQL_DATA' message sent when new data is available for the subscription.

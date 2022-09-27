@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     /// <summary>
     /// A set of constants related to GraphqlWsLegacy server.

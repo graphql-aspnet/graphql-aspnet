@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy.GraphqlWsLegacyTestData
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData
 {
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
 
     public class FakeGraphqlWsLegacyMessage : GraphqlWsLegacyMessage
     {

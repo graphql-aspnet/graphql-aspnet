@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy.GraphqlWsLegacyTestData
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;

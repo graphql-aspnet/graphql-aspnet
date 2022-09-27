@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Logging
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
 {
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// A collection of event ids for log entries related to the <see cref="GraphqlWsLegacySubscriptionServer{TSchema}"/>.
+    /// A collection of event ids for log entries related to the the legacy graphql-ws protocol.
     /// </summary>
     public static class GraphqlWsLegacyLogEventIds
     {

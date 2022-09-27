@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
     using System.Text;
     using System.Text.Json;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions.GQLWSMessaging;
+    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
     using NUnit.Framework;
 
     public static class GqltwsClientAsserts
@@ -30,7 +30,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             GqltwsMessageType type,
             bool dequeue = true)
         {
-            AssertGqltwsResponse(connection, type, null, false, null, false, dequeue);
+            connection.AssertGqltwsResponse(type, null, false, null, false, dequeue);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             string id,
             bool dequeue = true)
         {
-            AssertGqltwsResponse(connection, type, id, true, null, false, dequeue);
+            connection.AssertGqltwsResponse(type, id, true, null, false, dequeue);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             string expectedPayloadJson,
             bool dequeue = true)
         {
-            AssertGqltwsResponse(connection, type, id, true, expectedPayloadJson, true, dequeue);
+            connection.AssertGqltwsResponse(type, id, true, expectedPayloadJson, true, dequeue);
         }
 
         private static void AssertGqltwsResponse(

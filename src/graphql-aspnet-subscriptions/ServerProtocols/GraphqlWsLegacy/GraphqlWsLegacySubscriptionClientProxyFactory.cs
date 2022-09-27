@@ -7,24 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-
-namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.GraphqlWsLegacy;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

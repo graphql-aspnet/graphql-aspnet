@@ -7,26 +7,26 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.GraphqlWsLegacy;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ClientMessages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.GraphqlWsLegacy.GraphqlWsLegacyTestData;
+    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
@@ -490,9 +490,9 @@ namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
             await GraphqlWsLegacyClient.StartConnection();
 
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
-            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_ACK);
-            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
-            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.ERROR);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.ERROR);
         }
 
         [Test]
@@ -530,9 +530,9 @@ namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
 
             // execute the connection sequence
             await GraphqlWsLegacyClient.StartConnection();
-            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_ACK);
-            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
-            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.ERROR);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.ERROR);
         }
 
         [Test]

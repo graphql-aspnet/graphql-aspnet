@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Logging.GraphqlWsLegacyEvents
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging.ApolloEvents
 {
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
 
     /// <summary>
     /// Recorded when an GraphqlWsLegacy client proxy receives a new message from its connected client.

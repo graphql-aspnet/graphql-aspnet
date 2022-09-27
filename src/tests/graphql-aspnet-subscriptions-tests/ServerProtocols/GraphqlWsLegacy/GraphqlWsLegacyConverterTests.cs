@@ -7,26 +7,26 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
     using System;
     using System.Text.Json;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.GraphqlWsLegacy.GraphqlWsLegacyTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
 
     [TestFixture]
     public class GraphqlWsLegacyConverterTests

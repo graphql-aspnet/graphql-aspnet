@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GraphqlWsLegacyMessaging
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.GraphqlWsLegacy;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class GraphqlWsLegacyResponseMessageConverter : JsonConverter<GraphqlWsLegacyResponseMessage>

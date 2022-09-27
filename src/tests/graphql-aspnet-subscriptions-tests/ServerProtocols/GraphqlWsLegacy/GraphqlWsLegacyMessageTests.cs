@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Payloads;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Payloads;
     using NUnit.Framework;
 
     [TestFixture]

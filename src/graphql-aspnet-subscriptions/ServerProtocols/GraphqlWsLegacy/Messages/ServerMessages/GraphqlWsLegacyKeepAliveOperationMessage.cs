@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages
 {
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Payloads;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Payloads;
 
     /// <summary>
     /// A keep alive message sent periodically by the server to keep the connection

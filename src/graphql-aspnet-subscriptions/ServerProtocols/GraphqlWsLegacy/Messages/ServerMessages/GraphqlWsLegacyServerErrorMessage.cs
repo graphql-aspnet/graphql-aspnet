@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages
 {
     using System;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
 
     /// <summary>
     /// An GraphqlWsLegacy specific message containing one error that occured outside of any

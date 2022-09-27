@@ -7,17 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Response;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
 
     /// <summary>
     /// A json converter for the <see cref="GraphqlWsLegacyServerErrorMessage"/> type.

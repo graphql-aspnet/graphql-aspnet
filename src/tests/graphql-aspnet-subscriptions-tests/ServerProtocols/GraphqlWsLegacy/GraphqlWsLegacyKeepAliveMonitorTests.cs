@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
+namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
     using NUnit.Framework;
 

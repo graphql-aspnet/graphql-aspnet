@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.GraphqlWsLegacy.Logging
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Logging
 {
     /// <summary>
     /// A set of known property names for GraphqlWsLegacy related log entries.

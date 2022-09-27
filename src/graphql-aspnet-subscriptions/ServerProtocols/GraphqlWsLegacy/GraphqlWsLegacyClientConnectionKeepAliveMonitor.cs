@@ -7,15 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.GraphqlWsLegacy
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     using System;
     using System.Threading;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
 
     /// <summary>
     /// Sends a periodic keep-alive message that conforms to the expectations of the GraphqlWsLegacy graphql-over-websockets
@@ -94,7 +93,7 @@ namespace GraphQL.AspNet.GraphqlWsLegacy
         /// </summary>
         public void Dispose()
         {
-            Dispose(disposing: true);
+            this.Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
     }

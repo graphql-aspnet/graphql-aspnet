@@ -7,11 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.ServerProtocols.SubscriptionTransportWs
+namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

@@ -11,7 +11,6 @@ namespace GraphQL.Subscriptions.Tests
 {
     using System.Linq;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
@@ -24,6 +23,8 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
+    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
