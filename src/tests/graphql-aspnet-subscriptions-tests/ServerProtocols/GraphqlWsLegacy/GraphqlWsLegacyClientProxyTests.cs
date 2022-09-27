@@ -50,7 +50,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             var GraphqlWsLegacyClient = new GraphqlWsLegacyClientProxy<GraphSchema>(
                 socketClient,
                 serverOptions,
-                new GraphqlWsLegacyMessageConverterFactory());
+                new GraphqlWsLegacyMessageConverterFactory(),
+                GraphqlWsLegacyConstants.PROTOCOL_NAME);
 
             var subServer = server.ServiceProvider.GetService<ISubscriptionServer<GraphSchema>>();
 
@@ -119,6 +120,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
                 socketClient,
                 options,
                 new GraphqlWsLegacyMessageConverterFactory(),
+                GraphqlWsLegacyConstants.PROTOCOL_NAME,
                 null,
                 false);
 

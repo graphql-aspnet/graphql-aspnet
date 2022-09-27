@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     /// A factory for generating instance of <see cref="ISubscriptionClientProxy{TSchema}"/>
     /// that supports the 'graphql-ws' protocol.
     /// </summary>
-    internal class GqlwsLegacySubscriptionClientProxyFactoryAlternate : GraphqlWsLegacySubscriptionClientProxyFactory
+    internal class GraphqlWsLegacySubscriptionClientProxyFactoryAlternate : GraphqlWsLegacySubscriptionClientProxyFactory
     {
         /// <inheritdoc />
         public override string Protocol => GraphqlWsLegacyConstants.ALTERNATE_PROTOCOL_NAME;

@@ -95,6 +95,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// <param name="options">The options used to configure the registration.</param>
         /// <param name="messageConverter">The message converter factory that will generate
         /// json converters for the various <see cref="GraphqlWsLegacyMessage" /> the proxy shuttles to the client.</param>
+        /// <param name="protocolName">Name of the protocol this client negotiated as.</param>
         /// <param name="logger">The logger to record client level events to, if any.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>
@@ -102,18 +103,22 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             IClientConnection clientConnection,
             SubscriptionServerOptions<TSchema> options,
             GraphqlWsLegacyMessageConverterFactory messageConverter,
+            string protocolName,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
         {
+            this.Protocol = Validation.ThrowIfNullWhiteSpaceOrReturn(protocolName, nameof(protocolName));
             _connection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _messageConverter = Validation.ThrowIfNullOrReturn(messageConverter, nameof(messageConverter));
+
             _reservedMessageIds = new ClientTrackedMessageIdSet();
             _subscriptions = new SubscriptionCollection<TSchema>();
             _enableKeepAlive = options.KeepAliveInterval != TimeSpan.Zero;
 
             _logger = logger != null ? new ClientProxyEventLogger<TSchema>(this, logger) : null;
             _enableMetrics = enableMetrics;
+
         }
 
         /// <inheritdoc />

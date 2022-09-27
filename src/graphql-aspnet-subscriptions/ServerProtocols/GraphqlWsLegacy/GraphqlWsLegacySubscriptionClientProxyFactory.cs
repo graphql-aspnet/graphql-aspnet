@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
                 connection,
                 serverOptions,
                 converterFactory,
+                this.Protocol,
                 logger,
                 schema.Configuration.ExecutionOptions.EnableMetrics);
 

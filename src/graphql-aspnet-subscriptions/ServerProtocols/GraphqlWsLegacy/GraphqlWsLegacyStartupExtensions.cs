@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
                 serviceCollection.Add(
                     new ServiceDescriptor(
                         typeof(ISubscriptionClientProxyFactory),
-                        typeof(GqlwsLegacySubscriptionClientProxyFactoryAlternate),
+                        typeof(GraphqlWsLegacySubscriptionClientProxyFactoryAlternate),
                         ServiceLifetime.Singleton));
             }
 
