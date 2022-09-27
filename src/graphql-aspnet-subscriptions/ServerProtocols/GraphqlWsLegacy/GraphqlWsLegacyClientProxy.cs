@@ -118,7 +118,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 
             _logger = logger != null ? new ClientProxyEventLogger<TSchema>(this, logger) : null;
             _enableMetrics = enableMetrics;
-
         }
 
         /// <inheritdoc />
