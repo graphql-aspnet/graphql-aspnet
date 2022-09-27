@@ -24,6 +24,12 @@ namespace GraphQL.AspNet.Apollo
         public const string PROTOCOL_NAME = "graphql-ws";
 
         /// <summary>
+        /// An alternate name for the legacy 'graphql-ws' protocol transmitted by some
+        /// tools.
+        /// </summary>
+        public const string ALTERNATE_PROTOCOL_NAME = "subscription-transport-ws";
+
+        /// <summary>
         /// A set of constants relating to Apollo's messaging protocol.
         /// </summary>
         public static class Messaging

@@ -53,6 +53,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        public string Protocol => ApolloConstants.PROTOCOL_NAME;
+        public virtual string Protocol => ApolloConstants.PROTOCOL_NAME;
     }
 }

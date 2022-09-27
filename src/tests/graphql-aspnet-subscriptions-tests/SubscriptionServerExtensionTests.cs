@@ -60,7 +60,7 @@ namespace GraphQL.Subscriptions.Tests
         }
 
         [Test]
-        public void Verify_Default_InjectedObjects()
+        public void Verify_DefaultInjectedObjects()
         {
             using var restorePoint = new GraphQLProviderRestorePoint();
 
@@ -77,7 +77,7 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
 
-            Assert.AreEqual(7, primaryOptions.ServiceCollection.Count);
+            Assert.AreEqual(8, primaryOptions.ServiceCollection.Count);
 
             // primary server objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
@@ -91,6 +91,7 @@ namespace GraphQL.Subscriptions.Tests
             // legacy graphql-ws objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ApolloMessageConverterFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(ApolloSubscriptionClientProxyFactory)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqlwsLegacySubscriptionClientProxyFactoryAlternate)));
 
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
         }

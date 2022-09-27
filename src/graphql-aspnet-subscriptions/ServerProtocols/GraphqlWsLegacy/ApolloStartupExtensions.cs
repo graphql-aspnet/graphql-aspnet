@@ -41,6 +41,12 @@ namespace GraphQL.AspNet.ServerProtocols.SubscriptionTransportWs
                         typeof(ISubscriptionClientProxyFactory),
                         typeof(ApolloSubscriptionClientProxyFactory),
                         ServiceLifetime.Singleton));
+
+                serviceCollection.Add(
+                    new ServiceDescriptor(
+                        typeof(ISubscriptionClientProxyFactory),
+                        typeof(GqlwsLegacySubscriptionClientProxyFactoryAlternate),
+                        ServiceLifetime.Singleton));
             }
 
             return serviceCollection;
