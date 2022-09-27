@@ -78,8 +78,8 @@ namespace GraphQL.AspNet.Defaults
         {
             Validation.ThrowIfNull(clientProxy, nameof(clientProxy));
 
-            var isAuthenticated = clientProxy.SecurityContext.DefaultUser != null &&
-                                  clientProxy.SecurityContext
+            var isAuthenticated = clientProxy.ClientConnection.SecurityContext.DefaultUser != null &&
+                                  clientProxy.ClientConnection.SecurityContext
                                     .DefaultUser
                                     .Identities
                                     .Any(x => x.IsAuthenticated);

@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Defaults
                         logger?.SubscriptionClientRegistered(_subscriptionServer, subscriptionClient);
 
                         // hold the client connection to keep the socket open
-                        await subscriptionClient.StartConnection().ConfigureAwait(false);
+                        await subscriptionClient.StartConnection(_options.KeepAliveInterval).ConfigureAwait(false);
 
                         logger?.SubscriptionClientDropped(subscriptionClient);
                     }

@@ -20,10 +20,5 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     public interface ISubscriptionClientProxy<TSchema> : ISubscriptionClientProxy
         where TSchema : class, ISchema
     {
-        /// <summary>
-        /// Gets an enumeration of all the currently tracked subscriptions for this client.
-        /// </summary>
-        /// <value>The subscriptions tracked by this client.</value>
-        IEnumerable<ISubscription<TSchema>> Subscriptions { get; }
     }
 }

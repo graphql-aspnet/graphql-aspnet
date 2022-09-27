@@ -74,18 +74,6 @@ namespace GraphQL.AspNet.Configuration
         public TimeSpan KeepAliveInterval { get; set; } = TimeSpan.FromMinutes(2);
 
         /// <summary>
-        /// <para>Gets or sets the size of the message buffer (in bytes), at the application level, to extract and deserialize
-        /// the GraphQL message on the websocket.  This value is seperate from the socket level buffer size used in receiving data
-        /// from the connected client.
-        /// </para>
-        /// <para>
-        /// (Default: 4kb).
-        /// </para>
-        /// </summary>
-        /// <value>The size of the message buffer.</value>
-        public int MessageBufferSize { get; set; } = 4 * 1024;
-
-        /// <summary>
         /// <para>
         /// Gets or sets the maximum number of connected clients the server will communicate with
         /// concurrently.  If the collected sum total of clients set to receive any given event (or events) exceeds

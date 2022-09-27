@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
 {
     using System;
     using System.Text.Json.Serialization;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
@@ -22,33 +22,46 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
     /// <summary>
     /// Creates an appropriate json message converter for the given graphql-ws message and client.
     /// </summary>
-    internal class GqltwsMessageConverterFactory
+    /// <typeparam name="TSchema">The type of the schema to convert for.</typeparam>
+    internal class GqltwsMessageConverterFactory<TSchema>
+        where TSchema : class, ISchema
     {
+        private readonly GqltwsClientProxy<TSchema> _client;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GqltwsMessageConverterFactory{TSchema}"/> class.
+        /// </summary>
+        /// <param name="client">The specific client this factory makes converters for.</param>
+        public GqltwsMessageConverterFactory(GqltwsClientProxy<TSchema> client)
+        {
+            _client = Validation.ThrowIfNullOrReturn(client, nameof(client));
+        }
+
         /// <summary>
         /// Creates an appropriate message converter to properly serialize the given graphql-ws message
         /// in context of the provided client.
         /// </summary>
-        /// <typeparam name="TSchema">The type of the schema the message was created for.</typeparam>
-        /// <param name="client">The client to recieve the message. The factory may use
-        /// some client specific meta data as input parameters to the converters to customize the
-        /// message serialization routine for a specific schema or message type.</param>
+        /// <typeparam name="TMessage">The type of the message being converted.</typeparam>
         /// <param name="message">The actual message for which to create a converter.</param>
         /// <returns>Returns a converter that can process the message as well as the concrete type
         /// of message that was used as a template to select the converter.</returns>
-        public (JsonConverter, Type) CreateConverter<TSchema>(ISubscriptionClientProxy client, GqltwsMessage message)
-            where TSchema : class, ISchema
+        public (JsonConverter, Type) CreateConverter<TMessage>(TMessage message)
+            where TMessage : class
         {
             JsonConverter converter = null;
             Type matchedType = typeof(GqltwsMessage);
 
+            var gqlMessage = message as GqltwsMessage;
+
             ISchema schema = null;
-            if (message != null)
+            if (gqlMessage != null)
             {
-                switch (message.Type)
+                switch (gqlMessage.Type)
                 {
                     case GqltwsMessageType.NEXT:
-                        schema = client.ServiceProvider.GetService<TSchema>();
-                        var writer = client.ServiceProvider.GetService<IGraphResponseWriter<TSchema>>();
+                        schema = _client.ClientConnection.ServiceProvider.GetService<TSchema>();
+                        var writer = _client.ClientConnection.ServiceProvider.GetService<IGraphResponseWriter<TSchema>>();
+
                         converter = new GqltwsServerDataMessageConverter(schema, writer);
                         matchedType = typeof(GqltwsServerNextDataMessage);
                         break;
@@ -59,7 +72,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
                         break;
 
                     case GqltwsMessageType.ERROR:
-                        schema = client.ServiceProvider.GetService<TSchema>();
+                        schema = _client.ClientConnection.ServiceProvider.GetService<TSchema>();
                         converter = new GqltwsServerErrorMessageConverter(schema);
                         matchedType = typeof(GqltwsServerErrorMessage);
                         break;

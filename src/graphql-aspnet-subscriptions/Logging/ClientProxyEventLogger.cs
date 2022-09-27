@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Logging
         public ClientProxyEventLogger(ISubscriptionClientProxy<TSchema> client, IGraphEventLogger logger)
         {
             _client = Validation.ThrowIfNullOrReturn(client, nameof(client));
-            _logger = Validation.ThrowIfNullOrReturn(logger, nameof(logger));
+            _logger = logger;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Logging
         /// <param name="message">The message that was received.</param>
         public void MessageReceived(ILoggableClientProxyMessage message)
         {
-            _logger.Log(
+            _logger?.Log(
                 LogLevel.Trace,
                 () => new ClientProxyMessageReceivedLogEntry(_client, message));
         }
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Logging
         /// <param name="message">The message that was sent.</param>
         public void MessageSent(ILoggableClientProxyMessage message)
         {
-            _logger.Log(
+            _logger?.Log(
                 LogLevel.Trace,
                 () => new ClientProxyMessageSentLogEntry(_client, message));
         }
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Logging
         /// <param name="subscription">The subscription that was created.</param>
         public void SubscriptionCreated(ISubscription subscription)
         {
-            _logger.Log(
+            _logger?.Log(
                 LogLevel.Debug,
                 () => new ClientProxySubscriptionCreatedLogEntry(_client, subscription));
         }
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Logging
         /// <param name="subscriptionsToReceive">The subscriptions set to receive the event.</param>
         public void SubscriptionEventReceived(SchemaItemPath fieldPath, IReadOnlyList<ISubscription> subscriptionsToReceive)
         {
-            _logger.Log(
+            _logger?.Log(
                 LogLevel.Debug,
                 () => new ClientProxySubscriptionEventReceived<TSchema>(_client, fieldPath, subscriptionsToReceive));
         }
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Logging
         /// <param name="subscription">The subscription that was removed.</param>
         public void SubscriptionStopped(ISubscription subscription)
         {
-            _logger.Log(
+            _logger?.Log(
                 LogLevel.Debug,
                 () => new ClientProxySubscriptionStoppedLogEntry(_client, subscription));
         }

@@ -42,14 +42,18 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var securityContext = new Mock<IUserSecurityContext>();
             securityContext.Setup(x => x.DefaultUser).Returns(null as ClaimsPrincipal);
 
+            var connection = new Mock<IClientConnection>();
+            connection.Setup(x => x.SecurityContext).Returns(securityContext.Object);
+
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
-            client.Setup(x => x.SecurityContext).Returns(securityContext.Object);
+
+            client.Setup(x => x.ClientConnection).Returns(connection.Object);
 
             var result = await server.RegisterNewClient(client.Object);
 
             Assert.IsFalse(result);
 
-            client.Verify(x => x.SendErrorMessage(It.IsAny<IGraphMessage>()), Times.Once());
+            client.Verify(x => x.SendErrorMessage(It.IsAny<IGraphMessage>(), It.IsAny<string>()), Times.Once());
             client.Verify(
                 x => x.CloseConnection(
                     It.IsAny<ClientConnectionCloseStatus>(),

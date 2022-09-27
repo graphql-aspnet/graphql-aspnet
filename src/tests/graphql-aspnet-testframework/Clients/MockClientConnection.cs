@@ -130,6 +130,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <inheritdoc />
         public Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
+            this.ClosedForever = true;
+
             if (!_wasOpened)
                 throw new InvalidOperationException("Cant close a non-open connection");
 
@@ -192,12 +194,29 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public Task SendAsync(ArraySegment<byte> buffer, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
+        public async Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(CancellationToken cancelToken = default)
+        {
+            IClientConnectionReceiveResult response;
+            var message = new List<byte>();
+
+            var buffer = new byte[this.BufferSize];
+            do
+            {
+                response = await this.ReceiveAsync(new ArraySegment<byte>(buffer), cancelToken);
+                message.AddRange(new ArraySegment<byte>(buffer, 0, response.Count));
+            }
+            while (!response.EndOfMessage);
+
+            return (response, message);
+        }
+
+        /// <inheritdoc />
+        public Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
             if (!_wasOpened)
                 throw new InvalidOperationException("Cant send on a never-opened connection");
 
-            var message = new MockClientMessage(buffer.ToArray(), messageType, endOfMessage);
+            var message = new MockClientMessage(data, messageType, endOfMessage);
             lock (_outgoingMessageQueue)
             {
                 _outgoingMessageQueue.Enqueue(message);
@@ -246,5 +265,11 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         /// <inheritdoc />
         public string Protocol { get; }
+
+        /// <inheritdoc />
+        public bool ClosedForever { get; private set; }
+
+        /// <inheritdoc />
+        public int BufferSize => 4096;
     }
 }

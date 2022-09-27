@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Connections.WebSockets
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
@@ -34,14 +35,20 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="socketManager">The socket manager from which to
-        /// accept and process sockets. Defaults to <paramref name="context"/> socket manager
+        /// accept and process sockets. Defaults to <paramref name="context" /> socket manager
         /// when not supplied.</param>
-        public WebSocketClientConnection(HttpContext context, WebSocketManager socketManager = null)
+        /// <param name="bufferSize">Size of the read buffer when reading message data
+        /// off the socket (Default: 4k).</param>
+        public WebSocketClientConnection(
+            HttpContext context,
+            WebSocketManager socketManager = null,
+            int bufferSize = 4 * 1024)
         {
             _httpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
             _securityContext = new HttpUserSecurityContext(_httpContext);
             _socketManager = socketManager ?? _httpContext.WebSockets;
 
+            this.BufferSize = bufferSize;
             this.RequestedProtocols = this.DeteremineRequestedProtocol();
         }
 
@@ -59,6 +66,8 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// <inheritdoc />
         public async Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
+            this.ClosedForever = true;
+
             if (this.WebSocket == null)
                 return;
 
@@ -118,7 +127,24 @@ namespace GraphQL.AspNet.Connections.WebSockets
         }
 
         /// <inheritdoc />
-        public Task SendAsync(ArraySegment<byte> buffer, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
+        public async Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(CancellationToken cancelToken = default)
+        {
+            IClientConnectionReceiveResult response;
+            var message = new List<byte>();
+
+            var buffer = new byte[this.BufferSize];
+            do
+            {
+                response = await this.ReceiveAsync(new ArraySegment<byte>(buffer), cancelToken);
+                message.AddRange(new ArraySegment<byte>(buffer, 0, response.Count));
+            }
+            while (!response.EndOfMessage);
+
+            return (response, message);
+        }
+
+        /// <inheritdoc />
+        public Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
             if (this.WebSocket == null)
             {
@@ -127,7 +153,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
             }
 
             return this.WebSocket.SendAsync(
-                buffer,
+                new ArraySegment<byte>(data, 0, data.Length),
                 messageType.ToWebSocketMessageType(),
                 endOfMessage,
                 cancellationToken);
@@ -175,5 +201,11 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// </summary>
         /// <value>The web socket.</value>
         protected WebSocket WebSocket { get; set; }
+
+        /// <inheritdoc />
+        public bool ClosedForever { get; private set; }
+
+        /// <inheritdoc />
+        public int BufferSize { get; }
     }
 }

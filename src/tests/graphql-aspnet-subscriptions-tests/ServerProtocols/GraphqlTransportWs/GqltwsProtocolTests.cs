@@ -46,10 +46,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
             var subServer = server.ServiceProvider.GetRequiredService<ISubscriptionServer<GraphSchema>>();
 
-            var subClient = new GqltwsClientProxy<GraphSchema>(
-                connection,
-                serverOptions,
-                new GqltwsMessageConverterFactory());
+            var subClient = new GqltwsClientProxy<GraphSchema>(connection);
 
             var graphqlWsClient = await subServer.RegisterNewClient(subClient);
             return (subServer,
@@ -97,8 +94,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 },
             };
 
+            // register a subscription
             await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.ProcessReceivedMessage(startMessage);
+            await graphqlWsClient.ProcessMessage(startMessage);
 
             var evt = new SubscriptionEvent()
             {
@@ -108,9 +106,10 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 EventName = "[subscription]/GqltwsSubscription/WatchForPropObject",
             };
 
+            // mimic new data available for that subscription
             var count = await server.ReceiveEvent(evt);
-            Assert.AreEqual(1, count);
 
+            Assert.AreEqual(1, count);
             connection.AssertGqltwsResponse(GqltwsMessageType.NEXT, "abc");
         }
     }

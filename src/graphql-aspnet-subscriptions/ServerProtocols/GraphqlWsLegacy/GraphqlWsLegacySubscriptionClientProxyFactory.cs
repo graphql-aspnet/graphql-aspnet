@@ -10,11 +10,9 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -28,14 +26,10 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             where TSchema : class, ISchema
         {
             var schema = connection.ServiceProvider.GetService<TSchema>();
-            var serverOptions = connection.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
             var logger = connection.ServiceProvider.GetService<IGraphEventLogger>();
-            var converterFactory = connection.ServiceProvider.GetService<GraphqlWsLegacyMessageConverterFactory>();
 
             var client = new GraphqlWsLegacyClientProxy<TSchema>(
                 connection,
-                serverOptions,
-                converterFactory,
                 this.Protocol,
                 logger,
                 schema.Configuration.ExecutionOptions.EnableMetrics);

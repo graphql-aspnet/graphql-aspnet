@@ -28,9 +28,6 @@ namespace GraphQL.Subscriptions.Tests.Configuration
 
             options.Route = "bob";
             Assert.AreEqual("bob", options.Route);
-
-            options.MessageBufferSize = 15;
-            Assert.AreEqual(15, options.MessageBufferSize);
         }
     }
 }

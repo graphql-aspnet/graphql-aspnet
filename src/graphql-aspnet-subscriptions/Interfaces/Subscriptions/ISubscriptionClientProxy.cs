@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
@@ -57,8 +58,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// between the client and the graphql runtime for its lifetime. When this method
         /// completes the connected client is considered permanantly disconnected.
         /// </summary>
+        /// <param name="keepAliveInterval">When provided, defines the interval
+        /// on which this proxy should issue its keep alive sequence with the connected client.</param>
         /// <returns>Task.</returns>
-        Task StartConnection();
+        Task StartConnection(TimeSpan? keepAliveInterval = null);
 
         /// <summary>
         /// Instructs the client to process the new event. If this is an event the client subscribes
@@ -93,18 +96,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         string Id { get; }
 
         /// <summary>
-        /// Gets the service provider instance assigned to this client for resolving object requests.
-        /// </summary>
-        /// <value>The service provider.</value>
-        IServiceProvider ServiceProvider { get; }
-
-        /// <summary>
-        /// Gets the Security Context governing this client connection.
-        /// </summary>
-        /// <value>The user.</value>
-        IUserSecurityContext SecurityContext { get; }
-
-        /// <summary>
         /// Gets the state of the underlying connection.
         /// </summary>
         /// <value>The state.</value>
@@ -116,16 +107,26 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// terminate the connection as a result of this message being sent.
         /// </summary>
         /// <param name="graphMessage">The graph message to send.</param>
-        /// <remarks>
-        /// This method may not be supported by all clients.
-        /// </remarks>
+        /// <param name="subscriptionId">The id of the message this error is responding to, if any.</param>
         /// <returns>Task.</returns>
-        Task SendErrorMessage(IGraphMessage graphMessage);
+        Task SendErrorMessage(IGraphMessage graphMessage, string subscriptionId = null);
 
         /// <summary>
         /// Gets the messaing protocol supported by this client.
         /// </summary>
         /// <value>The client's chosen messaging protocol.</value>
         string Protocol { get; }
+
+        /// <summary>
+        /// Gets an enumeration of all the currently tracked subscriptions for this client.
+        /// </summary>
+        /// <value>The subscriptions tracked by this client.</value>
+        IEnumerable<ISubscription> Subscriptions { get; }
+
+        /// <summary>
+        /// Gets the underlying client connection this proxy represents.
+        /// </summary>
+        /// <value>The client connection.</value>
+        IClientConnection ClientConnection { get; }
     }
 }

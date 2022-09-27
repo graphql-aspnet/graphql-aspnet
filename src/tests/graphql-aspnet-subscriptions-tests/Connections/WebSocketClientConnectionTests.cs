@@ -225,7 +225,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
                     return Task.FromResult(fakeSocket as WebSocket);
                 });
 
-            var array = new ArraySegment<byte>(new byte[500]);
+            var array = new byte[500];
             var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
 
             await client.OpenAsync("protocol");

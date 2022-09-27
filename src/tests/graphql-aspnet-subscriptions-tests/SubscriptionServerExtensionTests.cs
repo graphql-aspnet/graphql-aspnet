@@ -78,7 +78,7 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
 
-            Assert.AreEqual(8, primaryOptions.ServiceCollection.Count);
+            Assert.AreEqual(6, primaryOptions.ServiceCollection.Count);
 
             // primary server objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
@@ -86,11 +86,9 @@ namespace GraphQL.Subscriptions.Tests
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServer<GraphSchema>)));
 
             // graphql-transport-ws objects
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(GqltwsMessageConverterFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqltwsSubscriptionClientProxyFactory)));
 
             // legacy graphql-ws objects
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(GraphqlWsLegacyMessageConverterFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GraphqlWsLegacySubscriptionClientProxyFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GraphqlWsLegacySubscriptionClientProxyFactoryAlternate)));
 

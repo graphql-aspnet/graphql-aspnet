@@ -31,12 +31,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             {
                 serviceCollection.Add(
                     new ServiceDescriptor(
-                        typeof(GqltwsMessageConverterFactory),
-                        typeof(GqltwsMessageConverterFactory),
-                        ServiceLifetime.Singleton));
-
-                serviceCollection.Add(
-                    new ServiceDescriptor(
                         typeof(ISubscriptionClientProxyFactory),
                         typeof(GqltwsSubscriptionClientProxyFactory),
                         ServiceLifetime.Singleton));

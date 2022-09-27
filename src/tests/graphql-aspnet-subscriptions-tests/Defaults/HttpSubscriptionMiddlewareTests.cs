@@ -123,7 +123,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var next = new RequestDelegate(CallNext);
 
             var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnection()).Returns(Task.CompletedTask);
+            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>())).Returns(Task.CompletedTask);
 
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
             server.Setup(x => x.RegisterNewClient(It.IsAny<ISubscriptionClientProxy<GraphSchema>>()))

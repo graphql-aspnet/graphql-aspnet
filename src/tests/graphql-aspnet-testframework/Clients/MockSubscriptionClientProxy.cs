@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas.Structural;
+    using Moq;
 
     /// <summary>
     /// A fake subscription client used to test server operations against
@@ -57,8 +58,12 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             IUserSecurityContext securityContext,
             ClientConnectionState connectionState)
         {
-            this.ServiceProvider = serviceProvider;
-            this.SecurityContext = securityContext;
+            var connection = new Mock<IClientConnection>();
+            connection.Setup(x => x.ServiceProvider).Returns(serviceProvider);
+            connection.Setup(x => x.SecurityContext).Returns(securityContext);
+
+            this.ClientConnection = connection.Object;
+
             this.Id = Guid.NewGuid().ToString();
             this.ReceivedEvents = new List<(SchemaItemPath FieldPath, object SourceData)>();
             this.SentMessages = new List<object>();
@@ -80,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public Task SendErrorMessage(IGraphMessage graphMessage)
+        public Task SendErrorMessage(IGraphMessage graphMessage, string subscriptionId = null)
         {
             Validation.ThrowIfNull(graphMessage, nameof(graphMessage));
             this.SentMessages.Add(graphMessage);
@@ -88,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public Task StartConnection()
+        public Task StartConnection(TimeSpan? keepAliveInterval = null)
         {
             this.ConnectionOpening?.Invoke(this, new EventArgs());
             return Task.CompletedTask;
@@ -96,12 +101,6 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         /// <inheritdoc />
         public string Id { get; }
-
-        /// <inheritdoc />
-        public IServiceProvider ServiceProvider { get; }
-
-        /// <inheritdoc />
-        public IUserSecurityContext SecurityContext { get; }
 
         /// <inheritdoc />
         public ClientConnectionState State { get; }
@@ -121,9 +120,12 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public List<object> SentMessages { get; }
 
         /// <inheritdoc />
-        public IEnumerable<ISubscription<TSchema>> Subscriptions => Enumerable.Empty<ISubscription<TSchema>>();
+        public IEnumerable<ISubscription> Subscriptions => Enumerable.Empty<ISubscription<TSchema>>();
 
         /// <inheritdoc />
         public string Protocol => "fake-protocol";
+
+        /// <inheritdoc />
+        public IClientConnection ClientConnection { get; }
     }
 }
