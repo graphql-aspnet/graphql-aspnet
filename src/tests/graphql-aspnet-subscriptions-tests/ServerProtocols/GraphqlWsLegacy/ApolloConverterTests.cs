@@ -7,36 +7,36 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo
+namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
 {
     using System;
     using System.Text.Json;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Apollo.Messages;
-    using GraphQL.AspNet.Apollo.Messages.Converters;
-    using GraphQL.AspNet.Apollo.Messages.ServerMessages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
+    using GraphQL.Subscriptions.Tests.GraphqlWsLegacy.GraphqlWsLegacyTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using GraphQL.AspNet.Common.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
-    using GraphQL.AspNet.Apollo.Messages.Common;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
 
     [TestFixture]
-    public class ApolloConverterTests
+    public class GraphqlWsLegacyConverterTests
     {
         [Test]
         public void CompleteMessage_WithId_SerializesCorrectly()
         {
-            var message = new ApolloServerCompleteMessage("abc123");
+            var message = new GraphqlWsLegacyServerCompleteMessage("abc123");
 
-            var converter = new ApolloServerCompleteMessageConverter();
+            var converter = new GraphqlWsLegacyServerCompleteMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
@@ -54,8 +54,8 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public void CompleteMessage_WithoutId_SerializesWithNoIdParameter()
         {
-            var message = new ApolloServerCompleteMessage(null);
-            var converter = new ApolloServerCompleteMessageConverter();
+            var message = new GraphqlWsLegacyServerCompleteMessage(null);
+            var converter = new GraphqlWsLegacyServerCompleteMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
@@ -74,7 +74,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         {
             var dt = DateTime.UtcNow;
             var server = new TestServerBuilder()
-                .AddGraphController<ApolloDataMessageController>()
+                .AddGraphController<GraphqlWsLegacyDataMessageController>()
                 .AddSubscriptionServer()
                 .AddGraphQL(options =>
                 {
@@ -82,14 +82,14 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 })
                 .Build();
 
-            var converter = new ApolloServerErrorMessageConverter(server.Schema);
+            var converter = new GraphqlWsLegacyServerErrorMessageConverter(server.Schema);
 
-            var message = new ApolloServerErrorMessage(
+            var message = new GraphqlWsLegacyServerErrorMessage(
                 "an error occured",
                 Constants.ErrorCodes.BAD_REQUEST,
                 GraphMessageSeverity.Warning,
                 "prev123",
-                lastMessageType: ApolloMessageType.START,
+                lastMessageType: GraphqlWsLegacyMessageType.START,
                 clientProvidedId: "abc123");
 
             var options = new JsonSerializerOptions();
@@ -126,7 +126,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         {
             var dt = DateTime.UtcNow;
             var server = new TestServerBuilder()
-                .AddGraphController<ApolloDataMessageController>()
+                .AddGraphController<GraphqlWsLegacyDataMessageController>()
                 .AddSubscriptionServer()
                 .AddGraphQL(options =>
                 {
@@ -134,14 +134,14 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 })
                 .Build();
 
-            var converter = new ApolloServerErrorMessageConverter(server.Schema);
+            var converter = new GraphqlWsLegacyServerErrorMessageConverter(server.Schema);
 
-            var message = new ApolloServerErrorMessage(
+            var message = new GraphqlWsLegacyServerErrorMessage(
                 "an error occured",
                 Constants.ErrorCodes.BAD_REQUEST,
                 GraphMessageSeverity.Warning,
                 "prev123",
-                lastMessageType: ApolloMessageType.START);
+                lastMessageType: GraphqlWsLegacyMessageType.START);
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
@@ -175,7 +175,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public async Task DataMessage_WithData_SerializesCorrectly()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<ApolloDataMessageController>()
+                .AddGraphController<GraphqlWsLegacyDataMessageController>()
                 .AddSubscriptionServer()
                 .Build();
 
@@ -186,9 +186,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                     .Build();
             await server.ExecuteQuery(context);
 
-            var message = new ApolloServerDataMessage("abc111", context.Result);
+            var message = new GraphqlWsLegacyServerDataMessage("abc111", context.Result);
 
-            var converter = new ApolloServerDataMessageConverter(
+            var converter = new GraphqlWsLegacyServerDataMessageConverter(
                 server.Schema,
                 server.ServiceProvider.GetRequiredService<IGraphResponseWriter<GraphSchema>>());
 
@@ -216,14 +216,14 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public void GeneralMessage_WithId_SerializesCorrectly()
         {
-            var message = new ApolloServerAckOperationMessage();
+            var message = new GraphqlWsLegacyServerAckOperationMessage();
             message.Id = "abc";
 
-            var converter = new ApolloMessageConverter();
+            var converter = new GraphqlWsLegacyMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize(message, typeof(ApolloMessage), options);
+            var response = JsonSerializer.Serialize(message, typeof(GraphqlWsLegacyMessage), options);
 
             var expected = @"
             {
@@ -237,12 +237,12 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public void GeneralMessage_WithoutId_SerializesCorrectly()
         {
-            var message = new ApolloServerAckOperationMessage();
-            var converter = new ApolloMessageConverter();
+            var message = new GraphqlWsLegacyServerAckOperationMessage();
+            var converter = new GraphqlWsLegacyMessageConverter();
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);
-            var response = JsonSerializer.Serialize(message, typeof(ApolloMessage), options);
+            var response = JsonSerializer.Serialize(message, typeof(GraphqlWsLegacyMessage), options);
 
             var expected = @"
             {

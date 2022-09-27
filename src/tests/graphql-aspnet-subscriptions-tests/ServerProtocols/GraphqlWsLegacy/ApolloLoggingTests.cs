@@ -16,11 +16,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo
+namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
 {
-    using GraphQL.AspNet.Apollo.Logging.ApolloEvents;
-    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Apollo.Messages.ServerMessages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Logging.GraphqlWsLegacyEvents;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ClientMessages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas.Structural;
@@ -28,7 +28,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using NUnit.Framework;
 
     [TestFixture]
-    public class ApolloLoggingTests
+    public class GraphqlWsLegacyLoggingTests
     {
         [Test]
         public void ClientMessageReceived_PropertyCheck()
@@ -36,9 +36,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var client = new Mock<ISubscriptionClientProxy>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new ApolloClientConnectionInitMessage();
+            var message = new GraphqlWsLegacyClientConnectionInitMessage();
 
-            var entry = new ApolloClientMessageReceivedLogEntry(client.Object, message);
+            var entry = new GraphqlWsLegacyClientMessageReceivedLogEntry(client.Object, message);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual(message.Type.ToString(), entry.MessageType);
@@ -53,9 +53,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var result = new Mock<IGraphOperationResult>();
             client.Setup(x => x.Id).Returns("client1");
 
-            var message = new ApolloServerDataMessage("123", result.Object);
+            var message = new GraphqlWsLegacyServerDataMessage("123", result.Object);
 
-            var entry = new ApolloClientMessageSentLogEntry(client.Object, message);
+            var entry = new GraphqlWsLegacyClientMessageSentLogEntry(client.Object, message);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual(message.Type.ToString(), entry.MessageType);
@@ -73,7 +73,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             sub.Setup(x => x.Id).Returns("sub1");
             sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new ApolloClientSubscriptionCreatedLogEntry(client.Object, sub.Object);
+            var entry = new GraphqlWsLegacyClientSubscriptionCreatedLogEntry(client.Object, sub.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
@@ -91,7 +91,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             sub.Setup(x => x.Id).Returns("sub1");
             sub.Setup(x => x.Route).Returns(new SchemaItemPath("[subscription]/bobSub1"));
 
-            var entry = new ApolloClientSubscriptionStoppedLogEntry(client.Object, sub.Object);
+            var entry = new GraphqlWsLegacyClientSubscriptionStoppedLogEntry(client.Object, sub.Object);
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);

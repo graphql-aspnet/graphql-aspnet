@@ -7,17 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo
+namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Apollo;
-    using GraphQL.AspNet.Apollo.Messages;
-    using GraphQL.AspNet.Apollo.Messages.ClientMessages;
-    using GraphQL.AspNet.Apollo.Messages.Converters;
-    using GraphQL.AspNet.Apollo.Messages.ServerMessages;
+    using GraphQL.AspNet.GraphqlWsLegacy;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ClientMessages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -26,19 +26,19 @@ namespace GraphQL.Subscriptions.Tests.Apollo
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.Apollo.ApolloTestData;
+    using GraphQL.Subscriptions.Tests.GraphqlWsLegacy.GraphqlWsLegacyTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
     [TestFixture]
-    public partial class ApolloClientProxyTests
+    public partial class GraphqlWsLegacyClientProxyTests
     {
-        private async Task<(MockClientConnection, ApolloClientProxy<GraphSchema>)>
+        private async Task<(MockClientConnection, GraphqlWsLegacyClientProxy<GraphSchema>)>
             CreateConnection()
         {
             var server = new TestServerBuilder()
-                .AddGraphController<ApolloSubscriptionController>()
+                .AddGraphController<GraphqlWsLegacySubscriptionController>()
                 .AddSubscriptionServer((options) =>
                 {
                     options.KeepAliveInterval = TimeSpan.FromMinutes(15);
@@ -47,24 +47,24 @@ namespace GraphQL.Subscriptions.Tests.Apollo
 
             var socketClient = server.CreateClientConnection();
             var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(
+            var GraphqlWsLegacyClient = new GraphqlWsLegacyClientProxy<GraphSchema>(
                 socketClient,
                 serverOptions,
-                new ApolloMessageConverterFactory());
+                new GraphqlWsLegacyMessageConverterFactory());
 
             var subServer = server.ServiceProvider.GetService<ISubscriptionServer<GraphSchema>>();
 
-            await subServer.RegisterNewClient(apolloClient);
-            return (socketClient, apolloClient);
+            await subServer.RegisterNewClient(GraphqlWsLegacyClient);
+            return (socketClient, GraphqlWsLegacyClient);
         }
 
         [Test]
         public async Task GeneralPropertyCheck()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            Assert.IsNotNull(string.IsNullOrWhiteSpace(apolloClient.Id));
-            Assert.AreNotEqual(Guid.Empty.ToString(), apolloClient.Id);
+            Assert.IsNotNull(string.IsNullOrWhiteSpace(GraphqlWsLegacyClient.Id));
+            Assert.AreNotEqual(Guid.Empty.ToString(), GraphqlWsLegacyClient.Id);
         }
 
         [Test]
@@ -76,12 +76,12 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 eventCalled = true;
             }
 
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
             socketClient.QueueConnectionCloseMessage();
 
             // execute the connection sequence
-            apolloClient.ConnectionOpening += ConnectionOpening;
-            await apolloClient.StartConnection();
+            GraphqlWsLegacyClient.ConnectionOpening += ConnectionOpening;
+            await GraphqlWsLegacyClient.StartConnection();
 
             Assert.IsTrue(eventCalled, "Connection Opening Event Handler not called");
         }
@@ -89,7 +89,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task WhenConnectionCloses_EventFires()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
             bool eventCalled = false;
             void ConnectionClosed(object sender, EventArgs e)
@@ -97,11 +97,11 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 eventCalled = true;
             }
 
-            apolloClient.ConnectionClosed += ConnectionClosed;
+            GraphqlWsLegacyClient.ConnectionClosed += ConnectionClosed;
 
             // execute the connection sequence
             socketClient.QueueConnectionCloseMessage();
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
 
             Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
         }
@@ -110,15 +110,15 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         public async Task StartConnection_OnReadClose_IfConnectionIsOpen_CloseConnection()
         {
             // set the underlying connection to not auto close when it retrieves a close message
-            // from the queue, leaving it up to the apollo client to do the close
+            // from the queue, leaving it up to the GraphqlWsLegacy client to do the close
             var socketClient = new MockClientConnection(autoCloseOnReadCloseMessage: false);
             var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
-            var apolloClient = new ApolloClientProxy<GraphSchema>(
+            var GraphqlWsLegacyClient = new GraphqlWsLegacyClientProxy<GraphSchema>(
                 socketClient,
                 options,
-                new ApolloMessageConverterFactory(),
+                new GraphqlWsLegacyMessageConverterFactory(),
                 null,
                 false);
 
@@ -128,47 +128,47 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 eventCalled = true;
             }
 
-            apolloClient.ConnectionClosed += ConnectionClosed;
+            GraphqlWsLegacyClient.ConnectionClosed += ConnectionClosed;
 
             // execute the connection sequence
             socketClient.QueueConnectionCloseMessage();
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
             Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
         }
 
         [Test]
         public async Task AttemptingToStartAClosedConnection_ThrowsException()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueConnectionCloseMessage();
 
             Assert.AreEqual(2, socketClient.QueuedMessageCount);
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
 
             Assert.AreEqual(0, socketClient.QueuedMessageCount);
 
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
            {
-               await apolloClient.StartConnection();
+               await GraphqlWsLegacyClient.StartConnection();
            });
         }
 
         [Test]
         public async Task StartConnection_ContinuesToReadMessagesFromTheSocketConnect_UntilCloseMessage()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueConnectionCloseMessage();
 
             Assert.AreEqual(2, socketClient.QueuedMessageCount);
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
 
             Assert.AreEqual(0, socketClient.QueuedMessageCount);
         }
@@ -176,15 +176,15 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task StartSubscription_RegistersSubscriptionCorrectly()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             });
 
@@ -208,15 +208,15 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             void ConnectionClosing(object o, EventArgs e)
             {
                 closeCalled = true;
-                Assert.AreEqual(1, apolloClient.Subscriptions.Count());
+                Assert.AreEqual(1, GraphqlWsLegacyClient.Subscriptions.Count());
             }
 
-            apolloClient.SubscriptionRouteAdded += RouteAdded;
-            apolloClient.SubscriptionRouteRemoved += RouteRemoved;
-            apolloClient.ConnectionClosing += ConnectionClosing;
+            GraphqlWsLegacyClient.SubscriptionRouteAdded += RouteAdded;
+            GraphqlWsLegacyClient.SubscriptionRouteRemoved += RouteRemoved;
+            GraphqlWsLegacyClient.ConnectionClosing += ConnectionClosing;
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
             Assert.AreEqual(1, routesAdded);
             Assert.AreEqual(1, routesRemoved);
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
@@ -225,12 +225,12 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task StartSubscription_ButMessageIsAQuery_YieldsDataMessage()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
             // use start message to send a query, not a subscription request
             // client should respond with expected data
             // then a complete
-            var startMessage = new ApolloClientStartMessage()
+            var startMessage = new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -239,10 +239,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 },
             };
 
-            await socketClient.OpenAsync(ApolloConstants.PROTOCOL_NAME);
-            await apolloClient.ProcessReceivedMessage(startMessage);
-            socketClient.AssertApolloResponse(
-                  ApolloMessageType.DATA,
+            await socketClient.OpenAsync(GraphqlWsLegacyConstants.PROTOCOL_NAME);
+            await GraphqlWsLegacyClient.ProcessReceivedMessage(startMessage);
+            socketClient.AssertGraphqlWsLegacyResponse(
+                  GraphqlWsLegacyMessageType.DATA,
                   "abc",
                   @"{
                     ""data"" : {
@@ -252,39 +252,39 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                     }
                 }");
 
-            socketClient.AssertApolloResponse(ApolloMessageType.COMPLETE);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.COMPLETE);
         }
 
         [Test]
         public async Task ReceiveEvent_OnStartedSubscription_YieldsDataMessage()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            var startMessage = new ApolloClientStartMessage()
+            var startMessage = new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             };
 
-            await socketClient.OpenAsync(ApolloConstants.PROTOCOL_NAME);
-            await apolloClient.ProcessReceivedMessage(startMessage);
+            await socketClient.OpenAsync(GraphqlWsLegacyConstants.PROTOCOL_NAME);
+            await GraphqlWsLegacyClient.ProcessReceivedMessage(startMessage);
 
-            var route = new SchemaItemPath("[subscription]/ApolloSubscription/WatchForPropObject");
-            await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
+            var route = new SchemaItemPath("[subscription]/GraphqlWsLegacySubscription/WatchForPropObject");
+            await GraphqlWsLegacyClient.ReceiveEvent(route, new TwoPropertyObject()
             {
                 Property1 = "value1",
                 Property2 = 33,
             });
 
-            socketClient.AssertApolloResponse(
-                ApolloMessageType.DATA,
+            socketClient.AssertGraphqlWsLegacyResponse(
+                GraphqlWsLegacyMessageType.DATA,
                 "abc",
                 @"{
                     ""data"" : {
-                        ""apolloSubscription"" : {
+                        ""graphqlWsLegacySubscription"" : {
                             ""watchForPropObject"" : {
                                 ""property1"" : ""value1"",
                             }
@@ -296,10 +296,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task ReceiveEvent_WhenNoSubscriptions_YieldsNothing()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            var route = new SchemaItemPath("[subscription]/ApolloSubscription/WatchForPropObject");
-            await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
+            var route = new SchemaItemPath("[subscription]/GraphqlWsLegacySubscription/WatchForPropObject");
+            await GraphqlWsLegacyClient.ReceiveEvent(route, new TwoPropertyObject()
             {
                 Property1 = "value1",
                 Property2 = 33,
@@ -311,23 +311,23 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task ReceiveEvent_OnNonSubscribedEventNAme_YieldsNothing()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
             // start a real subscription so the client is tracking one
-            var startMessage = new ApolloClientStartMessage()
+            var startMessage = new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             };
 
-            await apolloClient.ProcessReceivedMessage(startMessage);
+            await GraphqlWsLegacyClient.ProcessReceivedMessage(startMessage);
 
             // fire an event against a route not tracked, ensure the client skips it.
-            var route = new SchemaItemPath("[subscription]/ApolloSubscription/WatchForPropObject_NotReal");
-            await apolloClient.ReceiveEvent(route, new TwoPropertyObject()
+            var route = new SchemaItemPath("[subscription]/GraphqlWsLegacySubscription/WatchForPropObject_NotReal");
+            await GraphqlWsLegacyClient.ReceiveEvent(route, new TwoPropertyObject()
             {
                 Property1 = "value1",
                 Property2 = 33,
@@ -339,19 +339,19 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task StopSubscription_RemovesSubscriptionCorrectly()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             });
 
-            socketClient.QueueClientMessage(new ApolloClientStopMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStopMessage()
             {
                 Id = "abc",
             });
@@ -378,15 +378,15 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 closeCalled = true;
 
                 // should be no subscriptions by the time the connection closes
-                Assert.AreEqual(0, apolloClient.Subscriptions.Count());
+                Assert.AreEqual(0, GraphqlWsLegacyClient.Subscriptions.Count());
             }
 
-            apolloClient.SubscriptionRouteAdded += RouteAdded;
-            apolloClient.SubscriptionRouteRemoved += RouteRemoved;
-            apolloClient.ConnectionClosing += ConnectionClosing;
+            GraphqlWsLegacyClient.SubscriptionRouteAdded += RouteAdded;
+            GraphqlWsLegacyClient.SubscriptionRouteRemoved += RouteRemoved;
+            GraphqlWsLegacyClient.ConnectionClosing += ConnectionClosing;
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
             Assert.AreEqual(1, routesAdded);
             Assert.AreEqual(1, routesRemoved);
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
@@ -395,10 +395,10 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task StopSubscription_AgainstNonExistantId_YieldsError()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new ApolloClientStopMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStopMessage()
             {
                 Id = "abc123",
             });
@@ -406,33 +406,33 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             socketClient.QueueConnectionCloseMessage();
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
 
-            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_ACK);
-            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_KEEP_ALIVE);
-            socketClient.AssertApolloResponse(ApolloMessageType.ERROR);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.ERROR);
         }
 
         [Test]
         public async Task StartMultipleSubscriptions_AllRegistered_ButRouteEventOnlyRaisedOnce()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             });
-            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc1",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             });
 
@@ -442,36 +442,36 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             void ConnectionClosing(object o, EventArgs e)
             {
                 closeCalled = true;
-                Assert.AreEqual(2, apolloClient.Subscriptions.Count());
+                Assert.AreEqual(2, GraphqlWsLegacyClient.Subscriptions.Count());
             }
 
-            apolloClient.ConnectionClosing += ConnectionClosing;
+            GraphqlWsLegacyClient.ConnectionClosing += ConnectionClosing;
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
         }
 
         [Test]
         public async Task AttemptToStartMultipleSubscriptionsWithSameId_ResultsInErrorMessageForSecond()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             });
-            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
-                    Query = "subscription {  apolloSubscription { watchForPropObject { property1 } } }",
+                    Query = "subscription {  graphqlWsLegacySubscription { watchForPropObject { property1 } } }",
                 },
             });
 
@@ -481,27 +481,27 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             void ConnectionClosing(object o, EventArgs e)
             {
                 closeCalled = true;
-                Assert.AreEqual(1, apolloClient.Subscriptions.Count());
+                Assert.AreEqual(1, GraphqlWsLegacyClient.Subscriptions.Count());
             }
 
-            apolloClient.ConnectionClosing += ConnectionClosing;
+            GraphqlWsLegacyClient.ConnectionClosing += ConnectionClosing;
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
 
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
-            socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.CONNECTION_ACK);
-            socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.CONNECTION_KEEP_ALIVE);
-            socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.ERROR);
+            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.ERROR);
         }
 
         [Test]
         public async Task SendConnectionTerminate_ClosesConnectionFromServer()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new ApolloClientConnectionTerminateMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionTerminateMessage());
 
             var eventCalled = false;
             void ConnectionClosed(object sender, EventArgs e)
@@ -509,19 +509,19 @@ namespace GraphQL.Subscriptions.Tests.Apollo
                 eventCalled = true;
             }
 
-            apolloClient.ConnectionClosed += ConnectionClosed;
+            GraphqlWsLegacyClient.ConnectionClosed += ConnectionClosed;
 
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
             Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
         }
 
         [Test]
         public async Task InvalidMessageType_ResultsInError()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
 
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new FakeApolloMessage()
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new FakeGraphqlWsLegacyMessage()
             {
                 Type = "invalid_type",
             });
@@ -529,21 +529,21 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             socketClient.QueueConnectionCloseMessage();
 
             // execute the connection sequence
-            await apolloClient.StartConnection();
-            socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.CONNECTION_ACK);
-            socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.CONNECTION_KEEP_ALIVE);
-            socketClient.AssertApolloResponse(AspNet.Apollo.Messages.ApolloMessageType.ERROR);
+            await GraphqlWsLegacyClient.StartConnection();
+            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertGraphqlWsLegacyResponse(AspNet.GraphqlWsLegacy.Messages.GraphqlWsLegacyMessageType.ERROR);
         }
 
         [Test]
         public async Task SendMessage_AsInterface_MessageIsDeliveredToConnection()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
             socketClient.QueueConnectionCloseMessage();
 
             // execute the connection sequence
-            await socketClient.OpenAsync(ApolloConstants.PROTOCOL_NAME);
-            await apolloClient.SendMessage(new ApolloServerAckOperationMessage());
+            await socketClient.OpenAsync(GraphqlWsLegacyConstants.PROTOCOL_NAME);
+            await GraphqlWsLegacyClient.SendMessage(new GraphqlWsLegacyServerAckOperationMessage());
 
             Assert.AreEqual(1, socketClient.ResponseMessageCount);
         }
@@ -551,9 +551,9 @@ namespace GraphQL.Subscriptions.Tests.Apollo
         [Test]
         public async Task ExecuteQueryThroughStartMessage_YieldsQueryResult()
         {
-            (var socketClient, var apolloClient) = await this.CreateConnection();
-            socketClient.QueueClientMessage(new ApolloClientConnectionInitMessage());
-            socketClient.QueueClientMessage(new ApolloClientStartMessage()
+            (var socketClient, var GraphqlWsLegacyClient) = await this.CreateConnection();
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
+            socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
@@ -563,12 +563,12 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             });
 
             socketClient.QueueConnectionCloseMessage();
-            await apolloClient.StartConnection();
+            await GraphqlWsLegacyClient.StartConnection();
 
-            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_ACK);
-            socketClient.AssertApolloResponse(ApolloMessageType.CONNECTION_KEEP_ALIVE);
-            socketClient.AssertApolloResponse(
-                ApolloMessageType.DATA,
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
+            socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
+            socketClient.AssertGraphqlWsLegacyResponse(
+                GraphqlWsLegacyMessageType.DATA,
                 "abc",
                 @"{
                     ""data"" : {

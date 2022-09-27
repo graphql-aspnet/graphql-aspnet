@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo.ApolloTestData
+namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy.GraphqlWsLegacyTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class ApolloSubscriptionController : GraphController
+    public class GraphqlWsLegacySubscriptionController : GraphController
     {
         [Subscription]
         public TwoPropertyObject WatchForPropObject(TwoPropertyObject obj)

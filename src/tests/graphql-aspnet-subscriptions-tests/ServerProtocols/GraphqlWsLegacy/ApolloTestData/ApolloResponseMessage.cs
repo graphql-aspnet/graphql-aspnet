@@ -7,18 +7,18 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions.ApolloMessaging
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GraphqlWsLegacyMessaging
 {
-    using GraphQL.AspNet.Apollo.Messages;
-    using GraphQL.AspNet.Apollo.Messages.Common;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
 
     /// <summary>
     /// A general message to deserialize server sent messages into for inspection in testing.
     /// </summary>
-    public class ApolloResponseMessage : ApolloMessage<string>
+    public class GraphqlWsLegacyResponseMessage : GraphqlWsLegacyMessage<string>
     {
-        public ApolloResponseMessage()
-            : base(ApolloMessageType.UNKNOWN)
+        public GraphqlWsLegacyResponseMessage()
+            : base(GraphqlWsLegacyMessageType.UNKNOWN)
         {
         }
     }

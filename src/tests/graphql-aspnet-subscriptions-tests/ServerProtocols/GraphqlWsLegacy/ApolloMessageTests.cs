@@ -7,20 +7,20 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Apollo
+namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
 {
-    using GraphQL.AspNet.Apollo.Messages;
-    using GraphQL.AspNet.Apollo.Messages.Common;
-    using GraphQL.AspNet.Apollo.Messages.Payloads;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Common;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Payloads;
     using NUnit.Framework;
 
     [TestFixture]
-    public class ApolloMessageTests
+    public class GraphqlWsLegacyMessageTests
     {
-        private class TestNullPayloadMessage : ApolloMessage<ApolloNullPayload>
+        private class TestNullPayloadMessage : GraphqlWsLegacyMessage<GraphqlWsLegacyNullPayload>
         {
             public TestNullPayloadMessage()
-                : base(ApolloMessageType.UNKNOWN)
+                : base(GraphqlWsLegacyMessageType.UNKNOWN)
             {
             }
         }
@@ -31,7 +31,7 @@ namespace GraphQL.Subscriptions.Tests.Apollo
             var message = new TestNullPayloadMessage();
 
             Assert.IsNull(message.Payload);
-            message.Payload = new ApolloNullPayload();
+            message.Payload = new GraphqlWsLegacyNullPayload();
             Assert.IsNull(message.Payload);
         }
     }

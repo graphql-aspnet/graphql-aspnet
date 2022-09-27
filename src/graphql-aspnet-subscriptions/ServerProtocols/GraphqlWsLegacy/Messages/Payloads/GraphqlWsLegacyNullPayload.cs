@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.GraphqlWsLegacy
+namespace GraphQL.AspNet.GraphqlWsLegacy.Messages.Payloads
 {
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class GraphqlWsLegacyKeepAliveMonitorTests
+    /// <summary>
+    /// An object representing that no payload was or should be supplied with a message.
+    /// </summary>
+    public class GraphqlWsLegacyNullPayload
     {
     }
 }

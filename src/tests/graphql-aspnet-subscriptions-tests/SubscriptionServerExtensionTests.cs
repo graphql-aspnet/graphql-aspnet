@@ -11,7 +11,7 @@ namespace GraphQL.Subscriptions.Tests
 {
     using System.Linq;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Apollo.Messages.Converters;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
@@ -89,8 +89,8 @@ namespace GraphQL.Subscriptions.Tests
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqltwsSubscriptionClientProxyFactory)));
 
             // legacy graphql-ws objects
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ApolloMessageConverterFactory)));
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(ApolloSubscriptionClientProxyFactory)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(GraphqlWsLegacyMessageConverterFactory)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GraphqlWsLegacySubscriptionClientProxyFactory)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqlwsLegacySubscriptionClientProxyFactoryAlternate)));
 
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);

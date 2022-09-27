@@ -89,12 +89,6 @@ namespace GraphQL.AspNet
             /// graphql messaging protocol.
             /// </summary>
             public const string WEBSOCKET_PROTOCOL_HEADER = "sec-websocket-protocol";
-
-            /// <summary>
-            /// A legacy version of "graphql-ws" protcol previously maintained by apollo as detailed by:
-            /// (https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md) .
-            /// </summary>
-            public const string APOLLO_SUBSCRIPTION_TRANSPORT = "graphql-ws";
         }
     }
 }

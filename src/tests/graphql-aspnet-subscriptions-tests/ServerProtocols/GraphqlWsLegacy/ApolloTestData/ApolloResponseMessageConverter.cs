@@ -7,20 +7,20 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions.ApolloMessaging
+namespace GraphQL.Subscriptions.Tests.TestServerExtensions.GraphqlWsLegacyMessaging
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.Apollo;
-    using GraphQL.AspNet.Apollo.Messages;
+    using GraphQL.AspNet.GraphqlWsLegacy;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
-    public class ApolloResponseMessageConverter : JsonConverter<ApolloResponseMessage>
+    public class GraphqlWsLegacyResponseMessageConverter : JsonConverter<GraphqlWsLegacyResponseMessage>
     {
-        public override ApolloResponseMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override GraphqlWsLegacyResponseMessage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var message = new ApolloResponseMessage();
+            var message = new GraphqlWsLegacyResponseMessage();
 
             if (reader.TokenType == JsonTokenType.StartObject)
                 reader.Read();
@@ -35,17 +35,17 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions.ApolloMessaging
 
                 switch (propName.ToLower())
                 {
-                    case ApolloConstants.Messaging.MESSAGE_ID:
+                    case GraphqlWsLegacyConstants.Messaging.MESSAGE_ID:
                         message.Id = reader.GetString();
                         reader.Read();
                         break;
 
-                    case ApolloConstants.Messaging.MESSAGE_TYPE:
-                        message.Type = ApolloMessageTypeExtensions.FromString(reader.GetString());
+                    case GraphqlWsLegacyConstants.Messaging.MESSAGE_TYPE:
+                        message.Type = GraphqlWsLegacyMessageTypeExtensions.FromString(reader.GetString());
                         reader.Read();
                         break;
 
-                    case ApolloConstants.Messaging.MESSAGE_PAYLOAD:
+                    case GraphqlWsLegacyConstants.Messaging.MESSAGE_PAYLOAD:
                         if (reader.TokenType == JsonTokenType.Null)
                             reader.Read();
                         else
@@ -58,7 +58,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions.ApolloMessaging
             return message;
         }
 
-        public override void Write(Utf8JsonWriter writer, ApolloResponseMessage value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, GraphqlWsLegacyResponseMessage value, JsonSerializerOptions options)
         {
             throw new NotSupportedException();
         }

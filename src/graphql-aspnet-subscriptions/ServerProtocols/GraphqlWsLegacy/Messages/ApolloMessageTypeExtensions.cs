@@ -7,46 +7,46 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Apollo.Messages
+namespace GraphQL.AspNet.GraphqlWsLegacy.Messages
 {
     using System;
 
     /// <summary>
-    /// Helper methods for the <see cref="ApolloMessageType"/>.
+    /// Helper methods for the <see cref="GraphqlWsLegacyMessageType"/>.
     /// </summary>
-    public static class ApolloMessageTypeExtensions
+    public static class GraphqlWsLegacyMessageTypeExtensions
     {
         /// <summary>
-        /// A helper message to create a valid <see cref="ApolloMessageType"/> accounting
-        /// for various idiosyncrasies and possibilities of the message types as implemented by apollo.
+        /// A helper message to create a valid <see cref="GraphqlWsLegacyMessageType"/> accounting
+        /// for various idiosyncrasies and possibilities of the message types as implemented by GraphqlWsLegacy.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns>GraphQLOperationMessageType.</returns>
-        public static ApolloMessageType FromString(string text)
+        public static GraphqlWsLegacyMessageType FromString(string text)
         {
             if (text == null || text.Length == 0)
-                return ApolloMessageType.UNKNOWN;
+                return GraphqlWsLegacyMessageType.UNKNOWN;
 
             text = text.ToLowerInvariant();
 
-            // quirk of the apollo client. uses a shortened version of keep alive
+            // quirk of the GraphqlWsLegacy client. uses a shortened version of keep alive
             // for message transfer optimization
-            // https://github.com/apollographql/subscriptions-transport-ws/blob/master/src/message-types.ts
+            // https://github.com/GraphqlWsLegacygraphql/subscriptions-transport-ws/blob/master/src/message-types.ts
             if (text == "ka")
-                return ApolloMessageType.CONNECTION_KEEP_ALIVE;
+                return GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE;
 
-            if (Enum.TryParse<ApolloMessageType>(text, true, out var result))
+            if (Enum.TryParse<GraphqlWsLegacyMessageType>(text, true, out var result))
                 return result;
 
             // just in case, by some random fluke, someone transmits a string with "GQL_" appended
-            // thinking the static constant in apollo client is the connection type
+            // thinking the static constant in GraphqlWsLegacy client is the connection type
             // handle it appropriately
             text = $"gql_{text}";
             if (Enum.TryParse(text, true, out result))
                 return result;
 
             // dunno what the message type is
-            return ApolloMessageType.UNKNOWN;
+            return GraphqlWsLegacyMessageType.UNKNOWN;
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace GraphQL.AspNet.Apollo.Messages
         /// </summary>
         /// <param name="messageType">Type of the message.</param>
         /// <returns>System.String.</returns>
-        public static string Serialize(ApolloMessageType messageType)
+        public static string Serialize(GraphqlWsLegacyMessageType messageType)
         {
-            if (messageType == ApolloMessageType.CONNECTION_KEEP_ALIVE)
+            if (messageType == GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE)
                 return "ka";
             else
                 return messageType.ToString().ToLowerInvariant();

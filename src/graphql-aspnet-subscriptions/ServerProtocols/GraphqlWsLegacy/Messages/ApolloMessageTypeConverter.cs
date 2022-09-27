@@ -7,33 +7,33 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Apollo.Messages
+namespace GraphQL.AspNet.GraphqlWsLegacy.Messages
 {
     using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Handles conversion of <see cref="ApolloMessageType"/> to and from json to handle potential casing
+    /// Handles conversion of <see cref="GraphqlWsLegacyMessageType"/> to and from json to handle potential casing
     /// issues with connected clients.
     /// </summary>
-    internal class ApolloMessageTypeConverter : JsonConverter<ApolloMessageType>
+    internal class GraphqlWsLegacyMessageTypeConverter : JsonConverter<GraphqlWsLegacyMessageType>
     {
         /// <summary>
-        /// Reads and converts the JSON to type <see cref="ApolloMessageType"/>.
+        /// Reads and converts the JSON to type <see cref="GraphqlWsLegacyMessageType"/>.
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="typeToConvert">The type to convert.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
         /// <returns>The converted value.</returns>
-        public override ApolloMessageType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override GraphqlWsLegacyMessageType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.String)
             {
                 throw new JsonException($"Expected {nameof(JsonTokenType.String)} but got {reader.TokenType.ToString()}");
             }
 
-            return ApolloMessageTypeExtensions.FromString(reader.GetString());
+            return GraphqlWsLegacyMessageTypeExtensions.FromString(reader.GetString());
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace GraphQL.AspNet.Apollo.Messages
         /// <param name="writer">The writer to write to.</param>
         /// <param name="value">The value to convert to JSON.</param>
         /// <param name="options">An object that specifies serialization options to use.</param>
-        public override void Write(Utf8JsonWriter writer, ApolloMessageType value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, GraphqlWsLegacyMessageType value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(ApolloMessageTypeExtensions.Serialize(value));
+            writer.WriteStringValue(GraphqlWsLegacyMessageTypeExtensions.Serialize(value));
         }
     }
 }

@@ -11,13 +11,13 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 {
     using System.Text;
     using System.Text.Json;
-    using GraphQL.AspNet.Apollo.Messages;
+    using GraphQL.AspNet.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions.ApolloMessaging;
+    using GraphQL.Subscriptions.Tests.TestServerExtensions.GraphqlWsLegacyMessaging;
     using NUnit.Framework;
 
-    public static class ApolloClientAsserts
+    public static class GraphqlWsLegacyClientAsserts
     {
         /// <summary>
         /// Asserts that a response message from the server queued and that it is of the supplied type.
@@ -25,12 +25,12 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="connection">The connection.</param>
         /// <param name="type">The type of message to check for.</param>
         /// <param name="dequeue">if true, the message is removed from the queue.</param>
-        internal static void AssertApolloResponse(
+        internal static void AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
-            ApolloMessageType type,
+            GraphqlWsLegacyMessageType type,
             bool dequeue = true)
         {
-            AssertApolloResponse(connection, type, null, false, null, false, dequeue);
+            AssertGraphqlWsLegacyResponse(connection, type, null, false, null, false, dequeue);
         }
 
         /// <summary>
@@ -40,13 +40,13 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="type">The type of message to check for.</param>
         /// <param name="id">The id returned by the server, if supplied.</param>
         /// <param name="dequeue">if true, the message is removed from the queue.</param>
-        internal static void AssertApolloResponse(
+        internal static void AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
-            ApolloMessageType type,
+            GraphqlWsLegacyMessageType type,
             string id,
             bool dequeue = true)
         {
-            AssertApolloResponse(connection, type, id, true, null, false, dequeue);
+            AssertGraphqlWsLegacyResponse(connection, type, id, true, null, false, dequeue);
         }
 
         /// <summary>
@@ -58,19 +58,19 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="id">The expected identifier of the subscription that rendered the data.</param>
         /// <param name="expectedPayloadJson">The expected payload of the message, converted to a json string.</param>
         /// <param name="dequeue">if set to <c>true</c> if the message should be removed from the queue.</param>
-        internal static void AssertApolloResponse(
+        internal static void AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
-            ApolloMessageType type,
+            GraphqlWsLegacyMessageType type,
             string id,
             string expectedPayloadJson,
             bool dequeue = true)
         {
-            AssertApolloResponse(connection, type, id, true, expectedPayloadJson, true, dequeue);
+            AssertGraphqlWsLegacyResponse(connection, type, id, true, expectedPayloadJson, true, dequeue);
         }
 
-        private static void AssertApolloResponse(
+        private static void AssertGraphqlWsLegacyResponse(
             this MockClientConnection connection,
-            ApolloMessageType type,
+            GraphqlWsLegacyMessageType type,
             string id,
             bool compareId,
             string expectedPayloadJson,
@@ -86,9 +86,9 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
             options.AllowTrailingCommas = true;
-            options.Converters.Add(new ApolloResponseMessageConverter());
+            options.Converters.Add(new GraphqlWsLegacyResponseMessageConverter());
 
-            var convertedMessage = System.Text.Json.JsonSerializer.Deserialize<ApolloResponseMessage>(str, options);
+            var convertedMessage = System.Text.Json.JsonSerializer.Deserialize<GraphqlWsLegacyResponseMessage>(str, options);
 
             Assert.IsNotNull(convertedMessage, "Could not deserialized response message");
             Assert.AreEqual(type, convertedMessage.Type, $"Expected message type of {type.ToString()} but got {convertedMessage.Type.ToString()}");

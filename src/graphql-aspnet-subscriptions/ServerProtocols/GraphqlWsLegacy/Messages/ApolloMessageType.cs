@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Apollo.Messages
+namespace GraphQL.AspNet.GraphqlWsLegacy.Messages
 {
     /// <summary>
     /// <para>An enumeration of the different types of messages carried over a presistent connection.</para>
-    /// <para>Reference: https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md .</para>
+    /// <para>Reference: https://github.com/GraphqlWsLegacygraphql/subscriptions-transport-ws/blob/master/PROTOCOL.md .</para>
     /// </summary>
-    public enum ApolloMessageType
+    public enum GraphqlWsLegacyMessageType
     {
         UNKNOWN = 0,
 
