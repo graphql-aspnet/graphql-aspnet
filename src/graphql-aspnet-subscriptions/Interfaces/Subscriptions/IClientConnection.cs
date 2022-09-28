@@ -23,20 +23,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     public interface IClientConnection
     {
         /// <summary>
-        /// Receives the next segment of data from the connection asynchronously.
+        /// Receives a full, complete, and deserializable message, as a set of bytes, from the connection.
         /// </summary>
-        /// <param name="buffer">References the application buffer that is the storage location for the received
-        ///  data.</param>
-        /// <param name="cancelToken">Propagates the notification that operations should be canceled.</param>
-        /// <returns>Task&lt;IClientConnectionResult&gt;.</returns>
-        Task<IClientConnectionReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancelToken = default);
-
-        /// <summary>
-        /// Receives a full, complete and deserializable message from the connection. This method may or may not
-        /// produce different results than <see cref="ReceiveAsync"/> depending on the implementation of the underlying
-        /// connection.
-        /// </summary>
-        /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.ValueTuple&lt;WebSocketReceiveResult, IEnumerable&lt;System.Byte&gt;&gt;&gt;.</returns>
         Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(CancellationToken cancelToken = default);
 
@@ -66,8 +55,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <param name="subProtocol">The sub protocol the server wishes to tell
         /// the client that it will accept for messaging standards.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task OpenAsync(string subProtocol);
+        Task OpenAsync(string subProtocol, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Gets a description applied by the remote endpoint to describe the why the connection was closed.
@@ -76,7 +66,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         string CloseStatusDescription { get; }
 
         /// <summary>
-        /// Gets the reason why the remote endpoint initiated the close handshake.
+        /// Gets the reason why this connection was closed.
         /// </summary>
         /// <value>The final close status if this connection is closed, otherwise null.</value>
         ConnectionCloseStatus? CloseStatus { get; }
@@ -88,14 +78,15 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         ClientConnectionState State { get; }
 
         /// <summary>
-        /// Gets the configured service provider for the client connection.
+        /// Gets the configured service provider assigned to the client connection when
+        /// the server first recieved it.
         /// </summary>
         /// <value>The service provider.</value>
         ///
         IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Gets the security context governing this connection.
+        /// Gets the security context governing this connection, if any. Can be null.
         /// </summary>
         /// <value>The user.</value>
         IUserSecurityContext SecurityContext { get; }
@@ -107,14 +98,14 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         string RequestedProtocols { get; }
 
         /// <summary>
-        /// Gets the actual communications protocol neogiated by this client connection
-        /// when it was opened.
+        /// Gets the actual communications protocol neogiated by the server when
+        /// it accepted the connection.
         /// </summary>
         /// <value>The protocol.</value>
         string Protocol { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this connection is permanantly closed.
+        /// Gets a value indicating whether this connection is permanantly closed and cannot be opened.
         /// </summary>
         /// <value><c>true</c> if this connection has been permanantly; otherwise, <c>false</c>.</value>
         bool ClosedForever { get; }
@@ -123,7 +114,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Gets a value indicating the size of the receive and send buffer for messages
         /// bound to this connection.
         /// </summary>
-        /// <value>The size of the buffer.</value>
+        /// <value>The size of this connection's recieving buffer.</value>
         int BufferSize { get; }
     }
 }

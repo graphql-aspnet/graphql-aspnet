@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <inheritdoc />
-        public virtual async Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null)
+        public virtual async Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
         {
             if (this.ClientConnection == null || this.ClientConnection.ClosedForever)
             {
@@ -162,7 +162,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
             // accept the connection and begin lisening
             // for messages related to the protocol known to this specific client type
-            await this.ClientConnection.OpenAsync(this.Protocol);
+            await this.ClientConnection.OpenAsync(this.Protocol, cancelToken);
 
             TimerAsync keepAliveTimer = null;
             TimerAsync initialziationTimer = null;

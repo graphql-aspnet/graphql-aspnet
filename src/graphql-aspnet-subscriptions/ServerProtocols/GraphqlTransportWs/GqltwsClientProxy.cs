@@ -72,24 +72,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// <returns>Task.</returns>
         private async Task ResponseToUnknownMessage(GqltwsMessage lastMessage)
         {
-            var error = new GqltwsServerErrorMessage(
-                    "The last message recieved was unknown or could not be processed " +
-                    "by this server. This GrapQL server is configured to use the graphql-ws " +
-                    "message schema.",
-                    Constants.ErrorCodes.BAD_REQUEST,
-                    lastMessage: lastMessage,
-                    clientProvidedId: lastMessage.Id);
+            var error = "The last message recieved was unknown or could not be processed " +
+                        "by this server. This GrapQL server is configured to use the graphql-ws " +
+                        $"message schema. (messageType: '{lastMessage.Type}')";
 
-            error.Payload.MetaData.Add(
-                Constants.Messaging.REFERENCE_RULE_NUMBER,
-                "Unknown Message Type");
-
-            error.Payload.MetaData.Add(
-                Constants.Messaging.REFERENCE_RULE_URL,
-                "https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md");
-
-            await this.SendMessage(error);
-            await this.CloseConnection(ConnectionCloseStatus.InvalidMessageType);
+            await this.CloseConnection(
+                (ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.InvalidMessageType,
+                error);
         }
 
         /// <summary>
@@ -109,8 +98,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 
                 case SubscriptionOperationResultType.SingleQueryCompleted:
 
-                    // report syntax errors as single error messages which kills the message stream for the id
-                    // allow others to bubble into a result
+                    // report pre execution syntax errors as single error messages
                     if (result.Messages.Count == 1
                         && result.Messages[0].Code == Constants.ErrorCodes.SYNTAX_ERROR)
                     {
@@ -123,7 +111,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                     }
                     else
                     {
-                        // complete the single request
+                        // report everything else as a completed request via "next"
                         var responseMessage = new GqltwsServerNextDataMessage(message.Id, result.OperationResult);
                         var completedMessage = new GqltwsSubscriptionCompleteMessage(message.Id);
 
@@ -171,22 +159,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         /// <param name="message">The message containing the subscription id to stop.</param>
         /// <returns>Task.</returns>
-        private async Task ExecuteSubscriptionStopRequest(GqltwsSubscriptionCompleteMessage message)
+        private Task ExecuteSubscriptionStopRequest(GqltwsSubscriptionCompleteMessage message)
         {
             var removedSuccessfully = this.ReleaseSubscription(message.Id);
 
             if (!removedSuccessfully)
             {
-                var errorMessage = new GqltwsServerErrorMessage(
-                    $"No active subscription exists with id '{message.Id}'",
-                    Constants.ErrorCodes.BAD_REQUEST,
-                    lastMessage: message,
-                    clientProvidedId: message.Id);
-
-                await this
-                    .SendMessage(errorMessage)
-                    .ConfigureAwait(false);
+                // per spec:
+                // Receiving a message (other than Subscribe) with an ID that belongs to an
+                // operation that has been previously completed does not constitute an error.
+                // It is permissable to simply ignore all unknown IDs without closing the connection.
             }
+
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
@@ -260,16 +245,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                     await this.ResponseToPingMessage();
                     break;
 
-                // do nothing with a recevied pong message
-                case GqltwsMessageType.PONG:
-                    break;
-
                 case GqltwsMessageType.SUBSCRIBE:
                     await this.ExecuteSubscriptionStartRequest(message as GqltwsClientSubscribeMessage);
                     break;
 
                 case GqltwsMessageType.COMPLETE:
                     await this.ExecuteSubscriptionStopRequest(message as GqltwsSubscriptionCompleteMessage);
+                    break;
+
+                // do nothing with a recevied pong message
+                case GqltwsMessageType.PONG:
                     break;
 
                 default:

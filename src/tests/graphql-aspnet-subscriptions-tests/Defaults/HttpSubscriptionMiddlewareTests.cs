@@ -13,6 +13,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using System.Collections.Generic;
     using System.Net;
     using System.Net.WebSockets;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
@@ -123,7 +124,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var next = new RequestDelegate(CallNext);
 
             var connection = new Mock<ISubscriptionClientProxy>();
-            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>())).Returns(Task.CompletedTask);
+            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             var server = new Mock<ISubscriptionServer<GraphSchema>>();
             server.Setup(x => x.RegisterNewClient(It.IsAny<ISubscriptionClientProxy<GraphSchema>>()))

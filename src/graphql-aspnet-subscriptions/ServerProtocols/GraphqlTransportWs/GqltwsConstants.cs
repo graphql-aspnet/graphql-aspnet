@@ -61,6 +61,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         public static class CustomCloseEventIds
         {
             /// <summary>
+            /// A web socket closing code indicating the server received a message it didn't
+            /// understand.
+            /// </summary>
+            public const ushort InvalidMessageType = 4400;
+
+            /// <summary>
             /// A web socket closing code indicating the server did not receive
             /// the required connection init method within the expected amount of time.
             /// </summary>

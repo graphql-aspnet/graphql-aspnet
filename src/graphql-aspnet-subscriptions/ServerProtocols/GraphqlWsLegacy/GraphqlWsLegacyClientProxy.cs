@@ -165,7 +165,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         {
             var removedSuccessfully = this.ReleaseSubscription(message.Id);
 
-            if (!removedSuccessfully)
+            if (removedSuccessfully)
+            {
+                await this.SendMessage(new GraphqlWsLegacyServerCompleteMessage(message.Id))
+                    .ConfigureAwait(false);
+            }
+            else
             {
                 var errorMessage = new GraphqlWsLegacyServerErrorMessage(
                     $"No active subscription exists with id '{message.Id}'",
@@ -191,7 +196,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             switch (result.Status)
             {
                 case SubscriptionOperationResultType.SubscriptionRegistered:
-
                     // nothing to do in this case
                     break;
 

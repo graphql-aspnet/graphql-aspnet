@@ -37,6 +37,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                     string closeDescription = null)
         {
             this.Data = data;
+            this.OriginalMessage = data;
             this.MessageType = messageType;
             this.CloseStatus = closeStatus;
             this.CloseStatusDescription = closeDescription;
@@ -49,6 +50,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public MockSocketMessage(string data)
         {
             this.Data = Encoding.UTF8.GetBytes(data);
+            this.OriginalMessage = data;
             this.MessageType = ClientMessageType.Text;
             this.CloseStatus = null;
             this.CloseStatusDescription = null;
@@ -62,6 +64,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         {
             var messageSerialized = System.Text.Json.JsonSerializer.Serialize(data, data.GetType());
             this.Data = Encoding.UTF8.GetBytes(messageSerialized);
+            this.OriginalMessage = data;
             this.MessageType = ClientMessageType.Text;
             this.CloseStatus = null;
             this.CloseStatusDescription = null;
@@ -98,6 +101,13 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value>The data.</value>
         public byte[] Data { get; }
+
+        /// <summary>
+        /// Gets the original message as it was supplied to this instance, before it was
+        /// serialzied to a byte array.
+        /// </summary>
+        /// <value>The original message.</value>
+        public object OriginalMessage { get; }
 
         /// <summary>
         /// Gets a value indicating whether the current message is a UTF-8 message or a binary message.

@@ -105,20 +105,5 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             if (compareId)
                 Assert.AreEqual(id, convertedMessage.Id);
         }
-
-        internal static void AssertServerClosedConnection(
-            this MockClientConnection connection,
-            ConnectionCloseStatus? closeStatus = null,
-            bool dequeue = true)
-        {
-            if (connection.ResponseMessageCount == 0)
-                Assert.Fail("No messages queued.");
-
-            var message = dequeue ? connection.DequeueNextReceivedMessage() : connection.PeekNextReceivedMessage();
-            Assert.AreEqual(typeof(MockServerCloseMessage), message.GetType());
-
-            if (closeStatus.HasValue)
-                Assert.AreEqual(closeStatus, message.CloseStatus);
-        }
     }
 }

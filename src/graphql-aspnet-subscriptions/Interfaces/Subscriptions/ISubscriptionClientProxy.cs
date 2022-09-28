@@ -63,8 +63,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="initializationTimeout">When provided, defines the amount of
         /// time this proxy should wait for its connected client to transmit the protocol
         /// defined initialization sequence.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null);
+        Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Instructs the client to process the new event. If this is an event the client subscribes

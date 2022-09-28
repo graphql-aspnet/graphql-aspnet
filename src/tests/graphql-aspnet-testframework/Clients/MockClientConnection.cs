@@ -11,7 +11,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Runtime.CompilerServices;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -19,54 +20,44 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using Moq;
+    using NuGet.Frameworks;
 
     /// <summary>
-    /// A fake client connection to mock how a websocket would send and recieve data
-    /// that is also inspectable for unit tests. This client executes by storing a sequence of messages
-    /// in a specific order then, through the connection interface, delivering each in turn to the server listening
-    /// to this client.
+    /// A fake client connection to mock how an <see cref="IClientConnection"/> would send and recieve
+    /// data that is also inspectable for unit tests. This client executes by queueing a sequence of messages
+    /// in a specific order then, through the connection interface, delivering each in turn to the client proxy
+    /// listening to this connection.
     /// </summary>
     public class MockClientConnection : IClientConnection
     {
         // a queue of messages send by the client and recieved server side
-        private readonly Queue<MockSocketMessage> _incomingMessageQueue;
+        private readonly Queue<MockSocketMessage> _clientSentToServerQueue;
 
         // a queue of message sent by the server to the client
-        private readonly Queue<MockSocketMessage> _outgoingMessageQueue;
-
-        private readonly bool _autoCloseOnReadCloseMessage;
-        private MockSocketMessage _currentMessage;
-
-        private bool _connectionClosed;
-        private bool _connectionClosedByServer;
-        private bool _wasOpened;
+        private readonly Queue<MockSocketMessage> _serverSentToClientQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MockClientConnection" /> class.
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="securityContext">The security context.</param>
-        /// <param name="autoCloseOnReadCloseMessage">if set to <c>true</c> when the connection
-        /// reads a close message, it will shut it self down.</param>
+        /// <param name="broadcastState">The state this connection will appear to be in.</param>
         /// <param name="requestedProtocol">The requested protocol this client should show.</param>
-        /// <param name="actualProtocol">The actual protocol this client would have negoiated.</param>
         public MockClientConnection(
             IServiceProvider serviceProvider = null,
             IUserSecurityContext securityContext = null,
-            bool autoCloseOnReadCloseMessage = true,
-            string requestedProtocol = null,
-            string actualProtocol = null)
+            ClientConnectionState broadcastState = ClientConnectionState.Connecting,
+            string requestedProtocol = null)
         {
             this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
             this.SecurityContext = securityContext;
-            _incomingMessageQueue = new Queue<MockSocketMessage>();
+            this.State = broadcastState;
 
-            _outgoingMessageQueue = new Queue<MockSocketMessage>();
-            this.State = ClientConnectionState.Open;
-
-            _autoCloseOnReadCloseMessage = autoCloseOnReadCloseMessage;
             this.RequestedProtocols = requestedProtocol;
-            this.Protocol = actualProtocol;
+
+            _clientSentToServerQueue = new Queue<MockSocketMessage>();
+            _serverSentToClientQueue = new Queue<MockSocketMessage>();
+            this.ClosedBy = MockClientConnectionClosedByStatus.NotClosed;
         }
 
         /// <summary>
@@ -95,9 +86,9 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public void QueueClientMessage(MockSocketMessage message)
         {
             Validation.ThrowIfNull(message, nameof(message));
-            lock (_incomingMessageQueue)
+            lock (_clientSentToServerQueue)
             {
-                _incomingMessageQueue.Enqueue(message);
+                _clientSentToServerQueue.Enqueue(message);
             }
         }
 
@@ -117,8 +108,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <returns>MockClientMessage.</returns>
         public MockSocketMessage DequeueNextReceivedMessage()
         {
-            lock (_outgoingMessageQueue)
-                return _outgoingMessageQueue.Dequeue();
+            lock (_serverSentToClientQueue)
+                return _serverSentToClientQueue.Dequeue();
         }
 
         /// <summary>
@@ -127,32 +118,42 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <returns>MockClientMessage.</returns>
         public MockSocketMessage PeekNextReceivedMessage()
         {
-            lock (_outgoingMessageQueue)
-                return _outgoingMessageQueue.Peek();
+            lock (_serverSentToClientQueue)
+                return _serverSentToClientQueue.Peek();
         }
 
         /// <inheritdoc />
-        public Task OpenAsync(string subProtocol)
+        public Task OpenAsync(string subProtocol, CancellationToken cancelToken = default)
         {
-            _wasOpened = true;
+            switch (this.State)
+            {
+                case ClientConnectionState.Connecting:
+                    this.State = ClientConnectionState.Open;
+                    this.Protocol = subProtocol;
+                    break;
+
+                case ClientConnectionState.Open:
+                    throw new InvalidOperationException("can't open an already open connection.");
+
+                default:
+                    throw new InvalidOperationException("can't open a closed or closing connection.");
+            }
+
             return Task.CompletedTask;
         }
 
         /// <inheritdoc />
         public Task CloseAsync(ConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
-            this.ClosedForever = true;
+            // if already closed, don't indicate as server side closed
+            if (this.ClosedForever)
+                return Task.CompletedTask;
 
-            if (!_wasOpened)
+            if (this.State != ClientConnectionState.Open)
                 throw new InvalidOperationException("Cant close a non-open connection");
 
-            // when not already closed (form the client side)
-            // then queue a message to indicate the server initiated the close
-            if (!_connectionClosed)
-                _outgoingMessageQueue.Enqueue(new MockServerCloseMessage(closeStatus, statusDescription));
-
-            _connectionClosed = true;
-            _connectionClosedByServer = true;
+            this.ClosedForever = true;
+            this.ClosedBy = MockClientConnectionClosedByStatus.ClosedByServer;
             this.CloseStatusDescription = statusDescription;
             this.CloseStatus = closeStatus;
             this.State = ClientConnectionState.Closed;
@@ -160,86 +161,97 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public async Task<IClientConnectionReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancelToken = default)
-        {
-            if (!_wasOpened)
-                throw new InvalidOperationException("Cant receive a never-opened connection");
-
-            if (_connectionClosed)
-                throw new InvalidOperationException("can't recieve on a closed connection");
-
-            while (_currentMessage == null && !_connectionClosed)
-            {
-                lock (_incomingMessageQueue)
-                {
-                    if (_incomingMessageQueue.Count > 0)
-                        _currentMessage = _incomingMessageQueue.Dequeue();
-                }
-
-                if (_currentMessage == null)
-                    await Task.Delay(5).ConfigureAwait(false);
-            }
-
-            if (_currentMessage == null)
-            {
-                await Task.Delay(5);
-                return new MockClientMessageResult(0, ClientMessageType.Binary, true);
-            }
-
-            if (_currentMessage is MockTestActionMessage tam)
-            {
-                if (tam.Action != null)
-                    tam.Action.Invoke();
-
-                _currentMessage = null;
-                return new MockClientMessageResult(0, ClientMessageType.Binary, true);
-            }
-
-            bool hasRemainingBytes = _currentMessage.ReadNextBytes(buffer, out int bytesRead);
-
-            var result = new MockClientMessageResult(
-                bytesRead,
-                _currentMessage.MessageType,
-                !hasRemainingBytes,
-                !hasRemainingBytes ? _currentMessage.CloseStatus : null,
-                !hasRemainingBytes ? _currentMessage.CloseStatusDescription : null);
-
-            _connectionClosed = !hasRemainingBytes && result.CloseStatus != null;
-
-            // clear the message from the being read if its complete
-            if (!hasRemainingBytes)
-                _currentMessage = null;
-
-            return result;
-        }
-
-        /// <inheritdoc />
         public async Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
-            var message = new List<byte>();
+            var messageData = new List<byte>();
+            object currentMessage = null;
 
-            var buffer = new byte[this.BufferSize];
-            do
+            if (this.State != ClientConnectionState.Open)
+                throw new InvalidOperationException("Cant receive a non-opened connection");
+
+            if (this.ClosedForever)
+                throw new InvalidOperationException("Can't recieve on a closed connection");
+
+            while (!this.ClosedForever && currentMessage == null)
             {
-                response = await this.ReceiveAsync(new ArraySegment<byte>(buffer), cancelToken);
-                message.AddRange(new ArraySegment<byte>(buffer, 0, response.Count));
-            }
-            while (!response.EndOfMessage);
+                lock (_clientSentToServerQueue)
+                {
+                    if (_clientSentToServerQueue.Count > 0)
+                        currentMessage = _clientSentToServerQueue.Dequeue();
+                }
 
-            return (response, message);
+                // no message? wait for one
+                if (currentMessage == null)
+                    await Task.Delay(5).ConfigureAwait(false);
+            }
+
+            if (currentMessage == null)
+            {
+                await Task.Delay(5);
+                response = new MockClientMessageResult(0, ClientMessageType.Ignore, true);
+                return (response, messageData);
+            }
+
+            switch (currentMessage)
+            {
+                case MockTestActionMessage tam:
+                    if (tam.Action != null)
+                        tam.Action.Invoke();
+
+                    response = new MockClientMessageResult(0, ClientMessageType.Ignore, true);
+                    break;
+
+                case MockClientRemoteCloseMessage rcm:
+                    this.ClosedForever = true;
+                    this.CloseStatus = rcm.CloseStatus;
+                    this.CloseStatusDescription = rcm.CloseStatusDescription;
+                    this.ClosedBy = MockClientConnectionClosedByStatus.ClosedByClient;
+
+                    response = new MockClientMessageResult(
+                        0,
+                        ClientMessageType.Close,
+                        isEndOfMessage: true,
+                        closeStatus: rcm.CloseStatus,
+                        closeDescription: rcm.CloseStatusDescription);
+                    break;
+
+                case MockSocketMessage msm:
+                    bool hasRemainingBytes;
+                    var buffer = new byte[this.BufferSize];
+                    do
+                    {
+                        hasRemainingBytes = msm.ReadNextBytes(buffer, out int bytesRead);
+                        messageData.AddRange(new ArraySegment<byte>(buffer, 0, bytesRead));
+                    }
+                    while (hasRemainingBytes);
+
+                    response = new MockClientMessageResult(
+                        messageData.Count,
+                        msm.MessageType,
+                        true,
+                        msm.CloseStatus,
+                        msm.CloseStatusDescription);
+                    break;
+
+                default:
+                    throw new InvalidOperationException(
+                        "Queued client message is invalid with this mocked connection");
+            }
+
+            return (response, messageData);
         }
 
         /// <inheritdoc />
         public Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
-            if (!_wasOpened)
-                throw new InvalidOperationException("Cant send on a never-opened connection");
+            if (this.State != ClientConnectionState.Open)
+                throw new InvalidOperationException("Cant send on a non-opened connection");
 
             var message = new MockSocketMessage(data, messageType, endOfMessage);
-            lock (_outgoingMessageQueue)
+            lock (_serverSentToClientQueue)
             {
-                _outgoingMessageQueue.Enqueue(message);
+                _serverSentToClientQueue.Enqueue(message);
             }
 
             return Task.CompletedTask;
@@ -258,24 +270,17 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// Gets the number of messages recorded as sent by the server to the client.
         /// </summary>
         /// <value>The response message count.</value>
-        public int ResponseMessageCount => _outgoingMessageQueue.Count;
+        public int ResponseMessageCount => _serverSentToClientQueue.Count;
 
         /// <summary>
         /// Gets the number of simulated messages still on the connection
         /// that have yet to be consumed.
         /// </summary>
         /// <value>The queued message count.</value>
-        public int QueuedMessageCount => _incomingMessageQueue.Count;
+        public int QueuedMessageCount => _clientSentToServerQueue.Count;
 
         /// <inheritdoc />
         public IServiceProvider ServiceProvider { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this connection was closed by way
-        /// of the server proxy or itself.
-        /// </summary>
-        /// <value><c>true</c> if closed by the server; otherwise, <c>false</c>.</value>
-        public bool ConnectionClosedByServer => _connectionClosedByServer;
 
         /// <inheritdoc />
         public IUserSecurityContext SecurityContext { get; }
@@ -284,12 +289,25 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public string RequestedProtocols { get; }
 
         /// <inheritdoc />
-        public string Protocol { get; }
+        public string Protocol { get; private set; }
 
         /// <inheritdoc />
         public bool ClosedForever { get; private set; }
 
         /// <inheritdoc />
         public int BufferSize => 4096;
+
+        /// <summary>
+        /// Gets a list of all queued, but unprocessed messages, sent down to the client.
+        /// </summary>
+        /// <value>The client received messages.</value>
+        public IEnumerable<MockSocketMessage> ClientReceivedMessages => _serverSentToClientQueue;
+
+        /// <summary>
+        /// Gets a value indicating whether this connection was closed by way
+        /// of the server proxy or the client.
+        /// </summary>
+        /// <value><c>true</c> if closed by the server; otherwise, <c>false</c>.</value>
+        public MockClientConnectionClosedByStatus ClosedBy { get; private set; }
     }
 }

@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null)
+        public Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
         {
             this.ConnectionOpening?.Invoke(this, new EventArgs());
             return Task.CompletedTask;

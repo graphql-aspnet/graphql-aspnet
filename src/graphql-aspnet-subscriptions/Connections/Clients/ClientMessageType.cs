@@ -27,5 +27,11 @@ namespace GraphQL.AspNet.Connections.Clients
         /// A receive has completed because a close message was received.
         /// </summary>
         Close = 2,
+
+        /// <summary>
+        /// The message should be ignored by the client. This status is primarly
+        /// used by unit testing frameworks.
+        /// </summary>
+        Ignore = 3,
     }
 }

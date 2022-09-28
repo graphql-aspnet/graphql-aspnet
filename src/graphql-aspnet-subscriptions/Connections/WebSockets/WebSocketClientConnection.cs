@@ -92,7 +92,12 @@ namespace GraphQL.AspNet.Connections.WebSockets
             }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Receive the next segment of a message as an asynchronous operation.
+        /// </summary>
+        /// <param name="buffer">The buffer to write the segment to.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>An IClientConnectionReceiveResult representing the results of the read operation.</returns>
         public async Task<IClientConnectionReceiveResult> ReceiveAsync(
             ArraySegment<byte> buffer,
             CancellationToken cancelToken = default)
@@ -160,12 +165,12 @@ namespace GraphQL.AspNet.Connections.WebSockets
         }
 
         /// <inheritdoc />
-        public virtual async Task OpenAsync(string protocol)
+        public virtual async Task OpenAsync(string protocol, CancellationToken cancelToken = default)
         {
             if (this.WebSocket != null)
             {
-                throw new InvalidOperationException("Unable to open the connection " +
-                    "it is already open.");
+                throw new InvalidOperationException(
+                    "Unable to open the connection it is already open.");
             }
 
             this.WebSocket = await _socketManager.AcceptWebSocketAsync(protocol)
@@ -176,7 +181,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// Getsa description applied by the remote endpoint to describe the why the connection was closed.
         /// </summary>
         /// <value>The description applied when this connection was closed.</value>
-        public string CloseStatusDescription => this.WebSocket.CloseStatusDescription;
+        public string CloseStatusDescription => this.WebSocket?.CloseStatusDescription;
 
         /// <inheritdoc />
         public ConnectionCloseStatus? CloseStatus => this.WebSocket?.CloseStatus?.ToClientConnectionCloseStatus();
