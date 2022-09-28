@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="cancellationToken">The token that can be used to propagate notification that operations should be
         /// canceled.</param>
         /// <returns>Task.</returns>
-        Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken);
+        Task CloseAsync(ConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sends a block of data over the connection asynchronously.
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Gets the reason why the remote endpoint initiated the close handshake.
         /// </summary>
         /// <value>The final close status if this connection is closed, otherwise null.</value>
-        ClientConnectionCloseStatus? CloseStatus { get; }
+        ConnectionCloseStatus? CloseStatus { get; }
 
         /// <summary>
         /// Gets the current state of the connection.

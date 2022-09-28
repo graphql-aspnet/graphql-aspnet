@@ -21,9 +21,9 @@ namespace GraphQL.AspNet.Connections.Clients
         /// </summary>
         /// <param name="closeStatus">The websocket close status.</param>
         /// <returns>System.Nullable&lt;ClientConnectionCloseStatus&gt;.</returns>
-        public static ClientConnectionCloseStatus ToClientConnectionCloseStatus(this WebSocketCloseStatus closeStatus)
+        public static ConnectionCloseStatus ToClientConnectionCloseStatus(this WebSocketCloseStatus closeStatus)
         {
-            return (ClientConnectionCloseStatus)(int)closeStatus;
+            return (ConnectionCloseStatus)(int)closeStatus;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Connections.Clients
         /// </summary>
         /// <param name="closeStatus">The internal close status to convert.</param>
         /// <returns>System.Nullable&lt;WebSocketCloseStatus&gt;.</returns>
-        public static WebSocketCloseStatus ToWebSocketCloseStatus(this ClientConnectionCloseStatus closeStatus)
+        public static WebSocketCloseStatus ToWebSocketCloseStatus(this ConnectionCloseStatus closeStatus)
         {
             return (WebSocketCloseStatus)(int)closeStatus;
         }

@@ -16,24 +16,21 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A common base class providing schema specific functionality to all client proxies.
+    /// A common base class encapsulating a wide variety of common operations
+    /// that any client proxy would implement.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this proxy targets.</typeparam>
     /// <typeparam name="TMessage">A common base type representing the messages this proxy
@@ -80,6 +77,60 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <summary>
+        /// Instructs this client proxy to send an error message to its underlying connection.
+        /// </summary>
+        /// <param name="graphMessage">The graph message to send.</param>
+        /// <param name="subscriptionId">The subscription identifer this message
+        /// refers to, if any.</param>
+        /// <returns>Task.</returns>
+        public abstract Task SendErrorMessage(IGraphMessage graphMessage, string subscriptionId = null);
+
+        /// <summary>
+        /// Executes a keep alive heartbeat sequence with the connected client.
+        /// When supported by the messaging protocol, the proxy should immediately execute a keep alive
+        /// sequence to its connected client.
+        /// </summary>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        protected abstract Task ExecuteKeepAlive(CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Processes the received message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        protected abstract Task ProcessReceivedMessage(TMessage message, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Deserializes a received message (represented as a UTF-8 encoded byte array) into an
+        /// appropriate <typeparamref name="TMessage" /> consistant with the messaging protocol
+        /// used by this proxy.
+        /// </summary>
+        /// <param name="bytes">The bits to decode.</param>
+        /// <returns>TMessage.</returns>
+        protected abstract TMessage DeserializeMessage(IEnumerable<byte> bytes);
+
+        /// <summary>
+        /// Serializes the message into an array of UTF-8 encoded bytes that can be understood
+        /// by the connected client.
+        /// </summary>
+        /// <param name="message">The message to serialize.</param>
+        /// <returns>System.Byte[].</returns>
+        protected abstract byte[] SerializeMessage(TMessage message);
+
+        /// <summary>
+        /// Creates a message, consistant with this proxy's underlying protocol, that
+        /// can transmit a completd query operation result. This method is commonly called
+        /// via the processing of new data available to one of its subscriptions.
+        /// </summary>
+        /// <param name="subscriptionId">The unqiue identifier provided by the client
+        /// that identifies what series of operations this result belongs to.</param>
+        /// <param name="operationResult">The data result to transmit.</param>
+        /// <returns>TMessage.</returns>
+        protected abstract TMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult);
+
+        /// <summary>
         /// Executes the provided action against all members of the invocation list of the supplied delegate.
         /// </summary>
         /// <typeparam name="TDelegate">The type of the delegate being acted on.</typeparam>
@@ -98,7 +149,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <inheritdoc />
-        public async Task StartConnection(TimeSpan? keepAliveInterval = null)
+        public virtual async Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null)
         {
             if (this.ClientConnection == null || this.ClientConnection.ClosedForever)
             {
@@ -114,9 +165,25 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             await this.ClientConnection.OpenAsync(this.Protocol);
 
             TimerAsync keepAliveTimer = null;
+            TimerAsync initialziationTimer = null;
 
             try
             {
+                if (initializationTimeout.HasValue)
+                {
+                    initialziationTimer = new TimerAsync(
+                        async (token) =>
+                        {
+                            await this.InitializationWindowExpired(token);
+                            await initialziationTimer.Stop();
+                        },
+                        initializationTimeout.Value,
+                        TimeSpan.MaxValue,
+                        false);
+
+                    initialziationTimer?.Start();
+                }
+
                 if (keepAliveInterval.HasValue)
                 {
                     this.IsKeepAliveEnabled = true;
@@ -153,10 +220,14 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
                 this.ConnectionClosing?.Invoke(this, EventArgs.Empty);
 
-                // immediately end the keep alive timer
+                // immediately kill any timers
                 keepAliveTimer?.Stop();
                 keepAliveTimer?.Dispose();
                 keepAliveTimer = null;
+
+                initialziationTimer?.Dispose();
+                initialziationTimer = null;
+
                 this.IsKeepAliveEnabled = false;
 
                 // the connection and resources may already be closed
@@ -179,11 +250,14 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             }
             finally
             {
-                // ensure keep alive is stopped even when a server exception may be thrown
+                // ensure timers are stopped even when a server exception may be thrown
                 // during message receiving
                 keepAliveTimer?.Stop();
                 keepAliveTimer?.Dispose();
                 keepAliveTimer = null;
+
+                initialziationTimer?.Dispose();
+                initialziationTimer = null;
                 this.IsKeepAliveEnabled = false;
             }
 
@@ -192,16 +266,29 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             this.DoActionForAllInvokers(this.ConnectionClosed, x => this.ConnectionClosed -= x);
         }
 
+        /// <summary>
+        /// When overriden in a sub class, this method fires when the server provided timeframe
+        /// for client initailization has expired. This method will always fire when the timeout
+        /// completes it is up to the class implementing this method to act accordingly.
+        /// </summary>
+        /// <param name="token">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        protected virtual Task InitializationWindowExpired(CancellationToken token)
+        {
+            return Task.CompletedTask;
+        }
+
         /// <inheritdoc />
         public virtual async Task ReceiveEvent(SchemaItemPath field, object sourceData, CancellationToken cancelToken = default)
         {
+            // force asyncronicity
             await Task.Yield();
 
             if (field == null)
                 return;
 
+            // find the subscriptions that are listening for the received data
             var subscriptions = _subscriptions.RetreiveByRoute(field);
-
             this.Logger.SubscriptionEventReceived(field, subscriptions);
             if (subscriptions.Count == 0)
                 return;
@@ -209,6 +296,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             var runtime = this.ClientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
             var schema = this.ClientConnection.ServiceProvider.GetRequiredService<TSchema>();
 
+            // execute the individual subscription queries
+            // using the provided source data as an input
             var tasks = new List<Task>();
             foreach (var subscription in subscriptions)
             {
@@ -331,56 +420,28 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <summary>
-        /// Instructs the client to stop listening to the previously registered subscription.
+        /// Instructs the client to stop listening to the subscription with the given id.
         /// </summary>
-        /// <param name="subscriptionId">The subscription id to release.</param>
+        /// <param name="subscriptionId">The id of the subscription.</param>
         /// <returns><c>true</c> if the subscription was located and released, <c>false</c> otherwise.</returns>
         protected virtual bool ReleaseSubscription(string subscriptionId)
         {
             var totalRemaining = _subscriptions.Remove(subscriptionId, out var subFound);
 
-            if (subFound != null)
-            {
-                _reservedSubscriptionIds.ReleaseMessageId(subFound.Id);
-                if (totalRemaining == 0)
-                    this.SubscriptionRouteRemoved?.Invoke(this, new SubscriptionFieldEventArgs(subFound.Field));
+            if (subFound == null)
+                return false;
 
-                this.Logger?.SubscriptionStopped(subFound);
-                return true;
-            }
+            _reservedSubscriptionIds.ReleaseMessageId(subFound.Id);
+            if (totalRemaining == 0)
+                this.SubscriptionRouteRemoved?.Invoke(this, new SubscriptionFieldEventArgs(subFound.Field));
 
-            return subFound != null;
+            this.Logger?.SubscriptionStopped(subFound);
+            return true;
         }
-
-        /// <summary>
-        /// Instructs this client proxy to send an error message to its underlying connection.
-        /// </summary>
-        /// <param name="graphMessage">The graph message to send.</param>
-        /// <param name="subscriptionId">The subscription identifer this message
-        /// refers to, if any.</param>
-        /// <returns>Task.</returns>
-        public abstract Task SendErrorMessage(IGraphMessage graphMessage, string subscriptionId = null);
-
-        /// <summary>
-        /// Executes a keep alive heartbeat with the connected client.
-        /// When supported by the messaging protocol, the client should immediately execute a keep alive
-        /// request to its connected client.
-        /// </summary>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        protected abstract Task ExecuteKeepAlive(CancellationToken cancelToken = default);
-
-        /// <summary>
-        /// Processes the received message.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        protected abstract Task ProcessReceivedMessage(TMessage message, CancellationToken cancelToken = default);
 
         /// <inheritdoc />
         public virtual async Task CloseConnection(
-            ClientConnectionCloseStatus reason,
+            ConnectionCloseStatus reason,
             string message = null,
             CancellationToken cancelToken = default)
         {
@@ -410,40 +471,14 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <summary>
-        /// Deserializes a received message (represented as a UTF-8 encoded byte array) into an
-        /// appropriate <typeparamref name="TMessage" /> consistant with the messaging protocol
-        /// used by this proxy.
-        /// </summary>
-        /// <param name="bytes">The bits to decode.</param>
-        /// <returns>TMessage.</returns>
-        protected abstract TMessage DeserializeMessage(IEnumerable<byte> bytes);
-
-        /// <summary>
-        /// Serializes the message into an array of UTF-8 encoded bytes that can be understood
-        /// by the connected client.
-        /// </summary>
-        /// <param name="message">The message to serialize.</param>
-        /// <returns>System.Byte[].</returns>
-        protected abstract byte[] SerializeMessage(TMessage message);
-
-        /// <summary>
-        /// Creates a message consistant with this proxy's underlying protocol that
-        /// can transmit the data for a given result of a subscription.
-        /// </summary>
-        /// <param name="subscriptionId">The unqiue subscription identifier.</param>
-        /// <param name="operationResult">The data result.</param>
-        /// <returns>TMessage.</returns>
-        protected abstract TMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult);
-
-        /// <inheritdoc />
-        public IEnumerable<ISubscription> Subscriptions => _subscriptions;
-
-        /// <summary>
         /// Gets a decorated <see cref="IGraphEventLogger"/> with specialized
         /// events for client proxies.
         /// </summary>
         /// <value>The event logger for this instance.</value>
         protected ClientProxyEventLogger<TSchema> Logger { get; }
+
+        /// <inheritdoc />
+        public IEnumerable<ISubscription> Subscriptions => _subscriptions;
 
         /// <inheritdoc />
         public string Id { get; }
@@ -461,9 +496,10 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         public IClientConnection ClientConnection { get; protected set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether keep alive pings are enabled with this client.
+        /// Gets or sets a value indicating whether keep alive pings are currently
+        /// enabled on this client.
         /// </summary>
-        /// <value><c>true</c> if this instance is keep alive enabled; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if this instance is sending keep alives to the client; otherwise, <c>false</c>.</value>
         public bool IsKeepAliveEnabled { get; protected set; }
     }
 }

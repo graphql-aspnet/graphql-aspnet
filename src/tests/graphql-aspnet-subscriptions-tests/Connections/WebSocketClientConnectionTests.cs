@@ -56,7 +56,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             await client.OpenAsync("actual protocol");
 
             Assert.AreEqual(ClientConnectionState.Aborted, client.State);
-            Assert.AreEqual(ClientConnectionCloseStatus.EndpointUnavailable, client.CloseStatus.Value);
+            Assert.AreEqual(ConnectionCloseStatus.EndpointUnavailable, client.CloseStatus.Value);
             Assert.AreEqual("close desc", client.CloseStatusDescription);
             Assert.AreEqual(provider, client.ServiceProvider);
             Assert.AreEqual(user, client.SecurityContext.DefaultUser);
@@ -254,7 +254,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
 
             await client.OpenAsync("protocol");
-            await client.CloseAsync(ClientConnectionCloseStatus.Empty, string.Empty, default);
+            await client.CloseAsync(ConnectionCloseStatus.Empty, string.Empty, default);
 
             Assert.AreEqual(1, fakeSocket.TotalCloseCalls);
         }

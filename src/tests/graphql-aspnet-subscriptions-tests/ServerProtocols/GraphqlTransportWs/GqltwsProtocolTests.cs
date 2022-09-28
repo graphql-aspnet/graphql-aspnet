@@ -10,20 +10,19 @@
 namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
+    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.BidirectionalMessages;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +37,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 .AddGraphController<GqltwsSubscriptionController>()
                 .AddSubscriptionServer((options) =>
                 {
-                    options.KeepAliveInterval = TimeSpan.FromMinutes(15);
+                    options.ConnectionKeepAliveInterval = TimeSpan.FromMinutes(15);
                 })
                 .Build();
 
@@ -55,62 +54,114 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         }
 
         [Test]
-        public async Task ReceiveEvent_WithNoClients_YieldsNothing()
+        public async Task SendingTooManyInitRequests_ClosesTheConnection()
         {
             (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            var evt = new SubscriptionEvent()
-            {
-                Data = null,
-                DataTypeName = typeof(TwoPropertyObject).FullName,
-                SchemaTypeName = typeof(GraphSchema).FullName,
-                EventName = "fakeEvent",
-            };
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
 
-            var count = await server.ReceiveEvent(evt);
-            Assert.AreEqual(0, count);
+            await graphqlWsClient.StartConnection();
+
+            // a response to the first message should have been transmitted
+            connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
+
+            // the connection should be closed in response to the second message
+            Assert.IsTrue(connection.CloseStatus.HasValue);
+            Assert.AreEqual((int)connection.CloseStatus.Value, GqltwsConstants.CustomCloseEventIds.TooManyInitializationRequests);
         }
 
         [Test]
-        public async Task ReceiveEvent_WithNoData_YieldsNothing()
+        public async Task NotSendingTheInitMessageWithinTimeoutPeriod_ClosesTheConnection()
         {
             (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
-            var count = await server.ReceiveEvent(null);
-            Assert.AreEqual(0, count);
+
+            await graphqlWsClient.StartConnection(initializationTimeout: TimeSpan.FromMilliseconds(5));
+
+            // no response should ever have been given
+            // and the connection should have been closed from the server
+            Assert.AreEqual(1, connection.ResponseMessageCount);
+            connection.AssertServerClosedConnection();
+
+            // the connection should be closed in response to the second message
+            Assert.IsTrue(connection.CloseStatus.HasValue);
+            Assert.AreEqual((int)connection.CloseStatus.Value, GqltwsConstants.CustomCloseEventIds.ConnectionInitializationTimeout);
         }
 
         [Test]
-        public async Task WhenTheServerReceivesAnEvent_WithARegisteredClient_ClientRecievesEvent()
+        public async Task WhenPingReceived_PongIsSent()
         {
             (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
 
-            // start the sub on the client
-            var startMessage = new GqltwsClientSubscribeMessage()
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsPingMessage());
+            connection.QueueConnectionClosedByClient();
+
+            await graphqlWsClient.StartConnection();
+
+            // no response should ever have been given
+            // and the connection should have been closed from the server
+            connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
+            connection.AssertGqltwsResponse(GqltwsMessageType.PONG);
+
+            // no other messages
+            Assert.AreEqual(0, connection.ResponseMessageCount);
+
+            // the connection should be closed in response to the second message
+            Assert.IsTrue(connection.CloseStatus.HasValue);
+            Assert.AreEqual((int)connection.CloseStatus.Value, (int)ConnectionCloseStatus.NormalClosure);
+        }
+
+        [Test]
+        public async Task WhenClientSendsSubscriptionComplete_ServerDropsTheSubscription()
+        {
+            (var server, var connection, var graphqlWsClient) = await this.CreateConnection();
+
+            // queue the subscription
+            connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
+            connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
                 Id = "abc",
                 Payload = new GraphQueryData()
                 {
                     Query = "subscription {  gqltwsSubscription { watchForPropObject { property1 } } }",
                 },
-            };
+            });
 
-            // register a subscription
-            await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.ProcessMessage(startMessage);
-
-            var evt = new SubscriptionEvent()
+            // ensure it was set up
+            connection.QueueAction(() =>
             {
-                Data = new TwoPropertyObject(),
-                DataTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(TwoPropertyObject)),
-                SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(GraphSchema)),
-                EventName = "[subscription]/GqltwsSubscription/WatchForPropObject",
-            };
+                Assert.AreEqual(1, graphqlWsClient.Subscriptions.Count());
+            });
 
-            // mimic new data available for that subscription
-            var count = await server.ReceiveEvent(evt);
+            // unsbuscribe the subscription
+            connection.QueueClientMessage((object)new GqltwsSubscriptionCompleteMessage("abc"));
 
-            Assert.AreEqual(1, count);
-            connection.AssertGqltwsResponse(GqltwsMessageType.NEXT, "abc");
+            // ensure it was removed
+            connection.QueueAction(() =>
+            {
+                Assert.AreEqual(0, graphqlWsClient.Subscriptions.Count());
+            });
+
+            // close out
+            connection.QueueConnectionClosedByClient();
+
+            await graphqlWsClient.StartConnection();
+
+            connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
+
+            Assert.AreEqual(0, graphqlWsClient.Subscriptions.Count());
+            Assert.AreEqual(0, connection.ResponseMessageCount);
+
+            // the connection should be closed in response to the second message
+            Assert.IsTrue(connection.CloseStatus.HasValue);
+            Assert.AreEqual((int)connection.CloseStatus.Value, (int)ConnectionCloseStatus.NormalClosure);
+        }
+
+        [Test]
+        public void RecievingAnInvaidMessageType_ClosesSocketImmediately()
+        {
+            Assert.Fail("Write this test");
         }
     }
 }

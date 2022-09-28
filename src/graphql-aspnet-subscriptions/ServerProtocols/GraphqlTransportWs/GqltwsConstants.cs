@@ -54,5 +54,23 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             /// </summary>
             public const string LAST_RECEIVED_MESSAGE_TYPE = "lastMessage_type";
         }
+
+        /// <summary>
+        /// A set of ids detailing custom codes used during the closing of a client.
+        /// </summary>
+        public static class CustomCloseEventIds
+        {
+            /// <summary>
+            /// A web socket closing code indicating the server did not receive
+            /// the required connection init method within the expected amount of time.
+            /// </summary>
+            public const ushort ConnectionInitializationTimeout = 4408;
+
+            /// <summary>
+            /// A web socket closing code indicating the server received too many
+            /// initialization messages from the connected client.
+            /// </summary>
+            public const ushort TooManyInitializationRequests = 4429;
+        }
     }
 }

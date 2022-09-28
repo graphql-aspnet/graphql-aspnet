@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Schemas
                 throw new ArgumentOutOfRangeException(
                     nameof(action),
                     $"The '{action.InternalFullName}' action's operation root ({action.Route.RootCollection}) is not " +
-                    $"allowed by the schema's current configuration (Schema: {this.Schema.Name}).");
+                    $"allowed by the target schema (Name: {this.Schema.Name}).");
             }
         }
 

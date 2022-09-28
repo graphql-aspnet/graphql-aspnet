@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.Connections.Clients
 {
     /// <summary>
-    /// Possible reasons why the client connection was closed.
+    /// Possible reasons why the client or server terminated the connection.
     /// </summary>
-    public enum ClientConnectionCloseStatus
+    public enum ConnectionCloseStatus
     {
         /// <summary>
         /// An unknown, unused status

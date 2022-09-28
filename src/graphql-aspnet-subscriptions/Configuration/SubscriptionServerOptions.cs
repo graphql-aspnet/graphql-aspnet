@@ -66,12 +66,24 @@ namespace GraphQL.AspNet.Configuration
         /// sent to a connected client for those protocols that support it.
         /// </para>
         /// <para>
-        /// This keep alive is seperate from the socket level keep alive timer.
+        /// This keep alive is seperate from any low level commonucation protocol keep alive timer (such as websockets).
         /// </para>
-        /// <para>(Default: 2 minutes). Specify <see cref="TimeSpan.Zero"/> to disable.</para>
+        /// <para>(Default: 2 minutes). Specify <c>null</c> to disable.</para>
         /// </summary>
-        /// <value>The keep alive interval.</value>
-        public TimeSpan KeepAliveInterval { get; set; } = TimeSpan.FromMinutes(2);
+        /// <value>The keep alive interval to use for this schema.</value>
+        public TimeSpan? ConnectionKeepAliveInterval { get; set; } = TimeSpan.FromMinutes(2);
+
+        /// <summary>
+        /// <para>
+        /// Gets or sets the amount of time to wait between opening a connection to a
+        /// subscription client and the receipt of an initialization sequence. When set,
+        /// if the client has not transmitted a protocol appropriate initialization message
+        /// within the given timeframe the connection is immediately closed.
+        /// </para>
+        /// <para>(Default: 30 seconds). Specify <c>null</c> to disable.</para>
+        /// </summary>
+        /// <value>The initialization timeout.</value>
+        public TimeSpan? ConnectionInitializationTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// <para>

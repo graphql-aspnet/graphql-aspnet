@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.StarWarsAPI3X
                  // to be below all those thresholds to ensure a hassle free experience.
                  // In practice, you should configure your server (both graphql-ws keep alives and socket keep alives)
                  // with an interval that is compatiable with your client side environment.
-                 options.KeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
+                 options.ConnectionKeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
              });
 
             services.AddControllers();

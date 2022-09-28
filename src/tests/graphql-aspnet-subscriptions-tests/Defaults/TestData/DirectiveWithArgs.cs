@@ -18,7 +18,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults.TestData
         [DirectiveLocations(DirectiveLocation.AllTypeSystemLocations)]
         public IGraphActionResult Execute(int arg1, string arg2)
         {
-            return null;
+            return this.Ok();
         }
     }
 }

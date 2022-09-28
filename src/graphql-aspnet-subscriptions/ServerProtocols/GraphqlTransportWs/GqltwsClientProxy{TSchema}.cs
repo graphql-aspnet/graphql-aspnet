@@ -38,11 +38,15 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
     [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
-    internal sealed class GqltwsClientProxy<TSchema> : ClientProxyBase<TSchema, GqltwsMessage>
+    internal sealed class GqltwsClientProxy<TSchema> : ClientProxyBase<TSchema, GqltwsMessage>, IDisposable
         where TSchema : class, ISchema
     {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private readonly bool _enableMetrics;
         private readonly GqltwsMessageConverterFactory<TSchema> _converterFactory;
+
+        private bool _initReceived;
+        private bool _disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsClientProxy{TSchema}" /> class.
@@ -85,7 +89,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 "https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md");
 
             await this.SendMessage(error);
-            await this.CloseConnection(ClientConnectionCloseStatus.InvalidMessageType);
+            await this.CloseConnection(ConnectionCloseStatus.InvalidMessageType);
         }
 
         /// <summary>
@@ -292,7 +296,51 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         private async Task AcknowledgeConnectionInitializationMessage()
         {
-            await this.SendMessage(new GqltwsServerConnectionAckMessage()).ConfigureAwait(false);
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (!_initReceived)
+                {
+                    _initReceived = true;
+                    await this.SendMessage(new GqltwsServerConnectionAckMessage()).ConfigureAwait(false);
+                    return;
+                }
+
+                // from the spec
+                // If the server receives more than one ConnectionInit message at any given time,
+                // the server will close the socket with the event 4429: Too many initialisation requests.
+                await this.CloseConnection(
+                    (ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.TooManyInitializationRequests,
+                    "Too many initialization requests");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        /// <inheritdoc />
+        protected override async Task InitializationWindowExpired(CancellationToken token)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (_initReceived)
+                    return;
+
+                // from the spec
+                // If the server does not recieve the connection init message within a given time
+                // the server will close the socket with the event 4408: Connection initialziation timeout
+                await this.CloseConnection(
+                    (ConnectionCloseStatus)GqltwsConstants.CustomCloseEventIds.ConnectionInitializationTimeout,
+                    "Connection initialization timeout");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         /// <summary>
@@ -309,6 +357,26 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         {
             // not supported on graphql-transport-ws
             return Task.CompletedTask;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _semaphore.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc />

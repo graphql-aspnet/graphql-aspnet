@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                     int byteCount,
                     ClientMessageType messageType,
                     bool isEndOfMessage = false,
-                    ClientConnectionCloseStatus? closeStatus = null,
+                    ConnectionCloseStatus? closeStatus = null,
                     string closeDescription = null)
         {
             this.Count = byteCount;
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// Gets the reason why the remote endpoint initiated the close handshake, if it was closed. Null otherwise.
         /// </summary>
         /// <value>The close status that was provided, if any.</value>
-        public ClientConnectionCloseStatus? CloseStatus { get; }
+        public ConnectionCloseStatus? CloseStatus { get; }
 
         /// <summary>
         /// Gets an optional description that describes why the close handshake has been

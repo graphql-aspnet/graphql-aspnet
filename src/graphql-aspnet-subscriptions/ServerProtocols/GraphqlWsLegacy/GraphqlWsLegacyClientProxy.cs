@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 
                 case GraphqlWsLegacyMessageType.CONNECTION_TERMINATE:
                     return this.CloseConnection(
-                        ClientConnectionCloseStatus.NormalClosure,
+                        ConnectionCloseStatus.NormalClosure,
                         $"Recieved closure request via message '{GraphqlWsLegacyMessageTypeExtensions.Serialize(GraphqlWsLegacyMessageType.CONNECTION_TERMINATE)}'.");
 
                 default:

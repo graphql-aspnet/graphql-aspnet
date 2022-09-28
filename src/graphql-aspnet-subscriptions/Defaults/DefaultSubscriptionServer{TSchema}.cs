@@ -77,8 +77,9 @@ namespace GraphQL.AspNet.Defaults
         public async Task<bool> RegisterNewClient(ISubscriptionClientProxy<TSchema> clientProxy)
         {
             Validation.ThrowIfNull(clientProxy, nameof(clientProxy));
+            Validation.ThrowIfNull(clientProxy.ClientConnection, $"{nameof(clientProxy)}.{nameof(clientProxy.ClientConnection)}");
 
-            var isAuthenticated = clientProxy.ClientConnection.SecurityContext.DefaultUser != null &&
+            var isAuthenticated = clientProxy.ClientConnection.SecurityContext?.DefaultUser != null &&
                                   clientProxy.ClientConnection.SecurityContext
                                     .DefaultUser
                                     .Identities
@@ -93,7 +94,7 @@ namespace GraphQL.AspNet.Defaults
                         code: Constants.ErrorCodes.ACCESS_DENIED));
 
                 await clientProxy.CloseConnection(
-                    ClientConnectionCloseStatus.ProtocolError,
+                    ConnectionCloseStatus.ProtocolError,
                     "Unauthorized Request",
                     default);
 

@@ -12,16 +12,16 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Connections.Clients;
 
     /// <summary>
-    /// A messag that indicates the remote client has/is closing hte connection.
+    /// A messag that indicates the server has/is closing hte connection.
     /// </summary>
-    public class MockClientRemoteCloseMessage : MockSocketMessage
+    public class MockServerCloseMessage : MockSocketMessage
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MockClientRemoteCloseMessage" /> class.
+        /// Initializes a new instance of the <see cref="MockServerCloseMessage" /> class.
         /// </summary>
         /// <param name="closeStatus">The close status.</param>
         /// <param name="closeDescription">The close description.</param>
-        public MockClientRemoteCloseMessage(
+        public MockServerCloseMessage(
                     ConnectionCloseStatus? closeStatus = null,
                     string closeDescription = null)
             : base(

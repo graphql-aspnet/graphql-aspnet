@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -28,13 +29,13 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     public class MockClientConnection : IClientConnection
     {
         // a queue of messages send by the client and recieved server side
-        private readonly Queue<MockClientMessage> _incomingMessageQueue;
+        private readonly Queue<MockSocketMessage> _incomingMessageQueue;
 
         // a queue of message sent by the server to the client
-        private readonly Queue<MockClientMessage> _outgoingMessageQueue;
+        private readonly Queue<MockSocketMessage> _outgoingMessageQueue;
 
         private readonly bool _autoCloseOnReadCloseMessage;
-        private MockClientMessage _currentMessage;
+        private MockSocketMessage _currentMessage;
 
         private bool _connectionClosed;
         private bool _connectionClosedByServer;
@@ -58,9 +59,9 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         {
             this.ServiceProvider = serviceProvider ?? new Mock<IServiceProvider>().Object;
             this.SecurityContext = securityContext;
-            _incomingMessageQueue = new Queue<MockClientMessage>();
+            _incomingMessageQueue = new Queue<MockSocketMessage>();
 
-            _outgoingMessageQueue = new Queue<MockClientMessage>();
+            _outgoingMessageQueue = new Queue<MockSocketMessage>();
             this.State = ClientConnectionState.Open;
 
             _autoCloseOnReadCloseMessage = autoCloseOnReadCloseMessage;
@@ -72,16 +73,26 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// Queues a fake "connection closed" message to tell this mock connection to "close itself" mimicing
         /// a websocket disconnecting.
         /// </summary>
-        public void QueueConnectionCloseMessage()
+        public void QueueConnectionClosedByClient()
         {
             this.QueueClientMessage(new MockClientRemoteCloseMessage());
+        }
+
+        /// <summary>
+        /// Queues a fake "connection closed" message to tell this mock connection to "close itself" mimicing
+        /// a websocket disconnecting.
+        /// </summary>
+        /// <param name="action">The action to execute when this message is encountered.</param>
+        public void QueueAction(Action action)
+        {
+            this.QueueClientMessage(new MockTestActionMessage(action));
         }
 
         /// <summary>
         /// Simulates a client message being sent to the server.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void QueueClientMessage(MockClientMessage message)
+        public void QueueClientMessage(MockSocketMessage message)
         {
             Validation.ThrowIfNull(message, nameof(message));
             lock (_incomingMessageQueue)
@@ -97,14 +108,14 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public void QueueClientMessage(object message)
         {
             Validation.ThrowIfNull(message, nameof(message));
-            this.QueueClientMessage(new MockClientMessage(message));
+            this.QueueClientMessage(new MockSocketMessage(message));
         }
 
         /// <summary>
         /// Dequeues the next received message and returns it.
         /// </summary>
         /// <returns>MockClientMessage.</returns>
-        public MockClientMessage DequeueNextReceivedMessage()
+        public MockSocketMessage DequeueNextReceivedMessage()
         {
             lock (_outgoingMessageQueue)
                 return _outgoingMessageQueue.Dequeue();
@@ -114,7 +125,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// Peeks at the next received message.
         /// </summary>
         /// <returns>MockClientMessage.</returns>
-        public MockClientMessage PeekNextReceivedMessage()
+        public MockSocketMessage PeekNextReceivedMessage()
         {
             lock (_outgoingMessageQueue)
                 return _outgoingMessageQueue.Peek();
@@ -128,12 +139,17 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
+        public Task CloseAsync(ConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
             this.ClosedForever = true;
 
             if (!_wasOpened)
                 throw new InvalidOperationException("Cant close a non-open connection");
+
+            // when not already closed (form the client side)
+            // then queue a message to indicate the server initiated the close
+            if (!_connectionClosed)
+                _outgoingMessageQueue.Enqueue(new MockServerCloseMessage(closeStatus, statusDescription));
 
             _connectionClosed = true;
             _connectionClosedByServer = true;
@@ -150,9 +166,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                 throw new InvalidOperationException("Cant receive a never-opened connection");
 
             if (_connectionClosed)
-            {
                 throw new InvalidOperationException("can't recieve on a closed connection");
-            }
 
             while (_currentMessage == null && !_connectionClosed)
             {
@@ -167,7 +181,19 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             }
 
             if (_currentMessage == null)
-                throw new InvalidOperationException("No message was recieved, this should be impossible.");
+            {
+                await Task.Delay(5);
+                return new MockClientMessageResult(0, ClientMessageType.Binary, true);
+            }
+
+            if (_currentMessage is MockTestActionMessage tam)
+            {
+                if (tam.Action != null)
+                    tam.Action.Invoke();
+
+                _currentMessage = null;
+                return new MockClientMessageResult(0, ClientMessageType.Binary, true);
+            }
 
             bool hasRemainingBytes = _currentMessage.ReadNextBytes(buffer, out int bytesRead);
 
@@ -179,12 +205,6 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                 !hasRemainingBytes ? _currentMessage.CloseStatusDescription : null);
 
             _connectionClosed = !hasRemainingBytes && result.CloseStatus != null;
-            if (_connectionClosed && _autoCloseOnReadCloseMessage)
-            {
-                await this
-                    .CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, cancelToken)
-                    .ConfigureAwait(false);
-            }
 
             // clear the message from the being read if its complete
             if (!hasRemainingBytes)
@@ -216,7 +236,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             if (!_wasOpened)
                 throw new InvalidOperationException("Cant send on a never-opened connection");
 
-            var message = new MockClientMessage(data, messageType, endOfMessage);
+            var message = new MockSocketMessage(data, messageType, endOfMessage);
             lock (_outgoingMessageQueue)
             {
                 _outgoingMessageQueue.Enqueue(message);
@@ -229,7 +249,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public string CloseStatusDescription { get; private set; }
 
         /// <inheritdoc />
-        public ClientConnectionCloseStatus? CloseStatus { get; private set; }
+        public ConnectionCloseStatus? CloseStatus { get; private set; }
 
         /// <inheritdoc />
         public ClientConnectionState State { get; private set; }

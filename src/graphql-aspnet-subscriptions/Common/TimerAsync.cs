@@ -42,8 +42,8 @@ namespace GraphQL.AspNet.Common
         /// Initializes a new instance of the <see cref="TimerAsync"/> class.
         /// </summary>
         /// <param name="scheduledAction">A delegate representing a method to be executed.</param>
-        /// <param name="initialWaitTime">The amount of time to delay befoe scheduledAction is invoked for the first time.</param>
-        /// <param name="interval">The time interval between invocations of the scheduledAction.</param>
+        /// <param name="initialWaitTime">The amount of time to delay befoe <paramref name="scheduledAction"/> is invoked for the first time.</param>
+        /// <param name="interval">The time interval between invocations of the <paramref name="scheduledAction"/>.</param>
         /// <param name="canStartNextActionBeforePreviousIsCompleted">Whether or not the interval starts at the end of the previous scheduled action or at precise points in time.</param>
         public TimerAsync(Func<CancellationToken, Task> scheduledAction, TimeSpan initialWaitTime, TimeSpan interval, bool canStartNextActionBeforePreviousIsCompleted = false)
         {
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Common
 
                 _cancellationSource = new CancellationTokenSource();
                 _scheduledTask = RunScheduledAction();
-                IsRunning = true;
+                this.IsRunning = true;
             }
             finally
             {

@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         {
             this.Exception = exception;
             this.CloseStatusDescription = exception.Message;
-            this.CloseStatus = ClientConnectionCloseStatus.InternalServerError;
+            this.CloseStatus = ConnectionCloseStatus.InternalServerError;
             this.Count = 0;
             this.EndOfMessage = true;
             this.MessageType = ClientMessageType.Close;
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// Gets the reason why the remote endpoint initiated the close handshake, if it was closed. Null otherwise.
         /// </summary>
         /// <value>The close status that was provided, if any.</value>
-        public ClientConnectionCloseStatus? CloseStatus { get; }
+        public ConnectionCloseStatus? CloseStatus { get; }
 
         /// <summary>
         /// Gets an optional description that describes why the close handshake has been

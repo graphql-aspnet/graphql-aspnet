@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         }
 
         /// <inheritdoc />
-        public async Task CloseAsync(ClientConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
+        public async Task CloseAsync(ConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
             this.ClosedForever = true;
 
@@ -179,7 +179,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         public string CloseStatusDescription => this.WebSocket.CloseStatusDescription;
 
         /// <inheritdoc />
-        public ClientConnectionCloseStatus? CloseStatus => this.WebSocket?.CloseStatus?.ToClientConnectionCloseStatus();
+        public ConnectionCloseStatus? CloseStatus => this.WebSocket?.CloseStatus?.ToClientConnectionCloseStatus();
 
         /// <inheritdoc />
         public ClientConnectionState State => this.WebSocket?.State.ToClientState() ?? ClientConnectionState.None;

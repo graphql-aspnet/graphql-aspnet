@@ -17,23 +17,23 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     /// A fake message mimicing what would be generating when
     /// a client connection recieves data form its underlying implementaiton.
     /// </summary>
-    public class MockClientMessage
+    public class MockSocketMessage
     {
         private int _lastIndexRead = 0;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MockClientMessage" /> class.
+        /// Initializes a new instance of the <see cref="MockSocketMessage" /> class.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <param name="messageType">Type of the message.</param>
         /// <param name="isEndOfMessage">The is end of message.</param>
         /// <param name="closeStatus">The close status.</param>
         /// <param name="closeDescription">The close description.</param>
-        public MockClientMessage(
+        public MockSocketMessage(
                     byte[] data,
                     ClientMessageType messageType,
                     bool isEndOfMessage = false,
-                    ClientConnectionCloseStatus? closeStatus = null,
+                    ConnectionCloseStatus? closeStatus = null,
                     string closeDescription = null)
         {
             this.Data = data;
@@ -43,10 +43,10 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MockClientMessage" /> class.
+        /// Initializes a new instance of the <see cref="MockSocketMessage" /> class.
         /// </summary>
         /// <param name="data">The text data to encode for the message.</param>
-        public MockClientMessage(string data)
+        public MockSocketMessage(string data)
         {
             this.Data = Encoding.UTF8.GetBytes(data);
             this.MessageType = ClientMessageType.Text;
@@ -55,10 +55,10 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MockClientMessage" /> class.
+        /// Initializes a new instance of the <see cref="MockSocketMessage" /> class.
         /// </summary>
         /// <param name="data">The data to serialize as text for the message content.</param>
-        public MockClientMessage(object data)
+        public MockSocketMessage(object data)
         {
             var messageSerialized = System.Text.Json.JsonSerializer.Serialize(data, data.GetType());
             this.Data = Encoding.UTF8.GetBytes(messageSerialized);
@@ -84,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// Gets the reason why the remote endpoint initiated the close handshake, if it was closed. Null otherwise.
         /// </summary>
         /// <value>The close status that was provided, if any.</value>
-        public ClientConnectionCloseStatus? CloseStatus { get; }
+        public ConnectionCloseStatus? CloseStatus { get; }
 
         /// <summary>
         /// Gets an optional description that describes why the close handshake has been

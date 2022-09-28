@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Gets the reason why the remote endpoint initiated the close handshake, if it was closed. Null otherwise.
         /// </summary>
         /// <value>The close status that was provided, if any.</value>
-        ClientConnectionCloseStatus? CloseStatus { get; }
+        ConnectionCloseStatus? CloseStatus { get; }
 
         /// <summary>
         /// Gets an optional description that describes why the close handshake has been

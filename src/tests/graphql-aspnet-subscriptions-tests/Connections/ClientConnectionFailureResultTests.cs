@@ -26,7 +26,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             Assert.AreEqual(ex, result.Exception);
             Assert.IsTrue(result.EndOfMessage);
             Assert.AreEqual("close message", result.CloseStatusDescription);
-            Assert.AreEqual(ClientConnectionCloseStatus.InternalServerError, result.CloseStatus);
+            Assert.AreEqual(ConnectionCloseStatus.InternalServerError, result.CloseStatus);
             Assert.AreEqual(ClientMessageType.Close, result.MessageType);
         }
     }

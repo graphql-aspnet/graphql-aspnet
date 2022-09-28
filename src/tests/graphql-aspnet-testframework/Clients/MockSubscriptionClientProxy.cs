@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public Task CloseConnection(ClientConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default)
+        public Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default)
         {
             this.ConnectionClosing?.Invoke(this, new EventArgs());
             return Task.CompletedTask;
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public Task StartConnection(TimeSpan? keepAliveInterval = null)
+        public Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null)
         {
             this.ConnectionOpening?.Invoke(this, new EventArgs());
             return Task.CompletedTask;

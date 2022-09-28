@@ -45,7 +45,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 .AddGraphController<GqltwsSubscriptionController>()
                 .AddSubscriptionServer((options) =>
                 {
-                    options.KeepAliveInterval = TimeSpan.FromMinutes(15);
+                    options.ConnectionKeepAliveInterval = TimeSpan.FromMinutes(15);
                 })
                 .Build();
 
@@ -78,7 +78,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             }
 
             (var connection, var graphqlWsClient) = await this.CreateConnection();
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
             graphqlWsClient.ConnectionOpening += ConnectionOpening;
@@ -102,7 +102,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             graphqlWsClient.ConnectionClosed += ConnectionClosed;
 
             // execute the connection sequence
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
             await graphqlWsClient.StartConnection();
 
             Assert.IsTrue(closedCalled, "Connection Closed Event Handler not called");
@@ -123,7 +123,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             graphqlWsClient.ConnectionClosing += ConnectionClosing;
 
             // execute the connection sequence
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
             await graphqlWsClient.StartConnection();
 
             Assert.IsTrue(closingCalled, "Connection Closing event not called");
@@ -149,7 +149,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             graphqlWsClient.ConnectionClosed += ConnectionClosed;
 
             // execute the connection sequence
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
             await graphqlWsClient.StartConnection();
             Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
         }
@@ -161,7 +161,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             // init a connection then close the socket
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             Assert.AreEqual(2, connection.QueuedMessageCount);
 
@@ -183,7 +183,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             (var connection, var graphqlWsClient) = await this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
-            connection.QueueConnectionCloseMessage(); // socket level close message
+            connection.QueueConnectionClosedByClient(); // socket level close message
 
             Assert.AreEqual(2, connection.QueuedMessageCount);
 
@@ -209,7 +209,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 },
             });
 
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             var routesAdded = 0;
             var routesRemoved = 0;
@@ -384,7 +384,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 Id = "abc",
             });
 
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             var routesAdded = 0;
             var routesRemoved = 0;
@@ -434,7 +434,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 Id = "abc123",
             });
 
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
@@ -466,7 +466,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 },
             });
 
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             bool closeCalled = false;
             void ConnectionClosing(object o, EventArgs e)
@@ -505,7 +505,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 },
             });
 
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             bool closeCalled = false;
             void ConnectionClosing(object o, EventArgs e)
@@ -535,7 +535,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 Type = "invalid_type",
             });
 
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
@@ -558,7 +558,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 },
             });
 
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
             await graphqlWsClient.StartConnection();
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
@@ -581,7 +581,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsPingMessage());
-            connection.QueueConnectionCloseMessage();
+            connection.QueueConnectionClosedByClient();
 
             await graphqlWsClient.StartConnection();
 
