@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
     [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
-    internal sealed class GqltwsClientProxy<TSchema> : ClientProxyBase<TSchema, GqltwsMessage>
+    internal sealed class GqltwsClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GqltwsMessage>
         where TSchema : class, ISchema
     {
         private readonly bool _enableMetrics;

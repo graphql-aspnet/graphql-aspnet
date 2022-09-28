@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
     [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
-    public class GraphqlWsLegacyClientProxy<TSchema> : ClientProxyBase<TSchema, GraphqlWsLegacyMessage>
+    public class GraphqlWsLegacyClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GraphqlWsLegacyMessage>
         where TSchema : class, ISchema
     {
         private readonly bool _enableMetrics;

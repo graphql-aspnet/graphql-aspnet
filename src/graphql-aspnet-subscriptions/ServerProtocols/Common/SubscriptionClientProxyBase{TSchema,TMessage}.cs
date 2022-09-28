@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     /// <typeparam name="TSchema">The type of the schema this proxy targets.</typeparam>
     /// <typeparam name="TMessage">A common base type representing the messages this proxy
     /// communicates in with its client connection.</typeparam>
-    public abstract class ClientProxyBase<TSchema, TMessage> : ISubscriptionClientProxy<TSchema>
+    public abstract class SubscriptionClientProxyBase<TSchema, TMessage> : ISubscriptionClientProxy<TSchema>
         where TSchema : class, ISchema
         where TMessage : class, ILoggableClientProxyMessage
     {
@@ -59,12 +59,12 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         private bool _disposedValue;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientProxyBase{TSchema, TMessageBase}" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionClientProxyBase{TSchema, TMessageBase}" /> class.
         /// </summary>
         /// <param name="id">The globally unique id assigned to this instance.</param>
         /// <param name="clientConnection">The underlying client connection that this proxy communicates with.</param>
         /// <param name="logger">The primary logger object to record events to.</param>
-        protected ClientProxyBase(
+        protected SubscriptionClientProxyBase(
             string id,
             IClientConnection clientConnection,
             IGraphEventLogger logger = null)
