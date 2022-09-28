@@ -67,6 +67,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             Assert.IsNotNull(string.IsNullOrWhiteSpace(graphqlWsClient.Id));
             Assert.AreNotEqual(Guid.Empty.ToString(), graphqlWsClient.Id);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -86,6 +87,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             await graphqlWsClient.StartConnection();
 
             Assert.IsTrue(eventCalled, "Connection Opening Event Handler not called");
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -153,6 +155,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             connection.QueueConnectionClosedByClient();
             await graphqlWsClient.StartConnection();
             Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -176,6 +179,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
            {
                await graphqlWsClient.StartConnection();
            });
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -192,6 +196,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             await graphqlWsClient.StartConnection();
 
             Assert.AreEqual(0, connection.QueuedMessageCount);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -243,6 +248,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             Assert.AreEqual(1, routesAdded);
             Assert.AreEqual(1, routesRemoved);
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -277,6 +283,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 }");
 
             connection.AssertGqltwsResponse(GqltwsMessageType.COMPLETE);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -301,6 +308,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.AssertGqltwsResponse(GqltwsMessageType.ERROR, "abc");
             connection.AssertConnectionIsOpen();
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -342,6 +350,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                         }
                     }
                 }");
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -443,6 +452,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             Assert.AreEqual(1, routesAdded);
             Assert.AreEqual(1, routesRemoved);
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -482,6 +492,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -524,6 +535,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertGqltwsResponse(GqltwsMessageType.ERROR);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -554,6 +566,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                         }
                     }
                 }");
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -570,6 +583,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             await graphqlWsClient.SendErrorMessage(error);
 
             Assert.AreEqual(0, connection.QueuedMessageCount);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -588,6 +602,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             // the connection should be closed in response to the second message
             Assert.IsTrue(connection.CloseStatus.HasValue);
             Assert.AreEqual((int)connection.CloseStatus.Value, GqltwsConstants.CustomCloseEventIds.TooManyInitializationRequests);
+
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -625,6 +641,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             // no other messages
             Assert.AreEqual(0, connection.ResponseMessageCount);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -693,6 +710,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             // with a specific code
             Assert.IsTrue(connection.CloseStatus.HasValue);
             Assert.AreEqual((int)connection.CloseStatus.Value, (int)GqltwsConstants.CustomCloseEventIds.InvalidMessageType);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -708,6 +726,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertGqltwsResponse(GqltwsMessageType.PONG);
+            graphqlWsClient.Dispose();
         }
 
         [Test]
@@ -731,6 +750,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             Assert.AreEqual(0, connection.ResponseMessageCount);
+            graphqlWsClient.Dispose();
         }
     }
 }

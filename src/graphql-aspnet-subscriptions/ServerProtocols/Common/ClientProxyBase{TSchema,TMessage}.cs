@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
     /// <summary>
     /// A common base class encapsulating a wide variety of common operations
-    /// that any client proxy would implement.
+    /// that any client proxy, communicating over distinct messaging, would implement.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this proxy targets.</typeparam>
     /// <typeparam name="TMessage">A common base type representing the messages this proxy
@@ -56,6 +56,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
         private readonly SubscriptionCollection<TSchema> _subscriptions;
         private readonly ClientTrackedMessageIdSet _reservedSubscriptionIds;
+        private bool _disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientProxyBase{TSchema, TMessageBase}" /> class.
@@ -468,6 +469,32 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             _subscriptions.Clear();
             _reservedSubscriptionIds.Clear();
             this.ConnectionClosed?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    // no resources in base to dispose
+                    // client connection should be disposed individually
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

@@ -38,15 +38,14 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this client is built for.</typeparam>
     [DebuggerDisplay("Subscriptions = {_subscriptions.Count}")]
-    internal sealed class GqltwsClientProxy<TSchema> : ClientProxyBase<TSchema, GqltwsMessage>, IDisposable
+    internal sealed class GqltwsClientProxy<TSchema> : ClientProxyBase<TSchema, GqltwsMessage>
         where TSchema : class, ISchema
     {
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private readonly bool _enableMetrics;
         private readonly GqltwsMessageConverterFactory<TSchema> _converterFactory;
 
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
         private bool _initReceived;
-        private bool _disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsClientProxy{TSchema}" /> class.
@@ -344,24 +343,14 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             return Task.CompletedTask;
         }
 
-        private void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _semaphore.Dispose();
-                }
-
-                _disposedValue = true;
-            }
-        }
-
         /// <inheritdoc />
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            if (disposing)
+            {
+                _semaphore?.Dispose();
+                _semaphore = null;
+            }
         }
 
         /// <inheritdoc />

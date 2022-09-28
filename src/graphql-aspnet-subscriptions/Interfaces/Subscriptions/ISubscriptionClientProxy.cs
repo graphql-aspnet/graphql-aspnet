@@ -16,14 +16,13 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// An interface representing an established connection to a client that can process
     /// subscription data from the server.
     /// </summary>
-    public interface ISubscriptionClientProxy
+    public interface ISubscriptionClientProxy : IDisposable
     {
         /// <summary>
         /// Occurs just before the underlying websocket is opened. Once completed messages

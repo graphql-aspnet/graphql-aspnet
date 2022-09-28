@@ -17,6 +17,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     public class FakeWebSocket : WebSocket
     {
         private Exception _exceptionToThrowOnReceive;
+        private Exception _exceptionToThrowOnClose;
+        private Exception _exceptionToThrowOnSend;
 
         public FakeWebSocket(
             WebSocketState? state = null,
@@ -36,9 +38,19 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             this.SubProtocol = subProtocol;
         }
 
+        public void ThrowExceptionOnSend(Exception ex)
+        {
+            _exceptionToThrowOnSend = ex;
+        }
+
         public void ThrowExceptionOnReceieve(Exception ex)
         {
             _exceptionToThrowOnReceive = ex;
+        }
+
+        public void ThrowExceptionOnClose(Exception ex)
+        {
+            _exceptionToThrowOnClose = ex;
         }
 
         public override void Abort()
@@ -47,12 +59,19 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
         public override Task CloseAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
+            if (_exceptionToThrowOnClose != null)
+                throw _exceptionToThrowOnClose;
+
             this.TotalCloseCalls += 1;
             return Task.CompletedTask;
         }
 
         public override Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
+            if (_exceptionToThrowOnClose != null)
+                throw _exceptionToThrowOnClose;
+
+            this.TotalCloseCalls += 1;
             return Task.CompletedTask;
         }
 
@@ -71,6 +90,9 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
         public override Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
+            if (_exceptionToThrowOnSend != null)
+                throw _exceptionToThrowOnSend;
+
             this.TotalCallsToSend += 1;
             return Task.CompletedTask;
         }

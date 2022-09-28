@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Connections.Clients
         Close = 2,
 
         /// <summary>
-        /// The message should be ignored by the client. This status is primarly
+        /// The message should be ignored by the receiving client. This status is primarly
         /// used by unit testing frameworks.
         /// </summary>
         Ignore = 3,

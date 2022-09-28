@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Common
         /// <summary>
         /// Occurs when an error is raised in the scheduled action
         /// </summary>
-        public event EventHandler<Exception> OnError;
+        public event EventHandler<Exception> Error;
 
         private readonly Func<CancellationToken, Task> _scheduledAction;
         private readonly TimeSpan _initialWaitTime;
@@ -152,7 +152,7 @@ namespace GraphQL.AspNet.Common
                     {
                         try
                         {
-                            this.OnError?.Invoke(this, ex);
+                            this.Error?.Invoke(this, ex);
                         }
                         catch
                         {

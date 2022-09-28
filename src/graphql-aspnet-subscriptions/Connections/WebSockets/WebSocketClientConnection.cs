@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         }
 
         /// <inheritdoc />
-        public async Task CloseAsync(ConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
+        public async Task CloseAsync(ConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken = default)
         {
             this.ClosedForever = true;
 
@@ -81,14 +81,9 @@ namespace GraphQL.AspNet.Connections.WebSockets
             }
             catch (WebSocketException wse)
             {
-                if (wse.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
-                {
-                    // ignore
-                }
-                else
-                {
+                // swallow a premature closure...its what we were aiming for anyways
+                if (wse.WebSocketErrorCode != WebSocketError.ConnectionClosedPrematurely)
                     throw;
-                }
             }
         }
 
@@ -149,7 +144,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         }
 
         /// <inheritdoc />
-        public Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
+        public Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken = default)
         {
             if (this.WebSocket == null)
             {

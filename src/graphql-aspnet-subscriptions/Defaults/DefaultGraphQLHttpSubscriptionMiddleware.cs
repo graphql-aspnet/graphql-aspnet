@@ -83,12 +83,12 @@ namespace GraphQL.AspNet.Defaults
             if (isListeningToPath && context.WebSockets.IsWebSocketRequest)
             {
                 var logger = context.RequestServices.GetService<IGraphEventLogger>();
-
+                ISubscriptionClientProxy<TSchema> subscriptionClient = null;
                 try
                 {
                     IClientConnection clientConnectionProxy = new WebSocketClientConnection(context);
 
-                    var subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnectionProxy);
+                    subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnectionProxy);
                     var wasRegistered = await _subscriptionServer.RegisterNewClient(subscriptionClient).ConfigureAwait(false);
 
                     if (wasRegistered)
@@ -126,6 +126,11 @@ namespace GraphQL.AspNet.Defaults
                             "Check the server event logs for further details.")
                             .ConfigureAwait(false);
                     }
+                }
+                finally
+                {
+                    subscriptionClient?.Dispose();
+                    subscriptionClient = null;
                 }
 
                 return;
