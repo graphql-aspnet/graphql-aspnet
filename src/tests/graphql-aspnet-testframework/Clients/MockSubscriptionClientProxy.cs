@@ -61,13 +61,13 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             var connection = new Mock<IClientConnection>();
             connection.Setup(x => x.ServiceProvider).Returns(serviceProvider);
             connection.Setup(x => x.SecurityContext).Returns(securityContext);
+            connection.Setup(x => x.State).Returns(connectionState);
 
             this.ClientConnection = connection.Object;
 
             this.Id = Guid.NewGuid().ToString();
             this.ReceivedEvents = new List<(SchemaItemPath FieldPath, object SourceData)>();
             this.SentMessages = new List<object>();
-            this.State = connectionState;
         }
 
         /// <inheritdoc />
@@ -81,14 +81,6 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public Task ReceiveEvent(SchemaItemPath field, object sourceData, CancellationToken cancelToken = default)
         {
             this.ReceivedEvents.Add((field, sourceData));
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        public Task SendErrorMessage(IGraphMessage graphMessage, string subscriptionId = null)
-        {
-            Validation.ThrowIfNull(graphMessage, nameof(graphMessage));
-            this.SentMessages.Add(graphMessage);
             return Task.CompletedTask;
         }
 
@@ -116,9 +108,6 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
 
         /// <inheritdoc />
         public string Id { get; }
-
-        /// <inheritdoc />
-        public ClientConnectionState State { get; }
 
         /// <summary>
         /// Gets the events this client recieved from the server that it would
