@@ -87,12 +87,6 @@ namespace GraphQL.AspNet.Defaults
 
             if (_serverOptions.AuthenticatedRequestsOnly && !isAuthenticated)
             {
-                await clientProxy.SendErrorMessage(
-                    new GraphExecutionMessage(
-                        GraphMessageSeverity.Critical,
-                        message: "Unauthorized request.",
-                        code: Constants.ErrorCodes.ACCESS_DENIED));
-
                 await clientProxy.CloseConnection(
                     ConnectionCloseStatus.ProtocolError,
                     "Unauthorized Request",

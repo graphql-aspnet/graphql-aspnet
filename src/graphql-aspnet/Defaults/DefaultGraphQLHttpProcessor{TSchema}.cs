@@ -145,17 +145,14 @@ namespace GraphQL.AspNet.Defaults
                 // *******************************
                 // Setup
                 // *******************************
-                var request = _runtime.CreateRequest(queryData);
+                var request = await this.CreateOperationRequest(queryData, cancelToken);
                 if (request == null)
+                {
                     await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
+                    return;
+                }
 
-                // repackage the runtime request to carry the
-                // HttpContext along. It's not used or needed by the runtime
-                // but its useful within controller action method invocations
-                this.GraphQLRequest = this.PackageOperationRequest(request);
-                if (this.GraphQLRequest == null)
-                    await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
-
+                this.GraphQLRequest = request;
                 var securityContext = this.CreateUserSecurityContext();
 
                 // *******************************
@@ -209,12 +206,20 @@ namespace GraphQL.AspNet.Defaults
 
         /// <summary>
         /// When overriden in a child class, allows for updating or repackaging of the graphql operation
-        /// request before it is sent for processing.
+        /// request before it is sent to the runtime for processing.
         /// </summary>
-        /// <param name="request">The internally generated request.</param>
+        /// <param name="queryData">The query data that needs to be packaged into a <see cref="IGraphOperationRequest" />.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>IGraphOperationRequest.</returns>
-        protected virtual IGraphOperationRequest PackageOperationRequest(IGraphOperationRequest request)
+        protected virtual async Task<IGraphOperationRequest> CreateOperationRequest(GraphQueryData queryData, CancellationToken cancelToken = default)
         {
+            var request = _runtime.CreateRequest(queryData);
+            if (request == null)
+                await this.WriteStatusCodeResponse(HttpStatusCode.InternalServerError, ERROR_NO_REQUEST_CREATED, cancelToken).ConfigureAwait(false);
+
+            // repackage the runtime request to carry the
+            // HttpContext along. It's not used or needed by the runtime
+            // but its useful within controller action method invocations
             return new GraphOperationWebRequest(request, this.HttpContext);
         }
 
@@ -267,7 +272,7 @@ namespace GraphQL.AspNet.Defaults
 
         /// <summary>
         /// <para>When overridden in a child class, provides the option to intercept an unhandled exception thrown
-        /// by the execution of the graph query. If an <see cref="IGraphOperationResult"/> is returned from this method the runtime will return
+        /// by the execution of the query. If an <see cref="IGraphOperationResult"/> is returned from this method the runtime will return
         /// it as the graphql response.  If null is returned, a status 500 result will be generated with a generic error message.
         /// </para>
         /// </summary>
@@ -280,7 +285,7 @@ namespace GraphQL.AspNet.Defaults
 
         /// <summary>
         /// When overriden in a child class, this method provides access to the metrics package populated during a query run to facilicate custom processing.
-        /// This method is only called if a metrics package was generated for the request and will be called regardless of whether metrics are
+        /// This method is only called if a metrics package was generated for the request and will be invoked regardless of whether metrics are
         /// exposed to the requestor in a response package.
         /// </summary>
         /// <param name="metrics">The metrics containing information about the last run.</param>
@@ -338,13 +343,13 @@ namespace GraphQL.AspNet.Defaults
         protected virtual bool ExposeExceptions => _schema.Configuration.ResponseOptions.ExposeExceptions;
 
         /// <summary>
-        /// Gets the user object of the active http context.
+        /// Gets the claims principle representing the active, default user on the http context.
         /// </summary>
         /// <value>The user.</value>
         protected virtual ClaimsPrincipal User => this.HttpContext?.User;
 
         /// <summary>
-        /// Gets the response object of the active http context.
+        /// Gets the <see cref="HttpResponse"/> of the active <see cref="HttpContext"/>.
         /// </summary>
         /// <value>The response.</value>
         protected virtual HttpResponse Response => this.HttpContext?.Response;
@@ -356,15 +361,16 @@ namespace GraphQL.AspNet.Defaults
         protected virtual HttpContext HttpContext { get; private set; }
 
         /// <summary>
-        /// Gets the request object of the active http context.
+        /// Gets the <see cref="HttpRequest"/> object of the active <see cref="HttpContext"/>.
         /// </summary>
         /// <value>The request.</value>
         protected virtual HttpRequest Request => this.HttpContext?.Request;
 
         /// <summary>
-        /// Gets the GraphQL request that was created and processed.
+        /// Gets the GraphQL request that was created and processed. May not be populated until
+        /// after <see cref="CreateOperationRequest"/> is called.
         /// </summary>
-        /// <value>The graph ql request.</value>
+        /// <value>The graphQL request being executed by this processor.</value>
         protected virtual IGraphOperationRequest GraphQLRequest { get; private set; }
     }
 }

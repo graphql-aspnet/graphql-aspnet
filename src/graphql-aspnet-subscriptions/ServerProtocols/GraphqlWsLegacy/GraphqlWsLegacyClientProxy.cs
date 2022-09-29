@@ -65,9 +65,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override GraphqlWsLegacyMessage DeserializeMessage(IEnumerable<byte> bytes)
+        protected override GraphqlWsLegacyMessage DeserializeMessage(byte[] bytes)
         {
-            var text = Encoding.UTF8.GetString(bytes.ToArray());
+            var text = Encoding.UTF8.GetString(bytes);
 
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
@@ -88,13 +88,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             }
 
             return recievedMessage;
-        }
-
-        /// <inheritdoc />
-        public override async Task SendErrorMessage(IGraphMessage message, string subscriptionId = null)
-        {
-            Validation.ThrowIfNull(message, nameof(message));
-            await this.SendMessage(new GraphqlWsLegacyServerErrorMessage(message, clientProvidedId: subscriptionId));
         }
 
         /// <summary>
@@ -252,7 +245,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override async Task ProcessReceivedMessage(GraphqlWsLegacyMessage message, CancellationToken cancelToken = default)
+        protected override async Task ClientMessageReceived(GraphqlWsLegacyMessage message, CancellationToken cancelToken = default)
         {
             await this.ProcessMessage(message);
         }

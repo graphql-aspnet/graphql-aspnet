@@ -174,9 +174,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override GqltwsMessage DeserializeMessage(IEnumerable<byte> bytes)
+        protected override GqltwsMessage DeserializeMessage(byte[] bytes)
         {
-            var text = Encoding.UTF8.GetString(bytes.ToArray());
+            var text = Encoding.UTF8.GetString(bytes);
 
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
@@ -215,7 +215,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override async Task ProcessReceivedMessage(GqltwsMessage message, CancellationToken cancelToken = default)
+        protected override async Task ClientMessageReceived(GqltwsMessage message, CancellationToken cancelToken = default)
         {
             await this.ProcessMessage(message, cancelToken);
         }
@@ -334,13 +334,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         private async Task ResponseToPingMessage()
         {
             await this.SendMessage(new GqltwsPongMessage()).ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
-        public override Task SendErrorMessage(IGraphMessage graphMessage, string subscriptionId = null)
-        {
-            // not supported on graphql-transport-ws
-            return Task.CompletedTask;
         }
 
         /// <inheritdoc />

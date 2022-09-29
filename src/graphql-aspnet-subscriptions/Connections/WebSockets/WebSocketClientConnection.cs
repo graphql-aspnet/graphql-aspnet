@@ -127,7 +127,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         }
 
         /// <inheritdoc />
-        public async Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(CancellationToken cancelToken = default)
+        public async Task<(IClientConnectionReceiveResult, byte[])> ReceiveFullMessage(CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
             var message = new List<byte>();
@@ -140,7 +140,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
             }
             while (!response.EndOfMessage);
 
-            return (response, message);
+            return (response, message.ToArray());
         }
 
         /// <inheritdoc />

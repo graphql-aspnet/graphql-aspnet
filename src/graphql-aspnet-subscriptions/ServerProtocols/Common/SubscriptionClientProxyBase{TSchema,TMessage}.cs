@@ -78,30 +78,25 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <summary>
-        /// Instructs this client proxy to send an error message to its underlying connection.
-        /// </summary>
-        /// <param name="graphMessage">The graph message to send.</param>
-        /// <param name="subscriptionId">The subscription identifer this message
-        /// refers to, if any.</param>
-        /// <returns>Task.</returns>
-        public abstract Task SendErrorMessage(IGraphMessage graphMessage, string subscriptionId = null);
-
-        /// <summary>
-        /// Executes a keep alive heartbeat sequence with the connected client.
-        /// When supported by the messaging protocol, the proxy should immediately execute a keep alive
-        /// sequence to its connected client.
+        /// When overridden in a child class, this method is called on an interval set by the
+        /// time provided during <see cref="StartConnection"/>. When called this instance should immediately initiate
+        /// a keep alive heartbeat sequence with the connected client.
         /// </summary>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected abstract Task ExecuteKeepAlive(CancellationToken cancelToken = default);
+        protected virtual Task ExecuteKeepAlive(CancellationToken cancelToken = default)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
-        /// Processes the received message.
+        /// The connected client has transmitted a complete message to this instance
+        /// and it should be handled in an appropriate manner.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">The message that was sent by the connected client.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected abstract Task ProcessReceivedMessage(TMessage message, CancellationToken cancelToken = default);
+        protected abstract Task ClientMessageReceived(TMessage message, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Deserializes a received message (represented as a UTF-8 encoded byte array) into an
@@ -110,11 +105,11 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// </summary>
         /// <param name="bytes">The bits to decode.</param>
         /// <returns>TMessage.</returns>
-        protected abstract TMessage DeserializeMessage(IEnumerable<byte> bytes);
+        protected abstract TMessage DeserializeMessage(byte[] bytes);
 
         /// <summary>
-        /// Serializes the message into an array of UTF-8 encoded bytes that can be understood
-        /// by the connected client.
+        /// Serializes the message into an array of UTF-8 encoded bytes that can be transmitted
+        /// to the connected client.
         /// </summary>
         /// <param name="message">The message to serialize.</param>
         /// <returns>System.Byte[].</returns>
@@ -199,12 +194,11 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
                 // message dispatch loop
                 IClientConnectionReceiveResult result = null;
-                IEnumerable<byte> bytes = null;
-
                 if (this.ClientConnection.State == ClientConnectionState.Open)
                 {
                     do
                     {
+                        byte[] bytes;
                         (result, bytes) = await this.ClientConnection
                                 .ReceiveFullMessage()
                                 .ConfigureAwait(false);
@@ -212,7 +206,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                         if (result.MessageType == ClientMessageType.Text)
                         {
                             var message = this.DeserializeMessage(bytes);
-                            await this.ProcessReceivedMessage(message)
+                            await this.ClientMessageReceived(message)
                                 .ConfigureAwait(false);
                         }
                     }
@@ -234,12 +228,12 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 // the connection and resources may already be closed
                 // due to a processed message
                 // but just in case attempt to reprocess it
-                if (this.State == ClientConnectionState.Open)
+                if (this.ClientConnection?.State == ClientConnectionState.Open)
                 {
                     await this.CloseConnection(
-                        result.CloseStatus.Value,
-                        result.CloseStatusDescription,
-                        CancellationToken.None)
+                        result?.CloseStatus ?? ConnectionCloseStatus.Unknown,
+                        result?.CloseStatusDescription,
+                        cancelToken)
                         .ConfigureAwait(false);
                 }
                 else
@@ -251,7 +245,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             }
             finally
             {
-                // ensure timers are stopped even when a server exception may be thrown
+                // ensure timers are stopped and released
+                // even when a server exception may be thrown
                 // during message receiving
                 keepAliveTimer?.Stop();
                 keepAliveTimer?.Dispose();
@@ -348,7 +343,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             Validation.ThrowIfNull(message, nameof(message));
 
-            if (this.State == ClientConnectionState.Open)
+            if (this.ClientConnection?.State == ClientConnectionState.Open)
             {
                 var bytes = this.SerializeMessage(message);
                 await this.ClientConnection.SendAsync(
@@ -512,9 +507,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
         /// <inheritdoc />
         public abstract string Protocol { get; }
-
-        /// <inheritdoc />
-        public ClientConnectionState State => this.ClientConnection.State;
 
         /// <summary>
         /// Gets or sets the underlying abstraction representing the connected client.

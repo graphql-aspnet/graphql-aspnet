@@ -63,7 +63,6 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             Assert.IsFalse(result);
 
-            client.Verify(x => x.SendErrorMessage(It.IsAny<IGraphMessage>(), It.IsAny<string>()), Times.Once());
             client.Verify(
                 x => x.CloseConnection(
                     It.IsAny<ConnectionCloseStatus>(),

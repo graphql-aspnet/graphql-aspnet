@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

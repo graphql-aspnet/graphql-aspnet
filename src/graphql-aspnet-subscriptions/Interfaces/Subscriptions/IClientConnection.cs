@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.ValueTuple&lt;WebSocketReceiveResult, IEnumerable&lt;System.Byte&gt;&gt;&gt;.</returns>
-        Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(CancellationToken cancelToken = default);
+        Task<(IClientConnectionReceiveResult, byte[])> ReceiveFullMessage(CancellationToken cancelToken = default);
 
         /// <summary>
         /// Closes the connection as an asynchronous operation using the close handshake defined by the underlying implementation.

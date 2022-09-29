@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         }
 
         /// <inheritdoc />
-        public async Task<(IClientConnectionReceiveResult, IEnumerable<byte>)> ReceiveFullMessage(CancellationToken cancelToken = default)
+        public async Task<(IClientConnectionReceiveResult, byte[])> ReceiveFullMessage(CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
             var messageData = new List<byte>();
@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             {
                 await Task.Delay(5);
                 response = new MockClientMessageResult(0, ClientMessageType.Ignore, true);
-                return (response, messageData);
+                return (response, messageData.ToArray());
             }
 
             switch (currentMessage)
@@ -239,7 +239,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
                         "Queued client message is invalid with this mocked connection");
             }
 
-            return (response, messageData);
+            return (response, messageData.ToArray());
         }
 
         /// <inheritdoc />

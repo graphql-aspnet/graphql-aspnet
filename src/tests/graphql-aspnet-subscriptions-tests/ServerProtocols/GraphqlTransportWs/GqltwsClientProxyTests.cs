@@ -570,23 +570,6 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         }
 
         [Test]
-        public async Task SendingAErrorMessage_NoMessageSent()
-        {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
-
-            var error = new GraphExecutionMessage(
-                GraphMessageSeverity.Warning,
-                "Error Message",
-                "ERROR_CODE");
-
-            await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
-            await graphqlWsClient.SendErrorMessage(error);
-
-            Assert.AreEqual(0, connection.QueuedMessageCount);
-            graphqlWsClient.Dispose();
-        }
-
-        [Test]
         public async Task SendingTooManyInitRequests_ClosesTheConnection()
         {
             (var connection, var graphqlWsClient) = await this.CreateConnection();
