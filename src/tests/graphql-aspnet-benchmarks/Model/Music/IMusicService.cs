@@ -25,6 +25,8 @@ namespace GraphQL.AspNet.Benchmarks.Model
 
         Task<Artist> RetrieveArtist(int artistId);
 
+        Task<IEnumerable<Artist>> RetrieveArtists(IEnumerable<int> artistIds);
+
         Task<MusicGenre> RetrieveGenre(int genreId);
 
         Task<Artist> CreateArtist(string name, int recordCompanyId);

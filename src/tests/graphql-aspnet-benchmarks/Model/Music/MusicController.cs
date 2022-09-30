@@ -34,6 +34,14 @@ namespace GraphQL.AspNet.Benchmarks.Model
             return this.Ok(artists);
         }
 
+
+        [QueryRoot("findArtistsById", typeof(IEnumerable<Artist>))]
+        public async Task<IGraphActionResult> RetrieveMultipleArtists(IEnumerable<int> ids)
+        {
+            var artists = await _musicService.RetrieveArtists(ids);
+            return this.Ok(artists);
+        }
+
         [QueryRoot("artists", typeof(IEnumerable<Artist>))]
         public async Task<IGraphActionResult> SearchArtists(string searchText)
         {

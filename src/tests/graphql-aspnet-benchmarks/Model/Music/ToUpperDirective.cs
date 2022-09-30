@@ -7,8 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
+namespace GraphQL.AspNet.Benchmarks.Model.Music
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
@@ -18,7 +19,8 @@ namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
-    public class ToLowerDirective : GraphDirective
+    [GraphType("toUpper")]
+    public class ToUpperDirective : GraphDirective
     {
         [DirectiveLocations(DirectiveLocation.FIELD)]
         public IGraphActionResult AppendPostProcessor()
@@ -31,16 +33,16 @@ namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
 
                 // update the resolver used by the request
                 // resolver then upper case any string result
-                fieldPart.PostResolver = ConvertToLower;
+                fieldPart.PostResolver = ConvertToUpper;
             }
 
             return this.Ok();
         }
 
-        private static Task ConvertToLower(FieldResolutionContext context, CancellationToken token)
+        private static Task ConvertToUpper(FieldResolutionContext context, CancellationToken token)
         {
             if (context.Result is string)
-                context.Result = context.Result?.ToString().ToLowerInvariant();
+                context.Result = context.Result?.ToString().ToUpperInvariant();
 
             return Task.CompletedTask;
         }

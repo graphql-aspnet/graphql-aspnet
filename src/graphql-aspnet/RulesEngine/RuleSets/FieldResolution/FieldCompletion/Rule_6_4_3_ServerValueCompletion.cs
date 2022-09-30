@@ -126,9 +126,9 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
                 {
                     string actual = string.Empty;
                     if (expectedGraphType is ObjectGraphType)
-                        actual = dataObject.GetType().Name;
+                        actual = dataObject?.GetType().FriendlyName();
                     else
-                        actual = dataObject.ToString();
+                        actual = dataObject?.ToString();
 
                     this.ValidationError(
                         context,

@@ -309,12 +309,15 @@ namespace GraphQL.AspNet.Common.Extensions
 
         /// <summary>
         /// Attempts to create a friendly name to represent the type accounting for nested generic arguments.
-        /// (i.e. 'IEnumerable&lt;int&gt;' instead of 'IEnumerable`1').
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="fullName">if set to <c>true</c> The full name (including namespace) of the type
         /// will be returned; otherwise, just the type name will be returned. Type aliases will not be
         /// used when the fully qualified typename is returned.</param>
+        ///
+        /// <remarks>
+        /// e.g. 'IEnumerable&lt;int&gt;' instead of 'IEnumerable`1'.
+        /// </remarks>
         /// <returns>System.String.</returns>
         public static string FriendlyName(this Type type, bool fullName = false)
         {
