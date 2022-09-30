@@ -27,9 +27,12 @@ namespace GraphQL.Subscriptions.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var subClient = server.CreateSubscriptionClient();
+            var result = server.CreateSubscriptionClient();
 
-            var builder = server.CreateSubcriptionContextBuilder(subClient)
+            var builder = server.CreateSubcriptionContextBuilder(
+                result.Client,
+                result.ServiceProvider,
+                result.SecurityContext)
                 .AddQueryText("subscription  { subscriptionData {  retrieveObject { property1 } } }");
 
             var id = "bob";
@@ -44,7 +47,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             Assert.AreEqual("[subscription]/subscriptionData/RetrieveObject", createdSub.Field.Route.Path);
             Assert.AreEqual(id, createdSub.Id);
             Assert.AreEqual(0, createdSub.Messages.Count);
-            Assert.AreEqual(subClient, createdSub.Client);
+            Assert.AreEqual(result.Client, createdSub.Client);
             Assert.AreEqual(GraphOperationType.Subscription, createdSub.QueryOperation.OperationType);
             Assert.IsNull(context.Result);
         }
@@ -57,9 +60,12 @@ namespace GraphQL.Subscriptions.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var subClient = server.CreateSubscriptionClient();
+            var result = server.CreateSubscriptionClient();
 
-            var builder = server.CreateSubcriptionContextBuilder(subClient)
+            var builder = server.CreateSubcriptionContextBuilder(
+                result.Client,
+                result.ServiceProvider,
+                result.SecurityContext)
                 .AddQueryText("subscription  { subscriptionData {  notAField { property1 } } }");
 
             var id = "bob";
@@ -78,12 +84,15 @@ namespace GraphQL.Subscriptions.Tests.Execution
                         .AddSubscriptionServer()
                         .Build();
 
-            var subClient = server.CreateSubscriptionClient();
+            var result = server.CreateSubscriptionClient();
 
             // Add a default value for the "retrieveObject" method, which is a subscription action
             // this mimics recieving an subscription event data source and executing the default, normal pipeline
             // to produce a final result that can be returned along the client connection
-            var builder = server.CreateSubcriptionContextBuilder(subClient)
+            var builder = server.CreateSubcriptionContextBuilder(
+                result.Client,
+                result.ServiceProvider,
+                result.SecurityContext)
                 .AddQueryText("query  { subscriptionData {  queryRetrieveObject { property1 } } }");
 
             var id = "bob";

@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
@@ -56,6 +57,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
         private readonly SubscriptionCollection<TSchema> _subscriptions;
         private readonly ClientTrackedMessageIdSet _reservedSubscriptionIds;
+        private IClientConnection _clientConnection;
         private bool _disposedValue;
 
         /// <summary>
@@ -70,7 +72,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             IGraphEventLogger logger = null)
         {
             this.Id = Validation.ThrowIfNullWhiteSpaceOrReturn(id, nameof(id));
-            this.ClientConnection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
+            _clientConnection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
             this.Logger = new ClientProxyEventLogger<TSchema>(this, logger);
 
             _reservedSubscriptionIds = new ClientTrackedMessageIdSet();
@@ -147,7 +149,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <inheritdoc />
         public virtual async Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
         {
-            if (this.ClientConnection == null || this.ClientConnection.ClosedForever)
+            if (_clientConnection == null || _clientConnection.ClosedForever)
             {
                 throw new InvalidOperationException(
                     $"Unable to start this client proxy (id: {this.Id}). It has already " +
@@ -158,7 +160,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
             // accept the connection and begin lisening
             // for messages related to the protocol known to this specific client type
-            await this.ClientConnection.OpenAsync(this.Protocol, cancelToken);
+            await _clientConnection.OpenAsync(this.Protocol, cancelToken);
 
             TimerAsync keepAliveTimer = null;
             TimerAsync initialziationTimer = null;
@@ -194,12 +196,12 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
                 // message dispatch loop
                 IClientConnectionReceiveResult result = null;
-                if (this.ClientConnection.State == ClientConnectionState.Open)
+                if (_clientConnection.State == ClientConnectionState.Open)
                 {
                     do
                     {
                         byte[] bytes;
-                        (result, bytes) = await this.ClientConnection
+                        (result, bytes) = await _clientConnection
                                 .ReceiveFullMessage()
                                 .ConfigureAwait(false);
 
@@ -210,7 +212,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                                 .ConfigureAwait(false);
                         }
                     }
-                    while (!result.CloseStatus.HasValue && this.ClientConnection.State == ClientConnectionState.Open);
+                    while (!result.CloseStatus.HasValue && _clientConnection.State == ClientConnectionState.Open);
                 }
 
                 this.ConnectionClosing?.Invoke(this, EventArgs.Empty);
@@ -228,7 +230,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 // the connection and resources may already be closed
                 // due to a processed message
                 // but just in case attempt to reprocess it
-                if (this.ClientConnection?.State == ClientConnectionState.Open)
+                if (_clientConnection?.State == ClientConnectionState.Open)
                 {
                     await this.CloseConnection(
                         result?.CloseStatus ?? ConnectionCloseStatus.Unknown,
@@ -241,7 +243,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     this.ReleaseClientResources();
                 }
 
-                this.ClientConnection = null;
+                _clientConnection = null;
             }
             finally
             {
@@ -289,8 +291,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             if (subscriptions.Count == 0)
                 return;
 
-            var runtime = this.ClientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
-            var schema = this.ClientConnection.ServiceProvider.GetRequiredService<TSchema>();
+            var runtime = _clientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
+            var schema = _clientConnection.ServiceProvider.GetRequiredService<TSchema>();
 
             // execute the individual subscription queries
             // using the provided source data as an input
@@ -298,18 +300,18 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             foreach (var subscription in subscriptions)
             {
                 IGraphQueryExecutionMetrics metricsPackage = null;
-                IGraphEventLogger logger = this.ClientConnection.ServiceProvider.GetService<IGraphEventLogger>();
+                IGraphEventLogger logger = _clientConnection.ServiceProvider.GetService<IGraphEventLogger>();
 
                 if (schema.Configuration.ExecutionOptions.EnableMetrics)
                 {
-                    var factory = this.ClientConnection.ServiceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
+                    var factory = _clientConnection.ServiceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
                     metricsPackage = factory.CreateMetricsPackage();
                 }
 
                 var context = new GraphQueryExecutionContext(
                     runtime.CreateRequest(subscription.QueryData),
-                    this.ClientConnection.ServiceProvider,
-                    this.ClientConnection.SecurityContext,
+                    _clientConnection.ServiceProvider,
+                    _clientConnection.SecurityContext,
                     metricsPackage,
                     logger);
 
@@ -343,10 +345,10 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             Validation.ThrowIfNull(message, nameof(message));
 
-            if (this.ClientConnection?.State == ClientConnectionState.Open)
+            if (_clientConnection?.State == ClientConnectionState.Open)
             {
                 var bytes = this.SerializeMessage(message);
-                await this.ClientConnection.SendAsync(
+                await _clientConnection.SendAsync(
                     bytes,
                     ClientMessageType.Text,
                     true,
@@ -382,12 +384,14 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             if (!_reservedSubscriptionIds.ReserveMessageId(subscriptionId))
                 return SubscriptionDataExecutionResult<TSchema>.DuplicateId(subscriptionId);
 
-            var runtime = this.ClientConnection.ServiceProvider.GetRequiredService(typeof(IGraphQLRuntime<TSchema>)) as IGraphQLRuntime<TSchema>;
+            var runtime = _clientConnection.ServiceProvider.GetRequiredService(typeof(IGraphQLRuntime<TSchema>)) as IGraphQLRuntime<TSchema>;
             var request = runtime.CreateRequest(queryData);
             var metricsPackage = enableMetrics ? runtime.CreateMetricsPackage() : null;
             var context = new SubcriptionExecutionContext(
-                this,
                 request,
+                this,
+                _clientConnection.ServiceProvider,
+                _clientConnection.SecurityContext,
                 subscriptionId,
                 metricsPackage);
 
@@ -441,9 +445,9 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             string message = null,
             CancellationToken cancelToken = default)
         {
-            if (this.ClientConnection.State == ClientConnectionState.Open)
+            if (_clientConnection.State == ClientConnectionState.Open)
             {
-                await this.ClientConnection.CloseAsync(reason, message, cancelToken);
+                await _clientConnection.CloseAsync(reason, message, cancelToken);
             }
 
             this.ReleaseClientResources();
@@ -457,7 +461,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             // discontinue all client registered subscriptions
             // and acknowledge the terminate request
-            var fields = _subscriptions.Select(x => x.Field).Distinct();
+            var fields = _subscriptions.Values.Select(x => x.Field).Distinct();
             foreach (var field in fields)
                 this.SubscriptionRouteRemoved?.Invoke(this, new SubscriptionFieldEventArgs(field));
 
@@ -499,8 +503,12 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <value>The event logger for this instance.</value>
         protected ClientProxyEventLogger<TSchema> Logger { get; }
 
-        /// <inheritdoc />
-        public IEnumerable<ISubscription> Subscriptions => _subscriptions;
+        /// <summary>
+        /// Gets the subscriptions currnetly registered to this istance, keyed on their client
+        /// supplied unique id.
+        /// </summary>
+        /// <value>The subscriptions collection.</value>
+        public IReadOnlyDictionary<string, ISubscription<TSchema>> Subscriptions => _subscriptions;
 
         /// <inheritdoc />
         public string Id { get; }
@@ -508,11 +516,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <inheritdoc />
         public abstract string Protocol { get; }
 
-        /// <summary>
-        /// Gets or sets the underlying abstraction representing the connected client.
-        /// </summary>
-        /// <value>The client connection.</value>
-        public IClientConnection ClientConnection { get; protected set; }
+        /// <inheritdoc />
+        public IUserSecurityContext SecurityContext => _clientConnection?.SecurityContext;
 
         /// <summary>
         /// Gets or sets a value indicating whether keep alive pings are currently

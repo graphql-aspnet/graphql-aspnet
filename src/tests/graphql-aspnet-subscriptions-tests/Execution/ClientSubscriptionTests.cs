@@ -47,12 +47,12 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var field = queryPlan.Operation.FieldContexts[0].Field;
             var name = field.GetType().FullName;
 
-            var testClient = testServer.CreateSubscriptionClient();
+            var clientResult = testServer.CreateSubscriptionClient();
 
             var queryData = new GraphQueryData();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient,
+                clientResult.Client,
                 queryData,
                 queryPlan,
                 queryPlan.Operation,
@@ -62,7 +62,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             Assert.AreEqual("[subscription]/WatchObjects", sub.Route.Path);
             Assert.AreEqual("abc123", sub.Id);
             Assert.AreEqual(field, sub.Field);
-            Assert.AreEqual(testClient, sub.Client);
+            Assert.AreEqual(clientResult.Client, sub.Client);
             Assert.AreEqual(queryData, sub.QueryData);
         }
 
@@ -82,7 +82,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var testClient = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient,
+                testClient.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
                 fakeOp.Object,
@@ -116,7 +116,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var testClient = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient,
+                testClient.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
                 fakeOp.Object,

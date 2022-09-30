@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             bool enableMetrics = false)
             : base(Guid.NewGuid().ToString(), clientConnection, logger)
         {
-            _converterFactory = new GqltwsMessageConverterFactory<TSchema>(this);
+            _converterFactory = new GqltwsMessageConverterFactory<TSchema>(clientConnection?.ServiceProvider);
             _enableMetrics = enableMetrics;
         }
 

@@ -53,26 +53,29 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Instructs this client connection to accept any pending requests and begin listening
         /// for messages.
         /// </summary>
-        /// <param name="subProtocol">The sub protocol the server wishes to tell
-        /// the client that it will accept for messaging standards.</param>
+        /// <param name="messageProtocol">The message protocol the server will use
+        /// to speak with the client. May not be used by all client connection types. </param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task OpenAsync(string subProtocol, CancellationToken cancelToken = default);
+        Task OpenAsync(string messageProtocol, CancellationToken cancelToken = default);
 
         /// <summary>
-        /// Gets a description applied by the remote endpoint to describe the why the connection was closed.
+        /// Gets an optional, human-friendly description applied by the remote endpoint to describe the why the connection was closed.
+        /// Not all remote end points will supply a reason. This value may be null.
         /// </summary>
         /// <value>The description applied when this connection was closed.</value>
         string CloseStatusDescription { get; }
 
         /// <summary>
-        /// Gets the reason why this connection was closed.
+        /// Gets the reason code, supplied by the remote end point, on why this connection was closed.
+        /// Implementors should always set a value when a connection is closed.
         /// </summary>
         /// <value>The final close status if this connection is closed, otherwise null.</value>
         ConnectionCloseStatus? CloseStatus { get; }
 
         /// <summary>
-        /// Gets the current state of the connection.
+        /// Gets the current state of the connection. Not all client connection implementations
+        /// will use all state types.
         /// </summary>
         /// <value>The current state of this connection.</value>
         ClientConnectionState State { get; }

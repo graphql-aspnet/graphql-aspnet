@@ -69,15 +69,15 @@ namespace GraphQL.AspNet
             _primaryOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
 
-            // enforce a default auth method for the server instance
-            // if one was not set explicitly by the developer
+            // enforce a "per request" auth method for the server instance
+            // if and only if an auth method was not set explicitly by the developer
             if (!_primaryOptions.AuthorizationOptions.Method.HasValue)
                 _primaryOptions.AuthorizationOptions.Method = REQUIRED_AUTH_METHOD;
 
             // Security requirement for this component
             // --------------------------
-            // this component MUST use per request authorization
-            // a subscription query is then checked before its registered
+            // this component MUST use per request authorization.
+            // a subscription query is checked BEFORE its registered
             // as opposed to when its executed
             var authMethod = _primaryOptions.AuthorizationOptions.Method;
             if (!authMethod.HasValue || authMethod != REQUIRED_AUTH_METHOD)
@@ -87,17 +87,21 @@ namespace GraphQL.AspNet
                     $"authorization method. (Current authorization method is \"{_schemaBuilder.Options.AuthorizationOptions.Method}\")");
             }
 
-            // swap out the master providers for the ones that includes
-            // support for the subscription action type
-            if (!(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider))
+            // swap out the master templating provider for the one that includes
+            // support for the subscription action type if and only if the developer has not
+            // already registered their own custom one
+            if (GraphQLProviders.TemplateProvider == null || GraphQLProviders.TemplateProvider.GetType() == typeof(DefaultTypeTemplateProvider))
                 GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
 
-            if (!(GraphQLProviders.GraphTypeMakerProvider is SubscriptionEnabledGraphTypeMakerProvider))
+            // swap out the master graph type maker to its "subscription enabled" version
+            // if and only if the developer has not already registered their own custom instance
+            if (GraphQLProviders.GraphTypeMakerProvider == null || GraphQLProviders.GraphTypeMakerProvider.GetType() == typeof(DefaultGraphTypeMakerProvider))
                 GraphQLProviders.GraphTypeMakerProvider = new SubscriptionEnabledGraphTypeMakerProvider();
 
             // Update the query execution pipeline
             // ------------------------------------------
-            // wipe out the current execution pipeline and rebuild with subscription creation middleware injected
+            // Wipe out the current execution pipeline and rebuild with
+            // subscription middleware injected
             _schemaBuilder.QueryExecutionPipeline.Clear();
             var subscriptionQueryExecutionHelper = new SubscriptionQueryExecutionPipelineHelper<TSchema>(_schemaBuilder.QueryExecutionPipeline);
             subscriptionQueryExecutionHelper.AddDefaultMiddlewareComponents(_primaryOptions);
@@ -114,16 +118,19 @@ namespace GraphQL.AspNet
             var fieldExecutionHelper = new FieldExecutionPipelineHelper<TSchema>(_schemaBuilder.FieldExecutionPipeline);
             fieldExecutionHelper.AddDefaultMiddlewareComponents(_primaryOptions);
 
-            // the primary subscription options for the schema
-            _schemaBuilder.Options.ServiceCollection.Add(new ServiceDescriptor(typeof(SubscriptionServerOptions<TSchema>), this.SubscriptionOptions));
+            // register the primary subscription options for the schema
+            // so they are available to anyone that needs them
+            _schemaBuilder.Options.ServiceCollection.Add(
+                new ServiceDescriptor(
+                    typeof(SubscriptionServerOptions<TSchema>),
+                    this.SubscriptionOptions));
 
-            // register dependencies for built-in protocols
+            // register dependencies for built-in websocket sub protocols
             _schemaBuilder.Options.ServiceCollection.AddGraphqlWsLegacysProtocol();
             _schemaBuilder.Options.ServiceCollection.AddGqltwsProtocol();
 
-            // add the needed classes as optional services
-            // if the user has already added support for their own handlers
-            // they will be safely ignored
+            // add the foundational "server classes" as optional services
+            // if and only if the user has not added support for their own instances
             _schemaBuilder.Options.ServiceCollection.TryAdd(
                 new ServiceDescriptor(
                     typeof(ISubscriptionServer<TSchema>),

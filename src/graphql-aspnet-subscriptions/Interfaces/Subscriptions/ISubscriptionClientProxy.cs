@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
@@ -83,14 +83,22 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default);
 
         /// <summary>
-        /// Called by the server when a new event should be processed by this client.
-        /// If this is an event the client subscribes to it should process the data
-        /// appropriately and send down any data to its underlying connection as necessary.
+        /// Called by the server when a new event should be processed by this client instance.
+        /// If this is an event the client subscribes to, it should process the data
+        /// appropriately and send down any results to its underlying connection as necessary.
         /// </summary>
         /// <param name="field">The unique field corrisponding to the event that was raised
         /// by the publisher.</param>
         /// <param name="sourceData">The source data sent from the publisher when the event was raised.</param>
         /// <param name="cancelToken">A cancellation token.</param>
+        /// <remarks>
+        /// The data provided is the minimum amount of data to properly represent a subscription:<br/>
+        /// 1. The top-level field that the matches the published event that was raised during a mutation<br/>
+        /// 2. The object supplied to the publish event when it was raised.
+        /// <br/>
+        /// It is the responsibility of the client proxy to know its own subscriptions and execute
+        /// queries runtime to generate an appropriate graph result and send it to the client.
+        /// </remarks>
         /// <returns>Task.</returns>
         Task ReceiveEvent(SchemaItemPath field, object sourceData, CancellationToken cancelToken = default);
 
@@ -102,16 +110,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         string Id { get; }
 
         /// <summary>
-        /// Gets an enumeration of all the subscriptions currently registered by this client.
+        /// Gets the security context governing requests made by this client proxy.
         /// </summary>
-        /// <value>The subscriptions tracked by this client.</value>
-        IEnumerable<ISubscription> Subscriptions { get; }
-
-        /// <summary>
-        /// Gets the underlying client connection this proxy represents.
-        /// </summary>
-        /// <value>The client connection.</value>
-        IClientConnection ClientConnection { get; }
+        /// <value>The security context.</value>
+        IUserSecurityContext SecurityContext { get; }
 
         /// <summary>
         /// Gets the messaing protocol supported by this client.

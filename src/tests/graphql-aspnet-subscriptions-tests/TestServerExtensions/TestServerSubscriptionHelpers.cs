@@ -16,6 +16,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
@@ -108,7 +109,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// <param name="server">The server.</param>
         /// <param name="stateOfConnection">The state of underlying connection that the client should report.</param>
         /// <returns>ISubscriptionClientProxy&lt;TSchema&gt;.</returns>
-        public static MockSubscriptionClientProxy<TSchema> CreateSubscriptionClient<TSchema>(
+        public static (MockSubscriptionClientProxy<TSchema> Client, IServiceProvider ServiceProvider, IUserSecurityContext SecurityContext) CreateSubscriptionClient<TSchema>(
             this TestServer<TSchema> server,
             ClientConnectionState stateOfConnection = ClientConnectionState.Open)
                     where TSchema : class, ISchema
@@ -116,12 +117,14 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             var subServer = server.ServiceProvider.GetService<ISubscriptionServer<TSchema>>();
             var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
+            var serviceProvider = server.ServiceProvider.CreateScope().ServiceProvider;
+
             var client = new MockSubscriptionClientProxy<TSchema>(
-                server.ServiceProvider.CreateScope().ServiceProvider,
+                serviceProvider,
                 server.SecurityContext,
                 stateOfConnection);
 
-            return client;
+            return (client, serviceProvider, server.SecurityContext);
         }
 
         /// <summary>
@@ -137,10 +140,14 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             return testServer.ServiceProvider.GetRequiredService<SubscriptionServerOptions<TSchema>>();
         }
 
-        public static SubscriptionContextBuilder CreateSubcriptionContextBuilder<TSchema>(this TestServer<TSchema> testServer, ISubscriptionClientProxy client)
+        public static SubscriptionContextBuilder CreateSubcriptionContextBuilder<TSchema>(
+            this TestServer<TSchema> testServer,
+            ISubscriptionClientProxy client,
+            IServiceProvider serviceProvider,
+            IUserSecurityContext securityContext)
             where TSchema : class, ISchema
         {
-            return new SubscriptionContextBuilder(client);
+            return new SubscriptionContextBuilder(client, serviceProvider, securityContext);
         }
     }
 }

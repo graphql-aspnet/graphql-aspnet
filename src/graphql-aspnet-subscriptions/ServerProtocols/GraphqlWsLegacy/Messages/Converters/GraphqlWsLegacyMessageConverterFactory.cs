@@ -26,15 +26,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
     public class GraphqlWsLegacyMessageConverterFactory<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISubscriptionClientProxy _client;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphqlWsLegacyMessageConverterFactory{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="GraphqlWsLegacyMessageConverterFactory{TSchema}" /> class.
         /// </summary>
-        /// <param name="client">The client this factory converts messages for.</param>
-        public GraphqlWsLegacyMessageConverterFactory(ISubscriptionClientProxy client)
+        /// <param name="serviceProvider">The service provider used to generate
+        /// message converter instances.</param>
+        public GraphqlWsLegacyMessageConverterFactory(IServiceProvider serviceProvider)
         {
-            _client = Validation.ThrowIfNullOrReturn(client, nameof(client));
+            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
         /// <summary>
@@ -49,14 +50,14 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
             JsonConverter converter = null;
             Type matchedType = typeof(GraphqlWsLegacyMessage);
 
-            ISchema schema = null;
             if (message != null)
             {
+                ISchema schema;
                 switch (message.Type)
                 {
                     case GraphqlWsLegacyMessageType.DATA:
-                        schema = _client.ClientConnection.ServiceProvider.GetService<TSchema>();
-                        var writer = _client.ClientConnection.ServiceProvider.GetService<IGraphResponseWriter<TSchema>>();
+                        schema = _serviceProvider.GetService<TSchema>();
+                        var writer = _serviceProvider.GetService<IGraphResponseWriter<TSchema>>();
                         converter = new GraphqlWsLegacyServerDataMessageConverter(schema, writer);
                         matchedType = typeof(GraphqlWsLegacyServerDataMessage);
                         break;
@@ -67,7 +68,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters
                         break;
 
                     case GraphqlWsLegacyMessageType.ERROR:
-                        schema = _client.ClientConnection.ServiceProvider.GetService<TSchema>();
+                        schema = _serviceProvider.GetService<TSchema>();
                         converter = new GraphqlWsLegacyServerErrorMessageConverter(schema);
                         matchedType = typeof(GraphqlWsLegacyServerErrorMessage);
                         break;

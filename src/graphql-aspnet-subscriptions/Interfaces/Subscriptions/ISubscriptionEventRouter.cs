@@ -30,8 +30,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task RaiseEvent(SubscriptionEvent eventData);
 
         /// <summary>
-        /// Registers a new receiver to receive any raised events of the given type seen
-        /// by this listener.
+        /// Registers a new receiver to receive any raised events given to this router.
         /// </summary>
         /// <param name="receiver">The receiver to add.</param>
         /// <param name="eventName">Name of the event to listen for.</param>

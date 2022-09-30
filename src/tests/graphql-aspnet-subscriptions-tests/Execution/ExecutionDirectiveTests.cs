@@ -44,7 +44,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var subClient = server.CreateSubscriptionClient();
 
-            var builder = server.CreateSubcriptionContextBuilder(subClient)
+            var builder = server.CreateSubcriptionContextBuilder(
+                subClient.Client,
+                subClient.ServiceProvider,
+                subClient.SecurityContext)
                 .AddQueryText(queryText);
 
             if (variables != null)

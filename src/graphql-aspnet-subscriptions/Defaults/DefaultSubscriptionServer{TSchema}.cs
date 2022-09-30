@@ -12,13 +12,11 @@ namespace GraphQL.AspNet.Defaults
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -26,7 +24,6 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// The standard implementation of the subscription server component.
@@ -77,10 +74,9 @@ namespace GraphQL.AspNet.Defaults
         public async Task<bool> RegisterNewClient(ISubscriptionClientProxy<TSchema> clientProxy)
         {
             Validation.ThrowIfNull(clientProxy, nameof(clientProxy));
-            Validation.ThrowIfNull(clientProxy.ClientConnection, $"{nameof(clientProxy)}.{nameof(clientProxy.ClientConnection)}");
 
-            var isAuthenticated = clientProxy.ClientConnection.SecurityContext?.DefaultUser != null &&
-                                  clientProxy.ClientConnection.SecurityContext
+            var isAuthenticated = clientProxy.SecurityContext?.DefaultUser != null &&
+                                  clientProxy.SecurityContext
                                     .DefaultUser
                                     .Identities
                                     .Any(x => x.IsAuthenticated);

@@ -26,15 +26,16 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
     internal class GqltwsMessageConverterFactory<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly GqltwsClientProxy<TSchema> _client;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GqltwsMessageConverterFactory{TSchema}"/> class.
+        /// Initializes a new instance of the <see cref="GqltwsMessageConverterFactory{TSchema}" /> class.
         /// </summary>
-        /// <param name="client">The specific client this factory makes converters for.</param>
-        public GqltwsMessageConverterFactory(GqltwsClientProxy<TSchema> client)
+        /// <param name="serviceProvider">The service provider used to generate instances of
+        /// converters.</param>
+        public GqltwsMessageConverterFactory(IServiceProvider serviceProvider)
         {
-            _client = Validation.ThrowIfNullOrReturn(client, nameof(client));
+            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
         /// <summary>
@@ -53,14 +54,14 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
 
             var gqlMessage = message as GqltwsMessage;
 
-            ISchema schema = null;
             if (gqlMessage != null)
             {
+                ISchema schema;
                 switch (gqlMessage.Type)
                 {
                     case GqltwsMessageType.NEXT:
-                        schema = _client.ClientConnection.ServiceProvider.GetService<TSchema>();
-                        var writer = _client.ClientConnection.ServiceProvider.GetService<IGraphResponseWriter<TSchema>>();
+                        schema = _serviceProvider.GetService<TSchema>();
+                        var writer = _serviceProvider.GetService<IGraphResponseWriter<TSchema>>();
 
                         converter = new GqltwsServerDataMessageConverter(schema, writer);
                         matchedType = typeof(GqltwsServerNextDataMessage);
@@ -72,7 +73,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
                         break;
 
                     case GqltwsMessageType.ERROR:
-                        schema = _client.ClientConnection.ServiceProvider.GetService<TSchema>();
+                        schema = _serviceProvider.GetService<TSchema>();
                         converter = new GqltwsServerErrorMessageConverter(schema);
                         matchedType = typeof(GqltwsServerErrorMessage);
                         break;

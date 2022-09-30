@@ -9,11 +9,13 @@
 
 namespace GraphQL.AspNet.Middleware.SubcriptionExecution
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -26,20 +28,26 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
         /// <summary>
         /// Initializes a new instance of the <see cref="SubcriptionExecutionContext" /> class.
         /// </summary>
-        /// <param name="client">The client.</param>
         /// <param name="request">The request to be processed through the query pipeline.</param>
+        /// <param name="client">The client.</param>
+        /// <param name="serviceProvider">The service provider used for the creation of any
+        /// necessary objects during the execution of this query context.</param>
+        /// <param name="securityContext">The security context through which all
+        /// field authorization processes will occur during this query.</param>
         /// <param name="subscriptionId">The unique id to assign to the created subscription, when one is made.</param>
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
         /// <param name="items">A key/value pair collection for random access data.</param>
         public SubcriptionExecutionContext(
-            ISubscriptionClientProxy client,
             IGraphOperationRequest request,
+            ISubscriptionClientProxy client,
+            IServiceProvider serviceProvider,
+            IUserSecurityContext securityContext,
             string subscriptionId,
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             MetaDataCollection items = null)
-            : base(request, client.ClientConnection.ServiceProvider, client.ClientConnection.SecurityContext, metrics, logger, items)
+            : base(request, serviceProvider, securityContext, metrics, logger, items)
         {
             this.Client = Validation.ThrowIfNullOrReturn(client, nameof(client));
             this.SubscriptionId = Validation.ThrowIfNullWhiteSpaceOrReturn(subscriptionId, nameof(subscriptionId));

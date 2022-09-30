@@ -20,8 +20,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// <summary>
     /// A collection of subscriptions tracked by a single client.
     /// </summary>
-    /// <typeparam name="TSchema">The type of the t schema.</typeparam>
-    internal class SubscriptionCollection<TSchema> : IEnumerable<ISubscription<TSchema>>
+    /// <typeparam name="TSchema">The type of the schema the subscriptions exist for.</typeparam>
+    internal class SubscriptionCollection<TSchema> : IReadOnlyDictionary<string, ISubscription<TSchema>>
         where TSchema : class, ISchema
     {
         private readonly object _syncLock = new object();
@@ -186,10 +186,37 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             return this.GetEnumerator();
         }
 
+        /// <inheritdoc />
+        public bool ContainsKey(string key)
+        {
+            return _subsById.ContainsKey(key);
+        }
+
+        /// <inheritdoc />
+        public bool TryGetValue(string key, out ISubscription<TSchema> value)
+        {
+            return _subsById.TryGetValue(key, out value);
+        }
+
+        /// <inheritdoc />
+        IEnumerator<KeyValuePair<string, ISubscription<TSchema>>> IEnumerable<KeyValuePair<string, ISubscription<TSchema>>>.GetEnumerator()
+        {
+            return _subsById.GetEnumerator();
+        }
+
         /// <summary>
         /// Gets the total count of registered subscriptions.
         /// </summary>
         /// <value>The count.</value>
         public int Count => _subsById.Count;
+
+        /// <inheritdoc />
+        public IEnumerable<string> Keys => _subsById.Keys;
+
+        /// <inheritdoc />
+        public IEnumerable<ISubscription<TSchema>> Values => _subsById.Values;
+
+        /// <inheritdoc />
+        public ISubscription<TSchema> this[string key] => _subsById[key];
     }
 }

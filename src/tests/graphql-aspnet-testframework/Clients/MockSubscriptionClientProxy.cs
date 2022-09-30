@@ -14,10 +14,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -123,13 +121,22 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// <value>The sent messages.</value>
         public List<object> SentMessages { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the subscriptions currently registered to this instance.
+        /// </summary>
+        /// <value>The subscriptions.</value>
         public IEnumerable<ISubscription> Subscriptions => Enumerable.Empty<ISubscription<TSchema>>();
 
         /// <inheritdoc />
         public string Protocol => "fake-protocol";
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the underlying client connection so its available to tests.
+        /// </summary>
+        /// <value>The client connection.</value>
         public IClientConnection ClientConnection { get; }
+
+        /// <inheritdoc />
+        public IUserSecurityContext SecurityContext => this.ClientConnection?.SecurityContext;
     }
 }

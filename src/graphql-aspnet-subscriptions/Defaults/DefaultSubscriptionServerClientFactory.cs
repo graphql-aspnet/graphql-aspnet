@@ -21,8 +21,9 @@ namespace GraphQL.AspNet.Defaults
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// The default implementation of the client factory which can create clients for the
-    /// built-in protocols supported by the library.
+    /// The default implementation of the server-owned factory which uses all registered
+    /// client factories to create an appropriate proxy through which the server can speak with
+    /// a connected client.
     /// </summary>
     public class DefaultSubscriptionServerClientFactory : ISubscriptionServerClientFactory
     {
@@ -31,7 +32,7 @@ namespace GraphQL.AspNet.Defaults
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSubscriptionServerClientFactory"/> class.
         /// </summary>
-        /// <param name="clientFactories">The client factories.</param>
+        /// <param name="clientFactories">The client factories registered with this application.</param>
         public DefaultSubscriptionServerClientFactory(IEnumerable<ISubscriptionClientProxyFactory> clientFactories)
         {
             Validation.ThrowIfNull(clientFactories, nameof(clientFactories));
@@ -55,7 +56,7 @@ namespace GraphQL.AspNet.Defaults
 
             var subscriptionOptions = connection.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
-            // if the client didnt specify a protocol they can accept
+            // if the client doesn't specify a protocol they can accept
             // use the default for the schema (assuming one exists)
             var protocolData = connection.RequestedProtocols;
             if (string.IsNullOrWhiteSpace(protocolData))
@@ -65,6 +66,8 @@ namespace GraphQL.AspNet.Defaults
             if (string.IsNullOrWhiteSpace(protocolData))
                 throw new UnsupportedClientProtocolException("~none~");
 
+            // a client may submit multiple protocoles as a comma seperated list
+            // try each protocol key in order until a match is found
             var requestedProtocols = protocolData.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
             string protocolToUse = null;
@@ -96,6 +99,7 @@ namespace GraphQL.AspNet.Defaults
                     }
                 }
 
+                // match detected!
                 protocolToUse = testProtocol;
                 break;
             }

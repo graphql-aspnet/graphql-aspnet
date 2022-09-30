@@ -57,7 +57,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
 
-            client.Setup(x => x.ClientConnection).Returns(connection.Object);
+            client.Setup(x => x.SecurityContext).Returns(securityContext.Object);
 
             var result = await server.RegisterNewClient(client.Object);
 
@@ -135,7 +135,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var connection = new Mock<IClientConnection>();
             var securityContext = new Mock<IUserSecurityContext>();
             connection.Setup(x => x.SecurityContext).Returns(securityContext.Object);
-            client.Setup(x => x.ClientConnection).Returns(connection.Object);
+            client.Setup(x => x.SecurityContext).Returns(securityContext.Object);
 
             await server.RegisterNewClient(client.Object);
 

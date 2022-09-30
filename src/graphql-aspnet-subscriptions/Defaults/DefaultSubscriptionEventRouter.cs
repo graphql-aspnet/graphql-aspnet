@@ -18,8 +18,9 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Logging;
 
     /// <summary>
-    /// The default listener for raised subscription events. This object only listens to the locally attached
-    /// graphql server and DOES NOT scale. See demo projects for scalable subscription configurations.
+    /// The default listener for raised subscription events. This object routes recieved subscription
+    /// events to the various schema instances  within this application domain. This component IS NOT
+    /// responsible for publishing new events, only receieving existing ones.
     /// </summary>
     public class DefaultSubscriptionEventRouter : ISubscriptionEventRouter
     {
@@ -47,6 +48,7 @@ namespace GraphQL.AspNet.Defaults
             {
                 if (_receivers.Count > 0)
                 {
+                    // if no one is listening for the event, just let it go
                     var eventName = eventData.ToSubscriptionEventName();
                     if (!_receivers.ContainsKey(eventName))
                         return;

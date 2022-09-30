@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         {
             this.Protocol = Validation.ThrowIfNullWhiteSpaceOrReturn(protocolName, nameof(protocolName));
 
-            _messageConverterFactory = new GraphqlWsLegacyMessageConverterFactory<TSchema>(this);
+            _messageConverterFactory = new GraphqlWsLegacyMessageConverterFactory<TSchema>(clientConnection?.ServiceProvider);
             _enableMetrics = enableMetrics;
         }
 

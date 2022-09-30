@@ -14,7 +14,8 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>
-    /// An abstract factory for creating type makers using all the default, built in type makers.
+    /// An upgraded "type maker" factory that adds low level subscription field support
+    /// to the type system.
     /// </summary>
     public class SubscriptionEnabledGraphTypeMakerProvider : DefaultGraphTypeMakerProvider
     {

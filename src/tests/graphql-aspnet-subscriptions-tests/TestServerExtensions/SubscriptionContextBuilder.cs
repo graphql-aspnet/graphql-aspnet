@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
@@ -28,10 +29,12 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     /// </summary>
     public class SubscriptionContextBuilder
     {
+        private readonly IUserSecurityContext _seceurityContext;
         private readonly Mock<IGraphOperationRequest> _mockRequest;
 
         private readonly List<KeyValuePair<SchemaItemPath, object>> _sourceData;
 
+        private IServiceProvider _serviceProvider;
         private IGraphQueryExecutionMetrics _metrics;
         private IGraphEventLogger _eventLogger;
         private ISubscriptionClientProxy _client;
@@ -40,9 +43,16 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         /// Initializes a new instance of the <see cref="SubscriptionContextBuilder" /> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public SubscriptionContextBuilder(ISubscriptionClientProxy client)
+        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="securityContext">The security context.</param>
+        public SubscriptionContextBuilder(
+            ISubscriptionClientProxy client,
+            IServiceProvider serviceProvider,
+            IUserSecurityContext securityContext)
         {
             _client = client;
+            _serviceProvider = serviceProvider;
+            _seceurityContext = securityContext;
             _mockRequest = new Mock<IGraphOperationRequest>();
             _sourceData = new List<KeyValuePair<SchemaItemPath, object>>();
 
@@ -138,8 +148,10 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             // updateable items about the request
             var context = new SubcriptionExecutionContext(
-                _client,
                 this.OperationRequest,
+                _client,
+                _serviceProvider,
+                _seceurityContext,
                 subscriptionId,
                 _metrics,
                 _eventLogger,
