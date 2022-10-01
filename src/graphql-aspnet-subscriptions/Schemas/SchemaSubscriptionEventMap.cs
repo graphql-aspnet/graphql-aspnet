@@ -46,8 +46,11 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         public static void ClearCache()
         {
-            SUBSCRIPTION_EVENTNAME_CATALOG.Clear();
-            PARSED_SCHEMA_TYPES.Clear();
+            lock (_syncLock)
+            {
+                SUBSCRIPTION_EVENTNAME_CATALOG.Clear();
+                PARSED_SCHEMA_TYPES.Clear();
+            }
         }
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace GraphQL.AspNet.Schemas
         public static Dictionary<SubscriptionEventName, SchemaItemPath> CreateEventMap(ISchema schema)
         {
             var dic = new Dictionary<SubscriptionEventName, SchemaItemPath>(SubscriptionEventNameEqualityComparer.Instance);
+
             if (schema == null || !schema.Operations.ContainsKey(GraphOperationType.Subscription))
                 return dic;
 

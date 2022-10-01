@@ -27,10 +27,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
     public static class DefaultSubscriptionBuilderExtensions
     {
         /// <summary>
-        /// Adds the ability for this graphql server to raise subscription events as well
-        /// as creates a subscription server that can accept connected clients and respond to subscription events. This extension will attempt to inject subscription related
-        /// middleware into the primary query excution pipeline and replace it. Call this method before injecting or
-        /// adding your own query execution middleware items.
+        /// Adds the ability for this graphql server to raise and receive subscription events.
+        /// Call this method before injecting or adding your own query execution middleware items.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
@@ -41,7 +39,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             Action<SubscriptionServerOptions<TSchema>> options = null)
                     where TSchema : class, ISchema
         {
-            // publsihing is registered AFTER the subscription server
+            // publishing is registered AFTER the subscription server
             // because subscription server rebuilds the query execution pipeline
             // then publishing adds one additional middleware component
             return schemaBuilder
@@ -82,10 +80,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         }
 
         /// <summary>
-        /// Adds a subscription server to this instance that will accept connected clients and
-        /// process subscription requests from those clients. This extension will attempt to inject subscription related
-        /// middleware into the primary query excution pipeline and replace it. Call this method before injecting or
-        /// adding your own query execution middleware items.
+        /// Adds the ability for this graphql server to receive subscription events.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
