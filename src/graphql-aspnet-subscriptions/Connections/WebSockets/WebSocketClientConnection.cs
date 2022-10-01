@@ -207,5 +207,8 @@ namespace GraphQL.AspNet.Connections.WebSockets
 
         /// <inheritdoc />
         public int BufferSize { get; }
+
+        /// <inheritdoc />
+        public CancellationToken RequestAborted => _httpContext.RequestAborted;
     }
 }

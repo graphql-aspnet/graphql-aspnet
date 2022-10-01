@@ -30,20 +30,6 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     public class MockSubscriptionClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
         where TSchema : class, ISchema
     {
-        /// <inheritdoc />
-        public event EventHandler ConnectionOpening;
-
-        /// <inheritdoc />
-        public event EventHandler ConnectionClosed;
-
-        /// <inheritdoc />
-        public event EventHandler ConnectionClosing;
-
-        /// <inheritdoc />
-        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteAdded;
-
-        /// <inheritdoc />
-        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteRemoved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MockSubscriptionClientProxy{TSchema}" /> class.
@@ -64,28 +50,26 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
             this.ClientConnection = connection.Object;
 
             this.Id = Guid.NewGuid().ToString();
-            this.ReceivedEvents = new List<(SchemaItemPath FieldPath, object SourceData)>();
+            this.ReceivedEvents = new List<SubscriptionEvent>();
             this.SentMessages = new List<object>();
         }
 
         /// <inheritdoc />
         public Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default)
         {
-            this.ConnectionClosing?.Invoke(this, new EventArgs());
             return Task.CompletedTask;
         }
 
         /// <inheritdoc />
-        public Task ReceiveEvent(SchemaItemPath field, object sourceData, CancellationToken cancelToken = default)
+        public Task ReceiveEvent(SubscriptionEvent eventData)
         {
-            this.ReceivedEvents.Add((field, sourceData));
+            this.ReceivedEvents.Add(eventData);
             return Task.CompletedTask;
         }
 
         /// <inheritdoc />
         public Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
         {
-            this.ConnectionOpening?.Invoke(this, new EventArgs());
             return Task.CompletedTask;
         }
 
@@ -112,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// have processed.
         /// </summary>
         /// <value>The received events.</value>
-        public List<(SchemaItemPath FieldPath, object SourceData)> ReceivedEvents { get; }
+        public List<SubscriptionEvent> ReceivedEvents { get; }
 
         /// <summary>
         /// Gets the messages that this client was to have sent down the
@@ -135,8 +119,5 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value>The client connection.</value>
         public IClientConnection ClientConnection { get; }
-
-        /// <inheritdoc />
-        public IUserSecurityContext SecurityContext => this.ClientConnection?.SecurityContext;
     }
 }

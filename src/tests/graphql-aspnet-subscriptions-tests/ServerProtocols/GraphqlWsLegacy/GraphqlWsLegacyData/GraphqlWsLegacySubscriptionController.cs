@@ -21,6 +21,12 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsL
             return obj;
         }
 
+        [Subscription]
+        public TwoPropertyObject WatchForPropObject2(TwoPropertyObject obj)
+        {
+            return obj;
+        }
+
         [QueryRoot]
         public TwoPropertyObject FastQuery()
         {

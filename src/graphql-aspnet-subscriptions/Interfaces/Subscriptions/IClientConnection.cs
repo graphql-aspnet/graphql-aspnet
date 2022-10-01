@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
@@ -119,5 +118,12 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// </summary>
         /// <value>The size of this connection's recieving buffer.</value>
         int BufferSize { get; }
+
+        /// <summary>
+        /// Gets a cancellation token that will trigger when this connection is
+        /// closed or no longer active.
+        /// </summary>
+        /// <value>A cancellation token indiciating this connection is closed.</value>
+        CancellationToken RequestAborted { get; }
     }
 }

@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <typeparam name="TSchema">The type of the schema the graph field exists in.</typeparam>
         /// <param name="field">The field to create names for.</param>
         /// <returns>IEnumerable&lt;SubscriptionEventName&gt;.</returns>
-        public static IEnumerable<SubscriptionEventName> FromGraphField<TSchema>(ISubscriptionGraphField field)
+        public static SubscriptionEventName FromGraphField<TSchema>(ISubscriptionGraphField field)
             where TSchema : class, ISchema
         {
             Validation.ThrowIfNull(field, nameof(field));
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <param name="schema">The schema owning the field definition.</param>
         /// <param name="field">The field to create names for.</param>
         /// <returns>IEnumerable&lt;SubscriptionEventName&gt;.</returns>
-        public static IEnumerable<SubscriptionEventName> FromGraphField(ISchema schema, ISubscriptionGraphField field)
+        public static SubscriptionEventName FromGraphField(ISchema schema, ISubscriptionGraphField field)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             Validation.ThrowIfNull(field, nameof(field));
@@ -59,12 +59,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <param name="schemaType">The raw data type of the target schema.</param>
         /// <param name="field">The field to create names for.</param>
         /// <returns>IEnumerable&lt;SubscriptionEventName&gt;.</returns>
-        private static IEnumerable<SubscriptionEventName> FromSchemaTypeAndField(Type schemaType, ISubscriptionGraphField field)
+        private static SubscriptionEventName FromSchemaTypeAndField(Type schemaType, ISubscriptionGraphField field)
         {
-            yield return new SubscriptionEventName(schemaType, field.Route.Path);
-
             if (!string.IsNullOrWhiteSpace(field.EventName))
-                yield return new SubscriptionEventName(schemaType, field.EventName);
+                return new SubscriptionEventName(schemaType, field.EventName);
+
+            return null;
         }
 
         /// <summary>

@@ -309,5 +309,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         /// </summary>
         /// <value><c>true</c> if closed by the server; otherwise, <c>false</c>.</value>
         public MockClientConnectionClosedByStatus ClosedBy { get; private set; }
+
+        /// <inheritdoc />
+        public CancellationToken RequestAborted { get; } = default;
     }
 }

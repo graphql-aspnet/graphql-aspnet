@@ -29,7 +29,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await router.RaiseEvent(null);
+                await router.RaisePublishedEvent(null);
             });
         }
 
@@ -44,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task SubscribedReceiver_ReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
+            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>()));
 
             var router = new DefaultSubscriptionEventRouter();
 
@@ -57,7 +57,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             };
 
             router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
-            await router.RaiseEvent(evt);
+            await router.RaisePublishedEvent(evt);
 
             receiver.Verify(x => x.ReceiveEvent(evt));
         }
@@ -66,7 +66,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task SubscribedReceiveer_TwoEvents_DoesReceiveBothEventsOnce()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
+            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>()));
 
             var router = new DefaultSubscriptionEventRouter();
 
@@ -90,8 +90,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
             // to ensure its not processed
             router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
             router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
-            await router.RaiseEvent(evt);
-            await router.RaiseEvent(evt2);
+            await router.RaisePublishedEvent(evt);
+            await router.RaisePublishedEvent(evt2);
 
             receiver.Verify(x => x.ReceiveEvent(evt), Times.Once);
             receiver.Verify(x => x.ReceiveEvent(evt2), Times.Once);
@@ -101,7 +101,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task UnsubscribedReceiver_DoesNotReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
 
             var router = new DefaultSubscriptionEventRouter();
 
@@ -126,8 +125,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
             router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
             router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
             router.RemoveReceiver(receiver.Object, evt.ToSubscriptionEventName());
-            await router.RaiseEvent(evt);
-            await router.RaiseEvent(evt2);
+            await router.RaisePublishedEvent(evt);
+            await router.RaisePublishedEvent(evt2);
 
             receiver.Verify(x => x.ReceiveEvent(evt), Times.Never);
             receiver.Verify(x => x.ReceiveEvent(evt2), Times.Once);
@@ -137,7 +136,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task UnsubscribedAllReceiver_DoesNotReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>())).ReturnsAsync(0);
+            receiver.Setup(x => x.ReceiveEvent(It.IsAny<SubscriptionEvent>()));
 
             var router = new DefaultSubscriptionEventRouter();
 
@@ -161,8 +160,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
             router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
             router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
             router.RemoveReceiver(receiver.Object);
-            await router.RaiseEvent(evt);
-            await router.RaiseEvent(evt2);
+            await router.RaisePublishedEvent(evt);
+            await router.RaisePublishedEvent(evt2);
 
             receiver.Verify(x => x.ReceiveEvent(evt), Times.Never);
             receiver.Verify(x => x.ReceiveEvent(evt2), Times.Never);

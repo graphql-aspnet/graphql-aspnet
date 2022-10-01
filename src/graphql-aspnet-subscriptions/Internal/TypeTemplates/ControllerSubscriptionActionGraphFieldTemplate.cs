@@ -49,9 +49,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             var fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
             if (fieldDeclaration is SubscriptionAttribute sa)
-                EventName = sa.EventName;
+                this.EventName = sa.EventName;
             else if (fieldDeclaration is SubscriptionRootAttribute sra)
-                EventName = sra.EventName;
+                this.EventName = sra.EventName;
+
+            this.EventName = this.EventName?.Trim();
+            if (string.IsNullOrWhiteSpace(this.EventName))
+                this.EventName = this.Method.Name;
 
             // before parsing we have to determine the expected source data
             // when an event is raised targeting this field
@@ -79,15 +83,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override void ValidateOrThrow()
         {
             // ensure the custom event name is valid if it was supplied
-            if (this.EventName != null)
+            if (this.EventName == null)
             {
-                if (!Constants.RegExPatterns.NameRegex.IsMatch(this.EventName))
-                {
-                    throw new GraphTypeDeclarationException(
-                            $"Invalid subscription action declaration. The method '{this.InternalFullName}' declares " +
-                            $"a custom event name of '{this.EventName}'. However, the event name must conform to " +
-                            $"standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )");
-                }
+                throw new GraphTypeDeclarationException(
+                        $"Invalid subscription action declaration. The method '{this.InternalFullName}' does not " +
+                        $"have an event name.");
+            }
+            else if (!Constants.RegExPatterns.NameRegex.IsMatch(this.EventName))
+            {
+                throw new GraphTypeDeclarationException(
+                        $"Invalid subscription action declaration. The method '{this.InternalFullName}' declares " +
+                        $"a custom event name of '{this.EventName}'. However, the event name must conform to " +
+                        $"standard graphql naming rules. (Regex: {Constants.RegExPatterns.NameRegex} )");
             }
 
             // ensure that at most one param is decorated as the subscription source

@@ -60,12 +60,10 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var next = new RequestDelegate(CallNext);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
-            var server = new Mock<ISubscriptionServer<GraphSchema>>();
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                server.Object,
                 factory.Object,
                 options);
 
@@ -92,12 +90,10 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var next = new RequestDelegate(CallNext);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
-            var server = new Mock<ISubscriptionServer<GraphSchema>>();
             var factory = new Mock<ISubscriptionServerClientFactory>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                server.Object,
                 factory.Object,
                 options);
 
@@ -126,13 +122,9 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var connection = new Mock<ISubscriptionClientProxy>();
             connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
-            var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            server.Setup(x => x.RegisterNewClient(It.IsAny<ISubscriptionClientProxy<GraphSchema>>()))
-                .ReturnsAsync(true);
-
+            var factory = new Mock<ISubscriptionServerClientFactory>();
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
 
-            var factory = new Mock<ISubscriptionServerClientFactory>();
             factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
                 .ReturnsAsync(client.Object);
 
@@ -140,7 +132,6 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                server.Object,
                 factory.Object,
                 options);
 
@@ -165,17 +156,14 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             }
 
             var next = new RequestDelegate(CallNext);
-            var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            server.Setup(x => x.RegisterNewClient(It.IsAny<ISubscriptionClientProxy<GraphSchema>>()))
-                .Throws(new InvalidOperationException("failed"));
-
             var factory = new Mock<ISubscriptionServerClientFactory>();
+            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+                .Throws(new InvalidOperationException("failed"));
 
             var options = new SubscriptionServerOptions<GraphSchema>();
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                server.Object,
                 factory.Object,
                 options);
 
@@ -202,15 +190,14 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             var next = new RequestDelegate(CallNext);
 
             var options = new SubscriptionServerOptions<GraphSchema>();
-            var server = new Mock<ISubscriptionServer<GraphSchema>>();
             var factory = new Mock<ISubscriptionServerClientFactory>();
+
             factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
-                .Throws(new UnsupportedClientProtocolException("unknown"));
+                .Throws(new UnsupportedClientProtocolException("failed protocol"));
 
             var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
                 next,
                 new GraphSchema(),
-                server.Object,
                 factory.Object,
                 options);
 

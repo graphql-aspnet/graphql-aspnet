@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             // this publisher pushes events raised
             // by mutations and queries directly into the DI-configured router
             // for immediate dispatch within this instance
-            return _eventRouter.RaiseEvent(eventData);
+            return _eventRouter.RaisePublishedEvent(eventData);
         }
     }
 }

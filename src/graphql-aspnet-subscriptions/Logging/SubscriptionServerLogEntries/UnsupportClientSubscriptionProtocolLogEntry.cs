@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
 {
-    using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.Common;
 
@@ -17,21 +16,18 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
     /// A log event recorded when a subscription client attempts to connect with
     /// a messaging protocol not supported by the target schema.
     /// </summary>
-    public class SubscriptionServerUnsupportClientProtocolLogEntry : GraphLogEntry
+    public class UnsupportClientSubscriptionProtocolLogEntry : GraphLogEntry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionServerUnsupportClientProtocolLogEntry" /> class.
+        /// Initializes a new instance of the <see cref="UnsupportClientSubscriptionProtocolLogEntry" /> class.
         /// </summary>
-        /// <param name="server">The server.</param>
         /// <param name="targetSchema">The target schema.</param>
         /// <param name="protocol">The unsupported protocol .</param>
-        public SubscriptionServerUnsupportClientProtocolLogEntry(
-            ISubscriptionServer server,
+        public UnsupportClientSubscriptionProtocolLogEntry(
             ISchema targetSchema,
             string protocol)
             : base(SubscriptionLogEventIds.UnsupportedClientProtocol)
         {
-            this.ServerId = server?.Id;
             this.SchemaTypeName = targetSchema?.Name;
             this.ClientProtocol = protocol;
         }
@@ -56,20 +52,10 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             private set => this.SetProperty(LogPropertyNames.SCHEMA_TYPE_NAME, value);
         }
 
-        /// <summary>
-        /// Gets the unique id of the client that was created.
-        /// </summary>
-        /// <value>The identifier.</value>
-        public string ServerId
-        {
-            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_ID);
-            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_ID, value);
-        }
-
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"Subscription Server Unsupported Client Protocol | Schema: {this.SchemaTypeName}, Protocol: {this.ClientProtocol}";
+            return $"Unsupported Subscription Client Protocol | Schema: {this.SchemaTypeName}, Protocol: {this.ClientProtocol}";
         }
     }
 }

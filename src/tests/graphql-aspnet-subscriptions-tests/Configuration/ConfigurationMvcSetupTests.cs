@@ -157,8 +157,8 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             Assert.IsNotNull(schema);
             Assert.IsTrue(schema.Operations.ContainsKey(GraphOperationType.Subscription));
 
-            // ensure registered services for subscription server
-            Assert.IsNotNull(sp.GetService(typeof(ISubscriptionServer<GraphSchema>)));
+            // ensure router is registered
+            Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventRouter)));
 
             // ensure the template provider for the runtime is swapped
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);

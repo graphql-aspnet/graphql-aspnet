@@ -38,7 +38,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 .Build();
 
             var schema = testServer.Schema;
-            var subServer = testServer.RetrieveSubscriptionServer();
             var queryPlan = await testServer.CreateQueryPlan("subscription { watchObjects { property1 property2  }} ");
 
             Assert.IsNotNull(queryPlan.Operation);

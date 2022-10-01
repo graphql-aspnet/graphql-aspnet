@@ -7,6 +7,15 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.Subscriptions.Tests
 {
     using System.Linq;
@@ -22,9 +31,7 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
@@ -78,12 +85,11 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
 
-            Assert.AreEqual(6, primaryOptions.ServiceCollection.Count);
+            Assert.AreEqual(5, primaryOptions.ServiceCollection.Count);
 
             // primary server objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServerClientFactory)));
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServer<GraphSchema>)));
 
             // graphql-transport-ws objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqltwsSubscriptionClientProxyFactory)));

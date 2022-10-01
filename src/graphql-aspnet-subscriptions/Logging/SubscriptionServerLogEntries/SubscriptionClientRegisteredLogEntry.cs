@@ -28,10 +28,8 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionClientRegisteredLogEntry{TSchema}" /> class.
         /// </summary>
-        /// <param name="server">The server which created teh client.</param>
         /// <param name="client">The client that was created.</param>
         public SubscriptionClientRegisteredLogEntry(
-            ISubscriptionServer<TSchema> server,
             ISubscriptionClientProxy client)
             : base(SubscriptionLogEventIds.SubscriptionClientRegistered)
         {
@@ -39,9 +37,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.ClientTypeName = client?.GetType().FriendlyName(true);
-            this.ServerTypeName = server?.GetType().FriendlyName(true);
             this.ClientId = client?.Id;
-            this.ServerId = server?.Id;
         }
 
         /// <summary>
@@ -65,16 +61,6 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
         }
 
         /// <summary>
-        /// Gets the <see cref="Type"/> name of the subscription server that created the client.
-        /// </summary>
-        /// <value>The name of the server type.</value>
-        public string ServerTypeName
-        {
-            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_TYPE_NAME);
-            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_TYPE_NAME, value);
-        }
-
-        /// <summary>
         /// Gets the unique id of the client that was created.
         /// </summary>
         /// <value>The identifier.</value>
@@ -82,16 +68,6 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
         {
             get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_ID);
             private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_ID, value);
-        }
-
-        /// <summary>
-        /// Gets the server id of the server object the client was registered with.
-        /// </summary>
-        /// <value>The server identifier.</value>
-        public string ServerId
-        {
-            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_ID);
-            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_SERVER_ID, value);
         }
 
         /// <summary>

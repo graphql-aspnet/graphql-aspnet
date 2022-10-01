@@ -14,6 +14,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -27,99 +28,52 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Microsoft.Extensions.DependencyInjection;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public partial class GraphqlWsLegacyClientProxyTests
     {
-        private async Task<(MockClientConnection, GraphqlWsLegacyClientProxy<GraphSchema>)>
-            CreateConnection()
+        private (MockClientConnection, GraphqlWsLegacyClientProxy<GraphSchema>, Mock<ISubscriptionEventRouter>) CreateConnection()
         {
             var server = new TestServerBuilder()
                 .AddGraphController<GraphqlWsLegacySubscriptionController>()
                 .AddSubscriptionServer((options) =>
                 {
                     options.ConnectionKeepAliveInterval = TimeSpan.FromMinutes(15);
+                    options.AuthenticatedRequestsOnly = false;
                 })
                 .Build();
 
-            var socketClient = server.CreateClientConnection();
-            var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
-            var client = new GraphqlWsLegacyClientProxy<GraphSchema>(
-                socketClient,
+            var router = new Mock<ISubscriptionEventRouter>();
+
+            var connection = server.CreateClientConnection(GraphqlWsLegacyConstants.PROTOCOL_NAME);
+
+            var subClient = new GraphqlWsLegacyClientProxy<GraphSchema>(
+                server.Schema,
+                connection,
+                router.Object,
                 GraphqlWsLegacyConstants.PROTOCOL_NAME);
-
-            var subServer = server.ServiceProvider.GetService<ISubscriptionServer<GraphSchema>>();
-
-            await subServer.RegisterNewClient(client);
-            return (socketClient, client);
+            return (connection, subClient, router);
         }
 
         [Test]
-        public async Task GeneralPropertyCheck()
+        public void GeneralPropertyCheck()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             Assert.IsNotNull(string.IsNullOrWhiteSpace(client.Id));
             Assert.AreNotEqual(Guid.Empty.ToString(), client.Id);
         }
 
         [Test]
-        public async Task WhenConnectionOpened_EventFires()
-        {
-            bool eventCalled = false;
-            void ConnectionOpening(object sender, EventArgs e)
-            {
-                eventCalled = true;
-            }
-
-            (var socketClient, var client) = await this.CreateConnection();
-            socketClient.QueueConnectionClosedByClient();
-
-            // execute the connection sequence
-            client.ConnectionOpening += ConnectionOpening;
-            await client.StartConnection();
-
-            Assert.IsTrue(eventCalled, "Connection Opening Event Handler not called");
-        }
-
-        [Test]
-        public async Task WhenConnectionCloses_EventFires()
-        {
-            (var socketClient, var client) = await this.CreateConnection();
-
-            bool eventCalled = false;
-            void ConnectionClosed(object sender, EventArgs e)
-            {
-                eventCalled = true;
-            }
-
-            client.ConnectionClosed += ConnectionClosed;
-
-            // execute the connection sequence
-            socketClient.QueueConnectionClosedByClient();
-            await client.StartConnection();
-
-            Assert.IsTrue(eventCalled, "Connection Closed Event Handler not called");
-        }
-
-        [Test]
         public async Task StartConnection_OnReadClose_IfConnectionIsOpen_CloseConnection()
         {
-            // set the underlying connection to not auto close when it retrieves a close message
-            // from the queue, leaving it up to the GraphqlWsLegacy client to do the close
-            var socketClient = new MockClientConnection();
-            var options = new SubscriptionServerOptions<GraphSchema>();
-
-            var provider = new ServiceCollection().BuildServiceProvider();
-            var client = new GraphqlWsLegacyClientProxy<GraphSchema>(
-                socketClient,
-                GraphqlWsLegacyConstants.PROTOCOL_NAME,
-                null,
-                false);
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             // execute the connection sequence
             socketClient.QueueConnectionClosedByClient();
@@ -132,7 +86,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task AttemptingToStartAClosedConnection_ThrowsException()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueConnectionClosedByClient();
@@ -154,7 +108,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StartSubscription_RegistersSubscriptionCorrectly()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
@@ -168,36 +122,18 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 
             socketClient.QueueConnectionClosedByClient();
 
-            var routesAdded = 0;
-            var routesRemoved = 0;
-            void RouteAdded(object o, SubscriptionFieldEventArgs e)
-            {
-                if (e.Field.Name == "watchForPropObject")
-                    routesAdded += 1;
-            }
-
-            void RouteRemoved(object o, SubscriptionFieldEventArgs e)
-            {
-                if (e.Field.Name == "watchForPropObject")
-                    routesRemoved += 1;
-            }
-
-            client.SubscriptionRouteAdded += RouteAdded;
-            client.SubscriptionRouteRemoved += RouteRemoved;
-
             // execute the connection sequence
             await client.StartConnection();
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertClientClosedConnection();
 
-            Assert.AreEqual(1, routesAdded);
-            Assert.AreEqual(1, routesRemoved);
+            router.Verify(x => x.AddReceiver(client, It.IsAny<SubscriptionEventName>()), Times.Once());
         }
 
         [Test]
         public async Task StartSubscription_ButMessageIsAQuery_YieldsDataMessageAndComplete()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             // use start message to send a query, not a subscription request
             // client should respond with expected data
@@ -230,7 +166,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ReceiveEvent_OnStartedSubscription_YieldsDataMessage()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             var startMessage = new GraphqlWsLegacyClientStartMessage()
             {
@@ -244,12 +180,20 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             await socketClient.OpenAsync(GraphqlWsLegacyConstants.PROTOCOL_NAME);
             await client.ProcessMessage(startMessage);
 
-            var route = new SchemaItemPath("[subscription]/GraphqlWsLegacySubscription/WatchForPropObject");
-            await client.ReceiveEvent(route, new TwoPropertyObject()
+            var evt = new SubscriptionEvent()
             {
-                Property1 = "value1",
-                Property2 = 33,
-            });
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GraphqlWsLegacySubscriptionController.WatchForPropObject),
+                SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
+            };
+
+            await client.ReceiveEvent(evt);
 
             socketClient.AssertGraphqlWsLegacyResponse(
                 GraphqlWsLegacyMessageType.DATA,
@@ -268,14 +212,22 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ReceiveEvent_WhenNoSubscriptions_YieldsNothing()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
-            var route = new SchemaItemPath("[subscription]/GraphqlWsLegacySubscription/WatchForPropObject");
-            await client.ReceiveEvent(route, new TwoPropertyObject()
+            var evt = new SubscriptionEvent()
             {
-                Property1 = "value1",
-                Property2 = 33,
-            });
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GraphqlWsLegacySubscriptionController.WatchForPropObject),
+                SchemaTypeName = nameof(GraphSchema),
+            };
+
+            await client.ReceiveEvent(evt);
 
             Assert.AreEqual(0, socketClient.ResponseMessageCount);
         }
@@ -283,7 +235,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ReceiveEvent_OnNonSubscribedEventNAme_YieldsNothing()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             // start a real subscription so the client is tracking one
             var startMessage = new GraphqlWsLegacyClientStartMessage()
@@ -297,13 +249,18 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 
             await client.ProcessMessage(startMessage);
 
-            // fire an event against a route not tracked, ensure the client skips it.
-            var route = new SchemaItemPath("[subscription]/GraphqlWsLegacySubscription/WatchForPropObject_NotReal");
-            await client.ReceiveEvent(route, new TwoPropertyObject()
+            var evt = new SubscriptionEvent()
             {
-                Property1 = "value1",
-                Property2 = 33,
-            });
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GraphqlWsLegacySubscriptionController.WatchForPropObject2),
+                SchemaTypeName = nameof(GraphSchema),
+            };
 
             Assert.AreEqual(0, socketClient.ResponseMessageCount);
         }
@@ -311,7 +268,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StopSubscription_AgainstExistantId_RemovesSubscriptionCorrectly()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
@@ -348,7 +305,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StopSubscription_AgainstNonExistantId_YieldsError()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientStopMessage("abc123"));
@@ -365,7 +322,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StartMultipleSubscriptions_AllRegistered_ButRouteEventOnlyRaisedOnce()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
@@ -392,15 +349,6 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 
             socketClient.QueueConnectionClosedByClient();
 
-            var routesAdded = 0;
-            void RouteAdded(object o, SubscriptionFieldEventArgs e)
-            {
-                if (e.Field.Name == "watchForPropObject")
-                    routesAdded += 1;
-            }
-
-            client.SubscriptionRouteAdded += RouteAdded;
-
             // execute the connection sequence
             await client.StartConnection(TimeSpan.FromSeconds(2));
 
@@ -408,13 +356,13 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
             socketClient.AssertClientClosedConnection();
 
-            Assert.AreEqual(1, routesAdded);
+            router.Verify(x => x.AddReceiver(client, It.IsAny<SubscriptionEventName>()), Times.Once());
         }
 
         [Test]
         public async Task AttemptToStartMultipleSubscriptionsWithSameId_ResultsInErrorMessageForSecond()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
@@ -460,7 +408,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task SendConnectionTerminate_ClosesConnectionFromServer()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionTerminateMessage());
@@ -474,7 +422,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task InvalidMessageType_ResultsInError()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new FakeGraphqlWsLegacyMessage()
@@ -495,7 +443,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ExecuteQueryThroughStartMessage_YieldsQueryResult()
         {
-            (var socketClient, var client) = await this.CreateConnection();
+            (var socketClient, var client, var router) = this.CreateConnection();
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()
             {

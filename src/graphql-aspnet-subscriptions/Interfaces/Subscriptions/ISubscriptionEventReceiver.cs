@@ -13,19 +13,28 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
-    /// <para>
     /// An object that subscribes to a <see cref="ISubscriptionEventRouter"/>and can receive and asyncronously respond
     /// to an events. This object is generally used by a subscription sever component to correctly translate externally
     /// received events into a "server-specific" format.
-    /// </para>
     /// </summary>
+    /// <remarks>
+    /// This interface should probably be named "subscription event subscriber"
+    /// but its a bit too wordy :).
+    /// </remarks>
     public interface ISubscriptionEventReceiver
     {
         /// <summary>
-        /// Receives a new event that was seen by a listener.
+        /// Gets the globally unique id assigned to this instance.
         /// </summary>
-        /// <param name="eventData">The event data.</param>
-        /// <returns>The number of entities the event was forwarded to, if any.</returns>
-        Task<int> ReceiveEvent(SubscriptionEvent eventData);
+        /// <value>The instance's unique id.</value>
+        string Id { get; }
+
+        /// <summary>
+        /// Receives a new subscription event that was seen by a third party listener.
+        /// </summary>
+        /// <param name="eventData">The data package representing a raised subscription
+        /// event.</param>
+        /// <returns>Task.</returns>
+        Task ReceiveEvent(SubscriptionEvent eventData);
     }
 }

@@ -74,18 +74,6 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
         }
 
         /// <summary>
-        /// Retrieves the subscription server component from the test server.
-        /// </summary>
-        /// <typeparam name="TSchema">The type of the schema the server is hosting.</typeparam>
-        /// <param name="server">The test server.</param>
-        /// <returns>ISubscriptionServer&lt;TSchema&gt;.</returns>
-        public static ISubscriptionServer<TSchema> RetrieveSubscriptionServer<TSchema>(this TestServer<TSchema> server)
-            where TSchema : class, ISchema
-        {
-            return server.ServiceProvider.GetService(typeof(ISubscriptionServer<TSchema>)) as ISubscriptionServer<TSchema>;
-        }
-
-        /// <summary>
         /// Creates a test client that mimics an always-connected websocket client.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the server is hosting.</typeparam>
@@ -114,7 +102,6 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             ClientConnectionState stateOfConnection = ClientConnectionState.Open)
                     where TSchema : class, ISchema
         {
-            var subServer = server.ServiceProvider.GetService<ISubscriptionServer<TSchema>>();
             var options = server.ServiceProvider.GetService<SubscriptionServerOptions<TSchema>>();
 
             var serviceProvider = server.ServiceProvider.CreateScope().ServiceProvider;

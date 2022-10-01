@@ -9,19 +9,21 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
-    /// An event, raised by a <see cref="GraphController" />, and handled by a <see cref="ISubscriptionServer{TSchema}" />
-    /// to transfer the given data package to connected clients.
+    /// An event, raised by a <see cref="GraphController" /> and routed to various
+    /// clients that are listening for new data.
     /// </summary>
     [DebuggerDisplay("Subscription Event: {EventName}")]
     public class SubscriptionEvent
     {
         /// <summary>
-        /// Gets or sets the unique identifier assigned to this event when it was first raised.
+        /// Gets or sets the unique identifier assigned to this event when it was first raised
+        /// from the source mutation or query.
         /// </summary>
         /// <value>The identifier.</value>
         public string Id { get; set; }
@@ -33,19 +35,19 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         public object Data { get; set; }
 
         /// <summary>
-        /// Gets or sets the fully qualified type name of the <see cref="Data"/> object.
+        /// Gets or sets the fully qualified <see cref="Type"/> name of the <see cref="Data"/> object.
         /// </summary>
         /// <value>The type.</value>
         public string DataTypeName { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the event that was raised from the graphql server.
+        /// Gets or sets the schema-unique name of the event that was raised from the graphql server.
         /// </summary>
-        /// <value>The source route.</value>
+        /// <value>The event's unique name.</value>
         public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets the fully qualified type name of the schema to which this
+        /// Gets or sets the fully qualified <see cref="Type"/> name of the schema to which this
         /// event is targeted.
         /// </summary>
         /// <value>The schema identifier.</value>

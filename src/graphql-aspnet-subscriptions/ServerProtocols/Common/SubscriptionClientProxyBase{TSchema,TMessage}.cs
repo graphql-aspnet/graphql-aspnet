@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -21,12 +20,11 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
-    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -40,23 +38,10 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         where TSchema : class, ISchema
         where TMessage : class, ILoggableClientProxyMessage
     {
-        /// <inheritdoc />
-        public event EventHandler ConnectionOpening;
-
-        /// <inheritdoc />
-        public event EventHandler ConnectionClosed;
-
-        /// <inheritdoc />
-        public event EventHandler ConnectionClosing;
-
-        /// <inheritdoc />
-        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteAdded;
-
-        /// <inheritdoc />
-        public event EventHandler<SubscriptionFieldEventArgs> SubscriptionRouteRemoved;
-
         private readonly SubscriptionCollection<TSchema> _subscriptions;
         private readonly ClientTrackedMessageIdSet _reservedSubscriptionIds;
+        private readonly TSchema _schema;
+        private readonly ISubscriptionEventRouter _router;
         private IClientConnection _clientConnection;
         private bool _disposedValue;
 
@@ -64,17 +49,23 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// Initializes a new instance of the <see cref="SubscriptionClientProxyBase{TSchema, TMessageBase}" /> class.
         /// </summary>
         /// <param name="id">The globally unique id assigned to this instance.</param>
+        /// <param name="schema">The schema this client listens for.</param>
         /// <param name="clientConnection">The underlying client connection that this proxy communicates with.</param>
+        /// <param name="router">The router component that will send this client event data.</param>
         /// <param name="logger">The primary logger object to record events to.</param>
         protected SubscriptionClientProxyBase(
             string id,
+            TSchema schema,
             IClientConnection clientConnection,
+            ISubscriptionEventRouter router,
             IGraphEventLogger logger = null)
         {
             this.Id = Validation.ThrowIfNullWhiteSpaceOrReturn(id, nameof(id));
-            _clientConnection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
             this.Logger = new ClientProxyEventLogger<TSchema>(this, logger);
 
+            _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _clientConnection = Validation.ThrowIfNullOrReturn(clientConnection, nameof(clientConnection));
+            _router = Validation.ThrowIfNullOrReturn(router, nameof(router));
             _reservedSubscriptionIds = new ClientTrackedMessageIdSet();
             _subscriptions = new SubscriptionCollection<TSchema>();
         }
@@ -156,8 +147,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     "been previously closed and cannot be reopened.");
             }
 
-            this.ConnectionOpening?.Invoke(this, new EventArgs());
-
             // accept the connection and begin lisening
             // for messages related to the protocol known to this specific client type
             await _clientConnection.OpenAsync(this.Protocol, cancelToken);
@@ -215,8 +204,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     while (!result.CloseStatus.HasValue && _clientConnection.State == ClientConnectionState.Open);
                 }
 
-                this.ConnectionClosing?.Invoke(this, EventArgs.Empty);
-
                 // immediately kill any timers
                 keepAliveTimer?.Stop();
                 keepAliveTimer?.Dispose();
@@ -258,10 +245,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 initialziationTimer = null;
                 this.IsKeepAliveEnabled = false;
             }
-
-            // unregister any events that may be listening to this client as its shutting down for good.
-            this.DoActionForAllInvokers(this.ConnectionOpening, x => this.ConnectionOpening -= x);
-            this.DoActionForAllInvokers(this.ConnectionClosed, x => this.ConnectionClosed -= x);
         }
 
         /// <summary>
@@ -277,19 +260,21 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <inheritdoc />
-        public virtual async Task ReceiveEvent(SchemaItemPath field, object sourceData, CancellationToken cancelToken = default)
+        public async Task ReceiveEvent(SubscriptionEvent eventData)
         {
             // force asyncronicity
             await Task.Yield();
 
+            var field = _schema.RetrieveSubscriptionFieldPath(eventData.ToSubscriptionEventName());
             if (field == null)
                 return;
 
             // find the subscriptions that are listening for the received data
             var subscriptions = _subscriptions.RetreiveByRoute(field);
-            this.Logger.SubscriptionEventReceived(field, subscriptions);
             if (subscriptions.Count == 0)
                 return;
+
+            this.Logger.SubscriptionEventReceived(field, subscriptions);
 
             var runtime = _clientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
             var schema = _clientConnection.ServiceProvider.GetRequiredService<TSchema>();
@@ -316,10 +301,10 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     logger);
 
                 // register the event data as a source input for the target subscription field
-                context.DefaultFieldSources.AddSource(subscription.Field, sourceData);
+                context.DefaultFieldSources.AddSource(subscription.Field, eventData.Data);
                 context.QueryPlan = subscription.QueryPlan;
 
-                tasks.Add(runtime.ExecuteRequest(context, cancelToken)
+                tasks.Add(runtime.ExecuteRequest(context, _clientConnection.RequestAborted)
                     .ContinueWith(
                         task =>
                         {
@@ -330,7 +315,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                             var message = this.CreateDataMessage(subscription.Id, task.Result);
                             return this.SendMessage(message);
                         },
-                        cancelToken));
+                        _clientConnection.RequestAborted));
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -404,7 +389,10 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 {
                     var totalTracked = _subscriptions.Add(subscription);
                     if (totalTracked == 1)
-                        this.SubscriptionRouteAdded?.Invoke(this, new SubscriptionFieldEventArgs(subscription.Field));
+                    {
+                        var eventName = SubscriptionEventName.FromGraphField<TSchema>(subscription.Field);
+                        _router.AddReceiver(this, eventName);
+                    }
 
                     this.Logger?.SubscriptionCreated(subscription);
                     return SubscriptionDataExecutionResult<TSchema>.SubscriptionRegistered(subscription);
@@ -431,9 +419,13 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             if (subFound == null)
                 return false;
 
+            // unregister the subscription from the router as appropriate
             _reservedSubscriptionIds.ReleaseMessageId(subFound.Id);
             if (totalRemaining == 0)
-                this.SubscriptionRouteRemoved?.Invoke(this, new SubscriptionFieldEventArgs(subFound.Field));
+            {
+                var eventName = SubscriptionEventName.FromGraphField<TSchema>(subFound.Field);
+                _router.RemoveReceiver(this, eventName);
+            }
 
             this.Logger?.SubscriptionStopped(subFound);
             return true;
@@ -461,13 +453,9 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             // discontinue all client registered subscriptions
             // and acknowledge the terminate request
-            var fields = _subscriptions.Values.Select(x => x.Field).Distinct();
-            foreach (var field in fields)
-                this.SubscriptionRouteRemoved?.Invoke(this, new SubscriptionFieldEventArgs(field));
-
+            _router.RemoveReceiver(this);
             _subscriptions.Clear();
             _reservedSubscriptionIds.Clear();
-            this.ConnectionClosed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -516,14 +504,11 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <inheritdoc />
         public abstract string Protocol { get; }
 
-        /// <inheritdoc />
-        public IUserSecurityContext SecurityContext => _clientConnection?.SecurityContext;
-
         /// <summary>
-        /// Gets or sets a value indicating whether keep alive pings are currently
+        /// Gets a value indicating whether keep alive pings are currently
         /// enabled on this client.
         /// </summary>
         /// <value><c>true</c> if this instance is sending keep alives to the client; otherwise, <c>false</c>.</value>
-        public bool IsKeepAliveEnabled { get; protected set; }
+        protected bool IsKeepAliveEnabled { get; private set; }
     }
 }

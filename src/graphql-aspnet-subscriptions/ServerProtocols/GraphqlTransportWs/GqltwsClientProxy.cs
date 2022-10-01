@@ -50,15 +50,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsClientProxy{TSchema}" /> class.
         /// </summary>
-        /// <param name="clientConnection">The underlying client connection for graphql-ws to manage.</param>
-        /// <param name="logger">The logger to record client level events to, if any.</param>
+        /// <param name="schema">The schema this client listens for.</param>
+        /// <param name="clientConnection">The underlying client connection that this proxy communicates with.</param>
+        /// <param name="router">The router component that will send this client event data.</param>
+        /// <param name="logger">The primary logger object to record events to.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>
         public GqltwsClientProxy(
             IClientConnection clientConnection,
+            TSchema schema,
+            ISubscriptionEventRouter router,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
-            : base(Guid.NewGuid().ToString(), clientConnection, logger)
+            : base(Guid.NewGuid().ToString(), schema, clientConnection, router, logger)
         {
             _converterFactory = new GqltwsMessageConverterFactory<TSchema>(clientConnection?.ServiceProvider);
             _enableMetrics = enableMetrics;

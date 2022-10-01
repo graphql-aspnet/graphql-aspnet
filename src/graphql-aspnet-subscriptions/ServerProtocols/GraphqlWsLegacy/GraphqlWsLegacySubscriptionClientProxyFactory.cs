@@ -26,10 +26,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             where TSchema : class, ISchema
         {
             var schema = connection.ServiceProvider.GetService<TSchema>();
+            var router = connection.ServiceProvider.GetService<ISubscriptionEventRouter>();
             var logger = connection.ServiceProvider.GetService<IGraphEventLogger>();
 
             var client = new GraphqlWsLegacyClientProxy<TSchema>(
+                schema,
                 connection,
+                router,
                 this.Protocol,
                 logger,
                 schema.Configuration.ExecutionOptions.EnableMetrics);

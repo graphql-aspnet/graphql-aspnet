@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Defaults
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Defaults
     public class DefaultSubscriptionEventRouter : ISubscriptionEventRouter
     {
         private readonly IGraphEventLogger _logger;
-        private readonly SubscribedEventRecievers _receivers;
+        private readonly SubscribedEventRecievers _allReceivers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSubscriptionEventRouter" /> class.
@@ -34,34 +35,40 @@ namespace GraphQL.AspNet.Defaults
         public DefaultSubscriptionEventRouter(IGraphEventLogger logger = null)
         {
             _logger = logger;
-            _receivers = new SubscribedEventRecievers();
+            _allReceivers = new SubscribedEventRecievers();
         }
 
         /// <inheritdoc />
-        public async Task RaiseEvent(SubscriptionEvent eventData)
+        public async Task RaisePublishedEvent(SubscriptionEvent eventData)
         {
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
             _logger?.SubscriptionEventReceived(eventData);
-            var tasks = new List<Task>();
-            lock (_receivers)
-            {
-                if (_receivers.Count > 0)
-                {
-                    // if no one is listening for the event, just let it go
-                    var eventName = eventData.ToSubscriptionEventName();
-                    if (!_receivers.ContainsKey(eventName))
-                        return;
+            List<ISubscriptionEventReceiver> receivers = null;
 
-                    foreach (var receiver in _receivers[eventName])
-                    {
-                        var task = receiver.ReceiveEvent(eventData);
-                        tasks.Add(task);
-                    }
-                }
+            var tasks = new List<Task>();
+            lock (_allReceivers)
+            {
+                // if no one is listening for the event, just let it go
+                var eventName = eventData.ToSubscriptionEventName();
+                if (!_allReceivers.ContainsKey(eventName))
+                    return;
+
+                receivers = new List<ISubscriptionEventReceiver>(_allReceivers[eventName].Count);
+                receivers.AddRange(_allReceivers[eventName]);
             }
 
-            await Task.WhenAll(tasks);
+            if (receivers != null)
+            {
+                await Task.Yield();
+                foreach (var receiver in receivers)
+                {
+                    var task = receiver.ReceiveEvent(eventData);
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks);
+            }
         }
 
         /// <inheritdoc />
@@ -70,12 +77,12 @@ namespace GraphQL.AspNet.Defaults
             Validation.ThrowIfNull(eventName, nameof(eventName));
             Validation.ThrowIfNull(receiver, nameof(receiver));
 
-            lock (_receivers)
+            lock (_allReceivers)
             {
-                if (!_receivers.ContainsKey(eventName))
-                    _receivers.Add(eventName, new HashSet<ISubscriptionEventReceiver>());
+                if (!_allReceivers.ContainsKey(eventName))
+                    _allReceivers.Add(eventName, new HashSet<ISubscriptionEventReceiver>());
 
-                _receivers[eventName].Add(receiver);
+                _allReceivers[eventName].Add(receiver);
             }
         }
 
@@ -85,14 +92,14 @@ namespace GraphQL.AspNet.Defaults
             if (receiver == null || eventName == null)
                 return;
 
-            lock (_receivers)
+            lock (_allReceivers)
             {
-                if (_receivers.ContainsKey(eventName))
+                if (_allReceivers.ContainsKey(eventName))
                 {
-                    if (_receivers[eventName].Contains(receiver))
-                        _receivers[eventName].Remove(receiver);
-                    if (_receivers[eventName].Count == 0)
-                        _receivers.Remove(eventName);
+                    if (_allReceivers[eventName].Contains(receiver))
+                        _allReceivers[eventName].Remove(receiver);
+                    if (_allReceivers[eventName].Count == 0)
+                        _allReceivers.Remove(eventName);
                 }
             }
         }
@@ -103,10 +110,10 @@ namespace GraphQL.AspNet.Defaults
             if (receiver == null)
                 return;
 
-            lock (_receivers)
+            lock (_allReceivers)
             {
                 var toRemove = new List<SubscriptionEventName>();
-                foreach (var kvp in _receivers)
+                foreach (var kvp in _allReceivers)
                 {
                     if (kvp.Value.Contains(receiver))
                         kvp.Value.Remove(receiver);
@@ -117,7 +124,7 @@ namespace GraphQL.AspNet.Defaults
 
                 // remove any collections that no longer have listeners
                 foreach (var key in toRemove)
-                    _receivers.Remove(key);
+                    _allReceivers.Remove(key);
             }
         }
     }

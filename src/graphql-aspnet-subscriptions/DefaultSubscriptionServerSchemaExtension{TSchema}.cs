@@ -129,41 +129,11 @@ namespace GraphQL.AspNet
             _schemaBuilder.Options.ServiceCollection.AddGraphqlWsLegacysProtocol();
             _schemaBuilder.Options.ServiceCollection.AddGqltwsProtocol();
 
-            // add the foundational "server classes" as optional services
-            // if and only if the user has not added support for their own instances
-            _schemaBuilder.Options.ServiceCollection.TryAdd(
-                new ServiceDescriptor(
-                    typeof(ISubscriptionServer<TSchema>),
-                    this.CreateSubscriptionServer,
-                    ServiceLifetime.Singleton));
-
             _schemaBuilder.Options.ServiceCollection.TryAdd(
              new ServiceDescriptor(
                  typeof(ISubscriptionServerClientFactory),
                  typeof(DefaultSubscriptionServerClientFactory),
                  ServiceLifetime.Singleton));
-        }
-
-        /// <summary>
-        /// Creates the default subscription server and logs its creation.
-        /// </summary>
-        /// <param name="sp">The service provider to create the server from.</param>
-        /// <returns>ISubscriptionServer&lt;TSchema&gt;.</returns>
-        private ISubscriptionServer<TSchema> CreateSubscriptionServer(IServiceProvider sp)
-        {
-            using var scope = sp.CreateScope();
-            var schema = scope.ServiceProvider.GetRequiredService<TSchema>();
-            var eventListener = scope.ServiceProvider.GetRequiredService<ISubscriptionEventRouter>();
-            var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
-
-            var server = new DefaultSubscriptionServer<TSchema>(
-                schema,
-                this.SubscriptionOptions,
-                eventListener,
-                logger);
-
-            logger?.SubscriptionServerCreated(server);
-            return server;
         }
 
         /// <summary>

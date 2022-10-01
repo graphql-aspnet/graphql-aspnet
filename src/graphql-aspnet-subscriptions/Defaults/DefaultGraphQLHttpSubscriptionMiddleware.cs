@@ -11,10 +11,12 @@ namespace GraphQL.AspNet.Defaults
 {
     using System;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Exceptions;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -32,12 +34,11 @@ namespace GraphQL.AspNet.Defaults
     public class DefaultGraphQLHttpSubscriptionMiddleware<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISubscriptionServer<TSchema> _subscriptionServer;
+        private readonly ISubscriptionServerClientFactory _clientFactory;
         private readonly RequestDelegate _next;
         private readonly TSchema _schema;
         private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly string _routePath;
-        private readonly ISubscriptionServerClientFactory _clientFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> class.
@@ -45,24 +46,21 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="next">The delegate pointing to the next middleware component
         /// in the pipeline.</param>
         /// <param name="schema">The schema targeted by this middleware component.</param>
-        /// <param name="subscriptionServer">The subscription server configured for
-        /// this web host.</param>
-        /// <param name="clientFactory">The client factory from which
-        /// a valid client proxy can be generated.</param>
-        /// <param name="options">The options.</param>
+        /// <param name="clientFactory">The client factory used to instantiate
+        /// client proxies.</param>
+        /// <param name="options">The configuration options the developer
+        /// assigned for this schema.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
             TSchema schema,
-            ISubscriptionServer<TSchema> subscriptionServer,
             ISubscriptionServerClientFactory clientFactory,
             SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            _subscriptionServer = Validation.ThrowIfNullOrReturn(subscriptionServer, nameof(subscriptionServer));
-            _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
             _clientFactory = Validation.ThrowIfNullOrReturn(clientFactory, nameof(clientFactory));
+            _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
         }
 
         /// <summary>
@@ -84,16 +82,26 @@ namespace GraphQL.AspNet.Defaults
             {
                 var logger = context.RequestServices.GetService<IGraphEventLogger>();
                 ISubscriptionClientProxy<TSchema> subscriptionClient = null;
+                IClientConnection clientConnection = null;
                 try
                 {
-                    IClientConnection clientConnectionProxy = new WebSocketClientConnection(context);
+                    clientConnection = new WebSocketClientConnection(context);
 
-                    subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnectionProxy);
-                    var wasRegistered = await _subscriptionServer.RegisterNewClient(subscriptionClient).ConfigureAwait(false);
+                    // if this schema instance only allows pre-authenticaed clients
+                    // do a hard exit
+                    var isAuthenticated = clientConnection.SecurityContext?.DefaultUser != null &&
+                                          clientConnection.SecurityContext
+                                            .DefaultUser
+                                            .Identities
+                                            .Any(x => x.IsAuthenticated);
 
-                    if (wasRegistered)
+                    if (_options.AuthenticatedRequestsOnly && !isAuthenticated)
+                        throw new UnauthenticatedClientConnectionException(clientConnection);
+
+                    subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnection);
+                    if (subscriptionClient != null)
                     {
-                        logger?.SubscriptionClientRegistered(_subscriptionServer, subscriptionClient);
+                        logger?.SubscriptionClientRegistered<TSchema>(subscriptionClient);
 
                         // hold the client connection to keep the socket open
                         await subscriptionClient.StartConnection(
@@ -104,9 +112,20 @@ namespace GraphQL.AspNet.Defaults
                         logger?.SubscriptionClientDropped(subscriptionClient);
                     }
                 }
+                catch (UnauthenticatedClientConnectionException)
+                {
+                    if (clientConnection != null)
+                    {
+                        await clientConnection.CloseAsync(
+                                ConnectionCloseStatus.ProtocolError,
+                                "Unauthorized Request",
+                                context.RequestAborted)
+                            .ConfigureAwait(false);
+                    }
+                }
                 catch (UnsupportedClientProtocolException uspe)
                 {
-                    logger?.UnsupportedClientProtocol(_subscriptionServer, _schema, uspe.Protocol);
+                    logger?.UnsupportedClientProtocol(_schema, uspe.Protocol);
                     if (!context.Response.HasStarted)
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -122,8 +141,8 @@ namespace GraphQL.AspNet.Defaults
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         await context.Response.WriteAsync(
-                            "An unexpected error occured attempting to configure the web socket connection. " +
-                            "Check the server event logs for further details.")
+                            "An unexpected error occured attempting to configure the web socket " +
+                            "connection. Check the server event logs for further details.")
                             .ConfigureAwait(false);
                     }
                 }

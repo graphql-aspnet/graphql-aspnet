@@ -40,30 +40,33 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
     [TestFixture]
     public partial class GqltwsClientProxyTests
     {
-        private async Task<(MockClientConnection, GqltwsClientProxy<GraphSchema>)> CreateConnection()
+        private (MockClientConnection, GqltwsClientProxy<GraphSchema>, Mock<ISubscriptionEventRouter>) CreateConnection()
         {
             var server = new TestServerBuilder()
                 .AddGraphController<GqltwsSubscriptionController>()
                 .AddSubscriptionServer((options) =>
                 {
                     options.ConnectionKeepAliveInterval = TimeSpan.FromMinutes(15);
+                    options.AuthenticatedRequestsOnly = false;
                 })
                 .Build();
 
-            var connection = server.CreateClientConnection();
+            var router = new Mock<ISubscriptionEventRouter>();
+
+            var connection = server.CreateClientConnection(GqltwsConstants.PROTOCOL_NAME);
             var serverOptions = server.ServiceProvider.GetRequiredService<SubscriptionServerOptions<GraphSchema>>();
-            var subServer = server.ServiceProvider.GetRequiredService<ISubscriptionServer<GraphSchema>>();
 
-            var subClient = new GqltwsClientProxy<GraphSchema>(connection);
-
-            await subServer.RegisterNewClient(subClient);
-            return (connection, subClient);
+            var subClient = new GqltwsClientProxy<GraphSchema>(
+                connection,
+                server.Schema,
+                router.Object);
+            return (connection, subClient, router);
         }
 
         [Test]
-        public async Task GeneralPropertyCheck()
+        public void GeneralPropertyCheck()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             Assert.IsNotNull(string.IsNullOrWhiteSpace(graphqlWsClient.Id));
             Assert.AreNotEqual(Guid.Empty.ToString(), graphqlWsClient.Id);
@@ -71,85 +74,16 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         }
 
         [Test]
-        public async Task WhenConnectionOpened_EventFires()
-        {
-            bool eventCalled = false;
-            void ConnectionOpening(object sender, EventArgs e)
-            {
-                eventCalled = true;
-            }
-
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
-            connection.QueueConnectionClosedByClient();
-
-            // execute the connection sequence
-            graphqlWsClient.ConnectionOpening += ConnectionOpening;
-            await graphqlWsClient.StartConnection();
-
-            Assert.IsTrue(eventCalled, "Connection Opening Event Handler not called");
-            graphqlWsClient.Dispose();
-        }
-
-        [Test]
-        public async Task WhenConnectionCloses_ClosedEventFires()
-        {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
-
-            bool closedCalled = false;
-
-            void ConnectionClosed(object sender, EventArgs e)
-            {
-                closedCalled = true;
-            }
-
-            graphqlWsClient.ConnectionClosed += ConnectionClosed;
-
-            // execute the connection sequence
-            connection.QueueConnectionClosedByClient();
-            await graphqlWsClient.StartConnection();
-
-            Assert.IsTrue(closedCalled, "Connection Closed Event Handler not called");
-        }
-
-        [Test]
-        public async Task WhenConnectionCloses_ClosingEventFires()
-        {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
-
-            bool closingCalled = false;
-
-            void ConnectionClosing(object sender, EventArgs e)
-            {
-                closingCalled = true;
-            }
-
-            graphqlWsClient.ConnectionClosing += ConnectionClosing;
-
-            // execute the connection sequence
-            connection.QueueConnectionClosedByClient();
-            await graphqlWsClient.StartConnection();
-
-            Assert.IsTrue(closingCalled, "Connection Closing event not called");
-        }
-
-        [Test]
         public async Task StartConnection_OnReadClose_IfConnectionIsOpen_CloseConnection()
         {
             // set the underlying connection to not auto close when it retrieves a close message
             // from the queue, leaving it up to the graphql-ws client to do the close
-            var connection = new MockClientConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
             var options = new SubscriptionServerOptions<GraphSchema>();
 
             var provider = new ServiceCollection().BuildServiceProvider();
-            var graphqlWsClient = new GqltwsClientProxy<GraphSchema>(connection);
 
             var eventCalled = false;
-            void ConnectionClosed(object sender, EventArgs e)
-            {
-                eventCalled = true;
-            }
-
-            graphqlWsClient.ConnectionClosed += ConnectionClosed;
 
             // execute the connection sequence
             connection.QueueConnectionClosedByClient();
@@ -161,7 +95,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task AttemptingToStartAClosedConnection_ThrowsException()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // init a connection then close the socket
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
@@ -176,16 +110,17 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             // attempt to restart the closed connection
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
-           {
-               await graphqlWsClient.StartConnection();
-           });
+            {
+                 await graphqlWsClient.StartConnection();
+            });
+
             graphqlWsClient.Dispose();
         }
 
         [Test]
         public async Task StartConnection_ContinuesToReadMessagesFromTheSocketConnect_UntilCloseMessage()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueConnectionClosedByClient(); // socket level close message
@@ -202,7 +137,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task StartSubscription_RegistersSubscriptionCorrectly()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // startup the connection then register a subscription
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
@@ -217,44 +152,17 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.QueueConnectionClosedByClient();
 
-            var routesAdded = 0;
-            var routesRemoved = 0;
-            void RouteAdded(object o, SubscriptionFieldEventArgs e)
-            {
-                if (e.Field.Name == "watchForPropObject")
-                    routesAdded += 1;
-            }
-
-            void RouteRemoved(object o, SubscriptionFieldEventArgs e)
-            {
-                if (e.Field.Name == "watchForPropObject")
-                    routesRemoved += 1;
-            }
-
-            bool closeCalled = false;
-            void ConnectionClosing(object o, EventArgs e)
-            {
-                closeCalled = true;
-                Assert.AreEqual(1, graphqlWsClient.Subscriptions.Count());
-            }
-
-            graphqlWsClient.SubscriptionRouteAdded += RouteAdded;
-            graphqlWsClient.SubscriptionRouteRemoved += RouteRemoved;
-            graphqlWsClient.ConnectionClosing += ConnectionClosing;
-
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
 
-            Assert.AreEqual(1, routesAdded);
-            Assert.AreEqual(1, routesRemoved);
-            Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
+            router.Verify(x => x.AddReceiver(graphqlWsClient, It.IsAny<SubscriptionEventName>()), Times.Once());
             graphqlWsClient.Dispose();
         }
 
         [Test]
         public async Task StartSubscription_ButMessageIsAQuery_ImmediatelyYieldsNEXTMessage()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // Use subscribe message to send a query, not a subscription request.
             // Client should respond with expected NEXT with the results
@@ -289,7 +197,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task StartSubscription_ButMessageIsAQuery_WithSyntaxError_ImmediatelyYieldsError()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // Use subscribe message to send a query, not a subscription request.
             // Client should respond with expected NEXT with the results
@@ -314,7 +222,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task ReceiveEvent_OnStartedSubscription_YieldsNEXTMessage()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             var startMessage = new GqltwsClientSubscribeMessage()
             {
@@ -330,12 +238,19 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             // mimic new data for the registered subscription being processed by some
             // other mutation
-            var route = new SchemaItemPath("[subscription]/GqltwsSubscription/WatchForPropObject");
-            await graphqlWsClient.ReceiveEvent(route, new TwoPropertyObject()
+            var evt = new SubscriptionEvent()
             {
-                Property1 = "value1",
-                Property2 = 33,
-            });
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GqltwsSubscriptionController.WatchForPropObject),
+                SchemaTypeName = nameof(GraphSchema),
+            };
+            await graphqlWsClient.ReceiveEvent(evt);
 
             // the connection should receive a data package
             connection.AssertGqltwsResponse(
@@ -356,15 +271,23 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task ReceiveEvent_WhenNoSubscriptions_YieldsNothing()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // no active subscriptions for the client, but a server event is received
-            var route = new SchemaItemPath("[subscription]/GqltwsSubscription/WatchForPropObject");
-            await graphqlWsClient.ReceiveEvent(route, new TwoPropertyObject()
+            var evt = new SubscriptionEvent()
             {
-                Property1 = "value1",
-                Property2 = 33,
-            });
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GqltwsSubscriptionController.WatchForPropObject),
+                SchemaTypeName = nameof(GraphSchema),
+            };
+
+            await graphqlWsClient.ReceiveEvent(evt);
 
             // nothing should have been sent to the connection
             Assert.AreEqual(0, connection.ResponseMessageCount);
@@ -373,7 +296,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task ReceiveEvent_OnNonSubscribedEventNAme_YieldsNothing()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // start a real subscription so the client is tracking one
             var startMessage = new GqltwsClientSubscribeMessage()
@@ -388,12 +311,18 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             await graphqlWsClient.ProcessMessage(startMessage);
 
             // fire an event against a route not tracked, ensure the client skips it.
-            var route = new SchemaItemPath("[subscription]/GqltwsSubscription/WatchForPropObject_NotReal");
-            await graphqlWsClient.ReceiveEvent(route, new TwoPropertyObject()
+            var evt = new SubscriptionEvent()
             {
-                Property1 = "value1",
-                Property2 = 33,
-            });
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GqltwsSubscriptionController.WatchForPropObject2),
+                SchemaTypeName = nameof(GraphSchema),
+            };
 
             Assert.AreEqual(0, connection.ResponseMessageCount);
         }
@@ -401,7 +330,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task StopSubscription_RemovesSubscriptionCorrectly()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
@@ -420,45 +349,15 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.QueueConnectionClosedByClient();
 
-            var routesAdded = 0;
-            var routesRemoved = 0;
-            void RouteAdded(object o, SubscriptionFieldEventArgs e)
-            {
-                if (e.Field.Name == "watchForPropObject")
-                    routesAdded += 1;
-            }
-
-            void RouteRemoved(object o, SubscriptionFieldEventArgs e)
-            {
-                if (e.Field.Name == "watchForPropObject")
-                    routesRemoved += 1;
-            }
-
-            bool closeCalled = false;
-            void ConnectionClosing(object o, EventArgs e)
-            {
-                closeCalled = true;
-
-                // should be no subscriptions by the time the connection closes
-                Assert.AreEqual(0, graphqlWsClient.Subscriptions.Count());
-            }
-
-            graphqlWsClient.SubscriptionRouteAdded += RouteAdded;
-            graphqlWsClient.SubscriptionRouteRemoved += RouteRemoved;
-            graphqlWsClient.ConnectionClosing += ConnectionClosing;
-
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
-            Assert.AreEqual(1, routesAdded);
-            Assert.AreEqual(1, routesRemoved);
-            Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
             graphqlWsClient.Dispose();
         }
 
         [Test]
         public async Task StartMultipleSubscriptions_AllRegistered_ButRouteEventOnlyRaisedOnce()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
@@ -480,25 +379,15 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.QueueConnectionClosedByClient();
 
-            bool closeCalled = false;
-            void ConnectionClosing(object o, EventArgs e)
-            {
-                closeCalled = true;
-                Assert.AreEqual(2, graphqlWsClient.Subscriptions.Count());
-            }
-
-            graphqlWsClient.ConnectionClosing += ConnectionClosing;
-
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
-            Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
             graphqlWsClient.Dispose();
         }
 
         [Test]
         public async Task AttemptToStartMultipleSubscriptionsWithSameId_ResultsInErrorMessageForSecond()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
@@ -520,19 +409,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             connection.QueueConnectionClosedByClient();
 
-            bool closeCalled = false;
-            void ConnectionClosing(object o, EventArgs e)
-            {
-                closeCalled = true;
-                Assert.AreEqual(1, graphqlWsClient.Subscriptions.Count());
-            }
-
-            graphqlWsClient.ConnectionClosing += ConnectionClosing;
-
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
 
-            Assert.IsTrue(closeCalled, "Connection closing never called to verify client state");
             connection.AssertGqltwsResponse(GqltwsMessageType.CONNECTION_ACK);
             connection.AssertGqltwsResponse(GqltwsMessageType.ERROR);
             graphqlWsClient.Dispose();
@@ -541,7 +420,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task ExecuteQueryThroughStartMessage_YieldsQueryResult()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsClientSubscribeMessage()
             {
@@ -572,7 +451,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task SendingTooManyInitRequests_ClosesTheConnection()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
@@ -592,7 +471,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task NotSendingTheInitMessageWithinTimeoutPeriod_ClosesTheConnection()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             await graphqlWsClient.StartConnection(initializationTimeout: TimeSpan.FromMilliseconds(5));
 
@@ -608,7 +487,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task WhenPingReceived_PongIsSent()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsPingMessage());
@@ -630,7 +509,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task WhenClientSendsSubscriptionComplete_ServerDropsTheSubscription()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             // queue the subscription
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
@@ -677,7 +556,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task RecievingAnInvaidMessageType_ServerClosesConnectionImmediately()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new FakeGqltwsMessage());
@@ -699,7 +578,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task RecievedPingMessages_ResponsesWithAPong()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
             connection.QueueClientMessage((object)new GqltwsPingMessage());
@@ -715,7 +594,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
         [Test]
         public async Task StopSubscription_AgainstNonExistantId_IsIgnored()
         {
-            (var connection, var graphqlWsClient) = await this.CreateConnection();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
             connection.QueueClientMessage((object)new GqltwsClientConnectionInitMessage());
 

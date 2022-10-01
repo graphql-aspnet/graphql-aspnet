@@ -46,17 +46,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphqlWsLegacyClientProxy{TSchema}" /> class.
         /// </summary>
-        /// <param name="clientConnection">The underlying client connection for GraphqlWsLegacy to manage.</param>
-        /// <param name="protocolName">Name of the protocol this client negotiated as.</param>
-        /// <param name="logger">The logger to record client level events to, if any.</param>
+        /// <param name="schema">The schema this client listens for.</param>
+        /// <param name="clientConnection">The underlying client connection that this proxy communicates with.</param>
+        /// <param name="router">The router component that will send this client event data.</param>
+        /// <param name="protocolName">Name of the protocol this client presents as.</param>
+        /// <param name="logger">The primary logger object to record events to.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>
         public GraphqlWsLegacyClientProxy(
+            TSchema schema,
             IClientConnection clientConnection,
+            ISubscriptionEventRouter router,
             string protocolName,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
-            : base(Guid.NewGuid().ToString(), clientConnection, logger)
+            : base(Guid.NewGuid().ToString(), schema, clientConnection, router, logger)
         {
             this.Protocol = Validation.ThrowIfNullWhiteSpaceOrReturn(protocolName, nameof(protocolName));
 
