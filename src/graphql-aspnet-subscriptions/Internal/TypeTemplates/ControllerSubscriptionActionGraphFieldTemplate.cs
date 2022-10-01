@@ -47,16 +47,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         /// </summary>
         protected override void ParseTemplateDefinition()
         {
-            var fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
-            if (fieldDeclaration is SubscriptionAttribute sa)
-                this.EventName = sa.EventName;
-            else if (fieldDeclaration is SubscriptionRootAttribute sra)
-                this.EventName = sra.EventName;
-
-            this.EventName = this.EventName?.Trim();
-            if (string.IsNullOrWhiteSpace(this.EventName))
-                this.EventName = this.Method.Name;
-
             // before parsing we have to determine the expected source data
             // when an event is raised targeting this field
             // In order we should check:
@@ -72,7 +62,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 _explicitlyDeclaredSubscriptionSourceType = sourceParam.ParameterType;
             }
 
+            // perform base parsing
             base.ParseTemplateDefinition();
+
+            // figure out the event name
+            var fieldDeclaration = this.AttributeProvider.SingleAttributeOfTypeOrDefault<GraphFieldAttribute>();
+            if (fieldDeclaration is SubscriptionAttribute sa)
+                this.EventName = sa.EventName;
+            else if (fieldDeclaration is SubscriptionRootAttribute sra)
+                this.EventName = sra.EventName;
+
+            this.EventName = this.EventName?.Trim();
+            if (string.IsNullOrWhiteSpace(this.EventName))
+                this.EventName = this.Method.Name;
         }
 
         /// <summary>

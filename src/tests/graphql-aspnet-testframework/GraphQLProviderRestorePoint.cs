@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Schemas;
 
     /// <summary>
     /// A marker to a point in time that, when disposed, will reset the <see cref="GraphQLProviders"/> to the values
@@ -35,6 +36,8 @@ namespace GraphQL.AspNet.Tests.Framework
             _scalarTypeProvider = GraphQLProviders.ScalarProvider;
             _makerProvider = GraphQLProviders.GraphTypeMakerProvider;
             _globalConfig = GraphQLProviders.GlobalConfiguration;
+
+            SchemaSubscriptionEventMap.ClearCache();
         }
 
         /// <summary>

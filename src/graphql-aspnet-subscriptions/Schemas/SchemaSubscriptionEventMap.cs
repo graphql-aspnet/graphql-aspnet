@@ -42,11 +42,12 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Clears all locally cacehed subscription event names.
+        /// Clears all locally cached subscription event names.
         /// </summary>
-        internal static void ClearCache()
+        public static void ClearCache()
         {
             SUBSCRIPTION_EVENTNAME_CATALOG.Clear();
+            PARSED_SCHEMA_TYPES.Clear();
         }
 
         /// <summary>

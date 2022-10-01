@@ -61,10 +61,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <returns>IEnumerable&lt;SubscriptionEventName&gt;.</returns>
         private static SubscriptionEventName FromSchemaTypeAndField(Type schemaType, ISubscriptionGraphField field)
         {
-            if (!string.IsNullOrWhiteSpace(field.EventName))
-                return new SubscriptionEventName(schemaType, field.EventName);
-
-            return null;
+            return new SubscriptionEventName(schemaType, field.EventName);
         }
 
         /// <summary>

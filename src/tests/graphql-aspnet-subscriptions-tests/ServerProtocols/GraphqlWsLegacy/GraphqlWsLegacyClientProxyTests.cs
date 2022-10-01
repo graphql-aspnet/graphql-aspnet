@@ -11,27 +11,20 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
     using System;
     using System.Linq;
-    using System.Net.Sockets;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.GraphqlTransportWsData;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
-    using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
 
@@ -64,6 +57,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public void GeneralPropertyCheck()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             Assert.IsNotNull(string.IsNullOrWhiteSpace(client.Id));
@@ -73,6 +67,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StartConnection_OnReadClose_IfConnectionIsOpen_CloseConnection()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             // execute the connection sequence
@@ -86,6 +81,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task AttemptingToStartAClosedConnection_ThrowsException()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -108,6 +104,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StartSubscription_RegistersSubscriptionCorrectly()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -133,6 +130,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StartSubscription_ButMessageIsAQuery_YieldsDataMessageAndComplete()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             // use start message to send a query, not a subscription request
@@ -166,6 +164,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ReceiveEvent_OnStartedSubscription_YieldsDataMessage()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             var startMessage = new GraphqlWsLegacyClientStartMessage()
@@ -212,6 +211,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ReceiveEvent_WhenNoSubscriptions_YieldsNothing()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             var evt = new SubscriptionEvent()
@@ -235,6 +235,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ReceiveEvent_OnNonSubscribedEventNAme_YieldsNothing()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             // start a real subscription so the client is tracking one
@@ -268,6 +269,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StopSubscription_AgainstExistantId_RemovesSubscriptionCorrectly()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -305,6 +307,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StopSubscription_AgainstNonExistantId_YieldsError()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -322,6 +325,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task StartMultipleSubscriptions_AllRegistered_ButRouteEventOnlyRaisedOnce()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -362,6 +366,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task AttemptToStartMultipleSubscriptionsWithSameId_ResultsInErrorMessageForSecond()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -408,6 +413,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task SendConnectionTerminate_ClosesConnectionFromServer()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -422,6 +428,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task InvalidMessageType_ResultsInError()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
@@ -443,6 +450,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         [Test]
         public async Task ExecuteQueryThroughStartMessage_YieldsQueryResult()
         {
+            using var restorePoint = new GraphQLProviderRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientConnectionInitMessage());
             socketClient.QueueClientMessage(new GraphqlWsLegacyClientStartMessage()

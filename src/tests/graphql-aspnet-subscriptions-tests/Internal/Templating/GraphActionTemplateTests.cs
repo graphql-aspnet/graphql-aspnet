@@ -62,7 +62,7 @@ namespace GraphQL.Subscriptions.Tests.Internal.Templating
             Assert.IsFalse(action.Route.IsTopLevelField);
             Assert.IsFalse(action.IsAsyncField);
 
-            Assert.IsNull(action.EventName);
+            Assert.AreEqual("SingleMethod", action.EventName);
         }
 
         [Test]
