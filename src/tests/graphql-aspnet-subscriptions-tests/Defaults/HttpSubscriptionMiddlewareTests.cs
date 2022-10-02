@@ -21,9 +21,8 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using GraphQL.AspNet.Exceptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Features;
     using Moq;
     using NUnit.Framework;
 

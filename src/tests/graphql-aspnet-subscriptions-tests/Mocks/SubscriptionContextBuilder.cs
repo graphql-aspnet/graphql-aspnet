@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions
+namespace GraphQL.Subscriptions.Tests.Mocks
 {
     using System;
     using System.Collections.Generic;
@@ -160,7 +160,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
             foreach (var kvp in _sourceData)
             {
                 var mockField = new Mock<IGraphField>();
-                mockField.Setup(x => x.FieldSource).Returns(GraphQL.AspNet.Internal.TypeTemplates.GraphFieldSource.Action);
+                mockField.Setup(x => x.FieldSource).Returns(AspNet.Internal.TypeTemplates.GraphFieldSource.Action);
                 mockField.Setup(x => x.Route).Returns(kvp.Key);
                 context.DefaultFieldSources.AddSource(mockField.Object, kvp.Value);
             }

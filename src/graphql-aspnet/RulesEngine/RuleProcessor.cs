@@ -8,20 +8,6 @@
 // *************************************************************
 
 namespace GraphQL.AspNet.RulesEngine
-
-/* Unmerged change from project 'graphql-aspnet (net6.0)'
-Before:
-{
-    /// <summary>
-After:
-{
-    using GraphQL;
-    using GraphQL.AspNet;
-    using GraphQL.AspNet.RulesEngine;
-    using GraphQL.AspNet.ValidationRules;
-
-    /// <summary>
-*/
 {
     /// <summary>
     /// A publicly editable, core object for housing common constants and other rarely changed values relating

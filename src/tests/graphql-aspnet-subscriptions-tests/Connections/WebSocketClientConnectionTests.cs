@@ -17,7 +17,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;

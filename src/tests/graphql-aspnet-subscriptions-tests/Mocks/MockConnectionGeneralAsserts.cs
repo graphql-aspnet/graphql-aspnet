@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions
+namespace GraphQL.Subscriptions.Tests.Mocks
 {
     using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Tests.Framework.Clients;
     using NUnit.Framework;
 
     public static class MockConnectionGeneralAsserts

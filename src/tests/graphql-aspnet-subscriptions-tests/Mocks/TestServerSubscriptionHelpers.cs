@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.TestServerExtensions
+namespace GraphQL.Subscriptions.Tests.Mocks
 {
     using System;
     using System.Threading.Tasks;
@@ -21,8 +21,8 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -45,7 +45,7 @@ namespace GraphQL.Subscriptions.Tests.TestServerExtensions
 
             serverBuilder.AddSchemaBuilderAction(schemaBuilder =>
             {
-                DefaultSubscriptionBuilderExtensions.AddSubscriptionServer(schemaBuilder, options);
+                schemaBuilder.AddSubscriptionServer(options);
             });
 
             return serverBuilder;

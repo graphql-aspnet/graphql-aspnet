@@ -7,12 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Framework.Clients
+namespace GraphQL.Subscriptions.Tests.Mocks
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -20,7 +18,6 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using Moq;
-    using NuGet.Frameworks;
 
     /// <summary>
     /// A fake client connection to mock how an <see cref="IClientConnection"/> would send and recieve

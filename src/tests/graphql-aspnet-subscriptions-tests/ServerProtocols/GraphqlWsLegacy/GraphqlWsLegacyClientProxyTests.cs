@@ -21,10 +21,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Framework.Clients;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using Moq;
     using NUnit.Framework;
 

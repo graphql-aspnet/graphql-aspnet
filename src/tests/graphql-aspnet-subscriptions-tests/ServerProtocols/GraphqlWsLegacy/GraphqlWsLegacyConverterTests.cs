@@ -18,7 +18,6 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
@@ -27,6 +26,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
+    using GraphQL.Subscriptions.Tests.Mocks;
 
     [TestFixture]
     public class GraphqlWsLegacyConverterTests

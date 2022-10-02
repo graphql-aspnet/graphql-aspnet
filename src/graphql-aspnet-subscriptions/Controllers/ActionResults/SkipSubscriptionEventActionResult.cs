@@ -20,9 +20,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// event data to be dropped and no data will be sent to the connection client.
     /// </para>
     /// </summary>
-    /// <remarks>
-    /// Mimics returning a result of <c>null</c> for non subscription actions.
-    /// </remarks>
     public class SkipSubscriptionEventActionResult : IGraphActionResult
     {
         /// <inheritdoc />
