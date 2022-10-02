@@ -228,7 +228,6 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             };
 
             await client.ReceiveEvent(evt);
-
             Assert.AreEqual(0, socketClient.ResponseMessageCount);
         }
 

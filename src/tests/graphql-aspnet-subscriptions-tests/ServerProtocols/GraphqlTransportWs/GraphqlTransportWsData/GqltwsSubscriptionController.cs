@@ -21,7 +21,6 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.Graphql
             return obj;
         }
 
-
         [Subscription]
         public TwoPropertyObject WatchForPropObject2(TwoPropertyObject obj)
         {

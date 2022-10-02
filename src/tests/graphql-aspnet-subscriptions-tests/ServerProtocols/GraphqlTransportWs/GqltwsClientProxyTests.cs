@@ -84,6 +84,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             // execute the connection sequence
             connection.QueueConnectionClosedByClient();
             await graphqlWsClient.StartConnection();
+
+            connection.AssertClientClosedConnection();
             graphqlWsClient.Dispose();
         }
 

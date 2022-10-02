@@ -30,7 +30,6 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     public class MockSubscriptionClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
         where TSchema : class, ISchema
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MockSubscriptionClientProxy{TSchema}" /> class.
         /// </summary>

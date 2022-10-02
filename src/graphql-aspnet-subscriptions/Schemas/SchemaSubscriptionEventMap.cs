@@ -81,7 +81,6 @@ namespace GraphQL.AspNet.Schemas
                 }
 
                 dic.Add(eventName, route);
-
             }
 
             return dic;
