@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Controllers
     public abstract partial class GraphController
     {
         /// <summary>
-        /// Returns an action with the given object as the resolved object for the field resolution.
+        /// Returns an result with the given item as the resolved object for the field resolution.
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an action with a <c>null</c> value as the resolved object for the field resolution.
+        /// Returns an result with a <c>null</c> value as the resolved object for the field resolution.
         /// </summary>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok()

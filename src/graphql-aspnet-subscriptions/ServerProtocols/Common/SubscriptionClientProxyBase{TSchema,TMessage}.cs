@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Tracing;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -25,6 +26,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -183,7 +185,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     keepAliveTimer.Start();
                 }
 
-                // message dispatch loop
+                // message loop
                 IClientConnectionReceiveResult result = null;
                 if (_clientConnection.State == ClientConnectionState.Open)
                 {
@@ -204,19 +206,19 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     while (!result.CloseStatus.HasValue && _clientConnection.State == ClientConnectionState.Open);
                 }
 
-                // immediately kill any timers
+                // immediately kill any timers once we stop
+                // listening for messages
                 keepAliveTimer?.Stop();
                 keepAliveTimer?.Dispose();
                 keepAliveTimer = null;
+                this.IsKeepAliveEnabled = false;
 
+                initialziationTimer?.Stop();
                 initialziationTimer?.Dispose();
                 initialziationTimer = null;
 
-                this.IsKeepAliveEnabled = false;
-
                 // the connection and resources may already be closed
-                // due to a processed message
-                // but just in case attempt to reprocess it
+                // but in case it wasnt formally close it
                 if (_clientConnection?.State == ClientConnectionState.Open)
                 {
                     await this.CloseConnection(
@@ -240,17 +242,18 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 keepAliveTimer?.Stop();
                 keepAliveTimer?.Dispose();
                 keepAliveTimer = null;
+                this.IsKeepAliveEnabled = false;
 
+                initialziationTimer?.Stop();
                 initialziationTimer?.Dispose();
                 initialziationTimer = null;
-                this.IsKeepAliveEnabled = false;
             }
         }
 
         /// <summary>
-        /// When overriden in a sub class, this method fires when the server provided timeframe
+        /// When overriden in a child class, this method fires when the server provided timeframe
         /// for client initailization has expired. This method will always fire when the timeout
-        /// completes it is up to the class implementing this method to act accordingly.
+        /// completes, it is up to the class implementing this method to act accordingly.
         /// </summary>
         /// <param name="token">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
@@ -269,56 +272,73 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             if (field == null)
                 return;
 
-            // find the subscriptions that are listening for the received data
-            var subscriptions = _subscriptions.RetreiveByRoute(field);
-            if (subscriptions.Count == 0)
+            // find the subscriptions that are registered for the received data
+            var targetSubscriptions = _subscriptions.RetreiveByRoute(field);
+            if (targetSubscriptions.Count == 0)
                 return;
 
-            this.Logger.SubscriptionEventReceived(field, subscriptions);
-
-            var runtime = _clientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
-            var schema = _clientConnection.ServiceProvider.GetRequiredService<TSchema>();
+            this.Logger.SubscriptionEventReceived(field, targetSubscriptions);
 
             // execute the individual subscription queries
             // using the provided source data as an input
             var tasks = new List<Task>();
-            foreach (var subscription in subscriptions)
+            foreach (var subscription in targetSubscriptions)
             {
-                IGraphQueryExecutionMetrics metricsPackage = null;
-                IGraphEventLogger logger = _clientConnection.ServiceProvider.GetService<IGraphEventLogger>();
-
-                if (schema.Configuration.ExecutionOptions.EnableMetrics)
-                {
-                    var factory = _clientConnection.ServiceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
-                    metricsPackage = factory.CreateMetricsPackage();
-                }
-
-                var context = new GraphQueryExecutionContext(
-                    runtime.CreateRequest(subscription.QueryData),
-                    _clientConnection.ServiceProvider,
-                    _clientConnection.SecurityContext,
-                    metricsPackage,
-                    logger);
-
-                // register the event data as a source input for the target subscription field
-                context.DefaultFieldSources.AddSource(subscription.Field, eventData.Data);
-                context.QueryPlan = subscription.QueryPlan;
-
-                tasks.Add(runtime.ExecuteRequest(context, _clientConnection.RequestAborted)
-                    .ContinueWith(
-                        task =>
-                        {
-                            if (task.IsFaulted)
-                                return task;
-
-                            // send the message with the resultant data package
-                            var message = this.CreateDataMessage(subscription.Id, task.Result);
-                            return this.SendMessage(message);
-                        },
-                        _clientConnection.RequestAborted));
+                var executionTask = this.ExecuteSubscriptionEvent(subscription, eventData);
+                tasks.Add(executionTask);
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Executes the recevied event data against an individual, active subscription.
+        /// </summary>
+        /// <param name="subscription">The subscription to execute against.</param>
+        /// <param name="eventData">The event data to process.</param>
+        /// <returns>Task.</returns>
+        protected virtual async Task ExecuteSubscriptionEvent(ISubscription<TSchema> subscription, SubscriptionEvent eventData)
+        {
+            // ------------------------------
+            // Setup a new execution context to process the request
+            // ------------------------------
+            var runtime = _clientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
+            var schema = _clientConnection.ServiceProvider.GetRequiredService<TSchema>();
+
+            IGraphQueryExecutionMetrics metricsPackage = null;
+            IGraphEventLogger logger = _clientConnection.ServiceProvider.GetService<IGraphEventLogger>();
+
+            if (schema.Configuration.ExecutionOptions.EnableMetrics)
+            {
+                var factory = _clientConnection.ServiceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
+                metricsPackage = factory.CreateMetricsPackage();
+            }
+
+            var context = new GraphQueryExecutionContext(
+                runtime.CreateRequest(subscription.QueryData),
+                _clientConnection.ServiceProvider,
+                _clientConnection.SecurityContext,
+                metricsPackage,
+                logger);
+
+            // ------------------------------
+            // register the event data as a source input for the target subscription field
+            // ------------------------------
+            context.DefaultFieldSources.AddSource(subscription.Field, eventData.Data);
+            context.QueryPlan = subscription.QueryPlan;
+
+            // ------------------------------
+            // execute the request
+            // ------------------------------
+            var result = await runtime.ExecuteRequest(context, _clientConnection.RequestAborted);
+            if (context.Items.ContainsKey(SubscriptionConstants.SKIPPED_EVENT_KEY))
+                return;
+
+            // ------------------------------
+            // send the message with the resultant data package
+            // ------------------------------
+            var message = this.CreateDataMessage(subscription.Id, result);
+            await this.SendMessage(message);
         }
 
         /// <summary>

@@ -12,8 +12,10 @@ namespace GraphQL.AspNet.Controllers
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Controllers;
 
     /// <summary>
     /// Extension methods to expose subscription to graph controllers.
@@ -58,6 +60,20 @@ namespace GraphQL.AspNet.Controllers
             {
                 eventList.Add(new SubscriptionEventProxy(eventName, dataObject));
             }
+        }
+
+        /// <summary>
+        /// Returns an result indicating that this subscription event invocation
+        /// should be cancelled and no data sent to the connected client.
+        /// </summary>
+        /// <remarks>
+        /// <b>Note:</b> Issues a bad request and terminates the query for non-subscription action methods.
+        /// </remarks>
+        /// <param name="controller">The controller that contains the subscription method.</param>
+        /// <returns>IGraphActionResult.</returns>
+        public static IGraphActionResult SkipSubscriptionEvent(this GraphController controller)
+        {
+            return new SkipSubscriptionEventActionResult();
         }
     }
 }

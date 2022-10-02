@@ -9,7 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.Execution
 {
-    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Execution;
@@ -22,7 +21,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData;
     using GraphQL.Subscriptions.Tests.TestServerExtensions;
-    using Microsoft.VisualStudio.TestPlatform.TestExecutor;
     using Moq;
     using NUnit.Framework;
 
@@ -37,7 +35,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 .AddSubscriptionServer()
                 .Build();
 
-            var schema = testServer.Schema;
             var queryPlan = await testServer.CreateQueryPlan("subscription { watchObjects { property1 property2  }} ");
 
             Assert.IsNotNull(queryPlan.Operation);
@@ -46,12 +43,12 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var field = queryPlan.Operation.FieldContexts[0].Field;
             var name = field.GetType().FullName;
 
-            var clientResult = testServer.CreateSubscriptionClient();
+            var result = testServer.CreateSubscriptionClient();
 
             var queryData = new GraphQueryData();
 
             var sub = new ClientSubscription<GraphSchema>(
-                clientResult.Client,
+                result.Client,
                 queryData,
                 queryPlan,
                 queryPlan.Operation,
@@ -61,7 +58,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             Assert.AreEqual("[subscription]/WatchObjects", sub.Route.Path);
             Assert.AreEqual("abc123", sub.Id);
             Assert.AreEqual(field, sub.Field);
-            Assert.AreEqual(clientResult.Client, sub.Client);
+            Assert.AreEqual(result.Client, sub.Client);
             Assert.AreEqual(queryData, sub.QueryData);
         }
 
@@ -78,10 +75,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Query);
 
-            var testClient = testServer.CreateSubscriptionClient();
+            var result = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient.Client,
+                result.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
                 fakeOp.Object,
@@ -112,10 +109,10 @@ namespace GraphQL.Subscriptions.Tests.Execution
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Subscription);
             fakeOp.Setup(x => x.FieldContexts).Returns(fakeFieldContexts.Object);
 
-            var testClient = testServer.CreateSubscriptionClient();
+            var result = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient.Client,
+                result.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
                 fakeOp.Object,

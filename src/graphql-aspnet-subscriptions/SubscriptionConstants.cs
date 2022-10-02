@@ -22,7 +22,13 @@ namespace GraphQL.AspNet
         /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
         /// any events that were raised during the query execution.
         /// </summary>
-        public const string RAISED_EVENTS_COLLECTION_KEY = "RaisedSubscriptionEvents";
+        public const string RAISED_EVENTS_COLLECTION_KEY = "GraphqlAspNet:Subscriptions:RaisedSubscriptionEvents";
+
+        /// <summary>
+        /// A key added to the items collection of a request of a subscription
+        /// indicating that the request should be dropped/skipped.
+        /// </summary>
+        public const string SKIPPED_EVENT_KEY = "GraphqlAspNet:Subscriptions:SkippedSubscriptionEvent";
 
         /// <summary>
         /// A collection of constants related to subscription routing.

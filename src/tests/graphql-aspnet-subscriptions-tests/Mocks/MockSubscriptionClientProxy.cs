@@ -19,12 +19,11 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Schemas.Structural;
     using Moq;
 
     /// <summary>
     /// A fake subscription client used to test server operations against
-    /// connected clients without a specific protocol being in the mix.
+    /// connected clients without a real, underlying connection being present.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this proxy exists for.</typeparam>
     public class MockSubscriptionClientProxy<TSchema> : ISubscriptionClientProxy<TSchema>
@@ -114,7 +113,8 @@ namespace GraphQL.AspNet.Tests.Framework.Clients
         public string Protocol => "fake-protocol";
 
         /// <summary>
-        /// Gets the underlying client connection so its available to tests.
+        /// Gets the underlying client connection so its available to tests. This is a
+        /// mock interface, not a real connection.
         /// </summary>
         /// <value>The client connection.</value>
         public IClientConnection ClientConnection { get; }

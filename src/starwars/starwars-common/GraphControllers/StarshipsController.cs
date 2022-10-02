@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.StarwarsAPI.Common.Model;
@@ -103,9 +104,9 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         public Task<IGraphActionResult> StarshipUpdated(Starship eventData, string nameLike = "*")
         {
             if (eventData != null && (nameLike == "*" || eventData.Name.Contains(nameLike)))
-                return Task.FromResult(this.Ok(eventData));
+                return this.Ok(eventData).AsCompletedTask();
 
-            return Task.FromResult(this.Ok());
+            return this.SkipSubscriptionEvent().AsCompletedTask();
         }
     }
 }
