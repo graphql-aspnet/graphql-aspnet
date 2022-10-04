@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     /// A class representing the application of a <see cref="GraphDirective"/>
     /// to a schema item.
     /// </summary>
-    [DebuggerDisplay("Directive = {DiagnosticName} (Arg Count = {Arguments.Length})")]
+    [DebuggerDisplay("Directive = {DiagnosticName} (Arg Count = {ArgumentValues.Length})")]
     public class AppliedDirective : IAppliedDirective
     {
         /// <summary>
@@ -52,6 +52,19 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
                 this.DirectiveName = this.DirectiveName.Substring(1);
 
             this.ArgumentValues = arguments;
+        }
+
+        /// <inheritdoc />
+        public IAppliedDirective Clone()
+        {
+            var arr = new object[this.ArgumentValues.Length];
+            if (arr.Length > 0)
+                Array.Copy(this.ArgumentValues, arr, arr.Length);
+
+            if (this.DirectiveType != null)
+                return new AppliedDirective(this.DirectiveType, arr);
+            else
+                return new AppliedDirective(this.DirectiveName, arr);
         }
 
         /// <inheritdoc />

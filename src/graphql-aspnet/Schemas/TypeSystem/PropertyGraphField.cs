@@ -56,11 +56,11 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// </summary>
         /// <param name="parent">The item to assign as the parent of the new field.</param>
         /// <returns>IGraphField.</returns>
-        protected override IGraphField CreateNewInstance(IGraphType parent)
+        protected override MethodGraphField CreateNewInstance(IGraphType parent)
         {
             return new PropertyGraphField(
                 this.Name,
-                this.TypeExpression,
+                this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
                 this.InternalName,
                 this.ObjectType,

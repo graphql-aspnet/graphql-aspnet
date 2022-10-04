@@ -45,7 +45,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public IAppliedDirectiveCollection Clone(ISchemaItem newParent)
         {
             var clone = new AppliedDirectiveCollection(newParent);
-            clone._appliedDirectives = new HashSet<IAppliedDirective>(_appliedDirectives, AppliedDirectiveEqualityComparer.Instance);
+            foreach (var directive in this)
+                clone.Add(directive.Clone());
+
             return clone;
         }
 
