@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Web
                 throw new InvalidOperationException(
                     $"No {nameof(IGraphQLHttpProcessor)} of type " +
                     $"{typeof(IGraphQLHttpProcessor<TSchema>).FriendlyName()} " +
-                    "is registered with the DI container. The GraphQL runtime cannot invoke the schema.");
+                    "is registered with the DI container. The GraphQL runtime cannot invoke the target schema.");
             }
 
             return processor.Invoke(context);

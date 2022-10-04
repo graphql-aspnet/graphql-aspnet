@@ -11,9 +11,7 @@ namespace GraphQL.AspNet.Defaults
 {
     using System;
     using System.Net;
-    using System.Net.Http;
     using System.Security.Claims;
-    using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -27,6 +25,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.Security.Web;
     using GraphQL.AspNet.Web;
+    using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
@@ -41,12 +40,6 @@ namespace GraphQL.AspNet.Defaults
         /// An error message constant, in english, providing the text to return to the caller when no query data was present.
         /// </summary>
         protected const string ERROR_NO_QUERY_PROVIDED = "No query received on the request";
-
-        /// <summary>
-        /// An error message constant, in english, providing the text  to return to the caller when they use any HTTP action verb
-        /// other than post.
-        /// </summary>
-        protected const string ERROR_USE_POST = "GraphQL queries should be executed as a POST request";
 
         /// <summary>
         /// An error message constant, in english, providing the text to return to the caller when a 500 error is generated.
@@ -67,10 +60,10 @@ namespace GraphQL.AspNet.Defaults
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpProcessor{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The singleton instance of <typeparamref name="TSchema"/> representing this processor works against.</param>
-        /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema"/>.</param>
-        /// <param name="writer">The result writer capable of converting a <see cref="IGraphOperationResult"/> into a serialized payload
-        /// for the given <typeparamref name="TSchema"/>.</param>
+        /// <param name="schema">The singleton instance of <typeparamref name="TSchema" /> representing this processor works against.</param>
+        /// <param name="runtime">The primary runtime instance in which GraphQL requests are processed for <typeparamref name="TSchema" />.</param>
+        /// <param name="writer">The result writer capable of converting a <see cref="IGraphOperationResult" /> into a serialized payload
+        /// for the given <typeparamref name="TSchema" />.</param>
         /// <param name="logger">A logger instance where this object can write and record log entries.</param>
         public DefaultGraphQLHttpProcessor(
             TSchema schema,
@@ -81,6 +74,7 @@ namespace GraphQL.AspNet.Defaults
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _runtime = Validation.ThrowIfNullOrReturn(runtime, nameof(runtime));
             _writer = Validation.ThrowIfNullOrReturn(writer, nameof(writer));
+
             _logger = logger;
         }
 
@@ -88,28 +82,35 @@ namespace GraphQL.AspNet.Defaults
         public virtual async Task Invoke(HttpContext context)
         {
             this.HttpContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
-            if (!string.Equals(context.Request.Method, nameof(HttpMethod.Post), StringComparison.OrdinalIgnoreCase))
+
+            GraphQueryData queryData;
+            try
             {
-                await this.WriteStatusCodeResponse(HttpStatusCode.BadRequest, ERROR_USE_POST, context.RequestAborted).ConfigureAwait(false);
+                queryData = await this.ParseHttpContext();
+            }
+            catch (HttpContextParsingException ex)
+            {
+                await this.WriteStatusCodeResponse(ex.StatusCode, ex.Message, context.RequestAborted).ConfigureAwait(false);
                 return;
             }
 
-            // accepting a parsed object causes havoc with any variables collection
-            // ------
-            // By default:
-            // netcoreapp2.2 and older would auto parse to JObject (Newtonsoft)
-            // netcoreapp3.0 and later will parse to JsonElement (System.Text.Json).
-            // ------
-            // in lue of supporting deserialization from both generic json object types
-            // we accept the raw data and parse the json document
-            // using System.Text.Json on all clients (netstandard2.0 compatiable)
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
+            await this.SubmitGraphQLQuery(queryData, context.RequestAborted).ConfigureAwait(false);
+        }
 
-            var data = await JsonSerializer.DeserializeAsync<GraphQueryData>(context.Request.Body, options).ConfigureAwait(false);
-            await this.SubmitGraphQLQuery(data, context.RequestAborted).ConfigureAwait(false);
+        /// <summary>
+        /// When overriden in a child class, allows for the alteration of the method by which the various query
+        /// parameters are extracted from the <see cref="HttpContext"/> for input to the graphql runtime.
+        /// </summary>
+        /// <remarks>
+        /// Throw an <see cref="HttpContextParsingException"/> to stop execution and quickly write
+        /// an error back to the requestor.
+        /// </remarks>
+        /// <returns>A parsed query data object containing the input parameters for the
+        /// graphql runtime or <c>null</c>.</returns>
+        protected virtual async Task<GraphQueryData> ParseHttpContext()
+        {
+            var dataGenerator = new HttpContextParser(this.HttpContext);
+            return await dataGenerator.Parse();
         }
 
         /// <summary>
@@ -229,7 +230,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// writes directly to the <see cref="HttpResponse" /> stream with the given status code
+        /// Writes directly to the <see cref="HttpResponse" /> stream with the given status code
         /// and message.
         /// </summary>
         /// <param name="statusCode">The status code to deliver on the response.</param>
@@ -238,6 +239,11 @@ namespace GraphQL.AspNet.Defaults
         /// <returns>Task.</returns>
         protected async Task WriteStatusCodeResponse(HttpStatusCode statusCode, string message, CancellationToken cancelToken = default)
         {
+            if (_schema.Configuration.ResponseOptions.AppendServerHeader)
+            {
+                this.Response.Headers.Add(Constants.ServerInformation.SERVER_INFORMATION_HEADER, Constants.ServerInformation.ServerData);
+            }
+
             this.Response.StatusCode = (int)statusCode;
             await this.Response.WriteAsync(message, cancelToken).ConfigureAwait(false);
         }
