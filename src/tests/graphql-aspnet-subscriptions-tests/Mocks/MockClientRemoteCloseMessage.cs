@@ -29,7 +29,6 @@ namespace GraphQL.Subscriptions.Tests.Mocks
             : base(
                   new byte[0],
                   ClientMessageType.Close,
-                  true,
                   closeStatus ?? ConnectionCloseStatus.NormalClosure,
                   closeDescription)
         {

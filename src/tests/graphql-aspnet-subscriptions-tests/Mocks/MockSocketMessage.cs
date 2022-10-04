@@ -18,21 +18,20 @@ namespace GraphQL.Subscriptions.Tests.Mocks
     /// a client connection recieves data form its underlying implementaiton.
     /// </summary>
     public class MockSocketMessage
+
     {
         private int _lastIndexRead = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MockSocketMessage" /> class.
         /// </summary>
-        /// <param name="data">The data.</param>
+        /// <param name="data">The serialized data this message should contain.</param>
         /// <param name="messageType">Type of the message.</param>
-        /// <param name="isEndOfMessage">The is end of message.</param>
-        /// <param name="closeStatus">The close status.</param>
+        /// <param name="closeStatus">The close status this message should send.</param>
         /// <param name="closeDescription">The close description.</param>
         public MockSocketMessage(
                     byte[] data,
                     ClientMessageType messageType,
-                    bool isEndOfMessage = false,
                     ConnectionCloseStatus? closeStatus = null,
                     string closeDescription = null)
         {

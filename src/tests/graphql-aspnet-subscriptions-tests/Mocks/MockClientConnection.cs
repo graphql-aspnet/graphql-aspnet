@@ -130,10 +130,10 @@ namespace GraphQL.Subscriptions.Tests.Mocks
                     break;
 
                 case ClientConnectionState.Open:
-                    throw new InvalidOperationException("can't open an already open connection.");
+                    throw new InvalidOperationException("Can't open an already open connection.");
 
                 default:
-                    throw new InvalidOperationException("can't open a closed or closing connection.");
+                    throw new InvalidOperationException("Can't open a closed or closing connection.");
             }
 
             return Task.CompletedTask;
@@ -243,9 +243,9 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         public Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
             if (this.State != ClientConnectionState.Open)
-                throw new InvalidOperationException("Cant send on a non-opened connection");
+                throw new InvalidOperationException("Cant send data on a non-opened connection");
 
-            var message = new MockSocketMessage(data, messageType, endOfMessage);
+            var message = new MockSocketMessage(data, messageType);
             lock (_serverSentToClientQueue)
             {
                 _serverSentToClientQueue.Enqueue(message);
