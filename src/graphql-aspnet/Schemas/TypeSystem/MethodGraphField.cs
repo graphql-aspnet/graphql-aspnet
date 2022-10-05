@@ -94,8 +94,18 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             Validation.ThrowIfNull(parent, nameof(parent));
 
             var newField = this.CreateNewInstance(parent);
+
+            // assign all publically alterable fields
+            newField.Description = this.Description;
+            newField.Publish = this.Publish;
+            newField.Complexity = this.Complexity;
+            newField.IsDeprecated = this.IsDeprecated;
+            newField.DeprecationReason = this.DeprecationReason;
+            newField.FieldSource = this.FieldSource;
+
             newField.AssignParent(parent);
 
+            // clone over the arguments
             foreach (var argument in this.Arguments)
                 newField.Arguments.AddArgument(argument.Clone(newField));
 
@@ -130,13 +140,16 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <summary>
         /// Creates a new instance of a graph field from this type.
         /// </summary>
+        /// <remarks>
+        /// This method is used as the basis for new object creation during cloning.
+        /// </remarks>
         /// <param name="parent">The item to assign as the parent of the new field.</param>
         /// <returns>IGraphField.</returns>
-        protected virtual IGraphField CreateNewInstance(IGraphType parent)
+        protected virtual MethodGraphField CreateNewInstance(IGraphType parent)
         {
             return new MethodGraphField(
                 this.Name,
-                this.TypeExpression,
+                this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
                 this.ObjectType,
                 this.DeclaredReturnType,

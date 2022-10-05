@@ -1876,5 +1876,110 @@ namespace GraphQL.AspNet.Tests.Execution
 
             CommonAssertions.AreEqualJsonStrings(expectedResponse, response);
         }
+
+        [Test]
+        public async Task Description_OnTypeExtensionField_IsRetrievedViaIntrospection()
+        {
+            var server = new TestServerBuilder()
+                .AddGraphController<TypeExtensionDescriptionController>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"
+                {
+                    __type(name: ""TwoPropertyObject"")
+                    {
+                        kind
+                        name
+                        fields(includeDeprecated: true) {
+                            name
+                            description
+                        }
+                    }
+                }");
+
+            // property3 is a type extension and has a declared description
+            var response = await server.RenderResult(builder);
+            var expectedResponse = @"
+            {
+                ""data"": {
+                    ""__type"": {
+                        ""kind"": ""OBJECT"",
+                        ""name"": ""TwoPropertyObject"",
+                        ""fields"": [
+                            {
+                                ""name"": ""property1"",
+                                ""description"": null
+                            },
+                            {
+                                ""name"": ""property2"",
+                                ""description"": null
+                            },
+                            {
+                                ""name"": ""property3"",
+                                ""description"": ""Property3 is a boolean""
+                            }
+                        ]
+                    }
+                }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResponse, response);
+        }
+
+        [Test]
+        public async Task Descriptions_OnInheritedInterfaces_AreRetrievedViaIntrospection()
+        {
+            var server = new TestServerBuilder()
+                .AddType<InterfaceAForIntrospection>()
+                .AddType<InterfaceBForIntrospection>()
+                .Build();
+
+            var builder = server.CreateQueryContextBuilder();
+            builder.AddQueryText(@"
+                {
+                    __type(name: ""InterfaceBForIntrospection"")
+                    {
+                        kind
+                        name
+                        interfaces{ name }
+                        fields(includeDeprecated: true) {
+                            name
+                            description
+                        }
+                    }
+                }");
+
+            // description for field A is declared on interface A
+            // description for field B is declared on interface B
+            // both descriptions hould show as part of the fields for interface B
+            var response = await server.RenderResult(builder);
+            var expectedResponse = @"
+            {
+                ""data"": {
+                    ""__type"": {
+                        ""kind"": ""INTERFACE"",
+                        ""name"": ""InterfaceBForIntrospection"",
+                        ""interfaces"" : [
+                                {
+                                    ""name"": ""InterfaceAForIntrospection""
+                                }
+                        ],
+                        ""fields"": [
+                            {
+                                ""name"": ""fieldA"",
+                                ""description"": ""Description of field A""
+                            },
+                            {
+                                ""name"": ""fieldB"",
+                                ""description"": ""Description of field B""
+                            }
+                        ]
+                    }
+                }
+            }";
+
+            CommonAssertions.AreEqualJsonStrings(expectedResponse, response);
+        }
     }
 }

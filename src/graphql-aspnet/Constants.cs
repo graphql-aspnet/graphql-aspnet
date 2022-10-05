@@ -570,6 +570,36 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
+        /// A collection of constants related to the web processing of a query.
+        /// </summary>
+        public static class Web
+        {
+            /// <summary>
+            /// The key in the query string representing the query text when
+            /// processing a GET request.
+            /// </summary>
+            public const string QUERYSTRING_QUERY_KEY = "query";
+
+            /// <summary>
+            /// The key in the query string representing the named operation when
+            /// processing a GET request.
+            /// </summary>
+            public const string QUERYSTRING_OPERATIONNAME_KEY = "operationName";
+
+            /// <summary>
+            /// The key in the query string representing the the json encoded variable collection
+            /// when processing a GET request.
+            /// </summary>
+            public const string QUERYSTRING_VARIABLES_KEY = "variables";
+
+            /// <summary>
+            /// A 'content-type' header value that indicates the body of a POST request
+            /// should be treated entirely as a graphql query string.
+            /// </summary>
+            public const string GRAPHQL_CONTENT_TYPE_HEADER_VALUE = "application/graphql";
+        }
+
+        /// <summary>
         /// Gets a URL pointing to the page of the graphql specification this library
         /// targets. This value is used as a base url for most validation rules to generate
         /// a link pointing to a violated rule.

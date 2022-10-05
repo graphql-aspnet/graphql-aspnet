@@ -52,11 +52,11 @@ namespace GraphQL.AspNet.Schemas.Structural
         }
 
         /// <inheritdoc />
-        protected override IGraphField CreateNewInstance(IGraphType parent)
+        protected override MethodGraphField CreateNewInstance(IGraphType parent)
         {
             return new SubscriptionMethodGraphField(
                 this.Name,
-                this.TypeExpression,
+                this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
                 this.ObjectType,
                 this.DeclaredReturnType,

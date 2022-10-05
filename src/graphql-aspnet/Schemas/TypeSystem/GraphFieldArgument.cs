@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// <param name="route">The route path that identifies this argument.</param>
         /// <param name="modifiers">The modifiers.</param>
         /// <param name="parameterName">Name of the parameter as it is declared in the source code.</param>
-        /// <param name="internalname">The fully qualified internal name identifiying this argument.</param>
+        /// <param name="internalName">The fully qualified internal name identifiying this argument.</param>
         /// <param name="objectType">The concrete type of the object representing this argument.</param>
         /// <param name="hasDefaultValue">if set to <c>true</c> indicates that this
         /// argument has a default value assigned, even if that argument is <c>null</c>.</param>
@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             SchemaItemPath route,
             GraphArgumentModifiers modifiers,
             string parameterName,
-            string internalname,
+            string internalName,
             Type objectType,
             bool hasDefaultValue,
             object defaultValue = null,
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(argumentName, nameof(argumentName));
             this.Route = Validation.ThrowIfNullOrReturn(route, nameof(route));
-            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalname, nameof(internalname));
+            this.InternalName = Validation.ThrowIfNullWhiteSpaceOrReturn(internalName, nameof(internalName));
             this.ParameterName = Validation.ThrowIfNullWhiteSpaceOrReturn(parameterName, nameof(parameterName));
             this.TypeExpression = Validation.ThrowIfNullOrReturn(typeExpression, nameof(typeExpression));
             this.ObjectType = Validation.ThrowIfNullOrReturn(objectType, nameof(objectType));
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             return new GraphFieldArgument(
                 parent,
                 this.Name,
-                this.TypeExpression,
+                this.TypeExpression.Clone(),
                 parent.Route.CreateChild(this.Name),
                 this.ArgumentModifiers,
                 this.ParameterName,
