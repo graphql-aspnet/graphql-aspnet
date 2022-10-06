@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default);
 
         /// <summary>
-        /// Instructs the client proxy to immediately close its connection (a "server initiated" close).
+        /// Instructs the client proxy to immediately close its connection as a "server initiated" close.
         /// No additional messages should be sent through this instance once closed and this proxy
         /// should immediately unregister any active subscriptions.
         /// </summary>
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// reported in some log entries. May be null if the subscription proxy does not
         /// advertise or implement a specific protocol.
         /// </summary>
-        /// <value>The client's chosen messaging protocol.</value>
+        /// <value>The client's current messaging protocol.</value>
         string Protocol { get; }
     }
 }

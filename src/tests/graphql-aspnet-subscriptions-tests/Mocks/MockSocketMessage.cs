@@ -18,7 +18,6 @@ namespace GraphQL.Subscriptions.Tests.Mocks
     /// a client connection recieves data form its underlying implementaiton.
     /// </summary>
     public class MockSocketMessage
-
     {
         private int _lastIndexRead = 0;
 

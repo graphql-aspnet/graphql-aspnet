@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         IGraphDirectiveResolver Resolver { get; }
 
         /// <summary>
-        /// Gets the locations this directive can be defined.
+        /// Gets the bit-wise set of locations this directive can be defined at.
         /// </summary>
         /// <value>The locations.</value>
         DirectiveLocation Locations { get; }

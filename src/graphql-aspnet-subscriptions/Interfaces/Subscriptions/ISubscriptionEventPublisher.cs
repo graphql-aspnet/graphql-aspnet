@@ -19,7 +19,9 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     public interface ISubscriptionEventPublisher
     {
         /// <summary>
-        /// Publishs a new subscription event to be acted on.
+        /// Publishes the event in a manner fitting the workflow established by this publisher
+        /// such that it can be received by some listener and routed to a server instance
+        /// for processing.
         /// </summary>
         /// <param name="eventData">The event to publish.</param>
         /// <returns>Task.</returns>

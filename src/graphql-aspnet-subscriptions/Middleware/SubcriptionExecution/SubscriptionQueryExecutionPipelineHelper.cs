@@ -52,8 +52,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
             this.AddQueryDocumentParsingMiddleware()
                 .AddValidateQueryDocumentMiddleware()
                 .AddAssignOperationMiddleware()
-                .AddValidateOperationVariableDataMiddleware()
-                .AddApplyOperationDirectivesMiddleware();
+                .AddValidateOperationVariableDataMiddleware();
 
             var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerRequest;
             if (authOption == AuthorizationMethod.PerRequest)
@@ -67,7 +66,8 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
                     $"authorization method. (Current authorization method is \"{options.AuthorizationOptions.Method}\")");
             }
 
-            this.AddQueryPlanCreationMiddleware();
+            this.AddApplyOperationDirectivesMiddleware()
+                .AddQueryPlanCreationMiddleware();
 
             this.AddSubscriptionCreationMiddleware()
                 .AddQueryPlanExecutionMiddleware()

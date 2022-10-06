@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Tracing;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -26,12 +25,11 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// A common base class encapsulating a wide variety of common operations
-    /// that any client proxy, communicating over distinct messaging, would implement.
+    /// that any client proxy communicating with a distinct messaging subprotocol, would implement.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this proxy targets.</typeparam>
     /// <typeparam name="TMessage">A common base type representing the messages this proxy
@@ -120,24 +118,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="operationResult">The data result to transmit.</param>
         /// <returns>TMessage.</returns>
         protected abstract TMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult);
-
-        /// <summary>
-        /// Executes the provided action against all members of the invocation list of the supplied delegate.
-        /// </summary>
-        /// <typeparam name="TDelegate">The type of the delegate being acted on.</typeparam>
-        /// <param name="delegateCollection">The delegate that has an invocation list (can be null).</param>
-        /// <param name="action">The action.</param>
-        private void DoActionForAllInvokers<TDelegate>(TDelegate delegateCollection, Action<TDelegate> action)
-            where TDelegate : Delegate
-        {
-            if (delegateCollection != null)
-            {
-                foreach (Delegate d in delegateCollection.GetInvocationList())
-                {
-                    action(d as TDelegate);
-                }
-            }
-        }
 
         /// <inheritdoc />
         public virtual async Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)

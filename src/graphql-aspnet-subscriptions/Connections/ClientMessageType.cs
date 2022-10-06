@@ -14,24 +14,25 @@ namespace GraphQL.AspNet.Connections.Clients
     public enum ClientMessageType
     {
         /// <summary>
-        /// The message is clear text.
+        /// The message type should be ignored by a client proxy. This status is primarly
+        /// used by unit testing frameworks.
+        /// </summary>
+        Ignore = -1,
+
+        /// <summary>
+        /// The message data represents a clear text message.
         /// </summary>
         Text = 0,
 
         /// <summary>
-        /// The message is in binary format.
+        /// The message data represents a binary formatted message.
         /// </summary>
         Binary = 1,
 
         /// <summary>
-        /// A receive has completed because a close message was received.
+        /// A message that indicates the client is closing the connection. The received data
+        /// bits may or may not be useful.
         /// </summary>
         Close = 2,
-
-        /// <summary>
-        /// The message should be ignored by the receiving client. This status is primarly
-        /// used by unit testing frameworks.
-        /// </summary>
-        Ignore = 3,
     }
 }

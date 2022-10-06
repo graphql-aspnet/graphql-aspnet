@@ -16,8 +16,8 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
-    /// An decorator interface exposing the needed communication end points of some underlying
-    /// connection (usually a websocket). This interface facliates testing persistant connections in unit tests.
+    /// An decorator interface exposing the needed information of some
+    /// client connection (usually a websocket).
     /// </summary>
     public interface IClientConnection
     {
@@ -41,16 +41,16 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <summary>
         /// Sends a block of data over the connection asynchronously.
         /// </summary>
-        /// <param name="data">The data.</param>
-        /// <param name="messageType">TIndicates whether the application is sending a binary or text message.</param>
-        /// <param name="endOfMessage">Indicates whether the data in "buffer" is the last part of a message.</param>
+        /// <param name="data">The data buffer to send.</param>
+        /// <param name="messageType">Indicates whether the application is sending a binary or text message.</param>
+        /// <param name="endOfMessage">Indicates whether the data in the buffer completes a message. When false, it is
+        /// expected that additional data segments are forthcoming.</param>
         /// <param name="cancellationToken">The token that propagates the notification that operations should be canceled.</param>
         /// <returns>Task.</returns>
         Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Instructs this client connection to accept any pending requests and begin listening
-        /// for messages.
+        /// Opens the connection and begin listening for data coming from the connected client.
         /// </summary>
         /// <param name="messageProtocol">The message protocol the server will use
         /// to speak with the client. May not be used by all client connection types. </param>
@@ -79,16 +79,14 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <value>The current state of this connection.</value>
         ClientConnectionState State { get; }
 
-        /// <summary>
-        /// Gets the configured service provider assigned to the client connection when
-        /// the server first recieved it.
+        /// <summary>Gets the configured service provider assigned to the client connection when
+        /// the server first accepted it.
         /// </summary>
-        /// <value>The service provider.</value>
-        ///
+        /// <value>The service provider serving this connection.</value>
         IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Gets the security context governing this connection, if any. Can be null.
+        /// Gets the security context governing this connection, if any. May be null.
         /// </summary>
         /// <value>The user.</value>
         IUserSecurityContext SecurityContext { get; }

@@ -21,11 +21,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using Microsoft.Extensions.Hosting;
 
     /// <summary>
-    /// An internal hosted service to which events are queued for publishing. Allows for
-    /// sending from a disconnected task so as not to imped the execution of the task/pipeline where
-    /// the subscription events were initially raised.
+    /// An internal service to which events are queued for publishing. Allows for
+    /// "publishing" from a disconnected task so as not to imped the execution of the
+    /// query where the subscription events were initially raised.
     /// </summary>
-    public sealed class SubscriptionPublicationService : BackgroundService
+    internal sealed class SubscriptionPublicationService : BackgroundService
     {
         private static readonly object _syncLock = new object();
         private static int _waitInterval;
@@ -73,20 +73,17 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionPublicationService" /> class.
         /// </summary>
-        /// <param name="provider">The provider.</param>
-        /// <param name="eventQueue">The event queue.</param>
+        /// <param name="provider">The service provider this service
+        /// can use to instantiate the publisher instances.</param>
+        /// <param name="eventQueue">The singular event queue where all "published" events
+        /// are initially staged.</param>
         public SubscriptionPublicationService(IServiceProvider provider, SubscriptionEventQueue eventQueue)
         {
             _eventsToRaise = Validation.ThrowIfNullOrReturn(eventQueue, nameof(eventQueue));
             _provider = Validation.ThrowIfNullOrReturn(provider, nameof(provider));
         }
 
-        /// <summary>
-        /// This method is called when the <see cref="IHostedService" /> starts. The implementation should return a task that represents
-        /// the lifetime of the long running operation(s) being performed.
-        /// </summary>
-        /// <param name="stoppingToken">Triggered when <see cref="IHostedService.StopAsync(System.Threading.CancellationToken)" /> is called.</param>
-        /// <returns>A <see cref="Task" /> that represents the long running operations.</returns>
+        /// <inheritdoc />
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var waitInterval = SubscriptionPublicationService.WaitIntervalInMilliseconds;
@@ -109,8 +106,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <summary>
-        /// Forces this publication service to poll its internal queue for new events instead of waiting
-        /// for hte next publication cycle.
+        /// Inspects the server instance's internal queue for new events to publish.
         /// </summary>
         /// <returns>Task.</returns>
         internal async Task PollEventQueue()
@@ -120,14 +116,14 @@ namespace GraphQL.AspNet.Execution.Subscriptions
                 using var scope = _provider.CreateScope();
                 var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
                 var publisher = scope.ServiceProvider.GetRequiredService<ISubscriptionEventPublisher>();
-                while (_eventsToRaise.TryDequeue(out var result))
+                while (_eventsToRaise.TryDequeue(out var raisedEvent))
                 {
-                    if (result != null)
+                    if (raisedEvent != null)
                     {
                         try
                         {
-                            await publisher.PublishEvent(result);
-                            logger?.SubscriptionEventPublished(result);
+                            await publisher.PublishEvent(raisedEvent);
+                            logger?.SubscriptionEventPublished(raisedEvent);
                         }
                         catch (Exception ex)
                         {

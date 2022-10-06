@@ -80,7 +80,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
         }
 
         /// <summary>
-        /// Adds the ability for this graphql server to receive subscription events.
+        /// Adds the ability for this graphql server to receive subscription events
+        /// and client connections.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>

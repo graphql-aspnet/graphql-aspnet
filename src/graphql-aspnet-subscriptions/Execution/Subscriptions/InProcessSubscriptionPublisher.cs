@@ -32,17 +32,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             _eventRouter = Validation.ThrowIfNullOrReturn(eventRouter, nameof(eventRouter));
         }
 
-        /// <summary>
-        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventRouter" /> could
-        /// receive it for processing.
-        /// </summary>
-        /// <param name="eventData">The event to publish.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task PublishEvent(SubscriptionEvent eventData)
         {
             // this publisher pushes events raised
             // by mutations and queries directly into the DI-configured router
-            // for immediate dispatch within this instance
+            // for immediate dispatch within this local instance
             return _eventRouter.RaisePublishedEvent(eventData);
         }
     }

@@ -51,7 +51,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 result.Client,
                 queryData,
                 queryPlan,
-                queryPlan.Operation,
                 "abc123");
 
             Assert.IsTrue(sub.IsValid);
@@ -73,6 +72,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var fakePlan = new Mock<IGraphQueryPlan>();
             var fakeOp = new Mock<IGraphFieldExecutableOperation>();
 
+            fakePlan.Setup(x => x.Operation).Returns(fakeOp.Object);
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Query);
 
             var result = testServer.CreateSubscriptionClient();
@@ -81,7 +81,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 result.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
-                fakeOp.Object,
                 "abc123");
 
             Assert.IsFalse(sub.IsValid);
@@ -106,6 +105,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var fakeFieldContexts = new Mock<IFieldInvocationContextCollection>();
             fakeFieldContexts.Setup(x => x[It.IsAny<int>()]).Returns(fakeFieldContext.Object);
 
+            fakePlan.Setup(x => x.Operation).Returns(fakeOp.Object);
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Subscription);
             fakeOp.Setup(x => x.FieldContexts).Returns(fakeFieldContexts.Object);
 
@@ -115,7 +115,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 result.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
-                fakeOp.Object,
                 "abc123");
 
             Assert.IsFalse(sub.IsValid);

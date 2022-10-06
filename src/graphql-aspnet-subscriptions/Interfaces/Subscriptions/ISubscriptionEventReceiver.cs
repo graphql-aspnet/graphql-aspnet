@@ -30,7 +30,8 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         string Id { get; }
 
         /// <summary>
-        /// Receives a new subscription event that was seen by a third party listener.
+        /// Called by an outside source, typically an <see cref="ISubscriptionEventRouter"/>,
+        /// when an event was raised that this receiver requested.
         /// </summary>
         /// <param name="eventData">The data package representing a raised subscription
         /// event.</param>

@@ -51,8 +51,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
             this.AddQueryDocumentParsingMiddleware()
                 .AddValidateQueryDocumentMiddleware()
                 .AddAssignOperationMiddleware()
-                .AddValidateOperationVariableDataMiddleware()
-                .AddApplyOperationDirectivesMiddleware();
+                .AddValidateOperationVariableDataMiddleware();
 
             var authOption = options?.AuthorizationOptions?.Method ?? AuthorizationMethod.PerField;
             if (authOption == AuthorizationMethod.PerRequest)
@@ -60,11 +59,12 @@ namespace GraphQL.AspNet.Middleware.QueryExecution
                 this.AddQueryOperationAuthorizationMiddleware();
             }
 
-            this.AddQueryPlanCreationMiddleware();
-
-            return this
+            this.AddApplyOperationDirectivesMiddleware()
+                .AddQueryPlanCreationMiddleware()
                 .AddQueryPlanExecutionMiddleware()
                 .AddResultCreationMiddleware();
+
+            return this;
         }
 
         /// <summary>

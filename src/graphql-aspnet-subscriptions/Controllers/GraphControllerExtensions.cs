@@ -23,9 +23,9 @@ namespace GraphQL.AspNet.Controllers
     public static class GraphControllerExtensions
     {
         /// <summary>
-        /// Publishes the supplied data to the well-known internal event name, informing
-        /// all listening subscriptions of the change. If the <paramref name="dataObject"/> is null the event
-        /// is automatically canceled.
+        /// Publishes an instance of the internal event, informing all graphql-subscriptions that
+        /// are subscribed to the event. If the <paramref name="dataObject"/> is
+        /// <c>null</c> the event is automatically canceled.
         /// </summary>
         /// <param name="controller">The controller from where the event is originating.</param>
         /// <param name="eventName">Name of the well-known event to be raised.</param>
@@ -63,8 +63,8 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// Returns an result indicating that this subscription event invocation
-        /// should be cancelled and no data sent to the connected client.
+        /// When called from a subscription, indicates that the subscription should be skipped
+        /// and the connected client should receive NO data, as if the event enver occured.
         /// </summary>
         /// <remarks>
         /// <b>Note:</b> Issues a bad request and terminates the query for non-subscription action methods.

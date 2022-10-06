@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Common
+namespace GraphQL.Tests.Common
 {
     using System;
     using System.Threading.Tasks;

@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketFailureResult"/> class.
         /// </summary>
-        /// <param name="exception">The exception.</param>
+        /// <param name="exception">The exception that was thrown by the connection.</param>
         public WebSocketFailureResult(WebSocketException exception)
         {
             this.Exception = exception;
@@ -33,35 +33,19 @@ namespace GraphQL.AspNet.Connections.WebSockets
             this.MessageType = ClientMessageType.Close;
         }
 
-        /// <summary>
-        /// Gets the reason why the remote endpoint initiated the close handshake, if it was closed. Null otherwise.
-        /// </summary>
-        /// <value>The close status that was provided, if any.</value>
+        /// <inheritdoc />
         public ConnectionCloseStatus? CloseStatus { get; }
 
-        /// <summary>
-        /// Gets an optional description that describes why the close handshake has been
-        /// initiated by the remote endpoint.
-        /// </summary>
-        /// <value>The close status description.</value>
+        /// <inheritdoc />
         public string CloseStatusDescription { get; }
 
-        /// <summary>
-        /// Gets the count of bytes retrieved off the connection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether the data received indicates the end of a message.
-        /// </summary>
-        /// <value><c>true</c> if the bytes retrieved indicate the end of a message; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool EndOfMessage { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether the current message is a UTF-8 message or a binary message.
-        /// </summary>
-        /// <value>The type of the message that was recieved.</value>
+        /// <inheritdoc />
         public ClientMessageType MessageType { get; }
 
         /// <summary>

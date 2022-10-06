@@ -17,20 +17,14 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// This middleware assemblies the final subscription if and when warranted. If assembled the query
+    /// This middleware assembles the final subscription when warranted. If assembled the query
     /// is not immediately processed.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this middleware component exists for.</typeparam>
     public class SubscriptionCreationMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public Task InvokeAsync(GraphQueryExecutionContext context, GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next, CancellationToken cancelToken)
         {
             if (context is SubcriptionExecutionContext subContext
@@ -41,7 +35,6 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
                     subContext.Client,
                     subContext.ParentRequest.ToDataPackage(),
                     subContext.QueryPlan,
-                    subContext.QueryPlan.Operation,
                     subContext.SubscriptionId);
 
                 return Task.CompletedTask;

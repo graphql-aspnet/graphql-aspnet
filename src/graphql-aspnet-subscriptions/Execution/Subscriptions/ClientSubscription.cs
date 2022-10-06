@@ -33,21 +33,18 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <param name="clientProxy">The client proxy that will own this subscription.</param>
         /// <param name="originalQuerydata">The original querydata that generated this subscription.</param>
         /// <param name="queryPlan">The query plan.</param>
-        /// <param name="selectedOperation">The selected operation from the query plan
-        /// from which to generate the subscription.</param>
         /// <param name="subscriptionid">A unique id to assign to this subscription. A guid id
         /// will be generated if this value is not supplied.</param>
         public ClientSubscription(
             ISubscriptionClientProxy clientProxy,
             GraphQueryData originalQuerydata,
             IGraphQueryPlan queryPlan,
-            IGraphFieldExecutableOperation selectedOperation,
             string subscriptionid = null)
         {
             this.Client = Validation.ThrowIfNullOrReturn(clientProxy, nameof(clientProxy));
             this.QueryData = Validation.ThrowIfNullOrReturn(originalQuerydata, nameof(originalQuerydata));
-            this.QueryOperation = Validation.ThrowIfNullOrReturn(selectedOperation, nameof(selectedOperation));
             this.QueryPlan = Validation.ThrowIfNullOrReturn(queryPlan, nameof(queryPlan));
+            this.QueryOperation = Validation.ThrowIfNullOrReturn(queryPlan.Operation, $"{nameof(queryPlan)}.{nameof(queryPlan.Operation)}");
             this.Messages = this.QueryPlan?.Messages ?? new GraphMessageCollection();
 
             this.Id = string.IsNullOrWhiteSpace(subscriptionid)
