@@ -278,6 +278,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             return new GqltwsServerNextDataMessage(subscriptionId, operationResult);
         }
 
+        /// <inheritdoc />
+        protected override GqltwsMessage CreateCompleteMessage(string subscriptionId)
+        {
+            return new GqltwsSubscriptionCompleteMessage(subscriptionId);
+        }
+
         /// <summary>
         /// Sends the required startup messages down to the connected client to
         /// acknowledge the connection/protocol.

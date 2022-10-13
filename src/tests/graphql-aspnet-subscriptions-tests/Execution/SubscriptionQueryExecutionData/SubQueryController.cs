@@ -11,6 +11,7 @@ namespace GraphQL.Subscriptions.Tests.Execution.SubscriptionQueryExecutionData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     [GraphRoute("subscriptionData")]
@@ -20,6 +21,12 @@ namespace GraphQL.Subscriptions.Tests.Execution.SubscriptionQueryExecutionData
         public TwoPropertyObject RetrieveObject(TwoPropertyObject source)
         {
             return source;
+        }
+
+        [Subscription(typeof(TwoPropertyObject))]
+        public IGraphActionResult RetrieveObjectButSkipped(TwoPropertyObject source)
+        {
+            return this.SkipSubscriptionEvent();
         }
 
         [Query]

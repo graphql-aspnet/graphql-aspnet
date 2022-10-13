@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     [DebuggerDisplay("Route: {Route.Path}")]
     public class ControllerSubscriptionActionGraphFieldTemplate : ControllerActionGraphFieldTemplate
     {
-        private Type _explicitlyDeclaredSubscriptionSourceType;
+        private Type _explicitlyDeclaredAsSubscriptionSourceType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ControllerSubscriptionActionGraphFieldTemplate"/> class.
@@ -42,14 +42,12 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.EventName = null;
         }
 
-        /// <summary>
-        /// When overridden in a child class this method builds out the template according to its own individual requirements.
-        /// </summary>
+        /// <inheritdoc/>
         protected override void ParseTemplateDefinition()
         {
             // before parsing we have to determine the expected source data
             // when an event is raised targeting this field
-            // In order we should check:
+            // In order, we should check:
             //   1. Is Any field explicitly decorated with [SubscriptionSource]
             //   2. If the return type of this field is not a union, use the object type of the field
             //   3. If the return type is a union, the source is any ol' object (can't deteremine input, up to the user)
@@ -59,7 +57,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             var sourceParam = this.Method.GetParameters().Where(x => x.HasAttribute<SubscriptionSourceAttribute>()).FirstOrDefault();
             if (sourceParam != null)
             {
-                _explicitlyDeclaredSubscriptionSourceType = sourceParam.ParameterType;
+                _explicitlyDeclaredAsSubscriptionSourceType = sourceParam.ParameterType;
             }
 
             // perform base parsing
@@ -77,21 +75,18 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 this.EventName = this.Method.Name;
         }
 
-        /// <summary>
-        /// When overridden in a child class, allows the template to perform some final validation checks
-        /// on the integrity of itself. An exception should be thrown to stop the template from being
-        /// persisted if the object is unusable or otherwise invalid in the manner its been built.
-        /// </summary>
+        /// <inheritdoc/>
         public override void ValidateOrThrow()
         {
             // ensure the custom event name is valid if it was supplied
-            if (this.EventName == null)
+            if (string.IsNullOrWhiteSpace(this.EventName))
             {
                 throw new GraphTypeDeclarationException(
                         $"Invalid subscription action declaration. The method '{this.InternalFullName}' does not " +
                         $"have an event name.");
             }
-            else if (!Constants.RegExPatterns.NameRegex.IsMatch(this.EventName))
+
+            if (!Constants.RegExPatterns.NameRegex.IsMatch(this.EventName))
             {
                 throw new GraphTypeDeclarationException(
                         $"Invalid subscription action declaration. The method '{this.InternalFullName}' declares " +
@@ -130,30 +125,19 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 return new GraphSubscriptionInputArgumentTemplate(
                     this,
                     paramInfo,
-                    _explicitlyDeclaredSubscriptionSourceType != null);
+                    _explicitlyDeclaredAsSubscriptionSourceType != null);
             }
 
             return base.CreateInputArgument(paramInfo);
         }
 
-        /// <summary>
-        /// Gets the name of the event that was defined on the action for this field.
-        /// </summary>
-        /// <value>The name of the event.</value>
-        public string EventName { get; private set; }
-
-        /// <summary>
-        /// Gets the type of the object that owns this field. That is to say the type of source data
-        /// given to this field in the object graph. This is usually the Parent's object type but not always; such
-        /// is the case with type extensions.
-        /// </summary>
-        /// <value>The type of the source object.</value>
+        /// <inheritdoc />
         public override Type SourceObjectType
         {
             get
             {
-                if (_explicitlyDeclaredSubscriptionSourceType != null)
-                    return _explicitlyDeclaredSubscriptionSourceType;
+                if (_explicitlyDeclaredAsSubscriptionSourceType != null)
+                    return _explicitlyDeclaredAsSubscriptionSourceType;
 
                 if (this.UnionProxy != null)
                     return typeof(object);
@@ -161,5 +145,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 return this.ObjectType;
             }
         }
+
+        /// <summary>
+        /// Gets the name of the event that was defined on the action for this field.
+        /// </summary>
+        /// <value>The name of the event.</value>
+        public string EventName { get; private set; }
     }
 }

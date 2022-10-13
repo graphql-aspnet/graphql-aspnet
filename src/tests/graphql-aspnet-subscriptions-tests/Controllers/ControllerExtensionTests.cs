@@ -47,8 +47,8 @@ namespace GraphQL.Subscriptions.Tests.Controllers
             Assert.IsTrue(result is ObjectReturnedGraphActionResult);
 
             // ensure the event collection was created on the context
-            Assert.IsTrue(resolutionContext.Request.Items.ContainsKey(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY));
-            var raisedEvents = resolutionContext.Request.Items[SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY]
+            Assert.IsTrue(resolutionContext.Request.Items.ContainsKey(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY));
+            var raisedEvents = resolutionContext.Request.Items[SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY]
                 as List<SubscriptionEventProxy>;
 
             // ensure only one event was added
@@ -88,7 +88,7 @@ namespace GraphQL.Subscriptions.Tests.Controllers
             Assert.IsFalse(resolutionContext
                 .Request
                 .Items
-                .ContainsKey(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY));
+                .ContainsKey(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY));
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace GraphQL.Subscriptions.Tests.Controllers
 
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
             var eventCollection = new List<SubscriptionEventProxy>();
-            resolutionContext.Request.Items.TryAdd(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY, eventCollection);
+            resolutionContext.Request.Items.TryAdd(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY, eventCollection);
 
             var controller = new InvokableController();
             var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod.Object, resolutionContext);
@@ -119,7 +119,7 @@ namespace GraphQL.Subscriptions.Tests.Controllers
         }
 
         [Test]
-        public async Task PublishSubEvent_UnusableListForSubscriptionEvents_ThrowsException()
+        public void PublishSubEvent_UnusableListForSubscriptionEvents_ThrowsException()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
@@ -135,19 +135,17 @@ namespace GraphQL.Subscriptions.Tests.Controllers
 
             // prepopulate with a collection thats not really a collection
             var eventCollection = new TwoPropertyObject();
-            resolutionContext.Request.Items.TryAdd(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY, eventCollection);
+            resolutionContext.Request.Items.TryAdd(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY, eventCollection);
 
             var controller = new InvokableController();
             Assert.ThrowsAsync<GraphExecutionException>(async () =>
             {
                 var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod.Object, resolutionContext);
             });
-
-            await Task.CompletedTask;
         }
 
         [Test]
-        public async Task PublishSubEvent_NoEventNameFailsTheResolver_BubblesExceptionUp()
+        public void PublishSubEvent_NoEventNameFailsTheResolver_BubblesExceptionUp()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
@@ -166,8 +164,6 @@ namespace GraphQL.Subscriptions.Tests.Controllers
             {
                 var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod.Object, resolutionContext);
             });
-
-            await Task.CompletedTask;
         }
     }
 }

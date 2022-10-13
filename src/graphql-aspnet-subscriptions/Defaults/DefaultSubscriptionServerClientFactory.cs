@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Defaults
                 throw new UnsupportedClientProtocolException("~none~");
 
             // a client may submit multiple protocoles as a comma seperated list
-            // try each protocol key in order until a match is found
+            // try each protocol key, in order received, until a match is found
             var requestedProtocols = protocolData.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
             string protocolToUse = null;

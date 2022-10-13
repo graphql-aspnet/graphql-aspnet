@@ -24,11 +24,11 @@ namespace GraphQL.AspNet.Controllers
         /// <summary>
         /// Returns an result with the given item as the resolved object for the field resolution.
         /// </summary>
-        /// <param name="obj">The object.</param>
+        /// <param name="item">The object to resolve the field with.</param>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
-        protected virtual IGraphActionResult Ok(object obj)
+        protected virtual IGraphActionResult Ok(object item)
         {
-            return new ObjectReturnedGraphActionResult(obj);
+            return new ObjectReturnedGraphActionResult(item);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Controllers
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok()
         {
-            return new ObjectReturnedGraphActionResult(null);
+            return this.Ok(null);
         }
 
         /// <summary>

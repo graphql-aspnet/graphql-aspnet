@@ -57,14 +57,14 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
             {
                 // if a context item for the subscription event key was added by one of the extension methods
                 // inspect it to try and find the events that were registered
-                if (context.Items.ContainsKey(SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY))
+                if (context.Items.ContainsKey(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY))
                 {
-                    var collection = context.Items[SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY] as IList<SubscriptionEventProxy>;
+                    var collection = context.Items[SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY] as IList<SubscriptionEventProxy>;
 
                     if (collection == null)
                     {
                         throw new GraphExecutionException(
-                            $"Unable to cast the context item '{SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY}' into " +
+                            $"Unable to cast the context item '{SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY}' into " +
                             $"{typeof(IList<SubscriptionEventProxy>).FriendlyName()}. Published subscription events could not be raised.",
                             SourceOrigin.None);
                     }

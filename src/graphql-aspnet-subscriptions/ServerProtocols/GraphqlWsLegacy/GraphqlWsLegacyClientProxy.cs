@@ -273,6 +273,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
+        protected override GraphqlWsLegacyMessage CreateCompleteMessage(string subscriptionId)
+        {
+            return new GraphqlWsLegacyServerCompleteMessage(subscriptionId);
+        }
+
+        /// <inheritdoc />
         public override string Protocol { get; }
     }
 }

@@ -119,6 +119,14 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <returns>TMessage.</returns>
         protected abstract TMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult);
 
+        /// <summary>
+        /// Creates a message consistant with this proxy's udnerlying protocol
+        /// that indicates a subscription is done and is no longer subscribed server side.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>TMessage.</returns>
+        protected abstract TMessage CreateCompleteMessage(string subscriptionId);
+
         /// <inheritdoc />
         public virtual async Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
         {
@@ -311,7 +319,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             // execute the request
             // ------------------------------
             var result = await runtime.ExecuteRequest(context, _clientConnection.RequestAborted);
-            if (context.Items.ContainsKey(SubscriptionConstants.SKIPPED_EVENT_KEY))
+            if (context.Items.ContainsKey(SubscriptionConstants.Execution.SKIPPED_EVENT_KEY))
                 return;
 
             // ------------------------------
@@ -319,6 +327,16 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             // ------------------------------
             var message = this.CreateDataMessage(subscription.Id, result);
             await this.SendMessage(message);
+
+            // ------------------------------
+            // stop the subscription if requested
+            // ------------------------------
+            if (context.Items.ContainsKey(SubscriptionConstants.Execution.COMPLETED_SUBSCRIPTION_KEY))
+            {
+                var completeMessage = this.CreateCompleteMessage(subscription.Id);
+                await this.SendMessage(completeMessage);
+                this.ReleaseSubscription(subscription.Id);
+            }
         }
 
         /// <summary>
@@ -408,7 +426,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <summary>
-        /// Instructs the client to stop listening to the subscription with the given id.
+        /// Ends the subscription such that no further events will be raised and releases
+        /// the subscription id from the tracked set.
         /// </summary>
         /// <param name="subscriptionId">The id of the subscription.</param>
         /// <returns><c>true</c> if the subscription was located and released, <c>false</c> otherwise.</returns>

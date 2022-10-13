@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         {
             if (context is FieldResolutionContext frc && frc.Request.Field is ISubscriptionGraphField)
             {
-                frc.Request.Items.TryAdd(SubscriptionConstants.SKIPPED_EVENT_KEY, true);
+                frc.Request.Items.TryAdd(SubscriptionConstants.Execution.SKIPPED_EVENT_KEY, true);
                 frc.Result = null;
                 return Task.CompletedTask;
             }

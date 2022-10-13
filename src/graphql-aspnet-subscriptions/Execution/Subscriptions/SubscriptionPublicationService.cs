@@ -27,6 +27,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// </summary>
     internal sealed class SubscriptionPublicationService : BackgroundService
     {
+        private const int DEFAULT_WAIT_INTERVAL_MS = 100;
+        private const int MIN_WAIT_INTERVAL_MS = 15;
+
         private static readonly object _syncLock = new object();
         private static int _waitInterval;
 
@@ -64,7 +67,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// </summary>
         static SubscriptionPublicationService()
         {
-            WaitIntervalInMilliseconds = 100;
+            WaitIntervalInMilliseconds = DEFAULT_WAIT_INTERVAL_MS;
         }
 
         private readonly IServiceProvider _provider;
@@ -87,8 +90,8 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var waitInterval = SubscriptionPublicationService.WaitIntervalInMilliseconds;
-            if (waitInterval < 15)
-                waitInterval = 15;
+            if (waitInterval < MIN_WAIT_INTERVAL_MS)
+                waitInterval = MIN_WAIT_INTERVAL_MS;
 
             while (!stoppingToken.IsCancellationRequested)
             {
