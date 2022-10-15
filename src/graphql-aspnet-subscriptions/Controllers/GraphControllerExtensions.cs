@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -35,26 +36,33 @@ namespace GraphQL.AspNet.Controllers
             if (dataObject == null)
                 return;
 
-            eventName = Validation.ThrowIfNullWhiteSpaceOrReturn(eventName, nameof(eventName));
-
-            var itemsCollection = controller.Request.Items;
+            var contextData = controller.Context.Session.Items;
 
             // add or reference the list of events
-            if (!itemsCollection.TryGetValue(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY, out var listObject))
+            var eventsCollectionFound = contextData
+                .TryGetValue(
+                    SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION,
+                    out var listObject);
+
+            if (!eventsCollectionFound)
             {
                 listObject = new List<SubscriptionEventProxy>();
-                itemsCollection.TryAdd(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY, listObject);
+                contextData.TryAdd(
+                    SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION,
+                    listObject);
             }
 
             var eventList = listObject as IList<SubscriptionEventProxy>;
             if (eventList == null)
             {
                 throw new GraphExecutionException(
-                    $"Unable to cast the context item '{SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY}' " +
+                    $"Unable to cast the context data item '{SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION}' " +
                     $"(type: {listObject?.GetType().FriendlyName() ?? "unknown"}), into " +
                     $"{typeof(IList<SubscriptionEvent>).FriendlyName()}. Event '{eventName}' could not be published.",
                     controller.Request.Origin);
             }
+
+            eventName = Validation.ThrowIfNullWhiteSpaceOrReturn(eventName, nameof(eventName));
 
             lock (eventList)
             {

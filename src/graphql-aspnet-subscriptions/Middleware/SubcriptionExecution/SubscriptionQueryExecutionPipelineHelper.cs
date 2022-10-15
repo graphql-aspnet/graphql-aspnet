@@ -78,8 +78,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
 
         /// <summary>
         /// Adds a middleware component that will create a subscription and halt query execution
-        /// if the chosen operation is a subscription operation. The subscription will be added to the metadata collection
-        /// as key <see cref="SubscriptionConstants.Execution.CREATED_SUBSCRIPTION"/>.
+        /// if the chosen operation is a subscription operation.
         /// </summary>
         /// <returns>SubscriptionQueryExecutionPipelineHelper&lt;TSchema&gt;.</returns>
         public SubscriptionQueryExecutionPipelineHelper<TSchema> AddSubscriptionCreationMiddleware()

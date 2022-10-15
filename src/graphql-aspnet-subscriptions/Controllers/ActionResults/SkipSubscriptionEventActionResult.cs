@@ -23,11 +23,11 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     public class SkipSubscriptionEventActionResult : IGraphActionResult
     {
         /// <inheritdoc />
-        public Task Complete(BaseResolutionContext context)
+        public Task Complete(SchemaItemResolutionContext context)
         {
             if (context is FieldResolutionContext frc && frc.Request.Field is ISubscriptionGraphField)
             {
-                frc.Request.Items.TryAdd(SubscriptionConstants.Execution.SKIPPED_EVENT_KEY, true);
+                frc.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.SKIP_EVENT, true);
                 frc.Result = null;
                 return Task.CompletedTask;
             }

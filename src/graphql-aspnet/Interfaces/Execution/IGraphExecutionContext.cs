@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// generated from an HTTP request.
         /// </summary>
         /// <value>The top level request.</value>
-        IGraphOperationRequest ParentRequest { get; }
+        IGraphOperationRequest OperationRequest { get; }
 
         /// <summary>
         /// Gets the service provider to use for any required object instantiations.
@@ -69,14 +69,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IGraphEventLogger Logger { get; }
 
         /// <summary>
-        /// Gets a key/value pair collection that can be used to store
-        /// items used at different parts of processing the request. This collection is user driven
-        /// and not used by the graphql library.
-        /// </summary>
-        /// <value>The metadata.</value>
-        MetaDataCollection Items { get; }
-
-        /// <summary>
         /// Gets the collected set of query messages generated during this context's lifetime.
         /// </summary>
         /// <value>The messages.</value>
@@ -94,5 +86,26 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The governing cancellation token.</value>
         CancellationToken CancellationToken { get; set; }
+
+        /// <summary>
+        /// Gets a set of user-driven key/value pairs shared between all contexts during a
+        /// single query execution.
+        /// </summary>
+        /// <remarks>
+        /// This is a collection for developer use and is not used by graphql.
+        /// </remarks>
+        /// <value>The items collection by this query execution.</value>
+        MetaDataCollection Items { get; }
+
+        /// <summary>
+        /// Gets the session data tracked throughout the execution of a single query. This
+        /// data is used across various pipelines for various internal operations.
+        /// </summary>
+        /// <remarks>
+        /// This is an internal item used by graphql's pipelines and
+        /// should not be relied upon by user/developer code.
+        /// </remarks>
+        /// <value>The active query session.</value>
+        IQuerySession Session { get; }
     }
 }

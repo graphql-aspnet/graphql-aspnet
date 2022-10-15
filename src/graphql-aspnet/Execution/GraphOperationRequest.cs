@@ -34,6 +34,7 @@ namespace GraphQL.AspNet.Execution
             this.VariableData = queryData.Variables ?? new InputVariableCollection();
 
             this.StartTimeUTC = DateTimeOffset.UtcNow;
+            this.Items = new MetaDataCollection();
         }
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace GraphQL.AspNet.Execution
             this.VariableData = request.VariableData;
 
             this.StartTimeUTC = request.StartTimeUTC;
+            this.Items = request.Items.Clone();
         }
 
         /// <inheritdoc />
@@ -82,5 +84,8 @@ namespace GraphQL.AspNet.Execution
 
         /// <inheritdoc />
         public DateTimeOffset StartTimeUTC { get; }
+
+        /// <inheritdoc />
+        public MetaDataCollection Items { get; }
     }
 }

@@ -141,11 +141,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 var sourceData = new GraphDataContainer(dataSourceValue, path, topLevelDataItem);
 
                 var fieldRequest = new GraphFieldRequest(
-                    context.ParentRequest,
+                    context.OperationRequest,
                     item.Context,
                     sourceData,
-                    new SourceOrigin(item.Context.Origin.Location, path),
-                    context.Items);
+                    new SourceOrigin(item.Context.Origin.Location, path));
 
                 var fieldContext = new GraphFieldExecutionContext(
                     context,

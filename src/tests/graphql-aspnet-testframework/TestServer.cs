@@ -256,14 +256,16 @@ namespace GraphQL.AspNet.Tests.Framework
             var graphFieldRequest = new Mock<IGraphFieldRequest>();
             var fieldDocumentPart = new Mock<IFieldDocumentPart>();
 
-            parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
+            operationRequest.Setup(x => x.Items).Returns(metaData);
+
+            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(this.SecurityContext);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
             parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
-            parentContext.Setup(x => x.Items).Returns(() => metaData);
             parentContext.Setup(x => x.Messages).Returns(() => messages);
             parentContext.Setup(x => x.IsValid).Returns(() => messages.IsSucessful);
+            parentContext.Setup(x => x.Session).Returns(new QuerySession());
 
             fieldDocumentPart.Setup(x => x.Name).Returns(field.Name.AsMemory());
             fieldDocumentPart.Setup(x => x.Alias).Returns(field.Name.AsMemory());
@@ -291,7 +293,6 @@ namespace GraphQL.AspNet.Tests.Framework
             var id = Guid.NewGuid().ToString("N");
             graphFieldRequest.Setup(x => x.Id).Returns(id);
             graphFieldRequest.Setup(x => x.Origin).Returns(SourceOrigin.None);
-            graphFieldRequest.Setup(x => x.Items).Returns(metaData);
             graphFieldRequest.Setup(x => x.Field).Returns(field);
             graphFieldRequest.Setup(x => x.InvocationContext).Returns(fieldInvocationContext.Object);
             graphFieldRequest.Setup(x => x.Data).Returns(() => sourceDataContainer);
@@ -418,7 +419,6 @@ namespace GraphQL.AspNet.Tests.Framework
             directiveRequest.Setup(x => x.DirectivePhase).Returns(phase);
             directiveRequest.Setup(x => x.InvocationContext).Returns(invocationContext.Object);
             directiveRequest.Setup(x => x.DirectiveTarget).Returns(directiveTarget);
-            directiveRequest.Setup(x => x.Items).Returns(new MetaDataCollection());
 
             invocationContext.Setup(x => x.Location).Returns(location);
             invocationContext.Setup(x => x.Arguments).Returns(argCollection);
@@ -443,11 +443,11 @@ namespace GraphQL.AspNet.Tests.Framework
             }
 
             var context = new GraphDirectiveExecutionContext(
-            server.Schema,
-            server.ServiceProvider,
-            operationRequest.Object,
-            directiveRequest.Object,
-            items: directiveRequest.Object.Items);
+                server.Schema,
+                directiveRequest.Object,
+                operationRequest.Object,
+                server.ServiceProvider,
+                new QuerySession());
 
             return context;
         }

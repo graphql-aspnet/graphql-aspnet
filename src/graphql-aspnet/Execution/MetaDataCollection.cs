@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution
 {
+    using System;
     using System.Collections.Concurrent;
 
     /// <summary>
@@ -30,6 +31,17 @@ namespace GraphQL.AspNet.Execution
             {
                 this[kvp.Key] = kvp.Value;
             }
+        }
+
+        /// <summary>
+        /// Clones this instance into a new set of items.
+        /// </summary>
+        /// <returns>MetaDataCollection.</returns>
+        public MetaDataCollection Clone()
+        {
+            var newCollection = new MetaDataCollection();
+            newCollection.Merge(this);
+            return newCollection;
         }
     }
 }

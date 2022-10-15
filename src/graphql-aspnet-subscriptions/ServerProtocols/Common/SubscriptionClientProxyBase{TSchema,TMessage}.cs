@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Engine;
@@ -305,9 +306,10 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             var context = new GraphQueryExecutionContext(
                 runtime.CreateRequest(subscription.QueryData),
                 _clientConnection.ServiceProvider,
-                _clientConnection.SecurityContext,
-                metricsPackage,
-                logger);
+                new QuerySession(),
+                securityContext: _clientConnection.SecurityContext,
+                metrics: metricsPackage,
+                logger: logger);
 
             // ------------------------------
             // register the event data as a source input for the target subscription field
@@ -319,7 +321,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             // execute the request
             // ------------------------------
             var result = await runtime.ExecuteRequest(context, _clientConnection.RequestAborted);
-            if (context.Items.ContainsKey(SubscriptionConstants.Execution.SKIPPED_EVENT_KEY))
+            if (context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.SKIP_EVENT))
                 return;
 
             // ------------------------------
@@ -331,7 +333,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             // ------------------------------
             // stop the subscription if requested
             // ------------------------------
-            if (context.Items.ContainsKey(SubscriptionConstants.Execution.COMPLETED_SUBSCRIPTION_KEY))
+            if (context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION))
             {
                 var completeMessage = this.CreateCompleteMessage(subscription.Id);
                 await this.SendMessage(completeMessage);
@@ -388,15 +390,20 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 return SubscriptionDataExecutionResult<TSchema>.DuplicateId(subscriptionId);
 
             var runtime = _clientConnection.ServiceProvider.GetRequiredService(typeof(IGraphQLRuntime<TSchema>)) as IGraphQLRuntime<TSchema>;
+            var logger = _clientConnection.ServiceProvider.GetService<IGraphEventLogger>();
             var request = runtime.CreateRequest(queryData);
             var metricsPackage = enableMetrics ? runtime.CreateMetricsPackage() : null;
+            var session = new QuerySession();
+
             var context = new SubcriptionExecutionContext(
                 request,
                 this,
                 _clientConnection.ServiceProvider,
+                session,
                 _clientConnection.SecurityContext,
                 subscriptionId,
-                metricsPackage);
+                metrics: metricsPackage,
+                logger: logger);
 
             var result = await runtime.ExecuteRequest(context).ConfigureAwait(false);
 

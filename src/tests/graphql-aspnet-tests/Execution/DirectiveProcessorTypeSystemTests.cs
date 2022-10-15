@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             // build the test object
             _serviceProvider = _serviceCollection.BuildServiceProvider();
-            _instance = new DirectiveProcessorTypeSystem<GraphSchema>(_serviceProvider);
+            _instance = new DirectiveProcessorTypeSystem<GraphSchema>(_serviceProvider, new QuerySession());
         }
 
         [Test]

@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Directives
         private Mock<IInputArgumentCollection> _argCollection;
         private Mock<IInputValue> _argValue;
         private string _reason = null;
-        private GraphOperationRequest _parentRequest;
+        private GraphOperationRequest _operationRequest;
         private DirectiveInvocationContext _invocationContext;
         private DirectiveLocation _directiveLocation;
         private IServiceProvider _provider;
@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Directives
             _argCollection.Setup(x => x.Merge(It.IsAny<IResolvedVariableCollection>()))
                 .Returns(executionArgs);
 
-            _parentRequest = new GraphOperationRequest(GraphQueryData.Empty);
+            _operationRequest = new GraphOperationRequest(GraphQueryData.Empty);
 
             _invocationContext = new DirectiveInvocationContext(
                 _directive,
@@ -111,19 +111,18 @@ namespace GraphQL.AspNet.Tests.Directives
                 SourceOrigin.None,
                 _argCollection.Object);
 
-            var request = new GraphDirectiveRequest(
+            var directiveRequest = new GraphDirectiveRequest(
                 _invocationContext,
                 DirectiveInvocationPhase.SchemaGeneration,
                 _directiveTarget);
 
             var context = new GraphDirectiveExecutionContext(
                 _schema,
+                directiveRequest,
+                _operationRequest,
                 _scopedProvider.ServiceProvider,
-                _parentRequest,
-                request,
-                null as IGraphQueryExecutionMetrics,
-                _logger.Object,
-                items: request.Items);
+                new QuerySession(),
+                logger: _logger.Object);
 
             await _pipeline.InvokeAsync(context, default);
             return context;

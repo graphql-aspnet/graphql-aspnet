@@ -83,7 +83,9 @@ namespace GraphQL.AspNet.Execution
                     extension.Configure(schema);
 
                 // apply all queued type system directives
-                var processor = new DirectiveProcessorTypeSystem<TSchema>(_serviceProvider);
+                var processor = new DirectiveProcessorTypeSystem<TSchema>(
+                    _serviceProvider,
+                    new QuerySession());
                 processor.ApplyDirectives(schema);
 
                 manager.RebuildIntrospectionData();

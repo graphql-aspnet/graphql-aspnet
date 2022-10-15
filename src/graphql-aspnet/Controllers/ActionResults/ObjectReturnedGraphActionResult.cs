@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
 
         /// <inheritdoc />
         [DebuggerStepThrough]
-        public virtual Task Complete(BaseResolutionContext context)
+        public virtual Task Complete(SchemaItemResolutionContext context)
         {
             if (context is FieldResolutionContext frc)
                 frc.Result = _result;

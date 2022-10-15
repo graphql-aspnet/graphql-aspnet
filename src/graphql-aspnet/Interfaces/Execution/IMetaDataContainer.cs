@@ -9,18 +9,17 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
 
     /// <summary>
-    /// A base request defining fields common to all intermediate request types.
+    /// An interface defining an object as containing a collection of metadata items.
     /// </summary>
-    public interface IDataRequest : IGraphQLRequest
+    public interface IMetaDataContainer
     {
         /// <summary>
-        /// Gets the origin point in the source text where this request was generated.
+        /// Gets a collection of items used to store and retrieve various pieces of data.
         /// </summary>
-        /// <value>The origin.</value>
-        SourceOrigin Origin { get; }
+        /// <value>The collection items.</value>
+        MetaDataCollection Items { get; }
     }
 }

@@ -53,18 +53,18 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
             GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
             CancellationToken cancelToken)
         {
-            if (context?.Items != null && context.IsValid && !context.IsCancelled)
+            if (context?.Session?.Items != null && context.IsValid && !context.IsCancelled)
             {
                 // if a context item for the subscription event key was added by one of the extension methods
                 // inspect it to try and find the events that were registered
-                if (context.Items.ContainsKey(SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY))
+                if (context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION))
                 {
-                    var collection = context.Items[SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY] as IList<SubscriptionEventProxy>;
+                    var collection = context.Session.Items[SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION] as IList<SubscriptionEventProxy>;
 
                     if (collection == null)
                     {
                         throw new GraphExecutionException(
-                            $"Unable to cast the context item '{SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY}' into " +
+                            $"Unable to cast the context item '{SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION}' into " +
                             $"{typeof(IList<SubscriptionEventProxy>).FriendlyName()}. Published subscription events could not be raised.",
                             SourceOrigin.None);
                     }

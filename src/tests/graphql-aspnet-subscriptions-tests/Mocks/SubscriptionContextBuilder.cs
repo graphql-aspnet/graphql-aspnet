@@ -151,11 +151,11 @@ namespace GraphQL.Subscriptions.Tests.Mocks
                 this.OperationRequest,
                 _client,
                 _serviceProvider,
+                new QuerySession(),
                 _seceurityContext,
                 subscriptionId,
-                _metrics,
-                _eventLogger,
-                metaData);
+                metrics: _metrics,
+                logger: _eventLogger);
 
             foreach (var kvp in _sourceData)
             {

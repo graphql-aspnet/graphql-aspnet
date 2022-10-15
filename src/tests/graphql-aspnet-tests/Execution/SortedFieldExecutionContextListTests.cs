@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Variables;
@@ -23,8 +24,9 @@ namespace GraphQL.AspNet.Tests.Execution
         private GraphFieldExecutionContext CreateFakeContext()
         {
             var parentContext = new Mock<IGraphExecutionContext>();
-            parentContext.Setup(x => x.ParentRequest).Returns(new Mock<IGraphOperationRequest>().Object);
+            parentContext.Setup(x => x.OperationRequest).Returns(new Mock<IGraphOperationRequest>().Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(new Mock<IServiceProvider>().Object);
+            parentContext.Setup(x => x.Session).Returns(new QuerySession());
 
             var request = new Mock<IGraphFieldRequest>();
             var variableData = new Mock<IResolvedVariableCollection>();

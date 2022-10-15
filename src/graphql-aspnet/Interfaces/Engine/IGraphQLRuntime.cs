@@ -53,6 +53,8 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// <param name="serviceProvider">The service provider to use for resolving
         /// graph objects during execution.</param>
         /// <param name="request">The primary data request.</param>
+        /// <param name="session">The query session governing the execution of a query. A new
+        /// one will be generated if not supplied.</param>
         /// <param name="securityContext">The security context used for just-in-time authentication
         /// and authorization during the execution of the request.</param>
         /// <param name="metricsPackage">An optional metrics package to populate during the run.</param>
@@ -61,6 +63,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
             IGraphOperationRequest request,
+            IQuerySession session = null,
             IUserSecurityContext securityContext = null,
             IGraphQueryExecutionMetrics metricsPackage = null,
             CancellationToken cancelToken = default);

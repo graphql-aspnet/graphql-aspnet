@@ -339,8 +339,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         parentContext.Request.OperationRequest,
                         childInvocationContext,
                         dataSource,
-                        child.Origin,
-                        parentContext.Request.Items);
+                        child.Origin);
 
                     yield return new GraphFieldExecutionContext(
                         parentContext,
@@ -390,8 +389,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     parentContext.Request.OperationRequest,
                     childInvocationContext,
                     dataSource,
-                    batchOrigin,
-                    parentContext.Request.Items);
+                    batchOrigin);
 
                 yield return new GraphFieldExecutionContext(
                     parentContext,

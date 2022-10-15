@@ -145,9 +145,16 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
 
             // unchangable items about the request
             var request = new Mock<IGraphOperationRequest>();
+            request.Setup(x => x.Items).Returns(metaData);
 
             // updateable items about the request
-            var context = new GraphQueryExecutionContext(this.OperationRequest, _serviceProvider, _userSecurityContext, _metrics, _eventLogger, metaData);
+            var context = new GraphQueryExecutionContext(
+                this.OperationRequest,
+                _serviceProvider,
+                new QuerySession(),
+                securityContext: _userSecurityContext,
+                metrics: _metrics,
+                logger: _eventLogger);
 
             foreach (var kvp in _sourceData)
             {

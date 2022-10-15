@@ -71,8 +71,8 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             var context = server.CreateQueryContextBuilder()
                 .Build();
 
-            var col = context.Items.GetOrAdd(
-                SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY, (_) => new List<SubscriptionEventProxy>());
+            var col = context.Session.Items.GetOrAdd(
+                SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, (_) => new List<SubscriptionEventProxy>());
 
             await publisher.InvokeAsync(context, next, default);
             Assert.IsTrue(nextCalled);
@@ -97,8 +97,8 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             var context = server.CreateQueryContextBuilder()
                 .Build();
 
-            var col = context.Items.GetOrAdd(
-                SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY, (_) => new object());
+            var col = context.Session.Items.GetOrAdd(
+                SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, (_) => new object());
 
             Assert.ThrowsAsync<GraphExecutionException>(async () =>
             {
@@ -126,8 +126,8 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             var context = server.CreateQueryContextBuilder()
                 .Build();
 
-            var col = context.Items.GetOrAdd(
-                SubscriptionConstants.Execution.RAISED_EVENTS_COLLECTION_KEY, (_) => new List<SubscriptionEventProxy>())
+            var col = context.Session.Items.GetOrAdd(
+                SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, (_) => new List<SubscriptionEventProxy>())
                 as List<SubscriptionEventProxy>;
 
             col.Add(new SubscriptionEventProxy("fakeEvent", new TwoPropertyObject()));

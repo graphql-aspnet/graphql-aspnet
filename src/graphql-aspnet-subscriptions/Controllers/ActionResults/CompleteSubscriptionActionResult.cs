@@ -33,11 +33,11 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public override Task Complete(BaseResolutionContext context)
+        public override Task Complete(SchemaItemResolutionContext context)
         {
             if (context is FieldResolutionContext frc && frc.Request.Field is ISubscriptionGraphField)
             {
-                frc.Request.Items.TryAdd(SubscriptionConstants.Execution.COMPLETED_SUBSCRIPTION_KEY, true);
+                frc.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION, true);
             }
             else
             {

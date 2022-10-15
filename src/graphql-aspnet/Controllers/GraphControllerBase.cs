@@ -33,34 +33,32 @@ namespace GraphQL.AspNet.Controllers
     public abstract class GraphControllerBase<TRequest>
         where TRequest : class, IDataRequest
     {
+        private SchemaItemResolutionContext<TRequest> _schemaItemContext;
         private IGraphMethod _action;
-        private IGraphEventLogger _logger;
-        private ISchema _schema;
-
-        private BaseResolutionContext<TRequest> _resolutionContext;
 
         /// <summary>
         /// Invoke the specified action method as an asynchronous operation.
         /// </summary>
         /// <param name="actionToInvoke">The action to invoke.</param>
-        /// <param name="context">The invocation context to process.</param>
+        /// <param name="schemaItemContext">The invocation context to process.</param>
         /// <returns>Task&lt;System.Object&gt;.</returns>
         [GraphSkip]
         internal async virtual Task<object> InvokeActionAsync(
             IGraphMethod actionToInvoke,
-            BaseResolutionContext<TRequest> context)
+            SchemaItemResolutionContext<TRequest> schemaItemContext)
         {
             // deconstruct the context for processing
+            Validation.ThrowIfNull(schemaItemContext, nameof(schemaItemContext));
+            _schemaItemContext = schemaItemContext;
             _action = actionToInvoke;
 
-            var fieldRequest = context?.Request;
-            _schema = context?.Schema;
-            this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
-            _resolutionContext = context;
-            _logger = context?.Logger;
-            _logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
+            // ensure a field request is available
+            var fieldRequest = schemaItemContext?.Request;
+            Validation.ThrowIfNull(fieldRequest, nameof(fieldRequest));
 
-            if (_resolutionContext.ParentRequest is IGraphOperationWebRequest webRequest)
+            _schemaItemContext.Logger?.ActionMethodInvocationRequestStarted(_action, this.Request);
+
+            if (_schemaItemContext.OperationRequest is IGraphOperationWebRequest webRequest)
                 this.HttpContext = webRequest.HttpContext;
 
             if (_action?.Method == null)
@@ -71,10 +69,10 @@ namespace GraphQL.AspNet.Controllers
 
             try
             {
-                var modelGenerator = new ModelStateGenerator(context.ServiceProvider);
-                this.ModelState = modelGenerator.CreateStateDictionary(context.Arguments);
+                var modelGenerator = new ModelStateGenerator(schemaItemContext.ServiceProvider);
+                this.ModelState = modelGenerator.CreateStateDictionary(schemaItemContext.Arguments);
 
-                _logger?.ActionMethodModelStateValidated(_action, this.Request, this.ModelState);
+                _schemaItemContext.Logger?.ActionMethodModelStateValidated(_action, this.Request, this.ModelState);
 
                 if (_action.Method.DeclaringType != this.GetType())
                 {
@@ -83,7 +81,7 @@ namespace GraphQL.AspNet.Controllers
                 }
 
                 var invoker = InstanceFactory.CreateInstanceMethodInvoker(_action.Method);
-                var invocationParameters = context.Arguments.PrepareArguments(_action);
+                var invocationParameters = schemaItemContext.Arguments.PrepareArguments(_action);
 
                 var controllerRef = this as object;
                 var invokeReturn = invoker(ref controllerRef, invocationParameters);
@@ -106,13 +104,13 @@ namespace GraphQL.AspNet.Controllers
                     }
                 }
 
-                _logger?.ActionMethodInvocationCompleted(_action, this.Request, invokeReturn);
+                _schemaItemContext.Logger?.ActionMethodInvocationCompleted(_action, this.Request, invokeReturn);
                 return invokeReturn;
             }
             catch (TargetInvocationException ti)
             {
                 var innerException = ti.InnerException ?? ti;
-                _logger?.ActionMethodInvocationException(_action, this.Request, innerException);
+                _schemaItemContext.Logger?.ActionMethodInvocationException(_action, this.Request, innerException);
 
                 return new InternalServerErrorGraphActionResult(_action, innerException);
             }
@@ -124,13 +122,13 @@ namespace GraphQL.AspNet.Controllers
                     // might happen if a method was declared differently than the actual call signature
                     case TargetException _:
                     case TargetParameterCountException _:
-                        _logger?.ActionMethodInvocationException(_action, this.Request, ex);
+                        _schemaItemContext.Logger?.ActionMethodInvocationException(_action, this.Request, ex);
                         return new RouteNotFoundGraphActionResult(_action, ex);
 
                     default:
                         // total failure by the user's action code.
                         // record and bubble
-                        _logger?.ActionMethodUnhandledException(_action, this.Request, ex);
+                        _schemaItemContext.Logger?.ActionMethodUnhandledException(_action, this.Request, ex);
                         throw;
                 }
             }
@@ -192,34 +190,42 @@ namespace GraphQL.AspNet.Controllers
         /// </summary>
         /// <value>The field context.</value>
         [GraphSkip]
-        public TRequest Request { get; private set; }
+        public TRequest Request => _schemaItemContext.Request;
 
         /// <summary>
         /// Gets the resolved <see cref="ClaimsPrincipal"/> that was passed recieved on the request.
         /// </summary>
         /// <value>The user.</value>
         [GraphSkip]
-        public ClaimsPrincipal User => _resolutionContext.User;
+        public ClaimsPrincipal User => _schemaItemContext.User;
 
         /// <summary>
         /// Gets the schema in scope for the currently executed operation.
         /// </summary>
         /// <value>The schema.</value>
-        public ISchema Schema => _schema;
+        public ISchema Schema => _schemaItemContext.Schema;
 
         /// <summary>
         /// Gets the scoped <see cref="IServiceProvider"/> supplied to the original controller action that is being invoked.
         /// </summary>
         /// <value>The request services.</value>
         [GraphSkip]
-        protected IServiceProvider RequestServices => _resolutionContext.ServiceProvider;
+        protected IServiceProvider RequestServices => _schemaItemContext.ServiceProvider;
 
         /// <summary>
-        /// Gets the <see cref="HttpContext"/> for which this controller was invoked. May be <c>null</c>
-        /// if this controller was not invoked from an ASP.NET pipeline.
+        /// Gets the <see cref="HttpContext"/> for which this controller was invoked.
         /// </summary>
+        /// <remarks>
+        /// The is a convience property and may be <c>null</c> if this controller was not invoked from an ASP.NET pipeline.
+        /// </remarks>
         /// <value>The HTTP context.</value>
         [GraphSkip]
         public HttpContext HttpContext { get; private set; }
+
+        /// <summary>
+        /// Gets the schema item context governing this controller's field resolution operation.
+        /// </summary>
+        /// <value>The context.</value>
+        public SchemaItemResolutionContext<TRequest> Context => _schemaItemContext;
     }
 }

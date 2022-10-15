@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(BaseResolutionContext context)
+        public Task Complete(SchemaItemResolutionContext context)
         {
             var message = _errorMessage ?? $"An unhandled exception was thrown during the execution of field '{_action?.Name ?? "-unknown-"}'.";
             context.Messages.Critical(

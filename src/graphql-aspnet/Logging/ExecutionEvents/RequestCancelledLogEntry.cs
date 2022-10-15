@@ -26,14 +26,14 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public RequestCancelledLogEntry(GraphQueryExecutionContext context)
             : base(LogEventIds.RequestCancelled)
         {
-            this.OperationRequestId = context?.ParentRequest?.Id;
+            this.OperationRequestId = context?.OperationRequest?.Id;
 
             this.TotalExecutionMs = 0;
-            if (context?.ParentRequest?.StartTimeUTC != null)
+            if (context?.OperationRequest?.StartTimeUTC != null)
             {
                 this.TotalExecutionMs = DateTimeOffset
                     .UtcNow
-                    .Subtract(context.ParentRequest.StartTimeUTC)
+                    .Subtract(context.OperationRequest.StartTimeUTC)
                     .TotalMilliseconds;
             }
         }

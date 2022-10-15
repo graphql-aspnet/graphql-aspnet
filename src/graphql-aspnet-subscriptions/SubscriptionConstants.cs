@@ -48,47 +48,27 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
-        /// Constants pertaining to the execution of subscription type queries.
+        /// Constants pertaining to the context data collection of the various middleeware context types.
         /// </summary>
-        public static class Execution
+        public static class ContextDataKeys
         {
             /// <summary>
             /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
             /// any events that were raised during the query execution.
             /// </summary>
-            public const string RAISED_EVENTS_COLLECTION_KEY = "GraphqlAspNet:Subscriptions:RaisedSubscriptionEvents";
+            public const string RAISED_EVENTS_COLLECTION = "GraphqlAspNet:Subscriptions:RaisedSubscriptionEvents";
 
             /// <summary>
             /// A key added to the items collection of a request of a subscription
             /// indicating that the request should be dropped/skipped.
             /// </summary>
-            public const string SKIPPED_EVENT_KEY = "GraphqlAspNet:Subscriptions:SkippedSubscriptionEvent";
+            public const string SKIP_EVENT = "GraphqlAspNet:ControlKeys:Subscriptions:SkipSubscriptionEvent";
 
             /// <summary>
             /// A key added to the items collection of a request of a subscription
             /// indicating that the subscription should be closed upon completion of the event.
             /// </summary>
-            public const string COMPLETED_SUBSCRIPTION_KEY = "GraphqlAspNet:Subscriptions:CompletedSubscription";
-
-            /// <summary>
-            /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="GraphQueryExecutionContext"/> if a subscription was created.  If a subscription
-            /// was not created but should have been this value will be null.
-            /// </summary>
-            public const string CREATED_SUBSCRIPTION = "GraphqlAspNet:Subscriptions:PipelineCreatedSubscription";
-
-            /// <summary>
-            /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="SubcriptionExecutionContext"/>of the subscription id on the request
-            /// to uniquely identify the created subscription if/when it is created.
-            /// </summary>
-            public const string SUBSCRIPTION_ID = "GraphqlAspNet:Subscriptions:SubscriptionId";
-
-            /// <summary>
-            /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="SubcriptionExecutionContext"/> to a reference of the client that is making the request.
-            /// </summary>
-            public const string CLIENT = "GraphqlAspNet:Subscriptions:ClientReference";
+            public const string COMPLETE_SUBSCRIPTION = "GraphqlAspNet:ControlKeys:Subscriptions:CompleteSubscription";
         }
 
         /// <summary>

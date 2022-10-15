@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
+    using Microsoft.AspNetCore.Http;
     using Moq;
     using NUnit.Framework;
 
@@ -47,7 +48,8 @@ namespace GraphQL.AspNet.Tests.Middleware
             req.Setup(x => x.QueryText).Returns(null as string);
             var context = new GraphQueryExecutionContext(
                 req.Object,
-                new Mock<IServiceProvider>().Object);
+                new Mock<IServiceProvider>().Object,
+                new Mock<IQuerySession>().Object);
 
             await component.InvokeAsync(context, EmptyNextDelegate, default);
             Assert.AreEqual(1, context.Messages.Count);

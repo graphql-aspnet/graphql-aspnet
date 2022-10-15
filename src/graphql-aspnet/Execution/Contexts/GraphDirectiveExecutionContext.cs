@@ -56,36 +56,39 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Initializes a new instance of the <see cref="GraphDirectiveExecutionContext" /> class.
         /// </summary>
         /// <param name="schema">The schema this context targets.</param>
+        /// <param name="directiveRequest">The directive request to be completed.</param>
+        /// <param name="operationRequest">The parent operation under which
+        /// this directive execution is taking place.</param>
         /// <param name="serviceProvider">The service provider used to resolve needed
         /// objects for this context.</param>
-        /// <param name="parentOperationRequest">The parent operation under which
-        /// this directive execution is taking place.</param>
-        /// <param name="directiveRequest">The directive request to be completed.</param>
+        /// <param name="querySession">The query session.</param>
+        /// <param name="userSecurityContext">The user security context from which this directive will
+        /// be authorized.</param>
+        /// <param name="items">A collection of developer-driven items for tracking various pieces of data.</param>
         /// <param name="metrics">The metrics package to write timing data to.</param>
         /// <param name="logger">The logger to which any event log entries will be written.</param>
         /// <param name="variableData">A set of variable, parsed from a query document that may be used during processing.</param>
-        /// <param name="userSecurityContext">The user security context from which this directive will
-        /// be authorized.</param>
-        /// <param name="items">A collection of user defined items.</param>
         /// <param name="user">The user that has been preauthorized for this execution.</param>
         public GraphDirectiveExecutionContext(
             ISchema schema,
-            IServiceProvider serviceProvider,
-            IGraphOperationRequest parentOperationRequest,
             IGraphDirectiveRequest directiveRequest,
+            IGraphOperationRequest operationRequest,
+            IServiceProvider serviceProvider,
+            IQuerySession querySession,
+            IUserSecurityContext userSecurityContext = null,
+            MetaDataCollection items = null,
             IGraphQueryExecutionMetrics metrics = null,
             IGraphEventLogger logger = null,
             IResolvedVariableCollection variableData = null,
-            IUserSecurityContext userSecurityContext = null,
-            MetaDataCollection items = null,
             ClaimsPrincipal user = null)
             : base(
-                  parentOperationRequest,
+                  operationRequest,
                   serviceProvider,
+                  querySession,
                   userSecurityContext,
+                  items,
                   metrics,
-                  logger,
-                  items)
+                  logger)
         {
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             this.Request = Validation.ThrowIfNullOrReturn(directiveRequest, nameof(directiveRequest));

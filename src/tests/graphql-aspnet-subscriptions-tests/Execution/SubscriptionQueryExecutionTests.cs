@@ -85,7 +85,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var context = builder.Build();
             await server.ExecuteQuery(context);
 
-            Assert.IsTrue(context.Items.ContainsKey(SubscriptionConstants.Execution.SKIPPED_EVENT_KEY));
+            Assert.IsTrue(context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.SKIP_EVENT));
         }
     }
 }

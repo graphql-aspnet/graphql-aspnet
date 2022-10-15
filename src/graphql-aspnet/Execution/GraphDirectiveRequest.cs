@@ -26,30 +26,45 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphDirectiveRequest" /> class.
         /// </summary>
+        /// <param name="operationRequest">The operation request governing
+        /// this execution directive invocation.</param>
         /// <param name="invocationContext">The context detailing the specifics
         /// of what directive needs to be processed to fulfill this request.</param>
-        /// <param name="invocationPhase">The invocation current phase that the <paramref name="invocationContext"/>
+        /// <param name="invocationPhase">The invocation current phase that the <paramref name="invocationContext" />
         /// is being processed through.</param>
         /// <param name="targetData">The real data object that is the target of this request.</param>
-        /// <param name="requestMetaData">A set of meta data items to carry with this request.</param>
+        public GraphDirectiveRequest(
+            IGraphOperationRequest operationRequest,
+            IDirectiveInvocationContext invocationContext,
+            DirectiveInvocationPhase invocationPhase,
+            object targetData)
+            : this(invocationContext, invocationPhase, targetData)
+        {
+            this.OperationRequest = Validation.ThrowIfNullOrReturn(operationRequest, nameof(operationRequest));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphDirectiveRequest" /> class.
+        /// </summary>
+        /// <param name="invocationContext">The context detailing the specifics
+        /// of what directive needs to be processed to fulfill this request.</param>
+        /// <param name="invocationPhase">The invocation current phase that the <paramref name="invocationContext" />
+        /// is being processed through.</param>
+        /// <param name="targetData">The real data object that is the target of this request.</param>
         public GraphDirectiveRequest(
             IDirectiveInvocationContext invocationContext,
             DirectiveInvocationPhase invocationPhase,
-            object targetData,
-            MetaDataCollection requestMetaData = null)
+            object targetData)
         {
             this.Id = Guid.NewGuid().ToString("N");
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
-            this.Items = requestMetaData ?? new MetaDataCollection();
             this.DirectivePhase = invocationPhase;
             this.DirectiveTarget = targetData;
+            this.OperationRequest = null;
         }
 
         /// <inheritdoc />
         public string Id { get; private set; }
-
-        /// <inheritdoc />
-        public MetaDataCollection Items { get; }
 
         /// <inheritdoc />
         public IDirectiveInvocationContext InvocationContext { get; }
@@ -65,5 +80,8 @@ namespace GraphQL.AspNet.Execution
 
         /// <inheritdoc />
         public IDirective Directive => this.InvocationContext.Directive;
+
+        /// <inheritdoc />
+        public IGraphOperationRequest OperationRequest { get; }
     }
 }

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A context passed to a field resolver to complete its resolution task and generate data for a field.
     /// </summary>
     [DebuggerDisplay("Field: {Request.Field.Route.Path} (Mode = {Request.Field.Mode})")]
-    public class FieldResolutionContext : BaseResolutionContext<IGraphFieldRequest>
+    public class FieldResolutionContext : SchemaItemResolutionContext<IGraphFieldRequest>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldResolutionContext" /> class.
