@@ -34,7 +34,6 @@ namespace GraphQL.AspNet.Security
             this.Id = parentRequest.Id;
             this.SecureSchemaItem = parentRequest.Directive;
             this.Origin = parentRequest.Origin;
-            this.Items = new MetaDataCollection();
         }
 
         /// <summary>
@@ -47,7 +46,6 @@ namespace GraphQL.AspNet.Security
             this.Id = parentRequest.Id;
             this.SecureSchemaItem = parentRequest.Field;
             this.Origin = parentRequest.Origin;
-            this.Items = new MetaDataCollection();
         }
 
         /// <summary>
@@ -61,7 +59,6 @@ namespace GraphQL.AspNet.Security
             this.Id = Guid.NewGuid().ToString("N");
             this.SecureSchemaItem = invocationContext.Field;
             this.Origin = invocationContext.Origin;
-            this.Items = new MetaDataCollection();
         }
 
         /// <summary>
@@ -75,7 +72,6 @@ namespace GraphQL.AspNet.Security
             this.Id = Guid.NewGuid().ToString("N");
             this.SecureSchemaItem = securedDocumentPart.SecureItem;
             this.Origin = securedDocumentPart.Node.Location.AsOrigin();
-            this.Items = new MetaDataCollection();
         }
 
         /// <summary>
@@ -89,12 +85,6 @@ namespace GraphQL.AspNet.Security
         /// </summary>
         /// <value>The field.</value>
         public ISecureSchemaItem SecureSchemaItem { get; }
-
-        /// <summary>
-        /// Gets any additional metadata or items assigned to this request.
-        /// </summary>
-        /// <value>The metadata.</value>
-        public MetaDataCollection Items { get; }
 
         /// <summary>
         /// Gets the origin point in the source text where this request was generated.
