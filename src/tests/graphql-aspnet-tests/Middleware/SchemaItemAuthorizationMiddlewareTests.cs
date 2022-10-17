@@ -50,12 +50,12 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .ReturnsAsync(AuthorizationResult.Failed());
         }
 
-        public Task EmptyNextDelegate(GraphSchemaItemSecurityContext context, CancellationToken token)
+        public Task EmptyNextDelegate(GraphSchemaItemSecurityChallengeContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
 
-        private async Task<GraphSchemaItemSecurityContext> ExecuteTest(
+        private async Task<GraphSchemaItemSecurityChallengeContext> ExecuteTest(
             SchemaItemSecurityRequirements secRequirements,
             string userRoles = null)
         {
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             securityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(field.Object);
 
-            var fieldSecurityContext = new GraphSchemaItemSecurityContext(queryContext, securityRequest.Object);
+            var fieldSecurityContext = new GraphSchemaItemSecurityChallengeContext(queryContext, securityRequest.Object);
             fieldSecurityContext.AuthenticatedUser = _user;
             fieldSecurityContext.SecurityRequirements = secRequirements;
 

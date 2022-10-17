@@ -33,12 +33,12 @@ namespace GraphQL.AspNet.Controllers
         /// <param name="dataObject">The data object to pass with the event.</param>
         public static void PublishSubscriptionEvent(this GraphController controller, string eventName, object dataObject)
         {
-            if (dataObject == null)
-                return;
+            Validation.ThrowIfNull(dataObject, nameof(dataObject));
+            eventName = Validation.ThrowIfNullWhiteSpaceOrReturn(eventName, nameof(eventName));
 
             var contextData = controller.Context.Session.Items;
 
-            // add or reference the list of events
+            // add or reference the list of events on the active context
             var eventsCollectionFound = contextData
                 .TryGetValue(
                     SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION,
@@ -62,8 +62,6 @@ namespace GraphQL.AspNet.Controllers
                     controller.Request.Origin);
             }
 
-            eventName = Validation.ThrowIfNullWhiteSpaceOrReturn(eventName, nameof(eventName));
-
             lock (eventList)
             {
                 eventList.Add(new SubscriptionEventProxy(eventName, dataObject));
@@ -71,41 +69,42 @@ namespace GraphQL.AspNet.Controllers
         }
 
         /// <summary>
-        /// When called from a subscription, indicates that the subscription should be skipped
-        /// and the connected client should receive NO data, as if the event enver occured.
+        /// When used as an action result from subscription, indicates that the subscription should be skipped
+        /// and the connected client should receive NO data, as if the event never occured.
         /// </summary>
-        /// <remarks>
-        /// <b>Note:</b> Issues a bad request and terminates the query for non-subscription action methods.
-        /// </remarks>
         /// <param name="controller">The controller that contains the subscription method.</param>
-        /// <returns>IGraphActionResult.</returns>
-        public static IGraphActionResult SkipSubscriptionEvent(this GraphController controller)
+        /// <param name="completeSubscirption">if set to <c>true</c>, instructs that the
+        /// subscription should also be gracefully end such that no additional events
+        /// are processed after the event is skipped. The client may be informed of this operation if
+        /// supported by its negotiated protocol.</param>
+        /// <remarks>
+        /// If used as an action result for a non-subscription action (i.e. a query or mutation) a critical
+        /// error will be added to the response and the query will end.
+        /// </remarks>
+        /// <returns>An action result indicating that all field resolution results should be skipped
+        /// and no data should be sent to the connected client.</returns>
+        public static IGraphActionResult SkipSubscriptionEvent(this GraphController controller, bool completeSubscirption = false)
         {
-            return new SkipSubscriptionEventActionResult();
+            return new SkipSubscriptionEventActionResult(completeSubscirption);
         }
 
         /// <summary>
-        /// When called from a subscription, resolves the field with a <c>null</c> result and indicates that the subscription should end this event completes.
+        /// When used as an action result from subscription, resolves the field with the given object
+        /// and indicates that to the client that the subscription should gracefully end when this event completes.
         /// Once completed, the subscription will be unregsitered and no additional events will
-        /// be raised to this client.
+        /// be raised to this client. The client will be informed of this operation if supported
+        /// by its negotiated protocol.
         /// </summary>
-        /// <param name="controller">The controller.</param>
-        /// <returns>IGraphActionResult.</returns>
-        public static IGraphActionResult Complete(this GraphController controller)
-        {
-            return Complete(controller, null);
-        }
-
-        /// <summary>
-         /// When called from a subscription, resolves the field with the given object
-         /// and indicates that to the client that the subscription should end when this event completes.
-         /// Once completed, the subscription will be unregsitered and no additional events will
-         /// be raised to this client.
-         /// </summary>
-         /// <param name="controller">The controller.</param>
-         /// <param name="item">The object to resolve the field with.</param>
-         /// <returns>IGraphActionResult.</returns>
-        public static IGraphActionResult Complete(this GraphController controller, object item)
+        /// <param name="controller">The controller that contains the subscription method.</param>
+        /// <param name="item">The object to resolve the field with.</param>
+        /// <remarks>
+        /// If used as an action result for a non-subscription action (i.e. a query or mutation) a critical
+        /// error will be added to the response and the query will end.
+        /// </remarks>
+        /// <returns>An action result indicating a successful field resolution with the supplied <paramref name="item"/>
+        /// and additional information to instruct the subscription server to close the subscription
+        /// once processing is completed.</returns>
+        public static IGraphActionResult OkAndComplete(this GraphController controller, object item = null)
         {
             return new CompleteSubscriptionActionResult(item);
         }

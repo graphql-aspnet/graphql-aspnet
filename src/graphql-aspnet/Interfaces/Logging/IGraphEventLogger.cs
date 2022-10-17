@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// against an <see cref="IUserSecurityContext"/> to produce a <see cref="ClaimsPrincipal"/>.
         /// </summary>
         /// <param name="context">The field security context that contains the request to be authenticated.</param>
-        void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityContext context);
+        void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityChallengeContext context);
 
         /// <summary>
         /// Recorded when the security middleware completes an authentication challenge
@@ -79,21 +79,21 @@ namespace GraphQL.AspNet.Interfaces.Logging
         /// </summary>
         /// <param name="context">The field security context that contains the request to be authenticated.</param>
         /// <param name="authResult">The authentication result that was created.</param>
-        void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityContext context, IAuthenticationResult authResult);
+        void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityChallengeContext context, IAuthenticationResult authResult);
 
         /// <summary>
         /// Recorded when the security middleware invokes an authorization challenge
         /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
         /// </summary>
         /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
-        void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityContext context);
+        void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityChallengeContext context);
 
         /// <summary>
         /// Recorded when the security middleware completes an authorization challenge
         /// against a <see cref="ClaimsPrincipal"/> to determine access to a field of data.
         /// </summary>
         /// <param name="context">The field security context that contains the <see cref="ClaimsPrincipal"/> to be authorized.</param>
-        void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityContext context);
+        void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityChallengeContext context);
 
         /// <summary>
         /// Recorded when an executor attempts, and succeeds, to retrieve a query plan from its local cache.

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Interfaces.Security
     public interface IGraphSchemaItemSecurityRequest : IDataRequest
     {
         /// <summary>
-        /// Gets the secured schema item being queried with this request.
+        /// Gets the secured schema item being checked with this request.
         /// </summary>
         /// <value>The field.</value>
         ISecureSchemaItem SecureSchemaItem { get; }

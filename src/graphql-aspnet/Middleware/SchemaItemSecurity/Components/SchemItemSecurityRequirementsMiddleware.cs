@@ -56,8 +56,8 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 
         /// <inheritdoc />
         public async Task InvokeAsync(
-            GraphSchemaItemSecurityContext context,
-            GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityContext> next,
+            GraphSchemaItemSecurityChallengeContext context,
+            GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next,
             CancellationToken cancelToken = default)
         {
             if (context.SecurityRequirements == null)

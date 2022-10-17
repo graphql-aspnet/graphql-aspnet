@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         }
 
         /// <inheritdoc />
-        public void Cancel()
+        public virtual void Cancel()
         {
             _isCancelled = true;
         }

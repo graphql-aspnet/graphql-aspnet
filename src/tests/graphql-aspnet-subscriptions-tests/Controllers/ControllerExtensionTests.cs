@@ -63,7 +63,7 @@ namespace GraphQL.Subscriptions.Tests.Controllers
         }
 
         [Test]
-        public async Task PublishSubEvent_NoDataYieldsNoEvent()
+        public void PublishSubEvent_NoDataThrowsException()
         {
             var server = new TestServerBuilder(TestOptions.UseCodeDeclaredNames)
                 .AddGraphController<InvokableController>()
@@ -78,17 +78,11 @@ namespace GraphQL.Subscriptions.Tests.Controllers
             var resolutionContext = fieldContextBuilder.CreateResolutionContext();
 
             var controller = new InvokableController();
-            var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod.Object, resolutionContext);
 
-            // ensure the method executed completely
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectReturnedGraphActionResult);
-
-            // ensure the event collection was not created
-            Assert.IsFalse(resolutionContext
-                .Session
-                .Items
-                .ContainsKey(SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION));
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                var result = await controller.InvokeActionAsync(fieldContextBuilder.GraphMethod.Object, resolutionContext);
+            });
         }
 
         [Test]

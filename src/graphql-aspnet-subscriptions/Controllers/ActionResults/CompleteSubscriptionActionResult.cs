@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
 {
     using System.Diagnostics;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
 
@@ -24,6 +25,17 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     public class CompleteSubscriptionActionResult : ObjectReturnedGraphActionResult
     {
         /// <summary>
+        /// Applies the appropriate session information to the field context to instruct
+        /// the subscription server to complete/close the subscription.
+        /// </summary>
+        /// <param name="fieldContext">The field context.</param>
+        internal static void ConfigureForCompletedSubscription(FieldResolutionContext fieldContext)
+        {
+            Validation.ThrowIfNull(fieldContext, nameof(fieldContext));
+            fieldContext.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION, true);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CompleteSubscriptionActionResult"/> class.
         /// </summary>
         /// <param name="objectToReturn">The object to return.</param>
@@ -35,20 +47,25 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// <inheritdoc />
         public override Task Complete(SchemaItemResolutionContext context)
         {
-            if (context is FieldResolutionContext frc && frc.Request.Field is ISubscriptionGraphField)
+            if (context is FieldResolutionContext frc)
             {
-                frc.Session.Items.TryAdd(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION, true);
-            }
-            else
-            {
-                context.Messages.Critical(
-                    $"Invalid Action Result. {nameof(CompleteSubscriptionActionResult)} can only " +
-                    "be used on subscription action methods.",
-                    Constants.ErrorCodes.INVALID_ACTION_RESULT,
-                    context.Request.Origin);
+                if (frc.Request.Field is ISubscriptionGraphField)
+                {
+                    ConfigureForCompletedSubscription(frc);
+                    return base.Complete(context);
+                }
+
+                frc.Result = null;
             }
 
-            return base.Complete(context);
+            context.Cancel();
+            context.Messages.Critical(
+                $"Invalid Action Result. {nameof(CompleteSubscriptionActionResult)} can only " +
+                "be used on subscription actions.",
+                Constants.ErrorCodes.INVALID_ACTION_RESULT,
+                context.Request.Origin);
+
+            return Task.CompletedTask;
         }
     }
 }

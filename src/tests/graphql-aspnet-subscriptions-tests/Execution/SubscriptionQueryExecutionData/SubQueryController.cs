@@ -23,10 +23,34 @@ namespace GraphQL.Subscriptions.Tests.Execution.SubscriptionQueryExecutionData
             return source;
         }
 
-        [Subscription(typeof(TwoPropertyObject))]
-        public IGraphActionResult RetrieveObjectButSkipped(TwoPropertyObject source)
+        [QueryRoot(typeof(TwoPropertyObject))]
+        public IGraphActionResult NormalQueryWithSkipEvent()
         {
             return this.SkipSubscriptionEvent();
+        }
+
+        [QueryRoot(typeof(TwoPropertyObject))]
+        public IGraphActionResult NormalQueryWithComplete()
+        {
+            return this.OkAndComplete(new TwoPropertyObject());
+        }
+
+        [Subscription(typeof(TwoPropertyObject))]
+        public IGraphActionResult SkipEventMethod(TwoPropertyObject source)
+        {
+            return this.SkipSubscriptionEvent();
+        }
+
+        [Subscription(typeof(TwoPropertyObject))]
+        public IGraphActionResult SkipEventAndCompleteMethod(TwoPropertyObject source)
+        {
+            return this.SkipSubscriptionEvent(true);
+        }
+
+        [Subscription(typeof(TwoPropertyObject))]
+        public IGraphActionResult CompleteMethod(TwoPropertyObject source)
+        {
+            return this.OkAndComplete(source);
         }
 
         [Query]

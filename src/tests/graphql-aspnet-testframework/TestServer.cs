@@ -562,9 +562,9 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="context">The context.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        public async Task ExecuteFieldAuthorization(GraphSchemaItemSecurityContext context, CancellationToken cancelToken = default)
+        public async Task ExecuteFieldAuthorization(GraphSchemaItemSecurityChallengeContext context, CancellationToken cancelToken = default)
         {
-            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext>>();
+            var pipeline = this.ServiceProvider.GetService<ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext>>();
             await pipeline.InvokeAsync(context, cancelToken).ConfigureAwait(false);
         }
 

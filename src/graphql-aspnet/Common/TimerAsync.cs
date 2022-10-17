@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Common
         }
 
         /// <summary>
-        /// Starts the TimerAsync.
+        /// Starts the timer. This method is non-blocking.
         /// </summary>
         public void Start()
         {
@@ -95,7 +95,8 @@ namespace GraphQL.AspNet.Common
         }
 
         /// <summary>
-        /// Stops the TimerAsync.
+        /// Begins a task to end the timer. This task will return when the timer
+        /// has completed any outstanding iterations and has successfully stopped.
         /// </summary>
         /// <returns>A task that completes when the timer is stopped.</returns>
         public async Task Stop()

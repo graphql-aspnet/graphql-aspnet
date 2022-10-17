@@ -25,13 +25,13 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     public class AuthorizeFieldMiddleware<TSchema> : IGraphFieldExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> _authPipeline;
+        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> _authPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeFieldMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="authPipeline">The authentication pipeline.</param>
-        public AuthorizeFieldMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> authPipeline)
+        public AuthorizeFieldMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> authPipeline)
         {
             _authPipeline = Validation.ThrowIfNullOrReturn(authPipeline, nameof(authPipeline));
         }
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             {
                 // execute the authorization pipeline
                 var authRequest = new GraphSchemaItemSecurityRequest(context.Request);
-                var authContext = new GraphSchemaItemSecurityContext(context, authRequest);
+                var authContext = new GraphSchemaItemSecurityChallengeContext(context, authRequest);
                 await _authPipeline.InvokeAsync(authContext, cancelToken).ConfigureAwait(false);
 
                 result = authContext.Result ?? SchemaItemSecurityChallengeResult.Default();

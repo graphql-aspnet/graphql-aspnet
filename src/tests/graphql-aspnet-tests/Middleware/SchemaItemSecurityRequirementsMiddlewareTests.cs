@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Middleware
                 .Build();
         }
 
-        public Task EmptyNextDelegate(GraphSchemaItemSecurityContext context, CancellationToken token)
+        public Task EmptyNextDelegate(GraphSchemaItemSecurityChallengeContext context, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             _field = field.Object;
         }
 
-        private async Task<GraphSchemaItemSecurityContext> ExecuteTest()
+        private async Task<GraphSchemaItemSecurityChallengeContext> ExecuteTest()
         {
             var builder = new TestServerBuilder();
             var server = builder.Build();
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Tests.Middleware
             fieldSecurityRequest.Setup(x => x.SecureSchemaItem)
                 .Returns(_field);
 
-            var securityContext = new GraphSchemaItemSecurityContext(queryContext, fieldSecurityRequest.Object);
+            var securityContext = new GraphSchemaItemSecurityChallengeContext(queryContext, fieldSecurityRequest.Object);
 
             var component = new SchemItemSecurityRequirementsMiddleware(_policyProvider?.Object);
             await component.InvokeAsync(securityContext, this.EmptyNextDelegate);

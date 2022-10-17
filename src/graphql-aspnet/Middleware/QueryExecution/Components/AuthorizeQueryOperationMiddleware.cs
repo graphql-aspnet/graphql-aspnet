@@ -26,13 +26,13 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     public class AuthorizeQueryOperationMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> _authPipeline;
+        private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> _authPipeline;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizeQueryOperationMiddleware{TSchema}"/> class.
         /// </summary>
         /// <param name="authPipeline">The authentication pipeline.</param>
-        public AuthorizeQueryOperationMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityContext> authPipeline)
+        public AuthorizeQueryOperationMiddleware(ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> authPipeline)
         {
             _authPipeline = Validation.ThrowIfNullOrReturn(authPipeline, nameof(authPipeline));
         }
@@ -70,7 +70,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     continue;
 
                 var authRequest = new GraphSchemaItemSecurityRequest(securePart);
-                var authContext = new GraphSchemaItemSecurityContext(context, authRequest);
+                var authContext = new GraphSchemaItemSecurityChallengeContext(context, authRequest);
 
                 var pipelineTask = _authPipeline.InvokeAsync(authContext, cancelToken)
                     .ContinueWith(

@@ -184,12 +184,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Creates an authorization context to validate the field request this builder is creating.
         /// </summary>
         /// <returns>GraphFieldAuthorizationContext.</returns>
-        public GraphSchemaItemSecurityContext CreateSecurityContext()
+        public GraphSchemaItemSecurityChallengeContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
             var request = new GraphSchemaItemSecurityRequest(this.FieldRequest);
-            return new GraphSchemaItemSecurityContext(
+            return new GraphSchemaItemSecurityChallengeContext(
                 parent,
                 request);
         }

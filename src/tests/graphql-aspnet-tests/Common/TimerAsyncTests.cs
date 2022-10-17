@@ -67,6 +67,7 @@ namespace GraphQL.Tests.Common
             timer.Start();
             while (total < 3)
             {
+                await Task.Yield();
             }
 
             await timer.Stop();

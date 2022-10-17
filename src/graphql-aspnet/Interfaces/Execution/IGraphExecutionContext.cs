@@ -10,13 +10,15 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
+    using System.Diagnostics;
     using System.Threading;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
-    /// A base execution context defining a set of items supported by all middleware pipelines.
+    /// An execution context defining a set of items supported by all
+    /// middleware pipelines.
     /// </summary>
     public interface IGraphExecutionContext
     {
@@ -33,37 +35,46 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// the cancelation state or not. The final data result of the pipeline, however; will
         /// not be rendered to the requestor when the execution context is in a cancelled state.
         /// </summary>
+        /// <remarks>
+        /// <see cref="IsCancelled"/> and <see cref="IsValid"/> states are independent.  A context can be valid but still
+        /// while being cancelled.
+        /// </remarks>
         /// <value><c>true</c> if execution of the context has been canceled; otherwise, <c>false</c>.</value>
         bool IsCancelled { get; }
 
         /// <summary>
-        /// Gets the original data request that caused the pipeline to be invoked, typically
+        /// Gets the original data parameters that caused the pipeline to be invoked, typically
         /// generated from an HTTP request.
         /// </summary>
         /// <value>The top level request.</value>
         IGraphOperationRequest OperationRequest { get; }
 
         /// <summary>
-        /// Gets the service provider to use for any required object instantiations.
+        /// Gets the service provider assigned to this context to use for any required
+        /// object instantiations.
         /// </summary>
         /// <value>The services.</value>
         IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Gets the security context used to authenticate and authorize field executions.
+        /// Gets the security context used for authentication and authorizion operations
+        /// against secure items.
         /// </summary>
+        /// <remarks>
+        /// When <c>null</c>, it is assumed that an "anonymous request" is being processed.
+        /// </remarks>
         /// <value>The security context.</value>
         IUserSecurityContext SecurityContext { get; }
 
         /// <summary>
         /// Gets the metrics package attached to this operation, if any.
         /// </summary>
-        /// <value>The metrics.</value>
+        /// <value>The metrics package.</value>
         IGraphQueryExecutionMetrics Metrics { get; }
 
         /// <summary>
         /// Gets the logger instance assigned to this context. All events written to the logger will
-        /// be automatically contextualized to the same request.
+        /// be automatically contextualized and scoped to the request.
         /// </summary>
         /// <value>The logger instance this context should write events to, if any.</value>
         IGraphEventLogger Logger { get; }
@@ -77,6 +88,10 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <summary>
         /// Gets a value indicating whether this context is still in a valid and runnable state.
         /// </summary>
+        /// <remarks>
+        /// <see cref="IsCancelled"/> and <see cref="IsValid"/> states are independent.  A context can be valid but still
+        /// while being cancelled.
+        /// </remarks>
         /// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
         bool IsValid { get; }
 
@@ -98,12 +113,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         MetaDataCollection Items { get; }
 
         /// <summary>
-        /// Gets the session data tracked throughout the execution of a single query. This
-        /// data is used across various pipelines for various internal operations.
+        /// Gets the object used to track runtime session data for a single query.
         /// </summary>
         /// <remarks>
-        /// This is an internal item used by graphql's pipelines and
-        /// should not be relied upon by user/developer code.
+        /// This is an internal entity reserved for use by graphql's pipelines and
+        /// should not be utilized upon by user/developer code. Modification of the data within
+        /// the session can cause the query execution to break.
         /// </remarks>
         /// <value>The active query session.</value>
         IQuerySession Session { get; }
