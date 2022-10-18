@@ -21,8 +21,8 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     using Microsoft.AspNetCore.Authentication;
 
     /// <summary>
-    /// A piece of middleware, on the authorization pipeline, that can successfuly authenticate a
-    /// <see cref="IUserSecurityContext"/>.
+    /// A piece of middleware, on the authorization pipeline, that can successfuly
+    /// authenticate a <see cref="IUserSecurityContext"/>.
     /// </summary>
     public class SchemaItemAuthenticationMiddleware : IGraphSchemaItemSecurityMiddleware, IDisposable
     {
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             bool shouldThrowOnFail,
             CancellationToken cancelToken)
         {
-            // since authenticate can result in an exception, espeically when no default exsists
+            // since .Authenticate() can result in an exception, espeically when no default exsists
             // or some scheme is defined that doesnt really exist. We want those exceptions to bubble
             // (and prevent execution) in cases where the method completing is needed (i.e. when auth is absolutely required)
             // but in cases where anonymous is allowed there is no reason to fail, we just let

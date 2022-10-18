@@ -55,13 +55,13 @@ namespace GraphQL.AspNet
             /// The key value used when writing a url containing a link to a violated specification rule
             /// to a message's metadata collection.
             /// </summary>
-            public const string REFERENCE_RULE_URL = "RuleReference";
+            public const string REFERENCE_RULE_URL_KEY = "RuleReference";
 
             /// <summary>
             /// The key value used when writing a value containing the name or number of a violated specification
             /// rule to a message's metadata collection.
             /// </summary>
-            public const string REFERENCE_RULE_NUMBER = "Rule";
+            public const string REFERENCE_RULE_NUMBER_KEY = "Rule";
         }
 
         /// <summary>

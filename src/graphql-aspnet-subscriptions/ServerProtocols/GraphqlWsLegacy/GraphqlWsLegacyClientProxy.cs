@@ -136,18 +136,18 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         {
             var GraphqlWsLegacyError = new GraphqlWsLegacyServerErrorMessage(
                     "The last message recieved was unknown or could not be processed " +
-                    "by this server. This graph ql is configured to use GraphqlWsLegacy's GraphQL over websockets " +
+                    $"by this server. This connection is configured to use the {GraphqlWsLegacyConstants.PROTOCOL_NAME} " +
                     "message schema.",
                     Constants.ErrorCodes.BAD_REQUEST,
                     lastMessage: lastMessage,
                     clientProvidedId: lastMessage.Id);
 
             GraphqlWsLegacyError.Payload.MetaData.Add(
-                Constants.Messaging.REFERENCE_RULE_NUMBER,
+                Constants.Messaging.REFERENCE_RULE_NUMBER_KEY,
                 "Unknown Message Type");
 
             GraphqlWsLegacyError.Payload.MetaData.Add(
-                Constants.Messaging.REFERENCE_RULE_URL,
+                Constants.Messaging.REFERENCE_RULE_URL_KEY,
                 "https://github.com/GraphqlWsLegacygraphql/subscriptions-transport-ws/blob/master/PROTOCOL.md");
 
             return this.SendMessage(GraphqlWsLegacyError);

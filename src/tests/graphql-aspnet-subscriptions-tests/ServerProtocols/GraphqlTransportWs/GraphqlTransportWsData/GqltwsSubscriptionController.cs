@@ -11,6 +11,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.Graphql
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
+    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class GqltwsSubscriptionController : GraphController
@@ -25,6 +26,18 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs.Graphql
         public TwoPropertyObject WatchForPropObject2(TwoPropertyObject obj)
         {
             return obj;
+        }
+
+        [Subscription(typeof(TwoPropertyObject))]
+        public IGraphActionResult WatchForPropObjectAndComplete(TwoPropertyObject obj)
+        {
+            return this.OkAndComplete(obj);
+        }
+
+        [Subscription(typeof(TwoPropertyObject))]
+        public IGraphActionResult WatchForPropObjectSkipAndComplete(TwoPropertyObject obj)
+        {
+            return this.SkipSubscriptionEvent(true);
         }
 
         [QueryRoot]

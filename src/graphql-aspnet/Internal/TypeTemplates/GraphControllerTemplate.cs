@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             {
                 throw new GraphTypeDeclarationException(
                     $"The graph controller '{this.ObjectType.FriendlyName()}' defines a {typeof(GraphTypeAttribute).FriendlyName()} but should not. This attribute" +
-                    $"is reserved for object types. To alter the naming schema of a controller use '{nameof(GraphRouteAttribute)}' instead.");
+                    $"is reserved for object types. To alter the naming scheme of a controller use '{nameof(GraphRouteAttribute)}' instead.");
             }
 
             // ensure that root and a route path aren't defined (its one or the other)

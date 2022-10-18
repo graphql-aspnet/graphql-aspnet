@@ -98,7 +98,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(session, context.Session);
             Assert.AreEqual(items, context.Items);
             Assert.IsNotNull(context.DefaultFieldSources);
-            Assert.IsNotNull(context.PostProcessingActions);
             Assert.IsNotNull(context.FieldResults);
             Assert.IsNull(context.Result);
         }

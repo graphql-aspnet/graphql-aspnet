@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Connections.Clients
     public enum ConnectionCloseStatus
     {
         /// <summary>
-        /// An unknown, unused status
+        /// An unknown, unused status.
         /// </summary>
         Unknown = 0,
 

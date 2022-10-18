@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
             }
 
             // when no policies are ever defined (meaning no security)
-            // then we assume anon access is allowed
+            // then we assume anonymous access is allowed
             bool allowAnonmous = schemaItem.SecurityGroups.Sum(x => x.AppliedPolicies.Count) == 0;
 
             AuthorizationPolicy defaultPolicy = null;
@@ -172,7 +172,8 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
                 this.DeteremineFinalPolicySet(enforcedPolicies),
                 enforcedRoleGroups);
 
-            // ensure that there exists a scenario where its possible that
+            // ensure that, via the created requirements,
+            // there exists a scenario where its possible that
             // someone could be authenticated
             if (!requirements.AllowAnonymous
                 && !requirements.AllowedAuthenticationSchemes.Any()

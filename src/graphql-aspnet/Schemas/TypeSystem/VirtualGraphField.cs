@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
             string parentTypeName)
         {
             Validation.ThrowIfNull(route, nameof(route));
-            Validation.ThrowIfNullWhiteSpace(parentTypeName, nameof(parentTypeName));
+            parentTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentTypeName, nameof(parentTypeName));
 
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));

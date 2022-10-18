@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="reason">The status reason indicating why the connection is being closed. This may be
         /// sent to the client depending on implementation.</param>
         /// <param name="message">A human readable description as to why the connection was closed by
-        /// the server.</param>
+        /// the server. This message is passed directly to the underlying connection.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
         Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default);

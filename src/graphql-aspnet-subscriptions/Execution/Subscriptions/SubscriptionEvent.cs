@@ -25,19 +25,19 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// Gets or sets the unique identifier assigned to this event when it was first raised
         /// from the source mutation or query.
         /// </summary>
-        /// <value>The identifier.</value>
+        /// <value>The unique id of this event.</value>
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the data package that was supplied by the publisher when the event was raised.
         /// </summary>
-        /// <value>The data.</value>
+        /// <value>The data object supplied when the event was published.</value>
         public object Data { get; set; }
 
         /// <summary>
         /// Gets or sets the fully qualified <see cref="Type"/> name of the <see cref="Data"/> object.
         /// </summary>
-        /// <value>The type.</value>
+        /// <value>The data object's data type.</value>
         public string DataTypeName { get; set; }
 
         /// <summary>
@@ -50,13 +50,13 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// Gets or sets the fully qualified <see cref="Type"/> name of the schema to which this
         /// event is targeted.
         /// </summary>
-        /// <value>The schema identifier.</value>
+        /// <value>The target schema's data type.</value>
         public string SchemaTypeName { get; set; }
 
         /// <summary>
         /// Converts this instance to a fully qualified <see cref="SubscriptionEventName"/> object.
         /// </summary>
-        /// <returns>SubscriptionEventName.</returns>
+        /// <returns>An object useful for sorting and hashing events.</returns>
         public SubscriptionEventName ToSubscriptionEventName()
         {
             return new SubscriptionEventName(this.SchemaTypeName, this.EventName);

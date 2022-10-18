@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         private async Task ResponseToUnknownMessage(GqltwsMessage lastMessage)
         {
             var error = "The last message recieved was unknown or could not be processed " +
-                        "by this server. This GrapQL server is configured to use the graphql-ws " +
+                        $"by this server. This connection is configured to use the {GqltwsConstants.PROTOCOL_NAME} " +
                         $"message schema. (messageType: '{lastMessage.Type}')";
 
             await this.CloseConnection(
@@ -95,7 +95,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             switch (result.Status)
             {
                 case SubscriptionOperationResultType.SubscriptionRegistered:
-
                     // nothing to do in this case
                     break;
 
@@ -245,7 +244,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                     break;
 
                 case GqltwsMessageType.PING:
-                    await this.ResponseToPingMessage();
+                    await this.RespondToPingMessage();
                     break;
 
                 case GqltwsMessageType.SUBSCRIBE:
@@ -341,7 +340,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// Sends a PONG message down to the connected client to acknowledge a received
         /// PING messsage.
         /// </summary>
-        private async Task ResponseToPingMessage()
+        private async Task RespondToPingMessage()
         {
             await this.SendMessage(new GqltwsPongMessage()).ConfigureAwait(false);
         }

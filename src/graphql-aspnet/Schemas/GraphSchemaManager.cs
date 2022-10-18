@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Schemas
     /// parsed from any <see cref="GraphController"/> or added manually <see cref="Type"/> to the <see cref="ISchema"/> this instance is
     /// managing.
     /// </summary>
-    public class GraphSchemaManager
+    public sealed class GraphSchemaManager
     {
         private readonly GraphNameFormatter _formatter;
 

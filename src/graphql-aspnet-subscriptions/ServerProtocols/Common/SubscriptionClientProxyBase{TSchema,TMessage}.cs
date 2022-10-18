@@ -72,8 +72,21 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <summary>
+        /// When overriden in a child class, this method fires when the server provided timeframe
+        /// for client initailization has expired. This method will always fire when the timeout
+        /// completes, it is up to the class implementing this method to appropriate if and
+        /// when needed.
+        /// </summary>
+        /// <param name="token">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        protected virtual Task InitializationWindowExpired(CancellationToken token)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// When overridden in a child class, this method is called on an interval set by the
-        /// time provided during <see cref="StartConnection"/>. When called this instance should immediately initiate
+        /// time provided during <see cref="StartConnection"/>. When called this method should immediately initiate
         /// a keep alive heartbeat sequence with the connected client.
         /// </summary>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -82,15 +95,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             return Task.CompletedTask;
         }
-
-        /// <summary>
-        /// The connected client has transmitted a complete message to this instance
-        /// and it should be handled in an appropriate manner.
-        /// </summary>
-        /// <param name="message">The message that was sent by the connected client.</param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        protected abstract Task ClientMessageReceived(TMessage message, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Deserializes a received message (represented as a UTF-8 encoded byte array) into an
@@ -110,9 +114,18 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         protected abstract byte[] SerializeMessage(TMessage message);
 
         /// <summary>
+        /// Called when a client has sent a message to this proxy in a manner appropriate with
+        /// this client's protocol.
+        /// </summary>
+        /// <param name="message">The message that was sent by the connected client.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
+        protected abstract Task ClientMessageReceived(TMessage message, CancellationToken cancelToken = default);
+
+        /// <summary>
         /// Creates a message, consistant with this proxy's underlying protocol, that
         /// can transmit a completd query operation result. This method is commonly called
-        /// via the processing of new data available to one of its subscriptions.
+        /// via the processing of a newly received subscription event.
         /// </summary>
         /// <param name="subscriptionId">The unqiue identifier provided by the client
         /// that identifies what series of operations this result belongs to.</param>
@@ -121,15 +134,21 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         protected abstract TMessage CreateDataMessage(string subscriptionId, IGraphOperationResult operationResult);
 
         /// <summary>
-        /// Creates a message consistant with this proxy's udnerlying protocol
+        /// Creates a message consistant with this proxy's underlying protocol
         /// that indicates a subscription is done and is no longer subscribed server side.
         /// </summary>
+        /// <remarks>
+        /// Return <c>null</c> if this protocol supports no such message.
+        /// </remarks>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns>TMessage.</returns>
         protected abstract TMessage CreateCompleteMessage(string subscriptionId);
 
         /// <inheritdoc />
-        public virtual async Task StartConnection(TimeSpan? keepAliveInterval = null, TimeSpan? initializationTimeout = null, CancellationToken cancelToken = default)
+        public virtual async Task StartConnection(
+            TimeSpan? keepAliveInterval = null,
+            TimeSpan? initializationTimeout = null,
+            CancellationToken cancelToken = default)
         {
             if (_clientConnection == null || _clientConnection.ClosedForever)
             {
@@ -239,18 +258,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             }
         }
 
-        /// <summary>
-        /// When overriden in a child class, this method fires when the server provided timeframe
-        /// for client initailization has expired. This method will always fire when the timeout
-        /// completes, it is up to the class implementing this method to act accordingly.
-        /// </summary>
-        /// <param name="token">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        protected virtual Task InitializationWindowExpired(CancellationToken token)
-        {
-            return Task.CompletedTask;
-        }
-
         /// <inheritdoc />
         public async Task ReceiveEvent(SubscriptionEvent eventData)
         {
@@ -288,55 +295,28 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <returns>Task.</returns>
         protected virtual async Task ExecuteSubscriptionEvent(ISubscription<TSchema> subscription, SubscriptionEvent eventData)
         {
-            // ------------------------------
-            // Setup a new execution context to process the request
-            // ------------------------------
-            var runtime = _clientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
-            var schema = _clientConnection.ServiceProvider.GetRequiredService<TSchema>();
-
-            IGraphQueryExecutionMetrics metricsPackage = null;
-            IGraphEventLogger logger = _clientConnection.ServiceProvider.GetService<IGraphEventLogger>();
-
-            if (schema.Configuration.ExecutionOptions.EnableMetrics)
-            {
-                var factory = _clientConnection.ServiceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
-                metricsPackage = factory.CreateMetricsPackage();
-            }
-
-            var context = new GraphQueryExecutionContext(
-                runtime.CreateRequest(subscription.QueryData),
-                _clientConnection.ServiceProvider,
-                new QuerySession(),
-                securityContext: _clientConnection.SecurityContext,
-                metrics: metricsPackage,
-                logger: logger);
-
-            // ------------------------------
-            // register the event data as a source input for the target subscription field
-            // ------------------------------
-            context.DefaultFieldSources.AddSource(subscription.Field, eventData.Data);
-            context.QueryPlan = subscription.QueryPlan;
-
-            // ------------------------------
-            // execute the request
-            // ------------------------------
-            var result = await runtime.ExecuteRequest(context, _clientConnection.RequestAborted);
-            if (context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.SKIP_EVENT))
-                return;
+            var processor = new SubscriptionEventProcessor<TSchema>(_clientConnection);
+            var (context, result) = await processor.ProcessEvent(eventData, subscription);
 
             // ------------------------------
             // send the message with the resultant data package
             // ------------------------------
-            var message = this.CreateDataMessage(subscription.Id, result);
-            await this.SendMessage(message);
+            var shouldSkip = context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.SKIP_EVENT);
+            if (!shouldSkip)
+            {
+                var message = this.CreateDataMessage(subscription.Id, result);
+                await this.SendMessage(message);
+            }
 
             // ------------------------------
             // stop the subscription if requested
             // ------------------------------
-            if (context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION))
+            var shouldComplete = context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION);
+            if (shouldComplete)
             {
                 var completeMessage = this.CreateCompleteMessage(subscription.Id);
-                await this.SendMessage(completeMessage);
+                if (completeMessage != null)
+                    await this.SendMessage(completeMessage);
                 this.ReleaseSubscription(subscription.Id);
             }
         }

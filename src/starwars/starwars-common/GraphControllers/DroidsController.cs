@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
     /// <summary>
     /// A controller for operations dealing directly with humans.
     /// </summary>
+    [GraphRoute("Droids")]
     public class DroidsController : GraphController
     {
         private readonly IStarWarsDataService _starWarsData;

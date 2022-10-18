@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             Assert.IsFalse(complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual("5.7.2", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER]);
+            Assert.AreEqual("5.7.2", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             Assert.IsFalse(complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual("5.7.1", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER]);
+            Assert.AreEqual("5.7.1", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             Assert.IsFalse(complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual("5.7", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER]);
+            Assert.AreEqual("5.7", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             Assert.IsFalse(complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
-            Assert.AreEqual("5.7", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER]);
+            Assert.AreEqual("5.7", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
         }
     }
 }

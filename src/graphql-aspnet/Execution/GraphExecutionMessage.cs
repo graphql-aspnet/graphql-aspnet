@@ -71,8 +71,8 @@ namespace GraphQL.AspNet.Execution
                 messageOrigin,
                 exception);
 
-            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_NUMBER, ruleNumber);
-            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_URL, url);
+            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_NUMBER_KEY, ruleNumber);
+            graphMessage.MetaData.Add(Constants.Messaging.REFERENCE_RULE_URL_KEY, url);
             return graphMessage;
         }
 

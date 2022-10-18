@@ -629,5 +629,102 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             Assert.AreEqual(0, connection.ResponseMessageCount);
             graphqlWsClient.Dispose();
         }
+
+        [Test]
+        public async Task ReceiveEvent_SubscriptionsElectsToCloseOnStartedSubscription_YieldsNEXTMessage_AndCompleteMessage()
+        {
+            using var restorePoint = new GraphQLProviderRestorePoint();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
+
+            var startMessage = new GqltwsClientSubscribeMessage()
+            {
+                Id = "abc",
+                Payload = new GraphQueryData()
+                {
+                    Query = "subscription {  gqltwsSubscription { watchForPropObjectAndComplete { property1 } } }",
+                },
+            };
+
+            await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
+            await graphqlWsClient.ProcessMessage(startMessage);
+
+            // mimic new data for the registered subscription being processed by some
+            // other mutation
+            var evt = new SubscriptionEvent()
+            {
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GqltwsSubscriptionController.WatchForPropObjectAndComplete),
+                SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
+            };
+
+            await graphqlWsClient.ReceiveEvent(evt);
+
+            // the connection should receive a data package
+            connection.AssertGqltwsResponse(
+                GqltwsMessageType.NEXT,
+                "abc",
+                @"{
+                    ""data"" : {
+                        ""gqltwsSubscription"" : {
+                            ""watchForPropObjectAndComplete"" : {
+                                ""property1"" : ""value1"",
+                            }
+                        }
+                    }
+                }");
+
+            // the connection should receive the complete message
+            connection.AssertGqltwsResponse(GqltwsMessageType.COMPLETE, "abc");
+
+            graphqlWsClient.Dispose();
+        }
+
+        [Test]
+        public async Task ReceiveEvent_SubscriptionsElectsSkipAndCompleteOnStartedSubscription_YieldsJustCompleteMessage()
+        {
+            using var restorePoint = new GraphQLProviderRestorePoint();
+            (var connection, var graphqlWsClient, var router) = this.CreateConnection();
+
+            var startMessage = new GqltwsClientSubscribeMessage()
+            {
+                Id = "abc",
+                Payload = new GraphQueryData()
+                {
+                    Query = "subscription {  gqltwsSubscription { watchForPropObjectSkipAndComplete { property1 } } }",
+                },
+            };
+
+            await connection.OpenAsync(GqltwsConstants.PROTOCOL_NAME);
+            await graphqlWsClient.ProcessMessage(startMessage);
+
+            // mimic new data for the registered subscription being processed by some
+            // other mutation
+            var evt = new SubscriptionEvent()
+            {
+                Id = Guid.NewGuid().ToString(),
+                DataTypeName = typeof(TwoPropertyObject).Name,
+                Data = new TwoPropertyObject()
+                {
+                    Property1 = "value1",
+                    Property2 = 33,
+                },
+                EventName = nameof(GqltwsSubscriptionController.WatchForPropObjectSkipAndComplete),
+                SchemaTypeName = new GraphSchema().FullyQualifiedSchemaTypeName(),
+            };
+
+            await graphqlWsClient.ReceiveEvent(evt);
+
+            // the connection should NOT receive a data package
+            // the connection should receive the complete message
+            connection.AssertGqltwsResponse(GqltwsMessageType.COMPLETE, "abc");
+
+            graphqlWsClient.Dispose();
+        }
     }
 }
