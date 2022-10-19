@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using NUnit.Framework;
 
     [TestFixture]
-    public class DefaultFieldSourceCollectionTests
+    public class FieldSourceCollectionTests
     {
         [Test]
         public void AllowedFieldIsAdded_CanBeRetrieved()
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Execution
             mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
             var o = new object();
-            var collection = new DefaultFieldSourceCollection(GraphFieldSource.Action);
+            var collection = new FieldSourceCollection(GraphFieldSource.Action);
             collection.AddSource(mock.Object, o);
 
             var found = collection.TryRetrieveSource(mock.Object, out var result);
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var o = new object();
             var o1 = new object();
 
-            var collection = new DefaultFieldSourceCollection(GraphFieldSource.Action);
+            var collection = new FieldSourceCollection(GraphFieldSource.Action);
 
             // add then update the source
             collection.AddSource(mock.Object, o);
@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Execution
             mock.Setup(x => x.FieldSource).Returns(GraphFieldSource.Method);
 
             var o = new object();
-            var collection = new DefaultFieldSourceCollection();
+            var collection = new FieldSourceCollection();
             collection.AddSource(mock.Object, o);
 
             var found = collection.TryRetrieveSource(mock.Object, out var result);
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Execution
             mock1.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
 
             var o = new object();
-            var collection = new DefaultFieldSourceCollection();
+            var collection = new FieldSourceCollection();
             collection.AddSource(mock.Object, o);
             Assert.AreEqual(1, collection.Count);
 
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var o = new object();
             var o1 = new object();
-            var collection = new DefaultFieldSourceCollection(GraphFieldSource.Action | GraphFieldSource.Method);
+            var collection = new FieldSourceCollection(GraphFieldSource.Action | GraphFieldSource.Method);
             collection.AddSource(mock.Object, o);
             collection.AddSource(mock1.Object, o1);
 

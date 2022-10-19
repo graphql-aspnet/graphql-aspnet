@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         {
             this.ClientId = client?.Id;
             this.SubscriptionId = subscription?.Id;
-            this.Route = subscription?.Route?.Path;
+            this.SubscriptionPath = subscription?.Route?.Path;
         }
 
         /// <summary>
@@ -53,20 +53,20 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         }
 
         /// <summary>
-        /// Gets the id that was supplied by the client with the GraphqlWsLegacy message, if any.
+        /// Gets the path to the top level subscription field in the target schema.
         /// </summary>
-        /// <value>The message identifier.</value>
-        public string Route
+        /// <value>The subscription path.</value>
+        public string SubscriptionPath
         {
-            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE);
-            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_PATH);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_PATH, value);
         }
 
         /// <inheritdoc />
         public override string ToString()
         {
             var idTruncated = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
-            return $"Client Subscription Started | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.Route}";
+            return $"Client Subscription Started | Client Id: {idTruncated}, Sub Id: {this.SubscriptionId}, Field: {this.SubscriptionPath}";
         }
     }
 }

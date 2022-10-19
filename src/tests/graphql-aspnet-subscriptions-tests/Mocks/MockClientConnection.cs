@@ -11,12 +11,16 @@ namespace GraphQL.Subscriptions.Tests.Mocks
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using Microsoft.AspNetCore.Http.Extensions;
     using Moq;
 
     /// <summary>
@@ -158,10 +162,9 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         }
 
         /// <inheritdoc />
-        public async Task<(IClientConnectionReceiveResult, byte[])> ReceiveFullMessage(CancellationToken cancelToken = default)
+        public async Task<IClientConnectionReceiveResult> ReceiveFullMessage(Stream stream, CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
-            var messageData = new List<byte>();
             object currentMessage = null;
 
             if (this.State != ClientConnectionState.Open)
@@ -187,7 +190,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
             {
                 await Task.Delay(5);
                 response = new MockClientMessageResult(0, ClientMessageType.Ignore, true);
-                return (response, messageData.ToArray());
+                return response;
             }
 
             switch (currentMessage)
@@ -219,12 +222,12 @@ namespace GraphQL.Subscriptions.Tests.Mocks
                     do
                     {
                         hasRemainingBytes = msm.ReadNextBytes(buffer, out int bytesRead);
-                        messageData.AddRange(new ArraySegment<byte>(buffer, 0, bytesRead));
+                        stream.Write(buffer, 0, bytesRead);
                     }
                     while (hasRemainingBytes);
 
                     response = new MockClientMessageResult(
-                        messageData.Count,
+                        (int)stream.Length,
                         msm.MessageType,
                         true,
                         msm.CloseStatus,
@@ -236,7 +239,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
                         "Queued client message is invalid with this mocked connection");
             }
 
-            return (response, messageData.ToArray());
+            return response;
         }
 
         /// <inheritdoc />

@@ -43,13 +43,13 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
         }
 
         /// <summary>
-        /// Gets the qualified name of the schema this log entry is reported against.
+        /// Gets the client protocol(s) that were attempted but unsuccessfully negotiated.
         /// </summary>
-        /// <value>The name of the schema type.</value>
+        /// <value>The client protocol.</value>
         public string ClientProtocol
         {
             get => this.GetProperty<string>(SubscriptionLogPropertyNames.CLIENT_PROTOCOL);
-            private set => this.SetProperty(LogPropertyNames.SCHEMA_TYPE_NAME, value);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.CLIENT_PROTOCOL, value);
         }
 
         /// <inheritdoc/>

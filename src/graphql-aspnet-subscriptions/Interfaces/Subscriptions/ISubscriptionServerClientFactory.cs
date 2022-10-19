@@ -16,6 +16,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     /// A factory responsible for creating protocol-specific client proxies
     /// overtop of a given persistant connection.
     /// </summary>
+    /// <remarks>
+    /// This is a library managed interface and should not be implemented
+    /// by developers. Perhaps you need <see cref="ISubscriptionClientProxyFactory"/>.
+    /// </remarks>
     public interface ISubscriptionServerClientFactory
     {
         /// <summary>

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Execution
 {
     using System.Collections;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.TypeTemplates;
@@ -20,19 +21,19 @@ namespace GraphQL.AspNet.Execution
     /// A collection of objects supplied to a pipeline that can act as an input object for
     /// a <see cref="GraphDataContainer"/>.
     /// </summary>
-    public class DefaultFieldSourceCollection : IEnumerable<KeyValuePair<SchemaItemPath, object>>
+    public class FieldSourceCollection : IEnumerable<KeyValuePair<SchemaItemPath, object>>
     {
         private readonly Dictionary<SchemaItemPath, object> _actionSources;
         private readonly GraphFieldSource _sourceTemplateTypes;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultFieldSourceCollection"/> class.
+        /// Initializes a new instance of the <see cref="FieldSourceCollection"/> class.
         /// </summary>
         /// <param name="sourcableTemplateTypes">The set of flags indicating which types of <see cref="IGraphField"/>
         /// are allowed to define objects in this collection.</param>
-        public DefaultFieldSourceCollection(GraphFieldSource sourcableTemplateTypes = GraphFieldSource.Action)
+        public FieldSourceCollection(GraphFieldSource sourcableTemplateTypes = GraphFieldSource.Action)
         {
-            _actionSources = new Dictionary<SchemaItemPath, object>();
+            _actionSources = new Dictionary<SchemaItemPath, object>(SchemaItemPathComparer.Instance);
             _sourceTemplateTypes = sourcableTemplateTypes;
         }
 
@@ -44,6 +45,7 @@ namespace GraphQL.AspNet.Execution
         /// <returns><c>true</c> a source entry is found, <c>false</c> otherwise.</returns>
         public bool TryRetrieveSource(IGraphField field, out object result)
         {
+            Validation.ThrowIfNull(field, nameof(field));
             result = null;
             if (field == null || !_actionSources.ContainsKey(field.Route))
                 return false;
@@ -59,6 +61,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="sourceData">The source data to store with this context.</param>
         public void AddSource(IGraphField field, object sourceData)
         {
+            Validation.ThrowIfNull(field, nameof(field));
             if (field != null && _sourceTemplateTypes.HasFlag(field.FieldSource))
             {
                 lock (_actionSources)

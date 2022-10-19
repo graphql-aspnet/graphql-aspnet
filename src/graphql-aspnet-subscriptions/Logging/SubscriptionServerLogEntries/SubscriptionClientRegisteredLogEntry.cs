@@ -37,6 +37,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             _schemaTypeShortName = typeof(TSchema).FriendlyName();
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.ClientTypeName = client?.GetType().FriendlyName(true);
+            this.ClientProtocol = client?.Protocol;
             this.ClientId = client?.Id;
         }
 
@@ -58,6 +59,16 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
         {
             get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_TYPE_NAME);
             private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_CLIENT_TYPE_NAME, value);
+        }
+
+        /// <summary>
+        /// Gets the communications protocol that was negotiated for this client.
+        /// </summary>
+        /// <value>The client protocol.</value>
+        public string ClientProtocol
+        {
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.CLIENT_PROTOCOL);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.CLIENT_PROTOCOL, value);
         }
 
         /// <summary>

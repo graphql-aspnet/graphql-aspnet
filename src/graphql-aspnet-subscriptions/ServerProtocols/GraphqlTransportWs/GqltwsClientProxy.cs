@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Text.Json;
@@ -44,7 +45,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         private readonly bool _enableMetrics;
         private readonly GqltwsMessageConverterFactory<TSchema> _converterFactory;
 
-        private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private SemaphoreSlim _initSyncLock = new SemaphoreSlim(1);
         private bool _initReceived;
 
         /// <summary>
@@ -177,9 +178,10 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override GqltwsMessage DeserializeMessage(byte[] bytes)
+        protected override GqltwsMessage DeserializeMessage(Stream stream)
         {
-            var text = Encoding.UTF8.GetString(bytes);
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            var text = reader.ReadToEnd();
 
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
@@ -289,7 +291,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// </summary>
         private async Task AcknowledgeConnectionInitializationMessage()
         {
-            await _semaphore.WaitAsync();
+            await _initSyncLock.WaitAsync();
 
             try
             {
@@ -300,7 +302,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                     return;
                 }
 
-                // from the spec
+                // from the spec: https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md
+                // -----------------------------
                 // If the server receives more than one ConnectionInit message at any given time,
                 // the server will close the socket with the event 4429: Too many initialisation requests.
                 await this.CloseConnection(
@@ -309,21 +312,22 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             }
             finally
             {
-                _semaphore.Release();
+                _initSyncLock.Release();
             }
         }
 
         /// <inheritdoc />
         protected override async Task InitializationWindowExpired(CancellationToken token)
         {
-            await _semaphore.WaitAsync();
+            await _initSyncLock.WaitAsync();
 
             try
             {
                 if (_initReceived)
                     return;
 
-                // from the spec
+                // from the spec: https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md
+                // -----------------------------
                 // If the server does not recieve the connection init message within a given time
                 // the server will close the socket with the event 4408: Connection initialziation timeout
                 await this.CloseConnection(
@@ -332,7 +336,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             }
             finally
             {
-                _semaphore.Release();
+                _initSyncLock.Release();
             }
         }
 
@@ -350,8 +354,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         {
             if (disposing)
             {
-                _semaphore?.Dispose();
-                _semaphore = null;
+                _initSyncLock?.Dispose();
+                _initSyncLock = null;
             }
         }
 

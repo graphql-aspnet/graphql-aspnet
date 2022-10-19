@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
@@ -127,20 +128,22 @@ namespace GraphQL.AspNet.Connections.WebSockets
         }
 
         /// <inheritdoc />
-        public async Task<(IClientConnectionReceiveResult, byte[])> ReceiveFullMessage(CancellationToken cancelToken = default)
+        public async Task<IClientConnectionReceiveResult> ReceiveFullMessage(Stream stream, CancellationToken cancelToken = default)
         {
             IClientConnectionReceiveResult response;
-            var message = new List<byte>();
 
-            var buffer = new byte[this.BufferSize];
+            bool isEndOfMessage;
             do
             {
+                var buffer = new byte[this.BufferSize];
                 response = await this.ReceiveAsync(new ArraySegment<byte>(buffer), cancelToken);
-                message.AddRange(new ArraySegment<byte>(buffer, 0, response.Count));
-            }
-            while (!response.EndOfMessage);
+                stream.Write(buffer, 0, response.Count);
 
-            return (response, message.ToArray());
+                isEndOfMessage = !(response is WebsocketResultBase wrb) || wrb.EndOfMessage;
+            }
+            while (!isEndOfMessage);
+
+            return response;
         }
 
         /// <inheritdoc />

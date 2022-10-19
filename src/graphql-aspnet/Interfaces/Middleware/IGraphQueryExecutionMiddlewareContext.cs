@@ -71,6 +71,6 @@ namespace GraphQL.AspNet.Interfaces.Middleware
         /// field execution when no other sources exist.
         /// </summary>
         /// <value>The default field sources.</value>
-        DefaultFieldSourceCollection DefaultFieldSources { get; }
+        FieldSourceCollection DefaultFieldSources { get; }
     }
 }

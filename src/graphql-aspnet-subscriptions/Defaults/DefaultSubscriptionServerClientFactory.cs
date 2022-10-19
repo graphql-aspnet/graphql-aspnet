@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Defaults
     /// client factories to create an appropriate proxy through which the server can speak with
     /// a connected client.
     /// </summary>
-    public class DefaultSubscriptionServerClientFactory : ISubscriptionServerClientFactory
+    public sealed class DefaultSubscriptionServerClientFactory : ISubscriptionServerClientFactory
     {
         private readonly Dictionary<string, ISubscriptionClientProxyFactory> _clientFactories;
 
@@ -72,10 +72,6 @@ namespace GraphQL.AspNet.Defaults
 
             string protocolToUse = null;
             HashSet<string> unsupportedProtocols = null;
-
-            // search for the first requested protocol that
-            // matches those loaded to this server instance
-            // and approved by the target schema
             foreach (var protocol in requestedProtocols)
             {
                 var testProtocol = protocol.Trim();

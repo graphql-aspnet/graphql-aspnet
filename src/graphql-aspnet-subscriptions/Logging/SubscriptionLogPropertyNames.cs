@@ -62,7 +62,7 @@ namespace GraphQL.AspNet.Logging
         /// <summary>
         /// The unique route within a schema that a subscription event is being reported against.
         /// </summary>
-        public const string SUBSCRIPTION_ROUTE = "subscriptionRoute";
+        public const string SUBSCRIPTION_PATH = "subscriptionPath";
 
         /// <summary>
         /// The physical name of the ASP.NET server hosting subscriptions.

@@ -37,12 +37,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         int Count { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the data received indicates the end of a message.
-        /// </summary>
-        /// <value><c>true</c> if the bytes retrieved indicate the end of a message; otherwise, <c>false</c>.</value>
-        bool EndOfMessage { get; }
-
-        /// <summary>
         /// Gets a value indicating whether the current message is a text based message
         /// or a binary message.
         /// </summary>

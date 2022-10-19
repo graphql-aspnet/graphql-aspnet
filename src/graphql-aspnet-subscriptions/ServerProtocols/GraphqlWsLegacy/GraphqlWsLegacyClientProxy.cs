@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Text.Json;
@@ -69,9 +70,10 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override GraphqlWsLegacyMessage DeserializeMessage(byte[] bytes)
+        protected override GraphqlWsLegacyMessage DeserializeMessage(Stream stream)
         {
-            var text = Encoding.UTF8.GetString(bytes);
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            var text = reader.ReadToEnd();
 
             var options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;

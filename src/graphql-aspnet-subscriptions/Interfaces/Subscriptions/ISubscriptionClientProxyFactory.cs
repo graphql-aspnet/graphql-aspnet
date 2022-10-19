@@ -13,10 +13,13 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
-    /// A factory used to create client proxy instances that act as the intermediary
-    /// between the subscription service instance and some messaging protocol
-    /// supported by the connected client.
+    /// A factory used to create client proxy instances that support a specific
+    /// messaging protcol.
     /// </summary>
+    /// <remarks>
+    /// Implementors of this interface should do so expecting
+    /// the resultant factor to be used as a singleton.
+    /// </remarks>
     public interface ISubscriptionClientProxyFactory
     {
         /// <summary>
@@ -31,8 +34,10 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
             where TSchema : class, ISchema;
 
         /// <summary>
-        /// Gets the key that represents the protocol that client proxies created
-        /// from this factory support. Must be a single value.
+        /// Gets the key value that represents the protocol that client proxies created
+        /// from this factory support. Must be a single value. The server
+        /// will compare this value to those provided by connected clients to determine
+        /// if a proxy instance should be generated.
         /// </summary>
         /// <value>The protocol string.</value>
         string Protocol { get; }

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
     /// <summary>
     /// A connection receive result that can wrap a raw result retrieved from a websocket.
     /// </summary>
-    public class WebSocketReceiveResultProxy : IClientConnectionReceiveResult
+    public class WebSocketReceiveResultProxy : WebsocketResultBase
     {
         private readonly WebSocketReceiveResult _socketResult;
 
@@ -31,21 +31,10 @@ namespace GraphQL.AspNet.Connections.WebSockets
 
             this.MessageType = _socketResult.MessageType.ToClientMessageType();
             this.CloseStatus = _socketResult.CloseStatus?.ToClientConnectionCloseStatus();
+
+            this.EndOfMessage = _socketResult.EndOfMessage;
+            this.CloseStatusDescription = _socketResult.CloseStatusDescription;
+            this.Count = _socketResult.Count;
         }
-
-        /// <inheritdoc />
-        public ConnectionCloseStatus? CloseStatus { get; }
-
-        /// <inheritdoc />
-        public string CloseStatusDescription => _socketResult.CloseStatusDescription;
-
-        /// <inheritdoc />
-        public int Count => _socketResult.Count;
-
-        /// <inheritdoc />
-        public bool EndOfMessage => _socketResult.EndOfMessage;
-
-        /// <inheritdoc />
-        public ClientMessageType MessageType { get; }
     }
 }

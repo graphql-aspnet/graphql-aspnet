@@ -9,6 +9,8 @@
 
 namespace GraphQL.AspNet.ServerProtocols.Common
 {
+    using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
@@ -17,6 +19,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
@@ -32,47 +35,53 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     internal sealed class SubscriptionEventProcessor<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly IClientConnection _clientConnection;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionEventProcessor{TSchema}" /> class.
         /// </summary>
-        /// <param name="connection">The connection.</param>
-        public SubscriptionEventProcessor(IClientConnection connection)
+        /// <param name="serviceProvider">The service provider used to create
+        /// components to process an event.</param>
+        public SubscriptionEventProcessor(IServiceProvider serviceProvider)
         {
-            _clientConnection = Validation.ThrowIfNullOrReturn(connection, nameof(connection));
+            _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
         /// <summary>
         /// Processes the event returning the context that was executed
         /// along with its results.
         /// </summary>
+        /// <param name="securityContext">The security context to use during process.</param>
         /// <param name="evt">The subscription event to process.</param>
         /// <param name="subscription">The subscription to process against.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>GraphQueryExecutionContext.</returns>
-        public async Task<(GraphQueryExecutionContext context, IGraphOperationResult result)>
-            ProcessEvent(SubscriptionEvent evt, ISubscription<TSchema> subscription)
+        public async Task<GraphQueryExecutionContext> ProcessEvent(
+            IUserSecurityContext securityContext,
+            SubscriptionEvent evt,
+            ISubscription<TSchema> subscription,
+            CancellationToken cancelToken = default)
         {
             // ------------------------------
             // Setup a new execution context to process the request
             // ------------------------------
-            var runtime = _clientConnection.ServiceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
-            var schema = _clientConnection.ServiceProvider.GetRequiredService<TSchema>();
+            var runtime = _serviceProvider.GetRequiredService<IGraphQLRuntime<TSchema>>();
+            var schema = _serviceProvider.GetRequiredService<TSchema>();
 
             IGraphQueryExecutionMetrics metricsPackage = null;
-            IGraphEventLogger logger = _clientConnection.ServiceProvider.GetService<IGraphEventLogger>();
+            IGraphEventLogger logger = _serviceProvider.GetService<IGraphEventLogger>();
 
             if (schema.Configuration.ExecutionOptions.EnableMetrics)
             {
-                var factory = _clientConnection.ServiceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
+                var factory = _serviceProvider.GetRequiredService<IGraphQueryExecutionMetricsFactory<TSchema>>();
                 metricsPackage = factory.CreateMetricsPackage();
             }
 
             var context = new GraphQueryExecutionContext(
                 runtime.CreateRequest(subscription.QueryData),
-                _clientConnection.ServiceProvider,
+                _serviceProvider,
                 new QuerySession(),
-                securityContext: _clientConnection.SecurityContext,
+                securityContext: securityContext,
                 metrics: metricsPackage,
                 logger: logger);
 
@@ -85,9 +94,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             // ------------------------------
             // execute the request
             // ------------------------------
-            var result = await runtime.ExecuteRequest(context, _clientConnection.RequestAborted);
-
-            return (context, result);
+            await runtime.ExecuteRequest(context, cancelToken);
+            return context;
         }
     }
 }

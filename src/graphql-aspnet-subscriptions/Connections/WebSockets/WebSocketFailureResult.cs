@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Connections.WebSockets
     /// A receive result returned by a client when the recieve message fails to complete
     /// successfully or as intended, likely due to an exception.
     /// </summary>
-    public class WebSocketFailureResult : IClientConnectionReceiveResult
+    public class WebSocketFailureResult : WebsocketResultBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketFailureResult"/> class.
@@ -32,21 +32,6 @@ namespace GraphQL.AspNet.Connections.WebSockets
             this.EndOfMessage = true;
             this.MessageType = ClientMessageType.Close;
         }
-
-        /// <inheritdoc />
-        public ConnectionCloseStatus? CloseStatus { get; }
-
-        /// <inheritdoc />
-        public string CloseStatusDescription { get; }
-
-        /// <inheritdoc />
-        public int Count { get; }
-
-        /// <inheritdoc />
-        public bool EndOfMessage { get; }
-
-        /// <inheritdoc />
-        public ClientMessageType MessageType { get; }
 
         /// <summary>
         /// Gets the exception thrown that caused this failure result, if any.

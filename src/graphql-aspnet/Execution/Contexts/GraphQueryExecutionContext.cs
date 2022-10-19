@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             : base(request, serviceProvider, querySession, securityContext, items, metrics, logger)
         {
             this.FieldResults = new List<GraphDataItem>();
-            this.DefaultFieldSources = new DefaultFieldSourceCollection();
+            this.DefaultFieldSources = new FieldSourceCollection();
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// values to various field executions when no other sources exist.
         /// </summary>
         /// <value>The default field sources.</value>
-        public DefaultFieldSourceCollection DefaultFieldSources { get; }
+        public FieldSourceCollection DefaultFieldSources { get; }
 
         /// <summary>
         /// Gets or sets a collection of resolved variable data used to use during the

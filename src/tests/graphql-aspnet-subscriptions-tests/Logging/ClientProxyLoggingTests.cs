@@ -73,7 +73,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
-            Assert.AreEqual("[subscription]/bobSub1", entry.Route);
+            Assert.AreEqual("[subscription]/bobSub1", entry.SubscriptionPath);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
 
@@ -91,7 +91,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
 
             Assert.AreEqual("client1", entry.ClientId);
             Assert.AreEqual("sub1", entry.SubscriptionId);
-            Assert.AreEqual("[subscription]/bobSub1", entry.Route);
+            Assert.AreEqual("[subscription]/bobSub1", entry.SubscriptionPath);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
 
@@ -116,7 +116,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
                 subs);
 
             Assert.AreEqual("abc", entry.ClientId);
-            Assert.AreEqual(fieldPath.ToString(), entry.SubscriptionRoute);
+            Assert.AreEqual(fieldPath.ToString(), entry.SubscriptionPath);
             Assert.AreEqual(1, entry.SubscriptionCount);
             CollectionAssert.AreEquivalent(subs.Select(x => x.Id).ToList(), entry.SubscriptionIds);
             Assert.AreNotEqual(entry.GetType().Name, entry.ToString());

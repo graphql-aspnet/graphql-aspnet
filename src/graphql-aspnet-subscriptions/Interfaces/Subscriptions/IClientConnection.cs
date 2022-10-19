@@ -10,23 +10,26 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
-    /// An decorator interface exposing the needed information of some
-    /// client connection (usually a websocket).
+    /// An interface for standarizing the needed interaction points of a connected
+    /// client.
     /// </summary>
     public interface IClientConnection
     {
         /// <summary>
-        /// Receives a full, complete, and deserializable message, as a set of bytes, from the connection.
+        /// Opens the connection and begin listening for data coming from the connected client.
         /// </summary>
+        /// <param name="messageProtocol">The message protocol the server will use
+        /// to speak with the client. May not be used by all client connection types. </param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task&lt;System.ValueTuple&lt;WebSocketReceiveResult, IEnumerable&lt;System.Byte&gt;&gt;&gt;.</returns>
-        Task<(IClientConnectionReceiveResult, byte[])> ReceiveFullMessage(CancellationToken cancelToken = default);
+        /// <returns>Task.</returns>
+        Task OpenAsync(string messageProtocol, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Closes the connection as an asynchronous operation using the close handshake defined by the underlying implementation.
@@ -39,6 +42,14 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task CloseAsync(ConnectionCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken);
 
         /// <summary>
+        /// When called, this method should return a full, complete, and UTF-8 deserializable message, from the connection.
+        /// </summary>
+        /// <param name="stream">The stream to be filled with the bits of the full message.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task&lt;System.ValueTuple&lt;WebSocketReceiveResult, IEnumerable&lt;System.Byte&gt;&gt;&gt;.</returns>
+        Task<IClientConnectionReceiveResult> ReceiveFullMessage(Stream stream, CancellationToken cancelToken = default);
+
+        /// <summary>
         /// Sends a block of data over the connection asynchronously.
         /// </summary>
         /// <param name="data">The data buffer to send.</param>
@@ -48,15 +59,6 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="cancellationToken">The token that propagates the notification that operations should be canceled.</param>
         /// <returns>Task.</returns>
         Task SendAsync(byte[] data, ClientMessageType messageType, bool endOfMessage, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Opens the connection and begin listening for data coming from the connected client.
-        /// </summary>
-        /// <param name="messageProtocol">The message protocol the server will use
-        /// to speak with the client. May not be used by all client connection types. </param>
-        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>Task.</returns>
-        Task OpenAsync(string messageProtocol, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Gets an optional, human-friendly description applied by the remote endpoint to describe the why the connection was closed.

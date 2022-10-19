@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Connections
 {
     using System;
+    using System.IO;
     using System.Net.WebSockets;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -395,12 +396,13 @@ namespace GraphQL.Subscriptions.Tests.Connections
             var client = new WebSocketClientConnection(new DefaultHttpContext(), fakeSocketManager.Object);
 
             await client.OpenAsync("protocol");
-            (var result, var bytes) = await client.ReceiveFullMessage();
+            var stream = new MemoryStream();
+            var result = await client.ReceiveFullMessage(stream);
 
             Assert.IsNotNull(fakeSocket);
             Assert.AreEqual(1, fakeSocket.TotalCallsToReceive);
-            Assert.IsTrue(result.EndOfMessage);
             Assert.IsFalse(result.CloseStatus.HasValue);
+            Assert.IsTrue(stream.Length > 0);
         }
 
         [Test]

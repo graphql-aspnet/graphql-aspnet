@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Execution
             parentContext.Setup(x => x.Session).Returns(new QuerySession());
 
             var fieldRequest = new Mock<IGraphFieldRequest>();
-            var sourceFieldCollection = new DefaultFieldSourceCollection();
+            var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new GraphFieldExecutionContext(
                 parentContext.Object,
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Execution
             var securityContext = new Mock<IUserSecurityContext>();
 
             var fieldRequest = new Mock<IGraphFieldRequest>();
-            var sourceFieldCollection = new DefaultFieldSourceCollection();
+            var sourceFieldCollection = new FieldSourceCollection();
 
             var session = new QuerySession();
             var items = new MetaDataCollection();
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Execution
 
             var args = new Mock<IExecutionArgumentCollection>();
             var directiveRequest = new Mock<IGraphDirectiveRequest>();
-            var sourceFieldCollection = new DefaultFieldSourceCollection();
+            var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new DirectiveResolutionContext(
                 schema,

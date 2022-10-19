@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
             : base(SubscriptionLogEventIds.ClientSubscriptionEventRecieved)
         {
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SubscriptionRoute = fieldPath?.Path;
+            this.SubscriptionPath = fieldPath?.Path;
             this.SubscriptionCount = subscriptionsToReceive?.Count;
             this.SubscriptionIds = subscriptionsToReceive?.Select(x => x.Id).ToList();
             this.ClientId = client?.Id;
@@ -77,13 +77,13 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         }
 
         /// <summary>
-        /// Gets the unique id of the event that was received.
+        /// Gets the path to the top level subscription field in the target schema.
         /// </summary>
-        /// <value>The identifier.</value>
-        public string SubscriptionRoute
+        /// <value>The subscription path.</value>
+        public string SubscriptionPath
         {
-            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE);
-            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_ROUTE, value);
+            get => this.GetProperty<string>(SubscriptionLogPropertyNames.SUBSCRIPTION_PATH);
+            private set => this.SetProperty(SubscriptionLogPropertyNames.SUBSCRIPTION_PATH, value);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         public override string ToString()
         {
             var clientId = this.ClientId?.Length > 8 ? this.ClientId.Substring(0, 8) : this.ClientId;
-            return $"Client Event Received | Client: {clientId}, Route: '{this.SubscriptionRoute}', Subscription Count: {this.SubscriptionCount}";
+            return $"Client Event Received | Client: {clientId}, Route: '{this.SubscriptionPath}', Subscription Count: {this.SubscriptionCount}";
         }
     }
 }

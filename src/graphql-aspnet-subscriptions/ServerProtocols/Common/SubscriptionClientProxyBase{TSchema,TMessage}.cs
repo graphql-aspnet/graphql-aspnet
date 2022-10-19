@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -101,9 +102,9 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// appropriate <typeparamref name="TMessage" /> consistant with the messaging protocol
         /// used by this proxy.
         /// </summary>
-        /// <param name="bytes">The bits to decode.</param>
+        /// <param name="stream">The stream containing the bytes to deserialize.</param>
         /// <returns>TMessage.</returns>
-        protected abstract TMessage DeserializeMessage(byte[] bytes);
+        protected abstract TMessage DeserializeMessage(Stream stream);
 
         /// <summary>
         /// Serializes the message into an array of UTF-8 encoded bytes that can be transmitted
@@ -199,14 +200,15 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 {
                     do
                     {
-                        byte[] bytes;
-                        (result, bytes) = await _clientConnection
-                                .ReceiveFullMessage()
+                        var stream = new MemoryStream();
+                        result = await _clientConnection
+                                .ReceiveFullMessage(stream)
                                 .ConfigureAwait(false);
 
                         if (result.MessageType == ClientMessageType.Text)
                         {
-                            var message = this.DeserializeMessage(bytes);
+                            stream.Seek(0, SeekOrigin.Begin);
+                            var message = this.DeserializeMessage(stream);
                             await this.ClientMessageReceived(message)
                                 .ConfigureAwait(false);
                         }
@@ -295,8 +297,12 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <returns>Task.</returns>
         protected virtual async Task ExecuteSubscriptionEvent(ISubscription<TSchema> subscription, SubscriptionEvent eventData)
         {
-            var processor = new SubscriptionEventProcessor<TSchema>(_clientConnection);
-            var (context, result) = await processor.ProcessEvent(eventData, subscription);
+            var processor = new SubscriptionEventProcessor<TSchema>(_clientConnection.ServiceProvider);
+            var context = await processor.ProcessEvent(
+                    _clientConnection.SecurityContext,
+                    eventData,
+                    subscription,
+                    _clientConnection.RequestAborted);
 
             // ------------------------------
             // send the message with the resultant data package
@@ -304,7 +310,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             var shouldSkip = context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.SKIP_EVENT);
             if (!shouldSkip)
             {
-                var message = this.CreateDataMessage(subscription.Id, result);
+                var message = this.CreateDataMessage(subscription.Id, context.Result);
                 await this.SendMessage(message);
             }
 

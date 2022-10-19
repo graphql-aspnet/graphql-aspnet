@@ -31,9 +31,9 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
         {
             _eventName = eventRecieved?.EventName;
             this.SchemaType = eventRecieved?.SchemaTypeName;
-            this.SubscriptionEventName = eventRecieved?.EventName;
             this.DataType = eventRecieved?.DataTypeName;
             this.SubscriptionEventId = eventRecieved?.Id;
+            this.SubscriptionEventName = eventRecieved?.EventName;
             this.MachineName = Environment.MachineName;
         }
 

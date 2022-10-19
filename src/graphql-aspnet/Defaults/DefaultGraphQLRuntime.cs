@@ -130,6 +130,7 @@ namespace GraphQL.AspNet.Defaults
             {
                 queryResponse = new GraphOperationResult(context.OperationRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
+                context.Result = queryResponse;
             }
 
             return queryResponse;

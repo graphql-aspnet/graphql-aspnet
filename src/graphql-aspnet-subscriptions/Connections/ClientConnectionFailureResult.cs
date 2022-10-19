@@ -29,7 +29,6 @@ namespace GraphQL.AspNet.Connections.Clients
             this.CloseStatusDescription = closeMessage?.Trim();
             this.CloseStatus = ConnectionCloseStatus.InternalServerError;
             this.Count = 0;
-            this.EndOfMessage = true;
             this.MessageType = ClientMessageType.Close;
         }
 
@@ -41,9 +40,6 @@ namespace GraphQL.AspNet.Connections.Clients
 
         /// <inheritdoc />
         public int Count { get; }
-
-        /// <inheritdoc />
-        public bool EndOfMessage { get; }
 
         /// <inheritdoc />
         public ClientMessageType MessageType { get; }

@@ -28,7 +28,8 @@ namespace GraphQL.AspNet.Defaults
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// A default implementation of the logic for handling a subscription request over a websocket.
+    /// A middleware component, injected into the ASP.NET HTTP pipeline to
+    /// handling a subscription request over a websocket.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this middleware component is built for.</typeparam>
     public class DefaultGraphQLHttpSubscriptionMiddleware<TSchema>
@@ -71,91 +72,93 @@ namespace GraphQL.AspNet.Defaults
         /// <returns>Task.</returns>
         public virtual async Task InvokeAsync(HttpContext context)
         {
-            // immediate bypass if not aimed at this schema subscription route
+            // ---------------------------------
+            // Ensure this is a socket request targeted at the url
+            // the schema is listening on
+            // ---------------------------------
             var isListeningToPath = context?.Request?.Path == null || string.Compare(
                 context.Request.Path,
                 _routePath,
                 CultureInfo.InvariantCulture,
                 CompareOptions.OrdinalIgnoreCase) == 0;
 
-            if (isListeningToPath && context.WebSockets.IsWebSocketRequest)
+            if (!isListeningToPath || !context.WebSockets.IsWebSocketRequest)
             {
-                var logger = context.RequestServices.GetService<IGraphEventLogger>();
-                ISubscriptionClientProxy<TSchema> subscriptionClient = null;
-                IClientConnection clientConnection = null;
-                try
-                {
-                    clientConnection = new WebSocketClientConnection(context);
-
-                    // if this schema instance only allows pre-authenticaed clients
-                    // do a hard exit
-                    var isAuthenticated = clientConnection.SecurityContext?.DefaultUser != null &&
-                                          clientConnection.SecurityContext
-                                            .DefaultUser
-                                            .Identities
-                                            .Any(x => x.IsAuthenticated);
-
-                    if (_options.AuthenticatedRequestsOnly && !isAuthenticated)
-                        throw new UnauthenticatedClientConnectionException(clientConnection);
-
-                    subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnection);
-                    if (subscriptionClient != null)
-                    {
-                        logger?.SubscriptionClientRegistered<TSchema>(subscriptionClient);
-
-                        // hold the client connection to keep the socket open
-                        await subscriptionClient.StartConnection(
-                            _options.ConnectionKeepAliveInterval,
-                            _options.ConnectionInitializationTimeout,
-                            context.RequestAborted).ConfigureAwait(false);
-
-                        logger?.SubscriptionClientDropped(subscriptionClient);
-                    }
-                }
-                catch (UnauthenticatedClientConnectionException)
-                {
-                    if (clientConnection != null)
-                    {
-                        await clientConnection.CloseAsync(
-                                ConnectionCloseStatus.ProtocolError,
-                                "Unauthorized Request",
-                                context.RequestAborted)
-                            .ConfigureAwait(false);
-                    }
-                }
-                catch (UnsupportedClientProtocolException uspe)
-                {
-                    logger?.UnsupportedClientProtocol(_schema, uspe.Protocol);
-                    if (!context.Response.HasStarted)
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        await context.Response.WriteAsync(
-                            $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported " +
-                            $"by the target schema.").ConfigureAwait(false);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger?.UnhandledExceptionEvent(ex);
-                    if (!context.Response.HasStarted)
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        await context.Response.WriteAsync(
-                            "An unexpected error occured attempting to configure the web socket " +
-                            "connection. Check the server event logs for further details.")
-                            .ConfigureAwait(false);
-                    }
-                }
-                finally
-                {
-                    subscriptionClient?.Dispose();
-                    subscriptionClient = null;
-                }
-
+                await _next(context).ConfigureAwait(false);
                 return;
             }
 
-            await _next(context).ConfigureAwait(false);
+            var logger = context.RequestServices.GetService<IGraphEventLogger>();
+            ISubscriptionClientProxy<TSchema> subscriptionClient = null;
+            IClientConnection clientConnection = null;
+            try
+            {
+                clientConnection = new WebSocketClientConnection(context);
+
+                // if this schema instance only allows pre-authenticaed clients
+                // do a hard exit
+                var isAuthenticated = clientConnection.SecurityContext?.DefaultUser != null &&
+                                      clientConnection.SecurityContext
+                                        .DefaultUser
+                                        .Identities
+                                        .Any(x => x.IsAuthenticated);
+
+                if (_options.AuthenticatedRequestsOnly && !isAuthenticated)
+                    throw new UnauthenticatedClientConnectionException(clientConnection);
+
+                subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnection);
+                if (subscriptionClient != null)
+                {
+                    logger?.SubscriptionClientRegistered<TSchema>(subscriptionClient);
+
+                    // hold the client connection to keep the socket open
+                    await subscriptionClient.StartConnection(
+                        _options.ConnectionKeepAliveInterval,
+                        _options.ConnectionInitializationTimeout,
+                        context.RequestAborted).ConfigureAwait(false);
+
+                    logger?.SubscriptionClientDropped(subscriptionClient);
+                }
+            }
+            catch (UnauthenticatedClientConnectionException)
+            {
+                if (clientConnection != null)
+                {
+                    await clientConnection.CloseAsync(
+                            ConnectionCloseStatus.ProtocolError,
+                            "Unauthorized Request",
+                            context.RequestAborted)
+                        .ConfigureAwait(false);
+                }
+            }
+            catch (UnsupportedClientProtocolException uspe)
+            {
+                logger?.UnsupportedClientProtocol(_schema, uspe.Protocol);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await context.Response.WriteAsync(
+                        $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported " +
+                        $"by the target schema.").ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger?.UnhandledExceptionEvent(ex);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    await context.Response.WriteAsync(
+                        "An unexpected error occured attempting to configure the web socket " +
+                        "connection. Check the server event logs for further details.")
+                        .ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                subscriptionClient?.Dispose();
+                subscriptionClient = null;
+            }
         }
     }
 }
