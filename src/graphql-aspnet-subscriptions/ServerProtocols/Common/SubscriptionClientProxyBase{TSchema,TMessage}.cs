@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         private readonly TSchema _schema;
         private readonly ISubscriptionEventRouter _router;
         private IClientConnection _clientConnection;
-        private bool _disposedValue;
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionClientProxyBase{TSchema, TMessageBase}" /> class.
@@ -263,6 +263,16 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <inheritdoc />
         public async Task ReceiveEvent(SubscriptionEvent eventData)
         {
+            // its possible that an event was scheduled by the router
+            // when this connection was closed (but before it could be delivered)
+            // double check to make sure this client is able to receive events before processing them
+            if (_isDisposed
+                || _clientConnection == null
+                || _clientConnection.State != ClientConnectionState.Open)
+            {
+                return;
+            }
+
             // force asyncronicity
             await Task.Yield();
 
@@ -476,7 +486,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposedValue)
+            if (!_isDisposed)
             {
                 if (disposing)
                 {
@@ -484,7 +494,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     // client connection should be disposed individually
                 }
 
-                _disposedValue = true;
+                _isDisposed = true;
             }
         }
 

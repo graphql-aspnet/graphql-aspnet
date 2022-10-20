@@ -37,7 +37,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()
@@ -62,7 +62,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()
@@ -88,7 +88,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()
@@ -117,7 +117,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()

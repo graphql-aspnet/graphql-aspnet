@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             // register the internal queueing mechanism that will asyncrounously transfer
             // raised events from controller methods to the registered subscription publisher
-            schemaBuilder.Options.ServiceCollection.AddSingleton<SubscriptionEventQueue>();
+            schemaBuilder.Options.ServiceCollection.AddSingleton<SubscriptionEventPublishingQueue>();
             schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionPublicationService>();
             schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
 
@@ -96,10 +96,9 @@ namespace GraphQL.AspNet.Configuration.Mvc
             options?.Invoke(subscriptionsOptions);
 
             // try register the default router type to the service collection
-            var defaultRouter = CreateDefaultSubscriptionRouterDescriptor();
-            schemaBuilder.Options.ServiceCollection.TryAdd(defaultRouter);
+            schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
 
-            var extension = new DefaultSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
+            var extension = new SubscriptionReceiverSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
             schemaBuilder.Options.RegisterExtension(extension);
 
             return schemaBuilder;

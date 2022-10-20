@@ -14,14 +14,15 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Exceptions;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Middleware.FieldExecution;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
@@ -30,11 +31,11 @@ namespace GraphQL.AspNet
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
-    /// A schema extension encapsulating a subscription server that can accept clients and respond to
-    /// subscription events for connected clients.
+    /// A schema extension encapsulating a the necessary components to accept subscriptions clients and respond to
+    /// subscription events for those clients.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class DefaultSubscriptionServerSchemaExtension<TSchema> : IGraphQLServerExtension
+    public class SubscriptionReceiverSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -46,12 +47,12 @@ namespace GraphQL.AspNet
         private SchemaOptions _primaryOptions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultSubscriptionServerSchemaExtension{TSchema}" /> class.
+        /// Initializes a new instance of the <see cref="SubscriptionReceiverSchemaExtension{TSchema}" /> class.
         /// </summary>
         /// <param name="schemaBuilder">The schema builder created when adding graphql to the server
         /// originally.</param>
         /// <param name="options">The options.</param>
-        public DefaultSubscriptionServerSchemaExtension(ISchemaBuilder<TSchema> schemaBuilder, SubscriptionServerOptions<TSchema> options)
+        public SubscriptionReceiverSchemaExtension(ISchemaBuilder<TSchema> schemaBuilder, SubscriptionServerOptions<TSchema> options)
         {
             _schemaBuilder = Validation.ThrowIfNullOrReturn(schemaBuilder, nameof(schemaBuilder));
             this.SubscriptionOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
@@ -67,7 +68,7 @@ namespace GraphQL.AspNet
         public virtual void Configure(SchemaOptions options)
         {
             _primaryOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
-            _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
+            _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
 
             // enforce a "per request" auth method for the server instance
             // if and only if an auth method was not set explicitly by the developer
@@ -129,6 +130,16 @@ namespace GraphQL.AspNet
             _schemaBuilder.Options.ServiceCollection.AddGraphqlWsLegacysProtocol();
             _schemaBuilder.Options.ServiceCollection.AddGqltwsProtocol();
 
+            // register the global counter that imposes limits on the number of connected
+            // clients supported by this server instance
+            _schemaBuilder.Options.ServiceCollection.TryAdd(
+                new ServiceDescriptor(
+                typeof(GlobalConnectedSubscriptionClientCounter),
+                (sp) => new GlobalConnectedSubscriptionClientCounter(SubscriptionServerSettings.MaxConnectedClientCount),
+                ServiceLifetime.Singleton));
+
+            // register the primary factory that will generate client proxies for the
+            // supported messaging protocols
             _schemaBuilder.Options.ServiceCollection.TryAdd(
              new ServiceDescriptor(
                  typeof(ISubscriptionServerClientFactory),

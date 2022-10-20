@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="options">The options.</param>
         private void PerformInitialConfiguration(SchemaOptions options)
         {
-            options.AutoRegisterLocalGraphEntities = false;
+            options.AutoRegisterLocalEntities = false;
 
             if (_initialSetup.HasFlag(TestOptions.UseCodeDeclaredNames))
             {

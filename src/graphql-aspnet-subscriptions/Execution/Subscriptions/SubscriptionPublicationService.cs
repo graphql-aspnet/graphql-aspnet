@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         private readonly IServiceProvider _provider;
-        private readonly SubscriptionEventQueue _eventsToRaise;
+        private readonly SubscriptionEventPublishingQueue _eventsToRaise;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionPublicationService" /> class.
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// can use to instantiate the publisher instances.</param>
         /// <param name="eventQueue">The singular event queue where all "published" events
         /// are initially staged.</param>
-        public SubscriptionPublicationService(IServiceProvider provider, SubscriptionEventQueue eventQueue)
+        public SubscriptionPublicationService(IServiceProvider provider, SubscriptionEventPublishingQueue eventQueue)
         {
             _eventsToRaise = Validation.ThrowIfNullOrReturn(eventQueue, nameof(eventQueue));
             _provider = Validation.ThrowIfNullOrReturn(provider, nameof(provider));

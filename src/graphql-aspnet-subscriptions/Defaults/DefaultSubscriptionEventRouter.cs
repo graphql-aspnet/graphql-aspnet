@@ -9,10 +9,13 @@
 
 namespace GraphQL.AspNet.Defaults
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -23,10 +26,14 @@ namespace GraphQL.AspNet.Defaults
     /// events to the various schema instances  within this application domain. This component IS NOT
     /// responsible for publishing new events, only receieving existing ones.
     /// </summary>
-    public class DefaultSubscriptionEventRouter : ISubscriptionEventRouter
+    public sealed class DefaultSubscriptionEventRouter : ISubscriptionEventRouter, IDisposable
     {
         private readonly IGraphEventLogger _logger;
         private readonly SubscribedEventRecievers _allReceivers;
+        private readonly int _maxReceiverCount;
+        private readonly SemaphoreSlim _eventSendSemaphore;
+        private readonly ConcurrentHashSet<Task> _allSubscriberTasks;
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSubscriptionEventRouter" /> class.
@@ -36,17 +43,27 @@ namespace GraphQL.AspNet.Defaults
         {
             _logger = logger;
             _allReceivers = new SubscribedEventRecievers();
+            _allSubscriberTasks = new ConcurrentHashSet<Task>();
+            _maxReceiverCount = SubscriptionServerSettings.MaxConcurrentReceiverCount;
+
+            if (_maxReceiverCount < 1)
+                _maxReceiverCount = 1;
+
+            _eventSendSemaphore = new SemaphoreSlim(_maxReceiverCount);
         }
 
         /// <inheritdoc />
-        public async Task RaisePublishedEvent(SubscriptionEvent eventData)
+        public async Task RaisePublishedEvent(SubscriptionEvent eventData, bool waitForDelivery = false)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
             _logger?.SubscriptionEventReceived(eventData);
             List<ISubscriptionEventReceiver> receivers = null;
 
-            var tasks = new List<Task>();
+            // capture a list of all listeners to this event
             lock (_allReceivers)
             {
                 // if no one is listening for the event, just let it go
@@ -58,22 +75,49 @@ namespace GraphQL.AspNet.Defaults
                 receivers.AddRange(_allReceivers[eventName]);
             }
 
-            if (receivers != null)
+            // dispatch the event to the listeners
+            var subscriberTasks = new List<Task>();
+            if (receivers != null && receivers.Count > 0)
             {
-                await Task.Yield();
                 foreach (var receiver in receivers)
                 {
-                    var task = receiver.ReceiveEvent(eventData);
-                    tasks.Add(task);
+                    var task = this.TransmitEventToReceiver(receiver, eventData);
+                    _allSubscriberTasks.Add(task);
+                    subscriberTasks.Add(task);
+                    _ = task.ContinueWith(this.CleanupEventTransmission);
                 }
 
-                await Task.WhenAll(tasks);
+                if (waitForDelivery)
+                    await Task.WhenAll(subscriberTasks).ConfigureAwait(false);
             }
+        }
+
+        private async Task TransmitEventToReceiver(ISubscriptionEventReceiver receiver, SubscriptionEvent eventData)
+        {
+            await _eventSendSemaphore.WaitAsync().ConfigureAwait(false);
+
+            try
+            {
+                await receiver.ReceiveEvent(eventData).ConfigureAwait(false);
+            }
+            finally
+            {
+                _eventSendSemaphore.Release();
+            }
+        }
+
+        private Task CleanupEventTransmission(Task eventTask)
+        {
+            _allSubscriberTasks.TryRemove(eventTask);
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
         public void AddReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             Validation.ThrowIfNull(eventName, nameof(eventName));
             Validation.ThrowIfNull(receiver, nameof(receiver));
 
@@ -89,6 +133,9 @@ namespace GraphQL.AspNet.Defaults
         /// <inheritdoc />
         public void RemoveReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             if (receiver == null || eventName == null)
                 return;
 
@@ -107,6 +154,9 @@ namespace GraphQL.AspNet.Defaults
         /// <inheritdoc />
         public void RemoveReceiver(ISubscriptionEventReceiver receiver)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             if (receiver == null)
                 return;
 
@@ -126,6 +176,30 @@ namespace GraphQL.AspNet.Defaults
                 foreach (var key in toRemove)
                     _allReceivers.Remove(key);
             }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            if (!_isDisposed)
+            {
+                _isDisposed = true;
+
+                // try and allow any outstanding events some time to release
+                if (_allSubscriberTasks.Count > 0)
+                {
+                    int timeToWaitMs = 1000;
+                    while (_allSubscriberTasks.Count > 0 || timeToWaitMs > 0)
+                    {
+                        Thread.Sleep(500);
+                        timeToWaitMs = timeToWaitMs - 500;
+                    }
+                }
+
+                _eventSendSemaphore.Dispose();
+            }
+
+            GC.SuppressFinalize(this);
         }
     }
 }

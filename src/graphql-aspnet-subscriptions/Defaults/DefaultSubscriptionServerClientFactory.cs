@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.Defaults
             // use the default for the schema (assuming one exists)
             var protocolData = connection.RequestedProtocols;
             if (string.IsNullOrWhiteSpace(protocolData))
-                protocolData = subscriptionOptions?.DefaultProtocol;
+                protocolData = subscriptionOptions?.DefaultMessageProtocol;
 
             protocolData = protocolData?.Trim();
             if (string.IsNullOrWhiteSpace(protocolData))
@@ -85,9 +85,9 @@ namespace GraphQL.AspNet.Defaults
                 }
 
                 // ensure the protocol is allowed by the target schema
-                if (subscriptionOptions?.SupportedProtocols != null)
+                if (subscriptionOptions?.SupportedMessageProtocols != null)
                 {
-                    if (!subscriptionOptions.SupportedProtocols.Contains(testProtocol))
+                    if (!subscriptionOptions.SupportedMessageProtocols.Contains(testProtocol))
                     {
                         unsupportedProtocols = unsupportedProtocols ?? new HashSet<string>();
                         unsupportedProtocols.Add(testProtocol);

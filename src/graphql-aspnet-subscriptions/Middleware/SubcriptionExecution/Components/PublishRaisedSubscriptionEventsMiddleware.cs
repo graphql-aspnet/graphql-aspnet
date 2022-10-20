@@ -30,13 +30,13 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
     public class PublishRaisedSubscriptionEventsMiddleware<TSchema> : IQueryExecutionMiddleware
         where TSchema : class, ISchema
     {
-        private readonly SubscriptionEventQueue _eventQueue;
+        private readonly SubscriptionEventPublishingQueue _eventQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PublishRaisedSubscriptionEventsMiddleware{TSchema}" /> class.
         /// </summary>
         /// <param name="eventQueue">The event queue to add outgoing events to.</param>
-        public PublishRaisedSubscriptionEventsMiddleware(SubscriptionEventQueue eventQueue)
+        public PublishRaisedSubscriptionEventsMiddleware(SubscriptionEventPublishingQueue eventQueue)
         {
             _eventQueue = Validation.ThrowIfNullOrReturn(eventQueue, nameof(eventQueue));
         }

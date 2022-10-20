@@ -14,6 +14,7 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
@@ -35,7 +36,7 @@ namespace GraphQL.Subscriptions.Tests
             var extension = new SubscriptionPublisherSchemaExtension<GraphSchema>();
             extension.Configure(primaryOptions);
 
-            Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
+            Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphOperationType.Subscription));
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
         }
     }

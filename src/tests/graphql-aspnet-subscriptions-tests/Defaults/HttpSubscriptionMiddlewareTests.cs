@@ -20,6 +20,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Exceptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas;
     using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
@@ -64,6 +65,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
+                new GlobalConnectedSubscriptionClientCounter(),
                 options);
 
             var context = new DefaultHttpContext();
@@ -94,6 +96,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
+                new GlobalConnectedSubscriptionClientCounter(),
                 options);
 
             var context = new DefaultHttpContext();
@@ -132,6 +135,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
+                new GlobalConnectedSubscriptionClientCounter(),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -164,6 +168,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
+                new GlobalConnectedSubscriptionClientCounter(),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -198,6 +203,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
+                new GlobalConnectedSubscriptionClientCounter(),
                 options);
 
             var context = new FakeWebSocketHttpContext();

@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.Extensions;
     using Microsoft.AspNetCore.Http;
@@ -32,14 +33,15 @@ namespace GraphQL.AspNet.Defaults
     /// handling a subscription request over a websocket.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this middleware component is built for.</typeparam>
-    public class DefaultGraphQLHttpSubscriptionMiddleware<TSchema>
+    public sealed class DefaultGraphQLHttpSubscriptionMiddleware<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISubscriptionServerClientFactory _clientFactory;
         private readonly RequestDelegate _next;
+        private readonly ISubscriptionServerClientFactory _clientFactory;
         private readonly TSchema _schema;
-        private readonly SubscriptionServerOptions<TSchema> _options;
         private readonly string _routePath;
+        private readonly SubscriptionServerOptions<TSchema> _options;
+        private readonly GlobalConnectedSubscriptionClientCounter _counter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> class.
@@ -49,12 +51,14 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="schema">The schema targeted by this middleware component.</param>
         /// <param name="clientFactory">The client factory used to instantiate
         /// client proxies.</param>
+        /// <param name="counter">The global counter to track connected clients across all schemas.</param>
         /// <param name="options">The configuration options the developer
         /// assigned for this schema.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
             TSchema schema,
             ISubscriptionServerClientFactory clientFactory,
+            GlobalConnectedSubscriptionClientCounter counter,
             SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
@@ -62,15 +66,16 @@ namespace GraphQL.AspNet.Defaults
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _clientFactory = Validation.ThrowIfNullOrReturn(clientFactory, nameof(clientFactory));
             _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
+            _counter = Validation.ThrowIfNullOrReturn(counter, nameof(counter));
         }
 
         /// <summary>
         /// The invocation method that can process the current http context
         /// if it should be handled as a subscription request.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The http context to process.</param>
         /// <returns>Task.</returns>
-        public virtual async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             // ---------------------------------
             // Ensure this is a socket request targeted at the url
@@ -91,12 +96,22 @@ namespace GraphQL.AspNet.Defaults
             var logger = context.RequestServices.GetService<IGraphEventLogger>();
             ISubscriptionClientProxy<TSchema> subscriptionClient = null;
             IClientConnection clientConnection = null;
+
+            bool connectionAllowed = false;
             try
             {
+                // check the connection against the configured global max for this
+                // server instance
+                // ----------------------------
+                connectionAllowed = _counter.IncreaseCount();
+                if (!connectionAllowed)
+                    throw new MaxConcurrentClientConnectionsReachedException();
+
                 clientConnection = new WebSocketClientConnection(context);
 
                 // if this schema instance only allows pre-authenticaed clients
                 // do a hard exit
+                // ----------------------------
                 var isAuthenticated = clientConnection.SecurityContext?.DefaultUser != null &&
                                       clientConnection.SecurityContext
                                         .DefaultUser
@@ -106,58 +121,98 @@ namespace GraphQL.AspNet.Defaults
                 if (_options.AuthenticatedRequestsOnly && !isAuthenticated)
                     throw new UnauthenticatedClientConnectionException(clientConnection);
 
+                // wrap the connection in a proxy that abstracts graphql related
+                // communications from the underlying communications protocols
+                // ----------------------------
                 subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnection);
-                if (subscriptionClient != null)
-                {
-                    logger?.SubscriptionClientRegistered<TSchema>(subscriptionClient);
+                if (subscriptionClient == null)
+                    throw new InvalidOperationException("No client proxy could be configred for the connection.");
 
-                    // hold the client connection to keep the socket open
-                    await subscriptionClient.StartConnection(
-                        _options.ConnectionKeepAliveInterval,
-                        _options.ConnectionInitializationTimeout,
-                        context.RequestAborted).ConfigureAwait(false);
+                // begin listening for messages through the connection
+                // hold the client connection until operations complete
+                // ----------------------------
+                logger?.SubscriptionClientRegistered<TSchema>(subscriptionClient);
+                await subscriptionClient.StartConnection(
+                    _options.ConnectionKeepAliveInterval,
+                    _options.ConnectionInitializationTimeout,
+                    context.RequestAborted).ConfigureAwait(false);
 
-                    logger?.SubscriptionClientDropped(subscriptionClient);
-                }
+                logger?.SubscriptionClientDropped(subscriptionClient);
+            }
+            catch (MaxConcurrentClientConnectionsReachedException)
+            {
+                await this.WriteErrorToClientAndClose(
+                            context,
+                            clientConnection,
+                            (int)ConnectionCloseStatus.InternalServerError,
+                            (int)HttpStatusCode.InternalServerError,
+                            "Maximum concurrent connections reached")
+                    .ConfigureAwait(false);
             }
             catch (UnauthenticatedClientConnectionException)
             {
-                if (clientConnection != null)
-                {
-                    await clientConnection.CloseAsync(
-                            ConnectionCloseStatus.ProtocolError,
-                            "Unauthorized Request",
-                            context.RequestAborted)
-                        .ConfigureAwait(false);
-                }
+                await this.WriteErrorToClientAndClose(
+                           context,
+                           clientConnection,
+                           (int)HttpStatusCode.Unauthorized,
+                           (int)HttpStatusCode.Unauthorized,
+                           "Unauthorized Request")
+                   .ConfigureAwait(false);
             }
             catch (UnsupportedClientProtocolException uspe)
             {
                 logger?.UnsupportedClientProtocol(_schema, uspe.Protocol);
-                if (!context.Response.HasStarted)
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    await context.Response.WriteAsync(
-                        $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported " +
-                        $"by the target schema.").ConfigureAwait(false);
-                }
+                await this.WriteErrorToClientAndClose(
+                         context,
+                         clientConnection,
+                         (int)ConnectionCloseStatus.ProtocolError,
+                         (int)HttpStatusCode.BadRequest,
+                         $"The requested messaging protocol(s) '{uspe.Protocol}' are not supported " +
+                          $"by the target schema.")
+                 .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 logger?.UnhandledExceptionEvent(ex);
-                if (!context.Response.HasStarted)
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    await context.Response.WriteAsync(
+                await this.WriteErrorToClientAndClose(
+                        context,
+                        clientConnection,
+                        (int)ConnectionCloseStatus.InternalServerError,
+                        (int)HttpStatusCode.InternalServerError,
                         "An unexpected error occured attempting to configure the web socket " +
-                        "connection. Check the server event logs for further details.")
-                        .ConfigureAwait(false);
-                }
+                          "connection. Check the server event logs for further details.")
+                .ConfigureAwait(false);
             }
             finally
             {
+                if (connectionAllowed)
+                    _counter.DecreaseCount();
+
                 subscriptionClient?.Dispose();
                 subscriptionClient = null;
+            }
+        }
+
+        private async Task WriteErrorToClientAndClose(
+            HttpContext context,
+            IClientConnection clientConnection,
+            int clientConnectionStatus,
+            int httpStatus,
+            string message)
+        {
+            if (clientConnection != null && clientConnection.State == ClientConnectionState.Open)
+            {
+                await clientConnection.CloseAsync(
+                      (ConnectionCloseStatus)clientConnectionStatus,
+                      message,
+                      context.RequestAborted)
+                  .ConfigureAwait(false);
+            }
+            else if (context != null && !context.Response.HasStarted)
+            {
+                context.Response.StatusCode = httpStatus;
+                await context.Response.WriteAsync(message)
+                    .ConfigureAwait(false);
             }
         }
     }

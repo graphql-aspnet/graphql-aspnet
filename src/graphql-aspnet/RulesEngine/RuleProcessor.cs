@@ -16,9 +16,16 @@ namespace GraphQL.AspNet.RulesEngine
     public static class RuleProcessor
     {
         /// <summary>
-        /// Gets or sets the maximum processing depth supported by the rule processing engine. This value can be safely changed
-        /// during startup but should not be edited at runtime.
+        /// Gets or sets the maximum processing depth supported by the rule processing engine.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The rules processing engine is reponsible for executing rule sets of various kinds against parent/child structued
+        /// data sets (i.e. <c>entity -> child -> childOfChild</c> etc.) This value indicates the maximum depth of a parent/child tree
+        /// that processing will go. If this limit is reached, all processing is immediately stopped and an exception is thrown.
+        /// </para>
+        /// <para>This value can be safely changed during startup but should not be edited at runtime.</para>
+        /// </remarks>
         /// <value>The maximum processing depth.</value>
         public static int MaxProcessingDepth { get; set; }
 
@@ -27,7 +34,7 @@ namespace GraphQL.AspNet.RulesEngine
         /// </summary>
         static RuleProcessor()
         {
-            MaxProcessingDepth = 150;
+            MaxProcessingDepth = 250;
         }
     }
 }

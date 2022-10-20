@@ -18,9 +18,11 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
     using GraphQL.AspNet.Tests.Framework;
@@ -71,16 +73,17 @@ namespace GraphQL.Subscriptions.Tests
 
             (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
 
-            var extension = new DefaultSubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
             extension.Configure(primaryOptions);
 
-            Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphCollection.Subscription));
+            Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphOperationType.Subscription));
 
-            Assert.AreEqual(5, primaryOptions.ServiceCollection.Count);
+            Assert.AreEqual(6, primaryOptions.ServiceCollection.Count);
 
             // primary server objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServerClientFactory)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(GlobalConnectedSubscriptionClientCounter)));
 
             // graphql-transport-ws objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqltwsSubscriptionClientProxyFactory)));
@@ -105,7 +108,7 @@ namespace GraphQL.Subscriptions.Tests
 
             (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
 
-            var extension = new DefaultSubscriptionServerSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
             extension.Configure(primaryOptions);
 
             // 12 middleware components in the subscription-swapped primary query pipeline

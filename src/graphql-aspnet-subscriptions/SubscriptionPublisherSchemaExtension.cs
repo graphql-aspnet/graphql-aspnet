@@ -15,6 +15,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.AspNetCore.Builder;
 
     /// <summary>
@@ -44,7 +45,7 @@ namespace GraphQL.AspNet
         public virtual void Configure(SchemaOptions options)
         {
             _primaryOptions = options;
-            _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
+            _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
 
             // swap out the master providers for the ones that includes
             // support for the subscription action type

@@ -59,7 +59,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 EventName = "testEvent",
             };
 
-            var eventQueue = new SubscriptionEventQueue();
+            var eventQueue = new SubscriptionEventPublishingQueue();
             eventQueue.Enqueue(eventData);
 
             var publicationService = new SubscriptionPublicationService(provider, eventQueue);

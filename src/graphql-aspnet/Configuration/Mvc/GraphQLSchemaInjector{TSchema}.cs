@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             }
 
             // add execution assembly for auto loading of graph types
-            if (_options.AutoRegisterLocalGraphEntities)
+            if (_options.AutoRegisterLocalEntities)
             {
                 var assembly = Assembly.GetEntryAssembly();
                 _options.AddAssembly(assembly);

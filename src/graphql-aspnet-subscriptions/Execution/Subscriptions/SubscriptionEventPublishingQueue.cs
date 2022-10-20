@@ -13,12 +13,11 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
-    /// A globally shared, intermediate queue of <see cref="SubscriptionEvent"/> items. When
+    /// A globally shared, intermediate queue of <see cref="SubscriptionEvent"/> items waiting to be published. When
     /// controllers publish events they are initially staged to this queue where an additional
-    /// service dequeue's them and publishes them using the server's configured
-    /// <see cref="ISubscriptionEventPublisher"/>.
+    /// service dequeue's them and publishes them using the server's configured <see cref="ISubscriptionEventPublisher"/>.
     /// </summary>
-    public sealed class SubscriptionEventQueue : ConcurrentQueue<SubscriptionEvent>
+    public sealed class SubscriptionEventPublishingQueue : ConcurrentQueue<SubscriptionEvent>
     {
     }
 }

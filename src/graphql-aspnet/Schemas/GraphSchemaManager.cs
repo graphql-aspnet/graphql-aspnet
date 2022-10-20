@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="action">The action to add to the schema.</param>
         private void AddAction(IGraphFieldTemplate action)
         {
-            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
+            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection.ToGraphOperationType()))
             {
                 var operation = action.Route.RootCollection.ToGraphOperationType();
                 this.EnsureGraphOperationType(operation);

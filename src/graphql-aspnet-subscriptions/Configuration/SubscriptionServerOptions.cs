@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Configuration
         /// Gets or sets a value indicating whether the default subscription processing handler
         /// should be registered to the application. If disabled, the application will not register
         /// its middleware component to the ASP.NET pipeline for handling subscriptions. The application will need to handle
-        /// websocket requests manually. (Default: false).
+        /// websocket requests manually. (Default: false, "do include the default route").
         /// </summary>
         /// <value><c>true</c> if the default subscription route and middleware component should not be registered; otherwise, <c>false</c>.</value>
         public bool DisableDefaultRoute { get; set; } = false;
@@ -87,19 +87,6 @@ namespace GraphQL.AspNet.Configuration
 
         /// <summary>
         /// <para>
-        /// Gets or sets the maximum number of connected clients the server will communicate with
-        /// concurrently.  If the collected sum total of clients set to receive any given event (or events) exceeds
-        /// this value additional notifications are queued and processed as resources become available.
-        /// </para>
-        /// <para>
-        /// (Default: 50).
-        /// </para>
-        /// </summary>
-        /// <value>The maximum concurrent client notifications.</value>
-        public int MaxConcurrentClientNotifications { get; set; } = 50;
-
-        /// <summary>
-        /// <para>
         /// Gets or sets a value indicating whether web socket clients must be authenticated in order
         /// for their connection to be accepted. When true, unauthenticated clients are immediately rejected.
         /// </para>
@@ -121,7 +108,7 @@ namespace GraphQL.AspNet.Configuration
         /// <para>(Default: null).</para>
         /// </summary>
         /// <value>The default communication protocol for this schema.</value>
-        public string DefaultProtocol { get; set; } = null;
+        public string DefaultMessageProtocol { get; set; } = null;
 
         /// <summary>
         /// <para>
@@ -132,6 +119,6 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         ///
         /// <value>The supported protocols.</value>
-        public ISet<string> SupportedProtocols { get; set; }
+        public ISet<string> SupportedMessageProtocols { get; set; }
     }
 }

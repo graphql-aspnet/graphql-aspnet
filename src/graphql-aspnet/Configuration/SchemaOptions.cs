@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -73,19 +74,21 @@ namespace GraphQL.AspNet.Configuration
 
         /// <summary>
         /// Searches for and registers all publically accessible <see cref="GraphController" /> and  <see cref="GraphDirective"/>
-        /// found on the assembly in which the current <see cref="ISchema" /> is declared, injecting them into the schema and generating the
-        /// appropriate graph types.
+        /// items found in the assembly from which the current <see cref="ISchema" /> is declared, injecting them into the schema.
         /// </summary>
         /// <returns>SchemaOptions.</returns>
         public SchemaOptions AddSchemaAssembly()
         {
             var assemblyToCheck = _schemaType.Assembly;
-            return this.AddAssembly(assemblyToCheck);
+            if (assemblyToCheck != typeof(GraphSchema).Assembly)
+                this.AddAssembly(assemblyToCheck);
+
+            return this;
         }
 
         /// <summary>
         /// Searches for and registers all publically accessable <see cref="GraphController" /> and <see cref="GraphDirective"/>
-        /// found on the supplied assembly, injecting them into the schema as graph types.
+        /// items found in the supplied assembly, injecting them into the schema.
         /// </summary>
         /// <param name="assembly">The assembly to scan for items.</param>
         /// <returns>SchemaOptions.</returns>
@@ -350,7 +353,7 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value><c>true</c> if this schema should auto-register graph controllers declared
         /// on the entry assembly; otherwise, false.</value>
-        public bool AutoRegisterLocalGraphEntities { get; set; } = true;
+        public bool AutoRegisterLocalEntities { get; set; } = true;
 
         /// <summary>
         /// Gets the options related to the runtime setup and declaration of this schema.
@@ -401,17 +404,5 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         /// <value>The service collection.</value>
         public IServiceCollection ServiceCollection { get; }
-
-        /// <summary>
-        /// <para>Gets a value indicating to what depth any added graph type
-        /// will be inspected for dependent services. A deeper inspection
-        /// will traverse the type system deeper but may take longer to initialize.
-        /// </para>
-        /// <para>
-        /// Default = 3 .
-        /// </para>
-        /// </summary>
-        /// <value>The service introspection depth.</value>
-        public int ServiceIntrospectionDepth { get; }
     }
 }

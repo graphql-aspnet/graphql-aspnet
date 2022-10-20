@@ -119,7 +119,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             clientFactories.Add(new FakeClientFactory("protocol2"));
 
             var subOptions = new SubscriptionServerOptions<GraphSchema>();
-            subOptions.SupportedProtocols = new HashSet<string>() { "protocol1" };
+            subOptions.SupportedMessageProtocols = new HashSet<string>() { "protocol1" };
 
             var service = new DefaultSubscriptionServerClientFactory(clientFactories);
 
@@ -182,7 +182,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             clientFactories.Add(new FakeClientFactory("protocol4"));
 
             var subOptions = new SubscriptionServerOptions<GraphSchema>();
-            subOptions.SupportedProtocols = new HashSet<string>() { "protocol1", "protocol2" };
+            subOptions.SupportedMessageProtocols = new HashSet<string>() { "protocol1", "protocol2" };
 
             var service = new DefaultSubscriptionServerClientFactory(clientFactories);
 
@@ -206,7 +206,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             clientFactories.Add(new FakeClientFactory("protocol2"));
 
             var subOptions = new SubscriptionServerOptions<GraphSchema>();
-            subOptions.DefaultProtocol = "protocol1";
+            subOptions.DefaultMessageProtocol = "protocol1";
 
             var service = new DefaultSubscriptionServerClientFactory(clientFactories);
 
