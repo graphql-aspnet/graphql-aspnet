@@ -23,9 +23,11 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <summary>
         /// Instructs the proxy to perform the initial setup of the client proxy and
         /// begins brokering data between the client and the graphql runtime for its lifetime.
+        /// </summary>
+        /// <remarks>
         /// When this method completes, the underlying connection is considered permanantly closed
         /// and disconnected.
-        /// </summary>
+        /// </remarks>
         /// <param name="keepAliveInterval">When provided, defines the interval
         /// on which this proxy should issue its keep alive sequence with the connected client.
         /// Use of this parameter may not be supported by all proxy types.</param>
@@ -51,11 +53,11 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         Task CloseConnection(ConnectionCloseStatus reason, string message = null, CancellationToken cancelToken = default);
 
         /// <summary>
-        /// Gets the messaing protocol supported by this client. This value is
-        /// reported in some log entries. May be null if the subscription proxy does not
+        /// Gets the messaging protocol supported by this client. This value is
+        /// reported in some log entries. May be <c>null</c> if the subscription proxy does not
         /// advertise or implement a specific protocol.
         /// </summary>
-        /// <value>The client's current messaging protocol.</value>
+        /// <value>The client's current messaging protocol, if any.</value>
         string Protocol { get; }
     }
 }

@@ -25,7 +25,8 @@ namespace GraphQL.AspNet
         /// </summary>
         static SubscriptionServerSettings()
         {
-            MaxConcurrentSubscriptionReceiverCount = 50;
+            MaxConcurrentSubscriptionReceiverCount = SubscriptionConstants.DEFAULT_MAX_CONCURRENT_SUBSCRIPTION_RECEIVERS;
+            MaxConnectedClientCount = null;
         }
 
         /// <summary>

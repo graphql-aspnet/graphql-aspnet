@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution;
 
     /// <summary>
     /// A set of constants related to the configuration and processing of subscriptions
@@ -18,6 +17,12 @@ namespace GraphQL.AspNet
     /// </summary>
     public static class SubscriptionConstants
     {
+        /// <summary>
+        /// The default number of concurrent recievers that the event router will send a
+        /// received event to at one time.
+        /// </summary>
+        public const int DEFAULT_MAX_CONCURRENT_SUBSCRIPTION_RECEIVERS = 50;
+
         /// <summary>
         /// A collection of constants related to subscription routing.
         /// </summary>

@@ -26,14 +26,13 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <para>Gets a fully-qualified, internal name of schema item as it exists on the server. This name
         /// is used in many exceptions and internal error messages.
         /// </para>
-        /// <para>
+        /// </summary>
+        /// <remarks>
         /// Examples: <br/>
         /// <b>Scalar:</b>                     System.Int<br/>
         /// <b>Controller Resolver Method:</b> MyProject.MyController.RetrieveWidgets<br/>
-        /// <b>Object Property:</b>            MyProject.Widget.Name<br/>
-        /// .
-        /// </para>
-        /// </summary>
+        /// <b>Object Property:</b>            MyProject.Widget.Name<br/>.
+        /// </remarks>
         /// <value>The fully qualiified, internal name of this schema item.</value>
         string InternalName { get; }
     }
