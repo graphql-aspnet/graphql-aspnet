@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly
     /// authenticate a <see cref="IUserSecurityContext"/>.
     /// </summary>
-    public class SchemaItemAuthenticationMiddleware : IGraphSchemaItemSecurityMiddleware, IDisposable
+    public class SchemaItemAuthenticationMiddleware : ISchemaItemSecurityMiddleware, IDisposable
     {
         private SemaphoreSlim _locker = new SemaphoreSlim(1);
         private IAuthenticationSchemeProvider _schemeProvider;

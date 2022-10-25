@@ -61,20 +61,26 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <returns>ValueTask.</returns>
         public async ValueTask PollQueue(CancellationToken cancelToken = default)
         {
-            while (await _eventsToRaise.WaitToDequeueAsync(cancelToken))
+            try
             {
-                if (_eventsToRaise.TryDequeue(out var raisedEvent))
+                while (await _eventsToRaise.WaitToDequeueAsync(cancelToken))
                 {
-                    try
+                    if (_eventsToRaise.TryDequeue(out var raisedEvent))
                     {
-                        await _publisher.PublishEvent(raisedEvent);
-                        _logger?.SubscriptionEventPublished(raisedEvent);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger?.UnhandledExceptionEvent(ex);
+                        try
+                        {
+                            await _publisher.PublishEvent(raisedEvent, cancelToken);
+                            _logger?.SubscriptionEventPublished(raisedEvent);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger?.UnhandledExceptionEvent(ex);
+                        }
                     }
                 }
+            }
+            catch (TaskCanceledException)
+            {
             }
         }
     }

@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     /// the user is granted access via said policies.
     /// </summary>
     /// <typeparam name="TSchema">The schema this middleware instance is registered for.</typeparam>
-    public class AuthorizeFieldMiddleware<TSchema> : IGraphFieldExecutionMiddleware
+    public class AuthorizeFieldMiddleware<TSchema> : IFieldExecutionMiddleware
         where TSchema : class, ISchema
     {
         private readonly ISchemaPipeline<TSchema, GraphSchemaItemSecurityChallengeContext> _authPipeline;

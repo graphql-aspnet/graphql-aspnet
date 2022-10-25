@@ -28,13 +28,13 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
     public class SchemaItemSecurityPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> _pipelineBuilder;
+        private readonly ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> _pipelineBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaItemSecurityPipelineHelper{TSchema}"/> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public SchemaItemSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> pipelineBuilder)
+        public SchemaItemSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> pipelineBuilder)
         {
             _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }

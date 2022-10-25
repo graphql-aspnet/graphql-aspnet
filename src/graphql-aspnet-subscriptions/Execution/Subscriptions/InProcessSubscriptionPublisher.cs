@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -34,7 +35,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <inheritdoc />
-        public ValueTask PublishEvent(SubscriptionEvent eventData)
+        public ValueTask PublishEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             // this publisher pushes events raised
             // by mutations and queries directly into the DI-configured router

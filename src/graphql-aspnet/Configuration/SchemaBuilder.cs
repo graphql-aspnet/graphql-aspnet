@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Configuration
     /// A builder for constructing hte individual pipelines the schema will use when executing a query.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this builder exists for.</typeparam>
-    public partial class SchemaBuilder<TSchema> : ISchemaBuilder<TSchema>
+    internal sealed class SchemaBuilder<TSchema> : ISchemaBuilder<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -30,8 +30,8 @@ namespace GraphQL.AspNet.Configuration
         {
             Validation.ThrowIfNull(options, nameof(options));
 
-            this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(options, Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
-            this.FieldAuthorizationPipeline = new SchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
+            this.FieldExecutionPipeline = new SchemaPipelineBuilder<TSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(options, Constants.Pipelines.FIELD_EXECUTION_PIPELINE);
+            this.SchemaItemSecurityPipeline = new SchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext>(options, Constants.Pipelines.FIELD_AUTHORIZATION_PIPELINE);
             this.QueryExecutionPipeline = new SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext>(options, Constants.Pipelines.QUERY_PIPELINE);
             this.DirectiveExecutionPipeline = new SchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext>(options, Constants.Pipelines.DIRECTIVE_PIPELINE);
 
@@ -42,19 +42,19 @@ namespace GraphQL.AspNet.Configuration
         public SchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> QueryExecutionPipeline { get; }
 
         /// <inheritdoc cref="ISchemaBuilder{TSchema}.FieldExecutionPipeline" />
-        public SchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> FieldExecutionPipeline { get; }
+        public SchemaPipelineBuilder<TSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext> FieldExecutionPipeline { get; }
 
-        /// <inheritdoc cref="ISchemaBuilder{TSchema}.FieldAuthorizationPipeline" />
-        public SchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> FieldAuthorizationPipeline { get; }
+        /// <inheritdoc cref="ISchemaBuilder{TSchema}.SchemaItemSecurityPipeline" />
+        public SchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> SchemaItemSecurityPipeline { get; }
 
         /// <inheritdoc cref="ISchemaBuilder{TSchema}.DirectiveExecutionPipeline" />
         public SchemaPipelineBuilder<TSchema, IDirectiveExecutionMiddleware, GraphDirectiveExecutionContext> DirectiveExecutionPipeline { get; }
 
         /// <inheritdoc />
-        ISchemaPipelineBuilder<TSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext> ISchemaBuilder<TSchema>.FieldExecutionPipeline => this.FieldExecutionPipeline;
+        ISchemaPipelineBuilder<TSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext> ISchemaBuilder<TSchema>.FieldExecutionPipeline => this.FieldExecutionPipeline;
 
         /// <inheritdoc />
-        ISchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> ISchemaBuilder<TSchema>.FieldAuthorizationPipeline => this.FieldAuthorizationPipeline;
+        ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> ISchemaBuilder<TSchema>.SchemaItemSecurityPipeline => this.SchemaItemSecurityPipeline;
 
         /// <inheritdoc />
         ISchemaPipelineBuilder<TSchema, IQueryExecutionMiddleware, GraphQueryExecutionContext> ISchemaBuilder<TSchema>.QueryExecutionPipeline => this.QueryExecutionPipeline;

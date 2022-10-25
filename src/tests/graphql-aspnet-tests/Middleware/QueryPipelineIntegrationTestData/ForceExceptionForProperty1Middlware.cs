@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
 
-    public class ForceExceptionForProperty1Middlware : IGraphFieldExecutionMiddleware
+    public class ForceExceptionForProperty1Middlware : IFieldExecutionMiddleware
     {
         public Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken)
         {

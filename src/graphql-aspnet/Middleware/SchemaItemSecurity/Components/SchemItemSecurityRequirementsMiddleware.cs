@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     /// security groups (and subseqent policies) that should be evaluated for the
     /// target field.
     /// </summary>
-    public class SchemItemSecurityRequirementsMiddleware : IGraphSchemaItemSecurityMiddleware
+    public class SchemItemSecurityRequirementsMiddleware : ISchemaItemSecurityMiddleware
     {
         private class CachedRequirements
         {

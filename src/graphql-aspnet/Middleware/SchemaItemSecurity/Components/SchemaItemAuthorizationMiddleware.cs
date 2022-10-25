@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authorize a single user
     /// to a single field of data.
     /// </summary>
-    public class SchemaItemAuthorizationMiddleware : IGraphSchemaItemSecurityMiddleware
+    public class SchemaItemAuthorizationMiddleware : ISchemaItemSecurityMiddleware
     {
         private readonly IAuthorizationService _authService;
 

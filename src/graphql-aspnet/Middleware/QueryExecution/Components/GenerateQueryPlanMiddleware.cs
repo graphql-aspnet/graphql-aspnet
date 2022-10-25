@@ -9,20 +9,12 @@
 
 namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

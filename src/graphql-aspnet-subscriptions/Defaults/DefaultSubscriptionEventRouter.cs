@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public void RaisePublishedEvent(SubscriptionEvent eventData, bool waitForDelivery = false)
+        public void RaisePublishedEvent(SubscriptionEvent eventData)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));

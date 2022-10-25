@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.ThirdPartyDll.Model
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
 
-    public class CandleMiddleware : IGraphFieldExecutionMiddleware
+    public class CandleMiddleware : IFieldExecutionMiddleware
     {
         public static int Counter { get; set; }
 
