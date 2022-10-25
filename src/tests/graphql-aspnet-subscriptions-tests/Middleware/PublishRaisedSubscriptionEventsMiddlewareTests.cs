@@ -48,7 +48,6 @@ namespace GraphQL.Subscriptions.Tests.Middleware
 
             await publisher.InvokeAsync(context, next, default);
             Assert.IsTrue(nextCalled);
-            Assert.AreEqual(0, queue.Count);
         }
 
         [Test]
@@ -76,7 +75,6 @@ namespace GraphQL.Subscriptions.Tests.Middleware
 
             await publisher.InvokeAsync(context, next, default);
             Assert.IsTrue(nextCalled);
-            Assert.AreEqual(0, queue.Count);
         }
 
         [Test]
@@ -134,7 +132,6 @@ namespace GraphQL.Subscriptions.Tests.Middleware
 
             await publisher.InvokeAsync(context, next, default);
             Assert.IsTrue(nextCalled);
-            Assert.AreEqual(1, queue.Count);
         }
     }
 }

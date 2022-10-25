@@ -11,14 +11,14 @@ namespace GraphQL.AspNet.Defaults
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Logging;
 
     /// <summary>
@@ -30,30 +30,31 @@ namespace GraphQL.AspNet.Defaults
     {
         private readonly IGraphEventLogger _logger;
         private readonly SubscribedEventRecievers _allReceivers;
-        private readonly int _maxReceiverCount;
-        private readonly SemaphoreSlim _eventSendSemaphore;
-        private readonly ConcurrentHashSet<Task> _allSubscriberTasks;
+        private readonly ISubscriptionReceiverDispatchQueue _dispatchQueue;
+        private readonly Task _dispatchQueueExecutionTask;
         private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSubscriptionEventRouter" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public DefaultSubscriptionEventRouter(IGraphEventLogger logger = null)
+        /// <param name="dispatchQueue">The queue to throttle the rate at which
+        /// events are dispatched to receivers. The default, internal implementation is
+        /// used if an instance is not provided.</param>
+        public DefaultSubscriptionEventRouter(
+            IGraphEventLogger logger = null,
+            ISubscriptionReceiverDispatchQueue dispatchQueue = null)
         {
             _logger = logger;
             _allReceivers = new SubscribedEventRecievers();
-            _allSubscriberTasks = new ConcurrentHashSet<Task>();
-            _maxReceiverCount = SubscriptionServerSettings.MaxConcurrentReceiverCount;
+            var maxReceiverCount = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
+            _dispatchQueue = dispatchQueue ?? new SubscriptionReceiverDispatchQueue(maxReceiverCount);
 
-            if (_maxReceiverCount < 1)
-                _maxReceiverCount = 1;
-
-            _eventSendSemaphore = new SemaphoreSlim(_maxReceiverCount);
+            _dispatchQueueExecutionTask = _dispatchQueue.BeginProcessingQueue();
         }
 
         /// <inheritdoc />
-        public async Task RaisePublishedEvent(SubscriptionEvent eventData, bool waitForDelivery = false)
+        public void RaisePublishedEvent(SubscriptionEvent eventData, bool waitForDelivery = false)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
@@ -75,41 +76,12 @@ namespace GraphQL.AspNet.Defaults
                 receivers.AddRange(_allReceivers[eventName]);
             }
 
-            // dispatch the event to the listeners
-            var subscriberTasks = new List<Task>();
-            if (receivers != null && receivers.Count > 0)
+            // queue all events to be dispatched to the receivers
+            if (receivers.Count > 0)
             {
                 foreach (var receiver in receivers)
-                {
-                    var task = this.TransmitEventToReceiver(receiver, eventData);
-                    _allSubscriberTasks.Add(task);
-                    subscriberTasks.Add(task);
-                    _ = task.ContinueWith(this.CleanupEventTransmission);
-                }
-
-                if (waitForDelivery)
-                    await Task.WhenAll(subscriberTasks).ConfigureAwait(false);
+                    _dispatchQueue.EnqueueEvent(receiver, eventData);
             }
-        }
-
-        private async Task TransmitEventToReceiver(ISubscriptionEventReceiver receiver, SubscriptionEvent eventData)
-        {
-            await _eventSendSemaphore.WaitAsync().ConfigureAwait(false);
-
-            try
-            {
-                await receiver.ReceiveEvent(eventData).ConfigureAwait(false);
-            }
-            finally
-            {
-                _eventSendSemaphore.Release();
-            }
-        }
-
-        private Task CleanupEventTransmission(Task eventTask)
-        {
-            _allSubscriberTasks.TryRemove(eventTask);
-            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
@@ -185,18 +157,19 @@ namespace GraphQL.AspNet.Defaults
             {
                 _isDisposed = true;
 
-                // try and allow any outstanding events some time to release
-                if (_allSubscriberTasks.Count > 0)
+                // try and allow any outstanding events some time to
+                // shut down gracefully
+                if (_dispatchQueue.IsProcessing)
+                    _dispatchQueue.StopQueue();
+
+                int timeToWaitMs = 1000;
+                while (_dispatchQueue.IsProcessing && timeToWaitMs > 0)
                 {
-                    int timeToWaitMs = 1000;
-                    while (_allSubscriberTasks.Count > 0 || timeToWaitMs > 0)
-                    {
-                        Thread.Sleep(500);
-                        timeToWaitMs = timeToWaitMs - 500;
-                    }
+                    Thread.Sleep(500);
+                    timeToWaitMs = timeToWaitMs - 500;
                 }
 
-                _eventSendSemaphore.Dispose();
+                _dispatchQueue.Dispose();
             }
 
             GC.SuppressFinalize(this);

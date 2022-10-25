@@ -16,7 +16,7 @@ namespace GraphQL.AspNet
     /// </summary>
     public static class SubscriptionServerSettings
     {
-        private static readonly object _lock = new object();
+        private static readonly object SETTINGS_LOCK = new object();
         private static int _maxConcurrentReceiverCount;
         private static int? _maxConnectedClientCount;
 
@@ -25,7 +25,7 @@ namespace GraphQL.AspNet
         /// </summary>
         static SubscriptionServerSettings()
         {
-            MaxConcurrentReceiverCount = 50;
+            MaxConcurrentSubscriptionReceiverCount = 50;
         }
 
         /// <summary>
@@ -37,17 +37,17 @@ namespace GraphQL.AspNet
         /// (Default: 50, Minimum: 1).
         /// </remarks>
         /// <value>The maximum concurrent receiver count.</value>
-        public static int MaxConcurrentReceiverCount
+        public static int MaxConcurrentSubscriptionReceiverCount
         {
             get
             {
-                lock (_lock)
+                lock (SETTINGS_LOCK)
                     return _maxConcurrentReceiverCount;
             }
 
             set
             {
-                lock (_lock)
+                lock (SETTINGS_LOCK)
                     _maxConcurrentReceiverCount = value;
             }
         }
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet
         /// client attempts to connect, it will be immediately closed with an appropriate error.
         /// </para>
         /// <para>
-        /// In practical terms, this value represents the number of allowed websocket connections.
+        /// In practical terms, this value represents the number of allowed websocket connections to this server instance.
         /// </para>
         /// <para>
         /// (Default: ~no limit~).
@@ -72,13 +72,13 @@ namespace GraphQL.AspNet
         {
             get
             {
-                lock (_lock)
+                lock (SETTINGS_LOCK)
                     return _maxConnectedClientCount;
             }
 
             set
             {
-                lock (_lock)
+                lock (SETTINGS_LOCK)
                     _maxConnectedClientCount = value;
             }
         }

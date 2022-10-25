@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
 
@@ -29,12 +30,13 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         string Id { get; }
 
         /// <summary>
-        /// Called by an outside source, typically an <see cref="ISubscriptionEventRouter"/>,
+        /// Called by an outside source, typically an <see cref="ISubscriptionEventRouter" />,
         /// when an event was raised that this receiver requested.
         /// </summary>
         /// <param name="eventData">The data package representing a raised subscription
         /// event.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        Task ReceiveEvent(SubscriptionEvent eventData);
+        ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default);
     }
 }

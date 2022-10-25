@@ -261,7 +261,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         }
 
         /// <inheritdoc />
-        public async Task ReceiveEvent(SubscriptionEvent eventData)
+        public async ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             // its possible that an event was scheduled by the router
             // when this connection was closed (but before it could be delivered)
@@ -292,7 +292,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             var tasks = new List<Task>();
             foreach (var subscription in targetSubscriptions)
             {
-                var executionTask = this.ExecuteSubscriptionEvent(subscription, eventData);
+                var executionTask = this.ExecuteSubscriptionEvent(subscription, eventData, cancelToken);
                 tasks.Add(executionTask);
             }
 
@@ -304,15 +304,19 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// </summary>
         /// <param name="subscription">The subscription to execute against.</param>
         /// <param name="eventData">The event data to process.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task ExecuteSubscriptionEvent(ISubscription<TSchema> subscription, SubscriptionEvent eventData)
+        protected virtual async Task ExecuteSubscriptionEvent(ISubscription<TSchema> subscription, SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             var processor = new SubscriptionEventProcessor<TSchema>(_clientConnection.ServiceProvider);
+
+            var combinedToken = CancellationTokenSource.CreateLinkedTokenSource(cancelToken, _clientConnection.RequestAborted);
+
             var context = await processor.ProcessEvent(
                     _clientConnection.SecurityContext,
                     eventData,
                     subscription,
-                    _clientConnection.RequestAborted);
+                    combinedToken.Token);
 
             // ------------------------------
             // send the message with the resultant data package
@@ -321,7 +325,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             if (!shouldSkip)
             {
                 var message = this.CreateDataMessage(subscription.Id, context.Result);
-                await this.SendMessage(message);
+                await this.SendMessage(message, combinedToken.Token);
             }
 
             // ------------------------------
@@ -332,7 +336,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             {
                 var completeMessage = this.CreateCompleteMessage(subscription.Id);
                 if (completeMessage != null)
-                    await this.SendMessage(completeMessage);
+                    await this.SendMessage(completeMessage, combinedToken.Token);
                 this.ReleaseSubscription(subscription.Id);
             }
         }
@@ -341,8 +345,9 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// Sends a given message down to the connected client.
         /// </summary>
         /// <param name="message">The message to send.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task SendMessage(TMessage message)
+        protected virtual async Task SendMessage(TMessage message, CancellationToken cancelToken = default)
         {
             Validation.ThrowIfNull(message, nameof(message));
 
@@ -353,7 +358,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     bytes,
                     ClientMessageType.Text,
                     true,
-                    default);
+                    cancelToken);
                 this.Logger.MessageSent(message);
             }
         }

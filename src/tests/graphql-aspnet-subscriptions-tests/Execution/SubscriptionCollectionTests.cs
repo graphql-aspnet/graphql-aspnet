@@ -35,6 +35,11 @@ namespace GraphQL.Subscriptions.Tests.Execution
             collection.Add(fakeSub.Object);
             Assert.AreEqual(1, collection.CountByRoute(field));
             Assert.AreEqual(1, collection.Count);
+
+            Assert.AreEqual(1, collection.Keys.Count());
+            Assert.AreEqual(1, collection.Values.Count());
+            Assert.AreEqual(fakeSub.Object, collection["abc123"]);
+            Assert.IsTrue(collection.ContainsKey("abc123"));
         }
 
         [Test]

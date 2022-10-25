@@ -28,7 +28,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using NUnit.Framework;
 
     [TestFixture]
-    public class HttpSubscriptionMiddlewareTests
+    public class DefaultGraphQLHttpSubscriptionMiddlewareTests
     {
         public class FakeWebSocketManager : WebSocketManager
         {
@@ -72,8 +72,6 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             context.RequestServices = new Mock<IServiceProvider>().Object;
             context.Request.Path = options.Route;
 
-            // not a socket request aginst the route
-            // should be skipped
             await middleware.InvokeAsync(context);
             Assert.IsTrue(nextCalled);
         }
@@ -142,8 +140,6 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             context.RequestServices = new Mock<IServiceProvider>().Object;
             context.Request.Path = options.Route;
 
-            // not a socket request aginst the route
-            // next middleware component should not be invoked
             await middleware.InvokeAsync(context);
             Assert.IsFalse(nextCalled);
         }
@@ -175,8 +171,6 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             context.RequestServices = new Mock<IServiceProvider>().Object;
             context.Request.Path = options.Route;
 
-            // not a socket request aginst the route
-            // next middleware component should not be invoked
             await middleware.InvokeAsync(context);
             Assert.IsFalse(nextCalled);
 
@@ -208,7 +202,6 @@ namespace GraphQL.Subscriptions.Tests.Defaults
 
             var context = new FakeWebSocketHttpContext();
             context.Request.Host = new HostString("localhost:3000");
-            context.Request.Path = "/graphql";
             context.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER] = "unknown-protocl";
             context.RequestServices = new Mock<IServiceProvider>().Object;
             context.Request.Path = options.Route;
@@ -218,6 +211,42 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             await middleware.InvokeAsync(context);
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, context.Response.StatusCode);
+        }
+
+        [Test]
+        public async Task UnauthenticatedConnection_WhenAuthRequired_ClosesConnection()
+        {
+            Task CallNext(HttpContext context)
+            {
+                return Task.CompletedTask;
+            }
+
+            var next = new RequestDelegate(CallNext);
+
+            var options = new SubscriptionServerOptions<GraphSchema>();
+            options.AuthenticatedRequestsOnly = true;
+
+            var factory = new Mock<ISubscriptionServerClientFactory>();
+
+            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+                .Throws(new Exception("this should not be invoked"));
+
+            var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
+                next,
+                new GraphSchema(),
+                factory.Object,
+                new GlobalConnectedSubscriptionClientCounter(),
+                options);
+
+            var context = new FakeWebSocketHttpContext();
+            context.Request.Host = new HostString("localhost:3000");
+            context.Request.Headers[SubscriptionConstants.WebSockets.WEBSOCKET_PROTOCOL_HEADER] = "graphql-ws";
+            context.RequestServices = new Mock<IServiceProvider>().Object;
+            context.Request.Path = options.Route;
+
+            await middleware.InvokeAsync(context);
+
+            Assert.AreEqual((int)HttpStatusCode.Unauthorized, context.Response.StatusCode);
         }
     }
 }

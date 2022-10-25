@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
@@ -60,7 +61,8 @@ namespace GraphQL.AspNet.Middleware.DirectiveExecution.Components
                     context.Messages.Critical(
                         $"Access Denied to directive {context.Directive.Route.Path}",
                         Constants.ErrorCodes.ACCESS_DENIED,
-                        context.Request.Origin);
+                        context.Request.Origin,
+                        new UnauthorizedAccessException(result.LogMessage));
 
                     context.Cancel();
                 }

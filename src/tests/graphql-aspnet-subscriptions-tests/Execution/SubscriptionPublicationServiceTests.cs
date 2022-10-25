@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -24,26 +25,13 @@ namespace GraphQL.Subscriptions.Tests.Execution
     public class SubscriptionPublicationServiceTests
     {
         [Test]
-        public void StaticWaitInterval_AcceptsNewValues()
-        {
-            var startvalue = SubscriptionPublicationService.WaitIntervalInMilliseconds;
-
-            SubscriptionPublicationService.WaitIntervalInMilliseconds = startvalue + 1;
-
-            var result = SubscriptionPublicationService.WaitIntervalInMilliseconds;
-
-            Assert.AreEqual(result, startvalue + 1);
-            SubscriptionPublicationService.WaitIntervalInMilliseconds = startvalue;
-        }
-
-        [Test]
         public async Task PollEventQueue_EmptiesQueueOfEventsAndPublishesThem()
         {
             var logger = new Mock<IGraphEventLogger>();
             logger.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<SubscriptionEventPublishedLogEntry>>()));
 
             var publisher = new Mock<ISubscriptionEventPublisher>();
-            publisher.Setup(x => x.PublishEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
+            publisher.Setup(x => x.PublishEvent(It.IsAny<SubscriptionEvent>()));
 
             var collection = new ServiceCollection();
             collection.AddSingleton<IGraphEventLogger>(logger.Object);
@@ -63,11 +51,18 @@ namespace GraphQL.Subscriptions.Tests.Execution
             eventQueue.Enqueue(eventData);
 
             var publicationService = new SubscriptionPublicationService(provider, eventQueue);
-            await publicationService.PollEventQueue();
+
+            var source = new CancellationTokenSource(50);
+            try
+            {
+                await publicationService.PollQueue(source.Token);
+            }
+            catch (OperationCanceledException)
+            {
+            }
 
             logger.Verify(x => x.Log(LogLevel.Debug, It.IsAny<Func<IGraphLogEntry>>()), Times.Once(), "logger not called exactly once");
             publisher.Verify(x => x.PublishEvent(It.IsAny<SubscriptionEvent>()), Times.Once(), "published failed to publish one times");
-            Assert.AreEqual(0, eventQueue.Count);
         }
     }
 }

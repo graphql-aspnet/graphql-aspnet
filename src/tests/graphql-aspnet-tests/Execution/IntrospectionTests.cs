@@ -1313,7 +1313,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public async Task SpecifiedByEarlyBound_PopulateSpecifiedByURL()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.ScalarProvider = new DefaultScalarTypeProvider();
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(CustomSpecifiedScalar));

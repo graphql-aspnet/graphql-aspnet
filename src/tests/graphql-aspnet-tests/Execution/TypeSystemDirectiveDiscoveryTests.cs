@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.Execution
         [Test]
         public void ScalarDirective_DeclaredByType_WhenNotExplicitlyIncluded_IsLocatedAndIncluded()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(MarkedScalarByAttribute));
 

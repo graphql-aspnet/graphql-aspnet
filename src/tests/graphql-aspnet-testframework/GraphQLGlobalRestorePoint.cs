@@ -16,26 +16,31 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Schemas;
 
     /// <summary>
-    /// A marker to a point in time that, when disposed, will reset the <see cref="GraphQLProviders"/> to the values
+    /// A marker to a point in time that, when disposed, will reset the the global settings to the values
     /// that were present just before this object was created. Used in conjunction with NUnit to undo any changes to
     /// the global static providers in between tests.
     /// </summary>
-    public class GraphQLProviderRestorePoint : IDisposable
+    public class GraphQLGlobalRestorePoint : IDisposable
     {
         private readonly IGraphTypeTemplateProvider _templateProvider;
         private readonly IScalarTypeProvider _scalarTypeProvider;
         private readonly IGraphTypeMakerProvider _makerProvider;
         private readonly IGraphQLGlobalConfiguration _globalConfig;
+        private readonly int? _maxSubConnectedClient;
+        private readonly int _maxSubConcurrentReceiver;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphQLProviderRestorePoint"/> class.
+        /// Initializes a new instance of the <see cref="GraphQLGlobalRestorePoint"/> class.
         /// </summary>
-        public GraphQLProviderRestorePoint()
+        public GraphQLGlobalRestorePoint()
         {
             _templateProvider = GraphQLProviders.TemplateProvider;
             _scalarTypeProvider = GraphQLProviders.ScalarProvider;
             _makerProvider = GraphQLProviders.GraphTypeMakerProvider;
             _globalConfig = GraphQLProviders.GlobalConfiguration;
+
+            _maxSubConnectedClient = SubscriptionServerSettings.MaxConnectedClientCount;
+            _maxSubConcurrentReceiver = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
 
             SchemaSubscriptionEventMap.ClearCache();
         }
@@ -60,6 +65,9 @@ namespace GraphQL.AspNet.Tests.Framework
                 GraphQLProviders.ScalarProvider = _scalarTypeProvider;
                 GraphQLProviders.GraphTypeMakerProvider = _makerProvider;
                 GraphQLProviders.GlobalConfiguration = _globalConfig;
+
+                SubscriptionServerSettings.MaxConnectedClientCount = _maxSubConnectedClient;
+                SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = _maxSubConcurrentReceiver;
             }
         }
     }

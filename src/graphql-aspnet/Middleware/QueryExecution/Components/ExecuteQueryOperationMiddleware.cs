@@ -252,8 +252,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <summary>
-        /// Generates a "top level" source data representing the operation root under which a field
-        /// context should be executed.
+        /// Generates a "top level" source data item representing the operation root
+        /// under which a field context should be executed.
         /// </summary>
         /// <param name="operationType">Type of the operation.</param>
         /// <returns>System.Object.</returns>

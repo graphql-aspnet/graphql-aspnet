@@ -52,7 +52,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
         [TestCaseSource(nameof(TestQueries))]
         public void ExecuteRule_EnsureCorrectErrorIsGenerated(string expectedRuleError, string queryText)
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             var server = new TestServerBuilder()
                 .AddType<PeopleMoverController>()

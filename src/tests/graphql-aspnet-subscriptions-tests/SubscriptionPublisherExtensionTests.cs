@@ -25,7 +25,7 @@ namespace GraphQL.Subscriptions.Tests
         [Test]
         public void GeneralPropertyCheck()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.TemplateProvider = null;
             var collection = new ServiceCollection();

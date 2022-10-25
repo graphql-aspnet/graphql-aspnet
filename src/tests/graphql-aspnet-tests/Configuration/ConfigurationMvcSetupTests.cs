@@ -303,7 +303,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void ChangingGlobalConfig_ChangesHowControllersAreRegistered()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.GlobalConfiguration = new DefaultGraphQLGLobalConfiguration();
 

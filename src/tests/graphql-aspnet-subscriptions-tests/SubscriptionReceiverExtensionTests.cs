@@ -9,16 +9,19 @@
 
 namespace GraphQL.Subscriptions.Tests
 {
+    using System;
     using System.Linq;
+    using Castle.Core;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Logging.SubscriptionEventLogEntries;
     using GraphQL.AspNet.Middleware.FieldExecution.Components;
     using GraphQL.AspNet.Middleware.QueryExecution.Components;
     using GraphQL.AspNet.Schemas;
@@ -26,12 +29,15 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
     using GraphQL.AspNet.Tests.Framework;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
-    public class SubscriptionServerExtensionTests
+    public class SubscriptionReceiverExtensionTests
     {
         private (
             Mock<ISchemaBuilder<GraphSchema>>,
@@ -61,9 +67,9 @@ namespace GraphQL.Subscriptions.Tests
         }
 
         [Test]
-        public void Verify_DefaultInjectedObjects()
+        public void ServiceCollection_VerifyDefaultInjectedObjects()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             var serviceCollection = new ServiceCollection();
             GraphQLProviders.TemplateProvider = null;
@@ -96,9 +102,35 @@ namespace GraphQL.Subscriptions.Tests
         }
 
         [Test]
+        public void UseExtension_RegistersMiddlewareComponent()
+        {
+            var logger = new Mock<IGraphEventLogger>();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
+
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IGraphEventLogger>(logger.Object);
+
+            var primaryOptions = new SchemaOptions<GraphSchema>(serviceCollection);
+            var subscriptionOptions = new SubscriptionServerOptions<GraphSchema>();
+            subscriptionOptions.Route = "/graphql";
+
+            (var builder, var queryPipeline, var fieldPipeline) = CreateSchemaBuilderMock(primaryOptions);
+
+            var extension = new SubscriptionReceiverSchemaExtension<GraphSchema>(builder.Object, subscriptionOptions);
+            extension.Configure(primaryOptions);
+
+            var appBuilder = new Mock<IApplicationBuilder>();
+
+            extension.UseExtension(appBuilder.Object, serviceCollection.BuildServiceProvider());
+
+            appBuilder.Verify(x => x.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()), Times.Once);
+            logger.Verify(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()), Times.Once);
+        }
+
+        [Test]
         public void GeneralPropertyCheck()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             var serviceCollection = new ServiceCollection();
             GraphQLProviders.TemplateProvider = null;

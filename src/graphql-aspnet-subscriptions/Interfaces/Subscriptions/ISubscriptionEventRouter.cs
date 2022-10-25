@@ -32,8 +32,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <param name="eventData">The data package representing a raised event.</param>
         /// <param name="waitForDelivery">if set to <c>true</c>, when awaited this method will not complete
         /// until the event has been processed by all subscribers that should receive it.</param>
-        /// <returns>Task.</returns>
-        Task RaisePublishedEvent(SubscriptionEvent eventData, bool waitForDelivery = false);
+        void RaisePublishedEvent(SubscriptionEvent eventData, bool waitForDelivery = false);
 
         /// <summary>
         /// Instructs the router to raise any events of the supplied name to the given receiver.

@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// for processing.
         /// </summary>
         /// <param name="eventData">The event to publish.</param>
-        /// <returns>Task.</returns>
-        Task PublishEvent(SubscriptionEvent eventData);
+        /// <returns>ValueTask.</returns>
+        ValueTask PublishEvent(SubscriptionEvent eventData);
     }
 }

@@ -59,10 +59,10 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         }
 
         /// <inheritdoc />
-        public Task ReceiveEvent(SubscriptionEvent eventData)
+        public ValueTask ReceiveEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             this.ReceivedEvents.Add(eventData);
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <inheritdoc />

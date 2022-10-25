@@ -346,7 +346,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_WhenStructAKnownScalar_ThrowsException()
         {
-            using var point = new GraphQLProviderRestorePoint();
+            using var point = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(SimpleScalarStructGraphType));
 
@@ -361,7 +361,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         [Test]
         public void Parse_WhenObjectIsAKnownScalar_ThrowsException()
         {
-            using var point = new GraphQLProviderRestorePoint();
+            using var point = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.ScalarProvider.RegisterCustomScalar(typeof(SimpleScalarObjectGraphType));
 

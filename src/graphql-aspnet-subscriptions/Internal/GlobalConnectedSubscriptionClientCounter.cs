@@ -16,9 +16,10 @@ namespace GraphQL.AspNet.Internal
     /// </summary>
     public sealed class GlobalConnectedSubscriptionClientCounter
     {
-        private int _maxConnectedClientCount;
+        private readonly object _locker = new object();
+        private readonly int _maxConnectedClientCount;
+
         private int _currentCount;
-        private object _locker = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GlobalConnectedSubscriptionClientCounter"/> class.
@@ -55,7 +56,10 @@ namespace GraphQL.AspNet.Internal
         public void DecreaseCount()
         {
             lock (_locker)
-                _currentCount--;
+            {
+                if (_currentCount > 0)
+                    _currentCount--;
+            }
         }
 
         /// <summary>

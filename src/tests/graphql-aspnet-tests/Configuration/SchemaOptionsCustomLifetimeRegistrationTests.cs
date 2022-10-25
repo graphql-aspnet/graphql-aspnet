@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void DirectiveAddedWithNonDefaultLifeTime_IsRegisteredAsSuch()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders
                 .GlobalConfiguration
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void ControllerAddedWithNonDefaultLifeTime_IsRegisteredAsSuch()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders
                 .GlobalConfiguration
