@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Schemas
 {
     using System.Data;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
@@ -71,21 +72,20 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         }
 
         [Test]
-        public void DuplicateEventName_ThrowsException()
+        public void DuplicateEventName_ThrowsExceptionOnBuild()
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
             SchemaSubscriptionEventMap.ClearCache();
-
-            var schema = new TestServerBuilder<EventMapSchema>()
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var schema = new TestServerBuilder<EventMapSchema>()
                 .AddSubscriptionServer()
                 .AddGraphController<DuplicateEventNameController>()
                 .Build()
                 .Schema;
-
-            Assert.Throws<DuplicateNameException>(() =>
-            {
-                var map = SchemaSubscriptionEventMap.CreateEventMap(schema);
             });
+
+            Assert.IsTrue(ex.Message.Contains("Duplciate Subscription Event Name"));
         }
     }
 }

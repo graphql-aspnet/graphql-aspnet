@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             // create a manager that will monitor both the governing token passed
             // on the context as well as the configured timeout for the schema
-            using var monitor = new QueryCancellationMonitor(context, _queryTimeout);
+            using var monitor = new QueryCancellationMonitor(context.CancellationToken, _queryTimeout);
 
             var operation = context.QueryPlan.Operation;
             var fieldInvocations = new List<FieldPipelineInvocation>();
@@ -121,7 +121,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // those fields will then call their child fields in turn
             foreach (var item in orderedContextList)
             {
-                monitor.AbortIfCancelled();
+                // if at any point the context token signals a cancellation
+                // the monitor will switch out of a running state,
+                // at which point we can just stop executing
                 if (!monitor.IsRunning)
                     break;
 
@@ -177,23 +179,25 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     // throw an exception. Allow the reslts (exceptions included) to be
                     // captured on the task and handled by the rest of the middleware operation
                     //
-                    // while awaiting an isolated task the query timeout may expire
+                    // while awaiting an isolated task the monitor may complete
                     // exit and stop if so
-                    await Task.WhenAny(fieldTask, monitor.TimeoutTask).ConfigureAwait(false);
+                    await Task.WhenAny(fieldTask, monitor.MonitorTask).ConfigureAwait(false);
                 }
             }
 
             // Step 2
             // -----------------------------------------
-            // await all outstanding task and hope they finish before the timer
-            monitor.AbortIfCancelled();
+            // await all outstanding tasks and hope they finish before the timer
             if (monitor.IsRunning)
             {
                 var fieldPipelineTasksWrapper = Task.WhenAll(fieldInvocationTasks);
-                await Task.WhenAny(fieldPipelineTasksWrapper, monitor.TimeoutTask).ConfigureAwait(false);
+                await Task.WhenAny(fieldPipelineTasksWrapper, monitor.MonitorTask).ConfigureAwait(false);
 
                 // finalize the process, indicating all outstanding tasks
                 // are completed, cancelled or timed out
+                //
+                // if the monitor task finished first, indicating a timeout, it will
+                // auto flag the monitor as timed out.
                 monitor.Complete();
             }
 
@@ -241,7 +245,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                 context.Logger?.RequestCancelled(context);
             }
-            else if (monitor.IsTimedOut)
+
+            if (monitor.IsTimedOut)
             {
                 context.Messages.Critical(
                     $"The execution timed out prior to completion of the requested query. (Allowed Time: {_queryTimeout.Value.TotalSeconds} seconds)",

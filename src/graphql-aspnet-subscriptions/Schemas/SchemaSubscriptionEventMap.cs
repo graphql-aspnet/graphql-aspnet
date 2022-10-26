@@ -1,5 +1,4 @@
-﻿// *********************************************
-// ****************
+﻿// *************************************************************
 // project:  graphql-aspnet
 // --
 // repo: https://github.com/graphql-aspnet
@@ -12,11 +11,11 @@ namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -42,7 +41,7 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Clears all locally cached subscription event names.
+        /// Clears all locally cached subscription event names from all schemas.
         /// </summary>
         public static void ClearCache()
         {
@@ -54,7 +53,33 @@ namespace GraphQL.AspNet.Schemas
         }
 
         /// <summary>
-        /// Attempts to generate a dictionary of value relating field path to the possible event names.
+        /// Parses the subscription events registered to the schema and validates their correctness.
+        /// If an anomaly is detected and exception is thrown.
+        /// </summary>
+        /// <param name="schema">The schema to validate.</param>
+        public static void EnsureSubscriptionEventsOrThrow(ISchema schema)
+        {
+            Validation.ThrowIfNull(schema, nameof(schema));
+
+            // parse and cache the schema's known fields into a set of event names
+            if (!PARSED_SCHEMA_TYPES.Contains(schema.GetType()))
+            {
+                lock (_syncLock)
+                {
+                    if (!PARSED_SCHEMA_TYPES.Contains(schema.GetType()))
+                    {
+                        foreach (var kvp in CreateEventMap(schema))
+                            SUBSCRIPTION_EVENTNAME_CATALOG.Add(kvp.Key, kvp.Value);
+
+                        PARSED_SCHEMA_TYPES.Add(schema.GetType());
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to generate a dictionary of value relating field path to the possible
+        /// event names. An exception will be thrown if a duplicate name is detected.
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <returns>Dictionary&lt;System.String, SchemaItemPath&gt;.</returns>
@@ -74,10 +99,10 @@ namespace GraphQL.AspNet.Schemas
                 if (dic.ContainsKey(eventName))
                 {
                     var path = dic[eventName];
-                    throw new DuplicateNameException(
+                    throw new GraphTypeDeclarationException(
                         $"Duplciate Subscription Event Name. Unable to register the field '{route.Path}' " +
-                        $"with event name '{eventName}'. The schema '{schema.Name}' already contains " +
-                        $"a field with the event name '{eventName}'. (Event Owner: {path.Path}).");
+                        $"with event name '{eventName.EventName}'. The schema '{schema.Name}' already contains " +
+                        $"a field with the event name '{eventName.EventName}'. (Event Owner: {path.Path}).");
                 }
 
                 dic.Add(eventName, route);
@@ -90,7 +115,7 @@ namespace GraphQL.AspNet.Schemas
         /// Attempts to find the fully qualifed <see cref="SchemaItemPath"/> that is pointed at by the supplied event name.
         /// </summary>
         /// <param name="schema">The schema.</param>
-        /// <param name="eventName">The short or long name of the event.</param>
+        /// <param name="eventName">The formally named event.</param>
         /// <returns>System.String.</returns>
         public static SchemaItemPath RetrieveSubscriptionFieldPath(this ISchema schema, SubscriptionEventName eventName)
         {
@@ -100,20 +125,7 @@ namespace GraphQL.AspNet.Schemas
             if (eventName.OwnerSchemaType != schema.FullyQualifiedSchemaTypeName())
                 return null;
 
-            // parse and cache the schema's known fields into a set of event names
-            if (!PARSED_SCHEMA_TYPES.Contains(schema.GetType()))
-            {
-                lock (_syncLock)
-                {
-                    if (!PARSED_SCHEMA_TYPES.Contains(schema.GetType()))
-                    {
-                        foreach (var kvp in CreateEventMap(schema))
-                            SUBSCRIPTION_EVENTNAME_CATALOG.Add(kvp.Key, kvp.Value);
-
-                        PARSED_SCHEMA_TYPES.Add(schema.GetType());
-                    }
-                }
-            }
+            EnsureSubscriptionEventsOrThrow(schema);
 
             if (SUBSCRIPTION_EVENTNAME_CATALOG.TryGetValue(eventName, out var routePath))
                 return routePath;

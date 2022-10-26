@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
 
-            var extension = new SubscriptionPublisherSchemaExtension<TSchema>();
+            var publishingExtension = new SubscriptionPublisherSchemaExtension<TSchema>();
 
             // register the in-process publisher to the service collection before
             // if one is not already registered
@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionPublicationService>();
             schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
 
-            schemaBuilder.Options.RegisterExtension(extension);
+            schemaBuilder.Options.RegisterExtension(publishingExtension);
             schemaBuilder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>(
                 ServiceLifetime.Singleton);
 
@@ -98,8 +98,11 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // try register the default router type to the service collection
             schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
 
-            var extension = new SubscriptionReceiverSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
-            schemaBuilder.Options.RegisterExtension(extension);
+            var receiverExtension = new SubscriptionReceiverSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
+            schemaBuilder.Options.RegisterExtension(receiverExtension);
+
+            var validationExtension = new SubscriptionEventValidationSchemaExtension<TSchema>();
+            schemaBuilder.Options.RegisterExtension(validationExtension);
 
             return schemaBuilder;
         }

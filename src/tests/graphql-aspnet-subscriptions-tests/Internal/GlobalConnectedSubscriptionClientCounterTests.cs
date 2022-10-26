@@ -18,12 +18,10 @@ namespace GraphQL.Subscriptions.Tests.Internal
     {
         [TestCase(0)]
         [TestCase(-45)]
-        public void WhenCreatdWithLessThan1Max_ExceptionThrown(int maxAllowed)
+        public void WhenCreatdWithLessThan0_MaxIsSetToZero(int maxValue)
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var instance = new GlobalConnectedSubscriptionClientCounter(maxAllowed);
-            });
+            var instance = new GlobalConnectedSubscriptionClientCounter(maxValue);
+            Assert.AreEqual(0, instance.MaxAllowedConnectedClients);
         }
 
         [Test]

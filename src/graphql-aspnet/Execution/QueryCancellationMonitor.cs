@@ -12,9 +12,6 @@ namespace GraphQL.AspNet.Execution
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Internal.Introspection.Types;
 
     /// <summary>
     /// A helper class to manage the various external pressures on the execution of query context.
@@ -31,9 +28,8 @@ namespace GraphQL.AspNet.Execution
         }
 
         private readonly object _locker;
-        private readonly CancellationToken _contextCancelToken;
+        private readonly CancellationToken _externalCancelToken;
         private readonly TimeSpan _timeoutPeriod;
-        private readonly GraphQueryExecutionContext _context;
 
         private TaskCompletionSource<int> _publicTimeoutTaskSource;
 
@@ -47,26 +43,28 @@ namespace GraphQL.AspNet.Execution
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryCancellationMonitor" /> class.
         /// </summary>
-        /// <param name="context">The context to monitor.</param>
+        /// <param name="externalToken">An external token that,if cancelled will automatically end the monitor.</param>
         /// <param name="timeoutPeriod">A period of time after which this monitor will be marked
         /// as timedout and operations cancelled.</param>
-        public QueryCancellationMonitor(GraphQueryExecutionContext context, TimeSpan? timeoutPeriod)
+        public QueryCancellationMonitor(CancellationToken externalToken = default, TimeSpan? timeoutPeriod = null)
         {
-            _context = Validation.ThrowIfNullOrReturn(context, nameof(context));
-
             _timeoutPeriod = timeoutPeriod ?? Timeout.InfiniteTimeSpan;
             _locker = new object();
             _state = MonitorState.Incomplete;
-            _contextCancelToken = _context.CancellationToken;
+            _externalCancelToken = externalToken;
         }
 
         /// <summary>
-        /// Issues a new timeout task appropriate for the source context and schema.
+        /// Starts the monitor, if a timeout period was specified or an original external token provided,
+        /// the monitor will automaitcally timeout or cancel if either event occurs prior to a call to <see cref="Complete"/>.
         /// </summary>
         public void Start()
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(QueryCancellationMonitor));
+
+            if (_state != MonitorState.Incomplete)
+                return;
 
             _publicTimeoutTaskSource = new TaskCompletionSource<int>();
 
@@ -77,7 +75,7 @@ namespace GraphQL.AspNet.Execution
             {
                 _timeoutTaskCancelSource = new CancellationTokenSource();
                 _combinedCancelSource = CancellationTokenSource.CreateLinkedTokenSource(
-                    _contextCancelToken,
+                    _externalCancelToken,
                     _timeoutTaskCancelSource.Token);
 
                 // start the delay timer ticking, but stop it
@@ -87,44 +85,33 @@ namespace GraphQL.AspNet.Execution
                 {
                     if (task.IsCompleted && !task.IsFaulted && !task.IsCanceled && !_isDisposed)
                     {
-                        // if the internal timeout task finishes
-                        // cause the public facing task to complete
+                        // if the internal timeout task finishes normally
+                        // the monitor has timed out
                         this.SetState(MonitorState.Timeout);
-                        _publicTimeoutTaskSource.TrySetResult(0);
                     }
                 });
             }
 
-            this.TimeoutTask = _publicTimeoutTaskSource.Task;
+            this.MonitorTask = _publicTimeoutTaskSource.Task;
+
+            if (_externalCancelToken != default)
+                _externalCancelToken.Register(this.ExternalToken_Cancelled);
 
             // publish the appropriate cancel token
             this.CancellationToken = _timeoutPeriod == Timeout.InfiniteTimeSpan
-                ? _contextCancelToken
+                ? _externalCancelToken
                 : _combinedCancelSource.Token;
         }
 
-        /// <summary>
-        /// Inspects the monitored context and its constituent tokens to determine if anything
-        /// is in an aborted state. If an aborted state is found an appropriate cancellation
-        /// state is set.
-        /// </summary>
-        public void AbortIfCancelled()
+        private void ExternalToken_Cancelled()
         {
             if (_isDisposed)
-                throw new ObjectDisposedException(nameof(QueryCancellationMonitor));
+                return;
 
             // stop the timer if the context token requested cancellation
             // along the way and transition the monitor to a canceled state
-            if (_contextCancelToken.IsCancellationRequested)
-            {
+            if (_externalCancelToken.IsCancellationRequested)
                 this.SetState(MonitorState.CancelRequested);
-
-                // kill the delay task if one is running
-                _timeoutTaskCancelSource?.Cancel();
-
-                // complete the public timeout task
-                _publicTimeoutTaskSource.TrySetResult(0);
-            }
         }
 
         /// <summary>
@@ -135,14 +122,13 @@ namespace GraphQL.AspNet.Execution
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(QueryCancellationMonitor));
 
-            this.AbortIfCancelled();
             this.SetState(MonitorState.Completed);
         }
 
         private bool SetState(MonitorState newState)
         {
             if (_isDisposed)
-                throw new ObjectDisposedException(nameof(QueryCancellationMonitor));
+                return false;
 
             lock (_locker)
             {
@@ -152,7 +138,11 @@ namespace GraphQL.AspNet.Execution
 
                     // when a final state is set to the monitor, we can stop
                     // waiting for the timeout to complete
-                    _timeoutTaskCancelSource?.Cancel();
+                    if (_timeoutTaskCancelSource != null && !_timeoutTaskCancelSource.IsCancellationRequested)
+                        _timeoutTaskCancelSource.Cancel();
+
+                    // complete the monitor task
+                    _publicTimeoutTaskSource.TrySetResult(0);
 
                     return true;
                 }
@@ -196,17 +186,22 @@ namespace GraphQL.AspNet.Execution
         }
 
         /// <summary>
-        /// Gets the cancellation token governing this monitored context.
+        /// Gets the cancellation token governing this monitor. This token will request cancellation if
+        /// the timeout period expires or if the original, external token requests cancellation.
         /// </summary>
         /// <value>The cancellation token.</value>
         public CancellationToken CancellationToken { get; private set; }
 
         /// <summary>
-        /// Gets a task representing the timeout operation this monitoring is watching. Useful when using
-        /// <c>Task.WhenAny</c> along with another task.
+        /// Gets a task representing the timeout operation this monitoring is watching. This task will be completed
+        /// when any of the following occur:<br />
+        /// - The timeout period expires<br/>
+        /// - The external token supplied in the constructor requests a cancellation<br/>
+        /// - The .Complete() method is called.<br/>
+        /// .
         /// </summary>
         /// <value>The timeout task.</value>
-        public Task TimeoutTask { get; private set; }
+        public Task MonitorTask { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether cancellation was explicitly requested prior to a timeout.

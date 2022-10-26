@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// Initializes a new instance of the <see cref="SubscriptionEventProxy"/> class.
         /// </summary>
         /// <param name="eventName">Name of the event.</param>
-        /// <param name="dataObject">The data object.</param>
+        /// <param name="dataObject">The data object to carry with the event.</param>
         public SubscriptionEventProxy(string eventName, object dataObject)
         {
             this.EventName = Validation.ThrowIfNullEmptyOrReturn(eventName, nameof(eventName));

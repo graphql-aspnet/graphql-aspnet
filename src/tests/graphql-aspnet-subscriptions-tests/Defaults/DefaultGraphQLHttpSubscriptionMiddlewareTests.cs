@@ -22,6 +22,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
@@ -65,7 +66,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(),
+                new GlobalConnectedSubscriptionClientCounter(25),
                 options);
 
             var context = new DefaultHttpContext();
@@ -94,7 +95,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(),
+                new GlobalConnectedSubscriptionClientCounter(25),
                 options);
 
             var context = new DefaultHttpContext();
@@ -133,7 +134,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(),
+                new GlobalConnectedSubscriptionClientCounter(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -164,7 +165,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(),
+                new GlobalConnectedSubscriptionClientCounter(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -197,7 +198,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(),
+                new GlobalConnectedSubscriptionClientCounter(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -235,7 +236,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(),
+                new GlobalConnectedSubscriptionClientCounter(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -247,6 +248,45 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             await middleware.InvokeAsync(context);
 
             Assert.AreEqual((int)HttpStatusCode.Unauthorized, context.Response.StatusCode);
+        }
+
+        [Test]
+        public async Task MaxConnectionsReached_NewConnectionIsRejected()
+        {
+            bool nextCalled = false;
+            Task CallNext(HttpContext context)
+            {
+                nextCalled = true;
+                return Task.CompletedTask;
+            }
+
+            var next = new RequestDelegate(CallNext);
+
+            var connection = new Mock<ISubscriptionClientProxy>();
+            connection.Setup(x => x.StartConnection(It.IsAny<TimeSpan?>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+            var factory = new Mock<ISubscriptionServerClientFactory>();
+            var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
+
+            factory.Setup(x => x.CreateSubscriptionClient<GraphSchema>(It.IsAny<IClientConnection>()))
+                .ReturnsAsync(client.Object);
+
+            var options = new SubscriptionServerOptions<GraphSchema>();
+            var middleware = new DefaultGraphQLHttpSubscriptionMiddleware<GraphSchema>(
+                next,
+                new GraphSchema(),
+                factory.Object,
+                new GlobalConnectedSubscriptionClientCounter(0),
+                options);
+
+            var context1 = new FakeWebSocketHttpContext();
+            context1.RequestServices = new Mock<IServiceProvider>().Object;
+            context1.Request.Path = options.Route;
+
+            await middleware.InvokeAsync(context1);
+
+            Assert.AreEqual((int)HttpStatusCode.InternalServerError, context1.Response.StatusCode);
+            Assert.IsFalse(nextCalled);
         }
     }
 }

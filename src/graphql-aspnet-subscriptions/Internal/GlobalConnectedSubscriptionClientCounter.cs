@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Internal
     public sealed class GlobalConnectedSubscriptionClientCounter
     {
         private readonly object _locker = new object();
-        private readonly int _maxConnectedClientCount;
 
         private int _currentCount;
 
@@ -28,9 +27,9 @@ namespace GraphQL.AspNet.Internal
         /// Once reached, this instance will deny increasing the count.</param>
         public GlobalConnectedSubscriptionClientCounter(int? maxConnectedClientCount = null)
         {
-            _maxConnectedClientCount = maxConnectedClientCount ?? int.MaxValue;
-            if (_maxConnectedClientCount <= 0)
-                throw new ArgumentException("Max allowed concurrent client connections must be at least 1");
+            this.MaxAllowedConnectedClients = maxConnectedClientCount ?? int.MaxValue;
+            if (this.MaxAllowedConnectedClients < 0)
+                this.MaxAllowedConnectedClients = 0;
 
             _currentCount = 0;
         }
@@ -41,7 +40,7 @@ namespace GraphQL.AspNet.Internal
         /// <returns><c>true</c> if the count was successfully increased, <c>false</c> otherwise.</returns>
         public bool IncreaseCount()
         {
-            if (_currentCount >= _maxConnectedClientCount)
+            if (_currentCount >= this.MaxAllowedConnectedClients)
                 return false;
 
             lock (_locker)
@@ -74,5 +73,12 @@ namespace GraphQL.AspNet.Internal
                     return _currentCount;
             }
         }
+
+        /// <summary>
+        /// Gets the maximum number of allowed connected clients this instance will
+        /// support.
+        /// </summary>
+        /// <value>The maximum allowed connected clients.</value>
+        public int MaxAllowedConnectedClients { get; }
     }
 }

@@ -44,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.Security.SecurityTestData
             return this.Ok().AsCompletedTask();
         }
 
-        [SubscriptionRoot("unsecureWidgetChanged", typeof(SubscriptionSecureWidget), EventName = "secureWidgetUpdated")]
+        [SubscriptionRoot("unsecureWidgetChanged", typeof(SubscriptionSecureWidget), EventName = "unsecureWidgetUpdated")]
         public Task<IGraphActionResult> UnSecureStarshipUpdated(SubscriptionSecureWidget eventData, string nameLike = "*")
         {
             if (eventData != null && (nameLike == "*" || eventData.Name.Contains(nameLike)))

@@ -47,10 +47,14 @@ namespace GraphQL.AspNet.Defaults
         {
             _logger = logger;
             _allReceivers = new SubscribedEventRecievers();
-            var maxReceiverCount = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
-            _dispatchQueue = dispatchQueue ?? new SubscriptionReceiverDispatchQueue(maxReceiverCount);
 
-            _dispatchQueueExecutionTask = _dispatchQueue.BeginProcessingQueue();
+            _dispatchQueue = dispatchQueue;
+            if (_dispatchQueue == null)
+            {
+                var maxReceiverCount = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
+                _dispatchQueue = dispatchQueue ?? new SubscriptionReceiverDispatchQueue(maxReceiverCount);
+                _dispatchQueueExecutionTask = _dispatchQueue.BeginProcessingQueue();
+            }
         }
 
         /// <inheritdoc />
