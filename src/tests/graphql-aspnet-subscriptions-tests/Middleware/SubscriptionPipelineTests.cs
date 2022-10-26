@@ -70,7 +70,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
         /// and the subscription helper differ by only the subscription middleware component.
         /// </summary>
         [Test]
-        public void BasePipelineAndSubscriptionPipelien_DifferByOnlySubscriptionComponent()
+        public void BasePipelineAndSubscriptionPipeline_DifferByOnlySubscriptionComponent()
         {
             var options = new SchemaOptions(typeof(GraphSchema), new ServiceCollection());
             options.AuthorizationOptions.Method = AuthorizationMethod.PerRequest;

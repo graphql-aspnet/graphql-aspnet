@@ -32,7 +32,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             Assert.AreEqual(55, proxy.Count);
             Assert.AreEqual(ClientMessageType.Text, proxy.MessageType);
             Assert.IsTrue(proxy.EndOfMessage);
-            Assert.AreEqual(ClientConnectionCloseStatus.InternalServerError, proxy.CloseStatus.Value);
+            Assert.AreEqual(ConnectionCloseStatus.InternalServerError, proxy.CloseStatus.Value);
             Assert.AreEqual("no Description", proxy.CloseStatusDescription);
         }
     }

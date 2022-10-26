@@ -31,13 +31,13 @@ namespace GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData
 
                 // update the resolver used by the request
                 // resolver then upper case any string result
-                fieldPart.PostResolver = ConvertToUpper;
+                fieldPart.PostResolver = ConvertToLower;
             }
 
             return this.Ok();
         }
 
-        private static Task ConvertToUpper(FieldResolutionContext context, CancellationToken token)
+        private static Task ConvertToLower(FieldResolutionContext context, CancellationToken token)
         {
             if (context.Result is string)
                 context.Result = context.Result?.ToString().ToLowerInvariant();

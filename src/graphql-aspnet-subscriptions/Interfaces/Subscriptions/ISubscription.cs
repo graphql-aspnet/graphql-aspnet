@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// <summary>
         /// Gets a reference to the the top-level graph field that has been subscribed to.
         /// </summary>
-        /// <value>The field.</value>
+        /// <value>The field reference from a target schema.</value>
         ISubscriptionGraphField Field { get; }
 
         /// <summary>

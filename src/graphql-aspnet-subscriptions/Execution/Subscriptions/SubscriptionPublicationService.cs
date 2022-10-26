@@ -21,120 +21,66 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using Microsoft.Extensions.Hosting;
 
     /// <summary>
-    /// An internal hosted service to which events are queued for publishing. Allows for
-    /// sending from a disconnected task so as not to imped the execution of the task/pipeline where
-    /// the subscription events were initially raised.
+    /// An internal service to which events are queued for publishing. Allows for
+    /// "publishing" from a disconnected task so as not to imped the execution of the
+    /// query where the subscription events were initially raised.
     /// </summary>
-    public sealed class SubscriptionPublicationService : BackgroundService
+    internal sealed class SubscriptionPublicationService : BackgroundService
     {
-        private static readonly object _syncLock = new object();
-        private static int _waitInterval;
-
-        /// <summary>
-        /// <para>
-        /// Gets or sets the amount of time the internal publication service will
-        /// wait when it reaches the end of the event queue before inspecting the queue again.
-        /// </para>
-        /// <para>
-        /// This value should be configured during startup. Once this publication service is started
-        /// the value becomes fixed.
-        /// </para>
-        /// <para>
-        /// Default Value: 100ms,  Minimum Value: 15ms.
-        /// </para>
-        /// </summary>
-        /// <value>The amount of time to wait, in milliseconds.</value>
-        public static int WaitIntervalInMilliseconds
-        {
-            get
-            {
-                lock (_syncLock)
-                    return _waitInterval;
-            }
-
-            set
-            {
-                lock (_syncLock)
-                    _waitInterval = value;
-            }
-        }
-
-        /// <summary>
-        /// Initializes static members of the <see cref="SubscriptionPublicationService"/> class.
-        /// </summary>
-        static SubscriptionPublicationService()
-        {
-            WaitIntervalInMilliseconds = 100;
-        }
-
-        private readonly IServiceProvider _provider;
-        private readonly SubscriptionEventQueue _eventsToRaise;
+        private readonly SubscriptionEventPublishingQueue _eventsToRaise;
+        private readonly IGraphEventLogger _logger;
+        private readonly ISubscriptionEventPublisher _publisher;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionPublicationService" /> class.
         /// </summary>
-        /// <param name="provider">The provider.</param>
-        /// <param name="eventQueue">The event queue.</param>
-        public SubscriptionPublicationService(IServiceProvider provider, SubscriptionEventQueue eventQueue)
+        /// <param name="provider">The service provider this service
+        /// can use to instantiate the publisher instances.</param>
+        /// <param name="eventQueue">The singular event queue where all "published" events
+        /// are initially staged.</param>
+        public SubscriptionPublicationService(IServiceProvider provider, SubscriptionEventPublishingQueue eventQueue)
         {
             _eventsToRaise = Validation.ThrowIfNullOrReturn(eventQueue, nameof(eventQueue));
-            _provider = Validation.ThrowIfNullOrReturn(provider, nameof(provider));
+            Validation.ThrowIfNull(provider, nameof(provider));
+
+            var scope = provider.CreateScope();
+            _logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
+            _publisher = scope.ServiceProvider.GetRequiredService<ISubscriptionEventPublisher>();
         }
 
-        /// <summary>
-        /// This method is called when the <see cref="IHostedService" /> starts. The implementation should return a task that represents
-        /// the lifetime of the long running operation(s) being performed.
-        /// </summary>
-        /// <param name="stoppingToken">Triggered when <see cref="IHostedService.StopAsync(System.Threading.CancellationToken)" /> is called.</param>
-        /// <returns>A <see cref="Task" /> that represents the long running operations.</returns>
+        /// <inheritdoc />
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var waitInterval = SubscriptionPublicationService.WaitIntervalInMilliseconds;
-            if (waitInterval < 15)
-                waitInterval = 15;
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await this.PollEventQueue();
-
-                try
-                {
-                    await Task.Delay(waitInterval, stoppingToken);
-                }
-                catch (TaskCanceledException)
-                {
-                    break;
-                }
-            }
+            await this.PollQueue(stoppingToken);
         }
 
         /// <summary>
-        /// Forces this publication service to poll its internal queue for new events instead of waiting
-        /// for hte next publication cycle.
+        /// Polls the queue.
         /// </summary>
-        /// <returns>Task.</returns>
-        internal async Task PollEventQueue()
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>ValueTask.</returns>
+        public async ValueTask PollQueue(CancellationToken cancelToken = default)
         {
-            if (_eventsToRaise.Count > 0)
+            try
             {
-                using var scope = _provider.CreateScope();
-                var logger = scope.ServiceProvider.GetService<IGraphEventLogger>();
-                var publisher = scope.ServiceProvider.GetRequiredService<ISubscriptionEventPublisher>();
-                while (_eventsToRaise.TryDequeue(out var result))
+                while (await _eventsToRaise.WaitToDequeueAsync(cancelToken))
                 {
-                    if (result != null)
+                    if (_eventsToRaise.TryDequeue(out var raisedEvent))
                     {
                         try
                         {
-                            await publisher.PublishEvent(result);
-                            logger?.SubscriptionEventPublished(result);
+                            await _publisher.PublishEvent(raisedEvent, cancelToken);
+                            _logger?.SubscriptionEventPublished(raisedEvent);
                         }
                         catch (Exception ex)
                         {
-                            logger?.UnhandledExceptionEvent(ex);
+                            _logger?.UnhandledExceptionEvent(ex);
                         }
                     }
                 }
+            }
+            catch (TaskCanceledException)
+            {
             }
         }
     }

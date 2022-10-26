@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.Structural
+namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Collections.Generic;
@@ -19,13 +19,13 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A representation of a object field as it would be defined in the graph type system.
+    /// A representation of a field as it would be defined in an object graph that originated
+    /// from a .NET method invocation.
     /// </summary>
-    /// <seealso cref="IGraphField" />
     [DebuggerDisplay("Field: {Route.Path}")]
     public class MethodGraphField : IGraphField
     {

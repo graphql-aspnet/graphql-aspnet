@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
     using SR = GraphQL.AspNet.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
 
     /// <summary>
-    /// A tokenizer programmed with the symbols of graphql, capable of walking a string
+    /// A tokenizer programmed with the symbols of graphql, capable of walking a string,
     /// splitting it into logical segments, tracking read position, performing look aheads etc.
     /// </summary>
     public static class Lexer

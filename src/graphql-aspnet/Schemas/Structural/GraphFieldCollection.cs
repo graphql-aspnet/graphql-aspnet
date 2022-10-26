@@ -20,6 +20,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Resolvers;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A collection of <see cref="IGraphField"/> owned by a <see cref="IGraphType"/>.

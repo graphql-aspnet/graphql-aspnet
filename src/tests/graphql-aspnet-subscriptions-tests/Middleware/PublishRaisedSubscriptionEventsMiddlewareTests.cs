@@ -37,7 +37,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()
@@ -48,7 +48,6 @@ namespace GraphQL.Subscriptions.Tests.Middleware
 
             await publisher.InvokeAsync(context, next, default);
             Assert.IsTrue(nextCalled);
-            Assert.AreEqual(0, queue.Count);
         }
 
         [Test]
@@ -62,7 +61,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()
@@ -71,12 +70,11 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             var context = server.CreateQueryContextBuilder()
                 .Build();
 
-            var col = context.Items.GetOrAdd(
-                SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY, (_) => new List<SubscriptionEventProxy>());
+            var col = context.Session.Items.GetOrAdd(
+                SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, (_) => new List<SubscriptionEventProxy>());
 
             await publisher.InvokeAsync(context, next, default);
             Assert.IsTrue(nextCalled);
-            Assert.AreEqual(0, queue.Count);
         }
 
         [Test]
@@ -88,7 +86,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()
@@ -97,8 +95,8 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             var context = server.CreateQueryContextBuilder()
                 .Build();
 
-            var col = context.Items.GetOrAdd(
-                SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY, (_) => new object());
+            var col = context.Session.Items.GetOrAdd(
+                SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, (_) => new object());
 
             Assert.ThrowsAsync<GraphExecutionException>(async () =>
             {
@@ -117,7 +115,7 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             }
 
             var next = new GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext>(CallNext);
-            var queue = new SubscriptionEventQueue();
+            var queue = new SubscriptionEventPublishingQueue();
             var publisher = new PublishRaisedSubscriptionEventsMiddleware<GraphSchema>(queue);
 
             var server = new TestServerBuilder()
@@ -126,15 +124,14 @@ namespace GraphQL.Subscriptions.Tests.Middleware
             var context = server.CreateQueryContextBuilder()
                 .Build();
 
-            var col = context.Items.GetOrAdd(
-                SubscriptionConstants.RAISED_EVENTS_COLLECTION_KEY, (_) => new List<SubscriptionEventProxy>())
+            var col = context.Session.Items.GetOrAdd(
+                SubscriptionConstants.ContextDataKeys.RAISED_EVENTS_COLLECTION, (_) => new List<SubscriptionEventProxy>())
                 as List<SubscriptionEventProxy>;
 
             col.Add(new SubscriptionEventProxy("fakeEvent", new TwoPropertyObject()));
 
             await publisher.InvokeAsync(context, next, default);
             Assert.IsTrue(nextCalled);
-            Assert.AreEqual(1, queue.Count);
         }
     }
 }

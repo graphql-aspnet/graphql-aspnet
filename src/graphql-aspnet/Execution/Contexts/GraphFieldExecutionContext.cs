@@ -38,19 +38,20 @@ namespace GraphQL.AspNet.Execution.Contexts
             IGraphExecutionContext parentContext,
             IGraphFieldRequest fieldRequest,
             IResolvedVariableCollection variableData,
-            DefaultFieldSourceCollection defaultFieldSources = null,
+            FieldSourceCollection defaultFieldSources = null,
             ClaimsPrincipal user = null)
              : base(parentContext)
         {
             this.Request = Validation.ThrowIfNullOrReturn(fieldRequest, nameof(fieldRequest));
             this.VariableData = variableData;
             this.ResolvedSourceItems = new List<GraphDataItem>();
-            this.DefaultFieldSources = defaultFieldSources ?? new DefaultFieldSourceCollection();
+            this.DefaultFieldSources = defaultFieldSources ?? new FieldSourceCollection();
             this.User = user;
         }
 
         /// <summary>
-        /// Gets or sets the raw result generated of executing the field on this context.
+        /// Gets or sets the raw, unprocessed result generated from executing
+        /// (i.e. resolving) the field on this context.
         /// </summary>
         /// <value>The result.</value>
         public object Result { get; set; }
@@ -97,6 +98,6 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// field execution when no other sources exist.
         /// </summary>
         /// <value>The default field sources.</value>
-        public DefaultFieldSourceCollection DefaultFieldSources { get; }
+        public FieldSourceCollection DefaultFieldSources { get; }
     }
 }

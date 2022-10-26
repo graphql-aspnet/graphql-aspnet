@@ -9,7 +9,6 @@
 
 namespace GraphQL.Subscriptions.Tests.Execution
 {
-    using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Execution;
@@ -21,7 +20,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ClientSubscriptionTestData;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using Moq;
     using NUnit.Framework;
 
@@ -36,8 +35,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 .AddSubscriptionServer()
                 .Build();
 
-            var schema = testServer.Schema;
-            var subServer = testServer.RetrieveSubscriptionServer();
             var queryPlan = await testServer.CreateQueryPlan("subscription { watchObjects { property1 property2  }} ");
 
             Assert.IsNotNull(queryPlan.Operation);
@@ -46,27 +43,26 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var field = queryPlan.Operation.FieldContexts[0].Field;
             var name = field.GetType().FullName;
 
-            (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
+            var result = testServer.CreateSubscriptionClient();
 
             var queryData = new GraphQueryData();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient,
+                result.Client,
                 queryData,
                 queryPlan,
-                queryPlan.Operation,
                 "abc123");
 
             Assert.IsTrue(sub.IsValid);
             Assert.AreEqual("[subscription]/WatchObjects", sub.Route.Path);
             Assert.AreEqual("abc123", sub.Id);
             Assert.AreEqual(field, sub.Field);
-            Assert.AreEqual(testClient, sub.Client);
+            Assert.AreEqual(result.Client, sub.Client);
             Assert.AreEqual(queryData, sub.QueryData);
         }
 
         [Test]
-        public async Task ClientSubscription_NotASubscriptionOperation_ReturnsError()
+        public void ClientSubscription_NotASubscriptionOperation_ReturnsError()
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
@@ -76,15 +72,15 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var fakePlan = new Mock<IGraphQueryPlan>();
             var fakeOp = new Mock<IGraphFieldExecutableOperation>();
 
+            fakePlan.Setup(x => x.Operation).Returns(fakeOp.Object);
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Query);
 
-            (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
+            var result = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient,
+                result.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
-                fakeOp.Object,
                 "abc123");
 
             Assert.IsFalse(sub.IsValid);
@@ -94,7 +90,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         }
 
         [Test]
-        public async Task ClientSubscription_NoFieldContextFound_ReturnsError()
+        public void ClientSubscription_NoFieldContextFound_ReturnsError()
         {
             var testServer = new TestServerBuilder()
                 .AddGraphController<ClientSubscriptionTestController>()
@@ -109,16 +105,16 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var fakeFieldContexts = new Mock<IFieldInvocationContextCollection>();
             fakeFieldContexts.Setup(x => x[It.IsAny<int>()]).Returns(fakeFieldContext.Object);
 
+            fakePlan.Setup(x => x.Operation).Returns(fakeOp.Object);
             fakeOp.Setup(x => x.OperationType).Returns(GraphOperationType.Subscription);
             fakeOp.Setup(x => x.FieldContexts).Returns(fakeFieldContexts.Object);
 
-            (var socketClient, var testClient) = await testServer.CreateSubscriptionClient();
+            var result = testServer.CreateSubscriptionClient();
 
             var sub = new ClientSubscription<GraphSchema>(
-                testClient,
+                result.Client,
                 GraphQueryData.Empty,
                 fakePlan.Object,
-                fakeOp.Object,
                 "abc123");
 
             Assert.IsFalse(sub.IsValid);

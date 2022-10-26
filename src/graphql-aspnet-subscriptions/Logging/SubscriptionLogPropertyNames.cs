@@ -62,11 +62,51 @@ namespace GraphQL.AspNet.Logging
         /// <summary>
         /// The unique route within a schema that a subscription event is being reported against.
         /// </summary>
-        public const string SUBSCRIPTION_ROUTE = "subscriptionRoute";
+        public const string SUBSCRIPTION_PATH = "subscriptionPath";
 
         /// <summary>
         /// The physical name of the ASP.NET server hosting subscriptions.
         /// </summary>
         public const string ASPNET_SERVER_INSTANCE_NAME = "machineName";
+
+        /// <summary>
+        /// The total number of clients being reported on.
+        /// </summary>
+        public const string CLIENT_COUNT = "clientCount";
+
+        /// <summary>
+        /// The total number of subscriptions being reported on.
+        /// </summary>
+        public const string SUBSCRIPTION_COUNT = "subscriptionCount";
+
+        /// <summary>
+        /// A collection of client ids being reported on.
+        /// </summary>
+        public const string CLIENT_IDS = "clientIds";
+
+        /// <summary>
+        /// The name of a client messaging protocol.
+        /// </summary>
+        public const string CLIENT_PROTOCOL = "clientProtocol";
+
+        /// <summary>
+        /// The 'type' field of an GraphqlWsLegacy message.
+        /// </summary>
+        public const string MESSAGE_TYPE = "GraphqlWsLegacyMessageType";
+
+        /// <summary>
+        /// The 'id' field of an GraphqlWsLegacy message.
+        /// </summary>
+        public const string MESSAGE_ID = "GraphqlWsLegacyMessageId";
+
+        /// <summary>
+        /// The client supplied identifer assigned to the subscription.
+        /// </summary>
+        public const string SUBSCRIPTION_ID = "GraphqlWsLegacySubscriptionId";
+
+        /// <summary>
+        /// A collection of subscription ids being reported on.
+        /// </summary>
+        public const string SUBSCRIPTION_IDS = "subscriptionIds";
     }
 }

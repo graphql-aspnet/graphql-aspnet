@@ -13,7 +13,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Execution.ExecutionDirectiveTestData;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
@@ -30,7 +30,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         [TestCase("query { retrieveObject { ... @recordLocation { property1 } } }", null, DirectiveLocation.INLINE_FRAGMENT)]
         [TestCase("query ($id: String! @recordLocation ){ retrieveSingleObject (id: $id) {  property1  } }", @"{ ""id"" : ""bob"" }", DirectiveLocation.VARIABLE_DEFINITION)]
         [TestCase("query ($id: String = \"jane\" @recordLocation ){ retrieveSingleObject (id: $id) {  property1  } }", @"{ ""id"" : ""bob"" }", DirectiveLocation.VARIABLE_DEFINITION)]
-        public async Task ExpectedDirectiveLocationIsAnExpectedValue(string queryText, string variables, DirectiveLocation expectedLocation)
+        public async Task DirectiveLocationIsAnExpectedValue(string queryText, string variables, DirectiveLocation expectedLocation)
         {
             var directiveInstance = new DirectiveLocationRecorderDirective();
 
@@ -42,9 +42,12 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             var server = serverBuilder.Build();
 
-            (var socketClient, var subClient) = await server.CreateSubscriptionClient();
+            var subClient = server.CreateSubscriptionClient();
 
-            var builder = server.CreateSubcriptionContextBuilder(subClient)
+            var builder = server.CreateSubcriptionContextBuilder(
+                subClient.Client,
+                subClient.ServiceProvider,
+                subClient.SecurityContext)
                 .AddQueryText(queryText);
 
             if (variables != null)
@@ -55,6 +58,37 @@ namespace GraphQL.Subscriptions.Tests.Execution
             await server.ExecuteQuery(context);
 
             Assert.AreEqual(expectedLocation, directiveInstance.RecordedLocation);
+        }
+
+        [Test]
+        public async Task OperationRequestIsCorrectlySetOnInvokedExecutionDirective()
+        {
+            var queryText = "query  { retrieveObject @operationRequestCheck { property1 } }";
+
+            var directiveInstance = new OperationRequestCheckDirective();
+            directiveInstance.ExpectedQueryText = queryText;
+
+            var serverBuilder = new TestServerBuilder();
+            serverBuilder.AddSingleton(directiveInstance);
+            serverBuilder.AddGraphController<DirectiveTestController>()
+                   .AddSubscriptionServer()
+                   .AddDirective<OperationRequestCheckDirective>();
+
+            var server = serverBuilder.Build();
+
+            var subClient = server.CreateSubscriptionClient();
+
+            var builder = server.CreateSubcriptionContextBuilder(
+                subClient.Client,
+                subClient.ServiceProvider,
+                subClient.SecurityContext)
+                .AddQueryText(queryText);
+
+            var id = "bob";
+            var context = builder.Build(id);
+            await server.ExecuteQuery(context);
+
+            Assert.IsTrue(directiveInstance.OperationRequestReceived);
         }
     }
 }

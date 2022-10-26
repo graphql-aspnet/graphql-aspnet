@@ -19,6 +19,15 @@ namespace GraphQL.AspNet.Interfaces.Execution
     public interface IGraphDirectiveRequest : IDataRequest
     {
         /// <summary>
+        /// Gets the original operation request under which this directive is executing.
+        /// </summary>
+        /// <remarks>
+        /// This value will be null during the execution of Type System Directives at startup.
+        /// </remarks>
+        /// <value>The operation request.</value>
+        IGraphOperationRequest OperationRequest { get; }
+
+        /// <summary>
         /// Gets the invocation context containing the specific details
         /// of the directive to be processed against the <see cref="DirectiveTarget"/>.
         /// </summary>

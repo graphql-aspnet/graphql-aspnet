@@ -28,21 +28,7 @@ namespace GraphQL.AspNet.Common.Extensions
             if (schema == null)
                 return null;
 
-            return RetrieveFullyQualifiedSchemaTypeName(schema.GetType());
-        }
-
-        /// <summary>
-        /// Retrieves the value used for a fully qualified schema type name from the schema's
-        /// raw <see cref="Type"/>.
-        /// </summary>
-        /// <param name="schemaType">The type of the schema.</param>
-        /// <returns>System.String.</returns>
-        public static string RetrieveFullyQualifiedSchemaTypeName(Type schemaType)
-        {
-            if (schemaType == null)
-                return null;
-
-            return schemaType.AssemblyQualifiedName;
+            return RetrieveFullyQualifiedTypeName(schema.GetType());
         }
 
         /// <summary>
@@ -50,7 +36,7 @@ namespace GraphQL.AspNet.Common.Extensions
         /// </summary>
         /// <param name="dataObjectType">Type of the data object.</param>
         /// <returns>System.String.</returns>
-        public static string RetrieveFullyQualifiedDataObjectTypeName(Type dataObjectType)
+        public static string RetrieveFullyQualifiedTypeName(Type dataObjectType)
         {
             if (dataObjectType == null)
                 return null;

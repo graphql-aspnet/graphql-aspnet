@@ -6,10 +6,8 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
+namespace GraphQL.AspNet.Tests.RulesEngine.RuleCheckTestData
 {
-    using System.ComponentModel.DataAnnotations;
-
     public class Building
     {
         public int Id { get; set; }

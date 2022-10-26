@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An interface defining the various configuration options available for setting up your <see cref="ISchema"/>.
@@ -60,6 +61,6 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// Gets the set of operation types that can be registered to this schema.
         /// </summary>
         /// <value>The allowed operations.</value>
-        HashSet<GraphCollection> AllowedOperations { get; }
+        HashSet<GraphOperationType> AllowedOperations { get; }
     }
 }

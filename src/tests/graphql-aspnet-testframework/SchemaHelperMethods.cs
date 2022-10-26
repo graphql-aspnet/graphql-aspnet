@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Methods for quickly configuring schema related things during testing.
@@ -45,7 +46,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <param name="schema">The schema.</param>
         public static void SetSubscriptionAllowances(this ISchema schema)
         {
-            schema.Configuration.DeclarationOptions.AllowedOperations.Add(GraphCollection.Subscription);
+            schema.Configuration.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);
         }
     }
 }

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Middleware.SubcriptionExecution;
 
     /// <summary>
     /// A set of constants related to the configuration and processing of subscriptions
@@ -19,10 +18,10 @@ namespace GraphQL.AspNet
     public static class SubscriptionConstants
     {
         /// <summary>
-        /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
-        /// any events that were raised during the query execution.
+        /// The default number of concurrent recievers that the event router will send a
+        /// received event to at one time.
         /// </summary>
-        public const string RAISED_EVENTS_COLLECTION_KEY = "RaisedSubscriptionEvents";
+        public const int DEFAULT_MAX_CONCURRENT_SUBSCRIPTION_RECEIVERS = 50;
 
         /// <summary>
         /// A collection of constants related to subscription routing.
@@ -54,29 +53,27 @@ namespace GraphQL.AspNet
         }
 
         /// <summary>
-        /// Constants pertaining to the execution of subscription type queries.
+        /// Constants pertaining to the context data collection of the various middleeware context types.
         /// </summary>
-        public static class Execution
+        public static class ContextDataKeys
         {
             /// <summary>
-            /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="GraphQueryExecutionContext"/> if a subscription was created.  If a subscription
-            /// was not created but should have been this value will be null.
+            /// A key pointing to the collection within <see cref="GraphQueryExecutionContext"/> that contains
+            /// any events that were raised during the query execution.
             /// </summary>
-            public const string CREATED_SUBSCRIPTION = "GRAPHQL_SUBSCRIPTIONS_PIPELINE_CREATED_SUBSCRIPTION";
+            public const string RAISED_EVENTS_COLLECTION = "GraphqlAspNet:Subscriptions:RaisedSubscriptionEvents";
 
             /// <summary>
-            /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="SubcriptionExecutionContext"/>of the subscription id on the request
-            /// to uniquely identify the created subscription if/when it is created.
+            /// A key added to the items collection of a request of a subscription
+            /// indicating that the request should be dropped/skipped.
             /// </summary>
-            public const string SUBSCRIPTION_ID = "GRAPHQL_SUBSCRIPTIONS_ID";
+            public const string SKIP_EVENT = "GraphqlAspNet:ControlKeys:Subscriptions:SkipSubscriptionEvent";
 
             /// <summary>
-            /// A key value, pointing to an item in the Items collection of an executed
-            /// <see cref="SubcriptionExecutionContext"/> to a reference of the client that is making the request.
+            /// A key added to the items collection of a request of a subscription
+            /// indicating that the subscription should be closed upon completion of the event.
             /// </summary>
-            public const string CLIENT = "GRAPHQL_SUBSCRIPTIONS_CLIENT_REFERENCE";
+            public const string COMPLETE_SUBSCRIPTION = "GraphqlAspNet:ControlKeys:Subscriptions:CompleteSubscription";
         }
 
         /// <summary>
@@ -85,10 +82,10 @@ namespace GraphQL.AspNet
         public static class WebSockets
         {
             /// <summary>
-            /// The the key value used as the default sub protocol this subscription
-            /// server can support.
+            /// The name of the header on an http request that will contain the requested
+            /// graphql messaging protocol.
             /// </summary>
-            public const string DEFAULT_SUB_PROTOCOL = "graphql-ws";
+            public const string WEBSOCKET_PROTOCOL_HEADER = "sec-websocket-protocol";
         }
     }
 }

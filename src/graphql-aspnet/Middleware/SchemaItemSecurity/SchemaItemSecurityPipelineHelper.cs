@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldSecurity
+namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
 {
     using System;
     using GraphQL.AspNet.Common;
@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Middleware.FieldSecurity.Components;
+    using GraphQL.AspNet.Middleware.SchemaItemSecurity.Components;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.Extensions.DependencyInjection;
@@ -28,13 +28,13 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity
     public class SchemaItemSecurityPipelineHelper<TSchema>
         where TSchema : class, ISchema
     {
-        private readonly ISchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityContext> _pipelineBuilder;
+        private readonly ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> _pipelineBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemaItemSecurityPipelineHelper{TSchema}"/> class.
         /// </summary>
         /// <param name="pipelineBuilder">The pipeline builder.</param>
-        public SchemaItemSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, IGraphSchemaItemSecurityMiddleware, GraphSchemaItemSecurityContext> pipelineBuilder)
+        public SchemaItemSecurityPipelineHelper(ISchemaPipelineBuilder<TSchema, ISchemaItemSecurityMiddleware, GraphSchemaItemSecurityChallengeContext> pipelineBuilder)
         {
             _pipelineBuilder = Validation.ThrowIfNullOrReturn(pipelineBuilder, nameof(pipelineBuilder));
         }

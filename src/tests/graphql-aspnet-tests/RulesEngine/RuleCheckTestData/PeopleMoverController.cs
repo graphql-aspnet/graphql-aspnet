@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.ValidationRules.RuleCheckTestData
+namespace GraphQL.AspNet.Tests.RulesEngine.RuleCheckTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;

@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.Contexts
     /// A context passed to a directive resolver to complete its resolution task for the field its attached to.
     /// </summary>
     [DebuggerDisplay("Directive: {Request.InvocationContext.Directive.Name}")]
-    public class DirectiveResolutionContext : BaseResolutionContext<IGraphDirectiveRequest>
+    public class DirectiveResolutionContext : SchemaItemResolutionContext<IGraphDirectiveRequest>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectiveResolutionContext" /> class.

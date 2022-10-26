@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Schemas
     /// parsed from any <see cref="GraphController"/> or added manually <see cref="Type"/> to the <see cref="ISchema"/> this instance is
     /// managing.
     /// </summary>
-    public class GraphSchemaManager
+    public sealed class GraphSchemaManager
     {
         private readonly GraphNameFormatter _formatter;
 
@@ -149,7 +149,7 @@ namespace GraphQL.AspNet.Schemas
         /// <param name="action">The action to add to the schema.</param>
         private void AddAction(IGraphFieldTemplate action)
         {
-            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection))
+            if (this.Schema.Configuration.DeclarationOptions.AllowedOperations.Contains(action.Route.RootCollection.ToGraphOperationType()))
             {
                 var operation = action.Route.RootCollection.ToGraphOperationType();
                 this.EnsureGraphOperationType(operation);
@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Schemas
                 throw new ArgumentOutOfRangeException(
                     nameof(action),
                     $"The '{action.InternalFullName}' action's operation root ({action.Route.RootCollection}) is not " +
-                    $"allowed by the schema's current configuration (Schema: {this.Schema.Name}).");
+                    $"allowed by the target schema (Name: {this.Schema.Name}).");
             }
         }
 

@@ -15,7 +15,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging;
-    using GraphQL.AspNet.Logging.SubscriptionEvents;
+    using GraphQL.AspNet.Logging.SubscriptionEventLogEntries;
     using GraphQL.AspNet.Schemas;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -64,23 +64,16 @@ namespace GraphQL.Subscriptions.Tests.Logging
                     recordedlogEntry = entryMaker();
                 });
 
-            var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            server.Setup(x => x.Id).Returns("server1");
-
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
             client.Setup(x => x.Id).Returns("clientId1");
 
-            mock.Object.SubscriptionClientRegistered<GraphSchema>(
-                server.Object,
-                client.Object);
+            mock.Object.SubscriptionClientRegistered<GraphSchema>(client.Object);
 
             var entry = recordedlogEntry as SubscriptionClientRegisteredLogEntry<GraphSchema>;
             Assert.IsNotNull(entry);
             Assert.AreEqual(LogLevel.Debug, recordedLogLevel);
             Assert.AreEqual(entry.SchemaTypeName, typeof(GraphSchema).FriendlyName(true));
             Assert.AreEqual(entry.ClientTypeName, client.Object.GetType().FriendlyName(true));
-            Assert.AreEqual(entry.ServerTypeName, server.Object.GetType().FriendlyName(true));
-            Assert.AreEqual(entry.ServerId, "server1");
             Assert.AreEqual(entry.ClientId, "clientId1");
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
@@ -110,36 +103,6 @@ namespace GraphQL.Subscriptions.Tests.Logging
             Assert.AreEqual(LogLevel.Debug, recordedLogLevel);
             Assert.AreEqual(entry.ClientTypeName, client.Object.GetType().FriendlyName(true));
             Assert.AreEqual(entry.ClientId, "clientId1");
-            Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
-        }
-
-        [Test]
-        public void SubscriptionServerCreated_EnsureEventEntryIsGeneratedAndPassedThrough()
-        {
-            LogLevel recordedLogLevel = LogLevel.None;
-            IGraphLogEntry recordedlogEntry = null;
-
-            // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<IGraphEventLogger>();
-            mock.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()))
-                .Callback((LogLevel logLevel, Func<IGraphLogEntry> entryMaker) =>
-                {
-                    recordedLogLevel = logLevel;
-                    recordedlogEntry = entryMaker();
-                });
-
-            var server = new Mock<ISubscriptionServer<GraphSchema>>();
-            server.Setup(x => x.Id).Returns("server1");
-
-            mock.Object.SubscriptionServerCreated<GraphSchema>(
-                server.Object);
-
-            var entry = recordedlogEntry as SubscriptionServerCreatedLogEntry<GraphSchema>;
-            Assert.IsNotNull(entry);
-            Assert.AreEqual(LogLevel.Debug, recordedLogLevel);
-            Assert.AreEqual(entry.SchemaTypeName, typeof(GraphSchema).FriendlyName(true));
-            Assert.AreEqual(entry.ServerTypeName, server.Object.GetType().FriendlyName(true));
-            Assert.AreEqual(entry.ServerId, "server1");
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
 

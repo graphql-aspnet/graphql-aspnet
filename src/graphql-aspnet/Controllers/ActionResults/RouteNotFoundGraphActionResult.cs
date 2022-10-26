@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(BaseResolutionContext context)
+        public Task Complete(SchemaItemResolutionContext context)
         {
             if (_invokeDef != null)
             {

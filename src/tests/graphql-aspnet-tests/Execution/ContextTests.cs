@@ -34,17 +34,16 @@ namespace GraphQL.AspNet.Tests.Execution
             var logger = new Mock<IGraphEventLogger>();
             var metrics = new Mock<IGraphQueryExecutionMetrics>();
             var securityContext = new Mock<IUserSecurityContext>();
-            var metadata = new MetaDataCollection();
 
-            parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
             parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
             parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
             parentContext.Setup(x => x.Logger).Returns(logger.Object);
-            parentContext.Setup(x => x.Items).Returns(metadata);
+            parentContext.Setup(x => x.Session).Returns(new QuerySession());
 
             var fieldRequest = new Mock<IGraphFieldRequest>();
-            var sourceFieldCollection = new DefaultFieldSourceCollection();
+            var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new GraphFieldExecutionContext(
                 parentContext.Object,
@@ -52,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 variableData.Object,
                 sourceFieldCollection);
 
-            Assert.AreEqual(operationRequest.Object, context.ParentRequest);
+            Assert.AreEqual(operationRequest.Object, context.OperationRequest);
             Assert.AreEqual(variableData.Object, context.VariableData);
             Assert.AreEqual(sourceFieldCollection, context.DefaultFieldSources);
             Assert.AreEqual(fieldRequest.Object, context.Request);
@@ -61,7 +60,6 @@ namespace GraphQL.AspNet.Tests.Execution
             Assert.AreEqual(logger.Object, context.Logger);
             Assert.AreEqual(metrics.Object, context.Metrics);
             Assert.AreEqual(securityContext.Object, context.SecurityContext);
-            Assert.AreEqual(metadata, context.Items);
         }
 
         [Test]
@@ -75,28 +73,31 @@ namespace GraphQL.AspNet.Tests.Execution
             var logger = new Mock<IGraphEventLogger>();
             var metrics = new Mock<IGraphQueryExecutionMetrics>();
             var securityContext = new Mock<IUserSecurityContext>();
-            var metadata = new MetaDataCollection();
 
             var fieldRequest = new Mock<IGraphFieldRequest>();
-            var sourceFieldCollection = new DefaultFieldSourceCollection();
+            var sourceFieldCollection = new FieldSourceCollection();
+
+            var session = new QuerySession();
+            var items = new MetaDataCollection();
 
             var context = new GraphQueryExecutionContext(
                 operationRequest.Object,
                 serviceProvider.Object,
+                session,
+                items,
                 securityContext.Object,
                 metrics.Object,
-                logger.Object,
-                metadata);
+                logger.Object);
 
-            Assert.AreEqual(operationRequest.Object, context.ParentRequest);
+            Assert.AreEqual(operationRequest.Object, context.OperationRequest);
             Assert.AreEqual(sourceFieldCollection, context.DefaultFieldSources);
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
             Assert.AreEqual(metrics.Object, context.Metrics);
             Assert.AreEqual(securityContext.Object, context.SecurityContext);
-            Assert.AreEqual(metadata, context.Items);
+            Assert.AreEqual(session, context.Session);
+            Assert.AreEqual(items, context.Items);
             Assert.IsNotNull(context.DefaultFieldSources);
-            Assert.IsNotNull(context.PostProcessingActions);
             Assert.IsNotNull(context.FieldResults);
             Assert.IsNull(context.Result);
         }
@@ -112,19 +113,18 @@ namespace GraphQL.AspNet.Tests.Execution
             var logger = new Mock<IGraphEventLogger>();
             var metrics = new Mock<IGraphQueryExecutionMetrics>();
             var securityContext = new Mock<IUserSecurityContext>();
-            var metadata = new MetaDataCollection();
             var schema = new GraphSchema();
 
-            parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
             parentContext.Setup(x => x.SecurityContext).Returns(securityContext.Object);
             parentContext.Setup(x => x.Metrics).Returns(metrics.Object);
             parentContext.Setup(x => x.Logger).Returns(logger.Object);
-            parentContext.Setup(x => x.Items).Returns(metadata);
+            parentContext.Setup(x => x.Session).Returns(new QuerySession());
 
             var args = new Mock<IExecutionArgumentCollection>();
             var directiveRequest = new Mock<IGraphDirectiveRequest>();
-            var sourceFieldCollection = new DefaultFieldSourceCollection();
+            var sourceFieldCollection = new FieldSourceCollection();
 
             var context = new DirectiveResolutionContext(
                 schema,
@@ -132,13 +132,12 @@ namespace GraphQL.AspNet.Tests.Execution
                 directiveRequest.Object,
                 args.Object);
 
-            Assert.AreEqual(operationRequest.Object, context.ParentRequest);
+            Assert.AreEqual(operationRequest.Object, context.OperationRequest);
             Assert.AreEqual(directiveRequest.Object, context.Request);
             Assert.AreEqual(serviceProvider.Object, context.ServiceProvider);
             Assert.AreEqual(logger.Object, context.Logger);
             Assert.AreEqual(metrics.Object, context.Metrics);
             Assert.AreEqual(securityContext.Object, context.SecurityContext);
-            Assert.AreEqual(metadata, context.Items);
             Assert.AreEqual(schema, context.Schema);
         }
     }

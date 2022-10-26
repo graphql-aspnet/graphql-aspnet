@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IGraphQLHttpProcessor<GraphSchema>)));
 
             Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphFieldExecutionContext>)));
-            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphSchemaItemSecurityContext>)));
+            Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphSchemaItemSecurityChallengeContext>)));
             Assert.IsNotNull(sp.GetService(typeof(ISchemaPipeline<GraphSchema, GraphQueryExecutionContext>)));
 
             // objects injected for by standard pipeline components
@@ -303,7 +303,7 @@ namespace GraphQL.AspNet.Tests.Configuration
         [Test]
         public void ChangingGlobalConfig_ChangesHowControllersAreRegistered()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.GlobalConfiguration = new DefaultGraphQLGLobalConfiguration();
 

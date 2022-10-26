@@ -38,6 +38,7 @@ namespace GraphQL.AspNet.Execution
     internal sealed class DirectiveProcessorTypeSystem<TSchema>
         where TSchema : class, ISchema
     {
+        private readonly IQuerySession _querySession;
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
@@ -45,8 +46,11 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         /// <param name="serviceProvider">The service provider used to instantiate
         /// and apply type system directives.</param>
-        public DirectiveProcessorTypeSystem(IServiceProvider serviceProvider)
+        /// <param name="querySession">The query session to be shared by
+        /// all applied directives.</param>
+        public DirectiveProcessorTypeSystem(IServiceProvider serviceProvider, IQuerySession querySession)
         {
+            _querySession = Validation.ThrowIfNullOrReturn(querySession, nameof(querySession));
             _serviceProvider = Validation.ThrowIfNullOrReturn(serviceProvider, nameof(serviceProvider));
         }
 
@@ -116,7 +120,7 @@ namespace GraphQL.AspNet.Execution
 
                 var inputArgs = this.GatherInputArguments(targetDirective, appliedDirective.ArgumentValues);
 
-                var parentRequest = new GraphOperationRequest(GraphQueryData.Empty);
+                var operationRequest = new GraphOperationRequest(GraphQueryData.Empty);
 
                 var invocationContext = new DirectiveInvocationContext(
                     targetDirective,
@@ -124,7 +128,7 @@ namespace GraphQL.AspNet.Execution
                     SourceOrigin.None,
                     inputArgs);
 
-                var request = new GraphDirectiveRequest(
+                var directiveRequest = new GraphDirectiveRequest(
                     invocationContext,
                     DirectiveInvocationPhase.SchemaGeneration,
                     item);
@@ -132,13 +136,13 @@ namespace GraphQL.AspNet.Execution
                 var logger = scopedProvider.ServiceProvider.GetService<IGraphEventLogger>();
                 var context = new GraphDirectiveExecutionContext(
                     schema,
+                    directiveRequest,
+                    operationRequest,
                     scopedProvider.ServiceProvider,
-                    parentRequest,
-                    request,
-                    metrics: null as IGraphQueryExecutionMetrics,
+                    _querySession,
                     logger: logger,
-                    userSecurityContext: null,
-                    items: request.Items);
+                    metrics: null,
+                    userSecurityContext: null);
 
                 Exception causalException = null;
 

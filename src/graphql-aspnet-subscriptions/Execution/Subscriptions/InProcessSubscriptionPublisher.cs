@@ -9,9 +9,11 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
     /// <summary>
     /// A subscription server proxy that executes in process and will raise events directly to the
@@ -32,18 +34,14 @@ namespace GraphQL.AspNet.Execution.Subscriptions
             _eventRouter = Validation.ThrowIfNullOrReturn(eventRouter, nameof(eventRouter));
         }
 
-        /// <summary>
-        /// Raises a new event in a manner such that a compatible <see cref="ISubscriptionEventRouter" /> could
-        /// receive it for processing.
-        /// </summary>
-        /// <param name="eventData">The event to publish.</param>
-        /// <returns>Task.</returns>
-        public Task PublishEvent(SubscriptionEvent eventData)
+        /// <inheritdoc />
+        public ValueTask PublishEvent(SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             // this publisher pushes events raised
             // by mutations and queries directly into the DI-configured router
-            // for immediate dispatch within this instance
-            return _eventRouter.RaiseEvent(eventData);
+            // for immediate dispatch within this local instance
+            _eventRouter.RaisePublishedEvent(eventData);
+            return default;
         }
     }
 }

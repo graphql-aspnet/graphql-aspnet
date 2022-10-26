@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.ValidationRules
+namespace GraphQL.AspNet.Tests.RulesEngine
 {
     using GraphQL.AspNet.RulesEngine;
     using NUnit.Framework;

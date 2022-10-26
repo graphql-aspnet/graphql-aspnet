@@ -27,16 +27,16 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public RequestCompletedLogEntry(GraphQueryExecutionContext context)
             : base(LogEventIds.RequestCompleted)
         {
-            this.OperationRequestId = context?.ParentRequest?.Id;
+            this.OperationRequestId = context?.OperationRequest?.Id;
             this.ResultHasErrors = context?.Messages?.Severity.IsCritical();
             this.ResultHasData = context?.Result == null ? null : context.Result.Data != null;
 
             this.TotalExecutionMs = 0;
-            if (context?.ParentRequest?.StartTimeUTC != null)
+            if (context?.OperationRequest?.StartTimeUTC != null)
             {
                 this.TotalExecutionMs = DateTimeOffset
                     .UtcNow
-                    .Subtract(context.ParentRequest.StartTimeUTC)
+                    .Subtract(context.OperationRequest.StartTimeUTC)
                     .TotalMilliseconds;
             }
         }

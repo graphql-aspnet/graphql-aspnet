@@ -86,7 +86,6 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var id = Guid.NewGuid().ToString("N");
             _mockRequest.Setup(x => x.Id).Returns(id);
             _mockRequest.Setup(x => x.Origin).Returns(SourceOrigin.None);
-            _mockRequest.Setup(x => x.Items).Returns(metaData);
             _mockRequest.Setup(x => x.Field).Returns(_graphField);
             _mockRequest.Setup(x => x.InvocationContext).Returns(_mockInvocationContext.Object);
 
@@ -170,14 +169,14 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
             var operationRequest = new Mock<IGraphOperationRequest>();
             var parentContext = new Mock<IGraphExecutionContext>();
 
-            parentContext.Setup(x => x.ParentRequest).Returns(operationRequest.Object);
+            parentContext.Setup(x => x.OperationRequest).Returns(operationRequest.Object);
             parentContext.Setup(x => x.ServiceProvider).Returns(this.ServiceProvider);
             parentContext.Setup(x => x.SecurityContext).Returns(_securityContext);
             parentContext.Setup(x => x.Metrics).Returns(null as IGraphQueryExecutionMetrics);
             parentContext.Setup(x => x.Logger).Returns(null as IGraphEventLogger);
-            parentContext.Setup(x => x.Items).Returns(this.FieldRequest.Items ?? new MetaDataCollection());
             parentContext.Setup(x => x.Messages).Returns(_messageCollection);
             parentContext.Setup(x => x.IsValid).Returns(_messageCollection.IsSucessful);
+            parentContext.Setup(x => x.Session).Returns(new QuerySession());
             return parentContext.Object;
         }
 
@@ -185,12 +184,12 @@ namespace GraphQL.AspNet.Tests.Framework.PipelineContextBuilders
         /// Creates an authorization context to validate the field request this builder is creating.
         /// </summary>
         /// <returns>GraphFieldAuthorizationContext.</returns>
-        public GraphSchemaItemSecurityContext CreateSecurityContext()
+        public GraphSchemaItemSecurityChallengeContext CreateSecurityContext()
         {
             var parent = this.CreateFakeParentMiddlewareContext();
 
             var request = new GraphSchemaItemSecurityRequest(this.FieldRequest);
-            return new GraphSchemaItemSecurityContext(
+            return new GraphSchemaItemSecurityChallengeContext(
                 parent,
                 request);
         }

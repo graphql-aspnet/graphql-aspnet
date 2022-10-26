@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Benchmarks.Model
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
+    using Microsoft.Diagnostics.Runtime;
 
     public class MusicService : IMusicService
     {
@@ -127,6 +128,15 @@ namespace GraphQL.AspNet.Benchmarks.Model
             companyIds = companyIds ?? Enumerable.Empty<int>();
             var list = companyIds.ToList();
             return _repository.Companys.Where(x => list.Contains(x.Id)).AsCompletedTask();
+        }
+
+        public Task<IEnumerable<Artist>> RetrieveArtists(IEnumerable<int> artistIds)
+        {
+            artistIds = artistIds ?? Enumerable.Empty<int>();
+            var set = new HashSet<int>(artistIds);
+
+            var artists = _repository.Artists.Where(x => artistIds.Contains(x.Id)).ToList();
+            return Task.FromResult(artists as IEnumerable<Artist>);
         }
     }
 }

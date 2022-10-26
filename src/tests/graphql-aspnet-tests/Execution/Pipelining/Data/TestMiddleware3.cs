@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
     /// <summary>
     /// A test middleware component in a chain. Used to test pipeline invocation order.
     /// </summary>
-    public class TestMiddleware3 : IGraphFieldExecutionMiddleware
+    public class TestMiddleware3 : IFieldExecutionMiddleware
     {
         private readonly IMiddlewareTestService _testService;
 

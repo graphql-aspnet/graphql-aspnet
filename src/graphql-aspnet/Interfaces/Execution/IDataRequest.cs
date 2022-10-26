@@ -22,11 +22,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value>The origin.</value>
         SourceOrigin Origin { get; }
-
-        /// <summary>
-        /// Gets any additional metadata or items assigned to this request.
-        /// </summary>
-        /// <value>The metadata.</value>
-        MetaDataCollection Items { get; }
     }
 }

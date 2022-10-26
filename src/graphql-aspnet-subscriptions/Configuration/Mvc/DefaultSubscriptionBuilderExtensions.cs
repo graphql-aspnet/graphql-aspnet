@@ -27,10 +27,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
     public static class DefaultSubscriptionBuilderExtensions
     {
         /// <summary>
-        /// Adds the ability for this graphql server to raise subscription events as well
-        /// as creates a subscription server that can accept connected clients and respond to subscription events. This extension will attempt to inject subscription related
-        /// middleware into the primary query excution pipeline and replace it. Call this method before injecting or
-        /// adding your own query execution middleware items.
+        /// Adds the ability for this graphql server to raise and receive subscription events.
+        /// Call this method before injecting or adding your own query execution middleware items.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
@@ -41,7 +39,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             Action<SubscriptionServerOptions<TSchema>> options = null)
                     where TSchema : class, ISchema
         {
-            // publsihing is registered AFTER the subscription server
+            // publishing is registered AFTER the subscription server
             // because subscription server rebuilds the query execution pipeline
             // then publishing adds one additional middleware component
             return schemaBuilder
@@ -61,7 +59,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             Validation.ThrowIfNull(schemaBuilder, nameof(schemaBuilder));
 
-            var extension = new SubscriptionPublisherSchemaExtension<TSchema>();
+            var publishingExtension = new SubscriptionPublisherSchemaExtension<TSchema>();
 
             // register the in-process publisher to the service collection before
             // if one is not already registered
@@ -70,11 +68,11 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             // register the internal queueing mechanism that will asyncrounously transfer
             // raised events from controller methods to the registered subscription publisher
-            schemaBuilder.Options.ServiceCollection.AddSingleton<SubscriptionEventQueue>();
+            schemaBuilder.Options.ServiceCollection.AddSingleton<SubscriptionEventPublishingQueue>();
             schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionPublicationService>();
             schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
 
-            schemaBuilder.Options.RegisterExtension(extension);
+            schemaBuilder.Options.RegisterExtension(publishingExtension);
             schemaBuilder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>(
                 ServiceLifetime.Singleton);
 
@@ -82,10 +80,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
         }
 
         /// <summary>
-        /// Adds a subscription server to this instance that will accept connected clients and
-        /// process subscription requests from those clients. This extension will attempt to inject subscription related
-        /// middleware into the primary query excution pipeline and replace it. Call this method before injecting or
-        /// adding your own query execution middleware items.
+        /// Adds the ability for this graphql server to receive subscription events
+        /// and client connections.
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema being built.</typeparam>
         /// <param name="schemaBuilder">The schema builder.</param>
@@ -100,11 +96,13 @@ namespace GraphQL.AspNet.Configuration.Mvc
             options?.Invoke(subscriptionsOptions);
 
             // try register the default router type to the service collection
-            var defaultRouter = CreateDefaultSubscriptionRouterDescriptor();
-            schemaBuilder.Options.ServiceCollection.TryAdd(defaultRouter);
+            schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
 
-            var extension = new ApolloSubscriptionServerSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
-            schemaBuilder.Options.RegisterExtension(extension);
+            var receiverExtension = new SubscriptionReceiverSchemaExtension<TSchema>(schemaBuilder, subscriptionsOptions);
+            schemaBuilder.Options.RegisterExtension(receiverExtension);
+
+            var validationExtension = new SubscriptionEventValidationSchemaExtension<TSchema>();
+            schemaBuilder.Options.RegisterExtension(validationExtension);
 
             return schemaBuilder;
         }

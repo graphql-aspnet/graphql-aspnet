@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
     /// <summary>
     /// A middleware component that will be instantiated as a singleton in the test set.
     /// </summary>
-    public class TestMiddlewareSingleton : IGraphFieldExecutionMiddleware
+    public class TestMiddlewareSingleton : IFieldExecutionMiddleware
     {
         private readonly IMiddlewareTestService _testService;
 

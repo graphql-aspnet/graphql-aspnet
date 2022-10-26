@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
     /// <summary>
     /// A middleware item that will throw an exception if invoked.
     /// </summary>
-    public class TestMiddlewareThrowsException : IGraphFieldExecutionMiddleware
+    public class TestMiddlewareThrowsException : IFieldExecutionMiddleware
     {
         public class TestMiddlewareException : Exception
         {

@@ -32,9 +32,10 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="IGraphType"/> is
         /// published on an introspection request. Not publishing a valid graph type will cause most
-        /// development tools to fail.
+        /// development tools to throw errors.
         /// </summary>
-        /// <value><c>true</c> if publish; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if the metadata about this graph type is published during introspection queries;
+        /// otherwise, <c>false</c>.</value>
         bool Publish { get; set; }
 
         /// <summary>

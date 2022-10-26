@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityContext context)
+        public virtual void SchemaItemAuthorizationChallenge(GraphSchemaItemSecurityChallengeContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -170,7 +170,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public virtual void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityContext context)
+        public virtual void SchemaItemAuthorizationChallengeResult(GraphSchemaItemSecurityChallengeContext context)
         {
             var logLevel = context?.Result == null || context.Result.Status == SchemaItemSecurityChallengeStatus.Unauthorized
                 ? LogLevel.Warning
@@ -184,7 +184,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityContext context)
+        public void SchemaItemAuthenticationChallenge(GraphSchemaItemSecurityChallengeContext context)
         {
             if (!this.IsEnabled(LogLevel.Trace))
                 return;
@@ -194,7 +194,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityContext context, IAuthenticationResult authResult)
+        public void SchemaItemAuthenticationChallengeResult(GraphSchemaItemSecurityChallengeContext context, IAuthenticationResult authResult)
         {
             LogLevel logLevel;
             if (context?.AuthenticatedUser != null)

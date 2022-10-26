@@ -35,19 +35,17 @@ namespace GraphQL.AspNet.Execution
         /// <param name="dataSource">The data source containing the source input data to the field as well as
         /// the graph items referenced by said input data.</param>
         /// <param name="origin">The place in a source document where this request appeared.</param>
-        /// <param name="items">A collection of meta data items to carry with this request.</param>
         public GraphFieldRequest(
             IGraphOperationRequest parentOperationRequest,
             IGraphFieldInvocationContext invocationContext,
             GraphDataContainer dataSource,
-            SourceOrigin origin = null,
-            MetaDataCollection items = null)
+            SourceOrigin origin = null)
         {
             this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
             this.Id = Guid.NewGuid().ToString("N");
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
-            this.Items = items ?? new MetaDataCollection();
             this.Data = dataSource;
+            this.Items = parentOperationRequest.Items;
 
             // this may be different than the source indicated by teh parent operation request
             // do to child item resolution on arrays

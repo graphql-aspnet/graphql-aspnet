@@ -22,22 +22,22 @@ namespace GraphQL.AspNet.Controllers
     public abstract partial class GraphController
     {
         /// <summary>
-        /// Returns an action with the given object as the resolved object for the field resolution.
+        /// Returns an result with the given item as the resolved object for the field resolution.
         /// </summary>
-        /// <param name="obj">The object.</param>
+        /// <param name="item">The object to resolve the field with.</param>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
-        protected virtual IGraphActionResult Ok(object obj)
+        protected virtual IGraphActionResult Ok(object item)
         {
-            return new ObjectReturnedGraphActionResult(obj);
+            return new ObjectReturnedGraphActionResult(item);
         }
 
         /// <summary>
-        /// Returns an action with a <c>null</c> value as the resolved object for the field resolution.
+        /// Returns an result with a <c>null</c> value as the resolved object for the field resolution.
         /// </summary>
         /// <returns>IGraphActionResult&lt;TResult&gt;.</returns>
         protected virtual IGraphActionResult Ok()
         {
-            return new ObjectReturnedGraphActionResult(null);
+            return this.Ok(null);
         }
 
         /// <summary>

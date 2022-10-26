@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A set of configurations that will be applied when this  <see cref="ISchema" /> generated from a set of objects.
@@ -27,9 +28,9 @@ namespace GraphQL.AspNet.Configuration
         /// </summary>
         public SchemaDeclarationConfiguration()
         {
-            this.AllowedOperations = new HashSet<GraphCollection>();
-            this.AllowedOperations.Add(GraphCollection.Query);
-            this.AllowedOperations.Add(GraphCollection.Mutation);
+            this.AllowedOperations = new HashSet<GraphOperationType>();
+            this.AllowedOperations.Add(GraphOperationType.Query);
+            this.AllowedOperations.Add(GraphOperationType.Mutation);
         }
 
         /// <summary>
@@ -62,6 +63,6 @@ namespace GraphQL.AspNet.Configuration
         public GraphNameFormatter GraphNamingFormatter { get; set; } = new GraphNameFormatter();
 
         /// <inheritdoc />
-        public HashSet<GraphCollection> AllowedOperations { get; }
+        public HashSet<GraphOperationType> AllowedOperations { get; }
     }
 }

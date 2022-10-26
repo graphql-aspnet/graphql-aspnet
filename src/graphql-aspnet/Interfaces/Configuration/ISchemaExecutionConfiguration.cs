@@ -39,19 +39,6 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         TimeSpan? QueryTimeout { get; }
 
         /// <summary>
-        /// <para>Gets a value indicating whether ALL field, when they are resolved, is individually executed.</para>
-        ///
-        /// <para>If this option is set to <c>true</c> each field is executed and awaited individually in depth first order and can make
-        /// debugging easier. (Default: false).</para>
-        ///
-        /// <para>WARNING: Setting this option to <c>true</c> applies a significant performance hit and should only be used during
-        /// development.</para>
-        /// </summary>
-        /// <value><c>true</c> if each field should be individually executed; otherwise, <c>false</c>.</value>
-        [Obsolete("This configuration option will be removed in a future release. Use 'ResolverIsolationOptions' instead.")]
-        bool AwaitEachRequestedField { get; }
-
-        /// <summary>
         /// <para>
         /// Gets a set of options indicating which resolver types will be executed in isolation. Resolvers
         /// executed in isolation will be executed in a manner such that no other resolvers of any kind will be
@@ -61,7 +48,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
         /// Executing resolvers in isolation can help to alleviate some race conditions encountered
         /// by various injected services that must be scoped but not thread safe.</para>
         /// <para>
-        /// If <see cref="AwaitEachRequestedField"/> or <see cref="DebugMode"/> is enabled all resolvers
+        /// If <see cref="DebugMode"/> is enabled all resolvers
         /// will be executed in isolation regardless of this setting.</para>
         /// </summary>
         /// <value>The resolver isolation options.</value>

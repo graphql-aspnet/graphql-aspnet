@@ -90,11 +90,11 @@ namespace GraphQL.AspNet.StarWarsAPI3X
                  // still others (like graphql-playground running in electron) do not respond/configure
                  // for socket-level ping/pong frames to allow for socket-level keep alives
                  //
-                 // here we set this demo project websocket keep-alive (at the apollo server level)
+                 // here we set this demo project websocket keep-alive (at the graphql-ws server level)
                  // to be below all those thresholds to ensure a hassle free experience.
-                 // In practice, you should configure your server (both apollo keep alives and socket keep alives)
+                 // In practice, you should configure your server (both graphql-ws keep alives and socket keep alives)
                  // with an interval that is compatiable with your client side environment.
-                 options.KeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
+                 options.ConnectionKeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
              });
 
             services.AddControllers();

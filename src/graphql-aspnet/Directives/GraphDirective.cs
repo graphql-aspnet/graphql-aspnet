@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Directives
         /// <inheritdoc />
         internal override Task<object> InvokeActionAsync(
             IGraphMethod actionToInvoke,
-            BaseResolutionContext<IGraphDirectiveRequest> context)
+            SchemaItemResolutionContext<IGraphDirectiveRequest> context)
         {
             Validation.ThrowIfNull(context, nameof(context));
             Validation.ThrowIfNotCastable<DirectiveResolutionContext>(context.GetType(), nameof(context));

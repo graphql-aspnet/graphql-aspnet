@@ -7,18 +7,19 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.Structural
+namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
     /// <summary>
-    /// A representation of a object field as it would be defined in the graph type system. Contains
-    /// special logic for handling graph fields generating from object properties.
+    /// A representation of a field as it would be defined in an object graph that originated
+    /// from a .NET property getter.
     /// </summary>
     public class PropertyGraphField : MethodGraphField, ITypedSchemaItem
     {

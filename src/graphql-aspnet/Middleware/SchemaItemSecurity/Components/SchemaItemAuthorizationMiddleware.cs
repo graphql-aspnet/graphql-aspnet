@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
+namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 {
     using System.Linq;
     using System.Threading;
@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// A piece of middleware, on the authorization pipeline, that can successfuly authorize a single user
     /// to a single field of data.
     /// </summary>
-    public class SchemaItemAuthorizationMiddleware : IGraphSchemaItemSecurityMiddleware
+    public class SchemaItemAuthorizationMiddleware : ISchemaItemSecurityMiddleware
     {
         private readonly IAuthorizationService _authService;
 
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
         /// <param name="cancelToken">The cancel token.</param>
         /// <returns>Task.</returns>
-        public async Task InvokeAsync(GraphSchemaItemSecurityContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(GraphSchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
         {
             context.Logger?.SchemaItemAuthorizationChallenge(context);
 
@@ -65,9 +65,9 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// </summary>
         /// <param name="context">The context to process.</param>
         /// <returns>FieldSecurityChallengeResult.</returns>
-        private async Task<SchemaItemSecurityChallengeResult> AuthorizeRequest(GraphSchemaItemSecurityContext context)
+        private async Task<SchemaItemSecurityChallengeResult> AuthorizeRequest(GraphSchemaItemSecurityChallengeContext context)
         {
-            Validation.ThrowIfNull(context?.SecurityRequirements, nameof(GraphSchemaItemSecurityContext.SecurityRequirements));
+            Validation.ThrowIfNull(context?.SecurityRequirements, nameof(GraphSchemaItemSecurityChallengeContext.SecurityRequirements));
 
             var claimsUser = context.AuthenticatedUser;
 

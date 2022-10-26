@@ -25,7 +25,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         [Test]
         public void AddSingleSubscriptionAction_AllDefaults_EnsureFieldStructure()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
             var schema = new GraphSchema() as ISchema;
@@ -61,7 +61,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         [Test]
         public void AddASubscriptionAction_WithoutUpdatingTheConfiguration_ThrowsDeclarationException()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             GraphQLProviders.TemplateProvider = new SubscriptionEnabledTemplateProvider();
             var schema = new GraphSchema() as ISchema;

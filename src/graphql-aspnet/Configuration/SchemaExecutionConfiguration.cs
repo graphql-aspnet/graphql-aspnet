@@ -35,7 +35,6 @@ namespace GraphQL.AspNet.Configuration
 
             this.EnableMetrics = config.EnableMetrics;
             this.QueryTimeout = config.QueryTimeout;
-            this.AwaitEachRequestedField = config.AwaitEachRequestedField;
             this.ResolverIsolation = config.ResolverIsolation;
             this.MaxQueryDepth = config.MaxQueryDepth;
             this.MaxQueryComplexity = config.MaxQueryComplexity;
@@ -49,10 +48,6 @@ namespace GraphQL.AspNet.Configuration
         public TimeSpan? QueryTimeout { get; set; }
 
         /// <inheritdoc />
-        [Obsolete("The 'AwaitEachRequestedField' configuration setting will be removed in a future release. Use 'ResolverIsolation' instead.")]
-        public bool AwaitEachRequestedField { get; set; }
-
-        /// <inheritdoc />
         public int? MaxQueryDepth { get; set; }
 
         /// <inheritdoc />
@@ -63,7 +58,7 @@ namespace GraphQL.AspNet.Configuration
         {
             get
             {
-                if (this.AwaitEachRequestedField)
+                if (this.DebugMode)
                     return ResolverIsolationOptions.All;
 
                 return _isolationOptions;

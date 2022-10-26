@@ -26,8 +26,8 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Middleware.DirectiveExecution;
     using GraphQL.AspNet.Middleware.FieldExecution;
-    using GraphQL.AspNet.Middleware.FieldSecurity;
     using GraphQL.AspNet.Middleware.QueryExecution;
+    using GraphQL.AspNet.Middleware.SchemaItemSecurity;
     using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Builder;
@@ -98,7 +98,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             }
 
             // add execution assembly for auto loading of graph types
-            if (_options.AutoRegisterLocalGraphEntities)
+            if (_options.AutoRegisterLocalEntities)
             {
                 var assembly = Assembly.GetEntryAssembly();
                 _options.AddAssembly(assembly);
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             var fieldPipelineHelper = new FieldExecutionPipelineHelper<TSchema>(_schemaBuilder.FieldExecutionPipeline);
             fieldPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
-            var authPipelineHelper = new SchemaItemSecurityPipelineHelper<TSchema>(_schemaBuilder.FieldAuthorizationPipeline);
+            var authPipelineHelper = new SchemaItemSecurityPipelineHelper<TSchema>(_schemaBuilder.SchemaItemSecurityPipeline);
             authPipelineHelper.AddDefaultMiddlewareComponents(_options);
 
             var directivePipelineHelper = new DirectiveExecutionPipelineHelper<TSchema>(_schemaBuilder.DirectiveExecutionPipeline);
@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             // register the DI entries for each pipeline
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldExecutionPipeline));
-            _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.FieldAuthorizationPipeline));
+            _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.SchemaItemSecurityPipeline));
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.QueryExecutionPipeline));
             _options.ServiceCollection.TryAddSingleton(CreatePipelineFactory(_schemaBuilder.DirectiveExecutionPipeline));
 

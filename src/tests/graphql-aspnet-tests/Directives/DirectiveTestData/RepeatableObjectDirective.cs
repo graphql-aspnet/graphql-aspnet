@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Directives.RepeatableDirectivesTestData
+namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;

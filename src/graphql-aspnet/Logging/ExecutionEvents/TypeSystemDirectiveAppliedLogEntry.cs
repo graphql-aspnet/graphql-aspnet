@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.Common;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// Recorded when a type system directive is successfully applied to a targeted <see cref="ISchemaItem"/>.
@@ -32,6 +33,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             this.SchemaItemPath = appliedTo?.Route?.Path;
             this.DirectiveName = directiveApplied?.Name;
             this.DirectiveInternalName = directiveApplied?.InternalName;
+            this.DirectiveLocation = appliedTo?.AsDirectiveLocation().ToString() ?? "-unknown-";
         }
 
         /// <summary>
@@ -63,6 +65,17 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         {
             get => this.GetProperty<string>(LogPropertyNames.DIRECTIVE_NAME);
             private set => this.SetProperty(LogPropertyNames.DIRECTIVE_NAME, value);
+        }
+
+        /// <summary>
+        /// Gets the target location in type system of the item that was targetd by the
+        /// directive.
+        /// </summary>
+        /// <value>The directive location.</value>
+        public string DirectiveLocation
+        {
+            get => this.GetProperty<string>(LogPropertyNames.DIRECTIVE_LOCATION);
+            private set => this.SetProperty(LogPropertyNames.DIRECTIVE_LOCATION, value);
         }
 
         /// <summary>

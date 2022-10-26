@@ -22,14 +22,14 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public async Task PublishEvent_ForwardsEventToRouter()
         {
             var router = new Mock<ISubscriptionEventRouter>();
-            router.Setup(x => x.RaiseEvent(It.IsAny<SubscriptionEvent>())).Returns(Task.CompletedTask);
+            router.Setup(x => x.RaisePublishedEvent(It.IsAny<SubscriptionEvent>()));
 
             var publisher = new InProcessSubscriptionPublisher(router.Object);
 
             var eventData = new SubscriptionEvent();
             await publisher.PublishEvent(eventData);
 
-            router.Verify(x => x.RaiseEvent(It.IsAny<SubscriptionEvent>()), Times.Once(), "failed to raise the event");
+            router.Verify(x => x.RaisePublishedEvent(It.IsAny<SubscriptionEvent>()), Times.Once(), "failed to raise the event");
         }
     }
 }

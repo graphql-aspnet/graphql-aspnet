@@ -77,15 +77,16 @@ namespace GraphQL.AspNet.Defaults
             return this.ExecuteRequest(
                 serviceProvider,
                 request,
-                securityContext,
-                enableMetrics ? this.CreateMetricsPackage() : null,
-                cancelToken);
+                securityContext: securityContext,
+                metricsPackage: enableMetrics ? this.CreateMetricsPackage() : null,
+                cancelToken: cancelToken);
         }
 
         /// <inheritdoc />
         public Task<IGraphOperationResult> ExecuteRequest(
             IServiceProvider serviceProvider,
             IGraphOperationRequest request,
+            IQuerySession session = null,
             IUserSecurityContext securityContext = null,
             IGraphQueryExecutionMetrics metricsPackage = null,
             CancellationToken cancelToken = default)
@@ -93,12 +94,16 @@ namespace GraphQL.AspNet.Defaults
             Validation.ThrowIfNull(serviceProvider, nameof(serviceProvider));
             Validation.ThrowIfNull(request, nameof(request));
 
+            session = session ?? new QuerySession();
+
             var context = new GraphQueryExecutionContext(
                 request,
                 serviceProvider,
-                securityContext,
-                metricsPackage,
-                _logger);
+                session,
+                items: new MetaDataCollection(),
+                securityContext: securityContext,
+                metrics: metricsPackage,
+                logger: _logger);
 
             return this.ExecuteRequest(context, cancelToken);
         }
@@ -123,8 +128,9 @@ namespace GraphQL.AspNet.Defaults
             var queryResponse = context.Result;
             if (queryResponse == null)
             {
-                queryResponse = new GraphOperationResult(context.ParentRequest);
+                queryResponse = new GraphOperationResult(context.OperationRequest);
                 queryResponse.Messages.Add(GraphMessageSeverity.Critical, ERROR_NO_RESPONSE, Constants.ErrorCodes.GENERAL_ERROR);
+                context.Result = queryResponse;
             }
 
             return queryResponse;

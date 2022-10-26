@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware;
 
-    public class TestMiddleware2 : IGraphFieldExecutionMiddleware
+    public class TestMiddleware2 : IFieldExecutionMiddleware
     {
         private readonly IMiddlewareTestService _testService;
 

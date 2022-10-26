@@ -14,7 +14,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData;
     using NUnit.Framework;
 
@@ -52,7 +52,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
         [TestCaseSource(nameof(TestQueries))]
         public void ExecuteRule_EnsureCorrectErrorIsGenerated(string expectedRuleError, string queryText)
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             var server = new TestServerBuilder()
                 .AddType<PeopleMoverController>()

@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         }
 
         /// <inheritdoc />
-        public Task Complete(BaseResolutionContext resolutionContext)
+        public Task Complete(SchemaItemResolutionContext resolutionContext)
         {
             if (_modelState != null)
             {
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="entry">The entry to extract messages from.</param>
-        private void GenerateErrorMessages(BaseResolutionContext context, InputModelStateEntry entry)
+        private void GenerateErrorMessages(SchemaItemResolutionContext context, InputModelStateEntry entry)
         {
             foreach (var error in entry.Errors)
             {

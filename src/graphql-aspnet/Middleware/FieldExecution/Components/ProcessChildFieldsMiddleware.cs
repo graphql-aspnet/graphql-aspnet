@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     /// of downstream child fields decended from the active field.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this middl;eware exists for.</typeparam>
-    public class ProcessChildFieldsMiddleware<TSchema> : IGraphFieldExecutionMiddleware
+    public class ProcessChildFieldsMiddleware<TSchema> : IFieldExecutionMiddleware
         where TSchema : class, ISchema
     {
         private readonly ISchemaPipeline<TSchema, GraphFieldExecutionContext> _fieldExecutionPipeline;
@@ -339,8 +339,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                         parentContext.Request.OperationRequest,
                         childInvocationContext,
                         dataSource,
-                        child.Origin,
-                        parentContext.Request.Items);
+                        child.Origin);
 
                     yield return new GraphFieldExecutionContext(
                         parentContext,
@@ -390,8 +389,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                     parentContext.Request.OperationRequest,
                     childInvocationContext,
                     dataSource,
-                    batchOrigin,
-                    parentContext.Request.Items);
+                    batchOrigin);
 
                 yield return new GraphFieldExecutionContext(
                     parentContext,

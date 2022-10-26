@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
@@ -31,7 +32,7 @@ namespace GraphQL.AspNet.Configuration
         /// Gets or sets a value indicating whether the default subscription processing handler
         /// should be registered to the application. If disabled, the application will not register
         /// its middleware component to the ASP.NET pipeline for handling subscriptions. The application will need to handle
-        /// websocket requests manually. (Default: false).
+        /// websocket requests manually. (Default: false, "do include the default route").
         /// </summary>
         /// <value><c>true</c> if the default subscription route and middleware component should not be registered; otherwise, <c>false</c>.</value>
         public bool DisableDefaultRoute { get; set; } = false;
@@ -65,37 +66,24 @@ namespace GraphQL.AspNet.Configuration
         /// sent to a connected client for those protocols that support it.
         /// </para>
         /// <para>
-        /// This keep alive is seperate from the socket level keep alive timer.
+        /// This keep alive is seperate from any low level commonucation protocol keep alive timer (such as websockets).
         /// </para>
-        /// <para>(Default: 2 minutes). Specify <see cref="TimeSpan.Zero"/> to disable.</para>
+        /// <para>(Default: 2 minutes). Specify <c>null</c> to disable.</para>
         /// </summary>
-        /// <value>The keep alive interval.</value>
-        public TimeSpan KeepAliveInterval { get; set; } = TimeSpan.FromMinutes(2);
-
-        /// <summary>
-        /// <para>Gets or sets the size of the message buffer (in bytes), at the application level, to extract and deserialize
-        /// the GraphQL message on the websocket.  This value is seperate from the socket level buffer size used in receiving data
-        /// from the connected client.
-        /// </para>
-        /// <para>
-        /// (Default: 4kb).
-        /// </para>
-        /// </summary>
-        /// <value>The size of the message buffer.</value>
-        public int MessageBufferSize { get; set; } = 4 * 1024;
+        /// <value>The keep alive interval to use for this schema.</value>
+        public TimeSpan? ConnectionKeepAliveInterval { get; set; } = TimeSpan.FromMinutes(2);
 
         /// <summary>
         /// <para>
-        /// Gets or sets the maximum number of connected clients the server will communicate with
-        /// concurrently.  If the collected sum total of clients set to receive any given event (or events) exceeds
-        /// this value additional notifications are queued and processed as resources become available.
+        /// Gets or sets the amount of time to wait between opening a connection to a
+        /// subscription client and the receipt of an initialization sequence. When set,
+        /// if the client has not transmitted a protocol appropriate initialization message
+        /// within the given timeframe the connection is immediately closed.
         /// </para>
-        /// <para>
-        /// (Default: 50).
-        /// </para>
+        /// <para>(Default: 30 seconds). Specify <c>null</c> to disable.</para>
         /// </summary>
-        /// <value>The maximum concurrent client notifications.</value>
-        public int MaxConcurrentClientNotifications { get; set; } = 50;
+        /// <value>The initialization timeout.</value>
+        public TimeSpan? ConnectionInitializationTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// <para>
@@ -112,5 +100,25 @@ namespace GraphQL.AspNet.Configuration
         /// <value><c>true</c> if an authenticated request is required to complete
         /// a subscription client connection; otherwise, <c>false</c>.</value>
         public bool AuthenticatedRequestsOnly { get; set; } = false;
+
+        /// <summary>
+        /// <para>Gets or sets the string representing the default messaging protocol to use
+        /// when a connected client does not specify which protocol they wish to communicate with.
+        /// </para>
+        /// <para>(Default: null).</para>
+        /// </summary>
+        /// <value>The default communication protocol for this schema.</value>
+        public string DefaultMessageProtocol { get; set; } = null;
+
+        /// <summary>
+        /// <para>
+        /// Gets or sets a list of communication protocols supported by this schema when set. If
+        /// this value is null, all protocols registered with the server instance are allowed.
+        /// </para>
+        /// <para>(Default: null).</para>
+        /// </summary>
+        ///
+        /// <value>The supported protocols.</value>
+        public ISet<string> SupportedMessageProtocols { get; set; }
     }
 }

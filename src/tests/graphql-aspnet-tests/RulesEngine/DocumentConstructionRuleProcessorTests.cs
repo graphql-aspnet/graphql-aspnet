@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.ValidationRules
+namespace GraphQL.AspNet.Tests.RulesEngine
 {
     using System;
     using System.Linq;
@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
     using GraphQL.AspNet.RulesEngine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.ValidationRules.DocumentConstructionTestData;
+    using GraphQL.AspNet.Tests.RulesEngine.DocumentConstructionTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -665,8 +665,8 @@ namespace GraphQL.AspNet.Tests.ValidationRules
                 .Children.OfType<IComplexSuppliedValueDocumentPart>()
                 .ToList();
 
-            AssertInputDonut(donutsValue[0], 1, "\"Donut1\"", "STRAWBERRY");
-            AssertInputDonut(donutsValue[1], 2, "\"Donut2\"", "VANILLA");
+            this.AssertInputDonut(donutsValue[0], 1, "\"Donut1\"", "STRAWBERRY");
+            this.AssertInputDonut(donutsValue[1], 2, "\"Donut2\"", "VANILLA");
 
             var bagelsValue = firstItem
                 .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "bagels")
@@ -674,7 +674,7 @@ namespace GraphQL.AspNet.Tests.ValidationRules
                 .Children.OfType<IComplexSuppliedValueDocumentPart>()
                 .ToList();
 
-            AssertInputBagel(bagelsValue[0], 3, "\"Bagel3\"", true, 3);
+            this.AssertInputBagel(bagelsValue[0], 3, "\"Bagel3\"", true, 3);
             Assert.AreEqual("4", bagelsValue[1]
                 .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "id")
                 .Children.OfType<IScalarSuppliedValue>().Single().Value.ToString());
@@ -697,15 +697,15 @@ namespace GraphQL.AspNet.Tests.ValidationRules
                 .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "singleBagel")
                 .Children.OfType<IComplexSuppliedValueDocumentPart>().Single();
 
-            AssertInputDonut(singleDonut, 5, "\"Donut5\"", "CHOCOLATE");
-            AssertInputBagel(singleBagel, 6, "\"Bagel6\"", true, 19);
+            this.AssertInputDonut(singleDonut, 5, "\"Donut5\"", "CHOCOLATE");
+            this.AssertInputBagel(singleBagel, 6, "\"Bagel6\"", true, 19);
 
             // Validate second array entry
             singleBagel = secondItem
                 .Children.OfType<IInputObjectFieldDocumentPart>().Single(x => x.Name == "singleBagel")
                 .Children.OfType<IComplexSuppliedValueDocumentPart>().Single();
 
-            AssertInputBagel(singleBagel, 12, "\"Bagel12\"", true, 45);
+            this.AssertInputBagel(singleBagel, 12, "\"Bagel12\"", true, 45);
         }
 
         [Test]

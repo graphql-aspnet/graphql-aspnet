@@ -9,117 +9,137 @@
 
 namespace GraphQL.AspNet.Defaults
 {
+    using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Logging;
 
     /// <summary>
-    /// The default listener for raised subscription events. This object only listens to the locally attached
-    /// graphql server and DOES NOT scale. See demo projects for scalable subscription configurations.
+    /// The default listener for raised subscription events. This object routes recieved subscription
+    /// events to the various schema instances  within this application domain. This component IS NOT
+    /// responsible for publishing new events, only receieving existing ones.
     /// </summary>
-    public class DefaultSubscriptionEventRouter : ISubscriptionEventRouter
+    public sealed class DefaultSubscriptionEventRouter : ISubscriptionEventRouter, IDisposable
     {
         private readonly IGraphEventLogger _logger;
-        private readonly SubscribedEventRecievers _receivers;
+        private readonly SubscribedEventRecievers _allReceivers;
+        private readonly ISubscriptionReceiverDispatchQueue _dispatchQueue;
+        private readonly Task _dispatchQueueExecutionTask;
+        private bool _isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSubscriptionEventRouter" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public DefaultSubscriptionEventRouter(IGraphEventLogger logger = null)
+        /// <param name="dispatchQueue">The queue to throttle the rate at which
+        /// events are dispatched to receivers. The default, internal implementation is
+        /// used if an instance is not provided.</param>
+        public DefaultSubscriptionEventRouter(
+            IGraphEventLogger logger = null,
+            ISubscriptionReceiverDispatchQueue dispatchQueue = null)
         {
             _logger = logger;
-            _receivers = new SubscribedEventRecievers(SubscriptionEventNameEqualityComparer.Instance);
+            _allReceivers = new SubscribedEventRecievers();
+
+            _dispatchQueue = dispatchQueue;
+            if (_dispatchQueue == null)
+            {
+                var maxReceiverCount = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
+                _dispatchQueue = dispatchQueue ?? new SubscriptionReceiverDispatchQueue(maxReceiverCount);
+                _dispatchQueueExecutionTask = _dispatchQueue.BeginProcessingQueue();
+            }
         }
 
-        /// <summary>
-        /// Forces this listener to raise the given event. May not be invocable by all listeners.
-        /// </summary>
-        /// <param name="eventData">The event data.</param>
-        /// <returns>Task.</returns>
-        public async Task RaiseEvent(SubscriptionEvent eventData)
+        /// <inheritdoc />
+        public void RaisePublishedEvent(SubscriptionEvent eventData)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
             _logger?.SubscriptionEventReceived(eventData);
-            var tasks = new List<Task>();
-            lock (_receivers)
-            {
-                if (_receivers.Count > 0)
-                {
-                    var eventName = eventData.ToSubscriptionEventName();
-                    if (!_receivers.ContainsKey(eventName))
-                        return;
+            List<ISubscriptionEventReceiver> receivers = null;
 
-                    foreach (var receiver in _receivers[eventName])
-                    {
-                        var task = receiver.ReceiveEvent(eventData);
-                        tasks.Add(task);
-                    }
-                }
+            // capture a list of all listeners to this event
+            lock (_allReceivers)
+            {
+                // if no one is listening for the event, just let it go
+                var eventName = eventData.ToSubscriptionEventName();
+                if (!_allReceivers.ContainsKey(eventName))
+                    return;
+
+                receivers = new List<ISubscriptionEventReceiver>(_allReceivers[eventName].Count);
+                receivers.AddRange(_allReceivers[eventName]);
             }
 
-            await Task.WhenAll(tasks);
+            // queue all events to be dispatched to the receivers
+            if (receivers.Count > 0)
+            {
+                foreach (var receiver in receivers)
+                    _dispatchQueue.EnqueueEvent(receiver, eventData);
+            }
         }
 
-        /// <summary>
-        /// Registers a new receiver to receive any raised events of the given type.
-        /// </summary>
-        /// <param name="eventName">Name of the event.</param>
-        /// <param name="receiver">The receiver to add.</param>
-        public void AddReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver)
+        /// <inheritdoc />
+        public void AddReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             Validation.ThrowIfNull(eventName, nameof(eventName));
             Validation.ThrowIfNull(receiver, nameof(receiver));
 
-            lock (_receivers)
+            lock (_allReceivers)
             {
-                if (!_receivers.ContainsKey(eventName))
-                    _receivers.Add(eventName, new HashSet<ISubscriptionEventReceiver>());
+                if (!_allReceivers.ContainsKey(eventName))
+                    _allReceivers.Add(eventName, new HashSet<ISubscriptionEventReceiver>());
 
-                _receivers[eventName].Add(receiver);
+                _allReceivers[eventName].Add(receiver);
             }
         }
 
-        /// <summary>
-        /// Removes the receiver from the list of events to be delivered for the given event type.
-        /// </summary>
-        /// <param name="eventName">Type of the event.</param>
-        /// <param name="receiver">The receiver to remove.</param>
-        public void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver)
+        /// <inheritdoc />
+        public void RemoveReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             if (receiver == null || eventName == null)
                 return;
 
-            lock (_receivers)
+            lock (_allReceivers)
             {
-                if (_receivers.ContainsKey(eventName))
+                if (_allReceivers.ContainsKey(eventName))
                 {
-                    if (_receivers[eventName].Contains(receiver))
-                        _receivers[eventName].Remove(receiver);
-                    if (_receivers[eventName].Count == 0)
-                        _receivers.Remove(eventName);
+                    if (_allReceivers[eventName].Contains(receiver))
+                        _allReceivers[eventName].Remove(receiver);
+                    if (_allReceivers[eventName].Count == 0)
+                        _allReceivers.Remove(eventName);
                 }
             }
         }
 
-        /// <summary>
-        /// Removes the receiver from the list of events to be delivered for any event type.
-        /// </summary>
-        /// <param name="receiver">The receiver to remove.</param>
+        /// <inheritdoc />
         public void RemoveReceiver(ISubscriptionEventReceiver receiver)
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
+
             if (receiver == null)
                 return;
 
-            lock (_receivers)
+            lock (_allReceivers)
             {
                 var toRemove = new List<SubscriptionEventName>();
-                foreach (var kvp in _receivers)
+                foreach (var kvp in _allReceivers)
                 {
                     if (kvp.Value.Contains(receiver))
                         kvp.Value.Remove(receiver);
@@ -130,8 +150,33 @@ namespace GraphQL.AspNet.Defaults
 
                 // remove any collections that no longer have listeners
                 foreach (var key in toRemove)
-                    _receivers.Remove(key);
+                    _allReceivers.Remove(key);
             }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            if (!_isDisposed)
+            {
+                _isDisposed = true;
+
+                // try and allow any outstanding events some time to
+                // shut down gracefully
+                if (_dispatchQueue.IsProcessing)
+                    _dispatchQueue.StopQueue();
+
+                int timeToWaitMs = 1000;
+                while (_dispatchQueue.IsProcessing && timeToWaitMs > 0)
+                {
+                    Thread.Sleep(500);
+                    timeToWaitMs = timeToWaitMs - 500;
+                }
+
+                _dispatchQueue.Dispose();
+            }
+
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData
     [GraphRoute("peopleMovers")]
     public class PeopleMoverController : GraphController
     {
-        [SubscriptionRoot("elevatorMoved")]
+        [SubscriptionRoot("elevatorMoved", EventName = "SINGLE_ELEVATOR_MOVED")]
         public Elevator RetrieveElevator(Elevator elevator, int id)
         {
             if (elevator.Id == id)
@@ -24,7 +24,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData
                 return null;
         }
 
-        [SubscriptionRoot("anyElevatorMoved")]
+        [SubscriptionRoot("anyElevatorMoved", EventName ="ANY_ELEVATOR_MOVED")]
         public Elevator RetrieveElevator(Elevator elevator)
         {
             return elevator;

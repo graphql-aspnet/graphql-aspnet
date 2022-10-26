@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Configuration
         internal event EventHandler<ServiceToRegister> TypeReferenceAdded;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the default query processing controller
+        /// Gets or sets a value indicating whether the default query Http Processor
         /// should be registered to the application. When disabled, the application will not register
         /// its internal handler as a public end point; the application will need to handle
         /// HTTP request routing manually (Default: false, "do include the default route").
@@ -54,12 +54,11 @@ namespace GraphQL.AspNet.Configuration
         public string Route { get; set; } = Constants.Routing.DEFAULT_HTTP_ROUTE;
 
         /// <summary>
-        /// <para>Gets or sets an optional .NET type to use as the processor for HTTP requests. When set,
+        /// Gets or sets an optional .NET type to use as the processor for HTTP requests. When set,
         /// this type must inherit from <see cref="IGraphQLHttpProcessor{TSchema}" />.(Default: null).
-        /// </para>
-        /// <para>It can be advantagous to override the default  <see cref="DefaultGraphQLHttpProcessor{TSchema}" /> and register your custom
-        /// type here rather than overriding the entire graphql http middleware component. See the documentation for further details.</para>
         /// </summary>
+        /// /// <remarks>It can be advantagous to override the built in <see cref="DefaultGraphQLHttpProcessor{TSchema}" /> and register your custom
+        /// type here rather than overriding the entire graphql http middleware component. See the documentation for further details.</remarks>
         /// <value>The type of the processor to use when processing HTTP Requests received by the application.</value>
         public Type HttpProcessorType
         {

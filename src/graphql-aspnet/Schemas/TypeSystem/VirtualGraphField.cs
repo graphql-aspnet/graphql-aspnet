@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Schemas.Structural
+namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
     using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
     using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Security;
 
     /// <summary>
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Schemas.Structural
             string parentTypeName)
         {
             Validation.ThrowIfNull(route, nameof(route));
-            Validation.ThrowIfNullWhiteSpace(parentTypeName, nameof(parentTypeName));
+            parentTypeName = Validation.ThrowIfNullWhiteSpaceOrReturn(parentTypeName, nameof(parentTypeName));
 
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(fieldName, nameof(fieldName));
@@ -88,7 +88,7 @@ namespace GraphQL.AspNet.Schemas.Structural
         /// <inheritdoc />
         public void AssignParent(IGraphType parent)
         {
-            this.Parent = Parent;
+            this.Parent = this.Parent;
         }
 
         /// <inheritdoc />

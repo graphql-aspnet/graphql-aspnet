@@ -9,11 +9,13 @@
 
 namespace GraphQL.AspNet.Middleware.SubcriptionExecution
 {
+    using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -26,20 +28,28 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
         /// <summary>
         /// Initializes a new instance of the <see cref="SubcriptionExecutionContext" /> class.
         /// </summary>
-        /// <param name="client">The client.</param>
         /// <param name="request">The request to be processed through the query pipeline.</param>
+        /// <param name="client">The client.</param>
+        /// <param name="serviceProvider">The service provider used for the creation of any
+        /// necessary objects during the execution of this query context.</param>
+        /// <param name="querySession">The query session governing the execution of a query.</param>
+        /// <param name="securityContext">The security context through which all
+        /// field authorization processes will occur during this query.</param>
         /// <param name="subscriptionId">The unique id to assign to the created subscription, when one is made.</param>
+        /// <param name="items">A collection of developer-driven items for tracking various pieces of data.</param>
         /// <param name="metrics">The metrics package to profile this request, if any.</param>
         /// <param name="logger">The logger instance to record events related to this context.</param>
-        /// <param name="items">A key/value pair collection for random access data.</param>
         public SubcriptionExecutionContext(
-            ISubscriptionClientProxy client,
             IGraphOperationRequest request,
+            ISubscriptionClientProxy client,
+            IServiceProvider serviceProvider,
+            IQuerySession querySession,
+            IUserSecurityContext securityContext,
             string subscriptionId,
+            MetaDataCollection items = null,
             IGraphQueryExecutionMetrics metrics = null,
-            IGraphEventLogger logger = null,
-            MetaDataCollection items = null)
-            : base(request, client?.ServiceProvider, client?.SecurityContext, metrics, logger, items)
+            IGraphEventLogger logger = null)
+            : base(request, serviceProvider, querySession, items, securityContext, metrics, logger)
         {
             this.Client = Validation.ThrowIfNullOrReturn(client, nameof(client));
             this.SubscriptionId = Validation.ThrowIfNullWhiteSpaceOrReturn(subscriptionId, nameof(subscriptionId));
@@ -55,7 +65,7 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
             get
             {
                 return (this.QueryPlan?.Operation != null && this.QueryPlan.Operation.OperationType == GraphOperationType.Subscription)
-                    || this.Items.ContainsKey(SubscriptionConstants.Execution.CREATED_SUBSCRIPTION);
+                    || this.Subscription != null;
             }
         }
 
@@ -65,61 +75,19 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution
         /// a subscription should have been created but failed.
         /// </summary>
         /// <value>The subscription.</value>
-        public ISubscription Subscription
-        {
-            get
-            {
-                if (this.Items.ContainsKey(SubscriptionConstants.Execution.CREATED_SUBSCRIPTION))
-                    return this.Items[SubscriptionConstants.Execution.CREATED_SUBSCRIPTION] as ISubscription;
-
-                return null;
-            }
-
-            set
-            {
-                this.Items[SubscriptionConstants.Execution.CREATED_SUBSCRIPTION] = value;
-            }
-        }
+        public ISubscription Subscription { get; set; }
 
         /// <summary>
         /// Gets the subscription client that is making this request.
         /// </summary>
         /// <value>The client.</value>
-        public ISubscriptionClientProxy Client
-            {
-            get
-            {
-                if (this.Items.ContainsKey(SubscriptionConstants.Execution.CLIENT))
-                    return this.Items[SubscriptionConstants.Execution.CLIENT] as ISubscriptionClientProxy;
-
-                return null;
-            }
-
-            private set
-            {
-                this.Items[SubscriptionConstants.Execution.CLIENT] = value;
-            }
-        }
+        public ISubscriptionClientProxy Client { get; private set; }
 
         /// <summary>
         /// Gets the unique identifier provided by the client at the time this
         /// context was created.
         /// </summary>
         /// <value>The subscription identifier.</value>
-        public string SubscriptionId
-        {
-            get
-            {
-                if (this.Items.ContainsKey(SubscriptionConstants.Execution.SUBSCRIPTION_ID))
-                    return this.Items[SubscriptionConstants.Execution.SUBSCRIPTION_ID]?.ToString();
-
-                return null;
-            }
-
-            private set
-            {
-                this.Items[SubscriptionConstants.Execution.SUBSCRIPTION_ID] = value;
-            }
-        }
+        public string SubscriptionId { get; private set; }
     }
 }

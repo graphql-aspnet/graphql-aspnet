@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     /// A middleware component to create a <see cref="GraphController" /> and invoke an action method.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this middleware component exists for.</typeparam>
-    public class InvokeFieldResolverMiddleware<TSchema> : IGraphFieldExecutionMiddleware
+    public class InvokeFieldResolverMiddleware<TSchema> : IFieldExecutionMiddleware
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;

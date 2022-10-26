@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Logging
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Logging.SubscriptionEvents;
+    using GraphQL.AspNet.Logging.SubscriptionEventLogEntries;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -44,17 +44,15 @@ namespace GraphQL.AspNet.Logging
         /// </summary>
         /// <typeparam name="TSchema">The type of the schema the client was registered for.</typeparam>
         /// <param name="logger">The logger doing the logging.</param>
-        /// <param name="server">The server which created the client.</param>
         /// <param name="client">The client that was created.</param>
         public static void SubscriptionClientRegistered<TSchema>(
             this IGraphEventLogger logger,
-            ISubscriptionServer<TSchema> server,
             ISubscriptionClientProxy client)
             where TSchema : class, ISchema
         {
             logger.Log(
                 LogLevel.Debug,
-                () => new SubscriptionClientRegisteredLogEntry<TSchema>(server, client));
+                () => new SubscriptionClientRegisteredLogEntry<TSchema>(client));
         }
 
         /// <summary>
@@ -70,23 +68,6 @@ namespace GraphQL.AspNet.Logging
             logger.Log(
                 LogLevel.Debug,
                 () => new SubscriptionClientDroppedLogEntry(client));
-        }
-
-        /// <summary>
-        /// Recorded when a subscription client is no longer connected or otherwise dropped
-        /// by ASP.NET. The server will process no more messages from the client.
-        /// </summary>
-        /// <typeparam name="TSchema">The type of the schema the server was created for.</typeparam>
-        /// <param name="logger">The logger doing the logging.</param>
-        /// <param name="server">The server that was created.</param>
-        public static void SubscriptionServerCreated<TSchema>(
-            this IGraphEventLogger logger,
-            ISubscriptionServer<TSchema> server)
-            where TSchema : class, ISchema
-        {
-            logger.Log(
-                LogLevel.Debug,
-                () => new SubscriptionServerCreatedLogEntry<TSchema>(server));
         }
 
         /// <summary>
@@ -118,6 +99,23 @@ namespace GraphQL.AspNet.Logging
             logger.Log(
                 LogLevel.Debug,
                 () => new SubscriptionEventPublishedLogEntry(eventData));
+        }
+
+        /// <summary>
+        /// Recorded when a client attempts to connect to a subscription server, for a specific schema,
+        /// using a protocol explicitly not supported by that schema.
+        /// </summary>
+        /// <param name="logger">The logger doing the logging.</param>
+        /// <param name="schema">The schema requested.</param>
+        /// <param name="protocol">The protocol that was attempted.</param>
+        public static void UnsupportedClientProtocol(
+            this IGraphEventLogger logger,
+            ISchema schema,
+            string protocol)
+        {
+            logger.Log(
+                LogLevel.Warning,
+                () => new UnsupportClientSubscriptionProtocolLogEntry(schema, protocol));
         }
     }
 }

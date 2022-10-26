@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Defaults.TypeMakers
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// A maker capable of turning a <see cref="IGraphArgumentTemplate"/> into a usable <see cref="IGraphArgument"/> on a graph field.

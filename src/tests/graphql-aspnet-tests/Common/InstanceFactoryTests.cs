@@ -139,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Common
         }
 
         [Test]
-        public void MethodInvoker_NullMethodInfo_returnsNull()
+        public void MethodInvoker_NullMethodInfo_ReturnsNull()
         {
             var invoker = InstanceFactory.CreateInstanceMethodInvoker(null);
             Assert.IsNull(invoker);
@@ -183,6 +183,31 @@ namespace GraphQL.AspNet.Tests.Common
             Assert.AreEqual(8, result);
 
             // ensure it was cached.
+            Assert.AreEqual(1, InstanceFactory.MethodInvokers.Count);
+            InstanceFactory.Clear();
+        }
+
+        [Test]
+        public void MethodInvoker_StandardInvoke_CachesAndReturnsValue()
+        {
+            InstanceFactory.Clear();
+            var methodInfo = typeof(InstanceFactoryTests).GetMethod(nameof(InstanceFactoryTests.AddNumbers));
+
+            var invoker = InstanceFactory.CreateInstanceMethodInvoker(methodInfo);
+
+            var instance = new InstanceFactoryTests();
+            var obj = instance as object;
+            var result = invoker(ref obj, 5, 3);
+            Assert.AreEqual(8, result);
+
+            var secondInvoker = InstanceFactory.CreateInstanceMethodInvoker(methodInfo);
+
+            obj = instance as object;
+            result = secondInvoker(ref obj, 9, 1);
+            Assert.AreEqual(10, result);
+
+            // ensure it was cached.
+            Assert.AreSame(invoker, secondInvoker);
             Assert.AreEqual(1, InstanceFactory.MethodInvokers.Count);
             InstanceFactory.Clear();
         }

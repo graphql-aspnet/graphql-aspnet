@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
+namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 {
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     /// security groups (and subseqent policies) that should be evaluated for the
     /// target field.
     /// </summary>
-    public class SchemItemSecurityRequirementsMiddleware : IGraphSchemaItemSecurityMiddleware
+    public class SchemItemSecurityRequirementsMiddleware : ISchemaItemSecurityMiddleware
     {
         private class CachedRequirements
         {
@@ -56,8 +56,8 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
 
         /// <inheritdoc />
         public async Task InvokeAsync(
-            GraphSchemaItemSecurityContext context,
-            GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityContext> next,
+            GraphSchemaItemSecurityChallengeContext context,
+            GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next,
             CancellationToken cancelToken = default)
         {
             if (context.SecurityRequirements == null)
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             }
 
             // when no policies are ever defined (meaning no security)
-            // then we assume anon access is allowed
+            // then we assume anonymous access is allowed
             bool allowAnonmous = schemaItem.SecurityGroups.Sum(x => x.AppliedPolicies.Count) == 0;
 
             AuthorizationPolicy defaultPolicy = null;
@@ -172,7 +172,8 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
                 this.DeteremineFinalPolicySet(enforcedPolicies),
                 enforcedRoleGroups);
 
-            // ensure that there exists a scenario where its possible that
+            // ensure that, via the created requirements,
+            // there exists a scenario where its possible that
             // someone could be authenticated
             if (!requirements.AllowAnonymous
                 && !requirements.AllowedAuthenticationSchemes.Any()

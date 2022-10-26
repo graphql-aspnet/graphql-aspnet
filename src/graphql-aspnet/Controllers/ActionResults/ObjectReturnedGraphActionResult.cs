@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.Controllers.ActionResults
     /// <summary>
     /// A result indicating an ok return status and an object to be rendered to the graph.
     /// </summary>
-    /// <seealso cref="IGraphActionResult" />
     [DebuggerDisplay("Has Object: {_result?.GetType().FriendlyName()}")]
     public class ObjectReturnedGraphActionResult : IGraphActionResult
     {
@@ -34,7 +33,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults
 
         /// <inheritdoc />
         [DebuggerStepThrough]
-        public Task Complete(BaseResolutionContext context)
+        public virtual Task Complete(SchemaItemResolutionContext context)
         {
             if (context is FieldResolutionContext frc)
                 frc.Result = _result;

@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// A dictionary wrapper to associate <see cref="SubscriptionEventName"/> to a
     /// unique set of <see cref="ISubscriptionEventReceiver"/> that will receive the event.
     /// </summary>
-    public class SubscribedEventRecievers : Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>>
+    internal class SubscribedEventRecievers : Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscribedEventRecievers"/> class.

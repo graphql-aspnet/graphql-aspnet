@@ -16,34 +16,34 @@ namespace GraphQL.Subscriptions.Tests.Connections
     [TestFixture]
     public class ClientConnectionEnumerationTests
     {
-        [TestCase(WebSocketCloseStatus.Empty, ClientConnectionCloseStatus.Empty)]
-        [TestCase(WebSocketCloseStatus.NormalClosure, ClientConnectionCloseStatus.NormalClosure)]
-        [TestCase(WebSocketCloseStatus.EndpointUnavailable, ClientConnectionCloseStatus.EndpointUnavailable)]
-        [TestCase(WebSocketCloseStatus.ProtocolError, ClientConnectionCloseStatus.ProtocolError)]
-        [TestCase(WebSocketCloseStatus.InvalidMessageType, ClientConnectionCloseStatus.InvalidMessageType)]
-        [TestCase(WebSocketCloseStatus.InvalidPayloadData, ClientConnectionCloseStatus.InvalidPayloadData)]
-        [TestCase(WebSocketCloseStatus.PolicyViolation, ClientConnectionCloseStatus.PolicyViolation)]
-        [TestCase(WebSocketCloseStatus.MessageTooBig, ClientConnectionCloseStatus.MessageTooBig)]
-        [TestCase(WebSocketCloseStatus.MandatoryExtension, ClientConnectionCloseStatus.MandatoryExtension)]
-        [TestCase(WebSocketCloseStatus.InternalServerError, ClientConnectionCloseStatus.InternalServerError)]
+        [TestCase(WebSocketCloseStatus.Empty, ConnectionCloseStatus.Empty)]
+        [TestCase(WebSocketCloseStatus.NormalClosure, ConnectionCloseStatus.NormalClosure)]
+        [TestCase(WebSocketCloseStatus.EndpointUnavailable, ConnectionCloseStatus.EndpointUnavailable)]
+        [TestCase(WebSocketCloseStatus.ProtocolError, ConnectionCloseStatus.ProtocolError)]
+        [TestCase(WebSocketCloseStatus.InvalidMessageType, ConnectionCloseStatus.InvalidMessageType)]
+        [TestCase(WebSocketCloseStatus.InvalidPayloadData, ConnectionCloseStatus.InvalidPayloadData)]
+        [TestCase(WebSocketCloseStatus.PolicyViolation, ConnectionCloseStatus.PolicyViolation)]
+        [TestCase(WebSocketCloseStatus.MessageTooBig, ConnectionCloseStatus.MessageTooBig)]
+        [TestCase(WebSocketCloseStatus.MandatoryExtension, ConnectionCloseStatus.MandatoryExtension)]
+        [TestCase(WebSocketCloseStatus.InternalServerError, ConnectionCloseStatus.InternalServerError)]
         [TestCase(22, 22)]
-        public void ToClientConnectionCloseStatus(WebSocketCloseStatus socketStatus, ClientConnectionCloseStatus expectedCloseStatus)
+        public void ToClientConnectionCloseStatus(WebSocketCloseStatus socketStatus, ConnectionCloseStatus expectedCloseStatus)
         {
             Assert.AreEqual(expectedCloseStatus, socketStatus.ToClientConnectionCloseStatus());
         }
 
-        [TestCase(ClientConnectionCloseStatus.Empty, WebSocketCloseStatus.Empty)]
-        [TestCase(ClientConnectionCloseStatus.NormalClosure, WebSocketCloseStatus.NormalClosure)]
-        [TestCase(ClientConnectionCloseStatus.EndpointUnavailable, WebSocketCloseStatus.EndpointUnavailable)]
-        [TestCase(ClientConnectionCloseStatus.ProtocolError, WebSocketCloseStatus.ProtocolError)]
-        [TestCase(ClientConnectionCloseStatus.InvalidMessageType, WebSocketCloseStatus.InvalidMessageType)]
-        [TestCase(ClientConnectionCloseStatus.InvalidPayloadData, WebSocketCloseStatus.InvalidPayloadData)]
-        [TestCase(ClientConnectionCloseStatus.PolicyViolation, WebSocketCloseStatus.PolicyViolation)]
-        [TestCase(ClientConnectionCloseStatus.MessageTooBig, WebSocketCloseStatus.MessageTooBig)]
-        [TestCase(ClientConnectionCloseStatus.MandatoryExtension, WebSocketCloseStatus.MandatoryExtension)]
-        [TestCase(ClientConnectionCloseStatus.InternalServerError, WebSocketCloseStatus.InternalServerError)]
+        [TestCase(ConnectionCloseStatus.Empty, WebSocketCloseStatus.Empty)]
+        [TestCase(ConnectionCloseStatus.NormalClosure, WebSocketCloseStatus.NormalClosure)]
+        [TestCase(ConnectionCloseStatus.EndpointUnavailable, WebSocketCloseStatus.EndpointUnavailable)]
+        [TestCase(ConnectionCloseStatus.ProtocolError, WebSocketCloseStatus.ProtocolError)]
+        [TestCase(ConnectionCloseStatus.InvalidMessageType, WebSocketCloseStatus.InvalidMessageType)]
+        [TestCase(ConnectionCloseStatus.InvalidPayloadData, WebSocketCloseStatus.InvalidPayloadData)]
+        [TestCase(ConnectionCloseStatus.PolicyViolation, WebSocketCloseStatus.PolicyViolation)]
+        [TestCase(ConnectionCloseStatus.MessageTooBig, WebSocketCloseStatus.MessageTooBig)]
+        [TestCase(ConnectionCloseStatus.MandatoryExtension, WebSocketCloseStatus.MandatoryExtension)]
+        [TestCase(ConnectionCloseStatus.InternalServerError, WebSocketCloseStatus.InternalServerError)]
         [TestCase(22, 22)]
-        public void ToClientConnectionCloseStatus(ClientConnectionCloseStatus socketStatus, WebSocketCloseStatus expectedCloseStatus)
+        public void ToClientConnectionCloseStatus(ConnectionCloseStatus socketStatus, WebSocketCloseStatus expectedCloseStatus)
         {
             Assert.AreEqual(expectedCloseStatus, socketStatus.ToWebSocketCloseStatus());
         }

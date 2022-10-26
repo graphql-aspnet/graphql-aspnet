@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
+namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
 {
     using System;
     using System.Collections.Immutable;
@@ -21,10 +21,10 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
     using Microsoft.AspNetCore.Authentication;
 
     /// <summary>
-    /// A piece of middleware, on the authorization pipeline, that can successfuly authenticate a
-    /// <see cref="IUserSecurityContext"/>.
+    /// A piece of middleware, on the authorization pipeline, that can successfuly
+    /// authenticate a <see cref="IUserSecurityContext"/>.
     /// </summary>
-    public class SchemaItemAuthenticationMiddleware : IGraphSchemaItemSecurityMiddleware, IDisposable
+    public class SchemaItemAuthenticationMiddleware : ISchemaItemSecurityMiddleware, IDisposable
     {
         private SemaphoreSlim _locker = new SemaphoreSlim(1);
         private IAuthenticationSchemeProvider _schemeProvider;
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         }
 
         /// <inheritdoc />
-        public async Task InvokeAsync(GraphSchemaItemSecurityContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityContext> next, CancellationToken cancelToken = default)
+        public async Task InvokeAsync(GraphSchemaItemSecurityChallengeContext context, GraphMiddlewareInvocationDelegate<GraphSchemaItemSecurityChallengeContext> next, CancellationToken cancelToken = default)
         {
             context.Logger?.SchemaItemAuthenticationChallenge(context);
 
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         }
 
         private async Task<(ClaimsPrincipal, IAuthenticationResult, SchemaItemSecurityChallengeResult)>
-            AuthenticateUser(GraphSchemaItemSecurityContext context, CancellationToken cancelToken)
+            AuthenticateUser(GraphSchemaItemSecurityChallengeContext context, CancellationToken cancelToken)
         {
             // Step 1: Initial check for null requirements or allowed anonymous access
             if (context.SecurityRequirements == null)
@@ -193,7 +193,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
             bool shouldThrowOnFail,
             CancellationToken cancelToken)
         {
-            // since authenticate can result in an exception, espeically when no default exsists
+            // since .Authenticate() can result in an exception, espeically when no default exsists
             // or some scheme is defined that doesnt really exist. We want those exceptions to bubble
             // (and prevent execution) in cases where the method completing is needed (i.e. when auth is absolutely required)
             // but in cases where anonymous is allowed there is no reason to fail, we just let
@@ -231,7 +231,7 @@ namespace GraphQL.AspNet.Middleware.FieldSecurity.Components
         /// <inheritdoc />
         public void Dispose()
         {
-            Dispose(disposing: true);
+            this.Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
     }

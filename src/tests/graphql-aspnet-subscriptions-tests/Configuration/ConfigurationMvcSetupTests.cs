@@ -11,10 +11,10 @@ namespace GraphQL.Subscriptions.Tests.Configuration
 {
     using System;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Apollo.Exceptions;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -33,7 +33,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
         [Test]
         public void AddSubscriptions_RegistrationChecks()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
@@ -58,7 +58,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
         public void ExplicitDeclarationOfPerFieldAuthorizationFailsServerCreation()
         {
             // setup the server with a hard declaration of nothing
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
@@ -73,7 +73,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             });
 
             // server should value to generate
-            Assert.Throws<ApolloSubscriptionServerException>(
+            Assert.Throws<SubscriptionServerException>(
                 () =>
                 {
                     schemaBuilder.AddSubscriptionServer();
@@ -84,7 +84,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
         public void ExplicitDeclarationOfPerRequestAuthorizationAddsServerSuccessfully()
         {
             // setup the server with a hard declaration of nothing
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
@@ -106,7 +106,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
         public void NonExplicitDeclarationResultsInPerRequestAndAddsServerSuccessfully()
         {
             // setup the server with a hard declaration of nothing
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
@@ -130,7 +130,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
         [Test]
         public void AddSubscriptionServer_RegistrationChecks()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
@@ -157,8 +157,8 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             Assert.IsNotNull(schema);
             Assert.IsTrue(schema.Operations.ContainsKey(GraphOperationType.Subscription));
 
-            // ensure registered services for subscription server
-            Assert.IsNotNull(sp.GetService(typeof(ISubscriptionServer<GraphSchema>)));
+            // ensure router is registered
+            Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventRouter)));
 
             // ensure the template provider for the runtime is swapped
             Assert.IsTrue(GraphQLProviders.TemplateProvider is SubscriptionEnabledTemplateProvider);
@@ -168,7 +168,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
         [Test]
         public void AddSubscriptionPublishing_RegistrationChecks()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
 
             // ensure the runtime is in a default state (just in case the statics got messed up)
             GraphQLProviders.TemplateProvider = new DefaultTypeTemplateProvider();
@@ -196,7 +196,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
 
             // ensure registered services for subscription server
             Assert.IsNotNull(sp.GetService(typeof(ISubscriptionEventPublisher)));
-            Assert.IsNotNull(sp.GetService(typeof(SubscriptionEventQueue)));
+            Assert.IsNotNull(sp.GetService(typeof(SubscriptionEventPublishingQueue)));
             Assert.IsNotNull(sp.GetService(typeof(IHostedService)) as SubscriptionPublicationService);
 
             // ensure the template provider for the runtime is swapped

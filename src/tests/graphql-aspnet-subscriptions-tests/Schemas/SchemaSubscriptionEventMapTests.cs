@@ -10,11 +10,12 @@
 namespace GraphQL.Subscriptions.Tests.Schemas
 {
     using System.Data;
+    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.Subscriptions.Tests.Mocks;
     using GraphQL.Subscriptions.Tests.Schemas.SchemaTestData;
-    using GraphQL.Subscriptions.Tests.TestServerExtensions;
     using NUnit.Framework;
 
     [TestFixture]
@@ -27,7 +28,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         [Test]
         public void MapOfFieldWithNoEventName_RendersOneItem()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
             SchemaSubscriptionEventMap.ClearCache();
 
             var schema = new TestServerBuilder<EventMapSchema>()
@@ -38,7 +39,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
 
             var map = SchemaSubscriptionEventMap.CreateEventMap(schema);
             var pathName = "[subscription]/OneFieldMap/TestActionMethod";
-            var eventName = new SubscriptionEventName(typeof(EventMapSchema), pathName);
+            var eventName = new SubscriptionEventName(typeof(EventMapSchema), "TestActionMethod");
 
             Assert.AreEqual(1, map.Count);
             Assert.IsTrue(map.ContainsKey(eventName));
@@ -49,7 +50,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         [Test]
         public void RetrieveFieldPathByName_YieldsCorrectPath()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
             SchemaSubscriptionEventMap.ClearCache();
 
             var schema = new TestServerBuilder<EventMapSchema>()
@@ -60,7 +61,9 @@ namespace GraphQL.Subscriptions.Tests.Schemas
 
             var map = SchemaSubscriptionEventMap.CreateEventMap(schema);
             var pathName = "[subscription]/OneFieldMap/TestActionMethod";
-            var eventName = new SubscriptionEventName(typeof(EventMapSchema), pathName);
+            var eventName = new SubscriptionEventName(
+                typeof(EventMapSchema),
+                nameof(OneFieldMapController.TestActionMethod));
 
             var fieldPath = schema.RetrieveSubscriptionFieldPath(eventName);
 
@@ -69,52 +72,20 @@ namespace GraphQL.Subscriptions.Tests.Schemas
         }
 
         [Test]
-        public void MapOfFieldWithEventName_RendersTwoItem()
+        public void DuplicateEventName_ThrowsExceptionOnBuild()
         {
-            using var restorePoint = new GraphQLProviderRestorePoint();
+            using var restorePoint = new GraphQLGlobalRestorePoint();
             SchemaSubscriptionEventMap.ClearCache();
-
-            var schema = new TestServerBuilder<EventMapSchema>()
-                .AddSubscriptionServer()
-                .AddGraphController<OneFieldMapWithEventNameController>()
-                .Build()
-                .Schema;
-
-            var map = SchemaSubscriptionEventMap.CreateEventMap(schema);
-            var pathName = "[subscription]/OneFieldMapWithEventName/TestActionMethod";
-
-            var pathEventName = new SubscriptionEventName(typeof(EventMapSchema), pathName);
-            var eventName = new SubscriptionEventName(typeof(EventMapSchema), "shortTestName");
-
-            Assert.AreEqual(2, map.Count);
-            Assert.IsTrue(map.ContainsKey(eventName));
-            Assert.IsNotNull(map[eventName]);
-            Assert.AreEqual(pathName, map[eventName].Path);
-
-            Assert.IsTrue(map.ContainsKey(eventName));
-            Assert.IsNotNull(map[eventName]);
-            Assert.AreEqual(pathName, map[eventName].Path);
-
-            // ensure both items reference the same object
-            Assert.AreSame(map[pathEventName], map[eventName]);
-        }
-
-        [Test]
-        public void DuplicateEventName_ThrowsException()
-        {
-            using var restorePoint = new GraphQLProviderRestorePoint();
-            SchemaSubscriptionEventMap.ClearCache();
-
-            var schema = new TestServerBuilder<EventMapSchema>()
+            var ex = Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var schema = new TestServerBuilder<EventMapSchema>()
                 .AddSubscriptionServer()
                 .AddGraphController<DuplicateEventNameController>()
                 .Build()
                 .Schema;
-
-            Assert.Throws<DuplicateNameException>(() =>
-            {
-                var map = SchemaSubscriptionEventMap.CreateEventMap(schema);
             });
+
+            Assert.IsTrue(ex.Message.Contains("Duplciate Subscription Event Name"));
         }
     }
 }

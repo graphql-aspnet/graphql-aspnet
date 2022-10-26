@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
                 (string name) => { orderOfBeforeCalls.Add(name); }).Verifiable();
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
-            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
+            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
 
             pipelineBuilder.AddMiddleware<TestMiddleware1>(ServiceLifetime.Singleton);
             pipelineBuilder.AddMiddleware<TestMiddleware2>(ServiceLifetime.Singleton);
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
             var serverBuilder = new TestServerBuilder<GraphSchema>(TestOptions.UseCodeDeclaredNames)
                 .AddType<MiddlewareController>();
 
-            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
+            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
 
             // a pipeline with one component
             pipelineBuilder.AddMiddleware<TestMiddleware1>(ServiceLifetime.Singleton);
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
                 .AddType<MiddlewareController>();
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
-            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
+            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
 
             // a pipeline with one component
             pipelineBuilder.AddMiddleware<TestMiddlewareThrowsException>(ServiceLifetime.Singleton);
@@ -176,7 +176,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
             serverBuilder.AddSingleton(middlewareService.Object);
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
-            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
+            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
             pipelineBuilder.AddMiddleware<TestMiddlewareSingleton>(ServiceLifetime.Singleton);
 
             // make sure a delegate was created
@@ -225,7 +225,7 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
             serverBuilder.AddSingleton(middlewareService.Object);
 
             // mock the calls that would be made through the primary builder to generate a fake pipeline
-            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IGraphFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
+            var pipelineBuilder = new SchemaPipelineBuilder<GraphSchema, IFieldExecutionMiddleware, GraphFieldExecutionContext>(serverBuilder.SchemaOptions);
 
             // premake the singleton middleware component
             var component = new TestMiddlewareSingleton(middlewareService.Object);

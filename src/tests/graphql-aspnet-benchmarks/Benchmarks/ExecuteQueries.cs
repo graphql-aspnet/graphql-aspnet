@@ -21,7 +21,6 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Variables;
     using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +65,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
             _serviceProvider = serviceCollection.BuildServiceProvider();
             injector.UseSchema(_serviceProvider);
 
-            _introspectionQuery =  this.LoadResourceTexts("GraphQL.AspNet.Benchmarks.QueryText.introspectionQuery.graphql");
+            _introspectionQuery = this.LoadResourceTexts("GraphQL.AspNet.Benchmarks.QueryText.introspectionQuery.graphql");
         }
 
         private string LoadResourceTexts(string resourceName)
@@ -89,7 +88,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         /// <param name="queryText">The query text.</param>
         /// <param name="jsonText">The json text.</param>
         /// <returns>Task.</returns>
-        private async Task ExecuteQuery(string queryText, string jsonText = "{}")
+        private async Task ExecuteQueryOrFail(string queryText, string jsonText = "{}")
         {
             // top level services to execute the query
             var queryPipeline = _serviceProvider.GetService<ISchemaPipeline<GraphSchema, GraphQueryExecutionContext>>();
@@ -104,17 +103,16 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                 Variables = inputVars ?? InputVariableCollection.Empty,
             };
 
+            // execute the request
             var request = new GraphOperationRequest(query);
             var context = new GraphQueryExecutionContext(request, _serviceProvider, null);
-
-            // execute
             await queryPipeline.InvokeAsync(context, default);
 
             var response = context.Result;
             if (response.Messages.Count > 0)
                 throw new InvalidOperationException("Query failed: " + response.Messages[0].Message);
 
-            // simulate writing hte result to an output stream
+            // simulate writing the result to an output stream
             string result = null;
             using (var memStream = new MemoryStream())
             {
@@ -137,7 +135,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         [Benchmark]
         public Task SingleObjectQuery()
         {
-            return ExecuteQuery(
+            return ExecuteQueryOrFail(
                 @"query {
                     artist(id: 2){
                         id
@@ -155,7 +153,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         [Benchmark]
         public Task MultiActionMethodQuery()
         {
-            return ExecuteQuery(
+            return ExecuteQueryOrFail(
                 @"query MultiArtistQuery($var1: String){
                     artist1: artist(id: 2){
                         id
@@ -183,7 +181,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         public Task TypeExtensionQuery()
         {
             // "records" is a a batch extension on the 'Artist' graph type
-            return ExecuteQuery(@"
+            return ExecuteQueryOrFail(@"
                     query {
                     artists(searchText: ""queen"") {
                         id
@@ -200,8 +198,6 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                 }");
         }
 
-
-
         /// <summary>
         /// Represents a standard introspection query usually submitted by
         /// graphql tooling like GraphQL Playground or Graphiql.
@@ -210,7 +206,74 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         [Benchmark]
         public Task IntrospectionQuery()
         {
-            return ExecuteQuery(_introspectionQuery);
+            return ExecuteQueryOrFail(_introspectionQuery);
+        }
+
+        /// <summary>
+        /// Represents a query that has lots of variables of varying coercability and nesting
+        /// requirements.
+        /// </summary>
+        /// <returns>Task.</returns>
+        [Benchmark]
+        public Task MultiVariableQuery()
+        {
+            var variables = @"
+            {
+                    ""artistId"": 3,
+                    ""otherArtistId"": 4,
+                    ""artistIds"" : [5,8,9],
+                    ""shouldInclude"" : false,
+                    ""shouldSkip"" : true,
+                    ""artistLike"": ""Pink""
+            }";
+
+            var queryText = @"
+                    query SearchArtists(
+                        $artistId: Int!
+                        $otherArtistId: Int!
+                        $artistIds: [Int!],
+                        $artistLike: String!
+                        $shouldInclude: Boolean!,
+                        $shouldSkip: Boolean!){
+                    singleArtist: artist(id: $otherArtistId){
+                        id
+                        recordCompanyId
+                        name @skip(if: $shouldSkip)
+                    }
+
+                    idInArray: findArtistsById(ids: [1,4,7,$artistId]) {
+                        id
+                        name @toUpper
+                        records {
+                            id
+                            name
+                            genre {
+                                id
+                                name
+                            }
+                        }
+                    }
+
+                    searchArtists: artists(searchText: $artistLike) {
+                        id
+                        name
+                    }
+
+                    fullArray: findArtistsById(ids: $artistIds) {
+                        id
+                        name @include(if: $shouldInclude)
+                        records {
+                            id
+                            name
+                            genre {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }";
+
+            return ExecuteQueryOrFail(queryText, variables);
         }
     }
 }

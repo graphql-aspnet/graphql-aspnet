@@ -10,12 +10,13 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
+    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Variables;
 
     /// <summary>
-    /// A context object representing a single request, by a single user through the query execution.
+    /// A request to execute a query through the runtime.
     /// </summary>
-    public interface IGraphOperationRequest : IGraphQLRequest
+    public interface IGraphOperationRequest : IGraphQLRequest, IMetaDataContainer
     {
         /// <summary>
         /// Extracts a raw data package from this request.

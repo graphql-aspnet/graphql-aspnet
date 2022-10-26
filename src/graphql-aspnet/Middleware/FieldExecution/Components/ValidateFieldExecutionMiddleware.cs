@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
     /// included.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this field validator works against.</typeparam>
-    public class ValidateFieldExecutionMiddleware<TSchema> : IGraphFieldExecutionMiddleware
+    public class ValidateFieldExecutionMiddleware<TSchema> : IFieldExecutionMiddleware
         where TSchema : ISchema
     {
         private readonly ISchema _schema;

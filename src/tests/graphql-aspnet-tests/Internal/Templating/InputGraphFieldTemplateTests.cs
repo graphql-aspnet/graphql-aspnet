@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Internal
+namespace GraphQL.AspNet.Tests.Internal.Templating
 {
     using System.Linq;
     using GraphQL.AspNet.Execution.Exceptions;

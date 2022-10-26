@@ -13,39 +13,41 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using GraphQL.AspNet.Execution.Subscriptions;
 
     /// <summary>
-    /// An interface describing an object for a receiving events from a source and routing them to
-    /// the correct recievers that should handle the event. This object is typically called by
-    /// an external, platform dependent listener (such as a service bus client) and is
-    /// used to route deserialized events into the graphql subscription server instance present for each
-    /// declared schema.
+    /// An interface describing an object used for routing published subscription events to
+    /// the recievers that need to handle them.  This object is schema agnostic and should be registered as a global
+    /// singleton in a DI container.
     /// </summary>
+    /// <remarks>
+    /// This object is typically called by
+    /// a platform dependent listener (such as a service bus client) and will route
+    /// deserialized events from an event source to the connected client proxies.<br/>
+    /// <b>Note:</b> In most use cases, you will NOT have to implement your own version of
+    /// this object. Think twice before writing your own.
+    /// </remarks>
     public interface ISubscriptionEventRouter
     {
         /// <summary>
-        /// Instructs this router to raise the supplied event to each subscribed
-        /// receiver.
+        /// Instructs this router to raise the published event to each subscribed receiver.
         /// </summary>
-        /// <param name="eventData">The event data.</param>
-        /// <returns>Task.</returns>
-        Task RaiseEvent(SubscriptionEvent eventData);
+        /// <param name="eventData">The data package representing a raised event.</param>
+        void RaisePublishedEvent(SubscriptionEvent eventData);
 
         /// <summary>
-        /// Registers a new receiver to receive any raised events of the given type seen
-        /// by this listener.
+        /// Instructs the router to raise any events of the supplied name to the given receiver.
         /// </summary>
-        /// <param name="eventName">Name of the event.</param>
-        /// <param name="receiver">The receiver to add.</param>
-        void AddReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
+        /// <param name="receiver">The receiver to receive the event data.</param>
+        /// <param name="eventName">Name of the event to listen for.</param>
+        void AddReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName);
 
         /// <summary>
-        /// Removes the receiver from being notified of the given event type.
+        /// Removes the receiver from being notified of the given event.
         /// </summary>
-        /// <param name="eventName">Name of the event.</param>
-        /// <param name="receiver">The receiver to remove.</param>
-        void RemoveReceiver(SubscriptionEventName eventName, ISubscriptionEventReceiver receiver);
+        /// <param name="receiver">The receiver to drop.</param>
+        /// <param name="eventName">Name of the event to stop listening for.</param>
+        void RemoveReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName);
 
          /// <summary>
-        /// Removes the receiver from being notified of ALL event types that it may be registered to.
+        /// Removes the receiver from being notified of ALL events that it may be registered to.
         /// </summary>
         /// <param name="receiver">The receiver to remove.</param>
         void RemoveReceiver(ISubscriptionEventReceiver receiver);
