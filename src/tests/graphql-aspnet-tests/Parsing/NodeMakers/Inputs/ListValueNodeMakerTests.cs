@@ -58,8 +58,8 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Children.All(x => x is ScalarValueNode svn && svn.ValueType == ScalarValueType.String));
-            Assert.AreEqual("\"bob\"", ((ScalarValueNode)result.Children[0]).Value.ToString());
-            Assert.AreEqual("\"\"\"Robert\"\"\"", ((ScalarValueNode)result.Children[1]).Value.ToString());
+            Assert.AreEqual("\"bob\"", ((ScalarValueNode)result.Children.ElementAt(0)).Value.ToString());
+            Assert.AreEqual("\"\"\"Robert\"\"\"", ((ScalarValueNode)result.Children.ElementAt(1)).Value.ToString());
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.Name, stream.TokenType);
@@ -82,8 +82,8 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             foreach (var node in result.Children.OfType<ComplexValueNode>())
             {
                 Assert.AreEqual(1, node.Children.Count);
-                Assert.IsNotNull(node.Children[0] is InputItemCollectionNode);
-                Assert.AreEqual(2, node.Children[0].Children.Count);
+                Assert.IsNotNull(node.Children.ElementAt(0) is InputItemCollectionNode);
+                Assert.AreEqual(2, node.Children.ElementAt(0).Children.Count);
             }
 
             // ensure stream is pointing beyond the end of the list
@@ -113,8 +113,8 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
             Assert.AreEqual(2, result.Children.Count);
-            Assert.IsTrue(result.Children[0] is ScalarValueNode child1 && child1.ValueType == ScalarValueType.Number);
-            Assert.IsTrue(result.Children[1] is ScalarValueNode child2 && child2.ValueType == ScalarValueType.String);
+            Assert.IsTrue(result.Children.ElementAt(0) is ScalarValueNode child1 && child1.ValueType == ScalarValueType.Number);
+            Assert.IsTrue(result.Children.ElementAt(1) is ScalarValueNode child2 && child2.ValueType == ScalarValueType.String);
         }
 
         [Test]
@@ -129,9 +129,9 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             Assert.AreEqual(3, result.Children.Count);
 
-            Assert.IsTrue(result.Children[0] is ScalarValueNode child1 && child1.ValueType == ScalarValueType.Number);
-            Assert.IsTrue(result.Children[1] is NullValueNode);
-            Assert.IsTrue(result.Children[2] is ScalarValueNode child2 && child2.ValueType == ScalarValueType.Number);
+            Assert.IsTrue(result.Children.ElementAt(0) is ScalarValueNode child1 && child1.ValueType == ScalarValueType.Number);
+            Assert.IsTrue(result.Children.ElementAt(1) is NullValueNode);
+            Assert.IsTrue(result.Children.ElementAt(2) is ScalarValueNode child2 && child2.ValueType == ScalarValueType.Number);
         }
 
         [Test]

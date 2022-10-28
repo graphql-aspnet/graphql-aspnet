@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Common.Source
         /// Initializes a new instance of the <see cref="SourceOrigin"/> class.
         /// </summary>
         public SourceOrigin()
-            : this(null, null)
+            : this(SourceLocation.None, null)
         {
         }
 
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Common.Source
         /// </summary>
         /// <param name="path">the field path int he source text represented by this origin location.</param>
         public SourceOrigin(SourcePath path)
-            : this(null, path)
+            : this(SourceLocation.None, path)
         {
         }
 
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Common.Source
         /// <param name="path">The path.</param>
         public SourceOrigin(SourceLocation location, SourcePath path)
         {
-            this.Location = location ?? SourceLocation.None;
+            this.Location = location;
             this.Path = path ?? SourcePath.None;
         }
 

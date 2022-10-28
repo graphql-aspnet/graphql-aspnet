@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(node);
             Assert.AreEqual("field1", node.FieldAlias.ToString());
             Assert.AreEqual("field1", node.FieldName.ToString());
-            Assert.AreEqual(0, node.Children.Count);
+            Assert.IsNull(node.Children);
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(node);
             Assert.AreEqual("fieldA", node.FieldAlias.ToString());
             Assert.AreEqual("field1", node.FieldName.ToString());
-            Assert.AreEqual(0, node.Children.Count);
+            Assert.IsNull(node.Children);
         }
 
         [Test]
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(node);
             Assert.AreEqual("fieldA", node.FieldAlias.ToString());
             Assert.AreEqual("field1", node.FieldName.ToString());
-            Assert.AreEqual(0, node.Children.Count);
+            Assert.IsNull(node.Children);
         }
 
         [Test]
@@ -119,15 +119,15 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.AreEqual("field1", node.FieldName.ToString());
             Assert.AreEqual(1, node.Children.Count);
 
-            var collection = node.Children[0] as FieldCollectionNode;
+            var collection = node.Children.ElementAt(0) as FieldCollectionNode;
             Assert.IsNotNull(collection);
             Assert.AreEqual(2, collection.Children.Count);
 
-            var childField1 = collection.Children[0] as FieldNode;
+            var childField1 = collection.Children.ElementAt(0) as FieldNode;
             Assert.IsNotNull(childField1);
             Assert.AreEqual("field2", childField1.FieldName.ToArray());
 
-            var childField2 = collection.Children[1] as FieldNode;
+            var childField2 = collection.Children.ElementAt(1) as FieldNode;
             Assert.IsNotNull(childField2);
             Assert.AreEqual("field3", childField2.FieldName.ToString());
         }
@@ -144,11 +144,11 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.AreEqual("field1", node.FieldName.ToString());
             Assert.AreEqual(1, node.Children.Count);
 
-            var collection = node.Children[0] as FieldCollectionNode;
+            var collection = node.Children.ElementAt(0) as FieldCollectionNode;
             Assert.IsNotNull(collection);
             Assert.AreEqual(1, collection.Children.Count);
 
-            var childField1 = collection.Children[0] as FieldNode;
+            var childField1 = collection.Children.ElementAt(0) as FieldNode;
             Assert.IsNotNull(childField1);
             Assert.AreEqual("field2", childField1.FieldName.ToArray());
             Assert.AreEqual("fieldA", childField1.FieldAlias.ToArray());
@@ -167,26 +167,26 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.AreEqual("field1", node.FieldName.ToString());
             Assert.AreEqual(1, node.Children.Count);
 
-            var items = node.Children[0] as InputItemCollectionNode;
+            var items = node.Children.ElementAt(0) as InputItemCollectionNode;
             Assert.IsNotNull(items);
             Assert.AreEqual(2, items.Children.Count);
 
-            var item1 = items.Children[0] as InputItemNode;
+            var item1 = items.Children.ElementAt(0) as InputItemNode;
             Assert.IsNotNull(item1);
             Assert.AreEqual("id", item1.InputName.ToString());
             Assert.AreEqual(1, item1.Children.Count);
 
-            var value1 = item1.Children[0] as ScalarValueNode;
+            var value1 = item1.Children.ElementAt(0) as ScalarValueNode;
             Assert.IsNotNull(value1);
             Assert.AreEqual(ScalarValueType.String, value1.ValueType);
             Assert.AreEqual("\"bob\"", value1.Value.ToString());
 
-            var item2 = items.Children[1] as InputItemNode;
+            var item2 = items.Children.ElementAt(1) as InputItemNode;
             Assert.IsNotNull(item2);
             Assert.AreEqual("age", item2.InputName.ToString());
             Assert.AreEqual(1, item2.Children.Count);
 
-            var value2 = item2.Children[0] as ScalarValueNode;
+            var value2 = item2.Children.ElementAt(0) as ScalarValueNode;
             Assert.IsNotNull(value2);
             Assert.AreEqual(ScalarValueType.Number, value2.ValueType);
             Assert.AreEqual("123", value2.Value.ToString());

@@ -64,8 +64,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.Next();
 
             var collection = new InputItemCollectionNode(startLocation);
-            foreach (var child in children)
-                collection.AddChild(child);
+            collection.AddChildren(children);
 
             return collection;
         }

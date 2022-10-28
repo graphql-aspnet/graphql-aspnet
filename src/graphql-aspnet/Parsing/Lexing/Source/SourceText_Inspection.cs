@@ -247,20 +247,14 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
 
         /// <summary>
         /// Checks to see if the text at the current cursor location
-        /// matches all of the supplied rules...
+        /// matches all of the supplied rule...
         /// </summary>
-        /// <param name="rules">The rules.</param>
+        /// <param name="ruleToCheck">The rule to check.</param>
         /// <returns>System.Boolean.</returns>
         [DebuggerStepThrough]
-        public bool CheckCursor(params GraphQLSourceRule[] rules)
+        public bool CheckCursor(GraphQLSourceRule ruleToCheck)
         {
-            foreach (var rule in rules)
-            {
-                if (!SourceRuleFactory.FindRule(rule).Validate(this))
-                    return false;
-            }
-
-            return true;
+            return SourceRuleFactory.FindRule(ruleToCheck).Validate(this);
         }
 
         /// <summary>

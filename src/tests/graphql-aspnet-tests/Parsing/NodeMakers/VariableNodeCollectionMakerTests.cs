@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -37,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(collection);
             Assert.AreEqual(3, collection.Children.Count);
 
-            var child = collection.Children[0] as VariableNode;
+            var child = collection.Children.ElementAt(0) as VariableNode;
             Assert.IsNotNull(child);
             Assert.AreEqual("episode", child.Name.ToString());
             Assert.AreEqual("Episode", child.TypeExpression.ToString());
@@ -45,14 +46,13 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(defaultValue);
             Assert.AreEqual("JEDI", defaultValue.Value.ToString());
 
-            child = collection.Children[1] as VariableNode;
+            child = collection.Children.ElementAt(1) as VariableNode;
             Assert.IsNotNull(child);
             Assert.AreEqual("hero", child.Name.ToString());
             Assert.AreEqual("Hero", child.TypeExpression.ToString());
-            var defaultValue2 = child.Children.FirstOrDefault<InputValueNode>();
-            Assert.IsNull(defaultValue2);
+            Assert.IsNull(child.Children);
 
-            child = collection.Children[2] as VariableNode;
+            child = collection.Children.ElementAt(2) as VariableNode;
             Assert.IsNotNull(child);
             Assert.AreEqual("droid", child.Name.ToString());
             Assert.AreEqual("Droid", child.TypeExpression.ToString());

@@ -32,6 +32,13 @@ namespace GraphQL.AspNet.Parsing.Lexing.CharacterGroupValidation
         public static ControlPhraseValidator Instance { get; } = new ControlPhraseValidator();
 
         /// <summary>
+        /// Gets a cached delegate pointing to the <see cref="IsPossibleControlPhrase"/> static
+        /// method.
+        /// </summary>
+        /// <value>A cached delegate.</value>
+        public static SourceNextPhraseDelegate IsPossibleControlPhraseDelegate { get; } = IsPossibleControlPhrase;
+
+        /// <summary>
         /// Prevents a default instance of the <see cref="ControlPhraseValidator"/> class from being created.
         /// </summary>
         private ControlPhraseValidator()

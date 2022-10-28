@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -34,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
             var node = FieldCollectionNodeMaker.Instance.MakeNode(stream) as FieldCollectionNode;
             Assert.IsNotNull(node);
-            Assert.AreEqual(0, node.Children.Count);
+            Assert.IsNull(node.Children);
         }
 
         [Test]
@@ -78,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(node);
             Assert.AreEqual(2, node.Children.Count);
 
-            var field = node.Children[1] as FieldNode;
+            var field = node.Children.ElementAt(1) as FieldNode;
             Assert.IsNotNull(field);
             Assert.AreEqual("field2", field.FieldName.ToString());
             Assert.AreEqual("fieldA", field.FieldAlias.ToString());
@@ -95,15 +96,15 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(node);
             Assert.AreEqual(3, node.Children.Count);
 
-            var field = node.Children[0] as FieldNode;
+            var field = node.Children.ElementAt(0) as FieldNode;
             Assert.IsNotNull(field);
             Assert.AreEqual("field1", field.FieldName.ToString());
 
-            field = node.Children[1] as FieldNode;
+            field = node.Children.ElementAt(1) as FieldNode;
             Assert.IsNotNull(field);
             Assert.AreEqual("field2", field.FieldName.ToString());
 
-            field = node.Children[2] as FieldNode;
+            field = node.Children.ElementAt(2) as FieldNode;
             Assert.IsNotNull(field);
             Assert.AreEqual("field3", field.FieldName.ToString());
         }
@@ -119,20 +120,20 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(node);
             Assert.AreEqual(3, node.Children.Count);
 
-            var field = node.Children[0] as FieldNode;
+            var field = node.Children.ElementAt(0) as FieldNode;
             Assert.IsNotNull(field);
             Assert.AreEqual("field1", field.FieldName.ToString());
 
-            var frag = node.Children[1] as InlineFragmentNode;
+            var frag = node.Children.ElementAt(1) as InlineFragmentNode;
             Assert.IsNotNull(frag);
             Assert.AreEqual("User", frag.TargetType.ToString());
             Assert.AreEqual(1, frag.Children.Count); // has a field collection
-            Assert.AreEqual(2, frag.Children[0].Children.Count); // collection has 2 fields
+            Assert.AreEqual(2, frag.Children.ElementAt(0).Children.Count); // collection has 2 fields
 
-            var pointer = node.Children[2] as FragmentSpreadNode;
+            var pointer = node.Children.ElementAt(2) as FragmentSpreadNode;
             Assert.IsNotNull(pointer);
             Assert.AreEqual("someFragment", pointer.PointsToFragmentName.ToString());
-            Assert.AreEqual(0, pointer.Children.Count);
+            Assert.IsNull(pointer.Children);
         }
     }
 }

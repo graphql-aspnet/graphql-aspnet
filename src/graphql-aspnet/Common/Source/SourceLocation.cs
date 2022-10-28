@@ -17,33 +17,34 @@ namespace GraphQL.AspNet.Common.Source
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Index: {AbsoluteIndex}, Line: ({LineNumber}:{LineIndex})")]
-    public class SourceLocation
+    public struct SourceLocation : IEquatable<SourceLocation>
     {
         /// <summary>
         /// Gets a single source location pointing to no location in the source file.
         /// </summary>
         /// <value>The none.</value>
-        public static SourceLocation None { get; } = new SourceLocation();
+        public static SourceLocation None { get; } = new SourceLocation(-1, -1, -1);
 
         /// <summary>
-        /// Initializes static members of the <see cref="SourceLocation"/> class.
+        /// Initializes static members of the <see cref="SourceLocation"/> struct.
         /// </summary>
         static SourceLocation()
         {
         }
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="SourceLocation"/> class from being created.
+        /// Initializes a new instance of the <see cref="SourceLocation"/> struct.
         /// </summary>
-        private SourceLocation()
+        public SourceLocation()
         {
-            this.LineNumber = -1;
             this.AbsoluteIndex = -1;
+            this.LineText = ReadOnlyMemory<char>.Empty;
+            this.LineNumber = -1;
             this.LineIndex = -1;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SourceLocation" /> class.
+        /// Initializes a new instance of the <see cref="SourceLocation" /> struct.
         /// </summary>
         /// <param name="absoluteIndex">The absolute overall position pointed at by this location in the source material.</param>
         /// <param name="line">A reference to the line of text pointed at by this location.</param>
@@ -58,7 +59,7 @@ namespace GraphQL.AspNet.Common.Source
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SourceLocation" /> class.
+        /// Initializes a new instance of the <see cref="SourceLocation" /> struct.
         /// </summary>
         /// <param name="absoluteIndex">The absolute overall position pointed at by this location in the source material.</param>
         /// <param name="lineNumber">The line number pointed at by this position.</param>
@@ -110,13 +111,18 @@ namespace GraphQL.AspNet.Common.Source
         /// <value>The line number.</value>
         public int LineNumber { get; private set; }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"Line: {this.LineNumber}, Column: {this.LinePosition}";
+        }
+
+        /// <inheritdoc />
+        public bool Equals(SourceLocation other)
+        {
+            return this.LineIndex == other.LineIndex
+                && this.AbsoluteIndex == other.AbsoluteIndex
+                && this.LineNumber == other.LineNumber;
         }
     }
 }

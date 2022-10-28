@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             foreach (var directive in directives)
                 operationNode.AddChild(directive);
 
-            if (fieldCollection != null && fieldCollection.Children.Any())
+            if (fieldCollection?.Children != null)
                 operationNode.AddChild(fieldCollection);
 
             return operationNode;

@@ -86,9 +86,12 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// <returns>IEnumerable&lt;TContext&gt;.</returns>
         public IEnumerable<DocumentConstructionContext> CreateChildContexts()
         {
-            foreach (var child in this.ActiveNode.Children)
+            if (this.ActiveNode.Children != null)
             {
-                yield return new DocumentConstructionContext(child, this);
+                foreach (var child in this.ActiveNode.Children)
+                {
+                    yield return new DocumentConstructionContext(child, this);
+                }
             }
         }
 

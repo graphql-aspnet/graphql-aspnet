@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             else
                 node = new InlineFragmentNode(startLocation, restrictedToType);
 
-            if (collection != null && collection.Children.Any())
+            if (collection?.Children != null)
                 node.AddChild(collection);
 
             foreach (var directive in directives)

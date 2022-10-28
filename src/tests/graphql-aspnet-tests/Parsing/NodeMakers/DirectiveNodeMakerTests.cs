@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -38,16 +39,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.AreEqual("skip", node.DirectiveName.ToString());
             Assert.AreEqual(1, node.Children.Count);
 
-            var inputCollection = node.Children[0] as InputItemCollectionNode;
+            var inputCollection = node.Children.ElementAt(0) as InputItemCollectionNode;
             Assert.IsNotNull(inputCollection);
             Assert.AreEqual(1, inputCollection.Children.Count);
 
-            var child = inputCollection.Children[0] as InputItemNode;
+            var child = inputCollection.Children.ElementAt(0) as InputItemNode;
             Assert.IsNotNull(child);
             Assert.AreEqual("if", child.InputName.ToString());
             Assert.AreEqual(1, child.Children.Count);
 
-            var value = child.Children[0] as ScalarValueNode;
+            var value = child.Children.ElementAt(0) as ScalarValueNode;
             Assert.IsNotNull(value);
             Assert.AreEqual(ScalarValueType.Boolean, value.ValueType);
             Assert.AreEqual("true", value.Value.ToString());

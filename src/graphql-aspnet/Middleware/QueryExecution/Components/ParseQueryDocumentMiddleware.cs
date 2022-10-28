@@ -59,12 +59,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 {
                     // parse the text into an AST
                     var syntaxTree = _parser.ParseQueryDocument(context.OperationRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
-
-                    // convert the AST into a functional document
-                    // matched against the target schema
-                    var document = _documentGenerator.CreateDocument(syntaxTree);
-                    context.QueryDocument = document;
-                    context.Messages.AddRange(document.Messages);
+                    using (syntaxTree)
+                    {
+                        // convert the AST into a functional document
+                        // matched against the target schema
+                        var document = _documentGenerator.CreateDocument(syntaxTree);
+                        context.QueryDocument = document;
+                        context.Messages.AddRange(document.Messages);
+                    }
                 }
                 catch (GraphQLSyntaxException syntaxException)
                 {

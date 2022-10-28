@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -35,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragment", node.FragmentName.ToString());
             Assert.AreEqual("User", node.TargetType.ToArray());
-            Assert.AreEqual(0, node.Children.Count);
+            Assert.IsNull(node.Children);
         }
 
         [Test]
@@ -129,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             Assert.AreEqual("User", node.TargetType.ToArray());
             Assert.AreEqual(1, node.Children.Count);
 
-            var child = node.Children[0] as FieldCollectionNode;
+            var child = node.Children.ElementAt(0) as FieldCollectionNode;
             Assert.IsNotNull(child);
             Assert.AreEqual(2, child.Children.Count);
         }

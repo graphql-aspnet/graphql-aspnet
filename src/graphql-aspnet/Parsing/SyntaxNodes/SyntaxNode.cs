@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Parsing.SyntaxNodes
 {
     using System;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
@@ -23,15 +24,16 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
     /// create a foundational framework from which an execution plan can be generated and ran against a schema.
     /// </summary>
     [Serializable]
-    public abstract class SyntaxNode
+    public abstract class SyntaxNode : IDisposable
     {
+        private bool _isDisposed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxNode" /> class.
         /// </summary>
         /// <param name="startLocation">The start location.</param>
         protected SyntaxNode(SourceLocation startLocation)
         {
-            this.Children = new NodeCollection();
             this.Location = Validation.ThrowIfNullOrReturn(startLocation, nameof(startLocation));
         }
 
@@ -45,6 +47,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
             Validation.ThrowIfNull(childNode, nameof(childNode));
             if (this.CanHaveChild(childNode))
             {
+                this.Children = this.Children ?? new NodeCollection();
                 this.Children.Add(childNode);
                 childNode.ParentNode = this;
             }
@@ -54,6 +57,19 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
                     childNode.Location,
                     $"Unexpected node, {childNode.NodeName} is invalid at this location.");
             }
+        }
+
+        /// <summary>
+        /// Adds a collection of children to this instance.
+        /// </summary>
+        /// <param name="childNodes">The child nodes to add.</param>
+        public void AddChildren(IEnumerable<SyntaxNode> childNodes)
+        {
+            if (childNodes == null)
+                return;
+
+            foreach (var child in childNodes)
+                this.AddChild(child);
         }
 
         /// <summary>
@@ -79,7 +95,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         /// Gets the child nodes owned by this instance, if any.
         /// </summary>
         /// <value>The children.</value>
-        public NodeCollection Children { get; }
+        public NodeCollection Children { get; private set; }
 
         /// <summary>
         /// Gets the location in the source text where this node originated.
@@ -91,6 +107,34 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         public override string ToString()
         {
             return "Unknown";
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    if (this.Children != null)
+                        this.Children.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                _isDisposed = true;
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

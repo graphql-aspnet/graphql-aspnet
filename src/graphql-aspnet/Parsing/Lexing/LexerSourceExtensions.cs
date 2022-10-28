@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         public static ReadOnlyMemory<char> NextControlPhrase(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
-            var text = source.NextPhrase(ControlPhraseValidator.IsPossibleControlPhrase);
+            var text = source.NextPhrase(ControlPhraseValidator.IsPossibleControlPhraseDelegate);
             ControlPhraseValidator.Instance.ValidateOrThrow(text, location);
             return source.SliceMemory(location.AbsoluteIndex, text.Length);
         }
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         public static ReadOnlyMemory<char> NextString(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
-            var text = source.NextPhrase(StringValidator.IsDelimitedString);
+            var text = source.NextPhrase(StringValidator.IsDelimitedStringDelegate);
             StringValidator.Instance.ValidateOrThrow(source, text, location);
             return source.SliceMemory(location.AbsoluteIndex, text.Length);
         }

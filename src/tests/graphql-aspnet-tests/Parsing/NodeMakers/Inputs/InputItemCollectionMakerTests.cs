@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             Assert.IsNotNull(node);
             Assert.AreEqual(2, node.Children.Count);
 
-            var firstItem = node.Children[0] as InputItemNode;
+            var firstItem = node.Children.ElementAt(0) as InputItemNode;
             Assert.IsNotNull(firstItem);
             Assert.AreEqual("arg1", firstItem.InputName.ToString());
             Assert.AreEqual(1, firstItem.Children.Count);
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             Assert.AreEqual(ScalarValueType.Number, value.ValueType);
             Assert.AreEqual("123", value.Value.ToString());
 
-            var secondItem = node.Children[1] as InputItemNode;
+            var secondItem = node.Children.ElementAt(1) as InputItemNode;
             Assert.IsNotNull(secondItem);
             Assert.AreEqual("arg2", secondItem.InputName.ToString());
             Assert.AreEqual(1, secondItem.Children.Count);
@@ -112,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             Assert.IsNotNull(node);
             Assert.AreEqual(2, node.Children.Count);
 
-            var firstItem = node.Children[0] as InputItemNode;
+            var firstItem = node.Children.ElementAt(0) as InputItemNode;
             Assert.IsNotNull(firstItem);
             Assert.AreEqual("arg1", firstItem.InputName.ToString());
             Assert.AreEqual(1, firstItem.Children.Count);
@@ -121,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             Assert.IsNotNull(value);
             Assert.AreEqual("variable1", value.Value.ToString());
 
-            var secondItem = node.Children[1] as InputItemNode;
+            var secondItem = node.Children.ElementAt(1) as InputItemNode;
             Assert.IsNotNull(secondItem);
             Assert.AreEqual("arg2", secondItem.InputName.ToString());
             Assert.AreEqual(1, secondItem.Children.Count);

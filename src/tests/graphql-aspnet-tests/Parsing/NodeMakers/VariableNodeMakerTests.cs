@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -105,8 +106,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.AreEqual("Episode", node.TypeExpression.ToString());
 
             // has no default value set
-            var defaultValue = node.Children.FirstOrDefault<InputValueNode>();
-            Assert.IsNull(defaultValue);
+            Assert.IsNull(node.Children);
         }
 
         [Test]
@@ -161,16 +161,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(directiveNode);
             Assert.AreEqual("myDirective", directiveNode.DirectiveName.ToString());
 
-            var inputCollection = directiveNode.Children[0] as InputItemCollectionNode;
+            var inputCollection = directiveNode.Children.ElementAt(0) as InputItemCollectionNode;
             Assert.IsNotNull(inputCollection);
             Assert.AreEqual(1, inputCollection.Children.Count);
 
-            var child = inputCollection.Children[0] as InputItemNode;
+            var child = inputCollection.Children.ElementAt(0) as InputItemNode;
             Assert.IsNotNull(child);
             Assert.AreEqual("param1", child.InputName.ToString());
             Assert.AreEqual(1, child.Children.Count);
 
-            var value = child.Children[0] as ScalarValueNode;
+            var value = child.Children.ElementAt(0) as ScalarValueNode;
             Assert.IsNotNull(value);
             Assert.AreEqual(ScalarValueType.String, value.ValueType);
             Assert.AreEqual("\"value1\"", value.Value.ToString());
@@ -198,16 +198,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             Assert.IsNotNull(directiveNode);
             Assert.AreEqual("myDirective", directiveNode.DirectiveName.ToString());
 
-            var inputCollection = directiveNode.Children[0] as InputItemCollectionNode;
+            var inputCollection = directiveNode.Children.ElementAt(0) as InputItemCollectionNode;
             Assert.IsNotNull(inputCollection);
             Assert.AreEqual(1, inputCollection.Children.Count);
 
-            var child = inputCollection.Children[0] as InputItemNode;
+            var child = inputCollection.Children.ElementAt(0) as InputItemNode;
             Assert.IsNotNull(child);
             Assert.AreEqual("param1", child.InputName.ToString());
             Assert.AreEqual(1, child.Children.Count);
 
-            var value = child.Children[0] as ScalarValueNode;
+            var value = child.Children.ElementAt(0) as ScalarValueNode;
             Assert.IsNotNull(value);
             Assert.AreEqual(ScalarValueType.String, value.ValueType);
             Assert.AreEqual("\"value1\"", value.Value.ToString());

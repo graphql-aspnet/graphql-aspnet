@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             var collection = fieldCollectionMaker.MakeNode(tokenStream);
 
             var node = new NamedFragmentNode(startLocation, fragmentName, targetType);
-            if (collection.Children.Count > 0)
+            if (collection.Children != null)
                 node.AddChild(collection);
 
             foreach (var directive in directives)

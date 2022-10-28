@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             foreach (var directive in directives)
                 node.AddChild(directive);
 
-            if (fieldCollection != null && fieldCollection.Children.Any())
+            if (fieldCollection?.Children != null)
                 node.AddChild(fieldCollection);
 
             return node;

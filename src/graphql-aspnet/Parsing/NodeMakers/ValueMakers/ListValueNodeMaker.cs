@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
             tokenStream.Next();
 
             var listNode = new ListValueNode(startLocation);
-            listNode.Children.AddRange(children);
+            listNode.AddChildren(children);
 
             return listNode;
         }

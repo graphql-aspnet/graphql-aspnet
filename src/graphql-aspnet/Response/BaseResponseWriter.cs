@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Response
             writer.WriteStartObject();
             this.WritePreEncodedString(writer, "message", message.Message);
 
-            if (message.Origin.Location != SourceLocation.None)
+            if (!message.Origin.Location.Equals(SourceLocation.None))
             {
                 writer.WriteStartArray("locations");
                 writer.WriteStartObject();

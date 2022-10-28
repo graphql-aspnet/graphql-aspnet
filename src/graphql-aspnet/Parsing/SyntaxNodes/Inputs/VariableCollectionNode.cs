@@ -47,6 +47,9 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<VariableNode> GetEnumerator()
         {
+            if (this.Children == null)
+                return Enumerable.Empty<VariableNode>().GetEnumerator();
+
             return this.Children.Cast<VariableNode>().GetEnumerator();
         }
 

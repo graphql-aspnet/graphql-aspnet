@@ -34,6 +34,13 @@ namespace GraphQL.AspNet.Parsing.Lexing.CharacterGroupValidation
         public static StringValidator Instance { get; } = new StringValidator();
 
         /// <summary>
+        /// Gets a cached delegate pointing to the <see cref="IsDelimitedString" /> static
+        /// method.
+        /// </summary>
+        /// <value>A cached delegate.</value>
+        public static SourceNextPhraseDelegate IsDelimitedStringDelegate { get; } = IsDelimitedString;
+
+        /// <summary>
         /// Prevents a default instance of the <see cref="StringValidator"/> class from being created.
         /// </summary>
         private StringValidator()
