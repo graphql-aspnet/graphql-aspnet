@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Net.Http.Headers;
 
     /// <summary>
     /// A set of extensions containing logic pertaining to the <see cref="TokenType"/> used by the lexer.
@@ -72,32 +73,57 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
         }
 
         /// <summary>
-        /// Attempts to convert the given character slice to its equivilant control character enumeration....if any.
+        /// Determines whether the supplied <see cref="char"/> represents a valid
+        /// token type.
         /// </summary>
-        /// <param name="text">The text.</param>
-        /// <returns>TokenType.</returns>
-        public static TokenType ToTokenType(this in ReadOnlySpan<char> text)
+        /// <remarks>
+        /// Given the finite list of single character token types
+        /// this method allows for an easy to use, zero heap allocation method
+        /// for deteremining a <see cref="char"/> to <see cref="TokenType"/> mapping.</remarks>
+        /// <param name="charCode">The character code.</param>
+        /// <returns><c>true</c> if [is token type] [the specified character code]; otherwise, <c>false</c>.</returns>
+        public static TokenType ToTokenType(this char charCode)
         {
-            if (text.Length == 3 && text.Equals(ParserConstants.Characters.SpreadOperator.Span, StringComparison.OrdinalIgnoreCase))
-                return TokenType.SpreadOperator;
+            switch ((TokenType)charCode)
+            {
+                case TokenType.None:
+                case TokenType.Comment:
+                case TokenType.Bang:
+                case TokenType.Dollar:
+                case TokenType.ParenLeft:
+                case TokenType.ParenRight:
+                case TokenType.Comma:
+                case TokenType.EqualsSign:
+                case TokenType.SpreadOperatorInitiator:
+                case TokenType.Colon:
+                case TokenType.AtSymbol:
+                case TokenType.BracketLeft:
+                case TokenType.BracketRight:
+                case TokenType.CurlyBraceLeft:
+                case TokenType.CurlyBraceRight:
+                case TokenType.Pipe:
+                    return (TokenType)charCode;
 
-            if (text.Length != 1)
-                return TokenType.None;
-
-            if (Enum.IsDefined(typeof(TokenType), (int)text[0]))
-                return (TokenType)text[0];
-
-            return TokenType.None;
+                default:
+                    return TokenType.None;
+            }
         }
 
         /// <summary>
         /// Attempts to convert the given character slice to its equivilant control character enumeration....if any.
         /// </summary>
-        /// <param name="text">The text.</param>
+        /// <param name="text">The text to inspect.</param>
         /// <returns>TokenType.</returns>
-        public static TokenType ToTokenType(this in ReadOnlyMemory<char> text)
+        public static TokenType ToTokenType(this in ReadOnlySpan<char> text)
         {
-            return text.Span.ToTokenType();
+            if (text.Length == 3
+                && text.Equals(ParserConstants.Characters.SpreadOperator.Span, StringComparison.OrdinalIgnoreCase))
+                return TokenType.SpreadOperator;
+
+            if (text.Length != 1)
+                return TokenType.None;
+
+            return text[0].ToTokenType();
         }
 
         /// <summary>

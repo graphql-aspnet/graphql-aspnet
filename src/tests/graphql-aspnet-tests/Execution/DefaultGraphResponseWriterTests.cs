@@ -72,7 +72,7 @@ namespace GraphQL.AspNet.Tests.Execution
                 {
                   ""errors"": [
                             {
-                                ""message"": ""Invalid query. Expected 'NameToken' but received 'ControlToken'"",
+                                ""message"": ""Invalid query. Expected 'name' but received '{'"",
                                 ""locations"": [
                                 {
                                     ""line"": 2,

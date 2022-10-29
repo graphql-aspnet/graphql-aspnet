@@ -48,15 +48,24 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            var maker = NodeMakerFactory.CreateMaker<InputItemNode>();
-            var children = new List<SyntaxNode>();
-            while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.ParenRight, TokenType.CurlyBraceRight))
+            List<SyntaxNode> children = null;
+
+            if (!tokenStream.EndOfStream
+                && !tokenStream.Match(TokenType.ParenRight, TokenType.CurlyBraceRight))
             {
-                // ensure each input value in this collection is unique
-                if (maker.MakeNode(tokenStream) is InputItemNode node)
+                var maker = NodeMakerFactory.CreateMaker<InputItemNode>();
+                children = new List<SyntaxNode>();
+
+                do
                 {
-                    children.Add(node);
+                    // ensure each input value in this collection is unique
+                    if (maker.MakeNode(tokenStream) is InputItemNode node)
+                    {
+                        children.Add(node);
+                    }
                 }
+                while (!tokenStream.EndOfStream
+                    && !tokenStream.Match(TokenType.ParenRight, TokenType.CurlyBraceRight));
             }
 
             // ensure the paren right is being pointed at in the stream
@@ -64,6 +73,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.Next();
 
             var collection = new InputItemCollectionNode(startLocation);
+
             collection.AddChildren(children);
 
             return collection;

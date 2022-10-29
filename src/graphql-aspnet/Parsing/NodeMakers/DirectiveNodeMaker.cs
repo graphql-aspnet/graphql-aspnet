@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            tokenStream.MatchOrThrow<NameToken>();
+            tokenStream.MatchOrThrow(TokenType.Name);
             var directiveName = tokenStream.ActiveToken.Text;
             tokenStream.Next();
 

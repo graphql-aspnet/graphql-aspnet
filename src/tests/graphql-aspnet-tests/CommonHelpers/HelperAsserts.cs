@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
     /// </summary>
     public static class HelperAsserts
     {
-        public static void AssertTokenChain(TokenStream tokenSet, params LexicalToken[] expectedTokens)
+        public static void AssertTokenChain(TokenStream tokenSet, params LexToken[] expectedTokens)
         {
             if (tokenSet.Count != expectedTokens.Length)
                 Assert.Fail($"Expected {expectedTokens.Length} but received {tokenSet.Count}");
@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             while (tokenSet.Count > 0)
             {
                 var expected = expectedTokens[i];
-                AssertToken(tokenSet.ActiveToken, expected.GetType(), expected.Text.ToString(), expected.TokenType);
+                AssertToken(tokenSet.ActiveToken, expected.Text.ToString(), expected.TokenType);
                 tokenSet.Next(false);
                 i++;
             }
@@ -40,28 +40,13 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
         /// <summary>
         /// Asserts that the token meets common checks.
         /// </summary>
-        /// <typeparam name="TExpectedTokenType">The type of the t expected token type.</typeparam>
         /// <param name="token">The token.</param>
         /// <param name="expectedText">The expected text.</param>
         /// <param name="expectedType">The expected type of the 'TokenType' property.</param>
         /// <param name="expectedAbsolutePosition">The expected absolute position.</param>
-        public static void AssertToken<TExpectedTokenType>(LexicalToken token, string expectedText, TokenType expectedType, int? expectedAbsolutePosition = null)
-        {
-            AssertToken(token, typeof(TExpectedTokenType), expectedText, expectedType, expectedAbsolutePosition);
-        }
-
-        /// <summary>
-        /// Asserts that the token meets common checks.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="expectedClassType">Expected type of the class.</param>
-        /// <param name="expectedText">The expected text.</param>
-        /// <param name="expectedType">The expected type of the 'TokenType' property.</param>
-        /// <param name="expectedAbsolutePosition">The expected absolute position.</param>
-        public static void AssertToken(LexicalToken token, Type expectedClassType, string expectedText, TokenType expectedType, int? expectedAbsolutePosition = null)
+        public static void AssertToken(LexToken token, string expectedText, TokenType expectedType, int? expectedAbsolutePosition = null)
         {
             Assert.IsNotNull(token);
-            Assert.IsInstanceOf(expectedClassType, token);
             Assert.AreEqual(expectedType, token.TokenType);
             Assert.AreEqual(expectedText, token.Text.ToString());
             Assert.IsNotNull(token.Location, "Token does not contain a valid location");
@@ -75,11 +60,11 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
         /// Asserts that the token set provided ends with an "End of File" token.
         /// </summary>
         /// <param name="tokenSet">The token set.</param>
-        public static void AssertEndsWithEoF(IEnumerable<LexicalToken> tokenSet)
+        public static void AssertEndsWithEoF(IEnumerable<LexToken> tokenSet)
         {
             Assert.IsNotNull(tokenSet);
             Assert.IsTrue(tokenSet.Any());
-            AssertToken<EndOfFileToken>(tokenSet.Last(), string.Empty, TokenType.EndOfFile, -1);
+            AssertToken(tokenSet.Last(), string.Empty, TokenType.EndOfFile, -1);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            tokenStream.MatchOrThrow<NameToken>();
+            tokenStream.MatchOrThrow(TokenType.Name);
             var name = tokenStream.ActiveToken.Text;
             tokenStream.Next();
 

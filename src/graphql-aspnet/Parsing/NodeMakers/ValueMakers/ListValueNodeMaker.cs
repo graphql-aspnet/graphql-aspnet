@@ -41,24 +41,30 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// <returns>LexicalToken.</returns>
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
-            var children = new List<SyntaxNode>();
+            List<SyntaxNode> children = null;
             var startLocation = tokenStream.Location;
             tokenStream.MatchOrThrow(TokenType.BracketLeft);
             tokenStream.Next();
 
-            while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.BracketRight))
+            if (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.BracketRight))
             {
-                var childMaker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
-                if (childMaker == null)
-                {
-                    throw new GraphQLSyntaxException(
-                        tokenStream.Location,
-                        $"Unexpected token in list, no value could be parsed. Expected '{TokenType.BracketRight.Description().ToString()}' or an " +
-                        $"input object value but receieved '{tokenStream.ActiveToken.Text.ToString()}'");
-                }
+                children = new List<SyntaxNode>();
 
-                var childNode = childMaker.MakeNode(tokenStream);
-                children.Add(childNode);
+                do
+                {
+                    var childMaker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
+                    if (childMaker == null)
+                    {
+                        throw new GraphQLSyntaxException(
+                            tokenStream.Location,
+                            $"Unexpected token in list, no value could be parsed. Expected '{TokenType.BracketRight.Description().ToString()}' or an " +
+                            $"input object value but receieved '{tokenStream.ActiveToken.Text.ToString()}'");
+                    }
+
+                    var childNode = childMaker.MakeNode(tokenStream);
+                    children.Add(childNode);
+                }
+                while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.BracketRight));
             }
 
             // ensure we are pointing at an end of list

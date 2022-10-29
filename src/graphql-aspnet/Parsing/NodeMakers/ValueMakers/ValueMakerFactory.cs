@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// </summary>
         /// <param name="token">The token representing the start of the value to be parsed.</param>
         /// <returns>A <see cref="ISyntaxNodeMaker"/> that can parse the data.</returns>
-        public static ISyntaxNodeMaker CreateMaker(LexicalToken token)
+        public static ISyntaxNodeMaker CreateMaker(LexToken token)
         {
             // an input value could be:
             // NameToken:    a potential enumeration or true|false
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
             // CurlyLeft:    complex JSON object
             // BracketLeft:  an array of items
             // DollarSign:   variable reference
-            if (token is NameToken)
+            if (token.TokenType == TokenType.Name)
             {
                 if (token.Text.Span.Equals(ParserConstants.Keywords.True.Span, StringComparison.Ordinal) ||
                     token.Text.Span.Equals(ParserConstants.Keywords.False.Span, StringComparison.Ordinal))
@@ -48,13 +48,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
                 }
             }
 
-            if (token is NullToken)
+            if (token.TokenType == TokenType.Null)
                 return NullValueNodeMaker.Instance;
 
-            if (token is StringToken)
+            if (token.TokenType == TokenType.String)
                 return StringValueNodeMaker.Instance;
 
-            if (token is NumberToken)
+            if (token.TokenType == TokenType.Float || token.TokenType == TokenType.Integer)
                 return NumberValueNodeMaker.Instance;
 
             if (token.TokenType == TokenType.CurlyBraceLeft)

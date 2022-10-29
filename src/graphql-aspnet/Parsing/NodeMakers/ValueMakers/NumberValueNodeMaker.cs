@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
-    /// A value maker that can convert a <see cref="NumberToken"/> into a valid syntax node.
+    /// A value maker that can convert a number token into a valid syntax node.
     /// </summary>
     /// <seealso cref="ISyntaxNodeMaker" />
     public class NumberValueNodeMaker : ISyntaxNodeMaker
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
             SyntaxNode node;
-            if (tokenStream.Match<NullToken>())
+            if (tokenStream.Match(TokenType.Null))
             {
                 node = new ScalarValueNode(
                     tokenStream.Location,
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
             }
             else
             {
-                tokenStream.MatchOrThrow<NumberToken>();
+                tokenStream.MatchOrThrow(TokenType.Float, TokenType.Integer);
                 node = new ScalarValueNode(
                     tokenStream.Location,
                     ScalarValueType.Number,

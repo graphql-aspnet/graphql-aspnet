@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
             SyntaxNode node;
-            if (tokenStream.Match<NullToken>())
+            if (tokenStream.Match(TokenType.Null))
             {
                 node = new ScalarValueNode(
                     tokenStream.Location,
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
             }
             else
             {
-                tokenStream.MatchOrThrow<StringToken>();
+                tokenStream.MatchOrThrow(TokenType.String);
                 node = new ScalarValueNode(tokenStream.Location, ScalarValueType.String, tokenStream.ActiveToken.Text);
             }
 

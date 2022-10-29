@@ -45,9 +45,9 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
             // ensure we're pointing at a potential input item
-            tokenStream.MatchOrThrow<NameToken>();
+            tokenStream.MatchOrThrow(TokenType.Name);
             var startLocation = tokenStream.Location;
-            var directives = new List<SyntaxNode>();
+            List<SyntaxNode> directives = null;
 
             var name = tokenStream.ActiveToken.Text;
             tokenStream.Next();
@@ -61,18 +61,23 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             var value = maker.MakeNode(tokenStream);
 
             // account for possible directives on this field
-            while (tokenStream.Match(TokenType.AtSymbol))
+            if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                var directive = dirMaker.MakeNode(tokenStream);
-                directives.Add(directive);
+                directives = new List<SyntaxNode>();
+
+                do
+                {
+                    var directive = dirMaker.MakeNode(tokenStream);
+                    directives.Add(directive);
+                }
+                while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             var node = new InputItemNode(startLocation, name);
             node.AddChild(value);
 
-            foreach (var directive in directives)
-                node.AddChild(directive);
+            node.AddChildren(directives);
 
             return node;
         }

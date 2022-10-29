@@ -56,30 +56,36 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             SyntaxNode collection = null;
             ReadOnlyMemory<char> fragmentName = ReadOnlyMemory<char>.Empty;
             ReadOnlyMemory<char> restrictedToType = ReadOnlyMemory<char>.Empty;
-            var directives = new List<SyntaxNode>();
+            List<SyntaxNode> directives = null;
 
             // check for inline fragment first "on Type"
             if (tokenStream.Match(KEYWORDS.On))
             {
                 tokenStream.Next();
-                tokenStream.MatchOrThrow<NameToken>();
+                tokenStream.MatchOrThrow(TokenType.Name);
                 restrictedToType = tokenStream.ActiveToken.Text;
                 tokenStream.Next();
             }
 
             // might be a named fragment?
-            if (tokenStream.Match<NameToken>())
+            if (tokenStream.Match(TokenType.Name))
             {
                 fragmentName = tokenStream.ActiveToken.Text;
                 tokenStream.Next();
             }
 
             // account for possible directives on this field
-            while (tokenStream.Match(TokenType.AtSymbol))
+            if (tokenStream.Match(TokenType.AtSymbol))
             {
+                directives = new List<SyntaxNode>();
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                var directive = dirMaker.MakeNode(tokenStream);
-                directives.Add(directive);
+
+                do
+                {
+                    var directive = dirMaker.MakeNode(tokenStream);
+                    directives.Add(directive);
+                }
+                while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             // may contain a field set
@@ -89,7 +95,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
                 collection = filedColMaker.MakeNode(tokenStream);
             }
 
-            if (fragmentName.IsEmpty && restrictedToType.IsEmpty && directives.Count == 0 && collection == null)
+            if (fragmentName.IsEmpty && restrictedToType.IsEmpty && directives == null && collection == null)
             {
                 throw new GraphQLSyntaxException(
                     startLocation,
@@ -104,8 +110,11 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (collection?.Children != null)
                 node.AddChild(collection);
 
-            foreach (var directive in directives)
-                node.AddChild(directive);
+            if (directives != null)
+            {
+                foreach (var directive in directives)
+                    node.AddChild(directive);
+            }
 
             return node;
         }

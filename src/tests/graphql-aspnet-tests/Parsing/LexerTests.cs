@@ -44,28 +44,28 @@ namespace GraphQL.AspNet.Tests.Parsing
             // first two tokens should be control parens
             HelperAsserts.AssertTokenChain(
                 tokenSet,
-                new NameToken("mutation".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.CurlyBraceLeft, SourceLocation.None),
-                new NameToken("createHero".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.ParenLeft, SourceLocation.None),
-                new NameToken("name".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.Colon, SourceLocation.None),
-                new StringToken("\"John\"".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.Comma, SourceLocation.None),
-                new NameToken("age".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.Colon, SourceLocation.None),
-                NumberToken.FromSourceText("23".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.ParenRight, SourceLocation.None),
-                ControlToken.FromType(TokenType.CurlyBraceLeft, SourceLocation.None),
-                new NameToken("name".AsMemory(), SourceLocation.None),
-                new CommentToken("# Queries can have comments!".AsMemory(), SourceLocation.None),
-                new NameToken("friends".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.CurlyBraceLeft, SourceLocation.None),
-                new NameToken("name".AsMemory(), SourceLocation.None),
-                ControlToken.FromType(TokenType.CurlyBraceRight, SourceLocation.None),
-                ControlToken.FromType(TokenType.CurlyBraceRight, SourceLocation.None),
-                ControlToken.FromType(TokenType.CurlyBraceRight, SourceLocation.None),
-                EndOfFileToken.Instance);
+                new LexToken(TokenType.Name, "mutation".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.CurlyBraceLeft, "{".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Name, "createHero".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.ParenLeft, "(".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Name, "name".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Colon, ":".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.String, "\"John\"".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Comma, ",".AsMemory(), SourceLocation.None, true),
+                new LexToken(TokenType.Name, "age".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Colon, ":".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Integer, "23".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.ParenRight, ")".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.CurlyBraceLeft, "{".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Name, "name".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Comment, "# Queries can have comments!".AsMemory(), SourceLocation.None, true),
+                new LexToken(TokenType.Name, "friends".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.CurlyBraceLeft, "{".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.Name, "name".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.CurlyBraceRight, "}".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.CurlyBraceRight, "}".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.CurlyBraceRight, "}".AsMemory(), SourceLocation.None),
+                new LexToken(TokenType.EndOfFile));
         }
 
         [Test]
@@ -186,39 +186,38 @@ namespace GraphQL.AspNet.Tests.Parsing
 
             // first two tokens should be control parens
             Assert.AreEqual(9, tokenList.Count);
-            HelperAsserts.AssertToken<ControlToken>(tokenList[0], "(", TokenType.ParenLeft, 0);
-            HelperAsserts.AssertToken<ControlToken>(tokenList[1], ")", TokenType.ParenRight, 1);
-            HelperAsserts.AssertToken<StringToken>(tokenList[2], "\"abc123\"", TokenType.String, 2);
-            HelperAsserts.AssertToken<NameToken>(tokenList[3], "ab_2C", TokenType.Name, 12);
-            HelperAsserts.AssertToken<ControlToken>(tokenList[4], "...", TokenType.SpreadOperator, 18);
-            HelperAsserts.AssertToken<ControlToken>(tokenList[5], "{", TokenType.CurlyBraceLeft, 21);
-            HelperAsserts.AssertToken<NumberToken>(tokenList[6], "123", TokenType.Integer, 22);
-            HelperAsserts.AssertToken<ControlToken>(tokenList[7], "}", TokenType.CurlyBraceRight, 25);
+            HelperAsserts.AssertToken(tokenList[0], "(", TokenType.ParenLeft, 0);
+            HelperAsserts.AssertToken(tokenList[1], ")", TokenType.ParenRight, 1);
+            HelperAsserts.AssertToken(tokenList[2], "\"abc123\"", TokenType.String, 2);
+            HelperAsserts.AssertToken(tokenList[3], "ab_2C", TokenType.Name, 12);
+            HelperAsserts.AssertToken(tokenList[4], "...", TokenType.SpreadOperator, 18);
+            HelperAsserts.AssertToken(tokenList[5], "{", TokenType.CurlyBraceLeft, 21);
+            HelperAsserts.AssertToken(tokenList[6], "123", TokenType.Integer, 22);
+            HelperAsserts.AssertToken(tokenList[7], "}", TokenType.CurlyBraceRight, 25);
             HelperAsserts.AssertEndsWithEoF(tokenList);
         }
 
-        [TestCase("...", typeof(ControlToken), TokenType.SpreadOperator)]
-        [TestCase("|", typeof(ControlToken), TokenType.Pipe)]
-        [TestCase("{", typeof(ControlToken), TokenType.CurlyBraceLeft)]
-        [TestCase("}", typeof(ControlToken), TokenType.CurlyBraceRight)]
-        [TestCase("[", typeof(ControlToken), TokenType.BracketLeft)]
-        [TestCase("]", typeof(ControlToken), TokenType.BracketRight)]
-        [TestCase(":", typeof(ControlToken), TokenType.Colon)]
-        [TestCase("$", typeof(ControlToken), TokenType.Dollar)]
-        [TestCase("@", typeof(ControlToken), TokenType.AtSymbol)]
-        [TestCase("!", typeof(ControlToken), TokenType.Bang)]
-        [TestCase("tes3t", typeof(NameToken), TokenType.Name)]
-        [TestCase("#t123", typeof(CommentToken), TokenType.Comment)]
-        [TestCase("\"test\"", typeof(StringToken), TokenType.String)]
-        [TestCase("\"\"\"test\"\"\"", typeof(StringToken), TokenType.String)]
-        [TestCase("1234", typeof(NumberToken), TokenType.Integer)]
-        [TestCase("1E341234", typeof(NumberToken), TokenType.Float)]
-        [TestCase("123455.8", typeof(NumberToken), TokenType.Float)]
-        [TestCase("123.4556", typeof(NumberToken), TokenType.Float)]
-        [TestCase("123.45e6", typeof(NumberToken), TokenType.Float)]
+        [TestCase("...", TokenType.SpreadOperator)]
+        [TestCase("|", TokenType.Pipe)]
+        [TestCase("{", TokenType.CurlyBraceLeft)]
+        [TestCase("}", TokenType.CurlyBraceRight)]
+        [TestCase("[", TokenType.BracketLeft)]
+        [TestCase("]", TokenType.BracketRight)]
+        [TestCase(":",  TokenType.Colon)]
+        [TestCase("$",  TokenType.Dollar)]
+        [TestCase("@",  TokenType.AtSymbol)]
+        [TestCase("!",  TokenType.Bang)]
+        [TestCase("tes3t",  TokenType.Name)]
+        [TestCase("#t123",  TokenType.Comment)]
+        [TestCase("\"test\"",  TokenType.String)]
+        [TestCase("\"\"\"test\"\"\"",  TokenType.String)]
+        [TestCase("1234", TokenType.Integer)]
+        [TestCase("1E341234",  TokenType.Float)]
+        [TestCase("123455.8",  TokenType.Float)]
+        [TestCase("123.4556",  TokenType.Float)]
+        [TestCase("123.45e6",  TokenType.Float)]
         public void Lexer_Tokenize_SingleToken_ValidStringReturnsCorrectTokenType(
             string text,
-            Type expectedType,
             TokenType tokenType)
         {
             var source = new SourceText(text.AsMemory());
@@ -228,7 +227,7 @@ namespace GraphQL.AspNet.Tests.Parsing
 
             // first two tokens should be control parens
             Assert.AreEqual(2, tokenList.Count);
-            HelperAsserts.AssertToken(tokenList[0], expectedType, text, tokenType, 0);
+            HelperAsserts.AssertToken(tokenList[0], text, tokenType, 0);
             HelperAsserts.AssertEndsWithEoF(tokenList);
         }
 

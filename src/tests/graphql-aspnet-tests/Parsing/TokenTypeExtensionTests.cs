@@ -59,5 +59,20 @@ namespace GraphQL.AspNet.Tests.Parsing
                 }
             }
         }
+
+        [Test]
+        public void ToTokenType_EnsureAllAsciiBasedTokenTypesAreIncluded()
+        {
+            var allValues = Enum.GetValues(typeof(TokenType));
+            foreach (TokenType tt in allValues)
+            {
+                char c = (char)(int)tt;
+                if (c >= 32)
+                {
+                    var result = c.ToTokenType();
+                    Assert.AreNotEqual(TokenType.None, result);
+                }
+            }
+        }
     }
 }

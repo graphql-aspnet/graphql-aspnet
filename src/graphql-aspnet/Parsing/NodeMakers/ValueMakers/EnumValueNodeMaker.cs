@@ -44,13 +44,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
             SyntaxNode node;
-            if (tokenStream.Match<NullToken>())
+            if (tokenStream.Match(TokenType.Null))
             {
                 node = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken).MakeNode(tokenStream);
             }
             else
             {
-                tokenStream.MatchOrThrow<NameToken>();
+                tokenStream.MatchOrThrow(TokenType.Name);
                 node = new EnumValueNode(tokenStream.Location, tokenStream.ActiveToken.Text);
                 tokenStream.Next();
             }

@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// <returns>LexicalToken.</returns>
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
-            var directives = new List<SyntaxNode>();
+            List<SyntaxNode> directives = null;
             SyntaxNode variableCollection = null;
             SyntaxNode fieldCollection = null;
 
@@ -60,11 +60,17 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             }
 
             // account for possible directives on this operation
-            while (tokenStream.Match(TokenType.AtSymbol))
+            if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                var directive = dirMaker.MakeNode(tokenStream);
-                directives.Add(directive);
+                directives = new List<SyntaxNode>();
+
+                do
+                {
+                    var directive = dirMaker.MakeNode(tokenStream);
+                    directives.Add(directive);
+                }
+                while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             // only thing left on the operaton root is the field selection
@@ -75,8 +81,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             if (variableCollection != null)
                 operationNode.AddChild(variableCollection);
 
-            foreach (var directive in directives)
-                operationNode.AddChild(directive);
+            operationNode.AddChildren(directives);
 
             if (fieldCollection?.Children != null)
                 operationNode.AddChild(fieldCollection);
@@ -95,13 +100,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             ReadOnlyMemory<char> firstName = ReadOnlyMemory<char>.Empty;
             ReadOnlyMemory<char> secondName = ReadOnlyMemory<char>.Empty;
 
-            if (tokenStream.Match<NameToken>())
+            if (tokenStream.Match(TokenType.Name))
             {
                 firstName = tokenStream.ActiveToken.Text;
                 tokenStream.Next();
             }
 
-            if (tokenStream.Match<NameToken>())
+            if (tokenStream.Match(TokenType.Name))
             {
                 secondName = tokenStream.ActiveToken.Text;
                 tokenStream.Next();

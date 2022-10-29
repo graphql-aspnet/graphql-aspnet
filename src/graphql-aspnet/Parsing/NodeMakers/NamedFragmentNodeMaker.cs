@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.Next();
 
             // name of the fragment
-            tokenStream.MatchOrThrow<NameToken>();
+            tokenStream.MatchOrThrow(TokenType.Name);
             var fragmentName = tokenStream.ActiveToken.Text;
             tokenStream.Next();
 
@@ -63,18 +63,24 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
                 tokenStream.Next();
 
                 // target type
-                tokenStream.MatchOrThrow<NameToken>();
+                tokenStream.MatchOrThrow(TokenType.Name);
                 targetType = tokenStream.ActiveToken.Text;
                 tokenStream.Next();
             }
 
             // account for possible directives on this field
-            var directives = new List<SyntaxNode>();
-            while (tokenStream.Match(TokenType.AtSymbol))
+            List<SyntaxNode> directives = null;
+            if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                var directive = dirMaker.MakeNode(tokenStream);
-                directives.Add(directive);
+                directives = new List<SyntaxNode>();
+
+                do
+                {
+                    var directive = dirMaker.MakeNode(tokenStream);
+                    directives.Add(directive);
+                }
+                while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             // must be pointing at the fragment field set now
@@ -86,9 +92,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             if (collection.Children != null)
                 node.AddChild(collection);
 
-            foreach (var directive in directives)
-                node.AddChild(directive);
-
+            node.AddChildren(directives);
             return node;
         }
     }

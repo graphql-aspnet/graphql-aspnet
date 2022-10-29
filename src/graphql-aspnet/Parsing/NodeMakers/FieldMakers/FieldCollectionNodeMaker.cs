@@ -46,12 +46,17 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            var childNodes = new List<SyntaxNode>();
-            while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.CurlyBraceRight))
+            List<SyntaxNode> childNodes = null;
+            if (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.CurlyBraceRight))
             {
-                var maker = this.CreateFieldMaker(tokenStream);
-                var node = maker.MakeNode(tokenStream);
-                childNodes.Add(node);
+                childNodes = new List<SyntaxNode>();
+                do
+                {
+                    var maker = this.CreateFieldMaker(tokenStream);
+                    var node = maker.MakeNode(tokenStream);
+                    childNodes.Add(node);
+                }
+                while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.CurlyBraceRight));
             }
 
             // ensure and move past the close curly brace of the collection
@@ -59,8 +64,12 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             tokenStream.Next();
 
             var collectionNode = new FieldCollectionNode(startLocation);
-            foreach (var field in childNodes)
-                collectionNode.AddChild(field);
+
+            if (childNodes != null)
+            {
+                foreach (var field in childNodes)
+                    collectionNode.AddChild(field);
+            }
 
             return collectionNode;
         }

@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.Next();
 
             // must be a name token
-            tokenStream.MatchOrThrow<NameToken>();
+            tokenStream.MatchOrThrow(TokenType.Name);
             var variableName = tokenStream.ActiveToken.Text;
             tokenStream.Next();
 
@@ -60,21 +60,23 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.Next();
 
             // extract the type expression while the tokens are of characters '[', ']', '!', {NameToken}
-            LexicalToken startToken = null;
-            LexicalToken endToken = null;
+            LexToken startToken = default;
+            LexToken endToken = default;
             while (
                 tokenStream.Match(TokenType.BracketLeft) ||
                 tokenStream.Match(TokenType.BracketRight) ||
                 tokenStream.Match(TokenType.Bang) ||
                 tokenStream.Match(TokenType.Name))
             {
-                startToken = startToken ?? tokenStream.ActiveToken;
+                startToken = startToken.TokenType == TokenType.None
+                    ? tokenStream.ActiveToken
+                    : startToken;
                 endToken = tokenStream.ActiveToken;
                 tokenStream.Next();
             }
 
             var typeExpression = ReadOnlyMemory<char>.Empty;
-            if (startToken != null)
+            if (startToken.TokenType != TokenType.None)
             {
                 typeExpression = tokenStream.SourceText.Slice(
                     startToken.Location.AbsoluteIndex,
@@ -91,12 +93,18 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             }
 
             // could be directives with the @ symbol
-            var directives = new List<SyntaxNode>();
-            while (tokenStream.Match(TokenType.AtSymbol))
+            List<SyntaxNode> directives = null;
+            if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var maker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                var directiveNode = maker.MakeNode(tokenStream);
-                directives.Add(directiveNode);
+                directives = new List<SyntaxNode>();
+
+                do
+                {
+                    var directiveNode = maker.MakeNode(tokenStream);
+                    directives.Add(directiveNode);
+                }
+                while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             var variable = new VariableNode(startLocation, variableName, typeExpression);
@@ -104,11 +112,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             if (defaultValue != null)
                 variable.AddChild(defaultValue);
 
-            if (directives.Count > 0)
-            {
-                foreach (var d in directives)
-                    variable.AddChild(d);
-            }
+            variable.AddChildren(directives);
 
             return variable;
         }

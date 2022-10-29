@@ -14,6 +14,8 @@ namespace GraphQL.AspNet.Parsing.Lexing
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
+
+    using CHARS = GraphQL.AspNet.Parsing.ParserConstants.Characters;
     using SR = GraphQL.AspNet.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
 
     /// <summary>
@@ -41,7 +43,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 if (source.CheckCursor(SR.IsCommentGlyph))
                 {
                     var text = source.NextComment(out location);
-                    tokenSet.Enqueue(new CommentToken(text, location));
+                    tokenSet.Enqueue(new LexToken(TokenType.Comment, text, location, true));
                 }
 
                 // Flow Controler characer (non-text entities)
@@ -49,7 +51,9 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 else if (source.CheckCursor(SR.IsControlGlyph))
                 {
                     var text = source.NextControlPhrase(out location);
-                    tokenSet.Enqueue(new ControlToken(text.ToTokenType(), text, location));
+                    var tokenType = text.Span.ToTokenType();
+                    var shouldSkipControlToken = tokenType == TokenType.Comma;
+                    tokenSet.Enqueue(new LexToken(tokenType, text, location, shouldSkipControlToken));
                 }
 
                 // Named fields
@@ -65,7 +69,8 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 else if (source.CheckCursor(SR.IsStartOfNumberGlyph))
                 {
                     var text = source.NextNumber(out location);
-                    tokenSet.Enqueue(NumberToken.FromSourceText(text, location));
+                    var tokenType = text.Span.IndexOfAny(CHARS.FloatIndicatorChars.Span) >= 0 ? TokenType.Float : TokenType.Integer;
+                    tokenSet.Enqueue(new LexToken(tokenType, text, location));
                 }
 
                 // Strings
@@ -73,7 +78,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 else if (source.CheckCursor(SR.IsStringDelimiterGlyph))
                 {
                     var text = source.NextString(out location);
-                    tokenSet.Enqueue(new StringToken(text, location));
+                    tokenSet.Enqueue(new LexToken(TokenType.String, text, location));
                 }
                 else
                 {
@@ -87,26 +92,26 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 source.SkipWhitespace();
             }
 
-            tokenSet.Enqueue(EndOfFileToken.Instance);
+            tokenSet.Enqueue(LexToken.EoF);
             return tokenSet;
         }
 
         /// <summary>
-        /// Perform custom processing on any potential <see cref="NameToken" /> to determine
+        /// Perform custom processing on any potential name token to determine
         /// if it should be interpreted as a special case token (e.g. "null" phrases).
         /// </summary>
         /// <param name="tokenText">The token text to convert.</param>
         /// <param name="location">The location in hte source of hte given text.</param>
         /// <returns>LexicalToken.</returns>
-        private static LexicalToken CharactersToToken(ReadOnlyMemory<char> tokenText, SourceLocation location)
+        private static LexToken CharactersToToken(ReadOnlyMemory<char> tokenText, SourceLocation location)
         {
             if (tokenText.Span.Equals(ParserConstants.Keywords.Null.Span, StringComparison.Ordinal))
             {
-                return new NullToken(location);
+                return new LexToken(TokenType.Null, ParserConstants.Keywords.Null, location);
             }
             else
             {
-                return new NameToken(tokenText, location);
+                return new LexToken(TokenType.Name, tokenText, location);
             }
         }
     }

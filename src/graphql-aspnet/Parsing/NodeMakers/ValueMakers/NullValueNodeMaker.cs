@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
-    /// A value maker that can convert a <see cref="NullToken"/> into a valid syntax node.
+    /// A value maker that can convert a a null token into a valid syntax node.
     /// </summary>
     /// <seealso cref="ISyntaxNodeMaker" />
     public class NullValueNodeMaker : ISyntaxNodeMaker
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// <returns>LexicalToken.</returns>
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
-            tokenStream.MatchOrThrow<NullToken>();
+            tokenStream.MatchOrThrow(TokenType.Null);
             var node = new NullValueNode(tokenStream.Location);
             tokenStream.Next();
             return node;

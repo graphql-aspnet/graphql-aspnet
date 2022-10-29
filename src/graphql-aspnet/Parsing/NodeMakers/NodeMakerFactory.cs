@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
-    /// A factory that serves up "makers" that convert a series of <see cref="LexicalToken"/> into
+    /// A factory that serves up "makers" that convert a series of <see cref="LexToken"/> into
     /// functional <see cref="SyntaxNode"/>.
     /// </summary>
     public static class NodeMakerFactory

@@ -13,21 +13,19 @@ namespace GraphQL.AspNet.Parsing.Lexing
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
 
     /// <summary>
-    /// A managed collection of parsed <see cref="LexicalToken"/>. Keeps a pointer to the
+    /// A managed collection of parsed <see cref="LexToken"/> items. Keeps a pointer to the
     /// token in scope for analysis and provides easy access methods for checking its properties without actually
     /// stripping it away from the stream.
     /// </summary>
     [DebuggerDisplay("Active = {ActiveToken.TokenType}, Count = {Count}")]
-    public class TokenStream : IEnumerable<LexicalToken>
+    public class TokenStream : IEnumerable<LexToken>
     {
-        private readonly Queue<LexicalToken> _tokenQueue = new Queue<LexicalToken>();
+        private readonly Queue<LexToken> _tokenQueue = new Queue<LexToken>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenStream"/> class.
@@ -42,7 +40,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// Enqueues the specified token into the stream in the order received.
         /// </summary>
         /// <param name="token">The token.</param>
-        public void Enqueue(LexicalToken token)
+        public void Enqueue(LexToken token)
         {
             _tokenQueue.Enqueue(token);
         }
@@ -52,9 +50,12 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// null if no tokens are found.
         /// </summary>
         /// <returns>LexicalToken.</returns>
-        public LexicalToken Prime()
+        public LexToken Prime()
         {
-            return this.ActiveToken ?? this.Next();
+            if (this.ActiveToken.TokenType == TokenType.None)
+                return this.Next();
+
+            return this.ActiveToken;
         }
 
         /// <summary>
@@ -64,36 +65,34 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// <param name="skipIgnored">if set to <c>true</c> any tokens deemed as "ignorable" according
         /// to the graphql spec are automatically skipped over. This includes token such as whitespace, commas and comments.</param>
         /// <returns>LexicalToken.</returns>
-        public LexicalToken Next(bool skipIgnored = true)
+        public LexToken Next(bool skipIgnored = true)
         {
-            this.ActiveToken = _tokenQueue.Count > 0 ? _tokenQueue.Dequeue() : null;
-            if (skipIgnored)
+            this.ActiveToken = _tokenQueue.Count > 0 ? _tokenQueue.Dequeue() : LexToken.Empty;
+            if (skipIgnored && this.ActiveToken.IsIgnored)
             {
-                while (this.ActiveToken != null && this.ActiveToken.IsIgnored)
+                do
                 {
-                    this.ActiveToken = _tokenQueue.Count > 0 ? _tokenQueue.Dequeue() : null;
+                    this.ActiveToken = _tokenQueue.Count > 0 ? _tokenQueue.Dequeue() : LexToken.Empty;
                 }
+                while (this.ActiveToken.IsIgnored && _tokenQueue.Count > 0);
             }
 
             return this.ActiveToken;
         }
 
         /// <summary>
-        /// Attempts to match the given text values against the active token if its a <see cref="NameToken"/>.
-        /// Will always return false if the active token is not a <see cref="NameToken"/>.
+        /// Attempts to match the given text values against the active token if its a name token.
+        /// Will always return false if the active token is not a name token.
         /// </summary>
         /// <param name="textValues">The text values.</param>
         /// <returns><c>true</c> if the token text matches a given text value, <c>false</c> otherwise.</returns>
         public bool Match(params ReadOnlyMemory<char>[] textValues)
         {
-            if (this.ActiveToken == null)
-                return false;
-
-            if (this.ActiveToken is NameToken nt)
+            if (this.ActiveToken.TokenType == TokenType.Name)
             {
                 foreach (var text in textValues)
                 {
-                    if (nt.Text.Span.Equals(text.Span, StringComparison.Ordinal))
+                    if (this.ActiveToken.Text.Span.Equals(text.Span, StringComparison.Ordinal))
                         return true;
                 }
             }
@@ -102,112 +101,31 @@ namespace GraphQL.AspNet.Parsing.Lexing
         }
 
         /// <summary>
-        /// Peeks at the next token on the queue.
-        /// </summary>
-        /// <typeparam name="TLexicalType">The expected type of the token next in the queue.</typeparam>
-        /// <returns><c>true</c> if the token is of the give type, <c>false</c> otherwise.</returns>
-        public bool Match<TLexicalType>()
-        where TLexicalType : LexicalToken
-        {
-            if (this.ActiveToken == null)
-                return false;
-
-            return this.ActiveToken is TLexicalType;
-        }
-
-        /// <summary>
-        /// Matches the currently <see cref="ActiveToken" /> to any of the provided <see cref="TokenType" />. The active
-        /// token must match one of the provided types for the match to succeed.
-        /// </summary>
-        /// <param name="primaryTokenType">Type of the primary token to check for.</param>
-        /// <param name="additionalTypes">Any additional tokens to check for.</param>
-        /// <returns><c>true</c> if a match is found, <c>false</c> otherwise.</returns>
-        public bool Match(TokenType primaryTokenType, params TokenType[] additionalTypes)
-        {
-            if (additionalTypes == null || additionalTypes.Length == 0)
-            {
-                return this.Match(primaryTokenType);
-            }
-            else
-            {
-                return primaryTokenType.AsEnumerable().Concat(additionalTypes).Any(this.Match);
-            }
-        }
-
-        /// <summary>
         /// Peeks at the next token on the queue to see if its type matches that provided.
         /// </summary>
         /// <param name="tokenType">The type to check the top of the queue froro.</param>
+        /// <param name="otherType">Another type of token to check, if any.</param>
         /// <returns><c>true</c> if the token type matches, <c>false</c> otherwise.</returns>
-        public bool Match(TokenType tokenType)
+        public bool Match(TokenType tokenType, TokenType? otherType = null)
         {
-            if (this.ActiveToken == null)
-                return false;
-
-            return this.ActiveToken.TokenType == tokenType;
+            return this.ActiveToken.TokenType == tokenType
+                || (otherType.HasValue && this.ActiveToken.TokenType == otherType.Value);
         }
 
         /// <summary>
-        /// Matches the currently <see cref="ActiveToken" /> to any of the provided <see cref="TokenType" />.
-        /// The active token must match one of the provided values or an exception is thrown.
-        /// </summary>
-        /// <param name="primaryTokenType">Type of the primary token to check for.</param>
-        /// <param name="additionalTypes">Any additional tokens to check for.</param>
-        public void MatchOrThrow(TokenType primaryTokenType, params TokenType[] additionalTypes)
-        {
-            if (additionalTypes == null || additionalTypes.Length == 0)
-            {
-                this.MatchOrThrow(primaryTokenType);
-            }
-            else
-            {
-                var typeCollection = primaryTokenType.AsEnumerable().Concat(additionalTypes);
-                var tokensMatched = typeCollection.Where(this.Match);
-                if (!tokensMatched.Any())
-                {
-                    var errors = "[" + string.Join(", ", typeCollection.Select(TokenTypeTextForErrorMessage).Select(x => x.ToString())) + "]";
-                    GraphQLSyntaxException.ThrowFromExpectation(
-                        this.Location,
-                        errors,
-                        this.ActiveTokenTypeDescrption.ToString());
-                }
-            }
-        }
-
-        /// <summary>
-        /// Matches the currently <see cref="ActiveToken"/> to the provided <see cref="TokenType"/>
+        /// Matches the currently <see cref="ActiveToken" /> to the provided <see cref="TokenType" />
         /// or throws an exception.
         /// </summary>
         /// <param name="tokenType">Type of the token.</param>
-        public void MatchOrThrow(TokenType tokenType)
+        /// <param name="otherType">Another type of token to check, if any.</param>
+        public void MatchOrThrow(TokenType tokenType, TokenType? otherType = null)
         {
-            if (!this.Match(tokenType))
+            if (!this.Match(tokenType, otherType))
             {
                 GraphQLSyntaxException.ThrowFromExpectation(
                     this.Location,
                     tokenType.Description(),
                     this.ActiveTokenTypeDescrption);
-            }
-        }
-
-        /// <summary>
-        /// Matches the type of the <see cref="ActiveToken"/> to the provided type or throws
-        /// an exception.
-        /// </summary>
-        /// <typeparam name="TLexicalType">The type of the t lexical type.</typeparam>
-        public void MatchOrThrow<TLexicalType>()
-            where TLexicalType : LexicalToken
-        {
-            if (!this.Match<TLexicalType>())
-            {
-                var text = this.EndOfStream
-                    ? TokenType.EndOfFile.Description().ToString()
-                    : this.ActiveToken.GetType().FriendlyName();
-
-                GraphQLSyntaxException.ThrowFromExpectation(
-                    this.Location,
-                    typeof(TLexicalType).FriendlyName(),
-                    text);
             }
         }
 
@@ -223,7 +141,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 GraphQLSyntaxException.ThrowFromExpectation(
                     this.Location,
                     keyword,
-                    this.ActiveToken?.Text ?? ReadOnlyMemory<char>.Empty);
+                    this.ActiveToken.Text);
             }
         }
 
@@ -251,7 +169,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// Gets a reference to the token in scope for analysis.
         /// </summary>
         /// <value>The active token.</value>
-        public LexicalToken ActiveToken { get; private set; }
+        public LexToken ActiveToken { get; private set; }
 
         /// <summary>
         /// Gets the active token type descrption that can be used in error messages.
@@ -264,7 +182,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 if (this.EndOfStream)
                     return TokenType.EndOfFile.Description();
 
-                if (this.ActiveToken == null)
+                if (this.ActiveToken.TokenType == TokenType.None)
                     return ParserConstants.Keywords.Null;
 
                 return this.TokenTypeTextForErrorMessage(this.ActiveToken.TokenType);
@@ -276,7 +194,16 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// of the <see cref="ActiveToken"/>. Returns <see cref="SourceLocation.None"/> if no token is active.
         /// </summary>
         /// <value>The location.</value>
-        public SourceLocation Location => this.ActiveToken?.Location ?? SourceLocation.None;
+        public SourceLocation Location
+        {
+            get
+            {
+                if (this.ActiveToken.TokenType == TokenType.None)
+                    return SourceLocation.None;
+                else
+                    return this.ActiveToken.Location;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether the stream is flushed (no tokens left to process)
@@ -289,7 +216,8 @@ namespace GraphQL.AspNet.Parsing.Lexing
             {
                 if (_tokenQueue.Count == 0)
                 {
-                    return this.ActiveToken == null || this.ActiveToken.TokenType == TokenType.EndOfFile;
+                    return this.ActiveToken.TokenType == TokenType.None
+                        || this.ActiveToken.TokenType == TokenType.EndOfFile;
                 }
 
                 return false;
@@ -307,7 +235,16 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// if no active token.
         /// </summary>
         /// <value>the <see cref="TokenType"/> at the top of the stream.</value>
-        public TokenType TokenType => this.ActiveToken?.TokenType ?? TokenType.EndOfFile;
+        public TokenType TokenType
+        {
+            get
+            {
+                if (this.ActiveToken.TokenType == TokenType.None)
+                    return TokenType.EndOfFile;
+
+                return this.ActiveToken.TokenType;
+            }
+        }
 
         /// <summary>
         /// Gets the source text which provides the tokens in this stream.
@@ -319,7 +256,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<LexicalToken> GetEnumerator()
+        public IEnumerator<LexToken> GetEnumerator()
         {
             return _tokenQueue.GetEnumerator();
         }

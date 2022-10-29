@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
-    /// a node maker, expecting to start at a <see cref="NameToken"/> on a stream
+    /// a node maker, expecting to start at a name token on a stream
     /// and will parse the stream in an attempt to extract a single, qualified field reference.
     /// </summary>
     /// <seealso cref="ISyntaxNodeMaker" />
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
         /// <returns>LexicalToken.</returns>
         public SyntaxNode MakeNode(TokenStream tokenStream)
         {
-            tokenStream.MatchOrThrow<NameToken>();
+            tokenStream.MatchOrThrow(TokenType.Name);
 
             var startLocation = tokenStream.Location;
             var fieldName = tokenStream.ActiveToken.Text;
@@ -50,13 +50,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             tokenStream.Next();
             SyntaxNode inputCollection = null;
             SyntaxNode fieldCollection = null;
-            var directives = new List<SyntaxNode>();
+            List<SyntaxNode> directives = null;
 
             // account for a possible alias on the field name
             if (tokenStream.Match(TokenType.Colon))
             {
                 tokenStream.Next();
-                tokenStream.MatchOrThrow<NameToken>();
+                tokenStream.MatchOrThrow(TokenType.Name);
 
                 fieldName = tokenStream.ActiveToken.Text;
                 tokenStream.Next();
@@ -70,11 +70,17 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             }
 
             // account for possible directives on this field
-            while (tokenStream.Match(TokenType.AtSymbol))
+            if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var maker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                var directive = maker.MakeNode(tokenStream);
-                directives.Add(directive);
+                directives = new List<SyntaxNode>();
+
+                do
+                {
+                    var directive = maker.MakeNode(tokenStream);
+                    directives.Add(directive);
+                }
+                while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             // account for posible field collection on this field
@@ -89,8 +95,11 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (inputCollection != null)
                 node.AddChild(inputCollection);
 
-            foreach (var directive in directives)
-                node.AddChild(directive);
+            if (directives != null)
+            {
+                foreach (var directive in directives)
+                    node.AddChild(directive);
+            }
 
             if (fieldCollection?.Children != null)
                 node.AddChild(fieldCollection);
