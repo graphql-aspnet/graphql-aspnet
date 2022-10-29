@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
 {
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -34,13 +35,8 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
         {
         }
 
-        /// <summary>
-        /// Processes the queue as far as it needs to to generate a fully qualiffied
-        /// <see cref="SyntaxNode" /> based on its ruleset.
-        /// </summary>
-        /// <param name="tokenStream">The token stream.</param>
-        /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        /// <inheritdoc />
+        public SyntaxNode MakeNode(ISyntaxNodeList masterNodeList, ref TokenStream tokenStream)
         {
             tokenStream.MatchOrThrow(TokenType.Name);
 
@@ -48,9 +44,8 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             var fieldName = tokenStream.ActiveToken.Text;
             var fieldAlias = fieldName;
             tokenStream.Next();
-            SyntaxNode inputCollection = null;
-            SyntaxNode fieldCollection = null;
-            List<SyntaxNode> directives = null;
+
+            var collectionId = masterNodeList.BeginTempCollection();
 
             // account for a possible alias on the field name
             if (tokenStream.Match(TokenType.Colon))
@@ -66,19 +61,20 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (tokenStream.Match(TokenType.ParenLeft))
             {
                 var maker = NodeMakerFactory.CreateMaker<InputItemCollectionNode>();
-                inputCollection = maker.MakeNode(ref tokenStream);
+                var inputCollection = maker.MakeNode(masterNodeList, ref tokenStream);
+                if (inputCollection.Children != null)
+                    masterNodeList.AddNodeToTempCollection(collectionId, inputCollection);
             }
 
             // account for possible directives on this field
             if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var maker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                directives = new List<SyntaxNode>();
 
                 do
                 {
-                    var directive = maker.MakeNode(ref tokenStream);
-                    directives.Add(directive);
+                    var directive = maker.MakeNode(masterNodeList, ref tokenStream);
+                    masterNodeList.AddNodeToTempCollection(collectionId, directive);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
             }
@@ -87,23 +83,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (tokenStream.Match(TokenType.CurlyBraceLeft))
             {
                 var maker = NodeMakerFactory.CreateMaker<FieldCollectionNode>();
-                fieldCollection = maker.MakeNode(ref tokenStream);
+                var fieldCollection = maker.MakeNode(masterNodeList, ref tokenStream);
+                if (fieldCollection.Children != null)
+                    masterNodeList.AddNodeToTempCollection(collectionId, fieldCollection);
             }
 
             var node = new FieldNode(startLocation, fieldAlias, fieldName);
-
-            if (inputCollection != null)
-                node.AddChild(inputCollection);
-
-            if (directives != null)
-            {
-                foreach (var directive in directives)
-                    node.AddChild(directive);
-            }
-
-            if (fieldCollection?.Children != null)
-                node.AddChild(fieldCollection);
-
+            node.SetChildren(masterNodeList, collectionId);
             return node;
         }
     }

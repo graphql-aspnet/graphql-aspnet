@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -42,7 +43,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token queue.</param>
         /// <returns>SyntaxNode.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
             // a root fragment must be in the form of keywords:  fragment on TargetType{}
 
@@ -68,17 +69,17 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
                 tokenStream.Next();
             }
 
+            var collectionId = nodeList.BeginTempCollection();
+
             // account for possible directives on this field
-            List<SyntaxNode> directives = null;
             if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                directives = new List<SyntaxNode>();
 
                 do
                 {
-                    var directive = dirMaker.MakeNode(ref tokenStream);
-                    directives.Add(directive);
+                    var directive = dirMaker.MakeNode(nodeList, ref tokenStream);
+                    nodeList.AddNodeToTempCollection(collectionId, directive);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
             }
@@ -86,13 +87,14 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             // must be pointing at the fragment field set now
             tokenStream.MatchOrThrow(TokenType.CurlyBraceLeft);
             var fieldCollectionMaker = NodeMakerFactory.CreateMaker<FieldCollectionNode>();
-            var collection = fieldCollectionMaker.MakeNode(ref tokenStream);
+            var collection = fieldCollectionMaker.MakeNode(nodeList, ref tokenStream);
+
+            if (collection.Children != null)
+                nodeList.AddNodeToTempCollection(collectionId, collection);
 
             var node = new NamedFragmentNode(startLocation, fragmentName, targetType);
-            if (collection.Children != null)
-                node.AddChild(collection);
+            node.SetChildren(nodeList, collectionId);
 
-            node.AddChildren(directives);
             return node;
         }
     }

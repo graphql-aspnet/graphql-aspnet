@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
@@ -46,7 +47,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
             tokenStream.MatchOrThrow(TokenType.SpreadOperator);
             var startLocation = tokenStream.Location;
@@ -56,7 +57,9 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             SyntaxNode collection = null;
             ReadOnlyMemory<char> fragmentName = ReadOnlyMemory<char>.Empty;
             ReadOnlyMemory<char> restrictedToType = ReadOnlyMemory<char>.Empty;
-            List<SyntaxNode> directives = null;
+
+            var collectionId = nodeList.BeginTempCollection();
+            int childNodesCreated = 0;
 
             // check for inline fragment first "on Type"
             if (tokenStream.Match(KEYWORDS.On))
@@ -77,13 +80,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             // account for possible directives on this field
             if (tokenStream.Match(TokenType.AtSymbol))
             {
-                directives = new List<SyntaxNode>();
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
 
                 do
                 {
-                    var directive = dirMaker.MakeNode(ref tokenStream);
-                    directives.Add(directive);
+                    var directive = dirMaker.MakeNode(nodeList, ref tokenStream);
+                    nodeList.AddNodeToTempCollection(collectionId, directive);
+                    childNodesCreated++;
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
             }
@@ -92,10 +95,15 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (tokenStream.Match(TokenType.CurlyBraceLeft))
             {
                 var filedColMaker = NodeMakerFactory.CreateMaker<FieldCollectionNode>();
-                collection = filedColMaker.MakeNode(ref tokenStream);
+                collection = filedColMaker.MakeNode(nodeList, ref tokenStream);
+                if (collection.Children != null)
+                {
+                    nodeList.AddNodeToTempCollection(collectionId, collection);
+                    childNodesCreated++;
+                }
             }
 
-            if (fragmentName.IsEmpty && restrictedToType.IsEmpty && directives == null && collection == null)
+            if (fragmentName.IsEmpty && restrictedToType.IsEmpty && childNodesCreated == 0)
             {
                 throw new GraphQLSyntaxException(
                     startLocation,
@@ -107,14 +115,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             else
                 node = new InlineFragmentNode(startLocation, restrictedToType);
 
-            if (collection?.Children != null)
-                node.AddChild(collection);
-
-            if (directives != null)
-            {
-                foreach (var directive in directives)
-                    node.AddChild(directive);
-            }
+            node.SetChildren(nodeList, collectionId);
 
             return node;
         }

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Parsing.NodeMakers
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -40,7 +41,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
             // parentleft:  input item collection on a field
             // curlybraceleft: input item collection in a complex field
@@ -48,20 +49,19 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            List<SyntaxNode> children = null;
+            var collectionId = nodeList.BeginTempCollection();
 
             if (!tokenStream.EndOfStream
                 && !tokenStream.Match(TokenType.ParenRight, TokenType.CurlyBraceRight))
             {
                 var maker = NodeMakerFactory.CreateMaker<InputItemNode>();
-                children = new List<SyntaxNode>();
 
                 do
                 {
                     // ensure each input value in this collection is unique
-                    if (maker.MakeNode(ref tokenStream) is InputItemNode node)
+                    if (maker.MakeNode(nodeList, ref tokenStream) is InputItemNode node)
                     {
-                        children.Add(node);
+                        nodeList.AddNodeToTempCollection(collectionId, node);
                     }
                 }
                 while (!tokenStream.EndOfStream
@@ -73,8 +73,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.Next();
 
             var collection = new InputItemCollectionNode(startLocation);
-
-            collection.AddChildren(children);
+            collection.SetChildren(nodeList, collectionId);
 
             return collection;
         }

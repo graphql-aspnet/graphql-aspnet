@@ -55,12 +55,6 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         }
 
         /// <inheritdoc />
-        protected override bool CanHaveChild(SyntaxNode childNode)
-        {
-            return false;
-        }
-
-        /// <inheritdoc />
         public override string ToString()
         {
             return $"-Empty-";

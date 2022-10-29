@@ -14,8 +14,9 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps;
 
     /// <summary>
     /// The <see cref="SyntaxNode"/> is a single element in a syntax tree generated from the
@@ -24,9 +25,12 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
     /// create a foundational framework from which an execution plan can be generated and ran against a schema.
     /// </summary>
     [Serializable]
-    public abstract class SyntaxNode : IDisposable
+    public abstract class SyntaxNode
     {
-        private bool _isDisposed;
+        private bool _childrenSet;
+        private ISyntaxNodeList _nodeList;
+        private int _childStartIndex;
+        private int _childLength;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxNode" /> class.
@@ -38,54 +42,47 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         }
 
         /// <summary>
-        /// Adds the child to the node, incorporating it into the syntax tree. If this
-        /// node cannot accept this node an exception is thrown.
+        /// Sets the single provided child node as the ONLY child of this syntax node.
+        /// Once set, no additional children can be set.
         /// </summary>
-        /// <param name="childNode">The child node.</param>
-        public void AddChild(SyntaxNode childNode)
+        /// <param name="syntaxNode">The syntax node.</param>
+        public void SetChild(ISyntaxNodeList nodeList, SyntaxNode syntaxNode)
         {
-            Validation.ThrowIfNull(childNode, nameof(childNode));
-            if (this.CanHaveChild(childNode))
-            {
-                if (this.Children == null)
-                    this.Children = new NodeCollection();
+            if (_childrenSet)
+                throw new InvalidOperationException("Child nodes already defined, they cannot be edited once set");
 
-                this.Children.Add(childNode);
-                childNode.ParentNode = this;
-            }
-            else
-            {
-                throw new GraphQLSyntaxException(
-                    childNode.Location,
-                    $"Unexpected node, {childNode.NodeName} is invalid at this location.");
-            }
-        }
-
-        /// <summary>
-        /// Adds a collection of children to this instance.
-        /// </summary>
-        /// <param name="childNodes">The child nodes to add.</param>
-        public void AddChildren(IEnumerable<SyntaxNode> childNodes)
-        {
-            if (childNodes == null)
+            _childrenSet = true;
+            if (syntaxNode == null)
                 return;
 
-            foreach (var child in childNodes)
-                this.AddChild(child);
+            Validation.ThrowIfNull(nodeList, nameof(nodeList));
+            var index = nodeList.PreserveNode(syntaxNode);
+            _nodeList = nodeList;
+            _childLength = 1;
+            _childStartIndex = index;
         }
 
         /// <summary>
-        /// Gets the owner of this node in the syntax tree.
+        /// Using the provided collection id, on the <see cref="MasterNodeList"/>,
+        /// sets the contents of that collection as the children of this node.
         /// </summary>
-        /// <value>The parent node.</value>
-        public SyntaxNode ParentNode { get; private set; }
+        /// <remarks>
+        /// Use -1 to indicate no children should be associated with this node.
+        /// </remarks>
+        /// <param name="collectionId">The collection identifier.</param>
+        public void SetChildren(ISyntaxNodeList nodeList, int collectionId)
+        {
+            if (_childrenSet)
+                throw new InvalidOperationException("Child nodes already defined, they cannot be edited once set");
 
-        /// <summary>
-        /// Determines whether this instance can contain the child being added.
-        /// </summary>
-        /// <param name="childNode">The child node.</param>
-        /// <returns><c>true</c> if this instance can have the node as a child; otherwise, <c>false</c>.</returns>
-        protected abstract bool CanHaveChild(SyntaxNode childNode);
+            Validation.ThrowIfNull(nodeList, nameof(nodeList));
+            _childrenSet = true;
+
+            var result = nodeList.PreserveCollection(collectionId);
+            _nodeList = nodeList;
+            _childStartIndex = result.StartIndex;
+            _childLength = result.Length;
+        }
 
         /// <summary>
         /// Gets the friendly name of the node.
@@ -97,7 +94,16 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         /// Gets the child nodes owned by this instance, if any.
         /// </summary>
         /// <value>The children.</value>
-        public NodeCollection Children { get; private set; }
+        public IReadOnlyList<SyntaxNode> Children
+        {
+            get
+            {
+                if (_nodeList == null || _childLength == 0 || _childStartIndex < 0)
+                    return null;
+
+                return _nodeList.CreateSegment(_childStartIndex, _childLength);
+            }
+        }
 
         /// <summary>
         /// Gets the location in the source text where this node originated.
@@ -109,36 +115,6 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         public override string ToString()
         {
             return "Unknown";
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    if (this.Children != null)
-                        this.Children.Dispose();
-
-                    this.Children = null;
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                _isDisposed = true;
-            }
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

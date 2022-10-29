@@ -92,7 +92,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         public static ReadOnlyMemory<char> NextName(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
-            var text = source.NextFilter(NameValidator.IsValidNameCharacter);
+            var text = source.NextFilter(NameValidator.IsValidNameCharacterDelegate);
             NameValidator.Instance.ValidateOrThrow(source, text, location);
             return source.SliceMemory(location.AbsoluteIndex, text.Length);
         }
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         public static ReadOnlyMemory<char> NextNumber(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
-            var text = source.NextFilter(NumberValidator.IsValidNumberCharacter);
+            var text = source.NextFilter(NumberValidator.IsValidNumberCharacterDelegate);
             NumberValidator.Instance.ValidateOrThrow(source, text, location);
             return source.SliceMemory(location.AbsoluteIndex, text.Length);
         }

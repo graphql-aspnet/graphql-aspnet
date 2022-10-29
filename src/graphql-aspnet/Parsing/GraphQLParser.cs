@@ -86,6 +86,8 @@ namespace GraphQL.AspNet.Parsing
             // * variables are identified and proper reference is ensured
             // * ..and on and on
             // ----------------------------------
+
+            var collectionId = syntaxTree.BeginTempCollection();
             do
             {
                 // offload processing of the queue to a specialized top-level-node "maker"
@@ -117,10 +119,12 @@ namespace GraphQL.AspNet.Parsing
                     maker = NodeMakerFactory.CreateMaker<OperationNode>();
                 }
 
-                var node = maker.MakeNode(ref tokenStream);
-                syntaxTree.RootNode.AddChild(node);
+                var node = maker.MakeNode(syntaxTree, ref tokenStream);
+                syntaxTree.AddNodeToTempCollection(collectionId, node);
             }
             while (!tokenStream.EndOfStream);
+
+            syntaxTree.RootNode.SetChildren(syntaxTree, collectionId);
 
             return syntaxTree;
         }

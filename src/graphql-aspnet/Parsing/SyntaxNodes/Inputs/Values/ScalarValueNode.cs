@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Internal;
 
     /// <summary>
     /// A representation of a single, simple piece of data.

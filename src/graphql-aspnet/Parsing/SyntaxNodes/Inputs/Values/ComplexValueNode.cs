@@ -29,16 +29,6 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values
         {
         }
 
-        /// <summary>
-        /// Determines whether this instance can contain the child being added.
-        /// </summary>
-        /// <param name="childNode">The child node.</param>
-        /// <returns><c>true</c> if this instance can have the node as a child; otherwise, <c>false</c>.</returns>
-        protected override bool CanHaveChild(SyntaxNode childNode)
-        {
-            return childNode is InputItemCollectionNode;
-        }
-
         /// <inheritdoc />
         public override string ToString()
         {

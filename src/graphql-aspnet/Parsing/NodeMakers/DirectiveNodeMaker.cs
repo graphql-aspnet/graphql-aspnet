@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Parsing.NodeMakers
 {
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -34,13 +35,8 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         {
         }
 
-        /// <summary>
-        /// Processes the queue as far as it needs to to generate a fully qualiffied
-        /// <see cref="SyntaxNode" /> based on its ruleset.
-        /// </summary>
-        /// <param name="tokenStream">The token stream.</param>
-        /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        /// <inheritdoc />
+        public SyntaxNode MakeNode(ISyntaxNodeList masterNodeList, ref TokenStream tokenStream)
         {
             tokenStream.MatchOrThrow(TokenType.AtSymbol);
             var startLocation = tokenStream.Location;
@@ -55,13 +51,12 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             if (tokenStream.Match(TokenType.ParenLeft))
             {
                 var inputMaker = NodeMakerFactory.CreateMaker<InputItemCollectionNode>();
-                inputCol = inputMaker.MakeNode(ref tokenStream);
+                inputCol = inputMaker.MakeNode(masterNodeList, ref tokenStream);
             }
 
             // assemble the directive
             var directive = new DirectiveNode(startLocation, directiveName);
-            if (inputCol != null)
-                directive.AddChild(inputCol);
+            directive.SetChild(masterNodeList, inputCol);
 
             return directive;
         }

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -39,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             var complexMaker = ComplexValueNodeMaker.Instance;
 
-            var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
+            var node = complexMaker.MakeNode(new SyntaxTree(), ref stream) as ComplexValueNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(1, node.Children.Count);
 
@@ -75,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             var complexMaker = ComplexValueNodeMaker.Instance;
 
-            var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
+            var node = complexMaker.MakeNode(new SyntaxTree(), ref stream) as ComplexValueNode;
             Assert.IsNotNull(node);
 
             // three children childArg1, childArg2, childArg3
@@ -112,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             try
             {
                 var complexMaker = ComplexValueNodeMaker.Instance;
-                var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
+                var node = complexMaker.MakeNode(new SyntaxTree(), ref stream) as ComplexValueNode;
             }
             catch (GraphQLSyntaxException)
             {
@@ -133,7 +134,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             try
             {
                 var complexMaker = ComplexValueNodeMaker.Instance;
-                var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
+                var node = complexMaker.MakeNode(new SyntaxTree(), ref stream) as ComplexValueNode;
             }
             catch (GraphQLSyntaxException)
             {

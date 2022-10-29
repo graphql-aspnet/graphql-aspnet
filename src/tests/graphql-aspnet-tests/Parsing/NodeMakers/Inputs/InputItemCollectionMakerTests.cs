@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -35,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = InputItemCollectionNodeMaker.Instance.MakeNode(ref stream) as InputItemCollectionNode;
+            var node = InputItemCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as InputItemCollectionNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(2, node.Children.Count);
 
@@ -72,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                InputItemCollectionNodeMaker.Instance.MakeNode(ref stream);
+                InputItemCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -91,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                InputItemCollectionNodeMaker.Instance.MakeNode(ref stream);
+                InputItemCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -110,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                InputItemCollectionNodeMaker.Instance.MakeNode(ref stream);
+                InputItemCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -127,7 +128,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = InputItemCollectionNodeMaker.Instance.MakeNode(ref stream) as InputItemCollectionNode;
+            var node = InputItemCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as InputItemCollectionNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(2, node.Children.Count);
 

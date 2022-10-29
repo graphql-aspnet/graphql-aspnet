@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -33,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = NumberValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
+            var result = NumberValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ValueType, ScalarValueType.Number);
             Assert.AreEqual("1234.567", result.Value.ToString());
@@ -47,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = NumberValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
+            var result = NumberValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ValueType, ScalarValueType.Number);
             Assert.AreEqual("1234", result.Value.ToString());
@@ -61,7 +62,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = NumberValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
+            var result = NumberValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ValueType, ScalarValueType.Number);
             Assert.AreEqual("null", result.Value.ToString());
@@ -77,7 +78,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             try
             {
-                NumberValueNodeMaker.Instance.MakeNode(ref stream);
+                NumberValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {

@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -35,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ListValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Children.Count);
             Assert.IsTrue(result.Children.All(x => x is ScalarValueNode svn && svn.ValueType == ScalarValueType.Number));
@@ -55,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ListValueNode;
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Children.All(x => x is ScalarValueNode svn && svn.ValueType == ScalarValueType.String));
             Assert.AreEqual("\"bob\"", ((ScalarValueNode)result.Children.ElementAt(0)).Value.ToString());
@@ -74,10 +75,35 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
+            var syntaxTree = new SyntaxTree();
+            var result = ListValueNodeMaker.Instance.MakeNode(syntaxTree, ref stream) as ListValueNode;
             Assert.IsNotNull(result);
 
             Assert.AreEqual(3, result.Children.Count);
+            Assert.IsTrue(result.Children.All(x => x is ComplexValueNode));
+            foreach (var node in result.Children.OfType<ComplexValueNode>())
+            {
+                Assert.AreEqual(1, node.Children.Count);
+                Assert.IsNotNull(node.Children.ElementAt(0) as InputItemCollectionNode);
+                Assert.AreEqual(2, node.Children.ElementAt(0).Children.Count);
+            }
+
+            // ensure stream is pointing beyond the end of the list
+            Assert.AreEqual(TokenType.Name, stream.TokenType);
+        }
+
+
+        [Test]
+        public void ListValueNodeMaker_SmallComplexValueList_ParsesCorrectly()
+        {
+            var text = "[{arg1: 123, arg2: [456, 1234]}])";
+            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+
+            stream.Prime();
+            var result = ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ListValueNode;
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual(1, result.Children.Count);
             Assert.IsTrue(result.Children.All(x => x is ComplexValueNode));
             foreach (var node in result.Children.OfType<ComplexValueNode>())
             {
@@ -87,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             }
 
             // ensure stream is pointing beyond the end of the list
-            Assert.AreEqual(TokenType.Name, stream.TokenType);
+            Assert.AreEqual(TokenType.ParenRight, stream.TokenType);
         }
 
         [Test]
@@ -97,7 +123,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ListValueNode;
             Assert.IsNotNull(result);
 
             // ensure all children were parsed to lists
@@ -111,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ListValueNode;
             Assert.AreEqual(2, result.Children.Count);
             Assert.IsTrue(result.Children.ElementAt(0) is ScalarValueNode child1 && child1.ValueType == ScalarValueType.Number);
             Assert.IsTrue(result.Children.ElementAt(1) is ScalarValueNode child2 && child2.ValueType == ScalarValueType.String);
@@ -124,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ListValueNode;
             Assert.IsNotNull(result);
 
             Assert.AreEqual(3, result.Children.Count);
@@ -143,7 +169,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             try
             {
-                ListValueNodeMaker.Instance.MakeNode(ref stream);
+                ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -163,7 +189,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                ListValueNodeMaker.Instance.MakeNode(ref stream);
+                ListValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {

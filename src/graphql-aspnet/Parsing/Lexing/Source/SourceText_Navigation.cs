@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public ReadOnlySpan<char> NextFilter(Func<char, bool> predicate)
+        public ReadOnlySpan<char> NextFilter(SourceNextFilterDelegate predicate)
         {
             var index = this.Cursor;
             while (index < _sourceText.Length && predicate(_sourceText[index]))

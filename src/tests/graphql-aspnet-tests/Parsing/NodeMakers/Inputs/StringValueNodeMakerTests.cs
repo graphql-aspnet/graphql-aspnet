@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -33,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = StringValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
+            var result = StringValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(ScalarValueType.String, result.ValueType);
             Assert.AreEqual("\"TestValue\"", result.Value.ToString());
@@ -46,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = StringValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
+            var result = StringValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(ScalarValueType.String, result.ValueType);
             Assert.AreEqual("\"\"\"Tes\nt\"Va\r\nlue\"\"\"", result.Value.ToString());
@@ -63,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             try
             {
-                StringValueNodeMaker.Instance.MakeNode(ref stream);
+                StringValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -80,7 +81,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var node = StringValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
+            var node = StringValueNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as ScalarValueNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(ScalarValueType.String, node.ValueType);
             Assert.AreEqual("null", node.Value.ToString());

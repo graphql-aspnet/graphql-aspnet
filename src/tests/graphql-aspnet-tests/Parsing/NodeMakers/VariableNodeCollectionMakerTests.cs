@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -34,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(test.AsMemory()));
             stream.Prime();
 
-            var collection = VariableCollectionNodeMaker.Instance.MakeNode(ref stream) as VariableCollectionNode;
+            var collection = VariableCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as VariableCollectionNode;
             Assert.IsNotNull(collection);
             Assert.AreEqual(3, collection.Children.Count);
 
@@ -71,7 +72,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
             try
             {
-                VariableCollectionNodeMaker.Instance.MakeNode(ref stream);
+                VariableCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -90,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
             try
             {
-                VariableCollectionNodeMaker.Instance.MakeNode(ref stream);
+                VariableCollectionNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {

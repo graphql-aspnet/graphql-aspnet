@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
 {
     using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -41,7 +42,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
             // extracts a variable in the format of:    $name: declaredType [= defaultValue]
 
@@ -83,36 +84,32 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
                     endToken.Location.AbsoluteIndex + endToken.Text.Length - startToken.Location.AbsoluteIndex);
             }
 
+            var collectionId = nodeList.BeginTempCollection();
+
             // could be an equal sign for a default value
-            SyntaxNode defaultValue = null;
             if (tokenStream.Match(TokenType.EqualsSign))
             {
                 tokenStream.Next();
                 var maker = NodeMakerFactory.CreateMaker<InputValueNode>();
-                defaultValue = maker.MakeNode(ref tokenStream);
+                var defaultValue = maker.MakeNode(nodeList, ref tokenStream);
+                nodeList.AddNodeToTempCollection(collectionId, defaultValue);
             }
 
             // could be directives with the @ symbol
-            List<SyntaxNode> directives = null;
             if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var maker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                directives = new List<SyntaxNode>();
 
                 do
                 {
-                    var directiveNode = maker.MakeNode(ref tokenStream);
-                    directives.Add(directiveNode);
+                    var directiveNode = maker.MakeNode( nodeList, ref tokenStream);
+                    nodeList.AddNodeToTempCollection(collectionId, directiveNode);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             var variable = new VariableNode(startLocation, variableName, typeExpression);
-
-            if (defaultValue != null)
-                variable.AddChild(defaultValue);
-
-            variable.AddChildren(directives);
+            variable.SetChildren(nodeList, collectionId);
 
             return variable;
         }

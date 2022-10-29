@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList masterNodeList, ref TokenStream tokenStream)
         {
             // the token stream MUST be positioned at an open curley brace for this to function
             // correclty
@@ -46,15 +47,15 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            List<SyntaxNode> childNodes = null;
+            var collectionId = masterNodeList.BeginTempCollection();
+
             if (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.CurlyBraceRight))
             {
-                childNodes = new List<SyntaxNode>();
                 do
                 {
                     var maker = this.CreateFieldMaker(ref tokenStream);
-                    var node = maker.MakeNode(ref tokenStream);
-                    childNodes.Add(node);
+                    var node = maker.MakeNode(masterNodeList, ref tokenStream);
+                    masterNodeList.AddNodeToTempCollection(collectionId, node);
                 }
                 while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.CurlyBraceRight));
             }
@@ -64,12 +65,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             tokenStream.Next();
 
             var collectionNode = new FieldCollectionNode(startLocation);
-
-            if (childNodes != null)
-            {
-                foreach (var field in childNodes)
-                    collectionNode.AddChild(field);
-            }
+            collectionNode.SetChildren(masterNodeList, collectionId);
 
             return collectionNode;
         }

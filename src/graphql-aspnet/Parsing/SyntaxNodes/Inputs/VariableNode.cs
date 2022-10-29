@@ -37,16 +37,6 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         }
 
         /// <summary>
-        /// Determines whether this instance can contain the child being added.
-        /// </summary>
-        /// <param name="childNode">The child node.</param>
-        /// <returns><c>true</c> if this instance can have the node as a child; otherwise, <c>false</c>.</returns>
-        protected override bool CanHaveChild(SyntaxNode childNode)
-        {
-            return childNode is InputValueNode || childNode is DirectiveNode;
-        }
-
-        /// <summary>
         /// Gets the name of the variable as defined in the query.
         /// </summary>
         /// <value>The name of the variable.</value>

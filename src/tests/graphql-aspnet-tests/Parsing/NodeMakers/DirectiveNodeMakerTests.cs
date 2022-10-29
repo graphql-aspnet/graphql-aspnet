@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -34,7 +35,9 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = DirectiveNodeMaker.Instance.MakeNode(ref stream) as DirectiveNode;
+            var tree = new SyntaxTree();
+
+            var node = DirectiveNodeMaker.Instance.MakeNode(tree, ref stream) as DirectiveNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("skip", node.DirectiveName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -61,7 +64,9 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = DirectiveNodeMaker.Instance.MakeNode(ref stream) as DirectiveNode;
+            var tree = new SyntaxTree();
+
+            var node = DirectiveNodeMaker.Instance.MakeNode(tree, ref stream) as DirectiveNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("skip", node.DirectiveName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -78,7 +83,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
             try
             {
-                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+                DirectiveNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -97,7 +102,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
             try
             {
-                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+                DirectiveNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -116,7 +121,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
             try
             {
-                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+                DirectiveNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -135,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
 
             try
             {
-                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+                DirectiveNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {

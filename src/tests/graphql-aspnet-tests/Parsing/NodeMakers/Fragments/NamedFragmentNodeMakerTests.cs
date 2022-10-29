@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -32,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream) as NamedFragmentNode;
+            var node = NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream) as NamedFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragment", node.FragmentName.ToString());
             Assert.AreEqual("User", node.TargetType.ToArray());
@@ -46,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream) as NamedFragmentNode;
+            var node = NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream) as NamedFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragment", node.FragmentName.ToString());
             Assert.AreEqual("User", node.TargetType.ToArray());
@@ -66,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+                NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -85,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+                NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -104,7 +105,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+                NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -123,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+                NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -142,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+                NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -161,7 +162,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+                NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -178,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream) as NamedFragmentNode;
+            var node = NamedFragmentNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream) as NamedFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragment", node.FragmentName.ToString());
             Assert.AreEqual("User", node.TargetType.ToArray());

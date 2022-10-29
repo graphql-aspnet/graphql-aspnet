@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.NodeMakers.ValueMakers;
@@ -173,7 +174,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             {
                 var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
                 if (maker != null)
-                    node = maker.MakeNode(ref tokenStream) as InputValueNode;
+                    node = maker.MakeNode(new SyntaxTree(), ref tokenStream) as InputValueNode;
             }
 
             var inputValue = DocumentSuppliedValueFactory.CreateInputValue(owner.Object, node);
@@ -208,7 +209,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             {
                 var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
                 if (maker != null)
-                    node = maker.MakeNode(ref tokenStream) as InputValueNode;
+                    node = maker.MakeNode(new SyntaxTree(), ref tokenStream) as InputValueNode;
             }
 
             var inputValue = DocumentSuppliedValueFactory.CreateInputValue(owner.Object, node);

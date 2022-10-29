@@ -11,12 +11,14 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 {
     using System;
     using System.Linq;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.NodeMakers.FieldMakers;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
+    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps;
     using NUnit.Framework;
 
     [TestFixture]
@@ -29,7 +31,9 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(ref tokenStream) as FragmentSpreadNode;
+            var syntaxTree = new SyntaxTree();
+
+            var node = FragementNodeMaker.Instance.MakeNode(syntaxTree, ref tokenStream) as FragmentSpreadNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragmentA", node.PointsToFragmentName.ToString());
             Assert.IsNull(node.Children);
@@ -42,7 +46,9 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(ref tokenStream) as FragmentSpreadNode;
+            var syntaxTree = new SyntaxTree();
+
+            var node = FragementNodeMaker.Instance.MakeNode(syntaxTree, ref tokenStream) as FragmentSpreadNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragmentA", node.PointsToFragmentName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -61,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                FragementNodeMaker.Instance.MakeNode(ref tokenStream);
+                FragementNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -80,7 +86,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
 
             try
             {
-                FragementNodeMaker.Instance.MakeNode(ref tokenStream);
+                FragementNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -97,7 +103,9 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(ref tokenStream) as InlineFragmentNode;
+            var syntaxTree = new SyntaxTree();
+
+            var node = FragementNodeMaker.Instance.MakeNode(syntaxTree, ref tokenStream) as InlineFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("User", node.TargetType.ToString());
             Assert.IsNull(node.Children);
@@ -110,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(ref tokenStream) as InlineFragmentNode;
+            var node = FragementNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream) as InlineFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("User", node.TargetType.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -127,7 +135,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = FragementNodeMaker.Instance.MakeNode(ref tokenStream) as InlineFragmentNode;
+            var node = FragementNodeMaker.Instance.MakeNode(new SyntaxTree(), ref tokenStream) as InlineFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("User", node.TargetType.ToString());
             Assert.AreEqual(1, node.Children.Count);

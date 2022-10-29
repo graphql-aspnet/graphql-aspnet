@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 {
     using System;
+    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing.Lexing.Source;
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = InputItemNodeMaker.Instance.MakeNode(ref stream) as InputItemNode;
+            var node = InputItemNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as InputItemNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("arg1", node.InputName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -47,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = InputItemNodeMaker.Instance.MakeNode(ref stream) as InputItemNode;
+            var node = InputItemNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as InputItemNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("arg1", node.InputName.ToString());
             Assert.AreEqual(2, node.Children.Count); // inputvalue + directive
@@ -64,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = InputItemNodeMaker.Instance.MakeNode(ref stream) as InputItemNode;
+            var node = InputItemNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream) as InputItemNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("arg1", node.InputName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -83,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                InputItemNodeMaker.Instance.MakeNode(ref stream);
+                InputItemNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -102,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                InputItemNodeMaker.Instance.MakeNode(ref stream);
+                InputItemNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -121,7 +122,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                InputItemNodeMaker.Instance.MakeNode(ref stream);
+                InputItemNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {
@@ -140,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             try
             {
-                InputItemNodeMaker.Instance.MakeNode(ref stream);
+                InputItemNodeMaker.Instance.MakeNode(new SyntaxTree(), ref stream);
             }
             catch (GraphQLSyntaxException)
             {

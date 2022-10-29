@@ -160,6 +160,8 @@ namespace GraphQL.AspNet.Parsing.Lexing.CharacterGroupValidation
             return true;
         }
 
+        public static SourceNextFilterDelegate IsValidNumberCharacterDelegate { get; } = IsValidNumberCharacter;
+
         /// <summary>
         /// Determines whether the given character is valid in a graphql name.
         /// </summary>

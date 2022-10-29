@@ -22,15 +22,17 @@ namespace GraphQL.AspNet.Internal.Interfaces
     public interface ISyntaxNodeMaker
     {
         /// <summary>
-        /// Processes the stream as far as it needs to to generate a fully qualiffied
+        /// Processes the stream as far as it needs to to generate a fully qualified
         /// <see cref="SyntaxNode" /> based on its internal ruleset. All implementations
         /// are expected to validate the stream is at a location which it can consume
-        /// and throw an <see cref="GraphQLSyntaxException"/> as appropriate and consume
+        /// and throw an <see cref="GraphQLSyntaxException" /> as appropriate and consume
         /// the last character in their phrase, leaving the stream primed for the next
         /// maker in the series.
         /// </summary>
+        /// <param name="masterNodeList">The master node list that any
+        /// created node should reference.</param>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        SyntaxNode MakeNode(ref TokenStream tokenStream);
+        SyntaxNode MakeNode(ISyntaxNodeList masterNodeList, ref TokenStream tokenStream);
     }
 }

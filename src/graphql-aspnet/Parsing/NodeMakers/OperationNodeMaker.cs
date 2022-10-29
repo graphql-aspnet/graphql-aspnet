@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -41,11 +42,9 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
-            List<SyntaxNode> directives = null;
-            SyntaxNode variableCollection = null;
-            SyntaxNode fieldCollection = null;
+            var collectionId = nodeList.BeginTempCollection();
 
             // check to see if this is qualified operation root
             // default to "query" as per the specification if not
@@ -56,35 +55,35 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             if (tokenStream.Match(TokenType.ParenLeft))
             {
                 var variableMaker = NodeMakerFactory.CreateMaker<VariableCollectionNode>();
-                variableCollection = variableMaker.MakeNode(ref tokenStream);
+                var node = variableMaker.MakeNode(nodeList, ref tokenStream);
+
+                if (node.Children != null)
+                    nodeList.AddNodeToTempCollection(collectionId, node);
             }
 
             // account for possible directives on this operation
             if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                directives = new List<SyntaxNode>();
 
                 do
                 {
-                    var directive = dirMaker.MakeNode(ref tokenStream);
-                    directives.Add(directive);
+                    var directive = dirMaker.MakeNode(nodeList, ref tokenStream);
+                    nodeList.AddNodeToTempCollection(collectionId, directive);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             // only thing left on the operaton root is the field selection
             tokenStream.MatchOrThrow(TokenType.CurlyBraceLeft);
+
             var maker = NodeMakerFactory.CreateMaker<FieldCollectionNode>();
-            fieldCollection = maker.MakeNode(ref tokenStream);
+            var fieldCollection = maker.MakeNode(nodeList, ref tokenStream);
 
-            if (variableCollection != null)
-                operationNode.AddChild(variableCollection);
+            if (fieldCollection.Children != null)
+                nodeList.AddNodeToTempCollection(collectionId, fieldCollection);
 
-            operationNode.AddChildren(directives);
-
-            if (fieldCollection?.Children != null)
-                operationNode.AddChild(fieldCollection);
+            operationNode.SetChildren(nodeList, collectionId);
 
             return operationNode;
         }

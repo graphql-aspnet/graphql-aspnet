@@ -7,16 +7,18 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.CommonHelpers
+namespace GraphQL.AspNet.Parsing
 {
-    using GraphQL.AspNet.Common.Source;
+    using System.Collections.Generic;
+    using System.Linq;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
 
-    public class FakeSyntaxNode : SyntaxNode
+    public static class SyntaxNodeExtensions
     {
-        public FakeSyntaxNode()
-            : base(SourceLocation.None)
+        public static TNode FirstOrDefault<TNode>(this IEnumerable<SyntaxNode> nodeList)
+            where TNode : SyntaxNode
         {
+            return nodeList.FirstOrDefault(x => x is TNode) as TNode;
         }
     }
 }

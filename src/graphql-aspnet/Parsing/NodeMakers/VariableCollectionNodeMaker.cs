@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Parsing.NodeMakers
 {
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -39,25 +40,29 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
             // the token stream MUST be positioned at an open paren for this maker to function correclty
             tokenStream.MatchOrThrow(TokenType.ParenLeft);
 
-            var collection = new VariableCollectionNode(tokenStream.Location);
+            var variableCollectionNode = new VariableCollectionNode(tokenStream.Location);
             tokenStream.Next();
+
+            var collectionId = nodeList.BeginTempCollection();
 
             var variableMaker = NodeMakerFactory.CreateMaker<VariableNode>();
             while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.ParenRight))
             {
-                var variable = variableMaker.MakeNode(ref tokenStream);
-                collection.AddChild(variable);
+                var variable = variableMaker.MakeNode(nodeList, ref tokenStream);
+                nodeList.AddNodeToTempCollection(collectionId, variable);
             }
 
             // ensure and move past the close paren
             tokenStream.MatchOrThrow(TokenType.ParenRight);
             tokenStream.Next();
-            return collection;
+
+            variableCollectionNode.SetChildren(nodeList, collectionId);
+            return variableCollectionNode;
         }
     }
 }

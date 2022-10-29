@@ -30,14 +30,6 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
         }
 
         /// <inheritdoc />
-        protected override bool CanHaveChild(SyntaxNode childNode)
-        {
-            return childNode is FieldNode ||
-                   childNode is InlineFragmentNode ||
-                   childNode is FragmentSpreadNode;
-        }
-
-        /// <inheritdoc />
         public override string ToString()
         {
             return "FC";

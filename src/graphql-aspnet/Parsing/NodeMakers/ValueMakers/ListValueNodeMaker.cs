@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
@@ -39,17 +40,15 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
-            List<SyntaxNode> children = null;
             var startLocation = tokenStream.Location;
             tokenStream.MatchOrThrow(TokenType.BracketLeft);
             tokenStream.Next();
 
+            var collectionId = nodeList.BeginTempCollection();
             if (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.BracketRight))
             {
-                children = new List<SyntaxNode>();
-
                 do
                 {
                     var childMaker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
@@ -61,8 +60,8 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
                             $"input object value but receieved '{tokenStream.ActiveToken.Text.ToString()}'");
                     }
 
-                    var childNode = childMaker.MakeNode(ref tokenStream);
-                    children.Add(childNode);
+                    var childNode = childMaker.MakeNode(nodeList, ref tokenStream);
+                    nodeList.AddNodeToTempCollection(collectionId, childNode);
                 }
                 while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.BracketRight));
             }
@@ -72,7 +71,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
             tokenStream.Next();
 
             var listNode = new ListValueNode(startLocation);
-            listNode.AddChildren(children);
+            listNode.SetChildren(nodeList, collectionId);
 
             return listNode;
         }

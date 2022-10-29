@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
 {
     using System;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
@@ -41,11 +42,11 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
             var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
             if (maker != null)
-                return maker.MakeNode(ref tokenStream);
+                return maker.MakeNode(nodeList, ref tokenStream);
 
             GraphQLSyntaxException.ThrowFromExpectation(
                 tokenStream.Location,

@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Parsing.NodeMakers
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
@@ -42,12 +44,11 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(ref TokenStream tokenStream)
+        public SyntaxNode MakeNode(ISyntaxNodeList nodeList, ref TokenStream tokenStream)
         {
             // ensure we're pointing at a potential input item
             tokenStream.MatchOrThrow(TokenType.Name);
             var startLocation = tokenStream.Location;
-            List<SyntaxNode> directives = null;
 
             var name = tokenStream.ActiveToken.Text;
             tokenStream.Next();
@@ -57,27 +58,28 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.MatchOrThrow(TokenType.Colon);
             tokenStream.Next();
 
+            var collectionId = nodeList.BeginTempCollection();
+
             var maker = NodeMakerFactory.CreateMaker<InputValueNode>();
-            var value = maker.MakeNode(ref tokenStream);
+            var value = maker.MakeNode(nodeList, ref tokenStream);
+
+            nodeList.AddNodeToTempCollection(collectionId, value);
 
             // account for possible directives on this field
             if (tokenStream.Match(TokenType.AtSymbol))
             {
                 var dirMaker = NodeMakerFactory.CreateMaker<DirectiveNode>();
-                directives = new List<SyntaxNode>();
 
                 do
                 {
-                    var directive = dirMaker.MakeNode(ref tokenStream);
-                    directives.Add(directive);
+                    var directive = dirMaker.MakeNode(nodeList, ref tokenStream);
+                    nodeList.AddNodeToTempCollection(collectionId, directive);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
             }
 
             var node = new InputItemNode(startLocation, name);
-            node.AddChild(value);
-
-            node.AddChildren(directives);
+            node.SetChildren(nodeList, collectionId);
 
             return node;
         }
