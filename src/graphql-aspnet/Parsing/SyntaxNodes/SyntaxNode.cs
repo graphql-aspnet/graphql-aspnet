@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
     /// <summary>
     /// The <see cref="SyntaxNode"/> is a single element in a syntax tree generated from the
     /// lexed source document. It is a represention of a "thing" in a graphql source document.
-    /// Groups of <see cref="LexToken"/> together when parsed become syntax nodes. Syntax nodes
+    /// Groups of <see cref="LexicalToken"/> together when parsed become syntax nodes. Syntax nodes
     /// create a foundational framework from which an execution plan can be generated and ran against a schema.
     /// </summary>
     [Serializable]

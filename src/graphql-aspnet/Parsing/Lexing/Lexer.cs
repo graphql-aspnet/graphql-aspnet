@@ -36,9 +36,9 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// <param name="skipIgnored">if set to <c>true</c> any tokens deemed as "ignorable" according
         /// to the graphql spec are automatically skipped over. This includes token such as whitespace, commas and comments.</param>
         /// <returns>List&lt;LexToken&gt;.</returns>
-        public static List<LexToken> ToList(this TokenStream tokenStream, bool skipIgnored = true)
+        public static List<LexicalToken> ToList(this TokenStream tokenStream, bool skipIgnored = true)
         {
-            var list = new List<LexToken>();
+            var list = new List<LexicalToken>();
             if (tokenStream.TokenType == TokenType.StartOfFile)
                 tokenStream.Next(skipIgnored);
 

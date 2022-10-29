@@ -19,29 +19,23 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
     /// extracted from the raw query text.
     /// </summary>
     [DebuggerDisplay("{TokenType}")]
-    public struct LexToken
+    public struct LexicalToken
     {
-        /// <summary>
-        /// Gets an empty lexical token, it contains no useful information.
-        /// </summary>
-        /// <value>The empty.</value>
-        public static LexToken Empty { get; } = new LexToken(TokenType.None, ReadOnlyMemory<char>.Empty, SourceLocation.None, true);
-
         /// <summary>
         /// Gets a token that indicates the end of a file.
         /// </summary>
         /// <value>The eo f.</value>
-        public static LexToken EoF { get; } = new LexToken(TokenType.EndOfFile, ReadOnlyMemory<char>.Empty, SourceLocation.None, true);
+        public static LexicalToken EoF { get; } = new LexicalToken(TokenType.EndOfFile, ReadOnlyMemory<char>.Empty, SourceLocation.None, true);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LexToken" /> struct.
+        /// Initializes a new instance of the <see cref="LexicalToken" /> struct.
         /// </summary>
         /// <param name="tokenType">Type of the token.</param>
         /// <param name="text">The text included in hte token.</param>
         /// <param name="location">The location in the source document where the token occured.</param>
         /// <param name="isIgnored">if set to <c>true</c> this token will be ignored
         /// during common processing.</param>
-        public LexToken(
+        public LexicalToken(
             TokenType tokenType,
             ReadOnlyMemory<char> text,
             SourceLocation location,
@@ -54,12 +48,12 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LexToken" /> struct.
+        /// Initializes a new instance of the <see cref="LexicalToken" /> struct.
         /// </summary>
         /// <param name="tokenType">Type of the token.</param>
         /// <param name="isIgnored">if set to <c>true</c> this token will be ignored
         /// during common processing.</param>
-        public LexToken(
+        public LexicalToken(
             TokenType tokenType,
             bool isIgnored = false)
         {
@@ -70,13 +64,13 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LexToken" /> struct.
+        /// Initializes a new instance of the <see cref="LexicalToken" /> struct.
         /// </summary>
         /// <param name="tokenType">Type of the token.</param>
         /// <param name="location">The location in the source document where the token occured.</param>
         /// <param name="isIgnored">if set to <c>true</c> this token will be ignored
         /// during common processing.</param>
-        public LexToken(
+        public LexicalToken(
             TokenType tokenType,
             SourceLocation location,
             bool isIgnored = false)

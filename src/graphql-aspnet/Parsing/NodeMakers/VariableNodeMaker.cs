@@ -60,8 +60,8 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             tokenStream.Next();
 
             // extract the type expression while the tokens are of characters '[', ']', '!', {NameToken}
-            LexToken startToken = default;
-            LexToken endToken = default;
+            LexicalToken startToken = default;
+            LexicalToken endToken = default;
             while (
                 tokenStream.Match(TokenType.BracketLeft) ||
                 tokenStream.Match(TokenType.BracketRight) ||

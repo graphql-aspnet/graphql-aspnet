@@ -119,15 +119,15 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// <param name="tokenText">The token text to convert.</param>
         /// <param name="location">The location in hte source of hte given text.</param>
         /// <returns>LexicalToken.</returns>
-        public static LexToken CharactersToToken(ReadOnlyMemory<char> tokenText, SourceLocation location)
+        public static LexicalToken CharactersToToken(ReadOnlyMemory<char> tokenText, SourceLocation location)
         {
             if (tokenText.Span.Equals(ParserConstants.Keywords.Null.Span, StringComparison.Ordinal))
             {
-                return new LexToken(TokenType.Null, ParserConstants.Keywords.Null, location);
+                return new LexicalToken(TokenType.Null, ParserConstants.Keywords.Null, location);
             }
             else
             {
-                return new LexToken(TokenType.Name, tokenText, location);
+                return new LexicalToken(TokenType.Name, tokenText, location);
             }
         }
     }

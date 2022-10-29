@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// </summary>
         /// <param name="token">The token representing the start of the value to be parsed.</param>
         /// <returns>A <see cref="ISyntaxNodeMaker"/> that can parse the data.</returns>
-        public static ISyntaxNodeMaker CreateMaker(LexToken token)
+        public static ISyntaxNodeMaker CreateMaker(LexicalToken token)
         {
             // an input value could be:
             // NameToken:    a potential enumeration or true|false

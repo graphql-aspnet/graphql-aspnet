@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
     using SR = GraphQL.AspNet.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
 
     /// <summary>
-    /// A continuous flow of parsed <see cref="LexToken"/> items. Keeps a pointer to the
+    /// A continuous flow of parsed <see cref="LexicalToken"/> items. Keeps a pointer to the
     /// token in scope for analysis and provides easy access methods for checking its properties without actually
     /// stripping it away from the stream.
     /// </summary>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         public TokenStream(SourceText sourceText)
         {
             _sourceText = sourceText;
-            this.ActiveToken = new LexToken(TokenType.StartOfFile, false);
+            this.ActiveToken = new LexicalToken(TokenType.StartOfFile, false);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// null if no tokens are found.
         /// </summary>
         /// <returns>LexicalToken.</returns>
-        public LexToken Prime()
+        public LexicalToken Prime()
         {
             if (this.ActiveToken.TokenType == TokenType.StartOfFile)
                 return this.Next();
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// <param name="skipIgnored">if set to <c>true</c> any tokens deemed as "ignorable" according
         /// to the graphql spec are automatically skipped over. This includes token such as whitespace, commas and comments.</param>
         /// <returns>LexicalToken.</returns>
-        public LexToken Next(bool skipIgnored = true)
+        public LexicalToken Next(bool skipIgnored = true)
         {
             this.ActiveToken = this.FetchNextTokenFromStream();
             if (skipIgnored && this.ActiveToken.IsIgnored)
@@ -159,7 +159,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
             }
         }
 
-        private LexToken FetchNextTokenFromStream()
+        private LexicalToken FetchNextTokenFromStream()
         {
             _sourceText.SkipWhitespace();
             if (_sourceText.HasData)
@@ -171,7 +171,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 if (_sourceText.CheckCursor(SR.IsCommentGlyph))
                 {
                     var text = _sourceText.NextComment(out location);
-                    return new LexToken(TokenType.Comment, text, location, true);
+                    return new LexicalToken(TokenType.Comment, text, location, true);
                 }
 
                 // Flow Controler characer (non-text entities)
@@ -181,7 +181,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                     var text = _sourceText.NextControlPhrase(out location);
                     var tokenType = text.Span.ToTokenType();
                     var shouldSkipControlToken = tokenType == TokenType.Comma;
-                    return new LexToken(tokenType, text, location, shouldSkipControlToken);
+                    return new LexicalToken(tokenType, text, location, shouldSkipControlToken);
                 }
 
                 // Named fields
@@ -198,7 +198,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 {
                     var text = _sourceText.NextNumber(out location);
                     var tokenType = text.Span.IndexOfAny(CHARS.FloatIndicatorChars.Span) >= 0 ? TokenType.Float : TokenType.Integer;
-                    return new LexToken(tokenType, text, location);
+                    return new LexicalToken(tokenType, text, location);
                 }
 
                 // Strings
@@ -206,7 +206,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 else if (_sourceText.CheckCursor(SR.IsStringDelimiterGlyph))
                 {
                     var text = _sourceText.NextString(out location);
-                    return new LexToken(TokenType.String, text, location);
+                    return new LexicalToken(TokenType.String, text, location);
                 }
                 else
                 {
@@ -218,14 +218,14 @@ namespace GraphQL.AspNet.Parsing.Lexing
                 }
             }
 
-            return LexToken.EoF;
+            return LexicalToken.EoF;
         }
 
         /// <summary>
         /// Gets a reference to the token in scope for analysis.
         /// </summary>
         /// <value>The active token.</value>
-        public LexToken ActiveToken { get; private set; }
+        public LexicalToken ActiveToken { get; private set; }
 
         /// <summary>
         /// Gets the active token type descrption that can be used in error messages.

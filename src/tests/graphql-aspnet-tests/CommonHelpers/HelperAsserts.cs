@@ -21,11 +21,11 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
     /// </summary>
     public static class HelperAsserts
     {
-        public static void AssertTokenChain(ref TokenStream tokenSet, params LexToken[] expectedTokens)
+        public static void AssertTokenChain(ref TokenStream tokenSet, params LexicalToken[] expectedTokens)
         {
             tokenSet.Prime();
 
-            var listFound = new List<LexToken>();
+            var listFound = new List<LexicalToken>();
             listFound.Add(tokenSet.ActiveToken);
             var i = 0;
 
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
         /// <param name="expectedText">The expected text.</param>
         /// <param name="expectedType">The expected type of the 'TokenType' property.</param>
         /// <param name="expectedAbsolutePosition">The expected absolute position.</param>
-        public static void AssertToken(LexToken token, string expectedText, TokenType expectedType, int? expectedAbsolutePosition = null)
+        public static void AssertToken(LexicalToken token, string expectedText, TokenType expectedType, int? expectedAbsolutePosition = null)
         {
             Assert.IsNotNull(token);
             Assert.AreEqual(expectedType, token.TokenType);
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
         /// Asserts that the token set provided ends with an "End of File" token.
         /// </summary>
         /// <param name="tokenSet">The token set.</param>
-        public static void AssertEndsWithEoF(IEnumerable<LexToken> tokenSet)
+        public static void AssertEndsWithEoF(IEnumerable<LexicalToken> tokenSet)
         {
             Assert.IsNotNull(tokenSet);
             Assert.IsTrue(tokenSet.Any());
