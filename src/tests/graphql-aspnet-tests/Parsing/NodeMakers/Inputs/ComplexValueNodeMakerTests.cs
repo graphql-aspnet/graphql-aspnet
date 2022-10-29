@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             var complexMaker = ComplexValueNodeMaker.Instance;
 
-            var node = complexMaker.MakeNode(stream) as ComplexValueNode;
+            var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(1, node.Children.Count);
 
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             stream.Prime();
             var complexMaker = ComplexValueNodeMaker.Instance;
 
-            var node = complexMaker.MakeNode(stream) as ComplexValueNode;
+            var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
             Assert.IsNotNull(node);
 
             // three children childArg1, childArg2, childArg3
@@ -109,11 +109,17 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
                 var complexMaker = ComplexValueNodeMaker.Instance;
-                var node = complexMaker.MakeNode(stream) as ComplexValueNode;
-            });
+                var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -124,11 +130,17 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
                 var complexMaker = ComplexValueNodeMaker.Instance;
-                var node = complexMaker.MakeNode(stream) as ComplexValueNode;
-            });
+                var node = complexMaker.MakeNode(ref stream) as ComplexValueNode;
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
     }
 }

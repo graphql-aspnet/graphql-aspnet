@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             List<SyntaxNode> children = null;
             var startLocation = tokenStream.Location;
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
                             $"input object value but receieved '{tokenStream.ActiveToken.Text.ToString()}'");
                     }
 
-                    var childNode = childMaker.MakeNode(tokenStream);
+                    var childNode = childMaker.MakeNode(ref tokenStream);
                     children.Add(childNode);
                 }
                 while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.BracketRight));

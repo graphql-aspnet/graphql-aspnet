@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = DirectiveNodeMaker.Instance.MakeNode(stream) as DirectiveNode;
+            var node = DirectiveNodeMaker.Instance.MakeNode(ref stream) as DirectiveNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("skip", node.DirectiveName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = DirectiveNodeMaker.Instance.MakeNode(stream) as DirectiveNode;
+            var node = DirectiveNodeMaker.Instance.MakeNode(ref stream) as DirectiveNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("skip", node.DirectiveName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -76,7 +76,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { DirectiveNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -86,7 +95,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { DirectiveNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -96,7 +114,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { DirectiveNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -106,7 +133,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { DirectiveNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                DirectiveNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
     }
 }

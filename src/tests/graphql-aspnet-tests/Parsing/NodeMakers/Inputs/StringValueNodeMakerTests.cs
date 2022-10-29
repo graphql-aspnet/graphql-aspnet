@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = StringValueNodeMaker.Instance.MakeNode(stream) as ScalarValueNode;
+            var result = StringValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(ScalarValueType.String, result.ValueType);
             Assert.AreEqual("\"TestValue\"", result.Value.ToString());
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = StringValueNodeMaker.Instance.MakeNode(stream) as ScalarValueNode;
+            var result = StringValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(ScalarValueType.String, result.ValueType);
             Assert.AreEqual("\"\"\"Tes\nt\"Va\r\nlue\"\"\"", result.Value.ToString());
@@ -61,10 +61,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                StringValueNodeMaker.Instance.MakeNode(stream);
-            });
+                StringValueNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -74,7 +80,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var node = StringValueNodeMaker.Instance.MakeNode(stream) as ScalarValueNode;
+            var node = StringValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(ScalarValueType.String, node.ValueType);
             Assert.AreEqual("null", node.Value.ToString());

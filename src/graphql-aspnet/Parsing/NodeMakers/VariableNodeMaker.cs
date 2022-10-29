@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             // extracts a variable in the format of:    $name: declaredType [= defaultValue]
 
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             {
                 tokenStream.Next();
                 var maker = NodeMakerFactory.CreateMaker<InputValueNode>();
-                defaultValue = maker.MakeNode(tokenStream);
+                defaultValue = maker.MakeNode(ref tokenStream);
             }
 
             // could be directives with the @ symbol
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
 
                 do
                 {
-                    var directiveNode = maker.MakeNode(tokenStream);
+                    var directiveNode = maker.MakeNode(ref tokenStream);
                     directives.Add(directiveNode);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));

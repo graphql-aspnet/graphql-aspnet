@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = InputItemCollectionNodeMaker.Instance.MakeNode(stream) as InputItemCollectionNode;
+            var node = InputItemCollectionNodeMaker.Instance.MakeNode(ref stream) as InputItemCollectionNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(2, node.Children.Count);
 
@@ -70,10 +70,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                InputItemCollectionNodeMaker.Instance.MakeNode(stream);
-            });
+                InputItemCollectionNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -83,10 +89,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                InputItemCollectionNodeMaker.Instance.MakeNode(stream);
-            });
+                InputItemCollectionNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -96,10 +108,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                InputItemCollectionNodeMaker.Instance.MakeNode(stream);
-            });
+                InputItemCollectionNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -109,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = InputItemCollectionNodeMaker.Instance.MakeNode(stream) as InputItemCollectionNode;
+            var node = InputItemCollectionNodeMaker.Instance.MakeNode(ref stream) as InputItemCollectionNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(2, node.Children.Count);
 

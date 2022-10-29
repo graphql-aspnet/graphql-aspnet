@@ -33,10 +33,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                FieldNodeMaker.Instance.MakeNode(stream);
-            });
+                FieldNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -46,10 +52,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                FieldNodeMaker.Instance.MakeNode(stream);
-            });
+                FieldNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -59,10 +71,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                FieldNodeMaker.Instance.MakeNode(stream);
-            });
+                FieldNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -72,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("field1", node.FieldAlias.ToString());
             Assert.AreEqual("field1", node.FieldName.ToString());
@@ -86,7 +104,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("fieldA", node.FieldAlias.ToString());
             Assert.AreEqual("field1", node.FieldName.ToString());
@@ -100,7 +118,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("fieldA", node.FieldAlias.ToString());
             Assert.AreEqual("field1", node.FieldName.ToString());
@@ -114,7 +132,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("field1", node.FieldName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -139,7 +157,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("field1", node.FieldName.ToString());
             Assert.AreEqual(1, node.Children.Count);
@@ -161,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("field1", node.FieldAlias.ToString());
             Assert.AreEqual("field1", node.FieldName.ToString());
@@ -199,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("field1", node.FieldName.ToString());
             Assert.AreEqual(2, node.Children.Count); // directive + input collection
@@ -216,7 +234,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = FieldNodeMaker.Instance.MakeNode(stream) as FieldNode;
+            var node = FieldNodeMaker.Instance.MakeNode(ref stream) as FieldNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("field1", node.FieldName.ToString());
             Assert.AreEqual(3, node.Children.Count); // input-directive, skip-directive + input collection

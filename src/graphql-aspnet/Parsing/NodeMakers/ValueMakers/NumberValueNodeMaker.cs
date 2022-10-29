@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             SyntaxNode node;
             if (tokenStream.Match(TokenType.Null))

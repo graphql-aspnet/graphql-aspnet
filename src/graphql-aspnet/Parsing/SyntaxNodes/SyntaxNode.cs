@@ -123,6 +123,8 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
                 {
                     if (this.Children != null)
                         this.Children.Dispose();
+
+                    this.Children = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

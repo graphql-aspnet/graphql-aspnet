@@ -31,6 +31,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        SyntaxNode MakeNode(TokenStream tokenStream);
+        SyntaxNode MakeNode(ref TokenStream tokenStream);
     }
 }

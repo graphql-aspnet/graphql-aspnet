@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Children.Count);
             Assert.IsTrue(result.Children.All(x => x is ScalarValueNode svn && svn.ValueType == ScalarValueType.Number));
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Children.All(x => x is ScalarValueNode svn && svn.ValueType == ScalarValueType.String));
             Assert.AreEqual("\"bob\"", ((ScalarValueNode)result.Children.ElementAt(0)).Value.ToString());
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
             Assert.IsNotNull(result);
 
             Assert.AreEqual(3, result.Children.Count);
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
             Assert.IsNotNull(result);
 
             // ensure all children were parsed to lists
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
             Assert.AreEqual(2, result.Children.Count);
             Assert.IsTrue(result.Children.ElementAt(0) is ScalarValueNode child1 && child1.ValueType == ScalarValueType.Number);
             Assert.IsTrue(result.Children.ElementAt(1) is ScalarValueNode child2 && child2.ValueType == ScalarValueType.String);
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = ListValueNodeMaker.Instance.MakeNode(stream) as ListValueNode;
+            var result = ListValueNodeMaker.Instance.MakeNode(ref stream) as ListValueNode;
             Assert.IsNotNull(result);
 
             Assert.AreEqual(3, result.Children.Count);
@@ -141,7 +141,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() => { ListValueNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                ListValueNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -151,7 +160,17 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() => { ListValueNodeMaker.Instance.MakeNode(stream); });
+
+            try
+            {
+                ListValueNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
     }
 }

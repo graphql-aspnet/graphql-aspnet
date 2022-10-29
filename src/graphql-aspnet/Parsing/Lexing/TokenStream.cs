@@ -10,39 +10,33 @@
 namespace GraphQL.AspNet.Parsing.Lexing
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
+    using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
 
+    using CHARS = GraphQL.AspNet.Parsing.ParserConstants.Characters;
+    using SR = GraphQL.AspNet.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
+
     /// <summary>
-    /// A managed collection of parsed <see cref="LexToken"/> items. Keeps a pointer to the
+    /// A continuous flow of parsed <see cref="LexToken"/> items. Keeps a pointer to the
     /// token in scope for analysis and provides easy access methods for checking its properties without actually
     /// stripping it away from the stream.
     /// </summary>
-    [DebuggerDisplay("Active = {ActiveToken.TokenType}, Count = {Count}")]
-    public class TokenStream : IEnumerable<LexToken>
+    [DebuggerDisplay("Active = {ActiveToken.TokenType}")]
+    public ref struct TokenStream
     {
-        private readonly Queue<LexToken> _tokenQueue = new Queue<LexToken>();
+        private SourceText _sourceText;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TokenStream"/> class.
+        /// Initializes a new instance of the <see cref="TokenStream"/> struct.
         /// </summary>
         /// <param name="sourceText">The source text.</param>
-        public TokenStream(ReadOnlyMemory<char> sourceText)
+        public TokenStream(SourceText sourceText)
         {
-            this.SourceText = sourceText;
-        }
-
-        /// <summary>
-        /// Enqueues the specified token into the stream in the order received.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        public void Enqueue(LexToken token)
-        {
-            _tokenQueue.Enqueue(token);
+            _sourceText = sourceText;
+            this.ActiveToken = new LexToken(TokenType.StartOfFile, false);
         }
 
         /// <summary>
@@ -52,7 +46,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// <returns>LexicalToken.</returns>
         public LexToken Prime()
         {
-            if (this.ActiveToken.TokenType == TokenType.None)
+            if (this.ActiveToken.TokenType == TokenType.StartOfFile)
                 return this.Next();
 
             return this.ActiveToken;
@@ -67,14 +61,14 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// <returns>LexicalToken.</returns>
         public LexToken Next(bool skipIgnored = true)
         {
-            this.ActiveToken = _tokenQueue.Count > 0 ? _tokenQueue.Dequeue() : LexToken.Empty;
+            this.ActiveToken = this.FetchNextTokenFromStream();
             if (skipIgnored && this.ActiveToken.IsIgnored)
             {
                 do
                 {
-                    this.ActiveToken = _tokenQueue.Count > 0 ? _tokenQueue.Dequeue() : LexToken.Empty;
+                    this.ActiveToken = this.FetchNextTokenFromStream();
                 }
-                while (this.ActiveToken.IsIgnored && _tokenQueue.Count > 0);
+                while (this.ActiveToken.IsIgnored && this.ActiveToken.TokenType != TokenType.EndOfFile);
             }
 
             return this.ActiveToken;
@@ -165,6 +159,68 @@ namespace GraphQL.AspNet.Parsing.Lexing
             }
         }
 
+        private LexToken FetchNextTokenFromStream()
+        {
+            _sourceText.SkipWhitespace();
+            if (_sourceText.HasData)
+            {
+                SourceLocation location;
+
+                // Comments
+                // -------------------
+                if (_sourceText.CheckCursor(SR.IsCommentGlyph))
+                {
+                    var text = _sourceText.NextComment(out location);
+                    return new LexToken(TokenType.Comment, text, location, true);
+                }
+
+                // Flow Controler characer (non-text entities)
+                // -------------------
+                else if (_sourceText.CheckCursor(SR.IsControlGlyph))
+                {
+                    var text = _sourceText.NextControlPhrase(out location);
+                    var tokenType = text.Span.ToTokenType();
+                    var shouldSkipControlToken = tokenType == TokenType.Comma;
+                    return new LexToken(tokenType, text, location, shouldSkipControlToken);
+                }
+
+                // Named fields
+                // ---------------------------------
+                else if (_sourceText.CheckCursor(SR.IsStartOfNameGlyph))
+                {
+                    var text = _sourceText.NextName(out location);
+                    return LexerSourceExtensions.CharactersToToken(text, location);
+                }
+
+                // Numbers
+                // ----------------------------------
+                else if (_sourceText.CheckCursor(SR.IsStartOfNumberGlyph))
+                {
+                    var text = _sourceText.NextNumber(out location);
+                    var tokenType = text.Span.IndexOfAny(CHARS.FloatIndicatorChars.Span) >= 0 ? TokenType.Float : TokenType.Integer;
+                    return new LexToken(tokenType, text, location);
+                }
+
+                // Strings
+                // ----------------------------------
+                else if (_sourceText.CheckCursor(SR.IsStringDelimiterGlyph))
+                {
+                    var text = _sourceText.NextString(out location);
+                    return new LexToken(TokenType.String, text, location);
+                }
+                else
+                {
+                    // who the heck knows, just fail
+                    location = _sourceText.RetrieveCurrentLocation();
+                    throw new GraphQLSyntaxException(
+                        location,
+                        $"Unexpected character: '{_sourceText.Peek()}'");
+                }
+            }
+
+            return LexToken.EoF;
+        }
+
         /// <summary>
         /// Gets a reference to the token in scope for analysis.
         /// </summary>
@@ -214,60 +270,21 @@ namespace GraphQL.AspNet.Parsing.Lexing
         {
             get
             {
-                if (_tokenQueue.Count == 0)
-                {
-                    return this.ActiveToken.TokenType == TokenType.None
-                        || this.ActiveToken.TokenType == TokenType.EndOfFile;
-                }
-
-                return false;
+                return this.ActiveToken.TokenType == TokenType.EndOfFile;
             }
         }
-
-        /// <summary>
-        /// Gets the number of tokens currently queued in the stream.
-        /// </summary>
-        /// <value>The count.</value>
-        public int Count => _tokenQueue.Count;
 
         /// <summary>
         /// Gets the <see cref="TokenType"/> of the active token on the stream or EOF
         /// if no active token.
         /// </summary>
         /// <value>the <see cref="TokenType"/> at the top of the stream.</value>
-        public TokenType TokenType
-        {
-            get
-            {
-                if (this.ActiveToken.TokenType == TokenType.None)
-                    return TokenType.EndOfFile;
-
-                return this.ActiveToken.TokenType;
-            }
-        }
+        public TokenType TokenType => this.ActiveToken.TokenType;
 
         /// <summary>
-        /// Gets the source text which provides the tokens in this stream.
+        /// Gets the raw source text that this stream is processing.
         /// </summary>
         /// <value>The source text.</value>
-        public ReadOnlyMemory<char> SourceText { get; }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<LexToken> GetEnumerator()
-        {
-            return _tokenQueue.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
+        public ReadOnlyMemory<char> SourceText => _sourceText.Text;
     }
 }

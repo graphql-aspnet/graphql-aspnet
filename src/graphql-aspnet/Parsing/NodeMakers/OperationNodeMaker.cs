@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             List<SyntaxNode> directives = null;
             SyntaxNode variableCollection = null;
@@ -50,13 +50,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             // check to see if this is qualified operation root
             // default to "query" as per the specification if not
             tokenStream.Prime();
-            var operationNode = this.CreateNode(tokenStream);
+            var operationNode = this.CreateNode(ref tokenStream);
 
             // a variable collection will begin with an open paren
             if (tokenStream.Match(TokenType.ParenLeft))
             {
                 var variableMaker = NodeMakerFactory.CreateMaker<VariableCollectionNode>();
-                variableCollection = variableMaker.MakeNode(tokenStream);
+                variableCollection = variableMaker.MakeNode(ref tokenStream);
             }
 
             // account for possible directives on this operation
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
 
                 do
                 {
-                    var directive = dirMaker.MakeNode(tokenStream);
+                    var directive = dirMaker.MakeNode(ref tokenStream);
                     directives.Add(directive);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             // only thing left on the operaton root is the field selection
             tokenStream.MatchOrThrow(TokenType.CurlyBraceLeft);
             var maker = NodeMakerFactory.CreateMaker<FieldCollectionNode>();
-            fieldCollection = maker.MakeNode(tokenStream);
+            fieldCollection = maker.MakeNode(ref tokenStream);
 
             if (variableCollection != null)
                 operationNode.AddChild(variableCollection);
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>OperationRootNode.</returns>
-        private OperationNode CreateNode(TokenStream tokenStream)
+        private OperationNode CreateNode(ref TokenStream tokenStream)
         {
             var startLocation = tokenStream.Location;
             ReadOnlyMemory<char> firstName = ReadOnlyMemory<char>.Empty;

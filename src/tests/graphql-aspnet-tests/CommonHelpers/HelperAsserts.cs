@@ -21,20 +21,25 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
     /// </summary>
     public static class HelperAsserts
     {
-        public static void AssertTokenChain(TokenStream tokenSet, params LexToken[] expectedTokens)
+        public static void AssertTokenChain(ref TokenStream tokenSet, params LexToken[] expectedTokens)
         {
-            if (tokenSet.Count != expectedTokens.Length)
-                Assert.Fail($"Expected {expectedTokens.Length} but received {tokenSet.Count}");
-
             tokenSet.Prime();
+
+            var listFound = new List<LexToken>();
+            listFound.Add(tokenSet.ActiveToken);
             var i = 0;
-            while (tokenSet.Count > 0)
+
+            do
             {
                 var expected = expectedTokens[i];
                 AssertToken(tokenSet.ActiveToken, expected.Text.ToString(), expected.TokenType);
                 tokenSet.Next(false);
+                listFound.Add(tokenSet.ActiveToken);
                 i++;
             }
+            while (tokenSet.TokenType != TokenType.EndOfFile);
+
+            Assert.AreEqual(listFound.Count, expectedTokens.Length, $"Expected {expectedTokens.Length} tokens, got {i}");
         }
 
         /// <summary>

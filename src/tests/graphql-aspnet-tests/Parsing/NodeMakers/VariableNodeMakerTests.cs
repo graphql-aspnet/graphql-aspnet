@@ -34,7 +34,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var text = @"episode: Episode";
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() => { VariableNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                VariableNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -45,7 +54,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { VariableNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                VariableNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -55,7 +73,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var text = @"$episode = JEDI";
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() => { VariableNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                VariableNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -65,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            var node = VariableNodeMaker.Instance.MakeNode(ref stream) as VariableNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("episode", node.Name.ToString());
             Assert.AreEqual("Episode", node.TypeExpression.ToString());
@@ -83,7 +110,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            var node = VariableNodeMaker.Instance.MakeNode(ref stream) as VariableNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("episode", node.Name.ToString());
             Assert.AreEqual("Episode!", node.TypeExpression.ToString());
@@ -100,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            var node = VariableNodeMaker.Instance.MakeNode(ref stream) as VariableNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("episode", node.Name.ToString());
             Assert.AreEqual("Episode", node.TypeExpression.ToString());
@@ -116,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            var node = VariableNodeMaker.Instance.MakeNode(ref stream) as VariableNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("episode", node.Name.ToString());
             Assert.AreEqual("[[Episode!]!]!", node.TypeExpression.ToString());
@@ -133,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            var node = VariableNodeMaker.Instance.MakeNode(ref stream) as VariableNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("episode", node.Name.ToString());
             Assert.AreEqual("Episode", node.TypeExpression.ToString());
@@ -151,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            var node = VariableNodeMaker.Instance.MakeNode(ref stream) as VariableNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("episode", node.Name.ToString());
             Assert.AreEqual("Episode", node.TypeExpression.ToString());
@@ -183,7 +210,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = VariableNodeMaker.Instance.MakeNode(stream) as VariableNode;
+            var node = VariableNodeMaker.Instance.MakeNode(ref stream) as VariableNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("episode", node.Name.ToString());
             Assert.AreEqual("Episode", node.TypeExpression.ToString());

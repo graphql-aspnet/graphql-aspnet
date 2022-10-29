@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Parsing
 
             // first two tokens should be control parens
             HelperAsserts.AssertTokenChain(
-                tokenSet,
+                ref tokenSet,
                 new LexToken(TokenType.Name, "mutation".AsMemory(), SourceLocation.None),
                 new LexToken(TokenType.CurlyBraceLeft, "{".AsMemory(), SourceLocation.None),
                 new LexToken(TokenType.Name, "createHero".AsMemory(), SourceLocation.None),
@@ -74,7 +74,8 @@ namespace GraphQL.AspNet.Tests.Parsing
             var text = ResourceLoader.ReadAllLines("KitchenSink", "KitchenSink.graphql");
             var source = new SourceText(text.AsMemory());
             var tokenSet = Lexer.Tokenize(source);
-            Assert.AreEqual(191, tokenSet.Count);
+            var list = tokenSet.ToList(false);
+            Assert.AreEqual(191, list.Count);
         }
 
         [Test]
@@ -95,7 +96,8 @@ namespace GraphQL.AspNet.Tests.Parsing
             try
             {
                 var source = new SourceText(qualifiedQuery.AsMemory());
-                Lexer.Tokenize(source);
+                var tokenStream = Lexer.Tokenize(source);
+                var allTokens = tokenStream.ToList();
             }
             catch (GraphQLSyntaxException ex)
             {
@@ -128,7 +130,8 @@ namespace GraphQL.AspNet.Tests.Parsing
             try
             {
                 var source = new SourceText(qualifiedQuery.AsMemory());
-                Lexer.Tokenize(source);
+                var tokenStream = Lexer.Tokenize(source);
+                var allTokens = tokenStream.ToList();
             }
             catch (GraphQLSyntaxException ex)
             {
@@ -161,7 +164,8 @@ namespace GraphQL.AspNet.Tests.Parsing
             try
             {
                 var source = new SourceText(qualifiedQuery.AsMemory());
-                Lexer.Tokenize(source);
+                var tokenStream = Lexer.Tokenize(source);
+                var allTokens = tokenStream.ToList();
             }
             catch (GraphQLSyntaxException ex)
             {
@@ -223,7 +227,7 @@ namespace GraphQL.AspNet.Tests.Parsing
             var source = new SourceText(text.AsMemory());
 
             var tokenSet = Lexer.Tokenize(source);
-            var tokenList = tokenSet.ToList();
+            var tokenList = tokenSet.ToList(false);
 
             // first two tokens should be control parens
             Assert.AreEqual(2, tokenList.Count);
@@ -244,7 +248,8 @@ namespace GraphQL.AspNet.Tests.Parsing
             try
             {
                 var source = new SourceText(text.AsMemory());
-                Lexer.Tokenize(source);
+                var stream = Lexer.Tokenize(source);
+                var allTokens = stream.ToList();
             }
             catch (GraphQLSyntaxException ex)
             {
@@ -264,11 +269,12 @@ namespace GraphQL.AspNet.Tests.Parsing
         }
 
         [Test]
-        public void Lexer_Tokenize_LongValidDocumentYieldsNoErrors()
+        public void Lexer_Tokenize_LongValidDocumentYieldsNoExceptions()
         {
             var sourceText = ResourceLoader.ReadAllLines("Lexer_Tokenizing", "SemiLongValidDocument.graphql");
             var source = new SourceText(sourceText.AsMemory());
             var tokenSet = Lexer.Tokenize(source);
+            var allTokens = tokenSet.ToList();
         }
     }
 }

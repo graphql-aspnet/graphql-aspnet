@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
+            var node = OperationNodeMaker.Instance.MakeNode(ref stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual(string.Empty, node.OperationType.ToString());
             Assert.AreEqual(string.Empty, node.OperationName.ToString());
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
+            var node = OperationNodeMaker.Instance.MakeNode(ref stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("namedQueryType", node.OperationType.ToString());
             Assert.AreEqual(string.Empty, node.OperationName.ToString());
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
+            var node = OperationNodeMaker.Instance.MakeNode(ref stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("namedQueryType", node.OperationType.ToString());
             Assert.AreEqual("aNamedQueryName", node.OperationName.ToString());
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             stream.Prime();
 
-            var node = OperationNodeMaker.Instance.MakeNode(stream) as OperationNode;
+            var node = OperationNodeMaker.Instance.MakeNode(ref stream) as OperationNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("namedQueryType", node.OperationType.ToString());
             Assert.AreEqual("aNamedQuery", node.OperationName.ToString());

@@ -50,6 +50,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Tokens
         [Description("string")] String = 5,
 
         [Description("<EOF>")] EndOfFile = 6,
-        [Description("<null>")] Null = 7,
+        [Description("<SOF>")] StartOfFile = 7,
+        [Description("<null>")] Null = 8,
     }
 }

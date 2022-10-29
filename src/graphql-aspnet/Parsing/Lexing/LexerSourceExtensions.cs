@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Parsing.Lexing.CharacterGroupValidation;
     using GraphQL.AspNet.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using CHARS = GraphQL.AspNet.Parsing.ParserConstants.Characters;
 
     /// <summary>
@@ -109,6 +110,25 @@ namespace GraphQL.AspNet.Parsing.Lexing
             var text = source.NextFilter(NumberValidator.IsValidNumberCharacter);
             NumberValidator.Instance.ValidateOrThrow(source, text, location);
             return source.SliceMemory(location.AbsoluteIndex, text.Length);
+        }
+
+        /// <summary>
+        /// Perform custom processing on any potential name token to determine
+        /// if it should be interpreted as a special case token (e.g. "null" phrases).
+        /// </summary>
+        /// <param name="tokenText">The token text to convert.</param>
+        /// <param name="location">The location in hte source of hte given text.</param>
+        /// <returns>LexicalToken.</returns>
+        public static LexToken CharactersToToken(ReadOnlyMemory<char> tokenText, SourceLocation location)
+        {
+            if (tokenText.Span.Equals(ParserConstants.Keywords.Null.Span, StringComparison.Ordinal))
+            {
+                return new LexToken(TokenType.Null, ParserConstants.Keywords.Null, location);
+            }
+            else
+            {
+                return new LexToken(TokenType.Name, tokenText, location);
+            }
         }
     }
 }

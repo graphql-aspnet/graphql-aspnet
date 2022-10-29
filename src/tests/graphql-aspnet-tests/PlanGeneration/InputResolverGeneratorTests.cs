@@ -173,7 +173,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             {
                 var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
                 if (maker != null)
-                    node = maker.MakeNode(tokenStream) as InputValueNode;
+                    node = maker.MakeNode(ref tokenStream) as InputValueNode;
             }
 
             var inputValue = DocumentSuppliedValueFactory.CreateInputValue(owner.Object, node);
@@ -208,7 +208,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             {
                 var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
                 if (maker != null)
-                    node = maker.MakeNode(tokenStream) as InputValueNode;
+                    node = maker.MakeNode(ref tokenStream) as InputValueNode;
             }
 
             var inputValue = DocumentSuppliedValueFactory.CreateInputValue(owner.Object, node);

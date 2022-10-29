@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token queue.</param>
         /// <returns>SyntaxNode.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             // a root fragment must be in the form of keywords:  fragment on TargetType{}
 
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
 
                 do
                 {
-                    var directive = dirMaker.MakeNode(tokenStream);
+                    var directive = dirMaker.MakeNode(ref tokenStream);
                     directives.Add(directive);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             // must be pointing at the fragment field set now
             tokenStream.MatchOrThrow(TokenType.CurlyBraceLeft);
             var fieldCollectionMaker = NodeMakerFactory.CreateMaker<FieldCollectionNode>();
-            var collection = fieldCollectionMaker.MakeNode(tokenStream);
+            var collection = fieldCollectionMaker.MakeNode(ref tokenStream);
 
             var node = new NamedFragmentNode(startLocation, fragmentName, targetType);
             if (collection.Children != null)

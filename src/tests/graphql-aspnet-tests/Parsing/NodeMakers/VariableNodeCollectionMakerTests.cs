@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(test.AsMemory()));
             stream.Prime();
 
-            var collection = VariableCollectionNodeMaker.Instance.MakeNode(stream) as VariableCollectionNode;
+            var collection = VariableCollectionNodeMaker.Instance.MakeNode(ref stream) as VariableCollectionNode;
             Assert.IsNotNull(collection);
             Assert.AreEqual(3, collection.Children.Count);
 
@@ -69,7 +69,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(test.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { VariableCollectionNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                VariableCollectionNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -79,7 +88,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers
             var stream = Lexer.Tokenize(new SourceText(test.AsMemory()));
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { VariableCollectionNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                VariableCollectionNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
     }
 }

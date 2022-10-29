@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             tokenStream.MatchOrThrow(TokenType.Name);
 
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (tokenStream.Match(TokenType.ParenLeft))
             {
                 var maker = NodeMakerFactory.CreateMaker<InputItemCollectionNode>();
-                inputCollection = maker.MakeNode(tokenStream);
+                inputCollection = maker.MakeNode(ref tokenStream);
             }
 
             // account for possible directives on this field
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
 
                 do
                 {
-                    var directive = maker.MakeNode(tokenStream);
+                    var directive = maker.MakeNode(ref tokenStream);
                     directives.Add(directive);
                 }
                 while (tokenStream.Match(TokenType.AtSymbol));
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
             if (tokenStream.Match(TokenType.CurlyBraceLeft))
             {
                 var maker = NodeMakerFactory.CreateMaker<FieldCollectionNode>();
-                fieldCollection = maker.MakeNode(tokenStream);
+                fieldCollection = maker.MakeNode(ref tokenStream);
             }
 
             var node = new FieldNode(startLocation, fieldAlias, fieldName);

@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = NamedFragmentNodeMaker.Instance.MakeNode(tokenStream) as NamedFragmentNode;
+            var node = NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream) as NamedFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragment", node.FragmentName.ToString());
             Assert.AreEqual("User", node.TargetType.ToArray());
@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = NamedFragmentNodeMaker.Instance.MakeNode(tokenStream) as NamedFragmentNode;
+            var node = NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream) as NamedFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragment", node.FragmentName.ToString());
             Assert.AreEqual("User", node.TargetType.ToArray());
@@ -64,7 +64,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { NamedFragmentNodeMaker.Instance.MakeNode(tokenStream); });
+            try
+            {
+                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -74,7 +83,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { NamedFragmentNodeMaker.Instance.MakeNode(tokenStream); });
+            try
+            {
+                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -84,7 +102,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { NamedFragmentNodeMaker.Instance.MakeNode(tokenStream); });
+            try
+            {
+                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -94,7 +121,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { NamedFragmentNodeMaker.Instance.MakeNode(tokenStream); });
+            try
+            {
+                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -104,7 +140,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { NamedFragmentNodeMaker.Instance.MakeNode(tokenStream); });
+            try
+            {
+                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -114,7 +159,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() => { NamedFragmentNodeMaker.Instance.MakeNode(tokenStream); });
+            try
+            {
+                NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
 
         [Test]
@@ -124,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Fragments
             var tokenStream = Lexer.Tokenize(new SourceText(text.AsMemory()));
             tokenStream.Prime();
 
-            var node = NamedFragmentNodeMaker.Instance.MakeNode(tokenStream) as NamedFragmentNode;
+            var node = NamedFragmentNodeMaker.Instance.MakeNode(ref tokenStream) as NamedFragmentNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("someFragment", node.FragmentName.ToString());
             Assert.AreEqual("User", node.TargetType.ToArray());

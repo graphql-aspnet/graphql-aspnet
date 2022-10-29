@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             stream.Prime();
 
-            var node = InputValueNodeMaker.Instance.MakeNode(stream) as ScalarValueNode;
+            var node = InputValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
             Assert.IsNotNull(node);
             Assert.AreEqual("\"SomeValue\"", node.Value.ToString());
         }
@@ -50,10 +50,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
 
             stream.Prime();
 
-            Assert.Throws<GraphQLSyntaxException>(() =>
+            try
             {
-                InputValueNodeMaker.Instance.MakeNode(stream);
-            });
+                InputValueNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
     }
 }

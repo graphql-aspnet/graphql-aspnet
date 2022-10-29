@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Parsing
                     maker = NodeMakerFactory.CreateMaker<OperationNode>();
                 }
 
-                var node = maker.MakeNode(tokenStream);
+                var node = maker.MakeNode(ref tokenStream);
                 syntaxTree.RootNode.AddChild(node);
             }
             while (!tokenStream.EndOfStream);

@@ -9,14 +9,9 @@
 
 namespace GraphQL.AspNet.Parsing.Lexing
 {
-    using System;
-    using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
+    using System.Collections.Generic;
     using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
-
-    using CHARS = GraphQL.AspNet.Parsing.ParserConstants.Characters;
-    using SR = GraphQL.AspNet.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
 
     /// <summary>
     /// A tokenizer programmed with the symbols of graphql, capable of walking a string,
@@ -31,88 +26,31 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// <returns>TokenStream.</returns>
         public static TokenStream Tokenize(SourceText source)
         {
-            var tokenSet = new TokenStream(source.Text);
-
-            source.SkipWhitespace();
-            while (source.HasData)
-            {
-                SourceLocation location;
-
-                // Comments
-                // -------------------
-                if (source.CheckCursor(SR.IsCommentGlyph))
-                {
-                    var text = source.NextComment(out location);
-                    tokenSet.Enqueue(new LexToken(TokenType.Comment, text, location, true));
-                }
-
-                // Flow Controler characer (non-text entities)
-                // -------------------
-                else if (source.CheckCursor(SR.IsControlGlyph))
-                {
-                    var text = source.NextControlPhrase(out location);
-                    var tokenType = text.Span.ToTokenType();
-                    var shouldSkipControlToken = tokenType == TokenType.Comma;
-                    tokenSet.Enqueue(new LexToken(tokenType, text, location, shouldSkipControlToken));
-                }
-
-                // Named fields
-                // ---------------------------------
-                else if (source.CheckCursor(SR.IsStartOfNameGlyph))
-                {
-                    var text = source.NextName(out location);
-                    tokenSet.Enqueue(Lexer.CharactersToToken(text, location));
-                }
-
-                // Numbers
-                // ----------------------------------
-                else if (source.CheckCursor(SR.IsStartOfNumberGlyph))
-                {
-                    var text = source.NextNumber(out location);
-                    var tokenType = text.Span.IndexOfAny(CHARS.FloatIndicatorChars.Span) >= 0 ? TokenType.Float : TokenType.Integer;
-                    tokenSet.Enqueue(new LexToken(tokenType, text, location));
-                }
-
-                // Strings
-                // ----------------------------------
-                else if (source.CheckCursor(SR.IsStringDelimiterGlyph))
-                {
-                    var text = source.NextString(out location);
-                    tokenSet.Enqueue(new LexToken(TokenType.String, text, location));
-                }
-                else
-                {
-                    // who the heck knows, just fail
-                    location = source.RetrieveCurrentLocation();
-                    throw new GraphQLSyntaxException(
-                        location,
-                        $"Unexpected character: '{source.Peek()}'");
-                }
-
-                source.SkipWhitespace();
-            }
-
-            tokenSet.Enqueue(LexToken.EoF);
-            return tokenSet;
+            return new TokenStream(source);
         }
 
         /// <summary>
-        /// Perform custom processing on any potential name token to determine
-        /// if it should be interpreted as a special case token (e.g. "null" phrases).
+        /// Reads and consumes the entire token stream and creates a list of tokens.
         /// </summary>
-        /// <param name="tokenText">The token text to convert.</param>
-        /// <param name="location">The location in hte source of hte given text.</param>
-        /// <returns>LexicalToken.</returns>
-        private static LexToken CharactersToToken(ReadOnlyMemory<char> tokenText, SourceLocation location)
+        /// <param name="tokenStream">The token stream.</param>
+        /// <param name="skipIgnored">if set to <c>true</c> any tokens deemed as "ignorable" according
+        /// to the graphql spec are automatically skipped over. This includes token such as whitespace, commas and comments.</param>
+        /// <returns>List&lt;LexToken&gt;.</returns>
+        public static List<LexToken> ToList(this TokenStream tokenStream, bool skipIgnored = true)
         {
-            if (tokenText.Span.Equals(ParserConstants.Keywords.Null.Span, StringComparison.Ordinal))
+            var list = new List<LexToken>();
+            if (tokenStream.TokenType == TokenType.StartOfFile)
+                tokenStream.Next(skipIgnored);
+
+            list.Add(tokenStream.ActiveToken);
+
+            while (tokenStream.TokenType != TokenType.EndOfFile)
             {
-                return new LexToken(TokenType.Null, ParserConstants.Keywords.Null, location);
+                tokenStream.Next(skipIgnored);
+                list.Add(tokenStream.ActiveToken);
             }
-            else
-            {
-                return new LexToken(TokenType.Name, tokenText, location);
-            }
+
+            return list;
         }
     }
 }

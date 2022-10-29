@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = EnumValueNodeMaker.Instance.MakeNode(stream) as EnumValueNode;
+            var result = EnumValueNodeMaker.Instance.MakeNode(ref stream) as EnumValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual("JEDI", result.Value.ToString());
 
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = EnumValueNodeMaker.Instance.MakeNode(stream) as EnumValueNode;
+            var result = EnumValueNodeMaker.Instance.MakeNode(ref stream) as EnumValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual("true", result.Value.ToString());
 
@@ -62,10 +62,17 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() =>
+
+            try
             {
-                EnumValueNodeMaker.Instance.MakeNode(stream);
-            });
+                EnumValueNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
     }
 }

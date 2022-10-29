@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             // the token stream MUST be positioned at an open paren for this maker to function correclty
             tokenStream.MatchOrThrow(TokenType.ParenLeft);
@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             var variableMaker = NodeMakerFactory.CreateMaker<VariableNode>();
             while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.ParenRight))
             {
-                var variable = variableMaker.MakeNode(tokenStream);
+                var variable = variableMaker.MakeNode(ref tokenStream);
                 collection.AddChild(variable);
             }
 

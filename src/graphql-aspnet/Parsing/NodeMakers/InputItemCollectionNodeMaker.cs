@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             // parentleft:  input item collection on a field
             // curlybraceleft: input item collection in a complex field
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
                 do
                 {
                     // ensure each input value in this collection is unique
-                    if (maker.MakeNode(tokenStream) is InputItemNode node)
+                    if (maker.MakeNode(ref tokenStream) is InputItemNode node)
                     {
                         children.Add(node);
                     }

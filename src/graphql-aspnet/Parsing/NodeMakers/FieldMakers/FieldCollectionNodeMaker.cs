@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             // the token stream MUST be positioned at an open curley brace for this to function
             // correclty
@@ -52,8 +52,8 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
                 childNodes = new List<SyntaxNode>();
                 do
                 {
-                    var maker = this.CreateFieldMaker(tokenStream);
-                    var node = maker.MakeNode(tokenStream);
+                    var maker = this.CreateFieldMaker(ref tokenStream);
+                    var node = maker.MakeNode(ref tokenStream);
                     childNodes.Add(node);
                 }
                 while (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.CurlyBraceRight));
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.FieldMakers
         /// <param name="tokenStream">The token stream to inspect.</param>
         /// <returns>An <see cref="ISyntaxNodeMaker"/> that can create a field node
         /// from the stream contents.</returns>
-        private ISyntaxNodeMaker CreateFieldMaker(TokenStream tokenStream)
+        private ISyntaxNodeMaker CreateFieldMaker(ref TokenStream tokenStream)
         {
             if (tokenStream.Match(TokenType.SpreadOperator))
                 return FragementNodeMaker.Instance;

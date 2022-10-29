@@ -39,13 +39,13 @@ namespace GraphQL.AspNet.Parsing.NodeMakers.ValueMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             tokenStream.MatchOrThrow(TokenType.CurlyBraceLeft);
             var startLocation = tokenStream.Location;
 
             var maker = NodeMakerFactory.CreateMaker<InputItemCollectionNode>();
-            var inputColection = maker.MakeNode(tokenStream);
+            var inputColection = maker.MakeNode(ref tokenStream);
 
             var collection = new ComplexValueNode(startLocation);
             collection.AddChild(inputColection);

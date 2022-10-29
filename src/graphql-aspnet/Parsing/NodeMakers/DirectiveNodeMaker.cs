@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
         /// </summary>
         /// <param name="tokenStream">The token stream.</param>
         /// <returns>LexicalToken.</returns>
-        public SyntaxNode MakeNode(TokenStream tokenStream)
+        public SyntaxNode MakeNode(ref TokenStream tokenStream)
         {
             tokenStream.MatchOrThrow(TokenType.AtSymbol);
             var startLocation = tokenStream.Location;
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Parsing.NodeMakers
             if (tokenStream.Match(TokenType.ParenLeft))
             {
                 var inputMaker = NodeMakerFactory.CreateMaker<InputItemCollectionNode>();
-                inputCol = inputMaker.MakeNode(tokenStream);
+                inputCol = inputMaker.MakeNode(ref tokenStream);
             }
 
             // assemble the directive

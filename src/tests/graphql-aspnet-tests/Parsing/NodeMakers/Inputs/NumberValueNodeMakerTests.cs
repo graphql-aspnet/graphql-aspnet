@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = NumberValueNodeMaker.Instance.MakeNode(stream) as ScalarValueNode;
+            var result = NumberValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ValueType, ScalarValueType.Number);
             Assert.AreEqual("1234.567", result.Value.ToString());
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = NumberValueNodeMaker.Instance.MakeNode(stream) as ScalarValueNode;
+            var result = NumberValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ValueType, ScalarValueType.Number);
             Assert.AreEqual("1234", result.Value.ToString());
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            var result = NumberValueNodeMaker.Instance.MakeNode(stream) as ScalarValueNode;
+            var result = NumberValueNodeMaker.Instance.MakeNode(ref stream) as ScalarValueNode;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ValueType, ScalarValueType.Number);
             Assert.AreEqual("null", result.Value.ToString());
@@ -75,7 +75,16 @@ namespace GraphQL.AspNet.Tests.Parsing.NodeMakers.Inputs
             var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
 
             stream.Prime();
-            Assert.Throws<GraphQLSyntaxException>(() => { NumberValueNodeMaker.Instance.MakeNode(stream); });
+            try
+            {
+                NumberValueNodeMaker.Instance.MakeNode(ref stream);
+            }
+            catch (GraphQLSyntaxException)
+            {
+                return;
+            }
+
+            Assert.Fail("Expection syntax exception");
         }
     }
 }
