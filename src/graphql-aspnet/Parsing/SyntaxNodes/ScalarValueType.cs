@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes
     /// spec: https://graphql.github.io/graphql-spec/October2021/#sec-Scalars.
     /// </summary>
     [Flags]
-    public enum ScalarValueType
+    public enum ScalarValueType : byte
     {
         Unknown = 0,
         Number = 1,
