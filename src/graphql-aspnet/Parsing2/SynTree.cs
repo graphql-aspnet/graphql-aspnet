@@ -11,13 +11,19 @@ namespace GraphQL.AspNet.Parsing2
 {
     using System;
     using System.Buffers;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Text;
+    using System.Text.Json;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Parsing;
 
     /// <summary>
     /// An abstract syntax tree containing <see cref="SynNode"/> elements
     /// that represent the parsed query document.
     /// </summary>
-    public struct SynTree
+    [DebuggerDisplay("{RootNode}")]
+    public readonly struct SynTree
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SynTree" /> struct.
@@ -25,7 +31,7 @@ namespace GraphQL.AspNet.Parsing2
         /// <param name="rootNode">The root node of the tree.</param>
         /// <param name="minBlockCapacity">The minmum number of node blocks
         /// that can be contained within this tree.</param>
-        /// <returns>The new syntax tree.</returns>
+        /// <returns>The newly created syntax tree.</returns>
         public static SynTree FromNode(SynNode rootNode, int minBlockCapacity = 4)
         {
             if (rootNode.Coordinates.BlockIndex >= 0
@@ -43,15 +49,80 @@ namespace GraphQL.AspNet.Parsing2
             return new SynTree(rootNode, nodePool, 0);
         }
 
+        /// <summary>
+        /// Clones this tree instance. Any supplied not supplied to this method
+        /// are instead pulled from this instance.
+        /// </summary>
+        /// <param name="rootNode">The new root node.</param>
+        /// <returns>SynTree.</returns>
+        public SynTree Clone(SynNode rootNode)
+        {
+            return this.Clone(
+                rootNode,
+                this.NodePool,
+                this.BlockLength);
+        }
+
+        /// <summary>
+        /// Clones this tree instance.
+        /// </summary>
+        /// <param name="newBlockLength">New used length of the block.</param>
+        /// <returns>SynTree.</returns>
+        public SynTree Clone(int newBlockLength)
+        {
+            return this.Clone(
+                this.RootNode,
+                this.NodePool,
+                newBlockLength);
+        }
+
+        /// <summary>
+        /// Clones this tree instance. Any supplied not supplied to this method
+        /// are instead pulled from this instance.
+        /// </summary>
+        /// <param name="rootNode">The new root node, if any.</param>
+        /// <param name="blockLength">Length of the set of nodes in the pool.</param>
+        /// <returns>SynTree.</returns>
         public SynTree Clone(
             SynNode? rootNode = null,
-            SynNode[][] nodePool = null,
             int? blockLength = null)
         {
-            return new SynTree(
+            return this.Clone(
                 rootNode ?? this.RootNode,
-                nodePool ?? this.NodePool,
+                this.NodePool,
                 blockLength ?? this.BlockLength);
+        }
+
+        /// <summary>
+        /// Clones this tree instance. Any supplied not supplied to this method
+        /// are instead pulled from this instance.
+        /// </summary>
+        /// <param name="rootNode">The new root node, if any.</param>
+        /// <param name="nodePool">The new node pool, if any.</param>
+        /// <param name="blockLength">Length of the set of nodes in the pool.</param>
+        /// <returns>SynTree.</returns>
+        public SynTree Clone(
+            SynNode[][] nodePool,
+            int blockLength)
+        {
+            Validation.ThrowIfNull(nodePool, nameof(nodePool));
+            return this.Clone(this.RootNode, nodePool, blockLength);
+        }
+
+        /// <summary>
+        /// Clones this tree instance. Any supplied not supplied to this method
+        /// are instead pulled from this instance.
+        /// </summary>
+        /// <param name="rootNode">The new root node, if any.</param>
+        /// <param name="nodePool">The new node pool, if any.</param>
+        /// <param name="blockLength">Length of the set of nodes in the pool.</param>
+        /// <returns>SynTree.</returns>
+        private SynTree Clone(
+            SynNode rootNode,
+            SynNode[][] nodePool,
+            int blockLength)
+        {
+            return new SynTree(rootNode, nodePool, blockLength);
         }
 
         /// <summary>

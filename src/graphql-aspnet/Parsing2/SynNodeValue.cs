@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Parsing2
     /// <summary>
     /// A struct representing a block of characters from a query text.
     /// </summary>
-    public struct SynNodeValue : IEquatable<SynNodeValue>
+    public readonly struct SynNodeValue : IEquatable<SynNodeValue>
     {
         public static SynNodeValue None { get; } = new SynNodeValue(ReadOnlyMemory<char>.Empty);
 
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Parsing2
         public bool Equals(SynNodeValue other)
         {
             return this.ValueType.Equals(other.ValueType)
-            && this.Value.Equals(other.Value);
+            && this.Value.Span.SequenceEqual(other.Value.Span);
         }
 
         /// <inheritdoc />
@@ -71,6 +71,12 @@ namespace GraphQL.AspNet.Parsing2
         {
             return obj is SynNodeValue snv
                 && this.Equals(snv);
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return this.Value.ToString();
         }
 
         /// <summary>

@@ -11,7 +11,11 @@ namespace GraphQL.AspNet.Parsing2
 {
     using System;
     using System.Buffers;
+    using System.IO;
+    using System.Text.Json;
+    using System.Text;
     using GraphQL.AspNet.Parsing;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Extension methods for <see cref="SynTree"/>.
@@ -43,10 +47,13 @@ namespace GraphQL.AspNet.Parsing2
         /// <param name="childNode">The child node to insert.</param>
         /// <returns>A copy of the tree with the node inserted and an updated
         /// version of the node with the appropriate coordinates.</returns>
-        public static (SynTree SyntaxTree, SynNode childNode) AddChildNode(this SynTree synTree, SynNode childNode)
+        public static SynTree AddChildNode(
+            this SynTree synTree,
+            ref SynNode childNode)
         {
-            var (treeOut, _, childOut) = AddChildNode(synTree, synTree.RootNode, childNode);
-            return (treeOut, childOut);
+            var rootNode = synTree.RootNode;
+            var treeOut = AddChildNode(synTree, ref rootNode, ref childNode);
+            return treeOut;
         }
 
         /// <summary>
@@ -62,37 +69,54 @@ namespace GraphQL.AspNet.Parsing2
         /// <param name="childNode">The child node to insert.</param>
         /// <returns>A copy of the tree with the node inserted and an updated
         /// version of the node with the appropriate coordinates.</returns>
-        public static (SynTree SyntaxTree, SynNode parentNode, SynNode childNode) AddChildNode(
+        public static SynTree AddChildNode(
             this SynTree synTree,
-            SynNode parentNode,
-            SynNode childNode)
+            ref SynNode parentNode,
+            ref SynNode childNode)
         {
-            SynTree treeOut;
-            SynNode parentOut;
-            SynNode childOut;
+            SynTree treeOut = synTree;
 
+            // add or update the parent's child block where the child
+            // will be added
             if (parentNode.Coordinates.ChildBlockIndex < 0)
             {
-                (treeOut, parentOut) = InsertChildBlock(synTree, parentNode);
+                InsertChildBlock(ref treeOut, ref parentNode);
             }
             else
             {
-                (treeOut, parentOut) = EnsureExistingChildBlockLength(
-                    synTree,
-                    parentNode,
+                EnsureExistingChildBlockLength(
+                    ref treeOut,
+                    ref parentNode,
                     parentNode.Coordinates.ChildBlockLength + 1);
             }
 
-            childOut = childNode.Clone(
+            // fix the coordinates of the child block
+            childNode = childNode.Clone(
                 coords: new SynNodeCoordinates(
-                    parentOut.Coordinates.ChildBlockIndex,
-                    parentOut.Coordinates.ChildBlockLength));
+                    parentNode.Coordinates.ChildBlockIndex,
+                    parentNode.Coordinates.ChildBlockLength));
 
-            treeOut.NodePool
-                [childOut.Coordinates.BlockIndex]
-                [childOut.Coordinates.BlockPosition] = childOut;
+            // insert the child block into the map
+            var coords = childNode.Coordinates;
+            treeOut.NodePool[coords.BlockIndex][coords.BlockPosition] = childNode;
 
-            return (treeOut, parentOut, childOut);
+            // update the parent's child count
+            coords = parentNode.Coordinates;
+            parentNode = parentNode.Clone(coords: coords.Clone(childBlockLength: coords.ChildBlockLength + 1));
+
+            // ensure the parentNode is updated within the
+            // tree copy to reflect its new child stats
+            if (parentNode.IsRootNode)
+            {
+                treeOut = treeOut.Clone(rootNode: parentNode);
+            }
+            else
+            {
+                coords = parentNode.Coordinates;
+                treeOut.NodePool[coords.BlockIndex][coords.BlockPosition] = parentNode;
+            }
+
+            return treeOut;
         }
 
         /// <summary>
@@ -100,65 +124,43 @@ namespace GraphQL.AspNet.Parsing2
         /// </summary>
         /// <param name="synTree">The syntax tree to add the block to.</param>
         /// <param name="node">The node to add the block for.</param>
-        /// <returns>The updated tree containing the block and the updated referncing the
-        /// newly added block.</returns>
-        private static (SynTree SyntaxTree, SynNode Node) InsertChildBlock(SynTree synTree, SynNode node)
+        private static void InsertChildBlock(ref SynTree synTree, ref SynNode node)
         {
-            SynTree treeOut = synTree;
-            SynNode nodeOut = node;
-
-            // add a block to the node pool to contain the child nodes
-            // of the parent
+            // create a new block to hold the children
             var newBlock = ArrayPool<SynNode>.Shared.Rent(4);
+
+            // expand the size of the block pool if needed
             if (synTree.BlockLength + 1 > synTree.NodePool.Length)
             {
-                // expand the size of the block pool if needed
-                var oldPool = treeOut.NodePool;
+                var oldPool = synTree.NodePool;
                 var newNodePool = ArrayPool<SynNode[]>.Shared.Rent(oldPool.Length * 2);
 
-                Array.Copy(oldPool, newNodePool, treeOut.BlockLength);
+                Array.Copy(oldPool, newNodePool, synTree.BlockLength);
                 ArrayPool<SynNode[]>.Shared.Return(oldPool);
 
-                treeOut = treeOut.Clone(nodePool: newNodePool);
+                synTree = synTree.Clone(newNodePool, synTree.BlockLength);
             }
 
-            var childBlockIndex = treeOut.BlockLength;
-            treeOut.NodePool[childBlockIndex] = newBlock;
-            treeOut = treeOut.Clone(blockLength: treeOut.BlockLength + 1);
+            // afix the new block into the tree
+            var childBlockIndex = synTree.BlockLength;
+            synTree.NodePool[childBlockIndex] = newBlock;
+            synTree = synTree.Clone(synTree.BlockLength + 1);
 
             // update the node with the correct child block index
-            nodeOut = nodeOut.Clone(
-                coords: nodeOut
+            node = node.Clone(
+                coords: node
                     .Coordinates.Clone(childBlockIndex: childBlockIndex));
-
-            if (nodeOut.Coordinates.BlockIndex == -1)
-            {
-                // re-root the tree with the root node's new details
-                treeOut = treeOut.Clone(rootNode: nodeOut);
-            }
-            else
-            {
-                // update the node in the tree with new details
-                treeOut.NodePool
-                    [nodeOut.Coordinates.BlockIndex]
-                    [nodeOut.Coordinates.BlockPosition] = nodeOut;
-            }
-
-            return (treeOut, nodeOut);
         }
 
-        private static (SynTree SyntaxTree, SynNode Node) EnsureExistingChildBlockLength(
-            SynTree synTree,
-            SynNode node,
+        private static void EnsureExistingChildBlockLength(
+            ref SynTree synTree,
+            ref SynNode node,
             int minimumRequiredLength)
         {
-            var treeOut = synTree;
-            var nodeOut = node;
-
             var coords = node.Coordinates;
-            var childNodeBlock = treeOut.NodePool[coords.ChildBlockIndex];
+            var childNodeBlock = synTree.NodePool[coords.ChildBlockIndex];
             if (childNodeBlock.Length >= minimumRequiredLength)
-                return (treeOut, nodeOut);
+                return;
 
             // expand the tree to a new minLength
             var newChildBlockLength = childNodeBlock.Length * 2;
@@ -169,8 +171,72 @@ namespace GraphQL.AspNet.Parsing2
             Array.Copy(childNodeBlock, newChildBlock, coords.ChildBlockLength);
             ArrayPool<SynNode>.Shared.Return(childNodeBlock);
 
-            treeOut.NodePool[coords.ChildBlockIndex] = newChildBlock;
-            return (treeOut, node);
+            synTree.NodePool[coords.ChildBlockIndex] = newChildBlock;
+        }
+
+        /// <summary>
+        /// Prints out the syntax tree into a structured json document.
+        /// </summary>
+        /// <param name="synTree">The syntax tree to convert.</param>
+        /// <returns>System.String.</returns>
+        public static string ToJsonString(this SynTree synTree)
+        {
+            var options = new JsonWriterOptions()
+            {
+                Indented = true,
+            };
+
+            var stream = new MemoryStream();
+            var writer = new Utf8JsonWriter(stream, options);
+
+            PrintJsonNode(writer, synTree, synTree.RootNode, 0);
+            writer.Flush();
+
+            stream.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(stream, Encoding.UTF8);
+            var str = reader.ReadToEnd();
+
+            reader.Dispose();
+            writer.Dispose();
+            stream.Dispose();
+
+            return str;
+        }
+
+        private static void PrintJsonNode(Utf8JsonWriter writer, SynTree synTree, SynNode node, int depth)
+        {
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("depth");
+            writer.WriteNumberValue(depth);
+
+            writer.WritePropertyName("type");
+            writer.WriteStringValue(node.NodeType.ToString());
+
+            if (node.PrimaryValue != default)
+            {
+                writer.WritePropertyName("primary");
+                writer.WriteStringValue(node.PrimaryValue.Value.ToString());
+            }
+
+            if (node.SecondaryValue != default)
+            {
+                writer.WritePropertyName("secondary");
+                writer.WriteStringValue(node.SecondaryValue.Value.ToString());
+            }
+
+            if (node.Coordinates.ChildBlockIndex >= 0)
+            {
+                writer.WritePropertyName("children");
+                writer.WriteStartArray();
+                var childBlock = synTree.NodePool[node.Coordinates.ChildBlockIndex];
+                for (var i = 0; i < node.Coordinates.ChildBlockLength; i++)
+                    PrintJsonNode(writer, synTree, childBlock[i], depth + 1);
+
+                writer.WriteEndArray();
+            }
+
+            writer.WriteEndObject();
         }
     }
 }

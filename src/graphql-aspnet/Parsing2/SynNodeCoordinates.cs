@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Parsing2
 {
+    using System;
     using System.Diagnostics;
 
     /// <summary>
@@ -16,7 +17,7 @@ namespace GraphQL.AspNet.Parsing2
     /// where this node is located.
     /// </summary>
     [DebuggerDisplay("{BlockIndex}, {BlockPosition}, {ChildBlockIndex}, {ChildBlockLength}")]
-    public struct SynNodeCoordinates
+    public readonly struct SynNodeCoordinates : IEquatable<SynNodeCoordinates>
     {
         /// <summary>
         /// Gets a set of coordinates indicating no position.
@@ -59,6 +60,22 @@ namespace GraphQL.AspNet.Parsing2
                 childBlockLength ?? this.ChildBlockLength);
         }
 
+        /// <inheritdoc />
+        public bool Equals(SynNodeCoordinates other)
+        {
+            return this.BlockIndex == other.BlockIndex
+                && this.BlockPosition == other.BlockPosition
+                && this.ChildBlockIndex == other.ChildBlockIndex
+                && this.ChildBlockLength == other.ChildBlockLength;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return obj is SynNodeCoordinates snc
+                && this.Equals(snc);
+        }
+
         /// <summary>
         /// Gets the index of the block, within the master syntax tree's pool,
         /// where this node is located.
@@ -86,5 +103,27 @@ namespace GraphQL.AspNet.Parsing2
         /// </summary>
         /// <value>The length of the child block.</value>
         public int ChildBlockLength { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{BlockIndex}, {BlockPosition}, {ChildBlockIndex}, {ChildBlockLength}";
+        }
+
+        /// <summary>
+        /// Implements the == operator.
+        /// </summary>
+        /// <param name="lhs">The left hand side of the equality check.</param>
+        /// <param name="rhs">The right hand side of the equality check.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(SynNodeCoordinates lhs, SynNodeCoordinates rhs) => lhs.Equals(rhs);
+
+        /// <summary>
+        /// Implements the != operator.
+        /// </summary>
+        /// <param name="lhs">The left hand side of the equality check.</param>
+        /// <param name="rhs">The right hand side of the equality check.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(SynNodeCoordinates lhs, SynNodeCoordinates rhs) => !(lhs == rhs);
     }
 }

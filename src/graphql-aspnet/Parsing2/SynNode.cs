@@ -10,14 +10,18 @@
 namespace GraphQL.AspNet.Parsing
 {
     using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices.ComTypes;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Controllers.ActionResults;
     using GraphQL.AspNet.Parsing2;
 
     /// <summary>
     /// A representing of a syntax node within a larger AST
     /// representing the query document.
     /// </summary>
-    public struct SynNode : IEquatable<SynNode>
+    [DebuggerDisplay("{PrimaryValue} ({Coordinates})")]
+    public readonly struct SynNode : IEquatable<SynNode>
     {
         public SynNode(
             SynNodeType nodeType,
@@ -55,6 +59,15 @@ namespace GraphQL.AspNet.Parsing
             SynNodeType nodeType,
             SynNodeValue primaryValue)
             : this(nodeType, default, primaryValue, SynNodeValue.None, SynNodeCoordinates.None)
+        {
+        }
+
+
+        public SynNode(
+            SynNodeType nodeType,
+            SynNodeValue primaryValue,
+            SynNodeValue secondaryValue)
+            : this(nodeType, default, primaryValue, secondaryValue, SynNodeCoordinates.None)
         {
         }
 
@@ -127,6 +140,12 @@ namespace GraphQL.AspNet.Parsing
         /// <value>The location.</value>
         public SourceLocation Location { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether this node is the root node in a given tree.
+        /// </summary>
+        /// <value><c>true</c> if this instance is a root node; otherwise, <c>false</c>.</value>
+        public bool IsRootNode => this.Coordinates.BlockIndex == -1;
+
         /// <inheritdoc />
         public override int GetHashCode()
         {
@@ -136,10 +155,10 @@ namespace GraphQL.AspNet.Parsing
         /// <inheritdoc />
         public bool Equals(SynNode other)
         {
-            return
-                this.NodeType == other.NodeType
-                && this.PrimaryValue.Equals(other.PrimaryValue)
-                && this.SecondaryValue.Equals(other.SecondaryValue);
+            return this.NodeType == other.NodeType
+             && this.PrimaryValue.Equals(other.PrimaryValue)
+             && this.SecondaryValue.Equals(other.SecondaryValue)
+             && this.Coordinates.Equals(other.Coordinates);
         }
 
         /// <inheritdoc />
