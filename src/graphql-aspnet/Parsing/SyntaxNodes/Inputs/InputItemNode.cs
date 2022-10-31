@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Parsing.SyntaxNodes.Inputs
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"II-{this.InputName}";
+            return $"II-{this.InputName.ToString()}";
         }
     }
 }

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing
+namespace GraphQL.AspNet.Parsing2
 {
     /// <summary>
     /// An enumeration of all the types of nodes that can exist within
@@ -33,6 +33,7 @@ namespace GraphQL.AspNet.Parsing
 
         InputItemCollection,
         InputItem,
+        InputValue,
 
         VariableValue,
         ComplexValue,

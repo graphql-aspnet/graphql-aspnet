@@ -11,11 +11,11 @@ namespace GraphQL.AspNet.Parsing2
 {
     using System;
     using System.Buffers;
+    using System.Diagnostics;
     using System.IO;
-    using System.Text.Json;
     using System.Text;
+    using System.Text.Json;
     using GraphQL.AspNet.Parsing;
-    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Extension methods for <see cref="SynTree"/>.
@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Parsing2
         /// the tree should be discarded.
         /// </summary>
         /// <param name="synTree">The syn tree to release.</param>
+        [DebuggerStepperBoundary]
         public static void Release(this SynTree synTree)
         {
             for (var i = 0; i < synTree.BlockLength; i++)
@@ -47,6 +48,7 @@ namespace GraphQL.AspNet.Parsing2
         /// <param name="childNode">The child node to insert.</param>
         /// <returns>A copy of the tree with the node inserted and an updated
         /// version of the node with the appropriate coordinates.</returns>
+        [DebuggerStepperBoundary]
         public static SynTree AddChildNode(
             this SynTree synTree,
             ref SynNode childNode)
@@ -69,6 +71,7 @@ namespace GraphQL.AspNet.Parsing2
         /// <param name="childNode">The child node to insert.</param>
         /// <returns>A copy of the tree with the node inserted and an updated
         /// version of the node with the appropriate coordinates.</returns>
+        [DebuggerStepperBoundary]
         public static SynTree AddChildNode(
             this SynTree synTree,
             ref SynNode parentNode,

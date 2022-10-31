@@ -33,6 +33,7 @@ namespace GraphQL.AspNet.Parsing2
         /// <param name="blockPosition">The 0-based position within the given
         /// block where this node is located.</param>
         /// <param name="childBlockIndex">Index of the child block in the master syntax tree.</param>
+        [DebuggerStepperBoundary]
         public SynNodeCoordinates(int blockIndex, int blockPosition, int childBlockIndex = -1, int childBlockLength = 0)
         {
             this.BlockIndex = blockIndex;
@@ -41,6 +42,7 @@ namespace GraphQL.AspNet.Parsing2
             this.ChildBlockLength = childBlockLength;
         }
 
+        [DebuggerStepperBoundary]
         public SynNodeCoordinates()
         {
             this.BlockIndex = -1;

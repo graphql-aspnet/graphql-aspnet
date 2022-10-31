@@ -14,6 +14,8 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
     using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Parsing2;
+    using Microsoft.VisualStudio.TestPlatform.ObjectModel;
     using NUnit.Framework;
 
     /// <summary>
@@ -70,6 +72,43 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             Assert.IsNotNull(tokenSet);
             Assert.IsTrue(tokenSet.Any());
             AssertToken(tokenSet.Last(), string.Empty, TokenType.EndOfFile, -1);
+        }
+
+        public static void AssertSynNodeChain(ref SynTree tree, SynNodeTestCase topLevelNode)
+        {
+            AssertSynNodeChain(ref tree, tree.RootNode, topLevelNode);
+        }
+
+        public static void AssertSynNodeChain(ref SynTree tree, SynNode node, SynNodeTestCase testCase)
+        {
+            if (testCase.NodeType.HasValue)
+                Assert.AreEqual(testCase.NodeType, node.NodeType);
+
+            if (testCase.PrimaryValueType.HasValue)
+                Assert.AreEqual(testCase.PrimaryValueType.Value, node.PrimaryValue.ValueType);
+
+            Assert.AreEqual(testCase.PrimaryText, node.PrimaryValue.Value.ToString());
+            Assert.AreEqual(testCase.SecondaryText, node.SecondaryValue.Value.ToString());
+
+            if (testCase.Children.Length > 0)
+                AssertChildNodeChain(ref tree, node, testCase.Children);
+        }
+
+        public static void AssertChildNodeChain(ref SynTree tree, SynNode node, params SynNodeTestCase[] childTestCases)
+        {
+            if (childTestCases.Length == 1 && childTestCases[0] == SynNodeTestCase.NoChildren)
+            {
+                Assert.AreEqual(0, node.Coordinates.ChildBlockLength);
+                return;
+            }
+            else if (childTestCases.Length > 0)
+            {
+                for (var i = 0; i < childTestCases.Length; i++)
+                {
+                    var childNode = tree.NodePool[node.Coordinates.ChildBlockIndex][i];
+                    AssertSynNodeChain(ref tree, childNode, childTestCases[i]);
+                }
+            }
         }
     }
 }

@@ -7,14 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing
+namespace GraphQL.AspNet.Parsing2
 {
     using System;
     using System.Diagnostics;
-    using System.Runtime.InteropServices.ComTypes;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Parsing2;
 
     /// <summary>
     /// A representing of a syntax node within a larger AST
@@ -23,6 +20,8 @@ namespace GraphQL.AspNet.Parsing
     [DebuggerDisplay("{PrimaryValue} ({Coordinates})")]
     public readonly struct SynNode : IEquatable<SynNode>
     {
+
+        [DebuggerStepperBoundary]
         public SynNode(
             SynNodeType nodeType,
             SourceLocation location)
@@ -30,6 +29,8 @@ namespace GraphQL.AspNet.Parsing
         {
         }
 
+
+        [DebuggerStepperBoundary]
         public SynNode(
             SynNodeType nodeType,
             SourceLocation location,
@@ -38,6 +39,8 @@ namespace GraphQL.AspNet.Parsing
         {
         }
 
+
+        [DebuggerStepperBoundary]
         public SynNode(
             SynNodeType nodeType,
             SourceLocation location,
@@ -47,6 +50,8 @@ namespace GraphQL.AspNet.Parsing
         {
         }
 
+
+        [DebuggerStepperBoundary]
         public SynNode(
             SynNodeType nodeType,
             SourceLocation location,
@@ -55,6 +60,8 @@ namespace GraphQL.AspNet.Parsing
         {
         }
 
+
+        [DebuggerStepperBoundary]
         public SynNode(
             SynNodeType nodeType,
             SynNodeValue primaryValue)
@@ -62,12 +69,21 @@ namespace GraphQL.AspNet.Parsing
         {
         }
 
-
         public SynNode(
             SynNodeType nodeType,
             SynNodeValue primaryValue,
             SynNodeValue secondaryValue)
             : this(nodeType, default, primaryValue, secondaryValue, SynNodeCoordinates.None)
+        {
+        }
+
+        [DebuggerStepperBoundary]
+        public SynNode(
+            SynNodeType nodeType,
+            SourceLocation location,
+            SynNodeValue primaryValue,
+            SynNodeValue secondaryValue)
+            : this(nodeType, location, primaryValue, secondaryValue, SynNodeCoordinates.None)
         {
         }
 

@@ -12,11 +12,8 @@ namespace GraphQL.AspNet.Parsing2
     using System;
     using System.Buffers;
     using System.Diagnostics;
-    using System.IO;
-    using System.Text;
-    using System.Text.Json;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Common.Source;
 
     /// <summary>
     /// An abstract syntax tree containing <see cref="SynNode"/> elements
@@ -26,7 +23,19 @@ namespace GraphQL.AspNet.Parsing2
     public readonly struct SynTree
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynTree" /> struct.
+        /// Creates a new tree with a new root node declares as a document type.
+        /// </summary>
+        /// <param name="minBlockCapacity">The minmum number of node blocks
+        /// that can be contained within this tree.</param>
+        /// <returns>The newly created syntax tree.</returns>
+        public static SynTree FromDocumentRoot(int minBlockCapacity = 4)
+        {
+            var rootNode = new SynNode(SynNodeType.Document, SourceLocation.None);
+            return FromNode(rootNode, minBlockCapacity);
+        }
+
+        /// <summary>
+        /// Creates a new tree with the given node as the root node.
         /// </summary>
         /// <param name="rootNode">The root node of the tree.</param>
         /// <param name="minBlockCapacity">The minmum number of node blocks

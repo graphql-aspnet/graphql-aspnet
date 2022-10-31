@@ -23,18 +23,21 @@ namespace GraphQL.AspNet.Parsing2
         /// <summary>
         /// Initializes a new instance of the <see cref="SynNodeValue"/> struct.
         /// </summary>
+        [DebuggerStepperBoundary]
         public SynNodeValue()
         {
             this.Value = ReadOnlyMemory<char>.Empty;
             this.ValueType = ScalarValueType.Unknown;
         }
 
+        [DebuggerStepperBoundary]
         public SynNodeValue(ReadOnlyMemory<char> value)
         {
             this.Value = value;
             this.ValueType = ScalarValueType.Unknown;
         }
 
+        [DebuggerStepperBoundary]
         public SynNodeValue(ReadOnlyMemory<char> value, ScalarValueType valueType)
         {
             this.Value = value;

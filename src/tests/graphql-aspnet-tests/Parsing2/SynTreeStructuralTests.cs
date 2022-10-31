@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
     using NUnit.Framework;
 
     [TestFixture]
-    public class SynTreeTests
+    public class SynTreeStructuralTests
     {
         [Test]
         public void AddSingleChild_ToTreeRoot_TreeIsExtended_RootIsUpdated()
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(0, updatedTree.RootNode.Coordinates.ChildBlockIndex);
 
             // child node exists at the right block position
-            Assert.AreEqual(childNode.PrimaryValue, updatedTree.NodePool[0][0].PrimaryValue);
+            Assert.IsTrue(childNode.PrimaryValue == updatedTree.NodePool[0][0].PrimaryValue);
 
             // child node coordinates are set
             Assert.AreEqual(0, childNode.Coordinates.BlockIndex);
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(0, updatedTree.RootNode.Coordinates.ChildBlockIndex);
 
             // child1 node exists at the right block position
-            Assert.AreEqual(childNode1.PrimaryValue, updatedTree.NodePool[0][1].PrimaryValue);
+            Assert.IsTrue(childNode1.PrimaryValue == updatedTree.NodePool[0][1].PrimaryValue);
 
             // child1 node coordinates are set
             Assert.AreEqual(0, childNode1.Coordinates.BlockIndex);
@@ -154,12 +154,12 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(2, updatedTree.BlockLength);
 
             // check contents of Node-0 child block
-            Assert.AreEqual(childNode0, updatedTree.NodePool[0][0]);
-            Assert.AreEqual(default(SynNode), updatedTree.NodePool[0][1]);
+            Assert.IsTrue(childNode0 == updatedTree.NodePool[0][0]);
+            Assert.IsTrue(updatedTree.NodePool[0][1] == default);
 
             // check contents of Node-0-0 child block
-            Assert.AreEqual(childNode1, updatedTree.NodePool[1][0]);
-            Assert.AreEqual(default(SynNode), updatedTree.NodePool[1][1]);
+            Assert.IsTrue(childNode1 == updatedTree.NodePool[1][0]);
+            Assert.IsTrue(updatedTree.NodePool[1][1] == default);
 
             // check coords of child0
             Assert.AreEqual(0, childNode0.Coordinates.BlockIndex);
