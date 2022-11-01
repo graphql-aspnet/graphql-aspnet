@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Parsing2
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A struct representing a block of characters from a query text.

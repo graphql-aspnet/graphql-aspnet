@@ -9,14 +9,16 @@
 
 namespace GraphQL.AspNet.Tests.CommonHelpers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Parsing2;
-    using Microsoft.VisualStudio.TestPlatform.ObjectModel;
     using NUnit.Framework;
+
+    using LexicalToken2 = GraphQL.AspNet.Parsing2.Lexing.Tokens.LexicalToken;
+    using TokenType2 = GraphQL.AspNet.Parsing2.Lexing.Tokens.TokenType;
+    using TokenStream2 = GraphQL.AspNet.Parsing2.Lexing.TokenStream;
 
     /// <summary>
     /// Some commonly used assert statements for various objects.
@@ -72,6 +74,57 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             Assert.IsNotNull(tokenSet);
             Assert.IsTrue(tokenSet.Any());
             AssertToken(tokenSet.Last(), string.Empty, TokenType.EndOfFile, -1);
+        }
+
+        public static void AssertTokenChain(ref TokenStream2 tokenSet, params LexicalToken2[] expectedTokens)
+        {
+            tokenSet.Prime();
+
+            var listFound = new List<LexicalToken2>();
+            listFound.Add(tokenSet.ActiveToken);
+            var i = 0;
+
+            do
+            {
+                var expected = expectedTokens[i];
+                AssertToken(tokenSet.ActiveToken, expected.Text.ToString(), expected.TokenType);
+                tokenSet.Next(false);
+                listFound.Add(tokenSet.ActiveToken);
+                i++;
+            }
+            while (tokenSet.TokenType != TokenType2.EndOfFile);
+
+            Assert.AreEqual(listFound.Count, expectedTokens.Length, $"Expected {expectedTokens.Length} tokens, got {i}");
+        }
+
+        /// <summary>
+        /// Asserts that the token meets common checks.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="expectedText">The expected text.</param>
+        /// <param name="expectedType">The expected type of the 'TokenType' property.</param>
+        /// <param name="expectedAbsolutePosition">The expected absolute position.</param>
+        public static void AssertToken(LexicalToken2 token, string expectedText, TokenType2 expectedType, int? expectedAbsolutePosition = null)
+        {
+            Assert.IsNotNull(token);
+            Assert.AreEqual(expectedType, token.TokenType);
+            Assert.AreEqual(expectedText, token.Text.ToString());
+            Assert.IsNotNull(token.Location, "Token does not contain a valid location");
+            if (expectedAbsolutePosition != null)
+            {
+                Assert.AreEqual(expectedAbsolutePosition.Value, token.Location.AbsoluteIndex);
+            }
+        }
+
+        /// <summary>
+        /// Asserts that the token set provided ends with an "End of File" token.
+        /// </summary>
+        /// <param name="tokenSet">The token set.</param>
+        public static void AssertEndsWithEoF(IEnumerable<LexicalToken2> tokenSet)
+        {
+            Assert.IsNotNull(tokenSet);
+            Assert.IsTrue(tokenSet.Any());
+            AssertToken(tokenSet.Last(), string.Empty, TokenType2.EndOfFile, -1);
         }
 
         public static void AssertSynNodeChain(ref SynTree tree, SynNodeTestCase topLevelNode)

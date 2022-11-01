@@ -9,13 +9,10 @@
 
 namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
 {
-    using System.Collections.ObjectModel;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing.NodeMakers.ValueMakers;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Exceptions;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     public class ListValueNodeBuilder : ISynNodeBuilder
     {
@@ -32,7 +29,6 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
 
             tokenStream.MatchOrThrow(TokenType.BracketLeft);
             tokenStream.Next();
-
 
             var listNode = new SynNode(
                 SynNodeType.ListValue,

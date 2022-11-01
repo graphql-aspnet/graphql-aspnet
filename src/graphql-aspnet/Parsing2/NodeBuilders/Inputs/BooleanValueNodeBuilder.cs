@@ -9,15 +9,11 @@
 
 namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
 {
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing.NodeMakers.ValueMakers;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Exceptions;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     public class BooleanValueNodeBuilder : ISynNodeBuilder
     {
@@ -26,7 +22,6 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
         /// </summary>
         /// <value>The instance.</value>
         public static ISynNodeBuilder Instance { get; } = new BooleanValueNodeBuilder();
-
 
         /// <inheritdoc />
         public void BuildNode(ref SynTree synTree, ref SynNode parentNode, ref TokenStream tokenStream)

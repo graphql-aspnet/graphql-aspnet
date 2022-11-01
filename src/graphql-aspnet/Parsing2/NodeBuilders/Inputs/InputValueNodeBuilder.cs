@@ -11,10 +11,9 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
 {
     using System;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing.NodeMakers.ValueMakers;
+    using GraphQL.AspNet.Parsing2.Exceptions;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     internal class InputValueNodeBuilder : ISynNodeBuilder
     {

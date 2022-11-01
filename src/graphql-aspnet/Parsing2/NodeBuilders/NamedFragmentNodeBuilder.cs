@@ -10,9 +10,9 @@
 namespace GraphQL.AspNet.Parsing2.NodeBuilders
 {
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using KEYWORDS = GraphQL.AspNet.Parsing.ParserConstants.Keywords;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
+    using KEYWORDS = GraphQL.AspNet.Parsing2.ParserConstants.Keywords;
 
     public class NamedFragmentNodeBuilder : ISynNodeBuilder
     {

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.CommonHelpers
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing2;
 
     public class SynNodeTestCase

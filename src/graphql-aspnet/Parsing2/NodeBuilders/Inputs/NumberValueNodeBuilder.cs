@@ -1,15 +1,17 @@
-﻿namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.NodeMakers.ValueMakers;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     internal class NumberValueNodeBuilder : ISynNodeBuilder
     {
@@ -47,7 +49,7 @@
                         ScalarValueType.Number));
             }
 
-            synTree = synTree.AddChildNode(ref parentNode,ref numberNode);
+            synTree = synTree.AddChildNode(ref parentNode, ref numberNode);
             tokenStream.Next();
         }
     }

@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Tests.Parsing2
 {
     using System;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;

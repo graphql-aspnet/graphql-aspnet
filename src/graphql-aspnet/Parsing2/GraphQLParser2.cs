@@ -7,21 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-
 namespace GraphQL.AspNet.Parsing2
 {
     using System;
     using System.Text;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
-    using GraphQL.AspNet.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Parsing.NodeMakers;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
-    using KEYWORDS = GraphQL.AspNet.Parsing.ParserConstants.Keywords;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Exceptions;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Parsing2.NodeBuilders;
+    using KEYWORDS = GraphQL.AspNet.Parsing2.ParserConstants.Keywords;
 
     /// <summary>
     /// A parse that will convert a graphql query into valid

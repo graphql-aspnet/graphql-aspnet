@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 {
     using System;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using NUnit.Framework;
 

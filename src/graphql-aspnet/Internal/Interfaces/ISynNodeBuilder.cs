@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Internal.Interfaces
 {
-    using GraphQL.AspNet.Parsing.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing;
     using GraphQL.AspNet.Parsing2;
 
     /// <summary>

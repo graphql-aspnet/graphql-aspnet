@@ -11,8 +11,8 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
 {
     using System;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     public class ValueNodeBuilderFactory
     {

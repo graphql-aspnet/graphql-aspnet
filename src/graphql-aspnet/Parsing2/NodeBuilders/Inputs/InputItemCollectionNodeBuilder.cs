@@ -1,16 +1,17 @@
-﻿namespace GraphQL.AspNet.Parsing2.NodeBuilders
+﻿// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
+namespace GraphQL.AspNet.Parsing2.NodeBuilders
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.NodeMakers;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     public class InputItemCollectionNodeBuilder : ISynNodeBuilder
     {

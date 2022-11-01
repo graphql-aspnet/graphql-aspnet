@@ -11,10 +11,9 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
 {
     using System;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Exceptions;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using KEYWORDS = GraphQL.AspNet.Parsing.ParserConstants.Keywords;
 
     public class FragmentSpreadNodeBuilder : ISynNodeBuilder
@@ -39,8 +38,6 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            SyntaxNode node;
-            SyntaxNode collection = null;
             ReadOnlyMemory<char> fragmentName = ReadOnlyMemory<char>.Empty;
             ReadOnlyMemory<char> restrictedToType = ReadOnlyMemory<char>.Empty;
 
