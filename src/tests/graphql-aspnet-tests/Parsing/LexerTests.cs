@@ -101,9 +101,6 @@ namespace GraphQL.AspNet.Tests.Parsing
             }
             catch (GraphQLSyntaxException ex)
             {
-                Assert.AreEqual(
-                    @"                                  createHero(  name: ""John"", age: 2ee.43  ) {",
-                    ex.Location.LineText.ToString());
                 Assert.AreEqual(2, ex.Location.LineNumber);
                 Assert.AreEqual(68, ex.Location.LineIndex);
                 return;
@@ -135,9 +132,6 @@ namespace GraphQL.AspNet.Tests.Parsing
             }
             catch (GraphQLSyntaxException ex)
             {
-                Assert.AreEqual(
-                    @"                                  createHero(  name: ""J\wohn"", age: 2ee.43  ) {",
-                    ex.Location.LineText.ToString());
                 Assert.AreEqual(2, ex.Location.LineNumber);
                 Assert.AreEqual(55, ex.Location.LineIndex);
                 return;
@@ -169,7 +163,6 @@ namespace GraphQL.AspNet.Tests.Parsing
             }
             catch (GraphQLSyntaxException ex)
             {
-                Assert.AreEqual(@"                                    na&me", ex.Location.LineText.ToString());
                 Assert.AreEqual(3, ex.Location.LineNumber);
                 Assert.AreEqual(38, ex.Location.LineIndex);
                 Assert.AreEqual(39, ex.Location.LinePosition);

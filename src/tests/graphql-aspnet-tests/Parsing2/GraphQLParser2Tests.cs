@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
     /// source query into a properly formatted syntaxTree that can be executed by a schema.
     /// </summary>
     [TestFixture]
-    public class ParserTests
+    public class GraphQLParser2Tests
     {
         [Test]
         public void ParseDocument_NonQueryThrowsException()

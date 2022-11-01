@@ -96,12 +96,11 @@ namespace GraphQL.AspNet.Tests.Parsing
         }
 
         [Test]
-        public void SourceLocation_WithText_PropertyCheck()
+        public void SourceLocation_PropertyCheck()
         {
             var text = "test".AsMemory();
 
-            var location = new SourceLocation(5, text, 2, 1);
-            Assert.AreEqual(text, location.LineText);
+            var location = new SourceLocation(5, 2, 1);
             Assert.AreEqual(5, location.AbsoluteIndex);
             Assert.AreEqual(2, location.LineNumber);
             Assert.AreEqual(1, location.LineIndex);
@@ -112,17 +111,6 @@ namespace GraphQL.AspNet.Tests.Parsing
             var origin = location.AsOrigin();
             Assert.AreEqual(location, origin.Location);
             Assert.AreEqual(SourcePath.None, origin.Path);
-        }
-
-        [Test]
-        public void SourceLocation_WithNoText_PropertyCheck()
-        {
-            var location = new SourceLocation(5, 2, 1);
-            Assert.AreEqual(ReadOnlyMemory<char>.Empty, location.LineText);
-            Assert.AreEqual(5, location.AbsoluteIndex);
-            Assert.AreEqual(2, location.LineNumber);
-            Assert.AreEqual(1, location.LineIndex);
-            Assert.AreEqual(2, location.LinePosition);
         }
 
         [Test]

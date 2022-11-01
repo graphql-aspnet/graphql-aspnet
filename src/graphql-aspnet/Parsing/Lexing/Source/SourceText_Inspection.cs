@@ -201,7 +201,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
             sourceIndex = sourceIndex > _sourceText.Length ? _sourceText.Length : sourceIndex;
 
             var (lineNumber, lineIndex) = this.RetrieveLineInformation(sourceIndex);
-            return new SourceLocation(sourceIndex, this.PeekFullLineInternal(sourceIndex), lineNumber, lineIndex);
+            return new SourceLocation(sourceIndex, lineNumber, lineIndex);
         }
 
         /// <summary>
