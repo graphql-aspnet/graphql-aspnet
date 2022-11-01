@@ -271,5 +271,11 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
         /// </summary>
         /// <value><c>true</c> if data is left to be read, otherwise; <c>false</c>.</value>
         public ReadOnlyMemory<char> Text => _sourceMemory;
+
+        /// <summary>
+        /// Gets the full set of characters that make up this instance.
+        /// </summary>
+        /// <value>The chars.</value>
+        public ReadOnlySpan<char> Chars => _sourceText;
     }
 }

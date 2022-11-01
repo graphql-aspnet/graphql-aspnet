@@ -32,6 +32,7 @@ namespace GraphQL.AspNet.Defaults
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
+        private readonly DocumentConstructionRuleProcessor _nodeProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQueryDocumentGenerator{TSchema}" /> class.
@@ -40,6 +41,7 @@ namespace GraphQL.AspNet.Defaults
         public DefaultGraphQueryDocumentGenerator(TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _nodeProcessor = new DocumentConstructionRuleProcessor();
         }
 
         /// <inheritdoc />
@@ -81,10 +83,9 @@ namespace GraphQL.AspNet.Defaults
             // that are required of that node to create pieces (IDocumentPart) of the
             // document being constructed
             // --------------------------------------------
-            var nodeProcessor = new DocumentConstructionRuleProcessor();
             var constructionContext = new DocumentConstructionContext(syntaxTree, document, _schema);
 
-            var completedAllSteps = nodeProcessor.Execute(constructionContext);
+            var completedAllSteps = _nodeProcessor.Execute(constructionContext);
 
             // --------------------------------------------
             // Step 2: Part Linking

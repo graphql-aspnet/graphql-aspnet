@@ -9,12 +9,9 @@
 
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.PlanGeneration.Document;
 
     /// <summary>
@@ -55,6 +52,10 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
         /// <value>The parent.</value>
         IDocumentPart Parent { get; }
 
+        /// <summary>
+        /// Gets the location in the original query text where this document part originated.
+        /// </summary>
+        /// <value>The source location.</value>
         SourceLocation SourceLocation { get; }
 
         /// <summary>
