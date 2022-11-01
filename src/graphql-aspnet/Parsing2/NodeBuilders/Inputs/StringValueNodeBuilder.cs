@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                     SynNodeType.ScalarValue,
                     tokenStream.Location,
                     new SynNodeValue(
-                        tokenStream.ActiveToken.Text,
+                        tokenStream.ActiveToken.Block,
                         ScalarValueType.String));
             }
             else
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                    SynNodeType.ScalarValue,
                    tokenStream.Location,
                    new SynNodeValue(
-                       tokenStream.ActiveToken.Text,
+                       tokenStream.ActiveToken.Block,
                        ScalarValueType.String));
             }
 

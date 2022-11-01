@@ -37,10 +37,11 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("...", 0, "...")]
         public void SourceText_NextControlPhrase_ValidStrings(string text, int offSet, string outputText)
         {
-            var source = new SourceText(text.AsMemory(), offSet);
+            var source = new SourceText(text.AsSpan(), offSet);
             var result = source.NextControlPhrase(out var location);
+            var resultText = source.RetrieveText(result).ToString();
 
-            Assert.AreEqual(outputText, result.ToString());
+            Assert.AreEqual(outputText, resultText);
             Assert.IsNotNull(location);
         }
 
@@ -55,7 +56,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             int errorLine,
             int errorLineIndex)
         {
-            var source = new SourceText(text.AsMemory(), offSet);
+            var source = new SourceText(text.AsSpan(), offSet);
             try
             {
                 var result = source.NextControlPhrase(out var location);
@@ -98,14 +99,14 @@ namespace GraphQL.AspNet.Tests.Parsing2
             SourceText source;
             if (!isFileReference)
             {
-                source = new SourceText(text.AsMemory(), offset);
+                source = new SourceText(text.AsSpan(), offset);
             }
             else
             {
                 try
                 {
                     var sourceText = ResourceLoader.ReadAllLines("LexerSource_NextString_Tests", text);
-                    source = new SourceText(sourceText.AsMemory(), offset);
+                    source = new SourceText(sourceText.AsSpan(), offset);
 
                     // account for a windows clone that may put in carriage returns
                     // cursor pointers would be after the carriage returns in any files
@@ -121,13 +122,14 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             var result = source.NextString(out var location);
 
+
             Assert.IsNotNull(location);
             Assert.AreEqual(expectedCursorLocation, source.Cursor);
             Assert.AreEqual(expectedResultLength, result.Length);
 
             // Note: expectedResult is ignored if null.
             if (expectedResult != null)
-                Assert.AreEqual(expectedResult, result.ToString());
+                Assert.AreEqual(expectedResult,  source.RetrieveText(result).ToString());
         }
 
         [TestCase("", 0, -1, -1, -1)] // nothing
@@ -151,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             // an invalid string will be one with no terminator
             try
             {
-                var source = new SourceText(text.AsMemory(), offset);
+                var source = new SourceText(text.AsSpan(), offset);
                 var result = source.NextString(out var location);
             }
             catch (GraphQLSyntaxException ex)
@@ -207,9 +209,11 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCaseSource(nameof(COMMENT_TEST_CASES))]
         public void SourceText_NextComment(string text, int offSet, string expectedOutput, int cursorLoc, string remaining = null)
         {
-            var source = new SourceText(text.AsMemory(), offSet);
-            var comment = source.NextComment(out var location).ToString();
-            Assert.AreEqual(expectedOutput, comment);
+            var source = new SourceText(text.AsSpan(), offSet);
+            var comment = source.NextComment(out var location);
+            var commentText = source.RetrieveText(comment).ToString();
+
+            Assert.AreEqual(expectedOutput, commentText);
             Assert.AreEqual(cursorLoc, source.Cursor);
             Assert.IsNotNull(location);
 
@@ -226,7 +230,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             // should disallow all conditions by the nature of extracting the next line
             try
             {
-                var source = new SourceText(text.AsMemory());
+                var source = new SourceText(text.AsSpan());
                 var location = source.RetrieveCurrentLocation();
                 var result = source.Next(source.Length);
                 CommentPhraseValidator.Instance.ValidateOrThrow(source, result, location);
@@ -260,14 +264,15 @@ namespace GraphQL.AspNet.Tests.Parsing2
             int expectedCursorLoc,    // the new expected location of the cursor
             string expectedRemaining) // the remaining text on the source buffer
         {
-            var source = new SourceText(text.AsMemory(), offSet);
+            var source = new SourceText(text.AsSpan(), offSet);
             var result = source.NextName(out var location);
+            var resultText = source.RetrieveText(result).ToString();
 
             // location should point to the start of the extraction
             Assert.IsNotNull(location);
             Assert.AreEqual(offSet, location.AbsoluteIndex);
 
-            Assert.AreEqual(expectedOut, result.ToString());
+            Assert.AreEqual(expectedOut, resultText);
             Assert.AreEqual(expectedCursorLoc, source.Cursor);
             Assert.AreEqual(expectedRemaining, source.ToString());
         }
@@ -287,7 +292,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             {
                 // query against the validation directly
                 // to force some exceptions that would not occur due to extraction delimiters
-                var source = new SourceText(text.AsMemory(), offset);
+                var source = new SourceText(text.AsSpan(), offset);
                 var location = source.RetrieveCurrentLocation();
                 var slice = source.Next(text.Length - offset);
                 NameValidator.Instance.ValidateOrThrow(source, slice, location);
@@ -330,14 +335,15 @@ namespace GraphQL.AspNet.Tests.Parsing2
             int expectedCursorLoc,    // the new expected location of the cursor
             string expectedRemaining) // the remaining text on the source buffer
         {
-            var source = new SourceText(text.AsMemory(), offSet);
+            var source = new SourceText(text.AsSpan(), offSet);
             var result = source.NextNumber(out var location);
+            var resultText = source.RetrieveText(result).ToString();
 
             // location should point to the start of the extraction
             Assert.IsNotNull(location);
             Assert.AreEqual(offSet, location.AbsoluteIndex);
 
-            Assert.AreEqual(expectedOut, result.ToString());
+            Assert.AreEqual(expectedOut, resultText);
             Assert.AreEqual(expectedCursorLoc, source.Cursor);
             Assert.AreEqual(expectedRemaining, source.ToString());
         }
@@ -366,7 +372,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         {
             try
             {
-                var source = new SourceText(text.AsMemory());
+                var source = new SourceText(text.AsSpan());
                 var result = source.NextNumber(out var location);
             }
             catch (GraphQLSyntaxException ex)

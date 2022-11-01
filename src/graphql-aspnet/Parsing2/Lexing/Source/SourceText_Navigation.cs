@@ -20,17 +20,15 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
     {
         private const string AT_LEAST_ZERO_CHARACTERS = "The requested length of characters cannot be less than 0";
         private readonly ReadOnlySpan<char> _sourceText;
-        private readonly ReadOnlyMemory<char> _sourceMemory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceText" /> struct.
         /// </summary>
         /// <param name="sourceText">The source text.</param>
         /// <param name="offset">The initial position to place the inspection cursor from the begining of the span.</param>
-        public SourceText(ReadOnlyMemory<char> sourceText, int offset = 0)
+        public SourceText(ReadOnlySpan<char> sourceText, int offset = 0)
         {
-            _sourceMemory = sourceText;
-            _sourceText = _sourceMemory.Span;
+            _sourceText = sourceText;
             this.Cursor = 0;
             if (_sourceText.Length > 0)
             {
@@ -211,11 +209,12 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
         /// the cursor to the first character after the line terminator.
         /// </summary>
         /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public ReadOnlySpan<char> NextLine()
+        public SourceTextBlockPointer NextLine()
         {
             if (this.Cursor >= this.Length)
-                return ReadOnlySpan<char>.Empty;
+                return SourceTextBlockPointer.None;
 
+            var startIndex = this.Cursor;
             var indexOfN = _sourceText.Slice(this.Cursor).IndexOf(CHARS.NL);
             ReadOnlySpan<char> slice;
             if (indexOfN < 0)
@@ -231,7 +230,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
             }
 
             // \r\n is considered a new line: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
-            return slice.TrimTrailingCarriageReturn();
+            return this.TrimTrailingCarriageReturn(new SourceTextBlockPointer(startIndex, slice.Length));
         }
 
         /// <summary>
@@ -265,12 +264,6 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
         /// </summary>
         /// <value><c>true</c> if data is left to be read, otherwise; <c>false</c>.</value>
         public int CurrentLineNumber => this.RetrieveLineInformation(this.Cursor).lineNumber;
-
-        /// <summary>
-        /// Gets a reference to the source data being processed by this object.
-        /// </summary>
-        /// <value><c>true</c> if data is left to be read, otherwise; <c>false</c>.</value>
-        public ReadOnlyMemory<char> Text => _sourceMemory;
 
         /// <summary>
         /// Gets the full set of characters that make up this instance.

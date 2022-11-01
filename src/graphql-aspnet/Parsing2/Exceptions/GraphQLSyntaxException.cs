@@ -27,8 +27,8 @@ namespace GraphQL.AspNet.Parsing2.Exceptions
         /// <param name="actual">The actual value received.</param>
         public static void ThrowFromExpectation(
             SourceLocation location,
-            ReadOnlyMemory<char> expected,
-            ReadOnlyMemory<char> actual)
+            ReadOnlySpan<char> expected,
+            ReadOnlySpan<char> actual)
         {
             ThrowFromExpectation(location, expected.ToString(), actual.ToString());
         }

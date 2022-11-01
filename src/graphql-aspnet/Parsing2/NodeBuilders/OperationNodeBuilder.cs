@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
     using System;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     /// <summary>
@@ -74,18 +75,18 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
         private SynNode CreateNode(ref TokenStream tokenStream)
         {
             var startLocation = tokenStream.Location;
-            ReadOnlyMemory<char> firstName = ReadOnlyMemory<char>.Empty;
-            ReadOnlyMemory<char> secondName = ReadOnlyMemory<char>.Empty;
+            SourceTextBlockPointer firstName = SourceTextBlockPointer.None;
+            SourceTextBlockPointer secondName = SourceTextBlockPointer.None;
 
             if (tokenStream.Match(TokenType.Name))
             {
-                firstName = tokenStream.ActiveToken.Text;
+                firstName = tokenStream.ActiveToken.Block;
                 tokenStream.Next();
             }
 
             if (tokenStream.Match(TokenType.Name))
             {
-                secondName = tokenStream.ActiveToken.Text;
+                secondName = tokenStream.ActiveToken.Block;
                 tokenStream.Next();
             }
 

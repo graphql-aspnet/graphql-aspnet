@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
             tokenStream.Next();
 
             tokenStream.MatchOrThrow(TokenType.Name);
-            var name = tokenStream.ActiveToken.Text;
+            var name = tokenStream.ActiveToken.Block;
             tokenStream.Next();
 
             var variableValueNode = new SynNode(

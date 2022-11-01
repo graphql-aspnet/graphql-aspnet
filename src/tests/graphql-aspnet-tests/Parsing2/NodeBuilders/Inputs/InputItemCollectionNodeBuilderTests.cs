@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class InputItemCollectionNodeBuilderTests
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputValueCollection_ValidCollection_ParsesCorrectly()
         {
             var text = "(arg1: 123, arg2: \"test\") { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -36,7 +37,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputItemCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                  ref tree,
+                stream.Source,
+                tree,
                   docNode,
                   new SynNodeTestCase(
                       SynNodeType.InputItemCollection,
@@ -63,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputValueCollection_MissingValue_ThrowsException()
         {
             var text = "(arg1: , arg2: \"test\") { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -87,7 +89,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputValueCollection_MissingCloseParen_ThrowsException()
         {
             var text = "(arg1: 123, arg2: \"test\" { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -111,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputValueCollection_NotPointingAtCollection_ThrowsException()
         {
             var text = "someField(arg1: , arg2: \"test\") { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -135,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputValueCollection_VariableReference_ParsesCorrectly()
         {
             var text = "(arg1: $variable1, arg2: \"test\") { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -145,7 +147,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputItemCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                  ref tree,
+                stream.Source,
+                tree,
                   docNode,
                   new SynNodeTestCase(
                       SynNodeType.InputItemCollection,

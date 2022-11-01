@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void Null_ParsesNodeCorrectly()
         {
             var text = "null";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -35,7 +36,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             NullValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.NullValue));
@@ -47,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void NotPointingAtNull_ResultsInException()
         {
             var text = "nameToken(arg1: 123, arg2: \"stringValue\")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

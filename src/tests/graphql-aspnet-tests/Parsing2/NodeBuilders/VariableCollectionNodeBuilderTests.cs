@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class VariableCollectionNodeBuilderTests
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void VariableNode_WithMultipleVariables_SetsNameCorrectly()
         {
             var text = @"($episode: Episode = JEDI, $hero: Hero, $droid:Droid = ""R2-D2"")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -34,7 +35,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             VariableCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.VariableCollection,
@@ -63,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void VariableNode_NoClosingParen_ThrowsExceptions()
         {
             var text = @"($episode: Episode = JEDI, $hero: Hero, $droid:Droid = ""R2-D2""";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -85,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void VariableNode_NotPointingAtACollection_ThrowsExceptions()
         {
             var text = @"someField($episode: Episode = JEDI, $hero: Hero, $droid:Droid = ""R2-D2"")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

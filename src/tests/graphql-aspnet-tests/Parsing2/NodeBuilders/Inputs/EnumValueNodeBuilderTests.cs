@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class EnumValueNodeBuilderTests
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void EnumValueNodeMaker_PointingAtAName_ReturnsEnum()
         {
             var text = "JEDI, name = 343";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -35,7 +36,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             EnumValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.EnumValue,
@@ -49,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void EnumValueNodeMaker_WillInterpreteABoolAsEnum_IfInvoked()
         {
             var text = "true, name = 343";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -58,7 +60,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             EnumValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.EnumValue,
@@ -72,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void EnumValueNodeMaker_NotPointingAtAName_ResultsInException()
         {
             var text = "123, arg2: \"stringValue\")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

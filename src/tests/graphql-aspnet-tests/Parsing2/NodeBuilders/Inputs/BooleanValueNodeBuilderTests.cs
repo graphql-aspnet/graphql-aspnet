@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class BooleanValueNodeBuilderTests
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void True_ParsesNodeCorrectly()
         {
             var text = "true";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -35,7 +36,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             BooleanValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.ScalarValue,
@@ -49,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void False_ParsesNodeCorrectly()
         {
             var text = "false, name = 343";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -59,7 +61,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             BooleanValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.ScalarValue,
@@ -73,7 +76,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void PointingAtNull_ParsesNodeCorrectly()
         {
             var text = "null, name = 343";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -83,7 +86,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             BooleanValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.NullValue,
@@ -96,7 +100,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void NotPointingAtBoolean_ResultsInException()
         {
             var text = "nameToken(arg1: 123, arg2: \"stringValue\")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

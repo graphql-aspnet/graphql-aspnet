@@ -9,9 +9,8 @@
 
 namespace GraphQL.AspNet.Tests.Parsing2
 {
-    using System;
     using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using NUnit.Framework;
 
     [TestFixture]
@@ -28,11 +27,11 @@ namespace GraphQL.AspNet.Tests.Parsing2
              */
             var rootNode = new SynNode(
                 SynNodeType.Document,
-                new SynNodeValue("Node-0".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(1, 1)));
 
             var childNode = new SynNode(
                 SynNodeType.Operation,
-                new SynNodeValue("Node-0-0".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(2, 1)));
 
             var tree = SynTree.FromNode(rootNode);
             var updatedTree = tree.AddChildNode(ref childNode);
@@ -74,15 +73,15 @@ namespace GraphQL.AspNet.Tests.Parsing2
              */
             var rootNode = new SynNode(
                 SynNodeType.Document,
-                new SynNodeValue("Node-0".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(1, 1)));
 
             var childNode0 = new SynNode(
                 SynNodeType.Operation,
-                new SynNodeValue("Node-0-0".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(2, 1)));
 
             var childNode1 = new SynNode(
                 SynNodeType.Operation,
-                new SynNodeValue("Node-0-1".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(3, 1)));
 
             var tree = SynTree.FromNode(rootNode);
             var updatedTree = tree.AddChildNode(ref childNode0);
@@ -130,15 +129,15 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             var rootNode = new SynNode(
                 SynNodeType.Document,
-                new SynNodeValue("Node-0".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(1, 1)));
 
             var childNode0 = new SynNode(
                 SynNodeType.Operation,
-                new SynNodeValue("Node-0-0".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(2, 1)));
 
             var childNode1 = new SynNode(
                 SynNodeType.Operation,
-                new SynNodeValue("Node-0-0-0".AsMemory()));
+                new SynNodeValue(new SourceTextBlockPointer(3, 1)));
 
             var tree = SynTree.FromNode(rootNode);
 
@@ -171,94 +170,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(0, childNode1.Coordinates.BlockPosition);
             Assert.AreEqual(-1, childNode1.Coordinates.ChildBlockIndex);
             Assert.AreEqual(0, childNode1.Coordinates.ChildBlockLength);
-        }
-
-        [Test]
-        public void SynTree_JsonCompare()
-        {
-            var rootNode = new SynNode(
-                SynNodeType.Document,
-                new SynNodeValue("Node-0".AsMemory()));
-
-            var childNode0 = new SynNode(
-                SynNodeType.Operation,
-                new SynNodeValue("Node-0-0".AsMemory()),
-                new SynNodeValue("Node-0-0-secondary".AsMemory()));
-
-            var childNode1 = new SynNode(
-                SynNodeType.Field,
-                new SynNodeValue("Node-0-0-0".AsMemory()));
-
-            var childNode2 = new SynNode(
-               SynNodeType.Field,
-               new SynNodeValue("Node-0-0-1".AsMemory()));
-
-            var childNode3 = new SynNode(
-              SynNodeType.NamedFragment,
-              new SynNodeValue("Node-0-1".AsMemory()));
-
-            var childNode4 = new SynNode(
-                SynNodeType.Field,
-                new SynNodeValue("Node-0-0-0-0".AsMemory()));
-
-            var childNode5 = new SynNode(
-                SynNodeType.Field,
-                new SynNodeValue("Node-0-0-0-1".AsMemory()));
-
-            var tree = SynTree.FromNode(rootNode);
-            tree = tree.AddChildNode(ref childNode0);
-            tree = tree.AddChildNode(ref childNode0, ref childNode1);
-            tree = tree.AddChildNode(ref childNode0, ref childNode2);
-            tree = tree.AddChildNode(ref childNode1, ref childNode4);
-            tree = tree.AddChildNode(ref childNode1, ref childNode5);
-            tree = tree.AddChildNode(ref childNode3);
-
-            var expected = @"
-            {
-                ""depth"": 0,
-                ""type"": ""Document"",
-                ""primary"": ""Node-0"",
-                ""children"": [
-                    {
-                        ""depth"": 1,
-                        ""type"": ""Operation"",
-                        ""primary"": ""Node-0-0"",
-                        ""secondary"": ""Node-0-0-secondary"",
-                        ""children"": [
-                            {
-                                ""depth"": 2,
-                                ""type"": ""Field"",
-                                ""primary"": ""Node-0-0-0"",
-                                ""children"": [
-                                    {
-                                        ""depth"": 3,
-                                        ""type"": ""Field"",
-                                        ""primary"": ""Node-0-0-0-0""
-                                    },
-                                    {
-                                        ""depth"": 3,
-                                        ""type"": ""Field"",
-                                        ""primary"": ""Node-0-0-0-1""
-                                    }
-                                ]
-                            },
-                            {
-                                ""depth"": 2,
-                                ""type"": ""Field"",
-                                ""primary"": ""Node-0-0-1""
-                            }
-                        ]
-                    },
-                    {
-                        ""depth"": 1,
-                        ""type"": ""NamedFragment"",
-                        ""primary"": ""Node-0-1""
-                    }
-                ]
-            }";
-
-            var actual = tree.ToJsonString();
-            CommonAssertions.AreEqualJsonStrings(expected, actual);
         }
     }
 }

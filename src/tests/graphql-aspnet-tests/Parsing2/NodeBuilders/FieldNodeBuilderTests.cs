@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class FieldNodeBuilderTests
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void InvalidFieldName_ThrowsException()
         {
             var text = "$field1,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -47,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FieldNameIsNumber_ThrowsException()
         {
             var text = "1234,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -69,7 +70,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void InvalidFieldNameWithValidAlias_ThrowsException()
         {
             var text = "fieldA: $field1,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -91,7 +92,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void SingleFieldNoInputs_ParsesCorrectly()
         {
             var text = "field1,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -100,7 +101,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,
@@ -112,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FieldWithAliasNoInputs_ParsesCorrectly()
         {
             var text = "fieldA: field1,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -121,7 +123,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,
@@ -133,7 +136,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FieldWithEmptyFieldSet_ParsesEmptyFieldCollletionNode()
         {
             var text = "fieldA: field1{ },";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -142,7 +145,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,
@@ -157,7 +161,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FieldWith1SimpleField_ParsesCorrectly()
         {
             var text = "field1{ field2, field3 },";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -166,7 +170,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,
@@ -188,7 +193,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FieldWithChildFieldWithAlias_ParsesCorrectly()
         {
             var text = "field1{ fieldA: field2 },";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -197,7 +202,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,
@@ -215,7 +221,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void WithInputValues_ParsesCorrectly()
         {
             var text = "field1(id: \"bob\", age: 123), ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -224,7 +230,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,
@@ -252,7 +259,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void WithSingleDirective_ParsesCorrectly()
         {
             var text = "field1(id: \"bob\", age: 123) @include(if: true), ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -261,7 +268,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,
@@ -278,7 +286,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void WithMultipleDirective_ParsesCorrectly()
         {
             var text = "field1(id: \"bob\", age: 123) @include(if: true) @skip(if: false), ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -287,7 +295,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Field,

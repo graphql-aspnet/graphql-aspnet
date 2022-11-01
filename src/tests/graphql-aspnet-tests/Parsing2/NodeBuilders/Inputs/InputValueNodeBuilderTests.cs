@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class InputValueNodeBuilderTests
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         {
             // assume the stream is pointing at a string value
             var text = "\"SomeValue\", arg2: 123)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -36,7 +37,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.ScalarValue,
@@ -49,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         {
             // assume the stream is pointing at an invalid close curly brace
             var text = "}, arg1: \"SomeValue\", arg2: 123)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

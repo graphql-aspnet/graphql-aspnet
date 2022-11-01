@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
     using System;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     public class VariableNodeBuilder : ISynNodeBuilder
@@ -38,7 +39,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
 
             // must be a name token
             tokenStream.MatchOrThrow(TokenType.Name);
-            var variableName = tokenStream.ActiveToken.Text;
+            var variableName = tokenStream.ActiveToken.Block;
             tokenStream.Next();
 
             // must be a colon
@@ -61,12 +62,12 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                 tokenStream.Next();
             }
 
-            var typeExpression = ReadOnlyMemory<char>.Empty;
+            SourceTextBlockPointer typeExpression = SourceTextBlockPointer.None;
             if (startToken.TokenType != TokenType.None)
             {
-                typeExpression = tokenStream.SourceText.Slice(
+                typeExpression = new SourceTextBlockPointer(
                     startToken.Location.AbsoluteIndex,
-                    endToken.Location.AbsoluteIndex + endToken.Text.Length - startToken.Location.AbsoluteIndex);
+                    endToken.Location.AbsoluteIndex + endToken.Block.Length - startToken.Location.AbsoluteIndex);
             }
 
             var variableNode = new SynNode(

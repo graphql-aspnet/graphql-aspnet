@@ -15,6 +15,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.Exceptions;
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using KEYWORDS = GraphQL.AspNet.Parsing.ParserConstants.Keywords;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
 
     public class FragmentSpreadNodeBuilder : ISynNodeBuilder
     {
@@ -38,8 +39,8 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
             var startLocation = tokenStream.Location;
             tokenStream.Next();
 
-            ReadOnlyMemory<char> fragmentName = ReadOnlyMemory<char>.Empty;
-            ReadOnlyMemory<char> restrictedToType = ReadOnlyMemory<char>.Empty;
+            SourceTextBlockPointer fragmentName = SourceTextBlockPointer.None;
+            SourceTextBlockPointer restrictedToType = SourceTextBlockPointer.None;
 
             var inlineFragmentNode = new SynNode(
                 SynNodeType.InlineFragment,
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
             SynNode fragmentNode;
             SynNodeType nodeType = SynNodeType.InlineFragment;
 
-            if (tokenStream.Match(KEYWORDS.On))
+            if (tokenStream.Match(KEYWORDS.On.Span))
             {
                 // check for an optional type declaration (e.g. "on Type")
                 // i.e. an inline fragment
@@ -57,14 +58,14 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
                 // declare a type restriction
                 tokenStream.Next();
                 tokenStream.MatchOrThrow(TokenType.Name);
-                restrictedToType = tokenStream.ActiveToken.Text;
+                restrictedToType = tokenStream.ActiveToken.Block;
                 tokenStream.Next();
             }
             else if (tokenStream.Match(TokenType.Name))
             {
                 // might be a named fragment spread (e.g.  ... myNamedFragment)
                 nodeType = SynNodeType.FragmentSpread;
-                fragmentName = tokenStream.ActiveToken.Text;
+                fragmentName = tokenStream.ActiveToken.Block;
                 tokenStream.Next();
             }
 

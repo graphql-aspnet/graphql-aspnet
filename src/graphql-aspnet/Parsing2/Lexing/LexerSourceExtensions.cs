@@ -17,37 +17,52 @@ namespace GraphQL.AspNet.Parsing2.Lexing
     using CHARS = GraphQL.AspNet.Parsing2.ParserConstants.Characters;
 
     /// <summary>
-    /// Extension methods for custom business logic related phrase token parsing..
+    /// Extension methods for custom business logic related phrase token parsing
     /// </summary>
     public static class LexerSourceExtensions
     {
+        /// <summary>
+        /// Retrieves the physical text pointed to by a source block definition.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="blockDefinition">The block definition.</param>
+        /// <returns>System.ReadOnlySpan&lt;char&gt;.</returns>
+        public static ReadOnlySpan<char> RetrieveText(this ref SourceText source, SourceTextBlockPointer blockDefinition)
+        {
+            if (blockDefinition.StartIndex < 0 || blockDefinition.Length <= 0)
+                return ReadOnlySpan<char>.Empty;
+
+            return source.Chars.Slice(blockDefinition.StartIndex, blockDefinition.Length);
+        }
+
         /// <summary>
         /// Trims a single trailing carriage return if one is found.
         /// </summary>
         /// <param name="slice">The slice.</param>
         /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public static ReadOnlySpan<char> TrimTrailingCarriageReturn(this in ReadOnlySpan<char> slice)
+        public static SourceTextBlockPointer TrimTrailingCarriageReturn(this ref SourceText source, SourceTextBlockPointer blockDefinition)
         {
-            return slice.Length > 0 && slice[slice.Length - 1] == CHARS.CR
-                ? slice.Slice(0, slice.Length - 1)
-                : slice;
+            var block = source.RetrieveText(blockDefinition);
+            return block.Length > 0 && block[block.Length - 1] == CHARS.CR
+                ? new SourceTextBlockPointer(blockDefinition.StartIndex, blockDefinition.Length - 1)
+                : blockDefinition;
         }
 
         /// <summary>
-        /// Assumes the cursor is currnetly pointed at a comment
+        /// Assumes the cursor is currently pointed at a comment
         /// and extracts the rest of the current line and all subsequent lines until
-        /// a non-comment is found
-        /// comment is no longer found.
+        /// a comment is no longer found.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="location">The location the comment started from.</param>
-        /// <returns>ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public static ReadOnlyMemory<char> NextComment(this ref SourceText source, out SourceLocation location)
+        /// <returns>A pointer to a block of text within the provided source.</returns>
+        public static SourceTextBlockPointer NextComment(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
-            var text = source.NextLine();
+            var block = source.NextLine();
+            var text = source.RetrieveText(block);
             CommentPhraseValidator.Instance.ValidateOrThrow(source, text, location);
-            return source.SliceMemory(location.AbsoluteIndex, text.Length);
+            return new SourceTextBlockPointer(location.AbsoluteIndex, text.Length);
         }
 
         /// <summary>
@@ -56,13 +71,13 @@ namespace GraphQL.AspNet.Parsing2.Lexing
         /// </summary>
         /// <param name="source">The source text to read from.</param>
         /// <param name="location">The location the token started.</param>
-        /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public static ReadOnlyMemory<char> NextControlPhrase(this ref SourceText source, out SourceLocation location)
+        /// <returns>A pointer to a block of text within the provided source.</returns>
+        public static SourceTextBlockPointer NextControlPhrase(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
             var text = source.NextPhrase(ControlPhraseValidator.IsPossibleControlPhraseDelegate);
             ControlPhraseValidator.Instance.ValidateOrThrow(text, location);
-            return source.SliceMemory(location.AbsoluteIndex, text.Length);
+            return new SourceTextBlockPointer(location.AbsoluteIndex, text.Length);
         }
 
         /// <summary>
@@ -72,13 +87,13 @@ namespace GraphQL.AspNet.Parsing2.Lexing
         /// </summary>
         /// <param name="source">The source text to read from.</param>
         /// <param name="location">The location the token started.</param>
-        /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public static ReadOnlyMemory<char> NextString(this ref SourceText source, out SourceLocation location)
+        /// <returns>A pointer to a block of text within the provided source.</returns>
+        public static SourceTextBlockPointer NextString(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
             var text = source.NextPhrase(StringValidator.IsDelimitedStringDelegate);
             StringValidator.Instance.ValidateOrThrow(source, text, location);
-            return source.SliceMemory(location.AbsoluteIndex, text.Length);
+            return new SourceTextBlockPointer(location.AbsoluteIndex, text.Length);
         }
 
         /// <summary>
@@ -88,13 +103,13 @@ namespace GraphQL.AspNet.Parsing2.Lexing
         /// </summary>
         /// <param name="source">The source text to read from.</param>
         /// <param name="location">The location the token started.</param>
-        /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public static ReadOnlyMemory<char> NextName(this ref SourceText source, out SourceLocation location)
+        /// <returns>A pointer to a block of text within the provided source.</returns>
+        public static SourceTextBlockPointer NextName(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
             var text = source.NextFilter(NameValidator.IsValidNameCharacterDelegate);
             NameValidator.Instance.ValidateOrThrow(source, text, location);
-            return source.SliceMemory(location.AbsoluteIndex, text.Length);
+            return new SourceTextBlockPointer(location.AbsoluteIndex, text.Length);
         }
 
         /// <summary>
@@ -103,31 +118,37 @@ namespace GraphQL.AspNet.Parsing2.Lexing
         /// </summary>
         /// <param name="source">The source text to read from.</param>
         /// <param name="location">The location the token started.</param>
-        /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public static ReadOnlyMemory<char> NextNumber(this ref SourceText source, out SourceLocation location)
+        /// <returns>A pointer to a block of text within the provided source.</returns>
+        public static SourceTextBlockPointer NextNumber(this ref SourceText source, out SourceLocation location)
         {
             location = source.RetrieveCurrentLocation();
             var text = source.NextFilter(NumberValidator.IsValidNumberCharacterDelegate);
             NumberValidator.Instance.ValidateOrThrow(source, text, location);
-            return source.SliceMemory(location.AbsoluteIndex, text.Length);
+            return new SourceTextBlockPointer(location.AbsoluteIndex, text.Length);
         }
 
         /// <summary>
         /// Perform custom processing on any potential name token to determine
         /// if it should be interpreted as a special case token (e.g. "null" phrases).
         /// </summary>
-        /// <param name="tokenText">The token text to convert.</param>
-        /// <param name="location">The location in hte source of hte given text.</param>
+        /// <param name="source">The source text containing the raw data.</param>
+        /// <param name="block">The pointer to a block of text in the source.</param>
+        /// <param name="location">The location in the source of hte given text.</param>
         /// <returns>LexicalToken.</returns>
-        public static LexicalToken CharactersToToken(ReadOnlyMemory<char> tokenText, SourceLocation location)
+        public static LexicalToken CharactersToToken(
+            ref SourceText source,
+            SourceTextBlockPointer block,
+            SourceLocation location)
         {
-            if (tokenText.Span.Equals(ParserConstants.Keywords.Null.Span, StringComparison.Ordinal))
+            var text = source.RetrieveText(block);
+
+            if (text.Equals(ParserConstants.Keywords.Null.Span, StringComparison.Ordinal))
             {
-                return new LexicalToken(TokenType.Null, ParserConstants.Keywords.Null, location);
+                return new LexicalToken(TokenType.Null, block, location);
             }
             else
             {
-                return new LexicalToken(TokenType.Name, tokenText, location);
+                return new LexicalToken(TokenType.Name, block, location);
             }
         }
     }

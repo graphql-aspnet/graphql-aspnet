@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class NamedFragmentNodeBuilderTests
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_FragmentKeyWord_ParsesCorrectly()
         {
             var text = "fragment someFragment on User{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -34,7 +35,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             NamedFragmentNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.NamedFragment,
@@ -46,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_WithDirective_ParsesCorrectly()
         {
             var text = "fragment someFragment on User @skip(if: true){}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -55,7 +57,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             NamedFragmentNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.NamedFragment,
@@ -70,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_NotAtFragmentKeyword_ThrowsException()
         {
             var text = "query someFragment on User{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -92,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_NoOnKeyword_ThrowsException()
         {
             var text = "fragment someFragment in User{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -114,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_NoTargetType_ThrowsException()
         {
             var text = "fragment someFragment on{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -136,7 +139,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_NoFragmentName_ThrowsException()
         {
             var text = "fragment on User{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -158,7 +161,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_NameIsANotAName_ThrowsException()
         {
             var text = "fragment 123 on User{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -180,7 +183,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_TargetTypeNotAName_ThrowsException()
         {
             var text = "fragment someFragment on \"User\"{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -202,7 +205,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentRootNodeMaker_WithAFieldSet_ParsesCorrectly()
         {
             var text = "fragment someFragment on User{field1, field2}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -211,7 +214,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             NamedFragmentNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.NamedFragment,

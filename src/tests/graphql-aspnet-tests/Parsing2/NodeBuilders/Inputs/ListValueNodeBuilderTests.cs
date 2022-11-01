@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class ListValueNodeBuilderTests
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ListValueNodeMaker_SimpleNumberList_ParsesCorrectly()
         {
             var text = "[1234, 5678, 91011], arg2: VALUE)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -36,7 +37,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ListValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-               ref tree,
+                stream.Source,
+                tree,
                docNode,
                new SynNodeTestCase(
                    SynNodeType.ListValue,
@@ -62,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         {
             // use both types of string delimiters
             var text = "[\"bob\", \"\"\"Robert\"\"\"], arg2: VALUE)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -72,7 +74,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ListValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+                stream.Source,
+                tree,
               docNode,
               new SynNodeTestCase(
                   SynNodeType.ListValue,
@@ -95,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             var text = "[{arg1: 123, arg2: [456, 1234]}," +
                        "{arg1: 345, arg2: [982, 1231]}," +
                        "{arg3: 812, arg2: [13,31]}], arg2: VALUE)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -105,7 +108,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ListValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+                stream.Source,
+                tree,
               docNode,
               new SynNodeTestCase(
                   SynNodeType.ListValue,
@@ -190,7 +194,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ListValueNodeMaker_SmallComplexValueList_ParsesCorrectly()
         {
             var text = "[{arg1: 123, arg2: [456, 1234]}])";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -199,7 +203,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             stream.Prime();
             ListValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+                stream.Source,
+                tree,
               docNode,
               new SynNodeTestCase(
                   SynNodeType.ListValue,
@@ -236,7 +241,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ListValueNodeMaker_ListOfLists_ParsesCorrectly()
         {
             var text = "[[456, 1234],[982, 1231],[13,99]], arg2: VALUE)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -246,7 +251,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ListValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+                stream.Source,
+                tree,
               docNode,
               new SynNodeTestCase(
                   SynNodeType.ListValue,
@@ -286,7 +292,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ListValueNodeMaker_MixedValueList_AssignsCorrectScalarTypes()
         {
             var text = "[123, \"\"\"Robert\"\"\"], arg2: VALUE)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -296,7 +302,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ListValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+                stream.Source,
+                tree,
               docNode,
               new SynNodeTestCase(
                   SynNodeType.ListValue,
@@ -314,7 +321,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ListValueNodeMaker_SameValueListWithNullInList_ParasesFine()
         {
             var text = "[123, null, 456], arg2: VALUE)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -324,7 +331,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ListValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+                stream.Source,
+                tree,
               docNode,
               new SynNodeTestCase(
                   SynNodeType.ListValue,
@@ -344,7 +352,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ListValueNodeMaker_NotPointingAtAList_ThrowsException()
         {
             var text = "someName(arg1: [123, 456], arg2: \"jane\")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -367,7 +375,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ListValueNodeMaker_UnclosedNestedListOfLists_ThrowsException()
         {
             var text = "[[456, 1234],[982, 1231],[13,99], arg2: VALUE)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

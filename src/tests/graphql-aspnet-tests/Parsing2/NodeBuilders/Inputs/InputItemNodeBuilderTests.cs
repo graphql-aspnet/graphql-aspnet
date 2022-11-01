@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class InputItemNodeBuilderTests
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputItemNodeMaker_SimpleValue_ParsesCorrectly()
         {
             var text = "arg1: 123) { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -34,7 +35,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputItemNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+              stream.Source,
+              tree,
               docNode,
               new SynNodeTestCase(
                     SynNodeType.InputItem,
@@ -49,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputItemNodeMaker_WithDirective_ParsesCorrectly()
         {
             var text = "arg1: 5 @someDirective(if: true) ) { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -58,7 +60,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputItemNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+              stream.Source,
+              tree,
               docNode,
               new SynNodeTestCase(
                     SynNodeType.InputItem,
@@ -76,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputItemNodeMaker_VariablePointer_ParsesCorrectly()
         {
             var text = "arg1: $variable1) { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -85,7 +88,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputItemNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+              stream.Source,
+              tree,
               docNode,
               new SynNodeTestCase(
                     SynNodeType.InputItem,
@@ -99,7 +103,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputItemNodeMaker_MissingColon_ThrowsException()
         {
             var text = "arg1 123) { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -121,7 +125,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputItemNodeMaker_NotPointingAtANamedToken_ThrowsException()
         {
             var text = "12Bob: 123) { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -143,7 +147,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputItemNodeMaker_NoValue_ThrowsException()
         {
             var text = "arg1:, ) { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -165,7 +169,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void InputItemNodeMaker_MissingEverything_ThrowsException()
         {
             var text = "arg1 , arg2: \"string\") { ";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

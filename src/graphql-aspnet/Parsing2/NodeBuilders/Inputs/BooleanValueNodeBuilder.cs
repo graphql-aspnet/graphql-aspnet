@@ -33,19 +33,20 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                     SynNodeType.NullValue,
                     tokenStream.Location,
                     new SynNodeValue(
-                    ParserConstants.Keywords.Null,
-                    ScalarValueType.Boolean));
+                        tokenStream.ActiveToken.Block,
+                        ScalarValueType.Boolean));
             }
             else
             {
                 tokenStream.MatchOrThrow(TokenType.Name);
-                if (tokenStream.Match(ParserConstants.Keywords.True, ParserConstants.Keywords.False))
+                if (tokenStream.Match(ParserConstants.Keywords.True.Span)
+                    || tokenStream.Match(ParserConstants.Keywords.False.Span))
                 {
                     synNode = new SynNode(
                         SynNodeType.ScalarValue,
                         tokenStream.Location,
                         new SynNodeValue(
-                            tokenStream.ActiveToken.Text,
+                            tokenStream.ActiveToken.Block,
                             ScalarValueType.Boolean));
                 }
                 else
@@ -53,7 +54,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                     GraphQLSyntaxException.ThrowFromExpectation(
                         tokenStream.Location,
                         "{true|false}",
-                        tokenStream.ActiveToken.Text.ToString());
+                        tokenStream.ActiveTokenText.ToString());
                 }
             }
 

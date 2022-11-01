@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class ComplexValueNodeBuilderTests
@@ -29,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             // has already been read
             // e.g.   someField(arg1: {test: "bob"} arg2: 123){ fieldListHere }
             var text = @"{test: ""bob""} arg2: 123";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -39,7 +40,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ComplexValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.ComplexValue,
@@ -55,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure the stream is pointing at the next item
             Assert.AreEqual(TokenType.Name, stream.TokenType);
-            Assert.AreEqual("arg2", stream.ActiveToken.Text.ToString());
+            Assert.AreEqual("arg2", stream.ActiveTokenText.ToString());
             Assert.IsFalse(stream.EndOfStream);
         }
 
@@ -71,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                             },
                             childArg3: ENUMVALUE
                          }, arg2 = 123";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -81,7 +83,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             ComplexValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-              ref tree,
+                stream.Source,
+                tree,
               docNode,
               new SynNodeTestCase(
                   SynNodeType.ComplexValue,
@@ -150,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void ComplexValueNodeMaker_InvalidClosure_YieldsException()
         {
             var text = @"{test: {test:""bob""},nextNode = 123";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -174,7 +177,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         {
             // stream must point at left curly to start reading a complex value correctly
             var text = @"janeNode(arg1: {test:""bob""}, arg2 = 123){}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

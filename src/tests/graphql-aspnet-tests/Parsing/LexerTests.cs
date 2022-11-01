@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing
     using GraphQL.AspNet.Parsing.Lexing.Source;
     using GraphQL.AspNet.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Parsing.Helpers;
     using NUnit.Framework;
 
     /// <summary>

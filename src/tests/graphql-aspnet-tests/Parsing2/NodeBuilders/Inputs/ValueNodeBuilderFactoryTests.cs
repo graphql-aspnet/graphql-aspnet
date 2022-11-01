@@ -10,6 +10,8 @@
 namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 {
     using System;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using NUnit.Framework;
@@ -20,7 +22,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         [Test]
         public void InvalidToken_ReturnsNull()
         {
-            var builder = ValueNodeBuilderFactory.CreateBuilder(new LexicalToken(TokenType.CurlyBraceRight));
+            var tokenStream = Lexer.Tokenize(new SourceText("}".AsSpan()));
+            tokenStream.Prime();
+
+            var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
             Assert.IsNull(builder);
         }
     }

@@ -32,22 +32,22 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
 
             // "fragment" keyword
             var startLocation = tokenStream.Location;
-            tokenStream.MatchOrThrow(KEYWORDS.Fragment);
+            tokenStream.MatchOrThrow(KEYWORDS.Fragment.Span);
             tokenStream.Next();
 
             // name of the fragment
             tokenStream.MatchOrThrow(TokenType.Name);
-            var fragmentName = tokenStream.ActiveToken.Text;
+            var fragmentName = tokenStream.ActiveToken.Block;
             tokenStream.Next();
 
             // "on" keyword
-            tokenStream.MatchOrThrow(KEYWORDS.On);
+            tokenStream.MatchOrThrow(KEYWORDS.On.Span);
 
             tokenStream.Next();
 
             // target type
             tokenStream.MatchOrThrow(TokenType.Name);
-            var targetType = tokenStream.ActiveToken.Text;
+            var targetType = tokenStream.ActiveToken.Block;
             tokenStream.Next();
 
             var namedFragmentNode = new SynNode(

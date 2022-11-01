@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Tests.Parsing2
 {
     using System;
+    using GraphQL.AspNet.Parsing2.Lexing;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules;
     using GraphQL.AspNet.Tests.Parsing2.Helpers;
@@ -36,13 +37,13 @@ namespace GraphQL.AspNet.Tests.Parsing2
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() =>
                 {
-                    var failureSource = new SourceText(text.AsMemory(), initialIndex);
+                    var failureSource = new SourceText(text.AsSpan(), initialIndex);
                     failureSource.Seek(lengthToSeek, from);
                 });
             }
             else
             {
-                var source = new SourceText(text.AsMemory(), initialIndex);
+                var source = new SourceText(text.AsSpan(), initialIndex);
                 source.Seek(lengthToSeek, from);
                 Assert.AreEqual(newCursorLocation, source.Cursor);
             }
@@ -53,7 +54,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("", 3, 0)]
         public void SourceText_Constructor_ValidValues(string text, int offset, int expectedCursorPosition)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(expectedCursorPosition, source.Cursor);
         }
 
@@ -61,14 +62,14 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("12345", -1)]
         public void SourceText_Constructor_InvalidValues(string text, int offset)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new SourceText(text.AsMemory(), offset));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new SourceText(text.AsSpan(), offset));
         }
 
         [TestCase("123", 0, 0, true)]
         [TestCase("", 0, 0, false)]
         public void SourceText_Cursor(string text, int offset, int expectedCursorIndex, bool hasData)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(expectedCursorIndex, source.Cursor);
             Assert.AreEqual(!hasData, source.EndOfFile);
             Assert.AreEqual(hasData, source.HasData);
@@ -78,7 +79,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("", 0, 0)]
         public void SourceText_Length(string text, int offset, int expectedLength)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(expectedLength, source.Length);
         }
 
@@ -87,14 +88,14 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("123", 2, "3")]
         public void SourceText_ToString_WithNoData_ReturnsEmptyString(string text, int offset, string expectedOutput)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(expectedOutput, source.ToString());
         }
 
         [Test]
         public void SourceText_Peek_AtEndOfText_ReturnsEmpty()
         {
-            var source = new SourceText("123".AsMemory());
+            var source = new SourceText("123".AsSpan());
 
             while (source.HasData)
                 source.Next();
@@ -113,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("12345", 0, -50, "")]
         public void SourceText_Peek(string text, int offset, int count, string expectedText)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             var cursor = source.Cursor;
             Assert.AreEqual(expectedText, source.Peek(count).ToString());
             Assert.AreEqual(cursor, source.Cursor);
@@ -130,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         public void SourceText_Peek_FromEndOfBlock(string text, int count, string expectedText)
         {
             // seek back two from the '3' => '12'
-            var source = new SourceText(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
             source.Seek(source.Length, SourceTextPosition.FromStart);
             Assert.AreEqual(expectedText, source.Peek(count).ToString());
         }
@@ -143,7 +144,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("12345", 3, '4')]
         public void SourceText_Peek1(string text, int offSet, char expectedText)
         {
-            var source = new SourceText(text.AsMemory(), offSet);
+            var source = new SourceText(text.AsSpan(), offSet);
             Assert.AreEqual(expectedText, source.Peek());
         }
 
@@ -152,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("1234", 2, true)]
         public void SourceText_HasData_WithDataRemaining_ReturnsTrue(string text, int offSet, bool expectedOutput)
         {
-            var source = new SourceText(text.AsMemory(), offSet);
+            var source = new SourceText(text.AsSpan(), offSet);
             Assert.AreEqual(expectedOutput, source.HasData);
         }
 
@@ -164,7 +165,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         {
             if (count >= 0)
             {
-                var source = new SourceText(text.AsMemory(), offset);
+                var source = new SourceText(text.AsSpan(), offset);
                 var next = source.Next(count);
                 Assert.AreEqual(expectedText, next.ToString());
                 Assert.AreEqual(expectedCursorIndex, source.Cursor);
@@ -173,7 +174,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() =>
                 {
-                    var source = new SourceText(text.AsMemory(), offset);
+                    var source = new SourceText(text.AsSpan(), offset);
                     var next = source.Next(count);
                 });
             }
@@ -183,7 +184,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         public void SourceText_Next_ContinuesToReturnDataTillEmpty()
         {
             var text = "12345";
-            var source = new SourceText(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
             var i = 0;
             while (source.HasData)
             {
@@ -208,7 +209,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("1 23", 1, true)]
         public void SourceText_PeekNextIsWhiteSpace(string text, int offset, bool expectedValue)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(expectedValue, source.PeekNextIsWhitespace());
         }
 
@@ -235,7 +236,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("12345\n567\n890", 14, "")] // beyond the end of hte string
         public void SourceText_PeekFullLine(string text, int offset, string expectedLineText)
         {
-            var source = new SourceText(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
             Assert.AreEqual(expectedLineText, source.PeekFullLine(offset).ToString());
         }
 
@@ -248,7 +249,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("\r23", 0, false)]
         public void SourceText_PeekNextIsLineTerminator(string text, int offset, bool isLineTerminator)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(isLineTerminator, source.PeekNextIsLineTerminator());
         }
 
@@ -260,7 +261,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("", 0, "")]
         public void SourceText_PeekLine(string text, int offset, string expectedResult)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             var line = source.PeekLine();
             Assert.AreEqual(expectedResult, line.ToString());
         }
@@ -271,7 +272,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("  \n\t\r  \xFEFF  dsdf", 0, 10, "dsdf")] // byte order mark
         public void SourceText_SkipWhiteSpace(string text, int offset, int expectedSkippedChars, string remainingChars)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(expectedSkippedChars, source.SkipWhitespace());
             Assert.AreEqual(remainingChars, source.ToString());
         }
@@ -282,7 +283,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("", 0, -1, -1, -1)]
         public void SourceText_RetrieveCurrentLocation(string text, int offset, int expectedLineNumber, int expectedLineIndex, int expectedAbsoluteIndex)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             var line = source.RetrieveCurrentLocation();
 
             Assert.IsNotNull(line);
@@ -299,19 +300,19 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("", 0, "", "")]
         public void SourceText_NextLine(string text, int offset, string expectedText, string expectedRemainingText)
         {
-            var source = new SourceText(text.AsMemory(), offset);
-            Assert.AreEqual(expectedText, source.NextLine().ToString());
+            var source = new SourceText(text.AsSpan(), offset);
+            Assert.AreEqual(expectedText, source.RetrieveText(source.NextLine()).ToString());
             Assert.AreEqual(expectedRemainingText, source.ToString());
         }
 
         [Test]
         public void SourceText_NextLine_WithMultipleLineDataEndingInLineTerminator_SegmentsCorrectly()
         {
-            var source = new SourceText("1234\r\n567\n8910\n111213\n".AsMemory());
-            Assert.AreEqual("1234", source.NextLine().ToString());
-            Assert.AreEqual("567", source.NextLine().ToString());
-            Assert.AreEqual("8910", source.NextLine().ToString());
-            Assert.AreEqual("111213", source.NextLine().ToString());
+            var source = new SourceText("1234\r\n567\n8910\n111213\n".AsSpan());
+            Assert.AreEqual("1234", source.RetrieveText(source.NextLine()).ToString());
+            Assert.AreEqual("567", source.RetrieveText(source.NextLine()).ToString());
+            Assert.AreEqual("8910", source.RetrieveText(source.NextLine()).ToString());
+            Assert.AreEqual("111213", source.RetrieveText(source.NextLine()).ToString());
             Assert.IsTrue(!source.HasData);
         }
 
@@ -323,7 +324,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("1234\r\n567\n8910\n111213", 19, 4)]
         public void SourceText_LineNumber(string text, int offset, int expectedLineNumber)
         {
-            var source = new SourceText(text.AsMemory(), offset);
+            var source = new SourceText(text.AsSpan(), offset);
             Assert.AreEqual(expectedLineNumber, source.CurrentLineNumber);
         }
 
@@ -355,7 +356,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase(" ", 0, GraphQLSourceRule.IsControlGlyph, false)]
         public void SourceText_CheckCursor(string sourceText, int offSet, GraphQLSourceRule rule, bool expectedValue)
         {
-            var source = new SourceText(sourceText.AsMemory(), offSet);
+            var source = new SourceText(sourceText.AsSpan(), offSet);
             Assert.AreEqual(expectedValue, source.CheckCursor(rule));
         }
 
@@ -372,13 +373,13 @@ namespace GraphQL.AspNet.Tests.Parsing2
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() =>
                 {
-                    var throwSource = new SourceText(text.AsMemory());
+                    var throwSource = new SourceText(text.AsSpan());
                     throwSource.Slice(start, length);
                 });
             }
             else
             {
-                var source = new SourceText(text.AsMemory());
+                var source = new SourceText(text.AsSpan());
                 var result = source.Slice(start, length);
 
                 Assert.AreEqual(result.ToString(), expectedResult);
@@ -392,7 +393,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("1234567", 0, "1234567", 7)]
         public void SourceText_NextCharacterGroup(string text, int start, string expectedResult, int expectedCursorLocation)
         {
-            var source = new SourceText(text.AsMemory(), start);
+            var source = new SourceText(text.AsSpan(), start);
             var nextGroup = source.NextCharacterGroup();
 
             Assert.AreEqual(expectedResult, nextGroup.ToString());
@@ -406,7 +407,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("123a4567", 0, "123", 3)]
         public void SourceText_NextFilter(string text, int start, string expectedOutput, int newCursor)
         {
-            var source = new SourceText(text.AsMemory(), start);
+            var source = new SourceText(text.AsSpan(), start);
             var result = source.NextFilter(char.IsDigit);
 
             Assert.AreEqual(expectedOutput, result.ToString());
@@ -416,7 +417,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [Test]
         public void SourceText_NextFilter_FromEndOfLength()
         {
-            var source = new SourceText("123".AsMemory());
+            var source = new SourceText("123".AsSpan());
             var result = source.Next(source.Length);
             Assert.AreEqual("123", result.ToString());
             Assert.AreEqual(3, source.Cursor);
@@ -469,7 +470,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             string expectedOutput,
             int expectedCursorPosition)
         {
-            var source = new SourceText(text.AsMemory(), offSet);
+            var source = new SourceText(text.AsSpan(), offSet);
             var result = source.NextPhrase(predicate);
 
             Assert.AreEqual(expectedOutput, result.ToString());
@@ -492,7 +493,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             int expectedLine,
             int expectedPositionInLine)
         {
-            var sourceText = new SourceText(text.AsMemory());
+            var sourceText = new SourceText(text.AsSpan());
 
             var result = sourceText.RetrieveLocationFromPosition(atIndex);
             Assert.IsNotNull(result);
@@ -513,7 +514,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             int expectedLine,
             int expectedPositionInLine)
         {
-            var sourceText = new SourceText(text.AsMemory());
+            var sourceText = new SourceText(text.AsSpan());
             var result = sourceText.RetrieveLocationFromPosition(startingAtIndex);
             Assert.IsNotNull(result);
 

@@ -40,13 +40,13 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
             {
                 do
                 {
-                    var childBuilder = ValueNodeBuilderFactory.CreateBuilder(tokenStream.ActiveToken);
+                    var childBuilder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
                     if (childBuilder == null)
                     {
                         throw new GraphQLSyntaxException(
                             tokenStream.Location,
                             $"Unexpected token in list, no value could be parsed. Expected '{TokenType.BracketRight.Description()}' or an " +
-                            $"input object value but receieved '{tokenStream.ActiveToken.Text}'");
+                            $"input object value but receieved '{tokenStream.ActiveToken.Block}'");
                     }
 
                     childBuilder.BuildNode(ref synTree, ref listNode, ref tokenStream);

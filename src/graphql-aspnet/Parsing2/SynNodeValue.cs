@@ -11,13 +11,14 @@ namespace GraphQL.AspNet.Parsing2
 {
     using System;
     using System.Diagnostics;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
 
     /// <summary>
     /// A struct representing a block of characters from a query text.
     /// </summary>
     public readonly struct SynNodeValue : IEquatable<SynNodeValue>
     {
-        public static SynNodeValue None { get; } = new SynNodeValue(ReadOnlyMemory<char>.Empty);
+        public static SynNodeValue None { get; } = new SynNodeValue(SourceTextBlockPointer.None);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SynNodeValue"/> struct.
@@ -25,21 +26,21 @@ namespace GraphQL.AspNet.Parsing2
         [DebuggerStepperBoundary]
         public SynNodeValue()
         {
-            this.Value = ReadOnlyMemory<char>.Empty;
+            this.TextBlock = SourceTextBlockPointer.None;
             this.ValueType = ScalarValueType.Unknown;
         }
 
         [DebuggerStepperBoundary]
-        public SynNodeValue(ReadOnlyMemory<char> value)
+        public SynNodeValue(SourceTextBlockPointer textBlock)
         {
-            this.Value = value;
+            this.TextBlock = textBlock;
             this.ValueType = ScalarValueType.Unknown;
         }
 
         [DebuggerStepperBoundary]
-        public SynNodeValue(ReadOnlyMemory<char> value, ScalarValueType valueType)
+        public SynNodeValue(SourceTextBlockPointer textBlock, ScalarValueType valueType)
         {
-            this.Value = value;
+            this.TextBlock = textBlock;
             this.ValueType = valueType;
         }
 
@@ -47,10 +48,10 @@ namespace GraphQL.AspNet.Parsing2
         /// Gets the block of characters representing a value.
         /// </summary>
         /// <value>The value.</value>
-        public ReadOnlyMemory<char> Value { get; }
+        public SourceTextBlockPointer TextBlock { get; }
 
         /// <summary>
-        /// Gets the scalared value type of <see cref="Value"/>, if any.
+        /// Gets the scalared value type of text pointed at by <see cref="TextBlock"/>, if any.
         /// </summary>
         /// <value>The type of the value.</value>
         public ScalarValueType ValueType { get; }
@@ -58,14 +59,14 @@ namespace GraphQL.AspNet.Parsing2
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return (this.ValueType, this.Value).GetHashCode();
+            return (this.ValueType, this.TextBlock).GetHashCode();
         }
 
         /// <inheritdoc />
         public bool Equals(SynNodeValue other)
         {
             return this.ValueType.Equals(other.ValueType)
-            && this.Value.Span.SequenceEqual(other.Value.Span);
+            && this.TextBlock.Equals(other.TextBlock);
         }
 
         /// <inheritdoc />
@@ -73,12 +74,6 @@ namespace GraphQL.AspNet.Parsing2
         {
             return obj is SynNodeValue snv
                 && this.Equals(snv);
-        }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return this.Value.ToString();
         }
 
         /// <summary>

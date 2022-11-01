@@ -105,17 +105,18 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
         public ReadOnlySpan<char> PeekLine(int absoluteIndex)
         {
             absoluteIndex = absoluteIndex < 0 ? 0 : absoluteIndex;
-            if (absoluteIndex >= _sourceMemory.Length)
+            if (absoluteIndex >= this.Chars.Length)
                 return ReadOnlySpan<char>.Empty;
 
             var newLineIndex = this.Slice(absoluteIndex).IndexOf(CHARS.NL);
             if (newLineIndex == CHARS.NO_INDEX)
-                return this.Slice(absoluteIndex);
+                newLineIndex = this.Chars.Length - absoluteIndex;
 
-            var slice = this.Slice(absoluteIndex, newLineIndex);
+            var block = new SourceTextBlockPointer(absoluteIndex, newLineIndex);
 
             // \r\n is considered a new line: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
-            return slice.TrimTrailingCarriageReturn();
+            block = this.TrimTrailingCarriageReturn(block);
+            return this.RetrieveText(block);
         }
 
         /// <summary>
@@ -140,7 +141,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
         /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
         public ReadOnlySpan<char> PeekFullLine(int absoluteIndex)
         {
-            return this.PeekFullLineInternal(absoluteIndex).Span;
+            return this.PeekFullLineInternal(absoluteIndex);
         }
 
         /// <summary>
@@ -155,11 +156,11 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
         /// <param name="absoluteIndex">Index of the absolute.</param>
         /// <returns>System.ReadOnlyMemory&lt;System.Char&gt;.</returns>
         [DebuggerStepThrough]
-        private ReadOnlyMemory<char> PeekFullLineInternal(int absoluteIndex)
+        private ReadOnlySpan<char> PeekFullLineInternal(int absoluteIndex)
         {
             absoluteIndex = absoluteIndex < 0 ? 0 : absoluteIndex;
             if (absoluteIndex >= _sourceText.Length)
-                return ReadOnlyMemory<char>.Empty;
+                return ReadOnlySpan<char>.Empty;
 
             // are we in the middle of a line delimiter '\r\n'
             if (absoluteIndex > 0
@@ -242,7 +243,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
                 lineNum++;
             }
 
-            return (lineNum, absoluteIndex - lastLineIndex);
+            return new (lineNum, absoluteIndex - lastLineIndex);
         }
 
         /// <summary>
@@ -255,6 +256,14 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
         public bool CheckCursor(GraphQLSourceRule ruleToCheck)
         {
             return SourceRuleFactory.FindRule(ruleToCheck).Validate(this);
+        }
+
+        public ReadOnlySpan<char> Slice(SourceTextBlockPointer block)
+        {
+            if (block.Length == 0)
+                return ReadOnlySpan<char>.Empty;
+
+            return this.Slice(block.StartIndex, block.Length);
         }
 
         /// <summary>
@@ -307,10 +316,10 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
         /// <param name="start">The start.</param>
         /// <param name="length">The length.</param>
         /// <returns>System.ReadOnlyMemory&lt;System.Char&gt;.</returns>
-        public ReadOnlyMemory<char> SliceMemory(int start, int length)
+        public ReadOnlySpan<char> SliceMemory(int start, int length)
         {
             // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-            return _sourceMemory.Slice(start, length);
+            return this.Chars.Slice(start, length);
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Parsing2
     using System.IO;
     using System.Text;
     using System.Text.Json;
-    using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
 
     /// <summary>
     /// Extension methods for <see cref="SynTree"/>.
@@ -182,7 +182,7 @@ namespace GraphQL.AspNet.Parsing2
         /// </summary>
         /// <param name="synTree">The syntax tree to convert.</param>
         /// <returns>System.String.</returns>
-        public static string ToJsonString(this SynTree synTree)
+        public static string ToJsonString(this SynTree synTree, ref SourceText sourceText)
         {
             var options = new JsonWriterOptions()
             {
@@ -192,7 +192,7 @@ namespace GraphQL.AspNet.Parsing2
             var stream = new MemoryStream();
             var writer = new Utf8JsonWriter(stream, options);
 
-            PrintJsonNode(writer, synTree, synTree.RootNode, 0);
+            PrintJsonNode(writer, sourceText, synTree, synTree.RootNode, 0);
             writer.Flush();
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -206,7 +206,7 @@ namespace GraphQL.AspNet.Parsing2
             return str;
         }
 
-        private static void PrintJsonNode(Utf8JsonWriter writer, SynTree synTree, SynNode node, int depth)
+        private static void PrintJsonNode(Utf8JsonWriter writer, SourceText sourceText, SynTree synTree, SynNode node, int depth)
         {
             writer.WriteStartObject();
 
@@ -219,13 +219,15 @@ namespace GraphQL.AspNet.Parsing2
             if (node.PrimaryValue != default)
             {
                 writer.WritePropertyName("primary");
-                writer.WriteStringValue(node.PrimaryValue.Value.ToString());
+                var textValue = sourceText.Slice(node.PrimaryValue.TextBlock);
+                writer.WriteStringValue(textValue.ToString());
             }
 
             if (node.SecondaryValue != default)
             {
                 writer.WritePropertyName("secondary");
-                writer.WriteStringValue(node.SecondaryValue.Value.ToString());
+                var textValue = sourceText.Slice(node.SecondaryValue.TextBlock);
+                writer.WriteStringValue(textValue.ToString());
             }
 
             if (node.Coordinates.ChildBlockIndex >= 0)
@@ -234,7 +236,7 @@ namespace GraphQL.AspNet.Parsing2
                 writer.WriteStartArray();
                 var childBlock = synTree.NodePool[node.Coordinates.ChildBlockIndex];
                 for (var i = 0; i < node.Coordinates.ChildBlockLength; i++)
-                    PrintJsonNode(writer, synTree, childBlock[i], depth + 1);
+                    PrintJsonNode(writer, sourceText, synTree, childBlock[i], depth + 1);
 
                 writer.WriteEndArray();
             }

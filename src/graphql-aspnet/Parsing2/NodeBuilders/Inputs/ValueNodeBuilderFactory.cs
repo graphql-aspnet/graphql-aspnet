@@ -12,11 +12,12 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
     using System;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing;
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
 
     public class ValueNodeBuilderFactory
     {
-        public static ISynNodeBuilder CreateBuilder(LexicalToken token)
+        public static ISynNodeBuilder CreateBuilder(TokenStream tokenStream)
         {
             // an input value could be:
             // NameToken:    a potential enumeration or true|false
@@ -25,10 +26,12 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
             // CurlyLeft:    complex JSON object
             // BracketLeft:  an array of items
             // DollarSign:   variable reference
+            var token = tokenStream.ActiveToken;
             if (token.TokenType == TokenType.Name)
             {
-                if (token.Text.Span.Equals(ParserConstants.Keywords.True.Span, StringComparison.Ordinal) ||
-                    token.Text.Span.Equals(ParserConstants.Keywords.False.Span, StringComparison.Ordinal))
+                var text = tokenStream.Source.Slice(token.Block);
+                if (text.Equals(ParserConstants.Keywords.True.Span, StringComparison.Ordinal) ||
+                    text.Equals(ParserConstants.Keywords.False.Span, StringComparison.Ordinal))
                 {
                     return BooleanValueNodeBuilder.Instance;
                 }

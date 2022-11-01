@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     /// <summary>
     /// Tests to validate the tokenization of a string.
@@ -38,41 +39,41 @@ namespace GraphQL.AspNet.Tests.Parsing2
                                   }
                                 }";
 
-            var source = new SourceText(qualifiedQuery.AsMemory());
+            var source = new SourceText(qualifiedQuery.AsSpan());
             var tokenSet = Lexer.Tokenize(source);
 
             // first two tokens should be control parens
             HelperAsserts.AssertTokenChain(
-                ref tokenSet,
-                new LexicalToken(TokenType.Name, "mutation".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.CurlyBraceLeft, "{".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Name, "createHero".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.ParenLeft, "(".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Name, "name".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Colon, ":".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.String, "\"John\"".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Comma, ",".AsMemory(), SourceLocation.None, true),
-                new LexicalToken(TokenType.Name, "age".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Colon, ":".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Integer, "23".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.ParenRight, ")".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.CurlyBraceLeft, "{".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Name, "name".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Comment, "# Queries can have comments!".AsMemory(), SourceLocation.None, true),
-                new LexicalToken(TokenType.Name, "friends".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.CurlyBraceLeft, "{".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.Name, "name".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.CurlyBraceRight, "}".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.CurlyBraceRight, "}".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.CurlyBraceRight, "}".AsMemory(), SourceLocation.None),
-                new LexicalToken(TokenType.EndOfFile));
+                tokenSet,
+                new LexicalTokenTestCase(TokenType.Name, "mutation", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "createHero", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.ParenLeft, "(", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "name", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Colon, ":", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.String, "\"John\"", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Comma, ",", SourceLocation.None, true),
+                new LexicalTokenTestCase(TokenType.Name, "age", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Colon, ":", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Integer, "23", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.ParenRight, ")", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "name", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Comment, "# Queries can have comments!", SourceLocation.None, true),
+                new LexicalTokenTestCase(TokenType.Name, "friends", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.Name, "name", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}", SourceLocation.None),
+                new LexicalTokenTestCase(TokenType.EndOfFile));
         }
 
         [Test]
         public void Lexer_Tokenize_KitchenSink_ParsesExpectedly()
         {
             var text = ResourceLoader.ReadAllLines("KitchenSink", "KitchenSink.graphql");
-            var source = new SourceText(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
             var tokenSet = Lexer.Tokenize(source);
             var list = tokenSet.ToList(false);
             Assert.AreEqual(191, list.Count);
@@ -95,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             try
             {
-                var source = new SourceText(qualifiedQuery.AsMemory());
+                var source = new SourceText(qualifiedQuery.AsSpan());
                 var tokenStream = Lexer.Tokenize(source);
                 var allTokens = tokenStream.ToList();
             }
@@ -126,7 +127,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             try
             {
-                var source = new SourceText(qualifiedQuery.AsMemory());
+                var source = new SourceText(qualifiedQuery.AsSpan());
                 var tokenStream = Lexer.Tokenize(source);
                 var allTokens = tokenStream.ToList();
             }
@@ -157,7 +158,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             try
             {
-                var source = new SourceText(qualifiedQuery.AsMemory());
+                var source = new SourceText(qualifiedQuery.AsSpan());
                 var tokenStream = Lexer.Tokenize(source);
                 var allTokens = tokenStream.ToList();
             }
@@ -176,22 +177,23 @@ namespace GraphQL.AspNet.Tests.Parsing2
         public void Lexer_Tokenize_SimpleString_ReturnsExpectedTokens()
         {
             var text = "()\"abc123\"  ab_2C ...{123}";
-            var source = new SourceText(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
 
             var tokenSet = Lexer.Tokenize(source);
             var tokenList = tokenSet.ToList();
 
             // first two tokens should be control parens
-            Assert.AreEqual(9, tokenList.Count);
-            HelperAsserts.AssertToken(tokenList[0], "(", TokenType.ParenLeft, 0);
-            HelperAsserts.AssertToken(tokenList[1], ")", TokenType.ParenRight, 1);
-            HelperAsserts.AssertToken(tokenList[2], "\"abc123\"", TokenType.String, 2);
-            HelperAsserts.AssertToken(tokenList[3], "ab_2C", TokenType.Name, 12);
-            HelperAsserts.AssertToken(tokenList[4], "...", TokenType.SpreadOperator, 18);
-            HelperAsserts.AssertToken(tokenList[5], "{", TokenType.CurlyBraceLeft, 21);
-            HelperAsserts.AssertToken(tokenList[6], "123", TokenType.Integer, 22);
-            HelperAsserts.AssertToken(tokenList[7], "}", TokenType.CurlyBraceRight, 25);
-            HelperAsserts.AssertEndsWithEoF(tokenList);
+            HelperAsserts.AssertTokenChain(
+                tokenSet,
+                new LexicalTokenTestCase(TokenType.ParenLeft, "("),
+                new LexicalTokenTestCase(TokenType.ParenRight, ")"),
+                new LexicalTokenTestCase(TokenType.String, "\"abc123\""),
+                new LexicalTokenTestCase(TokenType.Name, "ab_2C"),
+                new LexicalTokenTestCase(TokenType.SpreadOperator, "..."),
+                new LexicalTokenTestCase(TokenType.CurlyBraceLeft, "{"),
+                new LexicalTokenTestCase(TokenType.Integer, "123"),
+                new LexicalTokenTestCase(TokenType.CurlyBraceRight, "}"),
+                new LexicalTokenTestCase(TokenType.EndOfFile));
         }
 
         [TestCase("...", TokenType.SpreadOperator)]
@@ -200,32 +202,32 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [TestCase("}", TokenType.CurlyBraceRight)]
         [TestCase("[", TokenType.BracketLeft)]
         [TestCase("]", TokenType.BracketRight)]
-        [TestCase(":",  TokenType.Colon)]
-        [TestCase("$",  TokenType.Dollar)]
-        [TestCase("@",  TokenType.AtSymbol)]
-        [TestCase("!",  TokenType.Bang)]
-        [TestCase("tes3t",  TokenType.Name)]
-        [TestCase("#t123",  TokenType.Comment)]
-        [TestCase("\"test\"",  TokenType.String)]
-        [TestCase("\"\"\"test\"\"\"",  TokenType.String)]
+        [TestCase(":", TokenType.Colon)]
+        [TestCase("$", TokenType.Dollar)]
+        [TestCase("@", TokenType.AtSymbol)]
+        [TestCase("!", TokenType.Bang)]
+        [TestCase("tes3t", TokenType.Name)]
+        [TestCase("#t123", TokenType.Comment)]
+        [TestCase("\"test\"", TokenType.String)]
+        [TestCase("\"\"\"test\"\"\"", TokenType.String)]
         [TestCase("1234", TokenType.Integer)]
-        [TestCase("1E341234",  TokenType.Float)]
-        [TestCase("123455.8",  TokenType.Float)]
-        [TestCase("123.4556",  TokenType.Float)]
-        [TestCase("123.45e6",  TokenType.Float)]
+        [TestCase("1E341234", TokenType.Float)]
+        [TestCase("123455.8", TokenType.Float)]
+        [TestCase("123.4556", TokenType.Float)]
+        [TestCase("123.45e6", TokenType.Float)]
         public void Lexer_Tokenize_SingleToken_ValidStringReturnsCorrectTokenType(
             string text,
             TokenType tokenType)
         {
-            var source = new SourceText(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
 
             var tokenSet = Lexer.Tokenize(source);
-            var tokenList = tokenSet.ToList(false);
 
             // first two tokens should be control parens
-            Assert.AreEqual(2, tokenList.Count);
-            HelperAsserts.AssertToken(tokenList[0], text, tokenType, 0);
-            HelperAsserts.AssertEndsWithEoF(tokenList);
+            HelperAsserts.AssertTokenChain(
+                tokenSet,
+                new LexicalTokenTestCase(tokenType, text),
+                new LexicalTokenTestCase(TokenType.EndOfFile));
         }
 
         [TestCase("()....44", 5, 1, 5)] // interpreted as an invalid spread operator (4th period)
@@ -240,7 +242,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         {
             try
             {
-                var source = new SourceText(text.AsMemory());
+                var source = new SourceText(text.AsSpan());
                 var stream = Lexer.Tokenize(source);
                 var allTokens = stream.ToList();
             }
@@ -265,7 +267,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         public void Lexer_Tokenize_LongValidDocumentYieldsNoExceptions()
         {
             var sourceText = ResourceLoader.ReadAllLines("Lexer_Tokenizing", "SemiLongValidDocument.graphql");
-            var source = new SourceText(sourceText.AsMemory());
+            var source = new SourceText(sourceText.AsSpan());
             var tokenSet = Lexer.Tokenize(source);
             var allTokens = tokenSet.ToList();
         }

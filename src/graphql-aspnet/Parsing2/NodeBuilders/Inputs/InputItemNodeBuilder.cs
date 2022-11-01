@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
             tokenStream.MatchOrThrow(TokenType.Name);
             var startLocation = tokenStream.Location;
 
-            var name = tokenStream.ActiveToken.Text;
+            var name = tokenStream.ActiveToken.Block;
             tokenStream.Next();
 
             // input values are in the format:   NameToken: ValueToken

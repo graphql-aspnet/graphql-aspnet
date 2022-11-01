@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class DirectiveNodeBuildTests
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void DirectiveNodeBuilder_SimpleDirective_NoArgs_ParsesCorrectly()
         {
             var text = "@skip";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -35,7 +36,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
 
             DirectiveNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Directive,
@@ -46,7 +48,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void DirectiveNodeBuilder_DirectiveWithArgument_ParsesCorrectly()
         {
             var text = "@skip(if: true)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -54,7 +56,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
 
             DirectiveNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Directive,
@@ -74,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void DirectiveNodeBuilder_WithArguments_WithFieldsAfter_ParsesCorrectly()
         {
             var text = "@skip(if: true){field1, field2}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -82,7 +85,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
 
             DirectiveNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Directive,
@@ -105,7 +109,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void DirectiveNodeMaker_NoAtSign_ThrowsException()
         {
             var text = "skip(if: true)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -127,7 +131,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void DirectiveNodeBuilder_NoDirectiveName_ThrowsException()
         {
             var text = "@(if: true)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -149,7 +153,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void DirectiveNodeBuilder_NoAtSignAndNoName_ThrowsException()
         {
             var text = "(if: true)";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -171,7 +175,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void DirectiveNodeMaker_NotAtADirective_ThrowsException()
         {
             var text = "query someQuery{field1, field2}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

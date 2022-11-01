@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class VariableNodeBuilderTests
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         {
             // no leading $ on the variable name
             var text = @"episode: Episode";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -49,7 +50,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         {
             // no Type name
             var text = @"$episode";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -72,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         {
             // no Type name but with a default, still fails
             var text = @"$episode = JEDI";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -94,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void VariableNode_WithDefault_SetsNameCorrectly()
         {
             var text = @"$episode: Episode = JEDI";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -103,7 +104,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             VariableNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Variable,
@@ -118,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void VariableNode_WithNotNull_SetsFlagCorrectly()
         {
             var text = @"$episode: Episode! = JEDI";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -127,7 +129,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             VariableNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Variable,
@@ -142,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void VariableNode_WithNoDefault_SetsNameCorrectly()
         {
             var text = @"$episode: Episode";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -151,7 +154,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             VariableNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Variable,
@@ -163,7 +167,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void VariableNode_WithComplexTypeExpression_SetsNameCorrectly()
         {
             var text = @"$episode: [[Episode!]!]! = JEDI";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -172,7 +176,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             VariableNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Variable,
@@ -187,7 +192,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void VariableNode_WithDirective_AssignsDirectiveNode()
         {
             var text = @"$episode: Episode @myDirective";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -196,7 +201,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             VariableNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Variable,
@@ -211,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void VariableNode_WithDirectiveAndParams_AssignsDirectiveNode()
         {
             var text = @"$episode: Episode @myDirective(param1: ""value1"")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -220,7 +226,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             VariableNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Variable,
@@ -244,7 +251,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void VariableNode_WithDefaultValue_DirectiveAndParams_AssignsDirectiveNode()
         {
             var text = @"$episode: Episode = JEDI @myDirective(param1: ""value1"")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -253,7 +260,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             VariableNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Variable,

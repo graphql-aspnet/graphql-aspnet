@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
             tokenStream.MatchOrThrow(TokenType.Name);
 
             var startLocation = tokenStream.Location;
-            var fieldName = tokenStream.ActiveToken.Text;
+            var fieldName = tokenStream.ActiveToken.Block;
             var fieldAlias = fieldName;
             tokenStream.Next();
 
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
                 tokenStream.Next();
                 tokenStream.MatchOrThrow(TokenType.Name);
 
-                fieldName = tokenStream.ActiveToken.Text;
+                fieldName = tokenStream.ActiveToken.Block;
                 tokenStream.Next();
             }
 

@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class FieldCollectionNodeBuilderTests
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void EmptyCollection_ParsesNoChildren()
         {
             var text = "{  }";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -34,7 +35,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.FieldCollection,
@@ -45,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void NoPointingtoStartofCollection_ThrowsException()
         {
             var text = "query testQuery{  }";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -67,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void NoEndingCurlyBrace_ThrowsException()
         {
             var text = "{field1, field2, field3,field4";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -89,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void InvalidFieldName_ThrowsException()
         {
             var text = "{$field2}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -111,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void AssignedFieldAlias_IsSetCorrectly()
         {
             var text = "{field1, fieldA: field2}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -120,7 +122,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                 SynNodeType.FieldCollection,
@@ -138,7 +141,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void SimpleCollection_ParsesCorrectly()
         {
             var text = "{field1, field2, field3}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -147,7 +150,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                 SynNodeType.FieldCollection,
@@ -169,7 +173,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void WithFragments_ParsesCorrectly()
         {
             var text = "{field1, ...on User{fieldA, fieldQ}, ...someFragment }";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -178,7 +182,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FieldCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                 SynNodeType.FieldCollection,

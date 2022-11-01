@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class OperationNodeBuilderTests
@@ -24,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void VariableCollectionIsParsed()
         {
             var text = @"query namedQuery($var1: EPISODE = JEDI){}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -33,7 +34,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             OperationNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.Operation,
@@ -47,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void UnnamedQueryisQueryOperationWithNoName()
         {
             var text = @"{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -56,7 +58,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             OperationNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertSynNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 new SynNodeTestCase(
                     SynNodeType.Document,
                     new SynNodeTestCase(SynNodeType.Operation)));
@@ -66,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void OnlyOperationTypeDeclared()
         {
             var text = @"namedQueryType {}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -75,7 +78,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             OperationNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertSynNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 new SynNodeTestCase(
                     SynNodeType.Document,
                     new SynNodeTestCase(
@@ -87,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void NameAndTypeDeclaration()
         {
             var text = @"namedQueryType aNamedQueryName{}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -96,7 +100,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             OperationNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertSynNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 new SynNodeTestCase(
                     SynNodeType.Document,
                     new SynNodeTestCase(
@@ -109,7 +114,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void NamedQuery_WithDirective_SetsNameCorrectly()
         {
             var text = @"namedQueryType aNamedQuery @someDirective(if: true){}";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -118,7 +123,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             OperationNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertSynNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 new SynNodeTestCase(
                     SynNodeType.Document,
                     new SynNodeTestCase(

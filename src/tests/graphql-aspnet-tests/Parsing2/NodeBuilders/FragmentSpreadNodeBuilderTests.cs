@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.NodeBuilders;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class FragmentSpreadNodeBuilderTests
@@ -25,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentName_ParsesCorrectly()
         {
             var text = "...someFragmentA,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -34,7 +35,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FragmentSpreadNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.FragmentSpread,
@@ -45,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void WithDirective_ParsesCorrectly()
         {
             var text = "...someFragmentA @skip(if: true),";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -54,7 +56,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FragmentSpreadNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.FragmentSpread,
@@ -70,7 +73,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void NoName_ThrowsEceptions()
         {
             var text = "...,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -92,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void InvalidName_ThrowsEceptions()
         {
             var text = "...123A,";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -114,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentNode_ValidInlineFragment_NoFields_ParsesCorrectly()
         {
             var text = "...on User{},";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -123,7 +126,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FragmentSpreadNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.InlineFragment,
@@ -136,7 +140,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentNode_ValidInlineFragment_NoFields_WithDirective_ParsesCorrectly()
         {
             var text = "...on User @skip(if: true) {},";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -145,7 +149,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FragmentSpreadNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.InlineFragment,
@@ -161,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
         public void FragmentNode_ValidInlineFragment_WithFields_ParsesCorrectly()
         {
             var text = "...on User{field1, field2},";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -170,7 +175,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             FragmentSpreadNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.InlineFragment,

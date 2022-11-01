@@ -18,6 +18,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
     using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
+    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class NumberValueNodeBuilderTests
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void NumberValueNodeMaker_Float_ParsesNodeCorrectly()
         {
             var text = "1234.567";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -36,7 +37,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             NumberValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.ScalarValue,
@@ -50,7 +52,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void NumberValueNodeMaker_Int_ParsesNodeCorrectly()
         {
             var text = "1234, name = 343";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -60,7 +62,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             NumberValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                ref tree,
+                stream.Source,
+                tree,
                 docNode,
                 new SynNodeTestCase(
                     SynNodeType.ScalarValue,
@@ -74,7 +77,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void NumberValueNodeMaker_PointingAtNull_ParsesNodeCorrectly()
         {
             var text = "null, name = 343";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();
@@ -84,12 +87,13 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             NumberValueNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                  ref tree,
-                  docNode,
-                  new SynNodeTestCase(
-                      SynNodeType.ScalarValue,
-                      "null",
-                      ScalarValueType.Number));
+                stream.Source,
+                tree,
+                docNode,
+                new SynNodeTestCase(
+                    SynNodeType.ScalarValue,
+                    "null",
+                    ScalarValueType.Number));
 
             Assert.AreEqual(TokenType.Name, stream.TokenType);
         }
@@ -98,7 +102,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
         public void NumberValueNodeMaker_NotPointingAtANumber_ResultsInException()
         {
             var text = "nameToken(arg1: 123, arg2: \"stringValue\")";
-            var stream = Lexer.Tokenize(new SourceText(text.AsMemory()));
+            var stream = Lexer.Tokenize(new SourceText(text.AsSpan()));
             stream.Prime();
 
             var tree = SynTree.FromDocumentRoot();

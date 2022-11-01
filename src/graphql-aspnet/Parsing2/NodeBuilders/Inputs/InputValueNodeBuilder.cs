@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
         /// <inheritdoc />
         public void BuildNode(ref SynTree synTree, ref SynNode parentNode, ref TokenStream tokenStream)
         {
-            var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream.ActiveToken);
+            var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
             if (builder != null)
             {
                 builder.BuildNode(ref synTree, ref parentNode, ref tokenStream);

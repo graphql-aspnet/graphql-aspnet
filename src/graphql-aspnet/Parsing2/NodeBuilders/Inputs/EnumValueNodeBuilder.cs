@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
             if (tokenStream.Match(TokenType.Null))
             {
                 ValueNodeBuilderFactory
-                    .CreateBuilder(tokenStream.ActiveToken)
+                    .CreateBuilder(tokenStream)
                     .BuildNode(ref synTree, ref parentNode, ref tokenStream);
             }
             else
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                     SynNodeType.EnumValue,
                     tokenStream.Location,
                     new SynNodeValue(
-                        tokenStream.ActiveToken.Text));
+                        tokenStream.ActiveToken.Block));
 
                 synTree = synTree.AddChildNode(ref parentNode, ref enumValueNode);
                 tokenStream.Next();

@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Parsing2
         /// </summary>
         /// <param name="queryText">The raw query text to be parsed.</param>
         /// <returns>The completed document.</returns>
-        public SynTree ParseQueryDocument(ReadOnlyMemory<char> queryText)
+        public SynTree ParseQueryDocument(ReadOnlySpan<char> queryText)
         {
             // if an exception occurs during parsing just let it bubble up
             // the owner of the parse request will handle it accordingly
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Parsing2
                 // or skipping all that and variables, just be an open brace
                 // see spec: section 2.3 "query shorthand"
                 ISynNodeBuilder builder;
-                if (tokenStream.Match(KEYWORDS.Fragment))
+                if (tokenStream.Match(KEYWORDS.Fragment.Span))
                 {
                     builder = NodeBuilderFactory.CreateBuilder(SynNodeType.NamedFragment);
                 }

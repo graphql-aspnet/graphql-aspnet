@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.Throws<GraphQLSyntaxException>(() =>
             {
                 var parser = new GraphQLParser2();
-                var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsMemory());
+                var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsSpan());
             });
         }
 
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var qualifiedQuery = "{}";
 
             var parser = new GraphQLParser2();
-            var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsMemory());
+            var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsSpan());
 
             // RootNode | Operation -> Empty Field Set
             Assert.AreEqual(2, syntaxTree.BlockLength);
@@ -54,17 +54,17 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.Throws<GraphQLSyntaxException>(() =>
             {
                 var parser = new GraphQLParser2();
-                var syntaxTree = parser.ParseQueryDocument(text.AsMemory());
+                var syntaxTree = parser.ParseQueryDocument(text.AsSpan());
             });
         }
 
         [Test]
-        public void ParseDocument_KitchenSinkParses()
+        public void ParseDocument_KitchenSinkParses_DoesNotThrowExeception()
         {
             var qualifiedQuery = ResourceLoader.ReadAllLines("KitchenSink", "KitchenSink.graphql");
 
             var parser = new GraphQLParser2();
-            var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsMemory());
+            var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsSpan());
             Assert.IsTrue(syntaxTree.BlockLength > 0);
         }
 

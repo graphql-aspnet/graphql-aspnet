@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Tokens
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
 
     /// <summary>
     /// A lexical token, representing a meaningful character or set of characters
@@ -25,25 +26,29 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Tokens
         /// Gets a token that indicates the end of a file.
         /// </summary>
         /// <value>The eo f.</value>
-        public static LexicalToken EoF { get; } = new LexicalToken(TokenType.EndOfFile, ReadOnlyMemory<char>.Empty, SourceLocation.None, true);
+        public static LexicalToken EoF { get; } = new LexicalToken(
+            TokenType.EndOfFile,
+            SourceTextBlockPointer.None,
+            SourceLocation.None,
+            true);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LexicalToken" /> struct.
         /// </summary>
         /// <param name="tokenType">Type of the token.</param>
-        /// <param name="text">The text included in hte token.</param>
+        /// <param name="block">A pointer to the block of text this token represents, in the related source.</param>
         /// <param name="location">The location in the source document where the token occured.</param>
         /// <param name="isIgnored">if set to <c>true</c> this token will be ignored
         /// during common processing.</param>
         public LexicalToken(
             TokenType tokenType,
-            ReadOnlyMemory<char> text,
+            SourceTextBlockPointer block,
             SourceLocation location,
             bool isIgnored = false)
         {
             this.Location = Validation.ThrowIfNullOrReturn(location, nameof(location));
             this.TokenType = tokenType;
-            this.Text = text;
+            this.Block = block;
             this.IsIgnored = isIgnored;
         }
 
@@ -56,11 +61,8 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Tokens
         public LexicalToken(
             TokenType tokenType,
             bool isIgnored = false)
+            : this(tokenType, SourceTextBlockPointer.None, SourceLocation.None, isIgnored)
         {
-            this.TokenType = tokenType;
-            this.Location = SourceLocation.None;
-            this.Text = null;
-            this.IsIgnored = isIgnored;
         }
 
         /// <summary>
@@ -74,11 +76,8 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Tokens
             TokenType tokenType,
             SourceLocation location,
             bool isIgnored = false)
+            : this(tokenType, SourceTextBlockPointer.None, location, isIgnored)
         {
-            this.TokenType = tokenType;
-            this.Location = location;
-            this.Text = null;
-            this.IsIgnored = isIgnored;
         }
 
         /// <summary>
@@ -94,10 +93,10 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Tokens
         public SourceLocation Location { get; }
 
         /// <summary>
-        /// Gets the text that was parsed into the token.
+        /// Gets a pointer to a block of text, in the related source text, that represents this token.
         /// </summary>
         /// <value>The text.</value>
-        public ReadOnlyMemory<char> Text { get; }
+        public SourceTextBlockPointer Block { get; }
 
         /// <summary>
         /// Gets a value indicating whether this token should be ignored during common processing.

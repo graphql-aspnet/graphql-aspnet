@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
             tokenStream.Next();
 
             tokenStream.MatchOrThrow(TokenType.Name);
-            var directiveName = tokenStream.ActiveToken.Text;
+            var directiveName = tokenStream.ActiveToken.Block;
             tokenStream.Next();
 
             var directiveNode = new SynNode(
