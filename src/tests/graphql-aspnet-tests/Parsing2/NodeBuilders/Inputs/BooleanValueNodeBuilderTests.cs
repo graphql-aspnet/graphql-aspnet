@@ -45,6 +45,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     ScalarValueType.Boolean));
 
             Assert.IsTrue(stream.EndOfStream);
+            tree.Release();
         }
 
         [Test]
@@ -70,6 +71,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     ScalarValueType.Boolean));
 
             Assert.IsFalse(stream.EndOfStream);
+            tree.Release();
         }
 
         [Test]
@@ -94,6 +96,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     "null"));
 
             Assert.IsFalse(stream.EndOfStream);
+            tree.Release();
         }
 
         [Test]
@@ -114,6 +117,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             catch (GraphQLSyntaxException)
             {
                 return;
+            }
+            finally
+            {
+                tree.Release();
             }
 
             Assert.Fail("Expected syntax exception");

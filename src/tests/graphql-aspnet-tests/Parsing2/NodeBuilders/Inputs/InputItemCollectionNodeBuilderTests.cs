@@ -59,6 +59,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream focus
             Assert.IsTrue(stream.Match(TokenType.CurlyBraceLeft));
+            tree.Release();
         }
 
         [Test]
@@ -81,6 +82,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -105,6 +107,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -129,6 +132,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -168,6 +172,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream focus
             Assert.IsTrue(stream.Match(TokenType.CurlyBraceLeft));
+            tree.Release();
         }
     }
 }

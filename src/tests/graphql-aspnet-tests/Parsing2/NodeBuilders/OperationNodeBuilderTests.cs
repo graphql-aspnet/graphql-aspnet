@@ -43,6 +43,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     secondaryText: "namedQuery",
                     new SynNodeTestCase(
                         SynNodeType.VariableCollection)));
+            tree.Release();
         }
 
         [Test]
@@ -63,6 +64,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                 new SynNodeTestCase(
                     SynNodeType.Document,
                     new SynNodeTestCase(SynNodeType.Operation)));
+            tree.Release();
         }
 
         [Test]
@@ -85,6 +87,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.Operation,
                         primaryText: "namedQueryType")));
+            tree.Release();
         }
 
         [Test]
@@ -108,6 +111,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                         SynNodeType.Operation,
                         primaryText: "namedQueryType",
                         secondaryText: "aNamedQueryName")));
+            tree.Release();
         }
 
         [Test]
@@ -135,6 +139,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                         new SynNodeTestCase(
                             SynNodeType.Directive,
                             primaryText: "someDirective"))));
+            tree.Release();
         }
     }
 }

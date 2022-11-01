@@ -45,6 +45,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                         SynNodeType.ScalarValue,
                         "123",
                         ScalarValueType.Number)));
+            tree.Release();
         }
 
         [Test]
@@ -73,6 +74,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     new SynNodeTestCase(
                         SynNodeType.Directive,
                         "someDirective")));
+            tree.Release();
         }
 
         [Test]
@@ -97,6 +99,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     new SynNodeTestCase(
                         SynNodeType.VariableValue,
                         "variable1")));
+            tree.Release();
         }
 
         [Test]
@@ -116,6 +119,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             catch (GraphQLSyntaxException)
             {
                 return;
+            }
+            finally
+            {
+                tree.Release();
             }
 
             Assert.Fail("Expection syntax exception");
@@ -139,6 +146,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -161,6 +169,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -183,6 +192,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }

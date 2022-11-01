@@ -59,6 +59,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             Assert.AreEqual(TokenType.Name, stream.TokenType);
             Assert.AreEqual("arg2", stream.ActiveTokenText.ToString());
             Assert.IsFalse(stream.EndOfStream);
+            tree.Release();
         }
 
         [Test]
@@ -147,6 +148,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                               "ENUMVALUE")))));
 
             Assert.IsFalse(stream.EndOfStream);
+            tree.Release();
         }
 
         [Test]
@@ -167,6 +169,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             catch (GraphQLSyntaxException)
             {
                 return;
+            }
+            finally
+            {
+                tree.Release();
             }
 
             Assert.Fail("Expection syntax exception");
@@ -192,6 +198,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }

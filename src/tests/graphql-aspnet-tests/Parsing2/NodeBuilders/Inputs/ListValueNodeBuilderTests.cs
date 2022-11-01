@@ -57,6 +57,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.Name, stream.TokenType);
+            tree.Release();
         }
 
         [Test]
@@ -90,6 +91,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.Name, stream.TokenType);
+            tree.Release();
         }
 
         [Test]
@@ -188,6 +190,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.Name, stream.TokenType);
+            tree.Release();
         }
 
         [Test]
@@ -235,6 +238,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.ParenRight, stream.TokenType);
+            tree.Release();
         }
 
         [Test]
@@ -286,6 +290,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                           SynNodeType.ScalarValue,
                           "99",
                           ScalarValueType.Number))));
+            tree.Release();
         }
 
         [Test]
@@ -315,6 +320,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                       SynNodeType.ScalarValue,
                       "\"\"\"Robert\"\"\"",
                       ScalarValueType.String)));
+            tree.Release();
         }
 
         [Test]
@@ -346,6 +352,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                       SynNodeType.ScalarValue,
                       "456",
                       ScalarValueType.Number)));
+            tree.Release();
         }
 
         [Test]
@@ -366,6 +373,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             catch (GraphQLSyntaxException)
             {
                 return;
+            }
+            finally
+            {
+                tree.Release();
             }
 
             Assert.Fail("Expection syntax exception");
@@ -390,6 +401,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }

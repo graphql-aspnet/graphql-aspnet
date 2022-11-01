@@ -62,6 +62,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally
+            {
+                tree.Release();
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -84,6 +88,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -108,6 +113,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     SynNodeType.Field,
                     "field1",
                     "field1"));
+            tree.Release();
         }
 
         [Test]
@@ -130,6 +136,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     SynNodeType.Field,
                     "field1",
                     "fieldA"));
+            tree.Release();
         }
 
         [Test]
@@ -155,6 +162,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.FieldCollection,
                         SynNodeTestCase.NoChildren)));
+            tree.Release();
         }
 
         [Test]
@@ -187,6 +195,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                             SynNodeType.Field,
                             "field3",
                             "field3"))));
+            tree.Release();
         }
 
         [Test]
@@ -215,6 +224,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                             SynNodeType.Field,
                             "field2",
                             "fieldA"))));
+            tree.Release();
         }
 
         [Test]
@@ -253,6 +263,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                                 SynNodeType.ScalarValue,
                                 "123",
                                 ScalarValueType.Number)))));
+            tree.Release();
         }
 
         [Test]
@@ -280,6 +291,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.Directive,
                         "include")));
+            tree.Release();
         }
 
         [Test]
@@ -310,6 +322,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.Directive,
                         "skip")));
+            tree.Release();
         }
     }
 }

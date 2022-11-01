@@ -46,6 +46,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     ScalarValueType.Number));
 
             Assert.IsTrue(stream.EndOfStream);
+            tree.Release();
         }
 
         [Test]
@@ -71,6 +72,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     ScalarValueType.Number));
 
             Assert.AreEqual(TokenType.Name, stream.TokenType);
+            tree.Release();
         }
 
         [Test]
@@ -96,6 +98,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     ScalarValueType.Number));
 
             Assert.AreEqual(TokenType.Name, stream.TokenType);
+            tree.Release();
         }
 
         [Test]
@@ -116,6 +119,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             catch (GraphQLSyntaxException)
             {
                 return;
+            }
+            finally
+            {
+                tree.Release();
             }
 
             Assert.Fail("Expection syntax exception");

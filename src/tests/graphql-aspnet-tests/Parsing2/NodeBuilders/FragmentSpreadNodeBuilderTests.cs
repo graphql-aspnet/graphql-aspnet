@@ -41,6 +41,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                 new SynNodeTestCase(
                     SynNodeType.FragmentSpread,
                     "someFragmentA"));
+            tree.Release();
         }
 
         [Test]
@@ -67,6 +68,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                         "skip",
                         new SynNodeTestCase(
                             SynNodeType.InputItemCollection))));
+            tree.Release();
         }
 
         [Test]
@@ -87,6 +89,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -108,6 +111,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             catch (GraphQLSyntaxException)
             {
                 return;
+            }
+            finally
+            {
+                tree.Release();
             }
 
             Assert.Fail("Expection syntax exception");
@@ -134,6 +141,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     "User",
                     new SynNodeTestCase(
                         SynNodeType.FieldCollection)));
+            tree.Release();
         }
 
         [Test]
@@ -160,6 +168,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                         "skip"),
                     new SynNodeTestCase(
                         SynNodeType.FieldCollection)));
+            tree.Release();
         }
 
         [Test]
@@ -191,6 +200,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                             SynNodeType.Field,
                             "field2",
                             "field2"))));
+            tree.Release();
         }
     }
 }

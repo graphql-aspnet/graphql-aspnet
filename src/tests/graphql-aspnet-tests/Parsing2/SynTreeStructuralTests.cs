@@ -153,11 +153,9 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             // check contents of Node-0 child block
             Assert.IsTrue(childNode0 == updatedTree.NodePool[0][0]);
-            Assert.IsTrue(updatedTree.NodePool[0][1] == default);
 
             // check contents of Node-0-0 child block
             Assert.IsTrue(childNode1 == updatedTree.NodePool[1][0]);
-            Assert.IsTrue(updatedTree.NodePool[1][1] == default);
 
             // check coords of child0
             Assert.AreEqual(0, childNode0.Coordinates.BlockIndex);
@@ -170,6 +168,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(0, childNode1.Coordinates.BlockPosition);
             Assert.AreEqual(-1, childNode1.Coordinates.ChildBlockIndex);
             Assert.AreEqual(0, childNode1.Coordinates.ChildBlockLength);
+
+            updatedTree.Release();
         }
     }
 }

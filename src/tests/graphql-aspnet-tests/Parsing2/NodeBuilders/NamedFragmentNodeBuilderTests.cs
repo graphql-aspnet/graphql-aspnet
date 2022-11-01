@@ -42,6 +42,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     SynNodeType.NamedFragment,
                     "someFragment",
                     "User"));
+            tree.Release();
         }
 
         [Test]
@@ -67,6 +68,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.Directive,
                         "skip")));
+            tree.Release();
         }
 
         [Test]
@@ -86,6 +88,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             catch (GraphQLSyntaxException)
             {
                 return;
+            }
+            finally
+            {
+                tree.Release();
             }
 
             Assert.Fail("Expection syntax exception");
@@ -109,6 +115,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -131,6 +138,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -153,6 +161,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -175,6 +184,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -197,6 +207,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
+            finally { tree.Release(); }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -223,6 +234,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     "User",
                     new SynNodeTestCase(
                         SynNodeType.FieldCollection)));
+            tree.Release();
         }
     }
 }
