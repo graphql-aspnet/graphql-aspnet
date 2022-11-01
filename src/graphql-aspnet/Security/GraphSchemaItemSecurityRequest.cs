@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Security
             Validation.ThrowIfNull(securedDocumentPart, nameof(securedDocumentPart));
             this.Id = Guid.NewGuid().ToString("N");
             this.SecureSchemaItem = securedDocumentPart.SecureItem;
-            this.Origin = securedDocumentPart.Node.Location.AsOrigin();
+            this.Origin = securedDocumentPart.SourceLocation.AsOrigin();
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Variable: {Name}")]
-    internal class DocumentVariable : DocumentPartBase<VariableNode>, IVariableDocumentPart
+    internal class DocumentVariable : DocumentPartBase, IVariableDocumentPart
     {
         private DocumentDirectiveCollection _directives = null;
 

@@ -48,7 +48,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var arg1 = field.Arguments["arg1"];
             var scalarValue = arg1.Value as IScalarSuppliedValue;
             Assert.IsNotNull(scalarValue);
-            Assert.IsTrue(scalarValue.Node is ScalarValueNode);
             Assert.AreEqual("5", scalarValue.Value.ToString());
         }
     }

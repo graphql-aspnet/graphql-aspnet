@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A named fragment declared at the top of a query document.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentNamedFragment : DocumentFragmentBase<NamedFragmentNode>, INamedFragmentDocumentPart
+    internal class DocumentNamedFragment : DocumentFragmentBase, INamedFragmentDocumentPart
     {
         private readonly DocumentFragmentSpreadCollection _fragmentSpreads;
         private readonly DocumentVariableUsageCollection _variableUsages;

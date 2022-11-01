@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common
 {
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
@@ -21,12 +22,15 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common
     internal abstract class DocumentPartValidationRuleStep : DocumentPartValidationStep, IValidationRule
     {
         /// <inheritdoc />
-        protected override void ValidationError(DocumentValidationContext context, SyntaxNode node, string message)
+        protected override void ValidationError(
+            DocumentValidationContext context,
+            SourceLocation sourceLocation,
+            string message)
         {
             var graphMessage = GraphExecutionMessage.FromValidationRule(
              this,
              message,
-             node.Location.AsOrigin());
+             sourceLocation.AsOrigin());
 
             context.Messages.Add(graphMessage);
         }

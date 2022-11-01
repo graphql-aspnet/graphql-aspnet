@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
                    GraphMessageSeverity.Critical,
                    svce.Message,
                    Constants.ErrorCodes.INVALID_ARGUMENT,
-                   coreValue.Parent.Node.Location.AsOrigin(),
+                   coreValue.Parent.SourceLocation.AsOrigin(),
                    exception: svce.InnerException);
 
                 return new ArgumentGenerationResult(message);
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.PlanGeneration.InputArguments
                     GraphMessageSeverity.Critical,
                     "Invalid argument value. See exception for details.",
                     Constants.ErrorCodes.INVALID_ARGUMENT,
-                    coreValue.Parent.Node.Location.AsOrigin(),
+                    coreValue.Parent.SourceLocation.AsOrigin(),
                     ex);
 
                 return new ArgumentGenerationResult(message);

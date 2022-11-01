@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         public IDocumentPart Parent => null;
 
         /// <inheritdoc />
-        public SyntaxNode Node => EmptyNode.Instance;
+        public SourceLocation SourceLocation => SourceLocation.None;
 
         /// <inheritdoc />
         public SourcePath Path { get; }

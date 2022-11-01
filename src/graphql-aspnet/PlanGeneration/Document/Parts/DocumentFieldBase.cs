@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A base class defining common elements for different field types within a query
     /// document.
     /// </summary>
-    internal abstract class DocumentFieldBase : DocumentPartBase<FieldNode>, IIncludeableDocumentPart
+    internal abstract class DocumentFieldBase : DocumentPartBase, IIncludeableDocumentPart
     {
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
@@ -43,6 +43,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             IGraphType fieldGraphType)
             : base(parentPart, node)
         {
+            this.Name = node.FieldName;
+            this.Alias = node.FieldAlias;
+
             this.AssignGraphType(fieldGraphType);
             this.Field = field;
 
@@ -101,10 +104,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IGraphField Field { get; set; }
 
         /// <inheritdoc cref="IFieldDocumentPart.Name" />
-        public ReadOnlyMemory<char> Name => this.Node.FieldName;
+        public ReadOnlyMemory<char> Name { get; }
 
         /// <inheritdoc cref="IFieldDocumentPart.Alias" />
-        public ReadOnlyMemory<char> Alias => this.Node.FieldAlias;
+        public ReadOnlyMemory<char> Alias { get; }
 
         /// <inheritdoc cref="IFieldDocumentPart.FieldSelectionSet" />
         public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }

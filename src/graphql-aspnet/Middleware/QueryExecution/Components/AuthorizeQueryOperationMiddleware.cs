@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                                 context.Messages.Critical(
                                     $"Access Denied to {securePart.SecureItem.Route.Path}",
                                     Constants.ErrorCodes.ACCESS_DENIED,
-                                    securePart.Node.Location.AsOrigin());
+                                    securePart.SourceLocation.AsOrigin());
                                 anyFieldFailed = true;
                             }
                         }, cancelToken);

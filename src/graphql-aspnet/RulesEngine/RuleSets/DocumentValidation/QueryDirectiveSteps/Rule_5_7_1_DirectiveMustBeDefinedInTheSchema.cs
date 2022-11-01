@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryDirectiveS
             {
                 this.ValidationError(
                     context,
-                    directivePart.Node,
+                    directivePart.SourceLocation,
                     $"The target schema does not contain a directive named '{directivePart.DirectiveName}'.");
 
                 return false;

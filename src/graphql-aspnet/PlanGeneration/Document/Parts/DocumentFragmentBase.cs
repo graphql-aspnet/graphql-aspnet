@@ -18,17 +18,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A fragment that was parsed out of a submitted query document.
     /// </summary>
     /// <typeparam name="TSyntaxNode">The type of the syntax node from which the fragment is created.</typeparam>
-    internal abstract class DocumentFragmentBase<TSyntaxNode> : DocumentPartBase<TSyntaxNode>, IFragmentDocumentPart
-        where TSyntaxNode : SyntaxNode
+    internal abstract class DocumentFragmentBase : DocumentPartBase, IFragmentDocumentPart
     {
         private readonly DocumentDirectiveCollection _directives;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentFragmentBase{TSyntaxNode}" /> class.
+        /// Initializes a new instance of the <see cref="DocumentFragmentBase" /> class.
         /// </summary>
         /// <param name="parentPart">The document part that owns this instance.</param>
         /// <param name="fragmentNode">The inline fragment node.</param>
-        public DocumentFragmentBase(IDocumentPart parentPart, TSyntaxNode fragmentNode)
+        public DocumentFragmentBase(IDocumentPart parentPart, SyntaxNode fragmentNode)
             : base(parentPart, fragmentNode)
         {
             _directives = new DocumentDirectiveCollection(this);

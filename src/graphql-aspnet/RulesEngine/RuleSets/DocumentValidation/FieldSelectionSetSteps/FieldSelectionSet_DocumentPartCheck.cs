@@ -30,7 +30,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             {
                 this.ValidationError(
                     context,
-                    docPart.Node,
+                    docPart.SourceLocation,
                     "The field selection set does not reference a graph type. All selection sets must " +
                     "reference an OBJECT, INTERFACE or UNION graph type to validate its contents.");
 
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             {
                 this.ValidationError(
                     context,
-                    docPart.Node,
+                    docPart.SourceLocation,
                     $"The graph type of the field selection set '{docPart.GraphType.Name}' is a leaf type and does not declare any fields.");
 
                 return false;

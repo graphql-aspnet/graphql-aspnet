@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
             {
                 this.ValidationError(
                     context,
-                    fragment.Node,
+                    fragment.SourceLocation,
                     $"The named fragment '{fragment.Name}' was not referenced by an operation. " +
                     "All declared fragments must be used at least once.");
                 return false;

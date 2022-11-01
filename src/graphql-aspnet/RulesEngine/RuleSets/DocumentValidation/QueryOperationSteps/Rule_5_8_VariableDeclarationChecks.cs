@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                       context,
                       RuleNumber_581,
                       AnchorTag_581,
-                      operation.Node.Location.AsOrigin(),
+                      operation.SourceLocation.AsOrigin(),
                       $"Duplicate Variable Name. The variable named '{dupVarName}' must be unique " +
                       "in its contained operation. Ensure that all variable names, per operation, are unique (case-sensitive).");
 
@@ -105,7 +105,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                        context,
                        RuleNumber_582,
                        AnchorTag_582,
-                       variable.Node.Location.AsOrigin(),
+                       variable.SourceLocation.AsOrigin(),
                        "Unknown Variable Type Expresssion. Could not determine the graph type expression of the variable " +
                        $"named '{variable.Name}'. Double check that your variable declaration is correct.");
 
@@ -118,7 +118,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                         context,
                         RuleNumber_582,
                         AnchorTag_582,
-                        variable.Node.Location.AsOrigin(),
+                        variable.SourceLocation.AsOrigin(),
                         $"Unknown Variable Graph Type. The variable named '{variable?.Name}' declares " +
                         $"itself as a graph type of '{variable.TypeExpression}' but the target graph type does not " +
                         "exist in the schema.");
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                        context,
                        RuleNumber_582,
                        AnchorTag_582,
-                       variable.Node.Location.AsOrigin(),
+                       variable.SourceLocation.AsOrigin(),
                        $"Invalid Variable Graph Type. The variable named '${variable.Name}' references the graph type " +
                        $"'{variable.GraphType.Name}' which is of kind {variable.GraphType.Kind}.  Only " +
                        $"{TypeKind.SCALAR}, {TypeKind.ENUM} and '{TypeKind.INPUT_OBJECT}' are allowed for " +
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                     context,
                     RuleNumber_584,
                     AnchorTag_584,
-                    variable.Node.Location.AsOrigin(),
+                    variable.SourceLocation.AsOrigin(),
                     $"The variable '{variable.Name}' was not used within the target operation. " +
                     "All declared variables must be used at least once.");
 
@@ -203,7 +203,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                         context,
                         RuleNumber_583,
                         AnchorTag_583,
-                        variableUsage.Node.Location.AsOrigin(),
+                        variableUsage.SourceLocation.AsOrigin(),
                         $"The variable named '${variableName}' is not declared for the " +
                         $"operation '{variables.Operation.Name}'.");
 
@@ -344,7 +344,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                        context,
                        RuleNumber_585,
                        AnchorTag_585,
-                       variableUsage.Node.Location.AsOrigin(),
+                       variableUsage.SourceLocation.AsOrigin(),
                        $"Unsupported Variable Usage. Variable '{variable.Name}' used at " +
                        $"the target location is not supported.");
 
@@ -376,7 +376,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
                     context,
                     RuleNumber_585,
                     AnchorTag_585,
-                    variableUsage.Node.Location.AsOrigin(),
+                    variableUsage.SourceLocation.AsOrigin(),
                     "Invalid Variable Usage. The type expression for the variable used at " +
                     $"'{argName}' could not be successfully coerced to the required type. " +
                     $"Expected '{originalLocationType}' but got '{variableType}'.");

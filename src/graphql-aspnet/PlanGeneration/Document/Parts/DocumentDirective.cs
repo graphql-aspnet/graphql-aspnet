@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public DocumentDirective(IDocumentPart parentPart, DirectiveNode node)
             : base(parentPart, node)
         {
-            this.Location = parentPart.Node.AsDirectiveLocation();
+            this.Location = parentPart.AsDirectiveLocation();
             this.DirectiveName = node.DirectiveName.ToString();
 
             _arguments = new DocumentInputArgumentCollection(this);

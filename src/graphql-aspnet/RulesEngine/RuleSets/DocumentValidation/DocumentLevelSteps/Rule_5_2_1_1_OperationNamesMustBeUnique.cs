@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSt
                     {
                         this.ValidationError(
                             context,
-                            operation.Node,
+                            operation.SourceLocation,
                             $"Duplicate Operation Name. The operation named '{operationName}' must be unique " +
                             "in this document. Ensure that each query has a unique name (case-sensitive).");
 

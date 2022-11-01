@@ -137,7 +137,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var complexValue = arg1.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(complexValue);
-            Assert.IsTrue(complexValue.Node is ComplexValueNode);
             Assert.AreEqual(3, complexValue.Fields.Count);
 
             Assert.AreEqual(graphArg, complexValue.Parent.GraphType);
@@ -193,7 +192,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1Value = arg1.Value as IComplexSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
-            Assert.IsTrue(arg1Value.Node is ComplexValueNode);
             Assert.AreEqual(3, arg1Value.Fields.Count);
 
             Assert.AreEqual(userHomeGraphType, arg1Value.Parent.GraphType);
@@ -259,7 +257,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
-            Assert.IsTrue(arg1Value.Node is ListValueNode);
             Assert.AreEqual(4, arg1Value.ListItems.Count);
 
             Assert.IsTrue(arg1Value.ListItems[0] is IScalarSuppliedValue scalar && scalar.Value.ToString() == "5");
@@ -298,7 +295,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
-            Assert.IsTrue(arg1Value.Node is ListValueNode);
             Assert.AreEqual(3, arg1Value.ListItems.Count);
 
             var listItem1 = arg1Value.ListItems[0] as IListSuppliedValueDocumentPart;
@@ -353,7 +349,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
-            Assert.IsTrue(arg1Value.Node is ListValueNode);
             Assert.AreEqual(2, arg1Value.ListItems.Count);
 
             var user1 = arg1Value.ListItems[0] as IComplexSuppliedValueDocumentPart;
@@ -396,7 +391,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1Value = arg1.Value as IVariableUsageDocumentPart;
             Assert.IsNotNull(arg1Value);
-            Assert.IsTrue(arg1Value.Node is VariableValueNode);
             Assert.AreEqual("var1", arg1Value.VariableName.ToString());
         }
 
@@ -427,7 +421,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg1Value = arg1.Value as IListSuppliedValueDocumentPart;
             Assert.IsNotNull(arg1Value);
-            Assert.IsTrue(arg1Value.Node is ListValueNode);
             Assert.AreEqual(2, arg1Value.ListItems.Count);
 
             var listItem1 = arg1Value.ListItems[0] as IListSuppliedValueDocumentPart;

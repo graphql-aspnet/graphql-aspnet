@@ -167,7 +167,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
 
                 throw new GraphExecutionException(
                     failureMessage,
-                    targetDocumentPart.Node.Location.AsOrigin());
+                    targetDocumentPart.SourceLocation.AsOrigin());
             }
 
             var inputArgs = this.GatherInputArguments(
@@ -180,7 +180,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             var invocationContext = new DirectiveInvocationContext(
                 targetDirective,
                 directiveDocumentPart.Location,
-                targetDocumentPart.Node.Location.AsOrigin(),
+                targetDocumentPart.SourceLocation.AsOrigin(),
                 inputArgs);
 
             var request = new GraphDirectiveRequest(
@@ -223,7 +223,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     $"The request was cancelled while applying the execution directive '{targetDirective.Name}' to the query document. " +
                     (causalException != null ? "See inner exception(s) for details." : string.Empty),
                     Constants.ErrorCodes.REQUEST_ABORTED,
-                    targetDocumentPart.Node.Location.AsOrigin(),
+                    targetDocumentPart.SourceLocation.AsOrigin(),
                     exceptionThrown: causalException);
 
                 queryContext.Cancel();

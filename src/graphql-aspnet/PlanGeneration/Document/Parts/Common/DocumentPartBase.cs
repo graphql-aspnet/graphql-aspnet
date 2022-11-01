@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         protected DocumentPartBase(IDocumentPart parentPart, SyntaxNode node)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parentPart, nameof(Parent));
-            this.Node = Validation.ThrowIfNullOrReturn(node, nameof(node));
+            this.SourceLocation = Validation.ThrowIfNullOrReturn(node, nameof(node)).Location;
 
             this.Children = new DocumentPartsCollection(this);
             this.Attributes = new MetaDataCollection();
@@ -100,7 +100,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         }
 
         /// <inheritdoc />
-        public SyntaxNode Node { get; }
+        public SourceLocation SourceLocation { get; }
 
         /// <inheritdoc />
         public MetaDataCollection Attributes { get; }

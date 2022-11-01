@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                 SourceOrigin origin = null;
                 if (resolvableItem is IDocumentPart docPart)
                 {
-                    origin = docPart.Node.Location.AsOrigin();
+                    origin = docPart.SourceLocation.AsOrigin();
                 }
 
                 throw new GraphExecutionException(
@@ -131,7 +131,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                         SourceOrigin origin = null;
                         if (resolvableItem is IDocumentPart docPart)
                         {
-                            origin = docPart.Node.Location.AsOrigin();
+                            origin = docPart.SourceLocation.AsOrigin();
                         }
 
                         throw new GraphExecutionException(
@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                     SourceOrigin origin = null;
                     if (resolvableItem is IDocumentPart docPart)
                     {
-                        origin = docPart.Node.Location.AsOrigin();
+                        origin = docPart.SourceLocation.AsOrigin();
                     }
 
                     throw new GraphExecutionException(

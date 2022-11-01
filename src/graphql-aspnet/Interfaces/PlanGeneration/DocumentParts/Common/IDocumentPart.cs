@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.PlanGeneration.Document;
 
     /// <summary>
@@ -54,11 +55,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
         /// <value>The parent.</value>
         IDocumentPart Parent { get; }
 
-        /// <summary>
-        /// Gets the syntax node which prompted the creation of this document part.
-        /// </summary>
-        /// <value>The node.</value>
-        SyntaxNode Node { get; }
+        SourceLocation SourceLocation { get; }
 
         /// <summary>
         /// Gets human friendly path that notes where in the document this part exists.

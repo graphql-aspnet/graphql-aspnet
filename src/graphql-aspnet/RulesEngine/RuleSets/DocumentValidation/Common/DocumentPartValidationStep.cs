@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common
 {
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.RulesEngine.Interfaces;
@@ -26,7 +27,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common
         /// <param name="message">The error message.</param>
         protected virtual void ValidationError(DocumentValidationContext context, string message)
         {
-            this.ValidationError(context, context.ActivePart.Node, message);
+            this.ValidationError(context, context.ActivePart.SourceLocation, message);
         }
 
         /// <summary>
@@ -37,12 +38,12 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common
         /// <param name="node">A custom node to use to indicate the area in the source document
         /// the error occured.</param>
         /// <param name="message">The error message.</param>
-        protected virtual void ValidationError(DocumentValidationContext context, SyntaxNode node, string message)
+        protected virtual void ValidationError(DocumentValidationContext context, SourceLocation sourceLocation, string message)
         {
             context.Messages.Critical(
                 message,
                 this.ErrorCode,
-                node.Location.AsOrigin());
+                sourceLocation.AsOrigin());
         }
 
         /// <inheritdoc />

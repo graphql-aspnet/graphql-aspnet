@@ -31,9 +31,9 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             : base(LogEventIds.ExecutionDirectiveApplied)
         {
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
-            this.SourceLine = appliedTo?.Node.Location.LineNumber ?? 0;
-            this.SourceLineIndex = appliedTo?.Node.Location.LineIndex ?? 0;
-            this.DirectiveLocation = appliedTo?.Node?.AsDirectiveLocation().ToString() ?? "-unknown-";
+            this.SourceLine = appliedTo?.SourceLocation.LineNumber ?? 0;
+            this.SourceLineIndex = appliedTo?.SourceLocation.LineIndex ?? 0;
+            this.DirectiveLocation = appliedTo?.AsDirectiveLocation().ToString() ?? "-unknown-";
             this.DirectiveName = directiveApplied?.Name;
             this.DirectiveInternalName = directiveApplied?.InternalName;
         }

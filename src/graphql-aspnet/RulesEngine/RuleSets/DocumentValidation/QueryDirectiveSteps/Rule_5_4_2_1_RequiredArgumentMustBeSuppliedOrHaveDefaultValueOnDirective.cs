@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryDirectiveS
                     {
                         this.ValidationError(
                             context,
-                            docPart.Node,
+                            docPart.SourceLocation,
                             $"Missing Input Argument. The directive '{docPart.DirectiveName}' requires an input argument named '{argument.Name}'");
                         directiveIsValid = false;
                     }

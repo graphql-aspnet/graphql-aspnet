@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryDirectiveS
             {
                 this.ValidationError(
                     context,
-                    docPart.Node,
+                    docPart.SourceLocation,
                     $"The directive '{docPart.DirectiveName}' is already defined in this location in the query document. " +
                     $"Non-repeatable directives must be unique per instantiated location (e.g. once per field, once per input argument etc.).");
 

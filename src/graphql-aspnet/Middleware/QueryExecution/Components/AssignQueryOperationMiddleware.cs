@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                             $"Undeclared operation. An operation with the name '{operationToExecute}' was not " +
                             "found on the query document.",
                             Constants.ErrorCodes.BAD_REQUEST,
-                            context.QueryDocument.Node.Location.AsOrigin());
+                            context.QueryDocument.SourceLocation.AsOrigin());
                     }
                 }
             }

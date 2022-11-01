@@ -28,6 +28,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Logging.ExecutionEvents;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
@@ -530,21 +531,22 @@ namespace GraphQL.AspNet.Tests.Logging
             directive.Setup(x => x.Name).Returns("The Directive");
             directive.Setup(x => x.InternalName).Returns("The Directive Internal");
 
-            var item = new Mock<IDocumentPart>();
-            item.Setup(x => x.Node).Returns(
-                new FieldNode(
+            var docPart = new DocumentOperation(
+                new Mock<IDocumentPart>().Object,
+                new OperationNode(
                     new SourceLocation(999, 33, 5),
-                    "field".AsMemory(),
-                    "field".AsMemory()));
+                    "query".AsMemory(),
+                    string.Empty.AsMemory()),
+                GraphOperationType.Query);
 
             var path = new SchemaItemPath(GraphCollection.Types, "type1");
 
-            var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive.Object, item.Object);
+            var entry = new ExecutionDirectiveAppliedLogEntry<GraphSchema>(directive.Object, docPart);
 
             Assert.AreEqual(LogEventIds.ExecutionDirectiveApplied.Id, entry.EventId);
             Assert.AreEqual(directive.Object.Name, entry.DirectiveName);
             Assert.AreEqual(directive.Object.InternalName, entry.DirectiveInternalName);
-            Assert.AreEqual(DirectiveLocation.FIELD.ToString(), entry.DirectiveLocation);
+            Assert.AreEqual(DirectiveLocation.QUERY.ToString(), entry.DirectiveLocation);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
             Assert.AreEqual(33, entry.SourceLine);
             Assert.AreEqual(5, entry.SourceLineIndex);

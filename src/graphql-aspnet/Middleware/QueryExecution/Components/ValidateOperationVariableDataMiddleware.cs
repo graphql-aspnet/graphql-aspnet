@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                              "The resolved variable value of <null> is not valid for non-nullable variable " +
                              $"'{resolvedVariable.Name}'",
                              Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
-                             context.Operation.Node.Location.AsOrigin());
+                             context.Operation.SourceLocation.AsOrigin());
                     }
                 }
             }
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 context.Messages.Critical(
                    svce.Message,
                    Constants.ErrorCodes.INVALID_VARIABLE_VALUE,
-                   context.Operation.Node.Location.AsOrigin(),
+                   context.Operation.SourceLocation.AsOrigin(),
                    exceptionThrown: svce.InnerException);
             }
         }

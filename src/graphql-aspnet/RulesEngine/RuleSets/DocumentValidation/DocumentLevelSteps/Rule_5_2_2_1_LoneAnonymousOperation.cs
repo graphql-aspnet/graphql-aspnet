@@ -40,10 +40,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.DocumentLevelSt
 
             if (anonymousOperations.Count >= 1 && allFoundOperations.Count > 1)
             {
-                var node = anonymousOperations.Count > 1 ? anonymousOperations[1].Node : anonymousOperations[0].Node;
+                var location = anonymousOperations.Count > 1 ? anonymousOperations[1].SourceLocation : anonymousOperations[0].SourceLocation;
                 this.ValidationError(
                     context,
-                    node,
+                    location,
                     "A query document may declare an anonymous operation only if it exists by itself in a document. This document " +
                     $"contains {document.Operations.Count} total operation(s). Remove the other operations or " +
                     "provide a name for every operation.");

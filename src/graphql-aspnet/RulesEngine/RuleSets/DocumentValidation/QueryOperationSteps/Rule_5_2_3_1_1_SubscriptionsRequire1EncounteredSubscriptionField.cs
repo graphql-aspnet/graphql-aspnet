@@ -122,7 +122,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
 
             this.ValidationError(
                 context,
-                operation.Node,
+                operation.SourceLocation,
                 "Invalid Subscription. Expected exactly 1 root, non-virtual " +
                 $"child field at {fieldCollection?.Path.DotString() ?? "-null-"}.");
             return false;

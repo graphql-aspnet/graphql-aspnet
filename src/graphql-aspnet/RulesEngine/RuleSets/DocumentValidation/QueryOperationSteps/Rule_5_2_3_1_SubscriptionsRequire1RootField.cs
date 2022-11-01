@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryOperationS
             {
                 this.ValidationError(
                     context,
-                    operation.Node,
+                    operation.SourceLocation,
                     $"Invalid Subscription. Expected exactly 1 root child field, " +
                     $"recieved {fieldCollection?.Children.Count ?? 0} child fields.");
                 return false;

@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// selection set.
     /// </summary>
     [DebuggerDisplay("Inline Fragment. Target Type: {GraphType?.Name}")]
-    internal class DocumentInlineFragment : DocumentFragmentBase<InlineFragmentNode>, IInlineFragmentDocumentPart
+    internal class DocumentInlineFragment : DocumentFragmentBase, IInlineFragmentDocumentPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentInlineFragment"/> class.
