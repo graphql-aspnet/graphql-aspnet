@@ -41,7 +41,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentConstruction.Steps
                     keyValue = null;
             }
 
-            var suppliedValue = DocumentSuppliedValueFactory.CreateInputValue(context.ParentPart, node, keyValue);
+            var suppliedValue = DocumentSuppliedValueFactory.CreateInputValue(
+                context.ParentPart,
+                node,
+                keyValue);
 
             // the graph type of the supplied value is that of its owning argument
             suppliedValue.AssignGraphType(context.ParentPart.GraphType);

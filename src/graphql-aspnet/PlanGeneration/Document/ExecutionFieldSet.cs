@@ -36,12 +36,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         }
 
         /// <inheritdoc />
-        public IEnumerable<IFieldDocumentPart> FilterByAlias(ReadOnlyMemory<char> alias)
+        public IEnumerable<IFieldDocumentPart> FilterByAlias(string alias)
         {
             var enumerator = new ExecutableFieldSetEnumerator(this.Owner);
             while (enumerator.MoveNext())
             {
-                if (enumerator.Current.Alias.Span.SequenceEqual(alias.Span))
+                if (enumerator.Current.Alias == alias)
                     yield return enumerator.Current;
             }
         }

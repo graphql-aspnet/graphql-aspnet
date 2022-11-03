@@ -20,7 +20,6 @@ namespace GraphQL.AspNet.RulesEngine
     /// </summary>
     /// <typeparam name="TContext">The type of the context being processed by this rule set.</typeparam>
     internal abstract class RuleProcessor<TContext>
-        where TContext : IContextGenerator<TContext>
     {
         private readonly int _maxDepth;
         private readonly IRulePackage<TContext> _rulePackage;
@@ -123,8 +122,11 @@ namespace GraphQL.AspNet.RulesEngine
         private bool ProcessChildContexts(TContext parentContext, int parentDepth)
         {
             var completedAllSteps = true;
-            foreach (var childContext in parentContext.CreateChildContexts())
-                completedAllSteps = this.ProcessContext(childContext, parentDepth + 1) && completedAllSteps;
+            if (parentContext is IContextGenerator<TContext> childGenerator)
+            {
+                foreach (var childContext in childGenerator.CreateChildContexts())
+                    completedAllSteps = this.ProcessContext(childContext, parentDepth + 1) && completedAllSteps;
+            }
 
             return completedAllSteps;
         }

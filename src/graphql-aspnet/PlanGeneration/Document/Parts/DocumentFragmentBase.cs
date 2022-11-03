@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -29,6 +30,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <param name="fragmentNode">The inline fragment node.</param>
         public DocumentFragmentBase(IDocumentPart parentPart, SyntaxNode fragmentNode)
             : base(parentPart, fragmentNode)
+        {
+            _directives = new DocumentDirectiveCollection(this);
+        }
+
+        public DocumentFragmentBase(IDocumentPart parentPart, SourceLocation sourceLocation)
+            : base(parentPart, sourceLocation)
         {
             _directives = new DocumentDirectiveCollection(this);
         }

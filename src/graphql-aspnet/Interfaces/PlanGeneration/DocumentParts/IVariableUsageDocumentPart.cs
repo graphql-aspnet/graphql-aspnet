@@ -22,6 +22,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Gets the name of the variable this instance references.
         /// </summary>
         /// <value>The name of the variable.</value>
-        ReadOnlyMemory<char> VariableName { get; }
+        string VariableName { get; }
     }
 }

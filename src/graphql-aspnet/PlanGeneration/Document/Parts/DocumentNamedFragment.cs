@@ -44,6 +44,22 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _allDirectives = new List<IDirectiveDocumentPart>();
         }
 
+        public DocumentNamedFragment(
+            IDocumentPart ownerDocument,
+            string fragmentName,
+            string targetGraphTypeName,
+            SourceLocation location)
+            : base(ownerDocument, location)
+        {
+            this.Name = fragmentName;
+            this.TargetGraphTypeName = targetGraphTypeName;
+
+            _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
+            _variableUsages = new DocumentVariableUsageCollection(this);
+            _allDirectives = new List<IDirectiveDocumentPart>();
+
+        }
+
         /// <inheritdoc />
         protected override SourcePath CreatePath(SourcePath path)
         {

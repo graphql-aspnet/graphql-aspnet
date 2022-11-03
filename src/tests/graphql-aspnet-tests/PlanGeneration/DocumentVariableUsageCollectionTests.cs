@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void OwnerIsReturnedCorrectly()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void Add_AddsItemToCollection()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void FindReferences_ByVariableName_ReturnsReferences()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void FindReferences_ByVariableNameForNoRefs_ReturnsEmptySet()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 
@@ -89,7 +89,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void FindReferences_ByVariableNameForNoName_ReturnsEmptySet()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 
@@ -107,7 +107,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void HasUsages_ByVariableName_ReturnsTrueWhenFound()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 
@@ -124,7 +124,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void HasUsages_ByVariableName_ReturnsFalseWhenNotFound()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 
@@ -141,7 +141,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void HasUsages_ByVariableName_ForNoName_ReturnsFalseWhenNotFound()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IReferenceDocumentPart>();
 

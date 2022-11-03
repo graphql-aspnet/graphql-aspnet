@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
-    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.Exceptions;
@@ -41,7 +40,18 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             FragmentSpreadNode node)
             : base(parentPart, node)
         {
-            this.FragmentName = node.PointsToFragmentName;
+            this.FragmentName = node.PointsToFragmentName.ToString();
+            _directives = new DocumentDirectiveCollection(this);
+            this.IsIncluded = true;
+        }
+
+        public DocumentFragmentSpread(
+            IDocumentPart parentPart,
+            string pointsToFragmentName,
+            SourceLocation location)
+            : base(parentPart, location)
+        {
+            this.FragmentName = pointsToFragmentName;
             _directives = new DocumentDirectiveCollection(this);
             this.IsIncluded = true;
         }
@@ -80,7 +90,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public ReadOnlyMemory<char> FragmentName { get; }
+        public string FragmentName { get; }
 
         /// <inheritdoc />
         public override DocumentPartType PartType => DocumentPartType.FragmentSpread;

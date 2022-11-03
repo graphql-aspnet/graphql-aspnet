@@ -25,14 +25,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
     internal class Rule_5_3_3_A_LeafFieldMustNotHaveChildFields
         : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
-        /// <inheritdoc />
-        public override bool ShouldExecute(DocumentValidationContext context)
-        {
-            return base.ShouldExecute(context) && ((IFieldDocumentPart)context.ActivePart)
-                       .Name
-                       .Span
-                       .SequenceNotEqual(Constants.ReservedNames.TYPENAME_FIELD.AsSpan());
-        }
 
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
@@ -45,7 +37,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             {
                 this.ValidationError(
                     context,
-                    $"The graph type '{field.GraphType.Name}' is of kind '{field.GraphType.Kind.ToString()}'. A returned fieldset cannot be declared " +
+                    $"The graph type '{field.GraphType.Name}' is of kind '{field.GraphType.Kind}'. A returned fieldset cannot be declared " +
                     "against it.");
 
                 return false;

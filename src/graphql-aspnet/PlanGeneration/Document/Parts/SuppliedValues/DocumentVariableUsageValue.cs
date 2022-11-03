@@ -11,6 +11,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using System.Diagnostics;
+    using System.Xml.Linq;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
@@ -30,7 +32,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentVariableUsageValue(IDocumentPart parentPart, VariableValueNode node, string key = null)
             : base(parentPart, node, key)
         {
-            this.VariableName = node.Value;
+            this.VariableName = node.Value.ToString();
+        }
+
+        public DocumentVariableUsageValue(IDocumentPart parentPart, string variableName, SourceLocation location, string key = null)
+            : base(parentPart, location, key)
+        {
+            this.VariableName = variableName;
         }
 
         /// <inheritdoc />
@@ -40,11 +48,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                 return false;
 
             var otherVar = value as IVariableUsageDocumentPart;
-            return this.VariableName.Span.SequenceEqual(otherVar.VariableName.Span);
+            return this.VariableName == otherVar.VariableName;
         }
 
         /// <inheritdoc />
-        public ReadOnlyMemory<char> VariableName { get; }
+        public string VariableName { get; }
 
         /// <inheritdoc />
         public string PointsTo => this.VariableName.ToString();

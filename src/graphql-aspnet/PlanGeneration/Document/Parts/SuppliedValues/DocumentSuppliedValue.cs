@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -30,6 +31,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
         protected DocumentSuppliedValue(IDocumentPart parentPart, SyntaxNode node, string key = null)
             : base(parentPart, node)
+        {
+            this.Key = key?.Trim();
+        }
+
+        protected DocumentSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
+            : base(parentPart, location)
         {
             this.Key = key?.Trim();
         }

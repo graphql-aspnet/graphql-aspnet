@@ -43,8 +43,28 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             IGraphType fieldGraphType)
             : base(parentPart, node)
         {
-            this.Name = node.FieldName;
-            this.Alias = node.FieldAlias;
+            this.Name = node.FieldName.ToString();
+            this.Alias = node.FieldAlias.ToString();
+
+            this.AssignGraphType(fieldGraphType);
+            this.Field = field;
+
+            _directives = new DocumentDirectiveCollection(this);
+            _arguments = new DocumentInputArgumentCollection(this);
+            this.IsIncluded = true;
+        }
+
+        protected DocumentFieldBase(
+            IDocumentPart parentPart,
+            IGraphField field,
+            IGraphType fieldGraphType,
+            SourceLocation location,
+            string alias)
+            : base(parentPart, location)
+        {
+
+            this.Name = field?.Name;
+            this.Alias = alias;
 
             this.AssignGraphType(fieldGraphType);
             this.Field = field;
@@ -104,10 +124,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IGraphField Field { get; set; }
 
         /// <inheritdoc cref="IFieldDocumentPart.Name" />
-        public ReadOnlyMemory<char> Name { get; }
+        public string Name { get; }
 
         /// <inheritdoc cref="IFieldDocumentPart.Alias" />
-        public ReadOnlyMemory<char> Alias { get; }
+        public string Alias { get; }
 
         /// <inheritdoc cref="IFieldDocumentPart.FieldSelectionSet" />
         public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }

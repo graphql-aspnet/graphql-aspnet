@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
+    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
@@ -37,6 +38,25 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             this.Location = parentPart.AsDirectiveLocation();
             this.DirectiveName = node.DirectiveName.ToString();
+
+            _arguments = new DocumentInputArgumentCollection(this);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentDirective"/> class.
+        /// </summary>
+        /// <param name="parentPart">The parent part that owns this directive.</param>
+        /// <param name="directiveName">Name of the directive.</param>
+        /// <param name="location">The location in the source query where
+        /// this directive was declared.</param>
+        public DocumentDirective(
+            IDocumentPart parentPart,
+            ReadOnlySpan<char> directiveName,
+            SourceLocation location)
+            : base(parentPart, location)
+        {
+            this.Location = parentPart.AsDirectiveLocation();
+            this.DirectiveName = directiveName.ToString();
 
             _arguments = new DocumentInputArgumentCollection(this);
         }

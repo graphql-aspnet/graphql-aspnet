@@ -11,6 +11,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using System.Diagnostics;
+    using System.Xml.Linq;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -32,7 +34,19 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             : base(parentPart, node, key)
         {
             this.ValueType = node.ValueType;
-            this.Value = node.Value;
+            this.Value = node.Value.ToString();
+        }
+
+        public DocumentScalarSuppliedValue(
+            IDocumentPart parentPart,
+            string scalarValue,
+            ScalarValueType valueType,
+            SourceLocation location,
+            string key = null)
+            : base(parentPart, location, key)
+        {
+            this.ValueType = valueType;
+            this.Value = scalarValue;
         }
 
         /// <summary>
@@ -45,7 +59,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentScalarSuppliedValue(IDocumentPart parentPart, string value, ScalarValueType valueType, string key = null)
              : base(parentPart, EmptyNode.Instance, key)
         {
-            this.Value = value?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+            this.Value = value ?? string.Empty;
             this.ValueType = valueType;
         }
 
@@ -56,17 +70,17 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                 return false;
 
             var otherValue = value as IScalarSuppliedValue;
-            return this.Value.Span.SequenceEqual(otherValue.Value.Span);
+            return this.Value == otherValue.Value;
         }
 
         /// <inheritdoc />
         public ScalarValueType ValueType { get; }
 
         /// <inheritdoc />
-        public ReadOnlyMemory<char> Value { get; }
+        public string Value { get; }
 
         /// <inheritdoc />
-        public ReadOnlySpan<char> ResolvableValue => this.Value.Span;
+        public ReadOnlySpan<char> ResolvableValue => this.Value.AsSpan();
 
         /// <inheritdoc />
         public override string Description => "SCALAR: " + this.Value.ToString();

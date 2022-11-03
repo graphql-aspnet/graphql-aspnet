@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -31,6 +32,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <param name="fieldGraphType">The graph type for data returned from the field.</param>
         public DocumentFieldTypeName(IDocumentPart parentPart, FieldNode node, IGraphField field, IGraphType fieldGraphType)
             : base(parentPart, node, field, fieldGraphType)
+        {
+        }
+
+        public DocumentFieldTypeName(
+            IDocumentPart parentPart,
+            IGraphField field,
+            IGraphType fieldGraphType,
+            SourceLocation location,
+            string alias)
+            : base(parentPart, field, fieldGraphType, location, alias)
         {
         }
 

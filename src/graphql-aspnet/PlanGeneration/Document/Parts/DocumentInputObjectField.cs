@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -38,6 +39,17 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             : base(parentPart, node)
         {
             this.Name = node.InputName.ToString();
+            this.Field = field;
+        }
+
+        public DocumentInputObjectField(
+        IDocumentPart parentPart,
+        string suppliedName,
+        IInputGraphField field,
+        SourceLocation location)
+        : base(parentPart, location)
+        {
+            this.Name = suppliedName;
             this.Field = field;
         }
 

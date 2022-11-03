@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <param name="alias">The alias to search for.</param>
         /// <returns>IReadOnlyList&lt;IFieldDocumentPart&gt;.</returns>
-        IEnumerable<IFieldDocumentPart> FilterByAlias(ReadOnlyMemory<char> alias);
+        IEnumerable<IFieldDocumentPart> FilterByAlias(string alias);
 
         /// <summary>
         /// Gets the subset of executable fields that are marked as being included

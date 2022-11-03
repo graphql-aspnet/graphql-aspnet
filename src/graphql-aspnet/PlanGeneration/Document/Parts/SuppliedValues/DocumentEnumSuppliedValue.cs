@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
@@ -30,7 +31,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentEnumSuppliedValue(IDocumentPart parentPart, EnumValueNode node, string key = null)
             : base(parentPart, node, key)
         {
-            this.Value = node.Value;
+            this.Value = node.Value.ToString();
+        }
+
+        public DocumentEnumSuppliedValue(IDocumentPart parentPart, string enumValue, SourceLocation location, string key = null)
+            : base(parentPart, location, key)
+        {
+            this.Value = enumValue;
         }
 
         /// <inheritdoc />
@@ -39,14 +46,14 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             if (value == null || !(value is IEnumSuppliedValueDocumentPart))
                 return false;
 
-            return this.Value.Span.SequenceEqual(((IEnumSuppliedValueDocumentPart)value).Value.Span);
+            return this.Value == ((IEnumSuppliedValueDocumentPart)value).Value;
         }
 
         /// <inheritdoc />
-        public ReadOnlyMemory<char> Value { get; }
+        public string Value { get; }
 
         /// <inheritdoc />
-        public ReadOnlySpan<char> ResolvableValue => this.Value.Span;
+        public ReadOnlySpan<char> ResolvableValue => this.Value.AsSpan();
 
         /// <inheritdoc />
         public override string Description => $"EnumValue: {this.Value}";

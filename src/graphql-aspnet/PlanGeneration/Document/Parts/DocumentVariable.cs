@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using System;
     using System.Diagnostics;
     using System.Linq;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
@@ -37,6 +38,23 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         {
             this.Name = node.Name.ToString();
             this.TypeExpression = GraphTypeExpression.FromDeclaration(node.TypeExpression.Span);
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentVariable" /> class.
+        /// </summary>
+        /// <param name="parentPart">The part, typically an operation, that owns this variable declaration.</param>
+        /// <param name="node">The AST node from which this instance is created.</param>
+        public DocumentVariable(
+            IDocumentPart parentPart,
+            string variableName,
+            GraphTypeExpression typeExpression,
+            SourceLocation location)
+            : base(parentPart, location)
+        {
+            this.Name = variableName;
+            this.TypeExpression = typeExpression;
         }
 
         /// <inheritdoc />

@@ -267,8 +267,8 @@ namespace GraphQL.AspNet.Tests.Framework
             parentContext.Setup(x => x.IsValid).Returns(() => messages.IsSucessful);
             parentContext.Setup(x => x.Session).Returns(new QuerySession());
 
-            fieldDocumentPart.Setup(x => x.Name).Returns(field.Name.AsMemory());
-            fieldDocumentPart.Setup(x => x.Alias).Returns(field.Name.AsMemory());
+            fieldDocumentPart.Setup(x => x.Name).Returns(field.Name);
+            fieldDocumentPart.Setup(x => x.Alias).Returns(field.Name);
             fieldDocumentPart.Setup(x => x.Field).Returns(field);
 
             fieldInvocationContext.Setup(x => x.ExpectedSourceType).Returns(typeof(TType));

@@ -21,6 +21,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Gets the value literal of the data passed to the input value.
         /// </summary>
         /// <value>The value.</value>
-        ReadOnlyMemory<char> Value { get; }
+        string Value { get; }
     }
 }

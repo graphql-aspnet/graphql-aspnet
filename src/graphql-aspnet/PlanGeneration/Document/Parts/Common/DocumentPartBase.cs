@@ -9,16 +9,15 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
-    using GraphQL.AspNet.Schemas.Structural;
 
     /// <summary>
     /// A base class with common functionality of all <see cref="IDocumentPart" />
@@ -31,12 +30,23 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentPartBase" /> class.
         /// </summary>
-        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
+        /// <param name="parentPart">The parent document part that owns this instance.</param>
         /// <param name="node">The AST node from which this part was created.</param>
         protected DocumentPartBase(IDocumentPart parentPart, SyntaxNode node)
+            : this(parentPart, node.Location)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentPartBase"/> class.
+        /// </summary>
+        /// <param name="parentPart">The parent document part that owns this instance.</param>
+        /// <param name="sourceLocation">The location where this document part
+        /// originated in the query.</param>
+        protected DocumentPartBase(IDocumentPart parentPart, SourceLocation sourceLocation)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parentPart, nameof(Parent));
-            this.SourceLocation = Validation.ThrowIfNullOrReturn(node, nameof(node)).Location;
+            this.SourceLocation = sourceLocation;
 
             this.Children = new DocumentPartsCollection(this);
             this.Attributes = new MetaDataCollection();

@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Gets the name of the fragment this instance is spreading.
         /// </summary>
         /// <value>The name of the fragment.</value>
-        ReadOnlyMemory<char> FragmentName { get; }
+        string FragmentName { get; }
 
         /// <summary>
         /// Gets a reference to the named fragment in the document this instance is targeting,

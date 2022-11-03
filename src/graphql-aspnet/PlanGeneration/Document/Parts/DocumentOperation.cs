@@ -11,6 +11,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Xml.Linq;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
@@ -56,6 +58,27 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
             _allDirectives = new List<IDirectiveDocumentPart>();
             _allSecuredDocParts = new List<ISecureDocumentPart>();
+        }
+
+        public DocumentOperation(
+           IDocumentPart parentPart,
+           string operationTypeName,
+           GraphOperationType operationType,
+           SourceLocation location,
+           string operationName = "")
+       : base(parentPart, location)
+        {
+            this.OperationType = operationType;
+            this.Name = operationName?.Trim() ?? string.Empty;
+            this.OperationTypeName = operationTypeName;
+
+            _variableCollection = new DocumentVariableCollection(this);
+            _variableUsages = new DocumentVariableUsageCollection(this);
+            _directives = new DocumentDirectiveCollection(this);
+            _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
+            _allDirectives = new List<IDirectiveDocumentPart>();
+            _allSecuredDocParts = new List<ISecureDocumentPart>();
+
         }
 
         /// <inheritdoc />

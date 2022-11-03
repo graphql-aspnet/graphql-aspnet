@@ -29,10 +29,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) && ((IFieldDocumentPart)context.ActivePart)
-                       .Name
-                       .Span
-                       .SequenceNotEqual(Constants.ReservedNames.TYPENAME_FIELD.AsSpan());
+            return base.ShouldExecute(context)
+                && ((IFieldDocumentPart)context.ActivePart).Name != Constants.ReservedNames.TYPENAME_FIELD;
         }
 
         /// <inheritdoc />
@@ -43,7 +41,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
 
             // this rule will execute against every field in a selection
             // we don't need to validate it more than once if there are mergable fields found
-            var key = $"Rule_5_3_2|{selectionSet.Path.DotString()}|alias:{docPart.Alias.ToString()}";
+            var key = $"Rule_5_3_2|{selectionSet.Path.DotString()}|alias:{docPart.Alias}";
             if (context.GlobalKeys.ContainsKey(key))
                 return true;
 
@@ -97,7 +95,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             // one field could be referencing through an interface
             // and another through a concrete type so we cant check the IGraphField references.
             // Instead check to ensure the method invocation signatures are the same (field name, input args and return type).
-            if (!MemoryOfCharComparer.Instance.Equals(rightField.Name, leftField.Name))
+            if (rightField.Name != leftField.Name)
                 return false;
 
             if (leftField.GraphType != rightField.GraphType)

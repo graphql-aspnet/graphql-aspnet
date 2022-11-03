@@ -28,10 +28,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            return base.ShouldExecute(context) && ((IFieldDocumentPart)context.ActivePart)
-                       .Name
-                       .Span
-                       .SequenceNotEqual(Constants.ReservedNames.TYPENAME_FIELD.AsSpan());
+            if (!base.ShouldExecute(context))
+                return false;
+
+            return ((IFieldDocumentPart)context.ActivePart).Name != Constants.ReservedNames.TYPENAME_FIELD;
         }
 
         /// <inheritdoc />

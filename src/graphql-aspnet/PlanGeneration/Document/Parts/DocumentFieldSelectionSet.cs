@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        public IEnumerable<IFieldDocumentPart> FindFieldsOfAlias(ReadOnlyMemory<char> alias)
+        public IEnumerable<IFieldDocumentPart> FindFieldsOfAlias(string alias)
         {
             return this.ExecutableFields.FilterByAlias(alias);
         }

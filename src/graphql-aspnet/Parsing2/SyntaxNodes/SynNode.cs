@@ -21,6 +21,8 @@ namespace GraphQL.AspNet.Parsing2
     public readonly struct SynNode : IEquatable<SynNode>
     {
 
+        public static SynNode None { get; } = new SynNode(SynNodeType.Empty, SourceLocation.None);
+
         [DebuggerStepperBoundary]
         public SynNode(
             SynNodeType nodeType,

@@ -33,14 +33,14 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// Gets the name of the field requested, as it exists in the schema.
         /// </summary>
         /// <value>The parsed name from the queryt document.</value>
-        ReadOnlyMemory<char> Name { get; }
+        string Name { get; }
 
         /// <summary>
         /// Gets the alias assigned to the field requested as it was defined in the user's query document.
         /// Defaults to <see cref="Name"/> if not supplied.
         /// </summary>
         /// <value>The parsed alias from the query document.</value>
-        ReadOnlyMemory<char> Alias { get; }
+        string Alias { get; }
 
         /// <summary>
         /// Gets the field reference pointed to by this instance as its declared in the schema.

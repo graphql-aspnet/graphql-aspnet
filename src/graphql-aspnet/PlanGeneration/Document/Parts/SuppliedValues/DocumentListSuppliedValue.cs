@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
@@ -35,6 +36,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
         public DocumentListSuppliedValue(IDocumentPart parentPart, SyntaxNode node, string key = null)
             : base(parentPart, node, key)
+        {
+            _listItems = new List<ISuppliedValueDocumentPart>();
+            this.DetermineListItemTypeExpression();
+        }
+
+        public DocumentListSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
+            : base(parentPart, location, key)
         {
             _listItems = new List<ISuppliedValueDocumentPart>();
             this.DetermineListItemTypeExpression();
