@@ -36,5 +36,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
         /// </summary>
         /// <param name="documentParts">The document parts to add.</param>
         void Add(IEnumerable<IDocumentPart> documentParts);
+
+        /// <summary>
+        /// Adds the document part to this collection. The part
+        /// must have a parent pointing to the owner of this collection.
+        /// </summary>
+        /// <param name="documentPart">The document part to add.</param>
+        void Add(IDocumentPart documentPart);
     }
 }

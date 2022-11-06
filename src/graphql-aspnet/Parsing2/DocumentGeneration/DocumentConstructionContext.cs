@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
     /// A context managing the translation of a <see cref="SynNode"/> to a properly structured
     /// <see cref="IDocumentPart"/> with a <see cref="IGraphQueryDocument"/>.
     /// </summary>
-    [DebuggerDisplay("Node Type: {ActiveNode.NodeName}")]
+    [DebuggerDisplay("Node Type: {ActiveNode.NodeType}")]
     internal readonly ref struct DocumentConstructionContext
     {
         /// <summary>
@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
             var newDepth = this.Depth;
             var newOperation = this.ActiveOperation;
 
-            this.ParentPart.Children.Add(this.ActivePart);
+            this.ParentPart.Children.Add(docPart);
 
             if (this.ActivePart is IFieldDocumentPart)
                 newDepth += 1;

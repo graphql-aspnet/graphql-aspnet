@@ -36,9 +36,9 @@ namespace GraphQL.AspNet.Parsing2
         /// its internal rule set.  If, during parsing, an error occurs or something about
         /// the supplied query text is incorrect or unexpected a <see cref="GraphQLSyntaxException" />.
         /// </summary>
-        /// <param name="queryText">The raw query text to be parsed.</param>
+        /// <param name="sourceText">The raw query text to be parsed.</param>
         /// <returns>The completed document.</returns>
-        public SynTree ParseQueryDocument(ReadOnlySpan<char> queryText)
+        public SynTree ParseQueryDocument(SourceText sourceText)
         {
             // if an exception occurs during parsing just let it bubble up
             // the owner of the parse request will handle it accordingly
@@ -63,9 +63,8 @@ namespace GraphQL.AspNet.Parsing2
             // 5) Single line comments have been parsed but the delimiters have not been removed
             //    5a) All comments start with '#' and are always only one line
             // ----------------------------------
-            var source = new SourceText(queryText);
 
-            var tokenStream = Lexer.Tokenize(source);
+            var tokenStream = Lexer.Tokenize(sourceText);
             tokenStream.Prime();
 
             // ----------------------------------

@@ -17,10 +17,9 @@ namespace GraphQL.AspNet.Parsing2
     /// A representing of a syntax node within a larger AST
     /// representing the query document.
     /// </summary>
-    [DebuggerDisplay("{PrimaryValue} ({Coordinates})")]
+    [DebuggerDisplay("{NodeType} ({Coordinates})")]
     public readonly struct SynNode : IEquatable<SynNode>
     {
-
         public static SynNode None { get; } = new SynNode(SynNodeType.Empty, SourceLocation.None);
 
         [DebuggerStepperBoundary]

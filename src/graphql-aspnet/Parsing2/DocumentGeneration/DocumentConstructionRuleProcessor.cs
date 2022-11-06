@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
         private readonly DocumentConstructionRulePackage _rulePackage;
 
         private readonly int _maxDepth;
-        private readonly bool _childrenFirst;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentConstructionRuleProcessor"/> class.
@@ -42,7 +41,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
         /// <returns><c>true</c> if the context, at all levels, completed all steps successfully, <c>false</c> otherwise.</returns>
         public bool Execute(ref DocumentConstructionContext initialContext)
         {
-            return this.ProcessContext(ref initialContext);
+            return this.ProcessContext(ref initialContext, 0);
         }
 
         /// <summary>
@@ -65,10 +64,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
             }
 
             var completedAllSteps = true;
-
-            if (_childrenFirst)
-                completedAllSteps = this.ProcessChildContexts(ref context, currentDepth);
-
             var allowChildrenToExecute = true;
             foreach (var step in _rulePackage.FetchRules(context.ActiveNode.NodeType))
             {
@@ -82,7 +77,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
                 allowChildrenToExecute = step.ShouldAllowChildContextsToExecute(context) && allowChildrenToExecute;
             }
 
-            if (!_childrenFirst && completedAllSteps && allowChildrenToExecute)
+            if (completedAllSteps && allowChildrenToExecute)
                 completedAllSteps = this.ProcessChildContexts(ref context, currentDepth);
 
 

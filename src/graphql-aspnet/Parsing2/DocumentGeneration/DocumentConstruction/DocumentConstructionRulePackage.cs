@@ -12,8 +12,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common;
-    using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A rule package containing rules for processing a nested hierarchy of syntax nodes.
@@ -27,7 +25,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
         public static DocumentConstructionRulePackage Instance { get; } = new DocumentConstructionRulePackage();
 
         private readonly IDictionary<SynNodeType, IList<BaseDocumentConstructionRuleStep>> _stepCollection;
-        private readonly IList<BaseDocumentConstructionRuleStep> _topLevelSteps;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentConstructionRulePackage" /> class.
@@ -35,7 +32,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
         private DocumentConstructionRulePackage()
         {
             _stepCollection = new Dictionary<SynNodeType, IList<BaseDocumentConstructionRuleStep>>();
-            _topLevelSteps = new List<BaseDocumentConstructionRuleStep>();
 
             // top level document
             this.BuildTopLevelDocumentSteps();
@@ -71,9 +67,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
                 return Enumerable.Empty<BaseDocumentConstructionRuleStep>();
 
             // append special rules for root nodes of a query document when encountered
-            return nodeType == SynNodeType.Document
-                ? _topLevelSteps.Concat(_stepCollection[nodeType])
-                : _stepCollection[nodeType];
+            return _stepCollection[nodeType];
         }
 
         private void BuildTopLevelDocumentSteps()
@@ -122,7 +116,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
             // special case for the '__typename' field on union graph types
             steps.Add(new FieldSelection_TypeNameMetaField_SpecialCase());
 
-            _stepCollection.Add(SynNodeType.FieldCollection, steps);
+            _stepCollection.Add(SynNodeType.Field, steps);
         }
 
         private void BuildDirectiveSteps()

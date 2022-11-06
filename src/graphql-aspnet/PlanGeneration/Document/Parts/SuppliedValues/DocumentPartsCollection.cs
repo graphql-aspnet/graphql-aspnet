@@ -56,29 +56,36 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             Validation.ThrowIfNull(documentParts, nameof(documentParts));
             foreach (var part in documentParts)
             {
-                if (part.Parent != this.Owner)
-                {
-                    throw new GraphExecutionException(
-                        $"Document construction halted. An attempt was made to add a document " +
-                        $"part to a collection owned by a different parent.");
-                }
-
-                var args = new DocumentPartBeforeAddEventArgs(part, 1);
-
-                if (args.AllowAdd)
-                {
-                    _allParts.Add(part);
-
-                    if (!_partsByType.ContainsKey(part.PartType))
-                        _partsByType.Add(part.PartType, new List<IDocumentPart>());
-
-                    _partsByType[part.PartType].Add(part);
-
-                    this.ChildPartAdded?.Invoke(this, new DocumentPartEventArgs(part, 1));
-                }
-
-                part.Children.ChildPartAdded += this.Decendent_PartAdded;
+                this.Add(part);
             }
+        }
+
+        public void Add(IDocumentPart documentPart)
+        {
+            var part = Validation.ThrowIfNullOrReturn(documentPart, nameof(documentPart));
+
+            if (part.Parent != this.Owner)
+            {
+                throw new GraphExecutionException(
+                    $"Document construction halted. An attempt was made to add a document " +
+                    $"part to a collection owned by a different parent.");
+            }
+
+            var args = new DocumentPartBeforeAddEventArgs(part, 1);
+
+            if (args.AllowAdd)
+            {
+                _allParts.Add(part);
+
+                if (!_partsByType.ContainsKey(part.PartType))
+                    _partsByType.Add(part.PartType, new List<IDocumentPart>());
+
+                _partsByType[part.PartType].Add(part);
+
+                this.ChildPartAdded?.Invoke(this, new DocumentPartEventArgs(part, 1));
+            }
+
+            part.Children.ChildPartAdded += this.Decendent_PartAdded;
         }
 
         private void Decendent_PartAdded(object sender, DocumentPartEventArgs eventArgs)

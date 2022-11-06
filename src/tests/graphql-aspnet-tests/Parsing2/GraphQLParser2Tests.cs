@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
     using System;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Parsing2.Exceptions;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
 
@@ -30,7 +31,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.Throws<GraphQLSyntaxException>(() =>
             {
                 var parser = new GraphQLParser2();
-                var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsSpan());
+                var sourceText = new SourceText(qualifiedQuery);
+                var syntaxTree = parser.ParseQueryDocument(sourceText);
             });
         }
 
@@ -40,7 +42,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var qualifiedQuery = "{}";
 
             var parser = new GraphQLParser2();
-            var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsSpan());
+            var sourceText = new SourceText(qualifiedQuery);
+            var syntaxTree = parser.ParseQueryDocument(sourceText);
 
             // RootNode | Operation -> Empty Field Set
             Assert.AreEqual(2, syntaxTree.BlockLength);
@@ -54,7 +57,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.Throws<GraphQLSyntaxException>(() =>
             {
                 var parser = new GraphQLParser2();
-                var syntaxTree = parser.ParseQueryDocument(text.AsSpan());
+                var sourceText = new SourceText(text);
+                var syntaxTree = parser.ParseQueryDocument(sourceText);
             });
         }
 
@@ -64,7 +68,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var qualifiedQuery = ResourceLoader.ReadAllLines("KitchenSink", "KitchenSink.graphql");
 
             var parser = new GraphQLParser2();
-            var syntaxTree = parser.ParseQueryDocument(qualifiedQuery.AsSpan());
+            var sourceText = new SourceText(qualifiedQuery);
+            var syntaxTree = parser.ParseQueryDocument(sourceText);
             Assert.IsTrue(syntaxTree.BlockLength > 0);
         }
 
