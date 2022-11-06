@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;NU1603</NoWarn>
-    <RootNamespace>GraphQL.AspNet.StarWarsAPI3X</RootNamespace>
-    <AssemblyName>GraphQL.AspNet.StarwarsAPI3X</AssemblyName>
+    <RootNamespace>GraphQL.AspNet.StarWarsAPI7X</RootNamespace>
+    <AssemblyName>GraphQL.AspNet.StarwarsAPI7X</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
