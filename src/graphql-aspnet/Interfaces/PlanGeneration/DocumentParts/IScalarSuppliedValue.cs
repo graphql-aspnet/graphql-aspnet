@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
 {
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2;
 
     /// <summary>
     /// A supplied value to an query document that represents a scalar.

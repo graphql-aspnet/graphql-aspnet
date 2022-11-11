@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
 
     /// <summary>
     /// A document part representing a fragment defined and spread locally in a field
@@ -22,20 +21,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Inline Fragment. Target Type: {GraphType?.Name}")]
     internal class DocumentInlineFragment : DocumentFragmentBase, IInlineFragmentDocumentPart
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentInlineFragment"/> class.
-        /// </summary>
-        /// <param name="parentPart">The document part that owns this instance.</param>
-        /// <param name="fragmentNode">The inline fragment node.</param>
-        public DocumentInlineFragment(IDocumentPart parentPart, InlineFragmentNode fragmentNode)
-            : base(parentPart, fragmentNode)
-        {
-            // inline fragments are, by nature, already referenced in the document
-            this.MarkAsReferenced();
-            this.TargetGraphTypeName = fragmentNode.TargetType.ToString();
-            this.IsIncluded = true;
-        }
-
 
         public DocumentInlineFragment(
             IDocumentPart parentPart,

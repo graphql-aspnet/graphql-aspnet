@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
 

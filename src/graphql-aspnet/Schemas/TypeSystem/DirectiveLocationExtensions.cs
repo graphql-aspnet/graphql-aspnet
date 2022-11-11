@@ -12,9 +12,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
@@ -65,53 +62,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
                 case IGraphArgument _:
                     return DirectiveLocation.ARGUMENT_DEFINITION;
-            }
-
-            return DirectiveLocation.NONE;
-        }
-
-        /// <summary>
-        /// Determines the directive location corrisponding with this syntax node in the AST representing
-        /// a query document. (Execution Locations).
-        /// </summary>
-        /// <param name="node">The node to inspect.</param>
-        /// <returns>DirectiveLocation.</returns>
-        public static DirectiveLocation AsDirectiveLocation(this SyntaxNode node)
-        {
-            // all syntax nodes (those parsed on a document) will be
-            // "execution phase" locations.
-            switch (node)
-            {
-                case NamedFragmentNode _:
-                    return DirectiveLocation.FRAGMENT_DEFINITION;
-
-                case FragmentSpreadNode _:
-                    return DirectiveLocation.FRAGMENT_SPREAD;
-
-                case InlineFragmentNode _:
-                    return DirectiveLocation.INLINE_FRAGMENT;
-
-                case FieldNode _:
-                    return DirectiveLocation.FIELD;
-
-                case VariableNode _:
-                    return DirectiveLocation.VARIABLE_DEFINITION;
-
-                case OperationNode otn:
-                    var operationType = Constants.ReservedNames.FindOperationTypeByKeyword(otn.OperationType.ToString());
-                    switch (operationType)
-                    {
-                        case GraphOperationType.Query:
-                            return DirectiveLocation.QUERY;
-
-                        case GraphOperationType.Mutation:
-                            return DirectiveLocation.MUTATION;
-
-                        case GraphOperationType.Subscription:
-                            return DirectiveLocation.SUBSCRIPTION;
-                    }
-
-                    break;
             }
 
             return DirectiveLocation.NONE;

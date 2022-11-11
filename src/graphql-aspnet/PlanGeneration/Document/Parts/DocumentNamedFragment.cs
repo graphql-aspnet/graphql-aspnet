@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
 
     /// <summary>
     /// A named fragment declared at the top of a query document.
@@ -25,24 +24,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         private readonly DocumentFragmentSpreadCollection _fragmentSpreads;
         private readonly DocumentVariableUsageCollection _variableUsages;
         private readonly List<IDirectiveDocumentPart> _allDirectives;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentNamedFragment" /> class.
-        /// </summary>
-        /// <param name="ownerDocument">The query document which owns this fragment.</param>
-        /// <param name="fragmentNode">The fragment node.</param>
-        public DocumentNamedFragment(
-            IDocumentPart ownerDocument,
-            NamedFragmentNode fragmentNode)
-            : base(ownerDocument, fragmentNode)
-        {
-            this.Name = fragmentNode.FragmentName.ToString();
-            this.TargetGraphTypeName = fragmentNode.TargetType.ToString();
-
-            _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
-            _variableUsages = new DocumentVariableUsageCollection(this);
-            _allDirectives = new List<IDirectiveDocumentPart>();
-        }
 
         public DocumentNamedFragment(
             IDocumentPart ownerDocument,

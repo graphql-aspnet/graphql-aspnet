@@ -9,14 +9,12 @@
 
 namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
 {
-    using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using Moq;
 
@@ -35,8 +33,9 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
             {
                 dp.Children.Add(new DocumentInputArgument(
                     dp,
-                    new InputItemNode(SourceLocation.None, string.Empty.AsMemory()),
-                    arg.Object));
+                    arg.Object,
+                    "bobArg",
+                    SourceLocation.None));
             }
 
             return this.Ok();

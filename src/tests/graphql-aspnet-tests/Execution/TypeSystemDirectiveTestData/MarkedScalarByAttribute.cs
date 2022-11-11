@@ -6,12 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
 {
     using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     [ApplyDirective(typeof(ScalarMarkerDirective))]

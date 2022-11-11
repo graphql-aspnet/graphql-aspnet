@@ -14,16 +14,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
 
-    using GraphQLSyntaxException2 = Parsing2.Exceptions.GraphQLSyntaxException;
+    using GraphQLSyntaxException2 = GraphQL.AspNet.Parsing2.Exceptions.GraphQLSyntaxException;
 
     /// <summary>
     /// Attempts to generate a valid syntax tree for the incoming query text when needed. Skipped if a query plan was pulled
@@ -73,19 +71,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var document = _documentGenerator.CreateDocument(sourceText, syntaxTree);
                     context.QueryDocument = document;
                     context.Messages.AddRange(document.Messages);
-
                 }
                 catch (GraphQLSyntaxException2 syntaxException)
-                {
-                    // expose syntax exception messages to the client
-                    // the parser is self contained and ensures its exception messages are
-                    // related to the text being parsed
-                    context.Messages.Critical(
-                        syntaxException.Message,
-                        Constants.ErrorCodes.SYNTAX_ERROR,
-                        syntaxException.Location.AsOrigin());
-                }
-                catch (GraphQLSyntaxException syntaxException)
                 {
                     // expose syntax exception messages to the client
                     // the parser is self contained and ensures its exception messages are

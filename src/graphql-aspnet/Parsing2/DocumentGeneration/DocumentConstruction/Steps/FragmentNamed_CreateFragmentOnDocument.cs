@@ -10,9 +10,8 @@
 namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
 {
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common;
+    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
     /// Generates a <see cref="INamedFragmentDocumentPart"/> out of the active named fragment node and injects it as the active
@@ -23,7 +22,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
         public FragmentNamed_CreateFragmentOnDocument()
             : base(SynNodeType.NamedFragment)
         {
-
         }
 
         /// <inheritdoc />

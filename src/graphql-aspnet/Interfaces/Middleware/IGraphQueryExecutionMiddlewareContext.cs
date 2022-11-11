@@ -35,13 +35,6 @@ namespace GraphQL.AspNet.Interfaces.Middleware
         IGraphQueryPlan QueryPlan { get; set; }
 
         /// <summary>
-        /// Gets or sets the syntax tree parsed from the provided query text. Will be null if a query plan
-        /// was retrieved from the cache.
-        /// </summary>
-        /// <value>The syntax tree.</value>
-        ISyntaxTree SyntaxTree { get; set; }
-
-        /// <summary>
         /// Gets or sets the query operation to execute of the active query plan.
         /// </summary>
         /// <value>The query operation.</value>

@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -34,31 +33,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         private readonly List<ISecureDocumentPart> _allSecuredDocParts;
 
         private IFieldSelectionSetDocumentPart _fieldSelectionSet;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentOperation" /> class.
-        /// </summary>
-        /// <param name="parentPart">The owning document.</param>
-        /// <param name="node">The node representing the operation which created
-        /// this part.</param>
-        /// <param name="operationType">Type of the operation being represented.</param>
-        public DocumentOperation(
-            IDocumentPart parentPart,
-            OperationNode node,
-            GraphOperationType operationType)
-            : base(parentPart, node)
-        {
-            this.OperationType = operationType;
-            this.Name = node.OperationName.IsEmpty ? string.Empty : node.OperationName.ToString();
-            this.OperationTypeName = node.OperationType.ToString();
-
-            _variableCollection = new DocumentVariableCollection(this);
-            _variableUsages = new DocumentVariableUsageCollection(this);
-            _directives = new DocumentDirectiveCollection(this);
-            _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
-            _allDirectives = new List<IDirectiveDocumentPart>();
-            _allSecuredDocParts = new List<ISecureDocumentPart>();
-        }
 
         public DocumentOperation(
            IDocumentPart parentPart,

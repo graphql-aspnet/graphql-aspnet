@@ -34,7 +34,10 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
             // skip the field collection node
             // carry the parent part (a field or an operation) to the next set of children
             // (the child fields).
-            var docPart = new DocumentFieldSelectionSet(context.ParentPart);
+            var docPart = new DocumentFieldSelectionSet(
+                context.ParentPart,
+                context.ActiveNode.Location);
+
             context = context.AssignPart(docPart);
             return true;
         }

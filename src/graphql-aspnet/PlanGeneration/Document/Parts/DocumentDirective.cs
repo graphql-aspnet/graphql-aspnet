@@ -15,8 +15,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -27,20 +26,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     internal class DocumentDirective : DocumentPartBase, IDirectiveDocumentPart
     {
         private DocumentInputArgumentCollection _arguments;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentDirective" /> class.
-        /// </summary>
-        /// <param name="parentPart">The parent part that owns this directive.</param>
-        /// <param name="node">The node denoting the directive.</param>
-        public DocumentDirective(IDocumentPart parentPart, DirectiveNode node)
-            : base(parentPart, node)
-        {
-            this.Location = parentPart.AsDirectiveLocation();
-            this.DirectiveName = node.DirectiveName.ToString();
-
-            _arguments = new DocumentInputArgumentCollection(this);
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentDirective"/> class.

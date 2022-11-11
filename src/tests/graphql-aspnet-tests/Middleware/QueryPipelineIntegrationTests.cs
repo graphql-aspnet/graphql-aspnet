@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;

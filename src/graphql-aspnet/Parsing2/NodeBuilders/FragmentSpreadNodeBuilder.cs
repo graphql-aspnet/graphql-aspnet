@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
     using GraphQL.AspNet.Parsing2.Lexing;
     using GraphQL.AspNet.Parsing2.Exceptions;
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
-    using KEYWORDS = GraphQL.AspNet.Parsing.ParserConstants.Keywords;
+    using KEYWORDS = GraphQL.AspNet.Parsing2.ParserConstants.Keywords;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
 
     public class FragmentSpreadNodeBuilder : ISynNodeBuilder

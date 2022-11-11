@@ -12,16 +12,15 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing;
-    using GraphQL.AspNet.Parsing.Lexing;
-    using GraphQL.AspNet.Parsing.Lexing.Source;
-    using GraphQL.AspNet.Parsing.NodeMakers.ValueMakers;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
     using GraphQL.AspNet.PlanGeneration;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
     using GraphQL.AspNet.Schemas;
@@ -164,20 +163,32 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var generator = new InputResolverMethodGenerator(this.CreateSchema());
 
-            var text = inputText?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+            var text = ReadOnlySpan<char>.Empty;
+            if (inputText != null)
+                text = inputText.AsSpan();
+
+            var tree = SynTree.FromDocumentRoot();
+            var rootNode = tree.RootNode;
             var source = new SourceText(text);
             var tokenStream = Lexer.Tokenize(source);
 
             tokenStream.Prime();
-            InputValueNode node = null;
+            SynNode testNode = SynNode.None;
             if (!tokenStream.EndOfStream)
             {
-                var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
-                if (maker != null)
-                    node = maker.MakeNode(new SyntaxTree(), ref tokenStream) as InputValueNode;
+                var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
+                if (builder != null)
+                {
+                    builder.BuildNode(ref tree, ref rootNode, ref tokenStream);
+                    testNode = tree.NodePool[rootNode.Coordinates.ChildBlockIndex][rootNode.Coordinates.ChildBlockLength - 1];
+                }
             }
 
-            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(owner.Object, node);
+            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(
+                source,
+                owner.Object,
+                testNode);
+
             var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
             var resolver = generator.CreateResolver(typeExpression);
             var result = resolver.Resolve(inputValue);
@@ -189,7 +200,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [SetCulture("de-DE")]
         public void DefaultScalarValueResolvers_WithGermanCulture(string expressionText, string inputText, object expectedOutput)
         {
-             DefaultScalarValueResolvers(expressionText, inputText, expectedOutput);
+            DefaultScalarValueResolvers(expressionText, inputText, expectedOutput);
         }
 
         [TestCaseSource(nameof(_inputValueResolverTestCases_WithInvalidData))]
@@ -199,20 +210,34 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var generator = new InputResolverMethodGenerator(this.CreateSchema());
 
-            var text = inputText?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+            var text = ReadOnlySpan<char>.Empty;
+            if (inputText != null)
+                text = inputText.AsSpan();
+
+            var tree = SynTree.FromDocumentRoot();
+            var rootNode = tree.RootNode;
             var source = new SourceText(text);
             var tokenStream = Lexer.Tokenize(source);
 
             tokenStream.Prime();
-            InputValueNode node = null;
+            SynNode testNode = SynNode.None;
+
             if (!tokenStream.EndOfStream)
             {
-                var maker = ValueMakerFactory.CreateMaker(tokenStream.ActiveToken);
-                if (maker != null)
-                    node = maker.MakeNode(new SyntaxTree(), ref tokenStream) as InputValueNode;
+                var builder = ValueNodeBuilderFactory.CreateBuilder(tokenStream);
+                if (builder != null)
+                {
+                    builder.BuildNode(ref tree, ref rootNode, ref tokenStream);
+                    testNode = tree.NodePool[rootNode.Coordinates.ChildBlockIndex][rootNode.Coordinates.ChildBlockLength - 1];
+                }
             }
 
-            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(owner.Object, node);
+
+            var inputValue = DocumentSuppliedValueFactory.CreateInputValue(
+                source,
+                owner.Object,
+                testNode);
+
             var typeExpression = GraphTypeExpression.FromDeclaration(expressionText);
             var resolver = generator.CreateResolver(typeExpression);
 
@@ -227,9 +252,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var listOwner = new Mock<IDocumentPart>();
 
-            var sourceList = new DocumentListSuppliedValue(listOwner.Object, new FakeSyntaxNode());
-            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "15", ScalarValueType.Number));
-            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "12", ScalarValueType.Number));
+            var sourceList = new DocumentListSuppliedValue(listOwner.Object, SourceLocation.None);
+            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "15", ScalarValueType.Number, SourceLocation.None));
+            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "12", ScalarValueType.Number, SourceLocation.None));
 
             var typeExpression = GraphTypeExpression.FromDeclaration("[Int]");
             var generator = new InputResolverMethodGenerator(this.CreateSchema());
@@ -245,14 +270,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         {
             var listOwner = new Mock<IDocumentPart>();
 
-            var outerList = new DocumentListSuppliedValue(listOwner.Object, new FakeSyntaxNode());
-            var innerList1 = new DocumentListSuppliedValue(outerList, new FakeSyntaxNode());
-            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "15", ScalarValueType.Number));
-            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "12", ScalarValueType.Number));
+            var outerList = new DocumentListSuppliedValue(listOwner.Object, SourceLocation.None);
+            var innerList1 = new DocumentListSuppliedValue(outerList, SourceLocation.None);
+            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "15", ScalarValueType.Number, SourceLocation.None));
+            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "12", ScalarValueType.Number, SourceLocation.None));
 
-            var innerList2 = new DocumentListSuppliedValue(outerList, new FakeSyntaxNode());
-            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "30", ScalarValueType.Number));
-            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "40", ScalarValueType.Number));
+            var innerList2 = new DocumentListSuppliedValue(outerList, SourceLocation.None);
+            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "30", ScalarValueType.Number, SourceLocation.None));
+            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "40", ScalarValueType.Number, SourceLocation.None));
 
             outerList.Children.Add(innerList1);
             outerList.Children.Add(innerList2);

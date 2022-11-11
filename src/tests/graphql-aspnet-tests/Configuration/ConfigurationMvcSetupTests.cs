@@ -21,7 +21,6 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;

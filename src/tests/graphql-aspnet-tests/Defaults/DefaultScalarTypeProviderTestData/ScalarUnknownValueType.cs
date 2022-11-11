@@ -6,9 +6,10 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
 {
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2;
 
     public class ScalarUnknownValueType : ScalarTestBase
     {

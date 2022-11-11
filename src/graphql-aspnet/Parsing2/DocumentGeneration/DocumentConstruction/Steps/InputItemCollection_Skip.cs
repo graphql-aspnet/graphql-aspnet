@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
 {
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common;
 
     /// <summary>

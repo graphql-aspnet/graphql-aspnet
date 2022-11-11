@@ -19,7 +19,7 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Directives.Global;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

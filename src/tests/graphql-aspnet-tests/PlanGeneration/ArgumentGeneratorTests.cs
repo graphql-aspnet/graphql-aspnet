@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using System.Collections.Generic;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
@@ -106,7 +105,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
             var text = "query TestQuery{  input {  fetchString(arg1: 2147483648 ) } }";
 
-
             var parser = new GraphQLParser2();
             var source = new SourceText(text.AsSpan());
             var syntaxTree = parser.ParseQueryDocument(ref source);
@@ -149,7 +147,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
             var document = docGenerator.CreateDocument(source, syntaxTree);
 
-
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
             var argGenerator = new ArgumentGenerator(server.Schema, queryInputCollection);
@@ -181,7 +178,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
             var text = "query TestQuery($var1: Int!){  input {  fetchArrayTotal(arg3: [1, $var1, 3]) } }";
-
 
             var parser = new GraphQLParser2();
             var source = new SourceText(text.AsSpan());
@@ -224,7 +220,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                         )
                     }
                 }";
-
 
             var parser = new GraphQLParser2();
             var source = new SourceText(text.AsSpan());
@@ -272,7 +267,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                         )
                     }
                 }";
-
 
             var parser = new GraphQLParser2();
             var source = new SourceText(text.AsSpan());

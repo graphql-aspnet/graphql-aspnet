@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
         /// <param name="source">The source containing the phrase.</param>
         /// <param name="phrase">The phrase to validate.</param>
         /// <param name="location">The location the source where the phrase started.</param>
-        public void ValidateOrThrow(in SourceText source, in ReadOnlySpan<char> phrase, SourceLocation location)
+        public void ValidateOrThrow(SourceText source, ReadOnlySpan<char> phrase, SourceLocation location)
         {
             if (phrase.Length == 0)
                 throw new GraphQLSyntaxException(location, ERROR_EMPTY);

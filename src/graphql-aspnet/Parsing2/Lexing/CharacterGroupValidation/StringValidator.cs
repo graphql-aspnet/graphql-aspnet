@@ -54,8 +54,8 @@ namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
         /// <param name="phrase">The phrase to validate.</param>
         /// <param name="location">The location the source where the phrase started.</param>
         public void ValidateOrThrow(
-            in SourceText source,
-            in ReadOnlySpan<char> phrase,
+            SourceText source,
+            ReadOnlySpan<char> phrase,
             SourceLocation location)
         {
             // gotta be at least an empty string:  ""
@@ -167,7 +167,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns>System.Boolean.</returns>
-        public static bool IsBlockString(in ReadOnlySpan<char> text)
+        public static bool IsBlockString(ReadOnlySpan<char> text)
         {
             return text.IndexOf(ParserConstants.BlockStringDelimiterMemory.Span, StringComparison.OrdinalIgnoreCase) == 0;
         }
@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns><c>true</c> if the supplied text constitutes a complete string; otherwise, <c>false</c>.</returns>
-        public static NextPhraseResult IsDelimitedString(in ReadOnlySpan<char> text)
+        public static NextPhraseResult IsDelimitedString(ReadOnlySpan<char> text)
         {
             // need at least 3 characters before we can deteremine validity
             // result will be:

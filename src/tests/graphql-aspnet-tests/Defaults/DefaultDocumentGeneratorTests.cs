@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Tests.Defaults
     using System.Linq;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Schemas;

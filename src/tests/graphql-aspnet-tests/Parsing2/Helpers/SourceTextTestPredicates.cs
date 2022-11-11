@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.Helpers
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns><c>true</c> if the phrase is valid, <c>false</c> otherwise.</returns>
-        public static NextPhraseResult SingleQuoteDelimited(in ReadOnlySpan<char> text)
+        public static NextPhraseResult SingleQuoteDelimited(ReadOnlySpan<char> text)
         {
             if (text.Length < 2)
                 return NextPhraseResult.Continue;

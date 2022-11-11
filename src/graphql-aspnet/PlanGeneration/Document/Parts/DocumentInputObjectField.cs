@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.Schemas;
 
@@ -25,23 +24,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("{Description}")]
     internal class DocumentInputObjectField : DocumentPartBase, IInputObjectFieldDocumentPart
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentInputObjectField" /> class.
-        /// </summary>
-        /// <param name="parentPart">The document part(a field or directive) that owns this argument.</param>
-        /// <param name="node">The node in the query document creating this entity.</param>
-        /// <param name="field">The field of data on an INPUT_OBJECT represented by this
-        /// document part.</param>
-        public DocumentInputObjectField(
-            IDocumentPart parentPart,
-            InputItemNode node,
-            IInputGraphField field)
-            : base(parentPart, node)
-        {
-            this.Name = node.InputName.ToString();
-            this.Field = field;
-        }
-
         public DocumentInputObjectField(
         IDocumentPart parentPart,
         string suppliedName,

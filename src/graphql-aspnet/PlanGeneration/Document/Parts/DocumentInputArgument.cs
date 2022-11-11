@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.Schemas;
 
@@ -25,23 +24,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("{Description}")]
     internal class DocumentInputArgument : DocumentPartBase, IInputArgumentDocumentPart
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentInputArgument" /> class.
-        /// </summary>
-        /// <param name="parentPart">The document part(a field or directive) that owns this argument.</param>
-        /// <param name="node">The node in the query document creating this entity.</param>
-        /// <param name="argument">The input argument to a directive or field represented
-        /// by this document part.</param>
-        public DocumentInputArgument(
-            IDocumentPart parentPart,
-            InputItemNode node,
-            IGraphArgument argument)
-            : base(parentPart, node)
-        {
-            this.Name = node.InputName.ToString();
-            this.Argument = argument;
-        }
-
         public DocumentInputArgument(
            IDocumentPart parentPart,
            IGraphArgument argument,

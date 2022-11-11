@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
     /// <summary>
@@ -28,31 +27,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     {
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentFieldBase"/> class.
-        /// </summary>
-        /// <param name="parentPart">The parent part that owns this field.</param>
-        /// <param name="node">The node in the AST that defined the creation of this field.</param>
-        /// <param name="field">The field referenced from the target schema.</param>
-        /// <param name="fieldGraphType">The graph type for data returned from the field.</param>
-        protected DocumentFieldBase(
-            IDocumentPart parentPart,
-            FieldNode node,
-            IGraphField field,
-            IGraphType fieldGraphType)
-            : base(parentPart, node)
-        {
-            this.Name = node.FieldName.ToString();
-            this.Alias = node.FieldAlias.ToString();
-
-            this.AssignGraphType(fieldGraphType);
-            this.Field = field;
-
-            _directives = new DocumentDirectiveCollection(this);
-            _arguments = new DocumentInputArgumentCollection(this);
-            this.IsIncluded = true;
-        }
 
         protected DocumentFieldBase(
             IDocumentPart parentPart,

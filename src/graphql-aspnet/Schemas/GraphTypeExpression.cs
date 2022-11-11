@@ -6,15 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Schemas
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Text;
-    using GraphQL.AspNet.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

@@ -27,7 +27,6 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Logging;
     using GraphQL.AspNet.Logging.ExecutionEvents;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas;
@@ -533,11 +532,9 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var docPart = new DocumentOperation(
                 new Mock<IDocumentPart>().Object,
-                new OperationNode(
-                    new SourceLocation(999, 33, 5),
-                    "query".AsMemory(),
-                    string.Empty.AsMemory()),
-                GraphOperationType.Query);
+                string.Empty,
+                GraphOperationType.Query,
+                new SourceLocation(999, 33, 5));
 
             var path = new SchemaItemPath(GraphCollection.Types, "type1");
 

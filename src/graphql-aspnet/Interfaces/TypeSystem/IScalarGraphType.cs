@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Parsing2;
 
     /// <summary>
     /// Represents a scalar supported by a schema.

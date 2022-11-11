@@ -9,7 +9,6 @@
 
 namespace GraphQL.AspNet.Tests.Parsing2
 {
-    using GraphQL.AspNet.Parsing.Lexing;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
     using NUnit.Framework;

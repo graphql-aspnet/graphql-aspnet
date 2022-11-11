@@ -45,8 +45,8 @@ namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
         /// <param name="text">The phrase to validate.</param>
         /// <param name="location">The location the source where the phrase started.</param>
         public void ValidateOrThrow(
-            in SourceText source,
-            in ReadOnlySpan<char> text,
+            SourceText source,
+            ReadOnlySpan<char> text,
             SourceLocation location)
         {
             // must start with a '#'

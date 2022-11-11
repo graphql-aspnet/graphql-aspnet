@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 {
     using System.Linq;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData;
     using NUnit.Framework;

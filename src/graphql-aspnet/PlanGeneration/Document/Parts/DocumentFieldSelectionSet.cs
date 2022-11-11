@@ -12,11 +12,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
     /// <summary>
@@ -32,8 +32,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
         /// </summary>
         /// <param name="parent">The parent document part that owns this set.</param>
-        public DocumentFieldSelectionSet(IDocumentPart parent)
-            : base(parent, EmptyNode.Instance)
+        public DocumentFieldSelectionSet(IDocumentPart parent, SourceLocation location)
+            : base(parent, location)
         {
             this.AssignGraphType(parent.GraphType);
             _executionSet = new ExecutionFieldSet(this);

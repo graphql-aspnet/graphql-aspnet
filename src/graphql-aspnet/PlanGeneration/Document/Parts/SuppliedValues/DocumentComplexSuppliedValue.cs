@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
 
     /// <summary>
     /// An input value representing a complex input object read from a user's query document.
@@ -24,18 +23,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     internal class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
     {
         private readonly DocumentInputObjectFieldCollection _fields;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue" /> class.
-        /// </summary>
-        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
-        /// <param name="node">The node that represents this input value in the user query document.</param>
-        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
-        public DocumentComplexSuppliedValue(IDocumentPart parentPart, ComplexValueNode node, string key = null)
-            : base(parentPart, node, key)
-        {
-            _fields = new DocumentInputObjectFieldCollection(this);
-        }
 
         public DocumentComplexSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
             : base(parentPart, location, key)

@@ -14,8 +14,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
-    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
 
@@ -26,16 +24,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     internal abstract class DocumentPartBase : IDocumentPart
     {
         private SourcePath _path = null;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentPartBase" /> class.
-        /// </summary>
-        /// <param name="parentPart">The parent document part that owns this instance.</param>
-        /// <param name="node">The AST node from which this part was created.</param>
-        protected DocumentPartBase(IDocumentPart parentPart, SyntaxNode node)
-            : this(parentPart, node.Location)
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentPartBase"/> class.

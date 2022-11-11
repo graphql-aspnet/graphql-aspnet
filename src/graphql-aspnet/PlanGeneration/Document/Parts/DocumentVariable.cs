@@ -15,7 +15,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.Schemas;
 
@@ -27,19 +26,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     internal class DocumentVariable : DocumentPartBase, IVariableDocumentPart
     {
         private DocumentDirectiveCollection _directives = null;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentVariable" /> class.
-        /// </summary>
-        /// <param name="parentPart">The part, typically an operation, that owns this variable declaration.</param>
-        /// <param name="node">The AST node from which this instance is created.</param>
-        public DocumentVariable(IDocumentPart parentPart, VariableNode node)
-            : base(parentPart, node)
-        {
-            this.Name = node.Name.ToString();
-            this.TypeExpression = GraphTypeExpression.FromDeclaration(node.TypeExpression.Span);
-        }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentVariable" /> class.

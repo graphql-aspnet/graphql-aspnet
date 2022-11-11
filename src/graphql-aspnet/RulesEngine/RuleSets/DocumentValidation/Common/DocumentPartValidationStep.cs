@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common
 {
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.RulesEngine.Interfaces;
 

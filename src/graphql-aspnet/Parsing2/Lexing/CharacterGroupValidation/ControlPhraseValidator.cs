@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
         /// <param name="phrase">The phrase to validate.</param>
         /// <param name="location">The location the source where the phrase started.</param>
         public void ValidateOrThrow(
-            in ReadOnlySpan<char> phrase,
+            ReadOnlySpan<char> phrase,
             SourceLocation location)
         {
             // must be 1 char (most tokens) or 3 chars (spread operator)
@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
         /// </summary>
         /// <param name="text">The text.</param>
         /// <returns><c>true</c> if the supplied text constitutes a valid token glyph; otherwise, <c>false</c>.</returns>
-        public static NextPhraseResult IsPossibleControlPhrase(in ReadOnlySpan<char> text)
+        public static NextPhraseResult IsPossibleControlPhrase(ReadOnlySpan<char> text)
         {
             if (text.Length >= 3)
                 return NextPhraseResult.Complete;

@@ -9,12 +9,9 @@
 
 namespace GraphQL.AspNet.Internal.Interfaces
 {
-    using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Parsing.Lexing.Exceptions;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
     /// Represents an object that is capable of converted a raw block of text into a parsed

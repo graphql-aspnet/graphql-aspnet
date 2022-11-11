@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas;
 
     /// <summary>
@@ -27,19 +26,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     internal class DocumentListSuppliedValue : DocumentSuppliedValue, IListSuppliedValueDocumentPart
     {
         private List<ISuppliedValueDocumentPart> _listItems;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentListSuppliedValue" /> class.
-        /// </summary>
-        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
-        /// <param name="node">The node that represents this input value in the user query document.</param>
-        /// <param name="key">An optional key indicating the name of this supplied value, if one was given.</param>
-        public DocumentListSuppliedValue(IDocumentPart parentPart, SyntaxNode node, string key = null)
-            : base(parentPart, node, key)
-        {
-            _listItems = new List<ISuppliedValueDocumentPart>();
-            this.DetermineListItemTypeExpression();
-        }
 
         public DocumentListSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
             : base(parentPart, location, key)

@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
     /// <summary>
@@ -22,17 +21,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     internal abstract class DocumentFragmentBase : DocumentPartBase, IFragmentDocumentPart
     {
         private readonly DocumentDirectiveCollection _directives;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentFragmentBase" /> class.
-        /// </summary>
-        /// <param name="parentPart">The document part that owns this instance.</param>
-        /// <param name="fragmentNode">The inline fragment node.</param>
-        public DocumentFragmentBase(IDocumentPart parentPart, SyntaxNode fragmentNode)
-            : base(parentPart, fragmentNode)
-        {
-            _directives = new DocumentDirectiveCollection(this);
-        }
 
         public DocumentFragmentBase(IDocumentPart parentPart, SourceLocation sourceLocation)
             : base(parentPart, sourceLocation)

@@ -6,15 +6,14 @@
 // --
 // License:  MIT
 // *************************************************************
+
 namespace GraphQL.AspNet.Tests.PlanGeneration
 {
     using System;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.Schemas;
     using Moq;
     using NUnit.Framework;
 
@@ -24,7 +23,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void FindArgumentByStringName_ForExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
@@ -35,19 +34,20 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg = new DocumentInputArgument(
                 owner.Object,
-                new InputItemNode(SourceLocation.None, name),
-                graphArg.Object);
+                graphArg.Object,
+                name,
+                SourceLocation.None);
 
             colllection.AddArgument(arg);
 
-            var item = colllection.FindArgumentByName("thename");
+            var item = colllection.FindArgumentByName(name);
             Assert.IsNotNull(item);
         }
 
         [Test]
         public void FindArgumentByStringName_ForNonArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
@@ -58,8 +58,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg = new DocumentInputArgument(
                 owner.Object,
-                new InputItemNode(SourceLocation.None, name),
-                graphArg.Object);
+                graphArg.Object,
+                name,
+                SourceLocation.None);
 
             colllection.AddArgument(arg);
 
@@ -70,7 +71,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void FindArgumentByMemoryName_ForExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
@@ -81,20 +82,21 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg = new DocumentInputArgument(
                 owner.Object,
-                new InputItemNode(SourceLocation.None, name),
-                graphArg.Object);
+                graphArg.Object,
+                name,
+                SourceLocation.None);
 
             colllection.AddArgument(arg);
 
-            var item = colllection.FindArgumentByName(name);
+            var item = colllection.FindArgumentByName(name.AsMemory());
             Assert.IsNotNull(item);
         }
 
         [Test]
-        public void FindArgumentByMemoryName_ForNonArgument_ReturnsArgument()
+        public void FindArgumentByMemoryName_ForNonArgument_ReturnsNothing()
         {
-            var name = "thename".AsMemory();
-            var othername = "theothername".AsMemory();
+            var name = "thename";
+            var othername = "theothername";
 
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
@@ -105,19 +107,20 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg = new DocumentInputArgument(
                 owner.Object,
-                new InputItemNode(SourceLocation.None, name),
-                graphArg.Object);
+                graphArg.Object,
+                name,
+                SourceLocation.None);
 
             colllection.AddArgument(arg);
 
-            var item = colllection.FindArgumentByName(othername);
+            var item = colllection.FindArgumentByName(othername.AsMemory());
             Assert.IsNull(item);
         }
 
         [Test]
         public void TryGetByStringName_ForExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
@@ -128,8 +131,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg = new DocumentInputArgument(
                 owner.Object,
-                new InputItemNode(SourceLocation.None, name),
-                graphArg.Object);
+                graphArg.Object,
+                name,
+                SourceLocation.None);
 
             colllection.AddArgument(arg);
 
@@ -141,7 +145,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [Test]
         public void TryGetByStringName_ForNonExistingArgument_ReturnsArgument()
         {
-            var name = "thename".AsMemory();
+            var name = "thename";
 
             var owner = new Mock<IFieldDocumentPart>();
             var colllection = new DocumentInputArgumentCollection(owner.Object);
@@ -152,8 +156,9 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var arg = new DocumentInputArgument(
                 owner.Object,
-                new InputItemNode(SourceLocation.None, name),
-                graphArg.Object);
+                graphArg.Object,
+                name,
+                SourceLocation.None);
 
             colllection.AddArgument(arg);
 

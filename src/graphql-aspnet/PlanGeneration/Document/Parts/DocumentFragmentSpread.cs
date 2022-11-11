@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Parsing.SyntaxNodes.Fragments;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
 
     /// <summary>
@@ -29,21 +28,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         private DocumentDirectiveCollection _directives;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentFragmentSpread" /> class.
-        /// </summary>
-        /// <param name="parentPart">The parent document part, if any, that owns this instance.</param>
-        /// <param name="node">The spread node parsed from the query document
-        /// representing this instance.</param>
-        public DocumentFragmentSpread(
-            IDocumentPart parentPart,
-            FragmentSpreadNode node)
-            : base(parentPart, node)
-        {
-            this.FragmentName = node.PointsToFragmentName.ToString();
-            _directives = new DocumentDirectiveCollection(this);
-            this.IsIncluded = true;
-        }
 
         public DocumentFragmentSpread(
             IDocumentPart parentPart,
