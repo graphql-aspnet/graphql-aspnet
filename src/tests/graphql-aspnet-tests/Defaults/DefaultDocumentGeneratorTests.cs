@@ -14,6 +14,8 @@ namespace GraphQL.AspNet.Tests.Defaults
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.RulesEngine.DocumentConstructionTestData;
@@ -42,9 +44,10 @@ namespace GraphQL.AspNet.Tests.Defaults
                 }";
 
             var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var syntaxTree = new GraphQLParser().ParseQueryDocument(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = new GraphQLParser2().ParseQueryDocument(ref source);
 
-            var document = generator.CreateDocument(syntaxTree);
+            var document = generator.CreateDocument(source, syntaxTree);
 
             var spread = document.Operations[string.Empty].FieldSelectionSet
                 .Children.OfType<IFieldDocumentPart>().Single().FieldSelectionSet
@@ -77,9 +80,10 @@ namespace GraphQL.AspNet.Tests.Defaults
                 }";
 
             var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var syntaxTree = new GraphQLParser().ParseQueryDocument(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = new GraphQLParser2().ParseQueryDocument(ref source);
 
-            var document = generator.CreateDocument(syntaxTree);
+            var document = generator.CreateDocument(source, syntaxTree);
 
             var spread = document.Operations[string.Empty].FieldSelectionSet
                 .Children.OfType<IFieldDocumentPart>().Single().FieldSelectionSet
@@ -121,9 +125,10 @@ namespace GraphQL.AspNet.Tests.Defaults
                     }";
 
             var generator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var syntaxTree = new GraphQLParser().ParseQueryDocument(text.AsMemory());
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = new GraphQLParser2().ParseQueryDocument(ref source);
 
-            var document = generator.CreateDocument(syntaxTree);
+            var document = generator.CreateDocument(source, syntaxTree);
 
             var retrieveDonut = document.Operations[0]
                 .FieldSelectionSet.ExecutableFields[0] // bakery

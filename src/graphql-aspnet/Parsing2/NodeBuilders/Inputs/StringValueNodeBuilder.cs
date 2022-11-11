@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                        ScalarValueType.String));
             }
 
-            synTree = synTree.AddChildNode(ref parentNode, ref stringNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref stringNode);
             tokenStream.Next();
         }
     }

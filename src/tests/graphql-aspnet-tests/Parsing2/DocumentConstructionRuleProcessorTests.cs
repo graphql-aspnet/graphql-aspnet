@@ -11,11 +11,9 @@ namespace GraphQL.AspNet.Tests.Parsing2
 {
     using System;
     using System.Linq;
-    using Castle.DynamicProxy.Generators;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Parsing2.DocumentGeneration;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
@@ -140,10 +138,10 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(orderCreated.ToString(), orderCreatedValue);
         }
 
-        private SynTree CreateSyntaxTree(SourceText sourceText)
+        private SynTree CreateSyntaxTree(ref SourceText sourceText)
         {
             var parser = new GraphQLParser2();
-            return parser.ParseQueryDocument(sourceText);
+            return parser.ParseQueryDocument(ref sourceText);
         }
 
         private IGraphQueryDocument CreateDocument(SynTree syntaxTree, SourceText sourceText)
@@ -172,7 +170,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -231,6 +229,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.IsNull(flavor.FieldSelectionSet);
             Assert.AreEqual(0, flavor.Directives.Count);
             Assert.AreEqual(0, flavor.Arguments.Count);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -248,7 +248,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -295,8 +295,10 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var argValue = firstArg.Value.Value as DocumentScalarSuppliedValue;
             Assert.IsNotNull(argValue);
             Assert.AreEqual("3", argValue.Value.ToString());
-            Assert.AreEqual(ScalarValueType.Number, argValue.ValueType);
+            Assert.AreEqual(ScalarValueType.Number, (ScalarValueType)argValue.ValueType);
             Assert.AreEqual(Constants.ScalarNames.INT, argValue.GraphType.Name);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -312,7 +314,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -360,6 +362,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var argValue = firstArg.Value.Value as DocumentNullSuppliedValue;
             Assert.IsNotNull(argValue);
             Assert.AreEqual(Constants.ScalarNames.INT, argValue.GraphType.Name);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -375,7 +379,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -428,6 +432,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("2", ((IScalarSuppliedValue)argValue.ListItems.ElementAt(1)).Value.ToString());
             Assert.AreEqual("5", ((IScalarSuppliedValue)argValue.ListItems.ElementAt(2)).Value.ToString());
             Assert.AreEqual("9", ((IScalarSuppliedValue)argValue.ListItems.ElementAt(3)).Value.ToString());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -441,7 +447,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -498,6 +504,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("flavor", flavor.Name);
             Assert.AreEqual(_donutFlavorGraphType, flavor.GraphType);
             Assert.AreEqual("STRAWBERRY", ((IEnumSuppliedValueDocumentPart)flavor.Value).Value.ToString());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -509,7 +517,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -534,6 +542,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             // the expected graph type of the value is that of hte parent argument
             Assert.AreEqual(_inputDonutGraphType, argValue.GraphType);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -544,7 +554,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -562,6 +572,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("var1", var1.Name);
             Assert.AreEqual("Int!", var1.TypeExpression.ToString());
             Assert.AreEqual(Constants.ScalarNames.INT, var1.GraphType.Name);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -572,7 +584,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -596,8 +608,10 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var value = var1.Children.First() as DocumentScalarSuppliedValue;
             Assert.IsNotNull(value);
             Assert.AreEqual("13", value.Value.ToString());
-            Assert.AreEqual(ScalarValueType.Number, value.ValueType);
+            Assert.AreEqual(ScalarValueType.Number, (ScalarValueType)value.ValueType);
             Assert.AreEqual(Constants.ScalarNames.INT, value.GraphType.Name);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -609,7 +623,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -637,6 +651,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             Assert.AreEqual("count", secondArg.Name);
             Assert.AreEqual("22", ((IScalarSuppliedValue)secondArg.Value).Value.ToString());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -664,7 +680,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -739,6 +755,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 .Children.OfType<IComplexSuppliedValueDocumentPart>().Single();
 
             this.AssertInputBagel(singleBagel, 12, "\"Bagel12\"", true, 45);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -750,13 +768,18 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
+
+            var jsonText = tree.ToJsonString(sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
 
-            var outerlist = result.Operations[0]
-                .FieldSelectionSet.ExecutableFields[0]
-                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "items")
+            var nestedListField = result.Operations[0]
+                .FieldSelectionSet.ExecutableFields[0];
+
+            var itemsArg = nestedListField
+                .Children.OfType<IInputArgumentDocumentPart>().Single(x => x.Name == "items");
+            var outerlist = itemsArg
                 .Children.OfType<IListSuppliedValueDocumentPart>().Single();
 
             Assert.IsNotNull(outerlist);
@@ -788,6 +811,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(2, innerList3.Children.Count);
             Assert.AreEqual("7", innerList3.Children.OfType<IScalarSuppliedValue>().First().Value.ToString());
             Assert.AreEqual("8", innerList3.Children.OfType<IScalarSuppliedValue>().Skip(1).First().Value.ToString());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -798,7 +823,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
@@ -822,7 +847,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var value = var1.Children.First() as DocumentScalarSuppliedValue;
             Assert.IsNotNull(value);
             Assert.AreEqual("13", value.Value.ToString());
-            Assert.AreEqual(ScalarValueType.Number, value.ValueType);
+            Assert.AreEqual(ScalarValueType.Number, (ScalarValueType)value.ValueType);
             Assert.AreEqual(Constants.ScalarNames.INT, value.GraphType.Name);
 
             var var2 = variables[1];
@@ -832,6 +857,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             // no default value on var2
             Assert.AreEqual(0, var2.Children.Count());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -847,7 +874,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var inlineFragment = result.Operations[0].FieldSelectionSet.ExecutableFields[0]
@@ -858,6 +885,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(2, inlineFragment
                 .Children.OfType<IFieldSelectionSetDocumentPart>().Single()
                 .Children.Count());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -874,7 +903,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var inlineFragment = result.Operations[0].FieldSelectionSet.ExecutableFields[0]
@@ -885,6 +914,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(2, inlineFragment
                 .Children.OfType<IFieldSelectionSetDocumentPart>().Single()
                 .Children.Count());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -897,7 +928,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var namedFrag = result.NamedFragments[0];
@@ -908,6 +939,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(2, namedFrag
                 .Children.OfType<IFieldSelectionSetDocumentPart>().Single()
                 .Children.Count());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -921,7 +954,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var fragSpread = result.Operations[0].FieldSelectionSet.ExecutableFields[0]
@@ -930,6 +963,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(null, fragSpread.GraphType); // graphtype not set yet
             Assert.IsNull(fragSpread.Fragment); // fragment not yet set
             Assert.AreEqual("myFrag", fragSpread.FragmentName.ToString());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [TestCase("query MyQuery @directive1 @directive2 {}", DirectiveLocation.QUERY)]
@@ -941,7 +976,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         public void DirectiveOnOperationCheck(string text, DirectiveLocation expectedLocation)
         {
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var directives = result.Operations[0]
@@ -959,6 +994,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("directive2", directive2.DirectiveName);
             Assert.AreEqual(expectedLocation, directive2.Location);
             Assert.IsNull(directive2.GraphType);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -967,7 +1004,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var text = "fragment myData on Bagel @directive1 @directive2 {}";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var directives = result.NamedFragments[0]
@@ -985,6 +1022,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("directive2", directive2.DirectiveName);
             Assert.AreEqual(DirectiveLocation.FRAGMENT_DEFINITION, directive2.Location);
             Assert.IsNull(directive2.GraphType);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -1000,7 +1039,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                     }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var inlineFrag = result.Operations[0].FieldSelectionSet
@@ -1021,6 +1060,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("directive2", directive2.DirectiveName);
             Assert.AreEqual(DirectiveLocation.INLINE_FRAGMENT, directive2.Location);
             Assert.IsNull(directive2.GraphType);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -1034,7 +1075,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                     }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var fragSpread = result.Operations[0].FieldSelectionSet
@@ -1056,6 +1097,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("directive2", directive2.DirectiveName);
             Assert.AreEqual(DirectiveLocation.FRAGMENT_SPREAD, directive2.Location);
             Assert.IsNull(directive2.GraphType);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -1069,7 +1112,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                     }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var field = result.Operations[0].FieldSelectionSet
@@ -1090,6 +1133,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("directive2", directive2.DirectiveName);
             Assert.AreEqual(DirectiveLocation.FIELD, directive2.Location);
             Assert.IsNull(directive2.GraphType);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -1103,7 +1148,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                     }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var field = result.Operations[0].FieldSelectionSet
@@ -1131,6 +1176,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             Assert.AreEqual("arg2", arg2.Name.ToString());
             Assert.AreEqual("\"bob\"", ((IScalarSuppliedValue)arg2.Value).Value.ToString());
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -1144,7 +1191,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                     }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var field = result.Operations[0].FieldSelectionSet
@@ -1156,6 +1203,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.IsNull(arg.GraphType);
             Assert.IsNull(arg.Argument);
             Assert.AreEqual("notAnArgument", arg.Name);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -1170,7 +1219,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                     }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var fields = result.Operations[0]
@@ -1187,6 +1236,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("__typename", typeName.Name.ToString());
             Assert.IsNotNull(typeName.GraphType);
             Assert.AreEqual(Constants.ScalarNames.STRING, typeName.GraphType.Name);
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -1206,7 +1257,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
                     }";
 
             var sourceText = new SourceText(text.AsSpan());
-            var tree = this.CreateSyntaxTree(sourceText);
+            var tree = this.CreateSyntaxTree(ref sourceText);
 
             var result = this.CreateDocument(tree, sourceText);
             var retrieveEither = result.Operations[0]
@@ -1222,6 +1273,8 @@ namespace GraphQL.AspNet.Tests.Parsing2
                 .OfType<IFieldDocumentPart>().SingleOrDefault(x => x.Field.Parent == _donutGraphType && x.Field.Name == "__typename"));
             Assert.IsNotNull(fieldSelectionSet.Children[DocumentPartType.Field]
                 .OfType<IFieldDocumentPart>().SingleOrDefault(x => x.Field.Parent == _bagelGraphType && x.Field.Name == "__typename"));
+
+            SynTreeOperations.Release(ref tree);
         }
     }
 }

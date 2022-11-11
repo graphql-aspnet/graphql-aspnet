@@ -20,6 +20,9 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
     /// </summary>
     internal class InputArgument_B_AssignInputArgumentForDirective : DocumentConstructionStep
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputArgument_B_AssignInputArgumentForDirective"/> class.
+        /// </summary>
         public InputArgument_B_AssignInputArgumentForDirective()
             : base(SynNodeType.InputItem)
 

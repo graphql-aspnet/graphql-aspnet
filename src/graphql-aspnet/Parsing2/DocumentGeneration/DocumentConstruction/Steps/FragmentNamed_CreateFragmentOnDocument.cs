@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
             var node = context.ActiveNode;
 
             var fragmentName = context.SourceText.Slice(node.PrimaryValue.TextBlock).ToString();
-            var targetGraphTypeName = context.SourceText.Slice(node.PrimaryValue.TextBlock).ToString();
+            var targetGraphTypeName = context.SourceText.Slice(node.SecondaryValue.TextBlock).ToString();
 
             var docPart = new DocumentNamedFragment(
                 context.ParentPart,

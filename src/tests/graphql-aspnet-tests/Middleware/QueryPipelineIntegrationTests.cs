@@ -17,6 +17,7 @@ namespace GraphQL.AspNet.Tests.Middleware
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Middleware.QueryPipelineIntegrationTestData;
@@ -44,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WithAttachedQueryCache_RendersPlanToCache()
         {
-            var keyManager = new DefaultQueryPlanCacheKeyManager(new GraphQLParser());
+            var keyManager = new DefaultQueryPlanCacheKeyManager(new GraphQLParser2());
 
             var cacheInstance = new MemoryCache(nameof(WithAttachedQueryCache_RendersPlanToCache));
             var cache = new DefaultQueryPlanCacheProvider(cacheInstance);

@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     SynNodeType.ScalarValue,
                     "\"TestValue\"",
                     ScalarValueType.String));
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             Assert.AreEqual(TokenType.Name, stream.TokenType);
             Assert.AreEqual("secondValue", stream.ActiveTokenText.ToString());
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     SynNodeType.ScalarValue,
                     "null",
                     ScalarValueType.String));
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
     }
 }

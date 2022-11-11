@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
             tokenStream.Prime();
             var operationNode = this.CreateNode(ref tokenStream);
 
-            synTree = synTree.AddChildNode(ref parentNode, ref operationNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref operationNode);
 
             // a variable collection will begin with an open paren
             if (tokenStream.Match(TokenType.ParenLeft))

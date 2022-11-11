@@ -59,7 +59,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                             SynNodeType.ScalarValue,
                             "\"R2-D2\"",
                             ScalarValueType.String))));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -82,7 +83,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -106,7 +107,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }

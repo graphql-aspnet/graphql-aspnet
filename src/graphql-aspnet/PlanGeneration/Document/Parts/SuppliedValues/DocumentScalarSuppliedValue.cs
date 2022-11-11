@@ -11,12 +11,13 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 {
     using System;
     using System.Diagnostics;
-    using System.Xml.Linq;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Parsing.SyntaxNodes.Inputs.Values;
+
+    using ScalarValueType2 = GraphQL.AspNet.Parsing2.ScalarValueType;
 
     /// <summary>
     /// An input value representing a single scalar value of data.
@@ -40,12 +41,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public DocumentScalarSuppliedValue(
             IDocumentPart parentPart,
             string scalarValue,
-            ScalarValueType valueType,
+            ScalarValueType2 valueType,
             SourceLocation location,
             string key = null)
             : base(parentPart, location, key)
         {
-            this.ValueType = valueType;
+            this.ValueType = (ScalarValueType)valueType;
             this.Value = scalarValue;
         }
 

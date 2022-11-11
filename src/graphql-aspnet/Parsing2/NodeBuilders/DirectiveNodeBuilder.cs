@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
                 startLocation,
                 new SynNodeValue(directiveName));
 
-            synTree = synTree.AddChildNode(ref parentNode, ref directiveNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref directiveNode);
 
             // after the directive name an input collection may exist, parse it out
             if (tokenStream.Match(TokenType.ParenLeft))

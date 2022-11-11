@@ -16,22 +16,25 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common
     /// </summary>
     internal abstract class DocumentConstructionStep : BaseDocumentConstructionRuleStep
     {
-        private SynNodeType _acceptableNodeType;
+        private readonly HashSet<SynNodeType> _acceptableNodeTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentConstructionStep" /> class.
         /// </summary>
         /// <param name="acceptableNodeType">The active node on a given
         /// context must be of this type for the context to be processed by this rule.</param>
-        protected DocumentConstructionStep(SynNodeType acceptableNodeType)
+        protected DocumentConstructionStep(params SynNodeType[] acceptableNodeType)
         {
-            _acceptableNodeType = acceptableNodeType;
+            _acceptableNodeTypes = new HashSet<SynNodeType>();
+
+            for (var i = 0; i < acceptableNodeType.Length; i++)
+                _acceptableNodeTypes.Add(acceptableNodeType[i]);
         }
 
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentConstructionContext context)
         {
-            return _acceptableNodeType == context.ActiveNode.NodeType;
+            return _acceptableNodeTypes.Contains(context.ActiveNode.NodeType);
         }
     }
 }

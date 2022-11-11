@@ -37,8 +37,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputItemCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                stream.Source,
-                tree,
+                  stream.Source,
+                  tree,
                   docNode,
                   new SynNodeTestCase(
                       SynNodeType.InputItemCollection,
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream focus
             Assert.IsTrue(stream.Match(TokenType.CurlyBraceLeft));
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -82,7 +82,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -107,7 +110,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -132,7 +138,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -151,8 +160,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             InputItemCollectionNodeBuilder.Instance.BuildNode(ref tree, ref docNode, ref stream);
 
             HelperAsserts.AssertChildNodeChain(
-                stream.Source,
-                tree,
+                  stream.Source,
+                  tree,
                   docNode,
                   new SynNodeTestCase(
                       SynNodeType.InputItemCollection,
@@ -172,7 +181,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream focus
             Assert.IsTrue(stream.Match(TokenType.CurlyBraceLeft));
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
     }
 }

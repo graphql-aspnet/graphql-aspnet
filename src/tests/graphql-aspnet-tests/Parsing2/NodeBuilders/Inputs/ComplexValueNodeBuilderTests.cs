@@ -59,7 +59,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             Assert.AreEqual(TokenType.Name, stream.TokenType);
             Assert.AreEqual("arg2", stream.ActiveTokenText.ToString());
             Assert.IsFalse(stream.EndOfStream);
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -86,8 +87,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-              docNode,
-              new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                   SynNodeType.ComplexValue,
                   new SynNodeTestCase(
                       SynNodeType.InputItemCollection,
@@ -148,7 +149,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                               "ENUMVALUE")))));
 
             Assert.IsFalse(stream.EndOfStream);
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -172,7 +173,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -198,7 +199,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }

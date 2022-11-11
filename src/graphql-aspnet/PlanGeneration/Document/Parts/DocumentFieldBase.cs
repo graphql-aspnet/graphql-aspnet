@@ -56,6 +56,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         protected DocumentFieldBase(
             IDocumentPart parentPart,
+            string fieldName,
             IGraphField field,
             IGraphType fieldGraphType,
             SourceLocation location,
@@ -63,7 +64,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             : base(parentPart, location)
         {
 
-            this.Name = field?.Name;
+            this.Name = fieldName;
             this.Alias = alias;
 
             this.AssignGraphType(fieldGraphType);

@@ -112,10 +112,11 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
             if (newLineIndex == CHARS.NO_INDEX)
                 return this.Slice(absoluteIndex);
 
-            var slice = this.Slice(absoluteIndex, newLineIndex);
+            var sliceOut = this.Slice(absoluteIndex, newLineIndex);
 
             // \r\n is considered a new line: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
-            return slice.TrimTrailingCarriageReturn();
+            var sliceOut1 = LexerSourceExtensions.TrimTrailingCarriageReturn(sliceOut);
+            return sliceOut1;
         }
 
         /// <summary>

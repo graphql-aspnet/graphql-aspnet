@@ -16,9 +16,13 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.PlanGeneration.Document;
     using GraphQL.AspNet.RulesEngine;
+
+    using DocumentConstructionContext = GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstructionContext;
 
     /// <summary>
     /// Validates that a lexed syntax tree, intended to execute a query on a target schema,
@@ -31,7 +35,7 @@ namespace GraphQL.AspNet.Defaults
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
-        private readonly DocumentConstructionRuleProcessor _nodeProcessor;
+        private readonly Parsing2.DocumentGeneration.DocumentConstructionRuleProcessor _nodeProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQueryDocumentGenerator{TSchema}" /> class.
@@ -40,16 +44,15 @@ namespace GraphQL.AspNet.Defaults
         public DefaultGraphQueryDocumentGenerator(TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _nodeProcessor = new DocumentConstructionRuleProcessor();
+            _nodeProcessor = new GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstructionRuleProcessor();
         }
 
         /// <inheritdoc />
-        public virtual IGraphQueryDocument CreateDocument(ISyntaxTree syntaxTree)
+        public virtual IGraphQueryDocument CreateDocument(SourceText sourceText, SynTree syntaxTree)
         {
-            Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
             Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
 
-            return this.FillDocument(syntaxTree, new QueryDocument());
+            return this.FillDocument(sourceText, syntaxTree, new QueryDocument());
         }
 
         /// <inheritdoc />
@@ -69,9 +72,8 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="syntaxTree">The syntax tree to convert.</param>
         /// <param name="document">The query document to fill.</param>
         /// <returns>IGraphQueryDocument.</returns>
-        protected virtual IGraphQueryDocument FillDocument(ISyntaxTree syntaxTree, IGraphQueryDocument document)
+        protected virtual IGraphQueryDocument FillDocument(SourceText sourceText, SynTree syntaxTree, IGraphQueryDocument document)
         {
-            Validation.ThrowIfNull(syntaxTree, nameof(syntaxTree));
             Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
             Validation.ThrowIfNull(document, nameof(document));
 
@@ -82,9 +84,9 @@ namespace GraphQL.AspNet.Defaults
             // that are required of that node to create pieces (IDocumentPart) of the
             // document being constructed
             // --------------------------------------------
-            var constructionContext = new DocumentConstructionContext(syntaxTree, document, _schema);
+            var constructionContext = new DocumentConstructionContext(syntaxTree, sourceText, document, _schema);
 
-            var completedAllSteps = _nodeProcessor.Execute(constructionContext);
+            var completedAllSteps = _nodeProcessor.Execute(ref constructionContext);
 
             // --------------------------------------------
             // Step 2: Part Linking

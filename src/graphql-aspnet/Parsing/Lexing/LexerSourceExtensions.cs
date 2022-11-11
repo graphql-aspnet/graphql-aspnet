@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Parsing.Lexing
         /// </summary>
         /// <param name="slice">The slice.</param>
         /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public static ReadOnlySpan<char> TrimTrailingCarriageReturn(this in ReadOnlySpan<char> slice)
+        public static ReadOnlySpan<char> TrimTrailingCarriageReturn(ReadOnlySpan<char> slice)
         {
             return slice.Length > 0 && slice[slice.Length - 1] == CHARS.CR
                 ? slice.Slice(0, slice.Length - 1)

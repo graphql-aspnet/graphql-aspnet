@@ -13,9 +13,11 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.Resolvers;
-    using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
@@ -25,19 +27,27 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
     [TestFixture]
     public class ExecutionPlanGenerationTests
-   {
-        private async Task<IGraphQueryPlan> CreatePlan(GraphSchema schema, string text)
+    {
+        private IGraphQueryDocument CreateDocument(GraphSchema schema, string text)
         {
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument(text.AsMemory());
+            var parser = new GraphQLParser2();
+
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
 
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(schema);
+            var doc = docGenerator.CreateDocument(source, syntaxTree);
+            docGenerator.ValidateDocument(doc);
+            return doc;
+        }
+
+        private async Task<IGraphQueryPlan> CreatePlan(GraphSchema schema, string text)
+        {
+            var doc = this.CreateDocument(schema, text);
+
             var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
                 schema,
                 new DefaultOperationComplexityCalculator<GraphSchema>());
-
-            var doc = docGenerator.CreateDocument(syntaxTree);
-            docGenerator.ValidateDocument(doc);
 
             return await planGenerator.CreatePlan(doc.Operations[0]);
         }

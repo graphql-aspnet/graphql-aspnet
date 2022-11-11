@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
                     SynNodeType.VariableCollection,
                     startLocation);
 
-                synTree = synTree.AddChildNode(ref parentNode, ref variableCollectionNode);
+                SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref variableCollectionNode);
 
                 var variableBuilder = NodeBuilderFactory.CreateBuilder(SynNodeType.Variable);
 

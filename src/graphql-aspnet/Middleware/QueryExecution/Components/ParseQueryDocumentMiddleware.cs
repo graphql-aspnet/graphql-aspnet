@@ -21,6 +21,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
+
+    using GraphQLSyntaxException2 = Parsing2.Exceptions.GraphQLSyntaxException;
 
     /// <summary>
     /// Attempts to generate a valid syntax tree for the incoming query text when needed. Skipped if a query plan was pulled
@@ -58,15 +61,29 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                 try
                 {
                     // parse the text into an AST
-                    var syntaxTree = _parser.ParseQueryDocument(context.OperationRequest.QueryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
-                    using (syntaxTree)
-                    {
-                        // convert the AST into a functional document
-                        // matched against the target schema
-                        var document = _documentGenerator.CreateDocument(syntaxTree);
-                        context.QueryDocument = document;
-                        context.Messages.AddRange(document.Messages);
-                    }
+                    var text = ReadOnlySpan<char>.Empty;
+                    if (context.OperationRequest.QueryText != null)
+                        text = context.OperationRequest.QueryText.AsSpan();
+
+                    var sourceText = new SourceText(text);
+                    var syntaxTree = _parser.ParseQueryDocument(ref sourceText);
+
+                    // convert the AST into a functional document
+                    // matched against the target schema
+                    var document = _documentGenerator.CreateDocument(sourceText, syntaxTree);
+                    context.QueryDocument = document;
+                    context.Messages.AddRange(document.Messages);
+
+                }
+                catch (GraphQLSyntaxException2 syntaxException)
+                {
+                    // expose syntax exception messages to the client
+                    // the parser is self contained and ensures its exception messages are
+                    // related to the text being parsed
+                    context.Messages.Critical(
+                        syntaxException.Message,
+                        Constants.ErrorCodes.SYNTAX_ERROR,
+                        syntaxException.Location.AsOrigin());
                 }
                 catch (GraphQLSyntaxException syntaxException)
                 {

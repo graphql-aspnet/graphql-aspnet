@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Parsing2.Lexing
                 else if (_sourceText.CheckCursor(SR.IsStartOfNameGlyph))
                 {
                     var textBlock = _sourceText.NextName(out location);
-                    return LexerSourceExtensions.CharactersToToken(ref _sourceText, textBlock, location);
+                    return _sourceText.CharactersToToken(textBlock, location);
                 }
 
                 // Numbers
@@ -207,8 +207,8 @@ namespace GraphQL.AspNet.Parsing2.Lexing
                 // ----------------------------------
                 else if (_sourceText.CheckCursor(SR.IsStringDelimiterGlyph))
                 {
-                    var text = _sourceText.NextString(out location);
-                    return new LexicalToken(TokenType.String, text, location);
+                    var textBlock = _sourceText.NextString(out location);
+                    return new LexicalToken(TokenType.String, textBlock, location);
                 }
                 else
                 {

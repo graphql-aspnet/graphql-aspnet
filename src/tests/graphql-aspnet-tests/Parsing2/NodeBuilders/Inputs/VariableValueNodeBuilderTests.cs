@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     "var1"));
 
             Assert.IsTrue(stream.EndOfStream);
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -90,7 +90,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }

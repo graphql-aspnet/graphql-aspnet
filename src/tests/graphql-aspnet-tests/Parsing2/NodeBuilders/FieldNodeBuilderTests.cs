@@ -64,7 +64,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -88,7 +88,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -113,7 +116,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     SynNodeType.Field,
                     "field1",
                     "field1"));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -136,7 +140,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     SynNodeType.Field,
                     "field1",
                     "fieldA"));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -162,7 +167,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.FieldCollection,
                         SynNodeTestCase.NoChildren)));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -195,7 +201,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                             SynNodeType.Field,
                             "field3",
                             "field3"))));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -224,7 +231,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                             SynNodeType.Field,
                             "field2",
                             "fieldA"))));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -263,7 +271,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                                 SynNodeType.ScalarValue,
                                 "123",
                                 ScalarValueType.Number)))));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -291,7 +300,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.Directive,
                         "include")));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -322,7 +332,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     new SynNodeTestCase(
                         SynNodeType.Directive,
                         "skip")));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
     }
 }

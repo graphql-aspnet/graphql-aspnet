@@ -29,6 +29,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Middleware.QueryExecution;
     using GraphQL.AspNet.Middleware.SchemaItemSecurity;
     using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
@@ -164,7 +165,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
 
             // "per application server" instance
-            _options.ServiceCollection.TryAddSingleton<IGraphQLDocumentParser, GraphQLParser>();
+            _options.ServiceCollection.TryAddSingleton<IGraphQLDocumentParser, GraphQLParser2>();
             _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
             _options.ServiceCollection.TryAddScoped<IGraphEventLogger>((sp) =>
             {

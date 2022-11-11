@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                 startLocation,
                 new SynNodeValue(name));
 
-            synTree = synTree.AddChildNode(ref parentNode, ref inputItemNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref inputItemNode);
 
             var valueBuilder = NodeBuilderFactory.CreateBuilder(SynNodeType.InputValue);
             valueBuilder.BuildNode(ref synTree, ref inputItemNode, ref tokenStream);

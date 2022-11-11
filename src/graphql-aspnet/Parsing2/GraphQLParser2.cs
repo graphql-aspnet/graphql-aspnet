@@ -22,7 +22,7 @@ namespace GraphQL.AspNet.Parsing2
     /// A parse that will convert a graphql query into valid
     /// syntax tree to be used by the a formal schema for fulfilling the request.
     /// </summary>
-    public class GraphQLParser2
+    public class GraphQLParser2 : IGraphQLDocumentParser
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLParser2"/> class.
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Parsing2
         /// </summary>
         /// <param name="sourceText">The raw query text to be parsed.</param>
         /// <returns>The completed document.</returns>
-        public SynTree ParseQueryDocument(SourceText sourceText)
+        public SynTree ParseQueryDocument(ref SourceText sourceText)
         {
             // if an exception occurs during parsing just let it bubble up
             // the owner of the parse request will handle it accordingly

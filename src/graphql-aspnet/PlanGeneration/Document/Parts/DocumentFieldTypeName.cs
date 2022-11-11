@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             IGraphType fieldGraphType,
             SourceLocation location,
             string alias)
-            : base(parentPart, field, fieldGraphType, location, alias)
+            : base(parentPart, Constants.ReservedNames.TYPENAME_FIELD, field, fieldGraphType, location, alias)
         {
         }
 

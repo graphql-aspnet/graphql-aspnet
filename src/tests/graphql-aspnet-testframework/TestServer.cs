@@ -16,6 +16,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using Castle.DynamicProxy.Generators;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Controllers;
@@ -35,6 +36,8 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -132,10 +135,10 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="queryText">The query text to create a syntax tree for.</param>
         /// <returns>ISyntaxTree.</returns>
-        public ISyntaxTree CreateSyntaxTree(string queryText)
+        public SynTree CreateSyntaxTree(ref SourceText source)
         {
             var parser = this.ServiceProvider.GetService<IGraphQLDocumentParser>();
-            return parser.ParseQueryDocument(queryText?.AsMemory() ?? ReadOnlyMemory<char>.Empty);
+            return parser.ParseQueryDocument(ref source);
         }
 
         /// <summary>
@@ -146,8 +149,15 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>IGraphQueryDocument.</returns>
         public IGraphQueryDocument CreateDocument(string queryText)
         {
+            var text = ReadOnlySpan<char>.Empty;
+            if (queryText != null)
+                text = queryText.AsSpan();
+
+            var source = new SourceText(text);
+
             var generator = this.ServiceProvider.GetService<IGraphQueryDocumentGenerator<TSchema>>();
-            var document = generator.CreateDocument(this.CreateSyntaxTree(queryText));
+            var synTree = this.CreateSyntaxTree(ref source);
+            var document = generator.CreateDocument(source, synTree);
             return document;
         }
 

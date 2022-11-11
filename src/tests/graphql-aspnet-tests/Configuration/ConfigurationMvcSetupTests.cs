@@ -22,6 +22,7 @@ namespace GraphQL.AspNet.Tests.Configuration
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Configuration.ConfigurationTestData;
@@ -71,7 +72,7 @@ namespace GraphQL.AspNet.Tests.Configuration
             Assert.IsNotNull(sp.GetService(typeof(IGraphQueryPlanGenerator<GraphSchema>)) as DefaultGraphQueryPlanGenerator<GraphSchema>);
             Assert.IsNotNull(sp.GetService(typeof(IGraphResponseWriter<GraphSchema>)) as DefaultResponseWriter<GraphSchema>);
             Assert.IsNotNull(sp.GetService(typeof(IGraphQueryExecutionMetricsFactory<GraphSchema>)) as DefaultGraphQueryExecutionMetricsFactory<GraphSchema>);
-            Assert.IsNotNull(sp.GetService(typeof(IGraphQLDocumentParser)) as GraphQLParser);
+            Assert.IsNotNull(sp.GetService(typeof(IGraphQLDocumentParser)) as GraphQLParser2);
 
             GraphQLProviders.TemplateProvider.Clear();
         }

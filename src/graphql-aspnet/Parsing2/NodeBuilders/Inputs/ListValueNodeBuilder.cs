@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                 SynNodeType.ListValue,
                 startLocation);
 
-            synTree = synTree.AddChildNode(ref parentNode, ref listNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref listNode);
 
             if (!tokenStream.EndOfStream && !tokenStream.Match(TokenType.BracketRight))
             {

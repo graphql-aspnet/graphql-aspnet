@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                 SynNodeType.NullValue,
                 tokenStream.Location);
 
-            synTree = synTree.AddChildNode(ref parentNode, ref nullNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref nullNode);
             tokenStream.Next();
         }
     }

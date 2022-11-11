@@ -76,7 +76,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
                 new SynNodeValue(variableName),
                 new SynNodeValue(typeExpression));
 
-            synTree = synTree.AddChildNode(ref parentNode, ref variableNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref variableNode);
 
             // could be an equal sign for a default value
             if (tokenStream.Match(TokenType.EqualsSign))

@@ -217,7 +217,7 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
                 return ReadOnlySpan<char>.Empty;
 
             var indexOfN = _sourceText.Slice(this.Cursor).IndexOf(CHARS.NL);
-            ReadOnlySpan<char> slice;
+            ReadOnlySpan<char> slice = ReadOnlySpan<char>.Empty;
             if (indexOfN < 0)
             {
                 // consume the rest of the text
@@ -231,7 +231,8 @@ namespace GraphQL.AspNet.Parsing.Lexing.Source
             }
 
             // \r\n is considered a new line: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
-            return slice.TrimTrailingCarriageReturn();
+            slice = LexerSourceExtensions.TrimTrailingCarriageReturn(slice);
+            return slice;
         }
 
         /// <summary>

@@ -39,8 +39,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-               docNode,
-               new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                    SynNodeType.ListValue,
                    new SynNodeTestCase(
                        SynNodeType.ScalarValue,
@@ -57,7 +57,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.Name, stream.TokenType);
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -77,8 +77,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-              docNode,
-              new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                   SynNodeType.ListValue,
                   new SynNodeTestCase(
                       SynNodeType.ScalarValue,
@@ -91,7 +91,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.Name, stream.TokenType);
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -112,8 +112,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-              docNode,
-              new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                   SynNodeType.ListValue,
                   new SynNodeTestCase(
                       SynNodeType.ComplexValue,
@@ -190,7 +190,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.Name, stream.TokenType);
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -208,8 +208,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-              docNode,
-              new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                   SynNodeType.ListValue,
                   new SynNodeTestCase(
                       SynNodeType.ComplexValue,
@@ -238,7 +238,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
 
             // ensure stream is pointing beyond the end of the list
             Assert.AreEqual(TokenType.ParenRight, stream.TokenType);
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -257,8 +257,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-              docNode,
-              new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                   SynNodeType.ListValue,
                   new SynNodeTestCase(
                       SynNodeType.ListValue,
@@ -290,7 +290,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                           SynNodeType.ScalarValue,
                           "99",
                           ScalarValueType.Number))));
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -309,8 +309,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-              docNode,
-              new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                   SynNodeType.ListValue,
                   new SynNodeTestCase(
                       SynNodeType.ScalarValue,
@@ -320,7 +320,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                       SynNodeType.ScalarValue,
                       "\"\"\"Robert\"\"\"",
                       ScalarValueType.String)));
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -339,8 +339,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             HelperAsserts.AssertChildNodeChain(
                 stream.Source,
                 tree,
-              docNode,
-              new SynNodeTestCase(
+                docNode,
+                new SynNodeTestCase(
                   SynNodeType.ListValue,
                   new SynNodeTestCase(
                       SynNodeType.ScalarValue,
@@ -352,7 +352,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                       SynNodeType.ScalarValue,
                       "456",
                       ScalarValueType.Number)));
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -376,7 +376,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -401,7 +401,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }

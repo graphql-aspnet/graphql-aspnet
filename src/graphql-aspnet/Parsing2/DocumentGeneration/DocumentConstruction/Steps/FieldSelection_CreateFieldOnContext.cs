@@ -57,6 +57,7 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
 
             var docPart = new DocumentField(
                 context.ParentPart,
+                fieldName,
                 graphField,
                 fieldReturnGraphType,
                 node.Location,

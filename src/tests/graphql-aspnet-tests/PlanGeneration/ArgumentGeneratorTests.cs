@@ -14,6 +14,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Parsing;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.PlanGeneration.InputArguments;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
@@ -29,11 +31,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         public void FoundArgument_GeneratesResult()
         {
             var server = new TestServerBuilder().AddType<InputController>().Build();
+            var text = "query TestQuery{  input {  fetchString(arg1: 5, arg2: 10) } }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query TestQuery{  input {  fetchString(arg1: 5, arg2: 10) } }".AsMemory());
+            var parser = new GraphQLParser2();
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
+
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(syntaxTree);
+            var document = docGenerator.CreateDocument(source, syntaxTree);
 
             var queryInputCollection = document.Operations["TestQuery"]
                 .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
@@ -62,11 +67,14 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var server = new TestServerBuilder()
                 .AddType<InputController>()
                 .Build();
+            var text = "query TestQuery{  input {  fetchString(arg1: 5) } }";
 
-            var parser = new GraphQLParser();
-            var syntaxTree = parser.ParseQueryDocument("query TestQuery{  input {  fetchString(arg1: 5) } }".AsMemory());
+            var parser = new GraphQLParser2();
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
+
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(syntaxTree);
+            var document = docGenerator.CreateDocument(source, syntaxTree);
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -95,12 +103,16 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 .AddType<InputController>()
                 .Build();
 
-            var parser = new GraphQLParser();
-
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
-            var syntaxTree = parser.ParseQueryDocument("query TestQuery{  input {  fetchString(arg1: 2147483648 ) } }".AsMemory());
+            var text = "query TestQuery{  input {  fetchString(arg1: 2147483648 ) } }";
+
+
+            var parser = new GraphQLParser2();
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
+
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(syntaxTree);
+            var document = docGenerator.CreateDocument(source, syntaxTree);
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -127,12 +139,16 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 .AddType<InputController>()
                 .Build();
 
-            var parser = new GraphQLParser();
-
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
-            var syntaxTree = parser.ParseQueryDocument("query TestQuery{  input {  fetchArrayTotal(arg3: [1, 2, 3]) } }".AsMemory());
+            var text = "query TestQuery{  input {  fetchArrayTotal(arg3: [1, 2, 3]) } }";
+
+            var parser = new GraphQLParser2();
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
+
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(syntaxTree);
+            var document = docGenerator.CreateDocument(source, syntaxTree);
+
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -163,12 +179,16 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 .AddType<InputController>()
                 .Build();
 
-            var parser = new GraphQLParser();
-
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
-            var syntaxTree = parser.ParseQueryDocument("query TestQuery($var1: Int!){  input {  fetchArrayTotal(arg3: [1, $var1, 3]) } }".AsMemory());
+            var text = "query TestQuery($var1: Int!){  input {  fetchArrayTotal(arg3: [1, $var1, 3]) } }";
+
+
+            var parser = new GraphQLParser2();
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
+
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(syntaxTree);
+            var document = docGenerator.CreateDocument(source, syntaxTree);
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -193,10 +213,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 .AddType<InputController>()
                 .Build();
 
-            var parser = new GraphQLParser();
-
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
-            var syntaxTree = parser.ParseQueryDocument(@"
+            var text = @"
                 query TestQuery{
                     input {
                         fetchComplexValue(arg4: {
@@ -205,10 +223,15 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             }
                         )
                     }
-                }".AsMemory());
+                }";
+
+
+            var parser = new GraphQLParser2();
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
 
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(syntaxTree);
+            var document = docGenerator.CreateDocument(source, syntaxTree);
 
             var queryInputCollection = document.Operations["TestQuery"].FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;
 
@@ -238,10 +261,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                 .AddType<InputController>()
                 .Build();
 
-            var parser = new GraphQLParser();
-
             // set arg1 to int.max + 1; the int graph type will fail to resolve it
-            var syntaxTree = parser.ParseQueryDocument(@"
+            var text = @"
                 query TestQuery($var1: Int!){
                     input {
                         fetchComplexValue(arg4: {
@@ -250,10 +271,15 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
                             }
                         )
                     }
-                }".AsMemory());
+                }";
+
+
+            var parser = new GraphQLParser2();
+            var source = new SourceText(text.AsSpan());
+            var syntaxTree = parser.ParseQueryDocument(ref source);
 
             var docGenerator = new DefaultGraphQueryDocumentGenerator<GraphSchema>(server.Schema);
-            var document = docGenerator.CreateDocument(syntaxTree);
+            var document = docGenerator.CreateDocument(source, syntaxTree);
 
             var queryInputCollection = document.Operations["TestQuery"]
                 .FieldSelectionSet.ExecutableFields[0].FieldSelectionSet.ExecutableFields[0].Arguments;

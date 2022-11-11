@@ -41,7 +41,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                 new SynNodeTestCase(
                     SynNodeType.FieldCollection,
                     SynNodeTestCase.NoChildren));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -64,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -88,7 +89,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -111,7 +115,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally 
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -143,7 +150,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     "field2",
                     "fieldA")));
 
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -177,7 +184,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     "field3",
                     "field3")));
 
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -219,7 +226,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
                     SynNodeType.FragmentSpread,
                     "someFragment")));
 
-            tree.Release();
+            SynTreeOperations.Release(ref tree);
         }
     }
 }

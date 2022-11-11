@@ -51,11 +51,12 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <param name="fieldGraphType">The qualified graph type returned by the field.</param>
         public DocumentField(
             IDocumentPart parentPart,
+            string fieldName,
             IGraphField field,
             IGraphType fieldGraphType,
             SourceLocation location,
             string alias)
-            : base(parentPart, field, fieldGraphType, location, alias)
+            : base(parentPart, fieldName, field, fieldGraphType, location, alias)
         {
         }
 

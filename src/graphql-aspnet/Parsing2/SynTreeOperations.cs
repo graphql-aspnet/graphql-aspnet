@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Parsing2
         /// </summary>
         /// <param name="synTree">The syn tree to release.</param>
         [DebuggerStepperBoundary]
-        public static void Release(this SynTree synTree)
+        public static void Release(ref SynTree synTree)
         {
             for (var i = 0; i < synTree.BlockLength; i++)
                 ArrayPool<SynNode>.Shared.Return(synTree.NodePool[i]);
@@ -46,16 +46,13 @@ namespace GraphQL.AspNet.Parsing2
         /// </remarks>
         /// <param name="synTree">The syn tree to add the child to.</param>
         /// <param name="childNode">The child node to insert.</param>
-        /// <returns>A copy of the tree with the node inserted and an updated
-        /// version of the node with the appropriate coordinates.</returns>
         [DebuggerStepperBoundary]
-        public static SynTree AddChildNode(
-            this SynTree synTree,
+        public static void AddChildNode(
+            ref SynTree synTree,
             ref SynNode childNode)
         {
             var rootNode = synTree.RootNode;
-            var treeOut = AddChildNode(synTree, ref rootNode, ref childNode);
-            return treeOut;
+            AddChildNode(ref synTree, ref rootNode, ref childNode);
         }
 
         /// <summary>
@@ -69,26 +66,22 @@ namespace GraphQL.AspNet.Parsing2
         /// <param name="synTree">The syn tree to add the child to.</param>
         /// <param name="parentNode">The parent node to add the child to.</param>
         /// <param name="childNode">The child node to insert.</param>
-        /// <returns>A copy of the tree with the node inserted and an updated
-        /// version of the node with the appropriate coordinates.</returns>
         [DebuggerStepperBoundary]
-        public static SynTree AddChildNode(
-            this SynTree synTree,
+        public static void AddChildNode(
+            ref SynTree synTree,
             ref SynNode parentNode,
             ref SynNode childNode)
         {
-            SynTree treeOut = synTree;
-
             // add or update the parent's child block where the child
             // will be added
             if (parentNode.Coordinates.ChildBlockIndex < 0)
             {
-                InsertChildBlock(ref treeOut, ref parentNode);
+                InsertChildBlock(ref synTree, ref parentNode);
             }
             else
             {
                 EnsureExistingChildBlockLength(
-                    ref treeOut,
+                    ref synTree,
                     ref parentNode,
                     parentNode.Coordinates.ChildBlockLength + 1);
             }
@@ -101,7 +94,7 @@ namespace GraphQL.AspNet.Parsing2
 
             // insert the child block into the map
             var coords = childNode.Coordinates;
-            treeOut.NodePool[coords.BlockIndex][coords.BlockPosition] = childNode;
+            synTree.NodePool[coords.BlockIndex][coords.BlockPosition] = childNode;
 
             // update the parent's child count
             coords = parentNode.Coordinates;
@@ -111,15 +104,13 @@ namespace GraphQL.AspNet.Parsing2
             // tree copy to reflect its new child stats
             if (parentNode.IsRootNode)
             {
-                treeOut = treeOut.Clone(rootNode: parentNode);
+                synTree = synTree.Clone(rootNode: parentNode);
             }
             else
             {
                 coords = parentNode.Coordinates;
-                treeOut.NodePool[coords.BlockIndex][coords.BlockPosition] = parentNode;
+                synTree.NodePool[coords.BlockIndex][coords.BlockPosition] = parentNode;
             }
-
-            return treeOut;
         }
 
         /// <summary>
@@ -182,7 +173,7 @@ namespace GraphQL.AspNet.Parsing2
         /// </summary>
         /// <param name="synTree">The syntax tree to convert.</param>
         /// <returns>System.String.</returns>
-        public static string ToJsonString(this SynTree synTree, ref SourceText sourceText)
+        public static string ToJsonString(this SynTree synTree, SourceText sourceText)
         {
             var options = new JsonWriterOptions()
             {

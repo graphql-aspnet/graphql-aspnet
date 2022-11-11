@@ -12,6 +12,8 @@ namespace GraphQL.AspNet.Internal.Interfaces
     using System;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
     using GraphQL.AspNet.Parsing.Lexing.Exceptions;
+    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
@@ -27,7 +29,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// </summary>
         /// <param name="queryText">The raw query text to be parsed.</param>
         /// <returns>The completed document.</returns>
-        ISyntaxTree ParseQueryDocument(ReadOnlyMemory<char> queryText);
+        SynTree ParseQueryDocument(ref SourceText queryText);
 
         /// <summary>
         /// Strips extra whitespace from the query text.

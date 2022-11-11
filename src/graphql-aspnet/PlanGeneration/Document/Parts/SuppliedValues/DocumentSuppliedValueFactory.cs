@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                     return new DocumentScalarSuppliedValue(
                         ownerPart,
                         sourceText.Slice(valueNode.PrimaryValue.TextBlock).ToString(),
-                        (Parsing.SyntaxNodes.ScalarValueType)valueNode.PrimaryValue.ValueType,
+                        valueNode.PrimaryValue.ValueType,
                         valueNode.Location,
                         key);
 

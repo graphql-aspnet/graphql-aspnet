@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             {
                 var parser = new GraphQLParser2();
                 var sourceText = new SourceText(qualifiedQuery);
-                var syntaxTree = parser.ParseQueryDocument(sourceText);
+                var syntaxTree = parser.ParseQueryDocument(ref sourceText);
             });
         }
 
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             var parser = new GraphQLParser2();
             var sourceText = new SourceText(qualifiedQuery);
-            var syntaxTree = parser.ParseQueryDocument(sourceText);
+            var syntaxTree = parser.ParseQueryDocument(ref sourceText);
 
             // RootNode | Operation -> Empty Field Set
             Assert.AreEqual(2, syntaxTree.BlockLength);
@@ -58,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             {
                 var parser = new GraphQLParser2();
                 var sourceText = new SourceText(text);
-                var syntaxTree = parser.ParseQueryDocument(sourceText);
+                var syntaxTree = parser.ParseQueryDocument(ref sourceText);
             });
         }
 
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             var parser = new GraphQLParser2();
             var sourceText = new SourceText(qualifiedQuery);
-            var syntaxTree = parser.ParseQueryDocument(sourceText);
+            var syntaxTree = parser.ParseQueryDocument(ref sourceText);
             Assert.IsTrue(syntaxTree.BlockLength > 0);
         }
 

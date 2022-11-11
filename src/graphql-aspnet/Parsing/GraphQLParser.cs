@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Parsing
     /// A parse that will convert a graphql query into valid
     /// syntax tree to be used by the a formal schema for fulfilling the request.
     /// </summary>
-    public class GraphQLParser : IGraphQLDocumentParser
+    public class GraphQLParser
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphQLParser"/> class.

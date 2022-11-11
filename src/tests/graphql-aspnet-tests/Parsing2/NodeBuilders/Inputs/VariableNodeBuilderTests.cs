@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             }
             finally
             {
-                tree.Release();
+                SynTreeOperations.Release(ref tree);
             }
 
             Assert.Fail("Expection syntax exception");
@@ -68,7 +68,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -92,7 +95,10 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
             {
                 return;
             }
-            finally { tree.Release(); }
+            finally
+            {
+                SynTreeOperations.Release(ref tree);
+            }
 
             Assert.Fail("Expection syntax exception");
         }
@@ -120,7 +126,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     new SynNodeTestCase(
                         SynNodeType.EnumValue,
                         "JEDI")));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -146,7 +153,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     new SynNodeTestCase(
                         SynNodeType.EnumValue,
                         "JEDI")));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -169,7 +177,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     SynNodeType.Variable,
                     "episode",
                     "Episode"));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -195,7 +204,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     new SynNodeTestCase(
                         SynNodeType.EnumValue,
                         "JEDI")));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -221,7 +231,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                     new SynNodeTestCase(
                         SynNodeType.Directive,
                         "myDirective")));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -256,7 +267,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                                     SynNodeType.ScalarValue,
                                     "\"value1\"",
                                     ScalarValueType.String))))));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
 
         [Test]
@@ -294,7 +306,8 @@ namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
                                     SynNodeType.ScalarValue,
                                     "\"value1\"",
                                     ScalarValueType.String))))));
-            tree.Release();
+
+            SynTreeOperations.Release(ref tree);
         }
     }
 }

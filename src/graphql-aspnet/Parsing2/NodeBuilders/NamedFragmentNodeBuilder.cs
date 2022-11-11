@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
 {
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Parsing2.Lexing;
+    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Parsing2.Lexing.Tokens;
     using KEYWORDS = GraphQL.AspNet.Parsing2.ParserConstants.Keywords;
 
@@ -41,14 +42,17 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
             tokenStream.Next();
 
             // "on" keyword
-            tokenStream.MatchOrThrow(KEYWORDS.On.Span);
+            // optional on parsing, check as rule 5.5.1.2 during validation
+            var targetType = SourceTextBlockPointer.None;
+            if (tokenStream.Match(KEYWORDS.On.Span))
+            {
+                tokenStream.Next();
 
-            tokenStream.Next();
-
-            // target type
-            tokenStream.MatchOrThrow(TokenType.Name);
-            var targetType = tokenStream.ActiveToken.Block;
-            tokenStream.Next();
+                // target type
+                tokenStream.MatchOrThrow(TokenType.Name);
+                targetType = tokenStream.ActiveToken.Block;
+                tokenStream.Next();
+            }
 
             var namedFragmentNode = new SynNode(
                 SynNodeType.NamedFragment,
@@ -56,7 +60,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
                 new SynNodeValue(fragmentName),
                 new SynNodeValue(targetType));
 
-            synTree = synTree.AddChildNode(ref parentNode, ref namedFragmentNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref namedFragmentNode);
 
             // account for possible directives on this field
             if (tokenStream.Match(TokenType.AtSymbol))

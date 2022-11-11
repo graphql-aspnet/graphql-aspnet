@@ -115,8 +115,9 @@ namespace GraphQL.AspNet.Parsing2.Lexing.Source
             var block = new SourceTextBlockPointer(absoluteIndex, newLineIndex);
 
             // \r\n is considered a new line: https://graphql.github.io/graphql-spec/October2021/#sec-Line-Terminators
-            block = this.TrimTrailingCarriageReturn(block);
-            return this.RetrieveText(block);
+            block = this.TrimTrailingCarriageReturnFromBlock(block);
+            var slice = this.RetrieveText(block);
+            return slice;
         }
 
         /// <summary>

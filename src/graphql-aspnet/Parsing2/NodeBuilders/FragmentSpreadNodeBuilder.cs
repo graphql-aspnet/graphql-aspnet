@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
                     new SynNodeValue(restrictedToType));
             }
 
-            synTree = synTree.AddChildNode(ref parentNode, ref fragmentNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref fragmentNode);
 
             // account for possible directives on this field
             if (tokenStream.Match(TokenType.AtSymbol))

@@ -18,10 +18,19 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
     /// </summary>
     internal class InputValue_AssignValueToArgumentOrValue : DocumentConstructionStep
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputValue_AssignValueToArgumentOrValue"/> class.
+        /// </summary>
         public InputValue_AssignValueToArgumentOrValue()
-            : base(SynNodeType.InputValue)
+            : base(
+                  SynNodeType.InputValue,
+                  SynNodeType.VariableValue,
+                  SynNodeType.ComplexValue,
+                  SynNodeType.EnumValue,
+                  SynNodeType.ScalarValue,
+                  SynNodeType.ListValue,
+                  SynNodeType.NullValue)
         {
-
         }
 
         /// <inheritdoc />

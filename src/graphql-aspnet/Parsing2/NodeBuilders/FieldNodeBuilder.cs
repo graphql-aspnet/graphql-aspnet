@@ -54,7 +54,7 @@ namespace GraphQL.AspNet.Parsing2.NodeBuilders
                 new SynNodeValue(fieldName),
                 new SynNodeValue(fieldAlias));
 
-            synTree = synTree.AddChildNode(ref parentNode, ref fieldNode);
+            SynTreeOperations.AddChildNode(ref synTree, ref parentNode, ref fieldNode);
 
             // account for possible collection of input values
             if (tokenStream.Match(TokenType.ParenLeft))
