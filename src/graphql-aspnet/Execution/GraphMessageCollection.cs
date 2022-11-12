@@ -35,29 +35,6 @@ namespace GraphQL.AspNet.Execution
         public GraphMessageCollection()
         {
             _messages = new ConcurrentList<IGraphMessage>();
-            _messages.ItemAdded += this.Message_ItemAdded;
-            _messages.ListCleared += this.Messages_Cleared;
-        }
-
-        /// <summary>
-        /// Called whenever the underlying list is fully cleared.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="message">The message that was removed (null for this operation).</param>
-        private void Messages_Cleared(object sender, IGraphMessage message)
-        {
-            this.Severity = GraphMessageSeverity.Trace;
-        }
-
-        /// <summary>
-        /// Called whenever an item is addded the underlying collection.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="message">The message.</param>
-        private void Message_ItemAdded(object sender, IGraphMessage message)
-        {
-            if (message.Severity > this.Severity)
-                this.Severity = message.Severity;
         }
 
         /// <summary>
@@ -68,6 +45,9 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessage Add(IGraphMessage message)
         {
             _messages.Add(message);
+            if (message.Severity > this.Severity)
+                this.Severity = message.Severity;
+
             return message;
         }
 
@@ -201,6 +181,7 @@ namespace GraphQL.AspNet.Execution
         public void Clear()
         {
             _messages.Clear();
+            this.Severity = GraphMessageSeverity.Trace;
         }
 
         /// <summary>

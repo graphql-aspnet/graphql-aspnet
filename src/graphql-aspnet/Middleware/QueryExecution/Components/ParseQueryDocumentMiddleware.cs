@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Parsing2;
     using GraphQL.AspNet.Parsing2.Lexing.Source;
 
     using GraphQLSyntaxException2 = GraphQL.AspNet.Parsing2.Exceptions.GraphQLSyntaxException;
@@ -66,11 +67,18 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     var sourceText = new SourceText(text);
                     var syntaxTree = _parser.ParseQueryDocument(ref sourceText);
 
-                    // convert the AST into a functional document
-                    // matched against the target schema
-                    var document = _documentGenerator.CreateDocument(sourceText, syntaxTree);
-                    context.QueryDocument = document;
-                    context.Messages.AddRange(document.Messages);
+                    try
+                    {
+                        // convert the AST into a functional document
+                        // matched against the target schema
+                        var document = _documentGenerator.CreateDocument(sourceText, syntaxTree);
+                        context.QueryDocument = document;
+                        context.Messages.AddRange(document.Messages);
+                    }
+                    finally
+                    {
+                        SynTreeOperations.Release(ref syntaxTree);
+                    }
                 }
                 catch (GraphQLSyntaxException2 syntaxException)
                 {

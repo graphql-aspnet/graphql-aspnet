@@ -46,6 +46,20 @@ namespace GraphQL.AspNet.Defaults
         /// </summary>
         protected static readonly string ERROR_VARIABLE_PARAMETER_SERIALIZATION_ISSUE_FORMAT = $"Unable to deserialize the '{Constants.Web.QUERYSTRING_VARIABLES_KEY}' query string parameter: {{0}}";
 
+        private static readonly JsonSerializerOptions _options;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="HttpContextParser"/> class.
+        /// </summary>
+        static HttpContextParser()
+        {
+            // attempt to decode the body as a json object
+            _options = new JsonSerializerOptions();
+            _options.PropertyNameCaseInsensitive = true;
+            _options.AllowTrailingCommas = true;
+            _options.ReadCommentHandling = JsonCommentHandling.Skip;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpContextParser"/> class.
         /// </summary>
@@ -158,13 +172,11 @@ namespace GraphQL.AspNet.Defaults
                 };
             }
 
-            // attempt to decode the body as a json object
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
-
-            return await JsonSerializer.DeserializeAsync<GraphQueryData>(this.HttpContext.Request.Body, options, this.HttpContext.RequestAborted).ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<GraphQueryData>(
+                this.HttpContext.Request.Body,
+                _options,
+                this.HttpContext.RequestAborted)
+                .ConfigureAwait(false);
         }
 
         /// <summary>

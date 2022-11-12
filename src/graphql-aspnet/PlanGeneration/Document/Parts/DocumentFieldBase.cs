@@ -78,22 +78,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc cref="IFieldDocumentPart.PostResolver" />
-        public Func<FieldResolutionContext, CancellationToken, Task> PostResolver
-        {
-            get
-            {
-                if (this.Attributes.TryGetValue(Constants.DocumentPartAttributes.FieldPostResolutionResolver, out object item))
-                    return item as Func<FieldResolutionContext, CancellationToken, Task>;
-
-                return null;
-            }
-
-            set
-            {
-                this.Attributes.TryRemove(Constants.DocumentPartAttributes.FieldPostResolutionResolver, out _);
-                this.Attributes.TryAdd(Constants.DocumentPartAttributes.FieldPostResolutionResolver, value);
-            }
-        }
+        public Func<FieldResolutionContext, CancellationToken, Task> PostResolver { get; set; }
 
         /// <inheritdoc cref="IFieldDocumentPart.Field" />
         public IGraphField Field { get; set; }
@@ -120,20 +105,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public ISecureSchemaItem SecureItem => this.Field;
 
         /// <inheritdoc />
-        public bool IsIncluded
-        {
-            get
-            {
-                return this.Attributes.ContainsKey(Constants.DocumentPartAttributes.IsIncluded);
-            }
-
-            set
-            {
-                if (value)
-                    this.Attributes.TryAdd(Constants.DocumentPartAttributes.IsIncluded, value);
-                else
-                    this.Attributes.TryRemove(Constants.DocumentPartAttributes.IsIncluded, out _);
-            }
-        }
+        public bool IsIncluded { get; set; }
     }
 }

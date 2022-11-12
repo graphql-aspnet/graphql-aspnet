@@ -62,11 +62,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
         public void Add(IDocumentPart documentPart)
         {
-            if(documentPart.PartType == DocumentPartType.InputField)
-            {
-                var str = "";
-            }
-
             var part = Validation.ThrowIfNullOrReturn(documentPart, nameof(documentPart));
 
             if (part.Parent != this.Owner)

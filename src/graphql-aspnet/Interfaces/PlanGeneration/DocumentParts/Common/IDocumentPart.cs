@@ -65,17 +65,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
         SourcePath Path { get; }
 
         /// <summary>
-        /// Gets a set of attributes applied to this document part.
-        /// </summary>
-        /// <remarks>
-        /// This is an arbitrary collection of key/value that can indicate different things
-        /// to different consumers. Care should be taken to ensure keys are globally unique for
-        /// all potential key providers.
-        /// </remarks>
-        /// <value>Additional attributes applied to this document part.</value>
-        MetaDataCollection Attributes { get; }
-
-        /// <summary>
         /// Gets a common description that accurately identifies this document part. This value is
         /// controlled by the internal document system and largely used for debugging.
         /// It is not parsable or settable by the user.

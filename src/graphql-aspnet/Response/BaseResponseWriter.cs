@@ -25,6 +25,17 @@ namespace GraphQL.AspNet.Response
     /// </summary>
     public abstract class BaseResponseWriter
     {
+        private static readonly JsonSerializerOptions _serializerSettings;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="BaseResponseWriter"/> class.
+        /// </summary>
+        static BaseResponseWriter()
+        {
+            _serializerSettings = new JsonSerializerOptions();
+            _serializerSettings.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseResponseWriter"/> class.
         /// </summary>
@@ -35,9 +46,7 @@ namespace GraphQL.AspNet.Response
             this.TimeLocalizer = schema.Configuration.ResponseOptions.TimeStampLocalizer;
             this.NameFormatter = schema.Configuration.DeclarationOptions.GraphNamingFormatter;
 
-            var serializerSettings = new JsonSerializerOptions();
-            serializerSettings.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-            this.SerializerSettings = serializerSettings;
+            this.SerializerSettings = _serializerSettings;
         }
 
         /// <summary>

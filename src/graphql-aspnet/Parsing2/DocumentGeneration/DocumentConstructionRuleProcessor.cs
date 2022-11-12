@@ -53,11 +53,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
         /// <returns><c>true</c> if the context completed its step set successfully, <c>false</c> otherwise.</returns>
         private bool ProcessContext(ref DocumentConstructionContext context, int currentDepth = 0)
         {
-            if (context.ActiveNode.NodeType == SynNodeType.InputItem)
-            {
-                string str = "";
-            }
-
             if (currentDepth > _maxDepth)
             {
                 throw new GraphExecutionException(
@@ -84,11 +79,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
 
             if (completedAllSteps && allowChildrenToExecute)
                 completedAllSteps = this.ProcessChildContexts(ref context, currentDepth);
-
-            if (context.ActiveNode.NodeType == SynNodeType.InputItem)
-            {
-                string str = "";
-            }
 
             return completedAllSteps;
         }

@@ -37,7 +37,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
             this.SourceLocation = sourceLocation;
 
             this.Children = new DocumentPartsCollection(this);
-            this.Attributes = new MetaDataCollection();
 
             // wire up local events
             this.Children.ChildPartAdded += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart, e.RelativeDepth);
@@ -99,9 +98,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 
         /// <inheritdoc />
         public SourceLocation SourceLocation { get; }
-
-        /// <inheritdoc />
-        public MetaDataCollection Attributes { get; }
 
         /// <inheritdoc />
         public abstract string Description { get; }

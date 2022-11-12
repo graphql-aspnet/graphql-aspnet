@@ -23,41 +23,8 @@ namespace GraphQL.AspNet.Variables
     /// </summary>
     [DebuggerDisplay("Count = {Count}")]
     [JsonConverter(typeof(InputVariableCollectionConverter))]
-    public class InputVariableCollection : IInputVariableCollection
+    public partial class InputVariableCollection : IInputVariableCollection
     {
-        /// <summary>
-        /// Creates a qualified <see cref="InputVariableCollection"/> from a given json string.
-        /// </summary>
-        /// <param name="jsonDocument">The json document.</param>
-        /// <returns>IInputVariableCollection.</returns>
-        public static InputVariableCollection FromJsonDocument(string jsonDocument)
-        {
-            if (string.IsNullOrWhiteSpace(jsonDocument))
-                return InputVariableCollection.Empty;
-
-            var options = new JsonSerializerOptions()
-            {
-                AllowTrailingCommas = true,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-            };
-
-            return JsonSerializer.Deserialize<InputVariableCollection>(jsonDocument, options);
-        }
-
-        /// <summary>
-        /// Gets a singleton instance of an empty variable collection.
-        /// </summary>
-        /// <value>The empty.</value>
-        public static InputVariableCollection Empty { get; }
-
-        /// <summary>
-        /// Initializes static members of the <see cref="InputVariableCollection"/> class.
-        /// </summary>
-        static InputVariableCollection()
-        {
-            Empty = new InputVariableCollection();
-        }
-
         private readonly Dictionary<string, IInputVariable> _variableSet;
 
         /// <summary>

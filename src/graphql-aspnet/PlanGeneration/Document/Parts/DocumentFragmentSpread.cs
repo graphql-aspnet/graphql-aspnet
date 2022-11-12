@@ -86,21 +86,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public IDirectiveCollectionDocumentPart Directives => _directives;
 
         /// <inheritdoc />
-        public bool IsIncluded
-        {
-            get
-            {
-                return this.Attributes.ContainsKey(Constants.DocumentPartAttributes.IsIncluded);
-            }
-
-            set
-            {
-                if (value)
-                    this.Attributes.TryAdd(Constants.DocumentPartAttributes.IsIncluded, value);
-                else
-                    this.Attributes.TryRemove(Constants.DocumentPartAttributes.IsIncluded, out _);
-            }
-        }
+        public bool IsIncluded { get; set; }
 
         /// <inheritdoc />
         public override string Description => $"Spread: {this.FragmentName}";
