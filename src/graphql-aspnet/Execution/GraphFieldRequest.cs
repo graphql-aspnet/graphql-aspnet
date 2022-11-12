@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Execution
             SourceOrigin origin = null)
         {
             this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.InvocationContext = Validation.ThrowIfNullOrReturn(invocationContext, nameof(invocationContext));
             this.Data = dataSource;
             this.Items = parentOperationRequest.Items;
@@ -56,7 +56,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphOperationRequest OperationRequest { get; }
 
         /// <inheritdoc />
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <inheritdoc />
         public MetaDataCollection Items { get; }

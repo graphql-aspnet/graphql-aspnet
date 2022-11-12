@@ -50,7 +50,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="metrics">The metrics package that was filled during the operation execution.</param>
         public GraphOperationResult(
             IGraphOperationRequest originalRequest,
-            IEnumerable<IGraphMessage> messages = null,
+            IGraphMessageCollection messages = null,
             IResponseFieldSet dataItem = null,
             IGraphQueryExecutionMetrics metrics = null)
         {

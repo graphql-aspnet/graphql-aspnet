@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Execution
         /// <param name="queryData">The query data.</param>
         public GraphOperationRequest(GraphQueryData queryData)
         {
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.OperationName = queryData.OperationName?.Trim();
             this.QueryText = queryData.Query;
             this.VariableData = queryData.Variables ?? new InputVariableCollection();
@@ -74,7 +74,7 @@ namespace GraphQL.AspNet.Execution
         public IInputVariableCollection VariableData { get; set; }
 
         /// <inheritdoc />
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Gets the length of the <see cref="QueryText"/>.

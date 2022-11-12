@@ -71,7 +71,9 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="subscriptionId">The subscription id that was executed.</param>
         /// <param name="messages">The messages that were generated during the failure.</param>
         /// <returns>SubscriptionDataExecutionResult&lt;TSchema&gt;.</returns>
-        public static SubscriptionDataExecutionResult<TSchema> OperationFailure(string subscriptionId, IEnumerable<IGraphMessage> messages)
+        public static SubscriptionDataExecutionResult<TSchema> OperationFailure(
+            string subscriptionId,
+            IGraphMessageCollection messages)
         {
             var result = new SubscriptionDataExecutionResult<TSchema>();
             result.SubscriptionId = subscriptionId;
@@ -79,7 +81,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             result.Status = SubscriptionOperationResultType.OperationFailure;
 
             var messageSet = new GraphMessageCollection();
-            messageSet.AddRange(messages ?? Enumerable.Empty<IGraphMessage>());
+            messageSet.AddRange(messages);
             result.Messages = messageSet;
 
             return result;

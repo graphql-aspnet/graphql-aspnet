@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public SchemaItemAuthenticationStartedLogEntry(GraphSchemaItemSecurityChallengeContext context)
             : base(LogEventIds.SchemaItemAuthenticationStarted)
         {
-            this.PipelineRequestId = context?.Request?.Id;
+            this.PipelineRequestId = context?.Request?.Id.ToString();
             this.SchemaItemPath = context?.SecureSchemaItem?.Route?.Path;
         }
 

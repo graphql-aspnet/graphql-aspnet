@@ -44,8 +44,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         {
             // make static the children in this enumerator so that it doesnt accidently
             // change if the document is still being built as its being read
-            _partsToIterator = new List<IDocumentPart>(selectionSet?.Children?.Count ?? 0);
-            _partsToIterator.AddRange(selectionSet?.Children ?? Enumerable.Empty<IDocumentPart>());
+            if ((selectionSet?.Children?.Count ?? 0) > 0)
+            {
+                _partsToIterator = new List<IDocumentPart>(selectionSet.Children.Count);
+                _partsToIterator.AddRange(selectionSet.Children);
+            }
 
             _activeOnly = activeOnly;
             _traversedFragments = traversedFragments ?? new HashSet<INamedFragmentDocumentPart>();
@@ -56,6 +59,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document
 
         private bool MoveIndexToNextField()
         {
+            if (_partsToIterator == null)
+                return false;
+
             // then advance the pointer on this selection set
             _index++;
             while (_index < _partsToIterator.Count)

@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             this.QueryPlanIsValid = queryPlan?.IsValid;
             this.QueryPlanEstimatedComplexity = queryPlan?.EstimatedComplexity;
             this.QueryPlanOperationName = queryPlan?.OperationName;
-            this.QueryPlanId = queryPlan?.Id;
+            this.QueryPlanId = queryPlan?.Id.ToString();
         }
 
         /// <summary>

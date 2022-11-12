@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Defaults
         // a unique id under which all entries of this logger are recorded
         // since (by default) the logger is created in a scoped setting
         // this id will be unique per http request
-        private readonly string _loggerInstanceId;
+        private readonly Guid _loggerInstanceId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLEventLogger" /> class.
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Defaults
         {
             Validation.ThrowIfNull(loggerFactory, nameof(loggerFactory));
             _logger = loggerFactory.CreateLogger(Constants.Logging.LOG_CATEGORY);
-            _loggerInstanceId = Guid.NewGuid().ToString("N");
+            _loggerInstanceId = Guid.NewGuid();
         }
 
         /// <summary>

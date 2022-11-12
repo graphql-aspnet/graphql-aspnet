@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Execution
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Interfaces.Execution;
 
@@ -27,39 +26,62 @@ namespace GraphQL.AspNet.Execution
     [DebuggerStepThrough]
     public class GraphMessageCollection : IGraphMessageCollection
     {
-        private readonly ConcurrentList<IGraphMessage> _messages;
+        private readonly List<IGraphMessage> _messages;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphMessageCollection"/> class.
         /// </summary>
         public GraphMessageCollection()
         {
-            _messages = new ConcurrentList<IGraphMessage>();
+            _messages = new List<IGraphMessage>();
         }
 
-        /// <summary>
-        /// Adds the specified message to the collection.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
+        /// <inheritdoc />
+        public void AddRange(IGraphMessageCollection messagesToAdd)
+        {
+            if (messagesToAdd == null || messagesToAdd.Count == 0)
+                return;
+
+            lock (_messages)
+            {
+                // resize once then add all messages
+                var newCapacity = messagesToAdd.Count + _messages.Count;
+                if (newCapacity > _messages.Capacity)
+                {
+                    // ensure we increase capacity by at least double the current
+                    // message capacity
+                    if (newCapacity < _messages.Capacity * 2)
+                        newCapacity = _messages.Capacity * 2;
+
+                    var newMessages = new List<IGraphMessage>(newCapacity);
+                    newMessages.AddRange(_messages);
+                }
+
+                for (var i = 0; i < messagesToAdd.Count; i++)
+                {
+                    _messages.Add(messagesToAdd[i]);
+
+                    if (messagesToAdd[i].Severity > this.Severity)
+                        this.Severity = messagesToAdd[i].Severity;
+                }
+            }
+        }
+
+        /// <inheritdoc />
         public IGraphMessage Add(IGraphMessage message)
         {
-            _messages.Add(message);
-            if (message.Severity > this.Severity)
-                this.Severity = message.Severity;
+            lock (_messages)
+            {
+                _messages.Add(message);
+
+                if (message.Severity > this.Severity)
+                    this.Severity = message.Severity;
+            }
 
             return message;
         }
 
-        /// <summary>
-        /// Adds the message to the collection.
-        /// </summary>
-        /// <param name="severity">The severity of this new message.</param>
-        /// <param name="message">The body text for this new message.</param>
-        /// <param name="errorCode">An optional error code to apply to the message..</param>
-        /// <param name="origin">The origin in the source text, if any, that this message relates to.</param>
-        /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
+        /// <inheritdoc />
         public IGraphMessage Add(
             GraphMessageSeverity severity,
             string message,
@@ -77,14 +99,7 @@ namespace GraphQL.AspNet.Execution
             return this.Add(graphMessage);
         }
 
-        /// <summary>
-        /// Adds the critical message to the collection.
-        /// </summary>
-        /// <param name="message">The body text for this new message.</param>
-        /// <param name="errorCode">An optional error code to apply to the message..</param>
-        /// <param name="origin">The origin in the source text, if any, that this message relates to.</param>
-        /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
+        /// <inheritdoc />
         public IGraphMessage Critical(
             string message,
             string errorCode = "",
@@ -94,14 +109,7 @@ namespace GraphQL.AspNet.Execution
             return this.Add(GraphMessageSeverity.Critical, message, errorCode, origin, exceptionThrown);
         }
 
-        /// <summary>
-        /// Adds the warning message to the collection.
-        /// </summary>
-        /// <param name="message">The body text for this new message.</param>
-        /// <param name="errorCode">An optional error code to apply to the message..</param>
-        /// <param name="origin">The origin in the source text, if any, that this message relates to.</param>
-        /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
+        /// <inheritdoc />
         public IGraphMessage Warn(
             string message,
             string errorCode = "",
@@ -111,14 +119,7 @@ namespace GraphQL.AspNet.Execution
             return this.Add(GraphMessageSeverity.Warning, message, errorCode, origin, exceptionThrown);
         }
 
-        /// <summary>
-        /// Adds the informational message to the collection.
-        /// </summary>
-        /// <param name="message">The body text for this new message.</param>
-        /// <param name="errorCode">An optional error code to apply to the message..</param>
-        /// <param name="origin">The origin in the source text, if any, that this message relates to.</param>
-        /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
+        /// <inheritdoc />
         public IGraphMessage Info(
             string message,
             string errorCode = "",
@@ -128,14 +129,7 @@ namespace GraphQL.AspNet.Execution
             return this.Add(GraphMessageSeverity.Information, message, errorCode, origin, exceptionThrown);
         }
 
-        /// <summary>
-        /// Adds the debug message to the collection.
-        /// </summary>
-        /// <param name="message">The body text for this new message.</param>
-        /// <param name="errorCode">An optional error code to apply to the message..</param>
-        /// <param name="origin">The origin in the source text where this message was generated.</param>
-        /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
+        /// <inheritdoc />
         public IGraphMessage Debug(
             string message,
             string errorCode = "",
@@ -145,14 +139,7 @@ namespace GraphQL.AspNet.Execution
             return this.Add(GraphMessageSeverity.Debug, message, errorCode, origin, exceptionThrown);
         }
 
-        /// <summary>
-        /// Adds the trace message to the collection.
-        /// </summary>
-        /// <param name="message">The body text for this new message.</param>
-        /// <param name="errorCode">An optional error code to apply to the message..</param>
-        /// <param name="origin">The origin in the source text where this message was generated.</param>
-        /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
+        /// <inheritdoc />
         public IGraphMessage Trace(
             string message,
             string errorCode = "",
@@ -162,66 +149,33 @@ namespace GraphQL.AspNet.Execution
             return this.Add(GraphMessageSeverity.Trace, message, errorCode, origin, exceptionThrown);
         }
 
-        /// <summary>
-        /// Adds the set of messages to the collection.
-        /// </summary>
-        /// <param name="messages">The messages.</param>
-        public void AddRange(IEnumerable<IGraphMessage> messages)
-        {
-            if (messages == null)
-                return;
+        /// <inheritdoc />
+        public GraphMessageSeverity Severity { get; private set; }
 
-            foreach (var message in messages)
-                this.Add(message);
-        }
-
-        /// <summary>
-        /// Clears all the messages in this instance.
-        /// </summary>
-        public void Clear()
-        {
-            _messages.Clear();
-            this.Severity = GraphMessageSeverity.Trace;
-        }
-
-        /// <summary>
-        /// Gets the highest level severity of all the messages tracked in this collection.
-        /// </summary>
-        /// <value>The severity.</value>
-        public GraphMessageSeverity Severity { get; private set;  }
-
-        /// <summary>
-        /// Gets the count of messages in this collection.
-        /// </summary>
-        /// <value>The count.</value>
+        /// <inheritdoc />
         public int Count => _messages.Count;
 
-        /// <summary>
-        /// Gets a value indicating whether this collection of messages indicates a success (nothing critical).
-        /// </summary>
-        /// <value><c>true</c> if this instance is success; otherwise, <c>false</c>.</value>
+        /// <inheritdoc />
         public bool IsSucessful => !this.Severity.IsCritical();
 
-        /// <summary>
-        /// Gets the <see cref="IGraphMessage"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>IGraphExecutionMessage.</returns>
-        public IGraphMessage this[int index] => _messages[index];
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<IGraphMessage> GetEnumerator()
+        /// <inheritdoc />
+        public IGraphMessage this[int index]
         {
-            return _messages.GetEnumerator();
+            get
+            {
+                lock (_messages)
+                    return _messages[index];
+            }
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc />
+        public IEnumerator<IGraphMessage> GetEnumerator()
+        {
+            lock (_messages)
+                return _messages.GetEnumerator();
+        }
+
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

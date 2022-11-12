@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// Gets the unique identifier assigned to this instance when it was created.
         /// </summary>
         /// <value>The identifier.</value>
-        string Id { get; }
+        Guid Id { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this query plan can be cached. In general,

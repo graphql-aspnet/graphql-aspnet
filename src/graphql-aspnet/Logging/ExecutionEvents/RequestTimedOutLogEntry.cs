@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             : base(LogEventIds.RequestTimeout)
         {
             var startDate = context?.OperationRequest?.StartTimeUTC ?? DateTimeOffset.MinValue;
-            this.OperationRequestId = context?.OperationRequest?.Id;
+            this.OperationRequestId = context?.OperationRequest?.Id.ToString();
 
             this.TotalExecutionMs = 0;
             if (context?.OperationRequest?.StartTimeUTC != null)

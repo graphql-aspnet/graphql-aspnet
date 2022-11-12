@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
             this.QueryPlanHashCode = queryHash;
             _schemaTypeShortName = queryPlan?.SchemaType?.FriendlyName();
             this.SchemaTypeName = queryPlan?.SchemaType?.FriendlyName(true);
-            this.QueryPlanId = queryPlan?.Id;
+            this.QueryPlanId = queryPlan?.Id.ToString();
         }
 
         /// <summary>

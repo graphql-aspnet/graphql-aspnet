@@ -300,7 +300,7 @@ namespace GraphQL.AspNet.Tests.Framework
                 SourcePath.None,
                 resolvedParentDataItem);
 
-            var id = Guid.NewGuid().ToString("N");
+            var id = Guid.NewGuid();
             graphFieldRequest.Setup(x => x.Id).Returns(id);
             graphFieldRequest.Setup(x => x.Origin).Returns(SourceOrigin.None);
             graphFieldRequest.Setup(x => x.Field).Returns(field);

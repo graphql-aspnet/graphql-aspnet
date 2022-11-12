@@ -137,7 +137,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new RequestReceivedLogEntry(context);
 
             Assert.AreEqual(LogEventIds.RequestReceived.Id, entry.EventId);
-            Assert.AreEqual(request.Id, entry.OperationRequestId);
+            Assert.AreEqual(request.Id.ToString(), entry.OperationRequestId);
             Assert.AreEqual("fakeUserName", entry.Username);
             Assert.AreEqual(request.OperationName, entry.QueryOperationName);
             Assert.AreEqual("{ testField }", entry.QueryText);
@@ -166,7 +166,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new RequestCompletedLogEntry(context);
 
             Assert.AreEqual(LogEventIds.RequestCompleted.Id, entry.EventId);
-            Assert.AreEqual(request.Id, entry.OperationRequestId);
+            Assert.AreEqual(request.Id.ToString(), entry.OperationRequestId);
             Assert.AreEqual(false, entry.ResultHasErrors);
             Assert.AreEqual(true, entry.ResultHasData);
             Assert.IsNotNull(entry.ToString());
@@ -209,7 +209,7 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(LogEventIds.QueryCacheAdd.Id, entry.EventId);
             Assert.AreEqual("abc123", entry.QueryPlanHashCode);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
-            Assert.AreEqual(queryPlan.Id, entry.QueryPlanId);
+            Assert.AreEqual(queryPlan.Id.ToString(), entry.QueryPlanId);
             Assert.IsNotNull(entry.ToString());
         }
 
@@ -227,7 +227,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             Assert.AreEqual(LogEventIds.QueryPlanGenerationCompleted.Id, entry.EventId);
             Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
-            Assert.AreEqual(queryPlan.Id, entry.QueryPlanId);
+            Assert.AreEqual(queryPlan.Id.ToString(), entry.QueryPlanId);
             Assert.AreEqual(queryPlan.IsValid, entry.QueryPlanIsValid);
             Assert.AreEqual(queryPlan.OperationName, entry.QueryPlanOperationName);
             Assert.AreEqual(queryPlan.EstimatedComplexity, entry.QueryPlanEstimatedComplexity);
@@ -248,7 +248,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new FieldResolutionStartedLogEntry(resolutionContext);
 
             Assert.AreEqual(LogEventIds.FieldResolutionStarted.Id, entry.EventId);
-            Assert.AreEqual(resolutionContext.Request.Id, entry.PipelineRequestId);
+            Assert.AreEqual(resolutionContext.Request.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(resolutionContext.Request.Field.Mode.ToString(), entry.FieldExecutionMode);
             Assert.AreEqual(resolutionContext.Request.Field.Route.Path, entry.FieldPath);
             Assert.IsNotNull(entry.ToString());
@@ -270,7 +270,7 @@ namespace GraphQL.AspNet.Tests.Logging
 
             var entry = new FieldResolutionCompletedLogEntry(resolutionContext);
             Assert.AreEqual(LogEventIds.FieldResolutionCompleted.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.FieldPath);
             Assert.AreEqual(fieldRequest.Field.TypeExpression.ToString(), entry.TypeExpression);
             Assert.AreEqual(true, entry.HasData);
@@ -297,7 +297,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new SchemaItemAuthorizationStartedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.SchemaItemAuthorizationStarted.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
             Assert.IsNotNull(entry.ToString());
@@ -322,7 +322,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new SchemaItemAuthorizationCompletedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.SchemaItemAuthorizationCompleted.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual(authContext.AuthenticatedUser?.RetrieveUsername(), entry.Username);
             Assert.AreEqual(authContext.Result.Status.ToString(), entry.AuthorizationStatus);
@@ -349,7 +349,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new SchemaItemAuthenticationStartedLogEntry(authContext);
 
             Assert.AreEqual(LogEventIds.SchemaItemAuthenticationStarted.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.IsNotNull(entry.ToString());
         }
@@ -383,7 +383,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new SchemaItemAuthenticationCompletedLogEntry(authContext, authResult.Object);
 
             Assert.AreEqual(LogEventIds.SchemaItemAuthenticationCompleted.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(fieldRequest.Field.Route.Path, entry.SchemaItemPath);
             Assert.AreEqual("someOtherUser", entry.Username); // ensure its the user from the authResult
             Assert.AreEqual("testScheme", entry.AuthenticationScheme);
@@ -407,7 +407,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new ActionMethodInvocationStartedLogEntry(graphMethod, fieldRequest);
 
             Assert.AreEqual(LogEventIds.ControllerInvocationStarted.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerName);
             Assert.AreEqual(graphMethod.Name, entry.ActionName);
             Assert.AreEqual(graphMethod.Route.Path, entry.FieldPath);
@@ -434,7 +434,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new ActionMethodInvocationCompletedLogEntry(graphMethod, fieldRequest, result);
 
             Assert.AreEqual(LogEventIds.ControllerInvocationCompleted.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerName);
             Assert.AreEqual(graphMethod.Name, entry.ActionName);
             Assert.AreEqual(graphMethod.Route.Path, entry.FieldPath);
@@ -461,7 +461,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new ActionMethodInvocationExceptionLogEntry(graphMethod, fieldRequest, exception);
 
             Assert.AreEqual(LogEventIds.ControllerInvocationException.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerTypeName);
             Assert.AreEqual(graphMethod.Name, entry.ActionName);
             Assert.IsNotNull(entry.ToString());
@@ -491,7 +491,7 @@ namespace GraphQL.AspNet.Tests.Logging
             var entry = new ActionMethodUnhandledExceptionLogEntry(graphMethod, fieldRequest, exception);
 
             Assert.AreEqual(LogEventIds.ControllerUnhandledException.Id, entry.EventId);
-            Assert.AreEqual(fieldRequest.Id, entry.PipelineRequestId);
+            Assert.AreEqual(fieldRequest.Id.ToString(), entry.PipelineRequestId);
             Assert.AreEqual(graphMethod.Parent.InternalFullName, entry.ControllerTypeName);
             Assert.AreEqual(graphMethod.Name, entry.ActionName);
             Assert.IsNotNull(entry.ToString());

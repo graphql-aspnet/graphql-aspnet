@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public SchemaItemAuthenticationCompletedLogEntry(GraphSchemaItemSecurityChallengeContext securityContext, IAuthenticationResult authResult)
             : base(LogEventIds.SchemaItemAuthenticationCompleted)
         {
-            this.PipelineRequestId = securityContext?.Request?.Id;
+            this.PipelineRequestId = securityContext?.Request?.Id.ToString();
             this.SchemaItemPath = securityContext?.Request?.SecureSchemaItem?.Route?.Path;
             this.Username = authResult?.User?.RetrieveUsername();
             this.AuthenticationScheme = authResult?.AuthenticationScheme;

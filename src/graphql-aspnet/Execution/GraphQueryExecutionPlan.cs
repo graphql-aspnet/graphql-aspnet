@@ -31,12 +31,12 @@ namespace GraphQL.AspNet.Execution
         /// </summary>
         public GraphQueryExecutionPlan()
         {
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.Messages = new GraphMessageCollection();
         }
 
         /// <inheritdoc />
-        public string Id { get; protected set; }
+        public Guid Id { get; protected set; }
 
         /// <inheritdoc />
         public IGraphMessageCollection Messages { get; }

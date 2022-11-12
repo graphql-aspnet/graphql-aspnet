@@ -12,7 +12,6 @@ namespace GraphQL.AspNet.Security
     using System;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.Security;
@@ -56,7 +55,7 @@ namespace GraphQL.AspNet.Security
         public GraphSchemaItemSecurityRequest(IGraphFieldInvocationContext invocationContext)
         {
             Validation.ThrowIfNull(invocationContext, nameof(invocationContext));
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.SecureSchemaItem = invocationContext.Field;
             this.Origin = invocationContext.Origin;
         }
@@ -69,7 +68,7 @@ namespace GraphQL.AspNet.Security
         public GraphSchemaItemSecurityRequest(ISecureDocumentPart securedDocumentPart)
         {
             Validation.ThrowIfNull(securedDocumentPart, nameof(securedDocumentPart));
-            this.Id = Guid.NewGuid().ToString("N");
+            this.Id = Guid.NewGuid();
             this.SecureSchemaItem = securedDocumentPart.SecureItem;
             this.Origin = securedDocumentPart.SourceLocation.AsOrigin();
         }
@@ -78,7 +77,7 @@ namespace GraphQL.AspNet.Security
         /// Gets the globally unique Id assigned to this individual field request.
         /// </summary>
         /// <value>The identifier.</value>
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Gets the secured item being checked with this request.

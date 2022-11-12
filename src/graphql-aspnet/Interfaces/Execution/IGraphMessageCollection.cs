@@ -29,6 +29,12 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IGraphMessage Add(IGraphMessage message);
 
         /// <summary>
+        /// Adds all the messages of the provided collection to this collection.
+        /// </summary>
+        /// <param name="messagesToAdd">The messages to add.</param>
+        void AddRange(IGraphMessageCollection messagesToAdd);
+
+        /// <summary>
         /// Adds the message to the collection.
         /// </summary>
         /// <param name="severity">The severity of this new message.</param>
@@ -90,12 +96,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         IGraphMessage Trace(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
 
         /// <summary>
-        /// Adds the set of messages to the collection.
-        /// </summary>
-        /// <param name="messages">The messages.</param>
-        void AddRange(IEnumerable<IGraphMessage> messages);
-
-        /// <summary>
         /// Gets the highest level severity of all the messages tracked in this collection.
         /// </summary>
         /// <value>The severity.</value>
@@ -106,10 +106,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// </summary>
         /// <value><c>true</c> if this instance is success; otherwise, <c>false</c>.</value>
         bool IsSucessful { get; }
-
-        /// <summary>
-        /// Clears all the messages in this instance.
-        /// </summary>
-        void Clear();
     }
 }

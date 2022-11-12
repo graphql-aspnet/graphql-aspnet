@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.Logging.ExecutionEvents
         public ActionMethodInvocationCompletedLogEntry(IGraphMethod method, IDataRequest request, object result)
             : base(LogEventIds.ControllerInvocationCompleted)
         {
-            this.PipelineRequestId = request?.Id;
+            this.PipelineRequestId = request?.Id.ToString();
             this.ControllerName = method?.Parent?.InternalFullName;
             this.ActionName = method?.InternalName;
             this.FieldPath = method?.Route?.Path;

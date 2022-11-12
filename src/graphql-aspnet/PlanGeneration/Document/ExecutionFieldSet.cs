@@ -12,11 +12,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
 
     /// <summary>
     /// An execution set that manages the actual fields to be resolved within
@@ -25,6 +23,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     /// </summary>
     internal class ExecutionFieldSet : IExecutableFieldSelectionSet
     {
+        private int _sequence;
+        private int _lastBuiltSequence;
+        private List<IFieldDocumentPart> _cachedExecutableFields;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutionFieldSet"/> class.
         /// </summary>
@@ -33,23 +35,46 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         public ExecutionFieldSet(IFieldSelectionSetDocumentPart owner)
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
+            _cachedExecutableFields = null;
+           _lastBuiltSequence = -1;
+            _sequence = 0;
+        }
+
+        /// <summary>
+        /// Instructs this execution set to update its snapshot, clearing any
+        /// cached fields and rebuilding from its owner.
+        /// </summary>
+        internal void UpdateSnapshot()
+        {
+            _sequence++;
+        }
+
+        private void EnsureCurrentSnapshot()
+        {
+            if (_lastBuiltSequence == _sequence && _cachedExecutableFields != null)
+                return;
+
+            _cachedExecutableFields = new ((_cachedExecutableFields?.Count + 16) ?? 16);
+
+            var iterator = new ExecutableFieldSetEnumerator(this.Owner);
+            while (iterator.MoveNext())
+                _cachedExecutableFields.Add(iterator.Current);
+
+            _lastBuiltSequence = _sequence;
         }
 
         /// <inheritdoc />
         public IEnumerable<IFieldDocumentPart> FilterByAlias(string alias)
         {
-            var enumerator = new ExecutableFieldSetEnumerator(this.Owner);
-            while (enumerator.MoveNext())
-            {
-                if (enumerator.Current.Alias == alias)
-                    yield return enumerator.Current;
-            }
+            this.EnsureCurrentSnapshot();
+            return _cachedExecutableFields.Where(x => x.Alias == alias);
         }
 
         /// <inheritdoc />
         public IEnumerator<IFieldDocumentPart> GetEnumerator()
         {
-            return new ExecutableFieldSetEnumerator(this.Owner);
+            this.EnsureCurrentSnapshot();
+            return _cachedExecutableFields.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -63,16 +88,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         {
             get
             {
-                var enumerator = this.GetEnumerator();
-
-                var i = 0;
-                while (enumerator.MoveNext())
-                {
-                    if (i++ == index)
-                        return enumerator.Current;
-                }
-
-                throw new IndexOutOfRangeException();
+                this.EnsureCurrentSnapshot();
+                return _cachedExecutableFields[index];
             }
         }
 
@@ -81,9 +98,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         {
             get
             {
-                var enumerator = new ExecutableFieldSetEnumerator(this.Owner, true);
-                while (enumerator.MoveNext())
-                    yield return enumerator.Current;
+                this.EnsureCurrentSnapshot();
+                return _cachedExecutableFields.Where(x => x.IsIncluded);
             }
         }
 

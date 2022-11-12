@@ -8,6 +8,8 @@
 // *************************************************************
 namespace GraphQL.AspNet.Interfaces.Execution
 {
+    using System;
+
     /// <summary>
     /// A uniquely identified request for data.
     /// </summary>
@@ -17,6 +19,6 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Gets a globally unique identifier assigned to this request when it was created.
         /// </summary>
         /// <value>The identifier.</value>
-        string Id { get; }
+        Guid Id { get; }
     }
 }

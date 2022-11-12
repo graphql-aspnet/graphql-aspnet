@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution
         // It was decided to push this object back to a standard
         // dictionary with a locking mechanism.
         //
-        // Given its short lived nature (1 request and within user code)
+        // Given its scope (with a single request and only in user code)
         // its unlikely object will be under heavy pressure need the
         // speed of lock free reads provided by ConcurrentDictionary
         // ------

@@ -32,20 +32,6 @@ namespace GraphQL.AspNet.Tests.Execution
         }
 
         [Test]
-        public void Clear_EmptiesCollection()
-        {
-            var collection = new GraphMessageCollection();
-            collection.Critical("test message", "test code");
-
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual(GraphMessageSeverity.Critical, collection.Severity);
-
-            collection.Clear();
-            Assert.AreEqual(0, collection.Count);
-            Assert.AreEqual(GraphMessageSeverity.Trace, collection.Severity);
-        }
-
-        [Test]
         public void AddTrace_YieldsMessage()
         {
             var collection = new GraphMessageCollection();
