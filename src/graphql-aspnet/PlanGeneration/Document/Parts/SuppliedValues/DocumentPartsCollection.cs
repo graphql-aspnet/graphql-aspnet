@@ -44,22 +44,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             _allParts = new List<IDocumentPart>();
         }
 
-        /// <inheritdoc />
-        public void Add(params IDocumentPart[] documentParts)
-        {
-            this.Add(documentParts as IEnumerable<IDocumentPart>);
-        }
-
-        /// <inheritdoc />
-        public void Add(IEnumerable<IDocumentPart> documentParts)
-        {
-            Validation.ThrowIfNull(documentParts, nameof(documentParts));
-            foreach (var part in documentParts)
-            {
-                this.Add(part);
-            }
-        }
-
         public void Add(IDocumentPart documentPart)
         {
             var part = Validation.ThrowIfNullOrReturn(documentPart, nameof(documentPart));
@@ -71,30 +55,21 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                     $"part to a collection owned by a different parent.");
             }
 
-            var args = new DocumentPartBeforeAddEventArgs(part, 1);
+            _allParts.Add(part);
 
-            if (args.AllowAdd)
-            {
-                _allParts.Add(part);
+            if (!_partsByType.ContainsKey(part.PartType))
+                _partsByType.Add(part.PartType, new List<IDocumentPart>());
 
-                if (!_partsByType.ContainsKey(part.PartType))
-                    _partsByType.Add(part.PartType, new List<IDocumentPart>());
+            _partsByType[part.PartType].Add(part);
 
-                _partsByType[part.PartType].Add(part);
-
-                this.ChildPartAdded?.Invoke(this, new DocumentPartEventArgs(part, 1));
-            }
+            this.ChildPartAdded?.Invoke(part);
 
             part.Children.ChildPartAdded += this.Decendent_PartAdded;
         }
 
-        private void Decendent_PartAdded(object sender, DocumentPartEventArgs eventArgs)
+        private void Decendent_PartAdded(IDocumentPart docPart)
         {
-            this.ChildPartAdded?.Invoke(
-                this,
-                new DocumentPartEventArgs(
-                    eventArgs.TargetDocumentPart,
-                    eventArgs.RelativeDepth + 1));
+            this.ChildPartAdded?.Invoke(docPart);
         }
 
         /// <inheritdoc />

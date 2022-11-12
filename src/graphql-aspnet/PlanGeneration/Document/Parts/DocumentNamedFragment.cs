@@ -50,9 +50,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            base.OnChildPartAdded(childPart, relativeDepth);
+            base.OnChildPartAdded(childPart);
             if (childPart is IVariableUsageDocumentPart varRef)
             {
                 _variableUsages.Add(varRef);

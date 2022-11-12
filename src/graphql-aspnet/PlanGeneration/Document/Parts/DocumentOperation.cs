@@ -56,19 +56,20 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            if (relativeDepth == 1 && childPart is IVariableDocumentPart vd)
+            var isDirectChild = childPart.Parent == this;
+            if (isDirectChild && childPart is IVariableDocumentPart vd)
             {
                 _variableCollection.Add(vd);
             }
-            else if (relativeDepth == 1 && childPart is IFieldSelectionSetDocumentPart fieldSelection)
+            else if (isDirectChild && childPart is IFieldSelectionSetDocumentPart fieldSelection)
             {
                 _fieldSelectionSet = fieldSelection;
             }
             else if (childPart is IDirectiveDocumentPart ddp)
             {
-                if (relativeDepth == 1)
+                if (isDirectChild)
                     _directives.AddDirective(ddp);
                 _allDirectives.Add(ddp);
             }
@@ -83,9 +84,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
             if (childPart is ISecureDocumentPart sdp)
                 _allSecuredDocParts.Add(sdp);
-
-            if (relativeDepth > this.MaxDepth)
-                this.MaxDepth = relativeDepth;
         }
 
         /// <inheritdoc />

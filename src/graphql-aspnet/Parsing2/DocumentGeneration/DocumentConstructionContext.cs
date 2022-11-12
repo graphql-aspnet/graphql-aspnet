@@ -140,9 +140,6 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration
             if (docPart is IFieldDocumentPart)
                 newDepth += 1;
 
-            if (this.Document.MaxDepth < newDepth)
-                this.Document.MaxDepth = newDepth;
-
             if (docPart is IFragmentSpreadDocumentPart lbdp)
                 this.Spreads.Add(lbdp);
 

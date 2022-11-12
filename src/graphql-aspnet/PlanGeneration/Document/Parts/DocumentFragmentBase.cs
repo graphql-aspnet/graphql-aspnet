@@ -29,10 +29,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            base.OnChildPartAdded(childPart, relativeDepth);
-            if (relativeDepth == 1)
+            base.OnChildPartAdded(childPart);
+            if (childPart.Parent == this)
             {
                 if (childPart is IFieldSelectionSetDocumentPart fss)
                 {

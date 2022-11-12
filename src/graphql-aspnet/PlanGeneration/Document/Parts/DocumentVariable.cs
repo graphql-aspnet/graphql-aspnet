@@ -44,10 +44,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            base.OnChildPartAdded(childPart, relativeDepth);
-            if (relativeDepth == 1 && childPart is IDirectiveDocumentPart ddp)
+            base.OnChildPartAdded(childPart);
+            if (childPart.Parent == this && childPart is IDirectiveDocumentPart ddp)
             {
                 _directives = _directives ?? new DocumentDirectiveCollection(this);
                 _directives.AddDirective(ddp);

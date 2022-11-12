@@ -41,10 +41,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            base.OnChildPartAdded(childPart, relativeDepth);
-            if (relativeDepth == 1 && childPart is IDirectiveDocumentPart ddp)
+            base.OnChildPartAdded(childPart);
+            if (childPart.Parent == this && childPart is IDirectiveDocumentPart ddp)
             {
                 _directives.AddDirective(ddp);
             }
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 this.Fragment = targetFragment;
                 this.AssignGraphType(targetFragment?.GraphType);
                 targetFragment.MarkAsReferenced();
-                this.NamedFragmentAssigned?.Invoke(this, new DocumentPartEventArgs(targetFragment, 0));
+                this.NamedFragmentAssigned?.Invoke(targetFragment);
             }
         }
 

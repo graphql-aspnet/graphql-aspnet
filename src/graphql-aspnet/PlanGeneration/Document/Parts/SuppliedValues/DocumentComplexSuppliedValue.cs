@@ -31,9 +31,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
-            if (relativeDepth == 1 && childPart is IInputObjectFieldDocumentPart iia)
+            if (childPart.Parent == this && childPart is IInputObjectFieldDocumentPart iia)
             {
                 if (!_fields.ContainsKey(iia.Name))
                     _fields.AddField(iia);

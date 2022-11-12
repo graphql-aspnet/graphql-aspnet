@@ -52,7 +52,9 @@ namespace GraphQL.AspNet.Defaults
         {
             Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
 
-            return this.FillDocument(sourceText, syntaxTree, new QueryDocument());
+            var document = new QueryDocument();
+            this.FillDocument(sourceText, syntaxTree, document);
+            return document;
         }
 
         /// <inheritdoc />
@@ -69,10 +71,10 @@ namespace GraphQL.AspNet.Defaults
         /// <summary>
         /// An internal method for populating an existing query document.
         /// </summary>
+        /// <param name="sourceText">The source text.</param>
         /// <param name="syntaxTree">The syntax tree to convert.</param>
         /// <param name="document">The query document to fill.</param>
-        /// <returns>IGraphQueryDocument.</returns>
-        protected virtual IGraphQueryDocument FillDocument(SourceText sourceText, SynTree syntaxTree, IGraphQueryDocument document)
+        protected virtual void FillDocument(SourceText sourceText, SynTree syntaxTree, IGraphQueryDocument document)
         {
             Validation.ThrowIfNull(syntaxTree.RootNode, nameof(syntaxTree.RootNode));
             Validation.ThrowIfNull(document, nameof(document));
@@ -126,26 +128,23 @@ namespace GraphQL.AspNet.Defaults
             // --------------------------------------------
             // Step 3: Max Depth Calculation
             // --------------------------------------------
-            // When Named fragments spread into other field selection sets they can potentially
-            // increase the maximum depth of the operation
+            // Once all fields are accounted for and all fragments are parsed
+            // compute the max queryable depth. When Named fragments spread into
+            // other field selection sets they can potentially increase
+            // the maximum depth of the operation so we must wait till all
+            // fields are accounted for.
             // --------------------------------------------
-            if (completedAllSteps && document.NamedFragments.Count > 0)
+            if (completedAllSteps)
             {
                 foreach (var operation in document.Operations.Values)
                 {
-                    // no spreads no recomputing of the depth is necessary
-                    if (operation.FragmentSpreads.Count == 0)
-                        continue;
-
                     var depth = this.RecomputeDepth(
                         operation.FieldSelectionSet,
                         new HashSet<INamedFragmentDocumentPart>());
-                    if (depth > document.MaxDepth)
+                    if (document.MaxDepth < depth)
                         document.MaxDepth = depth;
                 }
             }
-
-            return document;
         }
 
         private int RecomputeDepth(

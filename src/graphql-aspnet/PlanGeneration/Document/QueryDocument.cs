@@ -45,11 +45,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             this.Attributes = new MetaDataCollection();
         }
 
-        private void Children_PartAdded(object sender, DocumentPartEventArgs eventArgs)
+        private void Children_PartAdded(IDocumentPart targetPart)
         {
-            if (eventArgs.TargetDocumentPart is INamedFragmentDocumentPart nf)
+            if (targetPart is INamedFragmentDocumentPart nf)
                 _fragmentCollection.AddFragment(nf);
-            else if (eventArgs.TargetDocumentPart is IOperationDocumentPart od)
+            else if (targetPart is IOperationDocumentPart od)
                 _operations.AddOperation(od);
         }
 

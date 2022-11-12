@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected override void OnChildPartAdded(IDocumentPart childPart)
         {
             if (childPart is IInputArgumentDocumentPart iiadp)
                 _arguments.AddArgument(iiadp);

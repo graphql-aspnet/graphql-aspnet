@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
             this.Children = new DocumentPartsCollection(this);
 
             // wire up local events
-            this.Children.ChildPartAdded += (o, e) => this.OnChildPartAdded(e.TargetDocumentPart, e.RelativeDepth);
+            this.Children.ChildPartAdded += (o) => this.OnChildPartAdded(o);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         /// <param name="childPart">The child part that was added.</param>
         /// <param name="relativeDepth">The depth of the part relative to this part. A depth of 1 indicates
         /// a direect child, 2 a grand child etc..</param>
-        protected virtual void OnChildPartAdded(IDocumentPart childPart, int relativeDepth)
+        protected virtual void OnChildPartAdded(IDocumentPart childPart)
         {
         }
 
