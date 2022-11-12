@@ -47,11 +47,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override SourcePath CreatePath(SourcePath path)
+        protected override SourcePath ExtendPath(SourcePath pathToExtend)
         {
-            var thisPath = path.Clone();
-            thisPath.AddFieldName(TokenTypeNames.AT_SYMBOL + this.DirectiveName.ToString());
-            return thisPath;
+            pathToExtend.AddFieldName(TokenTypeNames.AT_SYMBOL + this.DirectiveName.ToString());
+            return pathToExtend;
         }
 
         /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />

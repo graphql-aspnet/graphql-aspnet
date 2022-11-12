@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A single field of data from a source object selected to be returned as part of a graph query.
     /// </summary>
-    public interface IFieldDocumentPart : ISecureDocumentPart, IDirectiveContainerDocumentPart, IIncludeableDocumentPart, IDocumentPart
+    public interface IFieldDocumentPart : ISecureDocumentPart, IDirectiveContainerDocumentPart, IIncludeableDocumentPart, IDocumentPart, IInputArgumentCollectionContainer
     {
         /// <summary>
         /// Gets or sets a function that, when supplied, will be called immediately after
@@ -53,11 +53,5 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The child selection set.</value>
         IFieldSelectionSetDocumentPart FieldSelectionSet { get; }
-
-        /// <summary>
-        /// Gets the arguments defined on this field.
-        /// </summary>
-        /// <value>The arguments.</value>
-        IInputArgumentCollectionDocumentPart Arguments { get; }
     }
 }

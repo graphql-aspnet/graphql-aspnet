@@ -19,6 +19,9 @@ namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
     /// </summary>
     internal class OperationNode_CreateOperationOnContext : DocumentConstructionStep
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OperationNode_CreateOperationOnContext"/> class.
+        /// </summary>
         public OperationNode_CreateOperationOnContext()
             : base(SynNodeType.Operation)
         {

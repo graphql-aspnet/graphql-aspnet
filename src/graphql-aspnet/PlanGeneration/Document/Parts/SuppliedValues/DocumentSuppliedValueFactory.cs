@@ -49,7 +49,8 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
                         key);
 
                 case SynNodeType.EnumValue:
-                    return new DocumentEnumSuppliedValue(ownerPart,
+                    return new DocumentEnumSuppliedValue(
+                        ownerPart,
                         sourceText.Slice(valueNode.PrimaryValue.TextBlock).ToString(),
                         valueNode.Location,
                         key);

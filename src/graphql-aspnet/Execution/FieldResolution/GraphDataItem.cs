@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             this.SourceData = sourceData;
             this.FieldContext = Validation.ThrowIfNullOrReturn(context, nameof(context));
             this.Status = FieldItemResolutionStatus.NotStarted;
-            this.Origin = new SourceOrigin(context.Origin.Location, path);
+            this.Origin = new SourceOrigin(context.Location, path);
             this.TypeExpression = context.Field.TypeExpression;
             this.Schema = Validation.ThrowIfNullOrReturn(context.Schema, nameof(context.Schema));
         }

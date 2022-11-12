@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
 {
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Document;
 
@@ -71,5 +70,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
         /// </summary>
         /// <value>The description of this document part.</value>
         string Description { get; }
+
+        /// <summary>
+        /// Gets the object pointing to where this
+        /// document part originated in the source text.
+        /// </summary>
+        /// <value>The location in the source text of this entity.</value>
+        SourceOrigin Origin { get; }
     }
 }

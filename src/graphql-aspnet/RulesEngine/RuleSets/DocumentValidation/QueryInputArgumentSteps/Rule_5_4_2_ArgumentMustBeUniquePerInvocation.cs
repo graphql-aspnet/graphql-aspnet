@@ -9,7 +9,10 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgumentSteps
 {
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
@@ -25,32 +28,47 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgum
         {
             var docPart = (IInputArgumentDocumentPart)context.ActivePart;
 
-            // short cut. if an arugment IS declared this rule would be
-            // run twice duplicating the error message for the same argument name
-            var key = $"5.4.2|{docPart.Parent.Path.DotString()}|argument:{docPart.Name}";
-            if (context.GlobalKeys.ContainsKey(key))
+            var metadata = this.GetOrAddMetaData(
+                context,
+                () => new Dictionary<IDocumentPart, HashSet<string>>());
+
+            // short cut. if an arugment IS declared more than once
+            // this rule would be run twice but catching the duplication
+            // once is enough to fail validation, we can the other
+            // checks
+            HashSet<string> checkedArguments;
+            if (metadata.ContainsKey(docPart.Parent))
+            {
+                checkedArguments = metadata[docPart.Parent];
+            }
+            else
+            {
+                checkedArguments = new HashSet<string>();
+                metadata.Add(docPart.Parent, checkedArguments);
+            }
+
+            if (checkedArguments.Contains(docPart.Name))
                 return true;
 
-            context.GlobalKeys.Add(key, true);
+            checkedArguments.Add(docPart.Name);
 
-            var parentType = "unknown type";
-            var parentName = "~unknown~";
-            var isDuplicate = false;
-            if (context.ParentPart is IDirectiveDocumentPart ddp)
+            if (context.ParentPart is IInputArgumentCollectionContainer iac
+                && !iac.Arguments.IsUnique(docPart.Name))
             {
-                isDuplicate = !ddp.Arguments.IsUnique(docPart.Name);
-                parentType = "directive";
-                parentName = ddp.DirectiveName;
-            }
-            else if (context.ParentPart is IFieldDocumentPart fdp)
-            {
-                isDuplicate = !fdp.Arguments.IsUnique(docPart.Name);
-                parentType = "field";
-                parentName = fdp.Name.ToString();
-            }
+                var parentType = "unknown type";
+                var parentName = "~unknown~";
 
-            if (isDuplicate)
-            {
+                if (context.ParentPart is IDirectiveDocumentPart ddp)
+                {
+                    parentType = "directive";
+                    parentName = ddp.DirectiveName;
+                }
+                else if (context.ParentPart is IFieldDocumentPart fdp)
+                {
+                    parentType = "field";
+                    parentName = fdp.Name.ToString();
+                }
+
                 this.ValidationError(
                     context,
                     $"The {parentType} '{parentName}' already contains an input argument named '{docPart.Name}'. Input arguments " +

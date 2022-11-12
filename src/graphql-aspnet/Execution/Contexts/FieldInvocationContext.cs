@@ -28,6 +28,8 @@ namespace GraphQL.AspNet.Execution.Contexts
     [DebuggerDisplay("Field Context: {Name} (Restict To: {ExpectedSourceTypeName}, Children = {ChildContexts.Count})")]
     public class FieldInvocationContext : IGraphFieldInvocationContext
     {
+        private SourceOrigin _origin = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldInvocationContext" /> class.
         /// </summary>
@@ -42,14 +44,12 @@ namespace GraphQL.AspNet.Execution.Contexts
             Type expectedSourceType,
             string name,
             IGraphField field,
-            IFieldDocumentPart fieldPart,
-            SourceOrigin origin)
+            IFieldDocumentPart fieldPart)
         {
             this.Name = Validation.ThrowIfNullWhiteSpaceOrReturn(name, nameof(name));
             this.Field = Validation.ThrowIfNullOrReturn(field, nameof(field));
             this.FieldDocumentPart = Validation.ThrowIfNullOrReturn(fieldPart, nameof(fieldPart));
             this.ExpectedSourceType = expectedSourceType;
-            this.Origin = origin;
             this.ChildContexts = new FieldInvocationContextCollection();
             this.Arguments = new InputArgumentCollection();
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
@@ -89,6 +89,9 @@ namespace GraphQL.AspNet.Execution.Contexts
         public IFieldInvocationContextCollection ChildContexts { get; }
 
         /// <inheritdoc />
-        public SourceOrigin Origin { get; }
+        public SourceLocation Location => this.FieldDocumentPart.SourceLocation;
+
+        /// <inheritdoc />
+        public SourceOrigin Origin => this.FieldDocumentPart.Origin;
     }
 }

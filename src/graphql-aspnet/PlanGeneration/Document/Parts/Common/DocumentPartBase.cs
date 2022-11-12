@@ -23,6 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     internal abstract class DocumentPartBase : IDocumentPart
     {
         private SourcePath _path = null;
+        private SourceOrigin _origin = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentPartBase"/> class.
@@ -39,14 +40,14 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         }
 
         /// <summary>
-        /// When overriden in a child field, extends the human readable path into the query document
-        /// to include this document part.
+        /// When overriden in a child field, extends the provided, human readable,
+        /// path to include this document part.
         /// </summary>
-        /// <param name="path">The path to extend. This path should be cloned.</param>
+        /// <param name="pathToExtend">The path to extend.</param>
         /// <returns>SourcePath.</returns>
-        protected virtual SourcePath CreatePath(SourcePath path)
+        protected virtual SourcePath ExtendPath(SourcePath pathToExtend)
         {
-            return path.Clone();
+            return pathToExtend;
         }
 
         /// <inheritdoc />
@@ -68,23 +69,33 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         public IGraphType GraphType { get; private set; }
 
         /// <inheritdoc />
+        public abstract string Description { get; }
+
+        /// <inheritdoc />
+        public SourceLocation SourceLocation { get; }
+
+        /// <inheritdoc />
         public SourcePath Path
         {
             get
             {
                 if (_path == null)
-                {
-                    _path = this.CreatePath(this.Parent.Path);
-                }
+                    _path = this.ExtendPath(this.Parent.Path.Clone());
 
                 return _path;
             }
         }
 
         /// <inheritdoc />
-        public SourceLocation SourceLocation { get; }
+        public SourceOrigin Origin
+        {
+            get
+            {
+                if (_origin == null)
+                    _origin = new SourceOrigin(this.SourceLocation, this.Path);
 
-        /// <inheritdoc />
-        public abstract string Description { get; }
+                return _origin;
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common
 {
+    using System;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.RulesEngine.Interfaces;
@@ -18,6 +19,14 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common
     /// </summary>
     internal abstract class FieldResolutionStep : IRuleStep<FieldValidationContext>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FieldResolutionStep"/> class.
+        /// </summary>
+        public FieldResolutionStep()
+        {
+            this.RuleId = Guid.NewGuid();
+        }
+
         /// <inheritdoc />
         public virtual bool ShouldExecute(FieldValidationContext context)
         {
@@ -33,5 +42,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common
         {
             return true;
         }
+
+        /// <inheritdoc />
+        public Guid RuleId { get; }
     }
 }

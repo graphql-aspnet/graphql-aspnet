@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionSteps
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
@@ -39,13 +40,27 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             var docPart = (IFieldDocumentPart)context.ActivePart;
             var selectionSet = context.ParentPart as IFieldSelectionSetDocumentPart;
 
+            var metadata = this.GetOrAddMetaData(
+                context,
+                () => new Dictionary<IFieldSelectionSetDocumentPart, HashSet<string>>());
+
+            HashSet<string> checkedAliases;
+            if (metadata.ContainsKey(selectionSet))
+            {
+                checkedAliases = metadata[selectionSet];
+            }
+            else
+            {
+                checkedAliases = new HashSet<string>();
+                metadata.Add(selectionSet, checkedAliases);
+            }
+
             // this rule will execute against every field in a selection
             // we don't need to validate it more than once if there are mergable fields found
-            var key = $"Rule_5_3_2|{selectionSet.Path.DotString()}|alias:{docPart.Alias}";
-            if (context.GlobalKeys.ContainsKey(key))
+            if (checkedAliases.Contains(docPart.Alias))
                 return true;
 
-            context.GlobalKeys.Add(key, true);
+            checkedAliases.Add(docPart.Alias);
 
             var fields = selectionSet.FindFieldsOfAlias(docPart.Alias).ToList();
             if (fields.Count == 1)

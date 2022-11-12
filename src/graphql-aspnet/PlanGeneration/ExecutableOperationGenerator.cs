@@ -126,8 +126,7 @@ namespace GraphQL.AspNet.PlanGeneration
                 concreteType,
                 fieldPart.Alias.ToString(),
                 targetField,
-                fieldPart,
-                new SourceOrigin(fieldPart.SourceLocation, fieldPart.Path));
+                fieldPart);
 
             var arguments = this.CreateArgumentList(targetField, fieldPart.Arguments);
             foreach (var argument in arguments)

@@ -38,10 +38,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             this.Children = new DocumentPartsCollection(this);
 
             this.Path = new SourcePath();
+            this.Origin = new SourceOrigin(SourceLocation.None, this.Path);
             _fragmentCollection = new DocumentNamedFragmentCollection(this);
             _operations = new DocumentOperationCollection(this);
-
-            this.Attributes = new MetaDataCollection();
         }
 
         /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
@@ -88,9 +87,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         public INamedFragmentCollectionDocumentPart NamedFragments => _fragmentCollection;
 
         /// <inheritdoc />
-        public MetaDataCollection Attributes { get; }
+        public string Description => "Document Root";
 
         /// <inheritdoc />
-        public string Description => "Document Root";
+        public SourceOrigin Origin { get; }
     }
 }

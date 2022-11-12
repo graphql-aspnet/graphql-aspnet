@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.RulesEngine.Interfaces
 {
+    using System;
     using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
@@ -17,6 +18,13 @@ namespace GraphQL.AspNet.RulesEngine.Interfaces
     /// <typeparam name="TContext">The type of the rule context to execute against.</typeparam>
     internal interface IRuleStep<TContext>
     {
+        /// <summary>
+        /// Gets the id of this rule. The id must be unique within a given rule package
+        /// and processor combination.
+        /// </summary>
+        /// <value>The rule identifier.</value>
+        Guid RuleId { get; }
+
         /// <summary>
         /// Determines whether this instance can process the given context. The rule will have no effect on the TContext
         /// if it cannot process it.

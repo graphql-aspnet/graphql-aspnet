@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common
 {
+    using System;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.RulesEngine.Interfaces;
 
@@ -18,6 +19,14 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common
     /// </summary>
     internal abstract class DirectiveValidationStep : IRuleStep<GraphDirectiveExecutionContext>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectiveValidationStep"/> class.
+        /// </summary>
+        public DirectiveValidationStep()
+        {
+            this.RuleId = Guid.NewGuid();
+        }
+
         /// <inheritdoc />
         public virtual bool ShouldExecute(GraphDirectiveExecutionContext context)
         {
@@ -32,5 +41,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common
         {
             return true;
         }
+
+        /// <inheritdoc />
+        public Guid RuleId { get; }
     }
 }

@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
 
     /// <summary>
-    /// Ensures that whereever a named fragment is spread that it is not, in the current path,
+    /// Ensures that where ever a named fragment is spread that it is not, in the current path,
     /// nested inside itself forming an infinite resolution loop.
     /// </summary>
     internal class Rule_5_5_2_2_SpreadingANamedFragmentMustNotFormCycles
@@ -33,20 +33,20 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
             if (pointer.Fragment == null)
                 return true;
 
-            if (!context.GlobalKeys.ContainsKey(this.RuleNumber))
-                context.GlobalKeys.Add(this.RuleNumber, new HashSet<INamedFragmentDocumentPart>());
+            var checkedFragments = this.GetOrAddMetaData(
+                context,
+                () => new HashSet<INamedFragmentDocumentPart>());
 
-            var checkedFragments = context.GlobalKeys[this.RuleNumber] as HashSet<INamedFragmentDocumentPart>;
-
-            // if a spread of this fragmente has already been evaluated we dont
+            // if a spread of this fragment has already been evaluated we dont
             // need to eval it again
             if (checkedFragments.Contains(pointer.Fragment))
                 return true;
 
+            checkedFragments.Add(pointer.Fragment);
+
             // tracked for use in an error message to display the found
             // cycle if needed
             var fragmentPath = new Stack<string>();
-
             var fragmentsVisited = new HashSet<INamedFragmentDocumentPart>();
 
             // used to track already visited fragments in this change,
@@ -79,7 +79,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
 
             // if no rule was broken (meaning no cycles formed)
             // then this fragment can be considered checked with no cycles
-            checkedFragments.Add(pointer.Fragment);
             return true;
         }
 

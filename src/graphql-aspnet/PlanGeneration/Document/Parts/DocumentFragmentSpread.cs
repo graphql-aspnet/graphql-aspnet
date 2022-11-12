@@ -44,11 +44,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override SourcePath CreatePath(SourcePath path)
+        protected override SourcePath ExtendPath(SourcePath pathToExtend)
         {
-            var thisPath = path.Clone();
-            thisPath.AddFieldName("..." + this.FragmentName.ToString());
-            return thisPath;
+            pathToExtend.AddFieldName("..." + this.FragmentName.ToString());
+            return pathToExtend;
         }
 
         /// <inheritdoc />

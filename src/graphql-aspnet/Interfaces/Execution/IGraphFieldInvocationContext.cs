@@ -66,10 +66,16 @@ namespace GraphQL.AspNet.Interfaces.Execution
         ISchema Schema { get; }
 
         /// <summary>
-        /// Gets the origin location, in the source document, that coorisponds to this field context.
+        /// Gets the qualified origin location, in the source document, that coorisponds to this field context.
         /// </summary>
         /// <value>The location.</value>
         SourceOrigin Origin { get; }
+
+        /// <summary>
+        /// Gets the location, in the source text, that coorisponds to this field context.
+        /// </summary>
+        /// <value>The location.</value>
+        SourceLocation Location { get; }
 
         /// <summary>
         /// Gets the source type, if any, that the source object (when this field is executed) must be castable to

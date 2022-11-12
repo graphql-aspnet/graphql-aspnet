@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.PlanGeneration.Contexts
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             this.ActivePart = Validation.ThrowIfNullOrReturn(queryDocument, nameof(queryDocument));
             this.Document = queryDocument;
             this.Messages = queryDocument.Messages;
-            this.GlobalKeys = new Dictionary<string, object>();
+            this.RuleMetaData = new Dictionary<Guid, object>();
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
             this.ParentContext = parentContext;
             this.Document = parentContext.Document;
             this.Messages = parentContext.Messages;
-            this.GlobalKeys = parentContext.GlobalKeys;
+            this.RuleMetaData = parentContext.RuleMetaData;
             this.Schema = parentContext.Schema;
         }
 
@@ -105,10 +106,10 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         public IGraphQueryDocument Document { get; }
 
         /// <summary>
-        /// Gets a set of key/values identfying data items
-        /// that apply to the entire context.
+        /// Gets a metadata object (by rule id) to carry information
+        /// between rule invocations.
         /// </summary>
-        /// <value>The global keys.</value>
-        public Dictionary<string, object> GlobalKeys { get; }
+        /// <value>The shared metadata for this request invocation.</value>
+        public Dictionary<Guid, object> RuleMetaData { get; }
     }
 }

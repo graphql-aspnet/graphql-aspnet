@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps
 {
+    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.PlanGeneration.Contexts;
     using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
@@ -25,11 +26,18 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
         {
             var namedFragment = (INamedFragmentDocumentPart)context.ActivePart;
 
-            var key = $"5.5.1.1|namedFragmentUniqueness|name:{namedFragment.Name}";
-            if (context.GlobalKeys.ContainsKey(key))
+            var metaData = this.GetOrAddMetaData(
+                context,
+                () => new HashSet<string>());
+
+            // if duplicate named fragments exist an error will be captured
+            // when the first of them is processed
+            // no need to process the second duplicate again and add another
+            // error
+            if (metaData.Contains(namedFragment.Name))
                 return true;
 
-            context.GlobalKeys.Add(key, true);
+            metaData.Add(namedFragment.Name);
 
             if (!context.Document.NamedFragments.IsUnique(namedFragment.Name))
             {

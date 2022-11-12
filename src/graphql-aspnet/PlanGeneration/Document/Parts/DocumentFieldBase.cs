@@ -50,11 +50,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override SourcePath CreatePath(SourcePath path)
+        protected override SourcePath ExtendPath(SourcePath pathToExtend)
         {
-            var thisPath = path.Clone();
-            thisPath.AddFieldName(this.Name.ToString());
-            return thisPath;
+            pathToExtend.AddFieldName(this.Name);
+            return pathToExtend;
         }
 
         /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
@@ -92,7 +91,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         /// <inheritdoc cref="IFieldDocumentPart.FieldSelectionSet" />
         public IFieldSelectionSetDocumentPart FieldSelectionSet { get; private set; }
 
-        /// <inheritdoc cref="IFieldDocumentPart.Arguments" />
+        /// <inheritdoc cref="IInputArgumentCollectionContainer.Arguments" />
         public IInputArgumentCollectionDocumentPart Arguments => _arguments;
 
         /// <inheritdoc cref="IDirectiveContainerDocumentPart.Directives" />
