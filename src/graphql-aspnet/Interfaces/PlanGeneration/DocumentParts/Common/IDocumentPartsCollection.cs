@@ -18,12 +18,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
     public interface IDocumentPartsCollection : IReadOnlyDocumentPartsCollection
     {
         /// <summary>
-        /// Raised when a new direct child part is added to this collection or any of its
-        /// child's collection (recursive).
-        /// </summary>
-        event DocumentCollectionAlteredHandler ChildPartAdded;
-
-        /// <summary>
         /// Adds the document part to this collection. The part
         /// must have a parent pointing to the owner of this collection.
         /// </summary>

@@ -50,18 +50,19 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        protected override void OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            base.OnChildPartAdded(childPart);
-            if (childPart is IVariableUsageDocumentPart varRef)
+            base.OnDecendentPartAdded(decendentPart, relativeDepth);
+
+            if (decendentPart is IVariableUsageDocumentPart varRef)
             {
                 _variableUsages.Add(varRef);
             }
-            else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+            else if (decendentPart is IFragmentSpreadDocumentPart fragSpread)
             {
                 _fragmentSpreads.Add(fragSpread);
             }
-            else if (childPart is IDirectiveDocumentPart ddp)
+            else if (decendentPart is IDirectiveDocumentPart ddp)
             {
                 _allDirectives.Add(ddp);
             }

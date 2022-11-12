@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     /// An input value representing a complex input object read from a user's query document.
     /// </summary>
     [DebuggerDisplay("ComplexInputValue (Children = {Children.Count})")]
-    internal class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart
+    internal class DocumentComplexSuppliedValue : DocumentSuppliedValue, IComplexSuppliedValueDocumentPart, IDecdendentDocumentPartSubscriber
     {
         private readonly DocumentInputObjectFieldCollection _fields;
 
@@ -30,10 +30,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
             _fields = new DocumentInputObjectFieldCollection(this);
         }
 
-        /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
+        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            if (childPart.Parent == this && childPart is IInputObjectFieldDocumentPart iia)
+            if (decendentPart.Parent == this && decendentPart is IInputObjectFieldDocumentPart iia)
             {
                 if (!_fields.ContainsKey(iia.Name))
                     _fields.AddField(iia);

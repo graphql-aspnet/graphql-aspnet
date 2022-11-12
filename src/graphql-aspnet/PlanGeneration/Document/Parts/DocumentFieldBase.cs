@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// A base class defining common elements for different field types within a query
     /// document.
     /// </summary>
-    internal abstract class DocumentFieldBase : DocumentPartBase, IIncludeableDocumentPart
+    internal abstract class DocumentFieldBase : DocumentPartBase, IIncludeableDocumentPart, IDecdendentDocumentPartSubscriber
     {
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
@@ -57,20 +57,20 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             return thisPath;
         }
 
-        /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
+        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            if (childPart.Parent == this)
+            if (decendentPart.Parent == this)
             {
-                if (childPart is IFieldSelectionSetDocumentPart fss)
+                if (decendentPart is IFieldSelectionSetDocumentPart fss)
                 {
                     this.FieldSelectionSet = fss;
                 }
-                else if (childPart is IInputArgumentDocumentPart iadp)
+                else if (decendentPart is IInputArgumentDocumentPart iadp)
                 {
                     _arguments.AddArgument(iadp);
                 }
-                else if (childPart is IDirectiveDocumentPart ddp)
+                else if (decendentPart is IDirectiveDocumentPart ddp)
                 {
                     _directives.AddDirective(ddp);
                 }

@@ -44,12 +44,6 @@ namespace GraphQL.AspNet.Internal.Interfaces
         float EstimatedComplexity { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum depth of nested nodes the query text acheives in any operation or fragment.
-        /// </summary>
-        /// <value>The maximum depth.</value>
-        int MaxDepth { get; set; }
-
-        /// <summary>
         /// Gets the <see cref="Type"/> of the schema that this plan was created for.
         /// </summary>
         /// <value>The name of the schema.</value>

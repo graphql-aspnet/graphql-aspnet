@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// An instance of a referenced directive in a query document.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentDirective : DocumentPartBase, IDirectiveDocumentPart
+    internal class DocumentDirective : DocumentPartBase, IDirectiveDocumentPart, IDecdendentDocumentPartSubscriber
     {
         private DocumentInputArgumentCollection _arguments;
 
@@ -47,18 +47,18 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         }
 
         /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
-        {
-            if (childPart is IInputArgumentDocumentPart iiadp)
-                _arguments.AddArgument(iiadp);
-        }
-
-        /// <inheritdoc />
         protected override SourcePath CreatePath(SourcePath path)
         {
             var thisPath = path.Clone();
             thisPath.AddFieldName(TokenTypeNames.AT_SYMBOL + this.DirectiveName.ToString());
             return thisPath;
+        }
+
+        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
+        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
+        {
+            if (decendentPart is IInputArgumentDocumentPart iiadp)
+                _arguments.AddArgument(iiadp);
         }
 
         /// <inheritdoc />

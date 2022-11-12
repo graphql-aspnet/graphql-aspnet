@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
+    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
@@ -16,14 +17,14 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// query operation.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema.</typeparam>
-    public interface IQueryOperationComplexityCalculator<TSchema>
+    public interface IQueryOperationDepthCalculator<TSchema>
         where TSchema : class, ISchema
     {
         /// <summary>
         /// Inspects the operation and determines a final complexity score.
         /// </summary>
         /// <param name="operation">The operation to inspect.</param>
-        /// <returns>The complexity score for the given operation.</returns>
-        float Calculate(IGraphFieldExecutableOperation operation);
+        /// <returns>System.Single.</returns>
+        int Calculate(IOperationDocumentPart operation);
     }
 }

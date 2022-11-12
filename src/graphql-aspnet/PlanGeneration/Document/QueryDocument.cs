@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     /// <summary>
     /// A document representing the query text as supplied by the user matched against a schema.
     /// </summary>
-    internal class QueryDocument : IGraphQueryDocument
+    internal class QueryDocument : IGraphQueryDocument, IDecdendentDocumentPartSubscriber
     {
         private readonly DocumentOperationCollection _operations;
         private readonly DocumentNamedFragmentCollection _fragmentCollection;
@@ -41,15 +41,15 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             _fragmentCollection = new DocumentNamedFragmentCollection(this);
             _operations = new DocumentOperationCollection(this);
 
-            this.Children.ChildPartAdded += this.Children_PartAdded;
             this.Attributes = new MetaDataCollection();
         }
 
-        private void Children_PartAdded(IDocumentPart targetPart)
+        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
+        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            if (targetPart is INamedFragmentDocumentPart nf)
+            if (decendentPart is INamedFragmentDocumentPart nf)
                 _fragmentCollection.AddFragment(nf);
-            else if (targetPart is IOperationDocumentPart od)
+            else if (decendentPart is IOperationDocumentPart od)
                 _operations.AddOperation(od);
         }
 
@@ -59,11 +59,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             throw new NotSupportedException("No graph type exists that can be used for the root document");
         }
 
-        /// <inheritdoc />
-        public IGraphMessageCollection Messages { get; }
 
         /// <inheritdoc />
-        public int MaxDepth { get; set; }
+        public IGraphMessageCollection Messages { get; }
 
         /// <inheritdoc />
         public IDocumentPartsCollection Children { get; }

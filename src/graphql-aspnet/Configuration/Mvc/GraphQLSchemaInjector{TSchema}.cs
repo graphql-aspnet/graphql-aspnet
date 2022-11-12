@@ -155,6 +155,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             // "per schema" engine components
             _options.ServiceCollection.TryAddSingleton<IQueryOperationComplexityCalculator<TSchema>, DefaultOperationComplexityCalculator<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IQueryOperationDepthCalculator<TSchema>, DefaultOperationDepthCalculator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphResponseWriter<TSchema>, DefaultResponseWriter<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryDocumentGenerator<TSchema>, DefaultGraphQueryDocumentGenerator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryPlanGenerator<TSchema>, DefaultGraphQueryPlanGenerator<TSchema>>();

@@ -36,11 +36,5 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration
         /// </summary>
         /// <value>The named fragments.</value>
         INamedFragmentCollectionDocumentPart NamedFragments { get; }
-
-        /// <summary>
-        /// Gets or sets the maximum depth of any field of this document.
-        /// </summary>
-        /// <value>The maximum depth achived by the document.</value>
-        int MaxDepth { get; set; }
     }
 }

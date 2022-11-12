@@ -46,7 +46,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
 
@@ -89,7 +88,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -119,7 +117,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -173,7 +170,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -240,7 +236,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -279,7 +274,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -332,7 +326,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -374,7 +367,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -404,7 +396,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
@@ -445,7 +436,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
 
@@ -471,7 +461,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(2, document.MaxDepth);
 
             var operation = document.Operations[string.Empty];
 
@@ -508,7 +497,6 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             Assert.IsNotNull(document);
             Assert.AreEqual(0, document.Messages.Count);
             Assert.AreEqual(1, document.Operations.Count);
-            Assert.AreEqual(3, document.MaxDepth);
         }
     }
 }

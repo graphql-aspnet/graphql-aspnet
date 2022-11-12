@@ -20,12 +20,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     public interface IFragmentSpreadDocumentPart : IDirectiveContainerDocumentPart, IIncludeableDocumentPart, IDocumentPart
     {
         /// <summary>
-        /// Occurs when a fragment matching the requested name is discovered and
-        /// assigned to this instance.
-        /// </summary>
-        event DocumentCollectionAlteredHandler NamedFragmentAssigned;
-
-        /// <summary>
         /// Assigns the named fragment document part this spread is referencing.
         /// </summary>
         /// <param name="targetFragment">The target fragment.</param>

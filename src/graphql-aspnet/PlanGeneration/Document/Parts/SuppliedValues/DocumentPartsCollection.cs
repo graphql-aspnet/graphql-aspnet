@@ -22,9 +22,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
     [DebuggerDisplay("Count = {Count}, Owner: {Owner.GetType().Name}")]
     internal class DocumentPartsCollection : IDocumentPartsCollection
     {
-        /// <inheritdoc />
-        public event DocumentCollectionAlteredHandler ChildPartAdded;
-
         // all the parts added to this collection in the order they
         // were added
         private List<IDocumentPart> _allParts;
@@ -62,14 +59,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
 
             _partsByType[part.PartType].Add(part);
 
-            this.ChildPartAdded?.Invoke(part);
+            var parent = part.Parent;
+            var relativeDepth = 1;
+            while (parent != null)
+            {
+                if (parent is IDecdendentDocumentPartSubscriber sub)
+                    sub.OnDecendentPartAdded(part, relativeDepth);
 
-            part.Children.ChildPartAdded += this.Decendent_PartAdded;
-        }
-
-        private void Decendent_PartAdded(IDocumentPart docPart)
-        {
-            this.ChildPartAdded?.Invoke(docPart);
+                relativeDepth++;
+                parent = parent.Parent;
+            }
         }
 
         /// <inheritdoc />

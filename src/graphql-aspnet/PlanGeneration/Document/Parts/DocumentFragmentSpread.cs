@@ -21,13 +21,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// field selection set.
     /// </summary>
     [DebuggerDisplay("{Description}")]
-    internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart
+    internal class DocumentFragmentSpread : DocumentPartBase, IFragmentSpreadDocumentPart, IDecdendentDocumentPartSubscriber
     {
-        /// <inheritdoc />
-        public event DocumentCollectionAlteredHandler NamedFragmentAssigned;
-
         private DocumentDirectiveCollection _directives;
-
 
         public DocumentFragmentSpread(
             IDocumentPart parentPart,
@@ -40,14 +36,11 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.IsIncluded = true;
         }
 
-        /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
+        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            base.OnChildPartAdded(childPart);
-            if (childPart.Parent == this && childPart is IDirectiveDocumentPart ddp)
-            {
+            if (decendentPart.Parent == this && decendentPart is IDirectiveDocumentPart ddp)
                 _directives.AddDirective(ddp);
-            }
         }
 
         /// <inheritdoc />
@@ -69,7 +62,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 this.Fragment = targetFragment;
                 this.AssignGraphType(targetFragment?.GraphType);
                 targetFragment.MarkAsReferenced();
-                this.NamedFragmentAssigned?.Invoke(targetFragment);
             }
         }
 

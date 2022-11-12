@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Xml.Linq;
     using GraphQL.AspNet.Common.Source;
@@ -23,7 +24,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// and construction phase.
     /// </summary>
     [DebuggerDisplay("Operation: {Name} (Type = {OperationType})")]
-    internal class DocumentOperation : DocumentPartBase, IOperationDocumentPart
+    internal class DocumentOperation : DocumentPartBase, IOperationDocumentPart, IDecdendentDocumentPartSubscriber
     {
         private readonly DocumentVariableCollection _variableCollection = null;
         private readonly DocumentFragmentSpreadCollection _fragmentSpreads = null;
@@ -55,34 +56,34 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         }
 
-        /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
+        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            var isDirectChild = childPart.Parent == this;
-            if (isDirectChild && childPart is IVariableDocumentPart vd)
+            var isDirectChild = decendentPart.Parent == this;
+            if (isDirectChild && decendentPart is IVariableDocumentPart vd)
             {
                 _variableCollection.Add(vd);
             }
-            else if (isDirectChild && childPart is IFieldSelectionSetDocumentPart fieldSelection)
+            else if (isDirectChild && decendentPart is IFieldSelectionSetDocumentPart fieldSelection)
             {
                 _fieldSelectionSet = fieldSelection;
             }
-            else if (childPart is IDirectiveDocumentPart ddp)
+            else if (decendentPart is IDirectiveDocumentPart ddp)
             {
                 if (isDirectChild)
                     _directives.AddDirective(ddp);
                 _allDirectives.Add(ddp);
             }
-            else if (childPart is IVariableUsageDocumentPart varRef)
+            else if (decendentPart is IVariableUsageDocumentPart varRef)
             {
                 _variableUsages.Add(varRef);
             }
-            else if (childPart is IFragmentSpreadDocumentPart fragSpread)
+            else if (decendentPart is IFragmentSpreadDocumentPart fragSpread)
             {
                 _fragmentSpreads.Add(fragSpread);
             }
 
-            if (childPart is ISecureDocumentPart sdp)
+            if (decendentPart is ISecureDocumentPart sdp)
                 _allSecuredDocParts.Add(sdp);
         }
 
@@ -115,9 +116,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 
         /// <inheritdoc />
         public IReadOnlyList<IDirectiveDocumentPart> AllDirectives => _allDirectives;
-
-        /// <inheritdoc />
-        public int MaxDepth { get; private set; }
 
         /// <inheritdoc />
         public override string Description => $"Operation: {this.Name}";

@@ -175,7 +175,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(2, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
@@ -253,7 +252,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(3, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
@@ -319,7 +317,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(3, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
@@ -384,7 +381,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(3, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
@@ -452,7 +448,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(2, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
@@ -522,7 +517,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(1, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
@@ -628,7 +622,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(1, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];
@@ -685,7 +678,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
             var result = this.CreateDocument(tree, sourceText);
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Messages.Count);
-            Assert.AreEqual(1, result.MaxDepth);
             Assert.AreEqual(1, result.Operations.Count);
 
             var operation = result.Operations[0];

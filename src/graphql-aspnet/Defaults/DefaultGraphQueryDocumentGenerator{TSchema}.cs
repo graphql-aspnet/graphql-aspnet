@@ -124,68 +124,6 @@ namespace GraphQL.AspNet.Defaults
                     }
                 }
             }
-
-            // --------------------------------------------
-            // Step 3: Max Depth Calculation
-            // --------------------------------------------
-            // Once all fields are accounted for and all fragments are parsed
-            // compute the max queryable depth. When Named fragments spread into
-            // other field selection sets they can potentially increase
-            // the maximum depth of the operation so we must wait till all
-            // fields are accounted for.
-            // --------------------------------------------
-            if (completedAllSteps)
-            {
-                foreach (var operation in document.Operations.Values)
-                {
-                    var depth = this.RecomputeDepth(
-                        operation.FieldSelectionSet,
-                        new HashSet<INamedFragmentDocumentPart>());
-                    if (document.MaxDepth < depth)
-                        document.MaxDepth = depth;
-                }
-            }
-        }
-
-        private int RecomputeDepth(
-            IFieldSelectionSetDocumentPart selectionSet,
-            HashSet<INamedFragmentDocumentPart> walkedNamedFragments)
-        {
-            int maxDepth = 0;
-            if (selectionSet != null)
-            {
-                foreach (var child in selectionSet.Children)
-                {
-                    if (child is IFieldDocumentPart fd)
-                    {
-                        var depth = 1;
-                        if (fd.FieldSelectionSet != null)
-                            depth += this.RecomputeDepth(fd.FieldSelectionSet, walkedNamedFragments);
-                        if (depth > maxDepth)
-                            maxDepth = depth;
-                    }
-                    else if (child is IInlineFragmentDocumentPart iif)
-                    {
-                        var depth = this.RecomputeDepth(iif.FieldSelectionSet, walkedNamedFragments);
-                        if (depth > maxDepth)
-                            maxDepth = depth;
-                    }
-                    else if (child is IFragmentSpreadDocumentPart spread && spread.Fragment != null)
-                    {
-                        if (!walkedNamedFragments.Contains(spread.Fragment))
-                        {
-                            walkedNamedFragments.Add(spread.Fragment);
-                            var depth = this.RecomputeDepth(spread.Fragment.FieldSelectionSet, walkedNamedFragments);
-                            walkedNamedFragments.Remove(spread.Fragment);
-
-                            if (depth > maxDepth)
-                                maxDepth = depth;
-                        }
-                    }
-                }
-            }
-
-            return maxDepth;
         }
     }
 }

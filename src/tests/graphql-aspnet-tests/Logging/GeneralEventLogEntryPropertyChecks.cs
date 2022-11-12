@@ -231,7 +231,6 @@ namespace GraphQL.AspNet.Tests.Logging
             Assert.AreEqual(queryPlan.IsValid, entry.QueryPlanIsValid);
             Assert.AreEqual(queryPlan.OperationName, entry.QueryPlanOperationName);
             Assert.AreEqual(queryPlan.EstimatedComplexity, entry.QueryPlanEstimatedComplexity);
-            Assert.AreEqual(queryPlan.MaxDepth, entry.QueryPlanMaxDepth);
             Assert.IsNotNull(entry.ToString());
         }
 

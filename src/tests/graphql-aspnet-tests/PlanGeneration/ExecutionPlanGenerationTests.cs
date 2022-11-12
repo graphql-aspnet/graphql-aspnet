@@ -47,6 +47,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var planGenerator = new DefaultGraphQueryPlanGenerator<GraphSchema>(
                 schema,
+                new DefaultOperationDepthCalculator<GraphSchema>(),
                 new DefaultOperationComplexityCalculator<GraphSchema>());
 
             return await planGenerator.CreatePlan(doc.Operations[0]);

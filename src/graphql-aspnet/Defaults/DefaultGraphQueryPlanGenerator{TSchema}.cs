@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Defaults
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
@@ -29,6 +30,7 @@ namespace GraphQL.AspNet.Defaults
     {
         private readonly ISchema _schema;
         private readonly IQueryOperationComplexityCalculator<TSchema> _complexityCalculator;
+        private readonly IQueryOperationDepthCalculator<TSchema> _depthCalculator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQueryPlanGenerator{TSchema}" /> class.
@@ -38,10 +40,12 @@ namespace GraphQL.AspNet.Defaults
         /// when computing complexity scores.</param>
         public DefaultGraphQueryPlanGenerator(
             TSchema schema,
+            IQueryOperationDepthCalculator<TSchema> depthCalculator,
             IQueryOperationComplexityCalculator<TSchema> complexityCalculator)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
             _complexityCalculator = Validation.ThrowIfNullOrReturn(complexityCalculator, nameof(complexityCalculator));
+            _depthCalculator = Validation.ThrowIfNullOrReturn(depthCalculator, nameof(depthCalculator));
         }
 
         /// <inheritdoc />
@@ -54,7 +58,6 @@ namespace GraphQL.AspNet.Defaults
 
             // Validate that the document meets the depth requirements for plan generation
             this.InspectSyntaxDepth(queryPlan, operation);
-            queryPlan.MaxDepth = operation.MaxDepth;
             if (!queryPlan.IsValid)
                 return queryPlan;
 
@@ -88,8 +91,8 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <summary>
-        /// Inspects the syntax tree against the required metric values for the target schema and should a violation occur a
-        /// <see cref="GraphQLSyntaxException" /> is thrown aborting the query.
+        /// Inspects ano operation against the required metric values for the target schema and should a violation occur a
+        /// an error message is added to the query plan.
         /// </summary>
         /// <param name="queryPlan">The query plan being generated.</param>
         /// <param name="operation">The operation to be included.</param>
@@ -97,11 +100,21 @@ namespace GraphQL.AspNet.Defaults
             IGraphQueryPlan queryPlan,
             IOperationDocumentPart operation)
         {
+
             var maxAllowedDepth = _schema.Configuration?.ExecutionOptions?.MaxQueryDepth;
-            if (maxAllowedDepth.HasValue && operation.MaxDepth > maxAllowedDepth.Value)
+            if (maxAllowedDepth == null)
+                return;
+
+            var computedDepth = _depthCalculator.Calculate(operation);
+
+            if (maxAllowedDepth.HasValue && computedDepth > maxAllowedDepth.Value)
             {
+                var operationName = operation.Name;
+                if (string.IsNullOrWhiteSpace(operationName))
+                    operationName = "~anonymous~";
+
                 queryPlan.Messages.Critical(
-                    $"The query operation has a max field depth of {operation.MaxDepth} but " +
+                    $"The query operation {operationName} has a max field depth of {computedDepth} but " +
                     $"this schema has been configured to only accept queries with a max depth of {maxAllowedDepth.Value}. " +
                     "Adjust your query and try again.",
                     Constants.ErrorCodes.REQUEST_ABORTED);
@@ -126,5 +139,6 @@ namespace GraphQL.AspNet.Defaults
                     Constants.ErrorCodes.REQUEST_ABORTED);
             }
         }
+
     }
 }

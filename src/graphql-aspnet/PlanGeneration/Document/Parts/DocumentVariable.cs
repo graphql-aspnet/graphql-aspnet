@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     /// </summary>
     [Serializable]
     [DebuggerDisplay("Variable: {Name}")]
-    internal class DocumentVariable : DocumentPartBase, IVariableDocumentPart
+    internal class DocumentVariable : DocumentPartBase, IVariableDocumentPart, IDecdendentDocumentPartSubscriber
     {
         private DocumentDirectiveCollection _directives = null;
 
@@ -43,11 +43,10 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             this.TypeExpression = typeExpression;
         }
 
-        /// <inheritdoc />
-        protected override void OnChildPartAdded(IDocumentPart childPart)
+        /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
+        void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
-            base.OnChildPartAdded(childPart);
-            if (childPart.Parent == this && childPart is IDirectiveDocumentPart ddp)
+            if (decendentPart.Parent == this && decendentPart is IDirectiveDocumentPart ddp)
             {
                 _directives = _directives ?? new DocumentDirectiveCollection(this);
                 _directives.AddDirective(ddp);

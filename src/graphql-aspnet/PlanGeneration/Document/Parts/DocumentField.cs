@@ -7,14 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
 namespace GraphQL.AspNet.PlanGeneration.Document.Parts
 {
     using System.Diagnostics;
@@ -29,7 +21,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
     [DebuggerDisplay("Field: {Field?.Name} (Returns: {GraphType?.Name})")]
     internal class DocumentField : DocumentFieldBase, IFieldDocumentPart
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentField" /> class.
         /// </summary>

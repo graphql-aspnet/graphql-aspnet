@@ -11,7 +11,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Document;
@@ -37,9 +36,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
             this.SourceLocation = sourceLocation;
 
             this.Children = new DocumentPartsCollection(this);
-
-            // wire up local events
-            this.Children.ChildPartAdded += (o) => this.OnChildPartAdded(o);
         }
 
         /// <summary>
@@ -51,17 +47,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         protected virtual SourcePath CreatePath(SourcePath path)
         {
             return path.Clone();
-        }
-
-        /// <summary>
-        /// When overriden in a child class, this method is called
-        /// when a child part is added to this instance.
-        /// </summary>
-        /// <param name="childPart">The child part that was added.</param>
-        /// <param name="relativeDepth">The depth of the part relative to this part. A depth of 1 indicates
-        /// a direect child, 2 a grand child etc..</param>
-        protected virtual void OnChildPartAdded(IDocumentPart childPart)
-        {
         }
 
         /// <inheritdoc />

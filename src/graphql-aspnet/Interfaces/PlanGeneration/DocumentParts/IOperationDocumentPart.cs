@@ -52,13 +52,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         IVariableCollectionDocumentPart Variables { get; }
 
         /// <summary>
-        /// Gets the depth of any field of this operation, including spread
-        /// named fragments.
-        /// </summary>
-        /// <value>The depth achived by the operation.</value>
-        int MaxDepth { get; }
-
-        /// <summary>
         /// Gets a list of all the document parts in this operation that represent
         /// a secured item (typically a field or directive).
         /// </summary>
