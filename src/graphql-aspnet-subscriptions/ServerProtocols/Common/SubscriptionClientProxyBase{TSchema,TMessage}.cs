@@ -103,8 +103,9 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// used by this proxy.
         /// </summary>
         /// <param name="stream">The stream containing the bytes to deserialize.</param>
+        /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>TMessage.</returns>
-        protected abstract TMessage DeserializeMessage(Stream stream);
+        protected abstract Task<TMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default);
 
         /// <summary>
         /// Serializes the message into an array of UTF-8 encoded bytes that can be transmitted
@@ -208,7 +209,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                         if (result.MessageType == ClientMessageType.Text)
                         {
                             stream.Seek(0, SeekOrigin.Begin);
-                            var message = this.DeserializeMessage(stream);
+                            var message = await this.DeserializeMessage(stream);
                             await this.ClientMessageReceived(message)
                                 .ConfigureAwait(false);
                         }

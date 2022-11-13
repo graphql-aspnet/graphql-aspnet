@@ -40,19 +40,24 @@ namespace GraphQL.AspNet.Common.Source
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SourcePath"/> class.
+        /// Initializes a new instance of the <see cref="SourcePath" /> class.
         /// </summary>
-        public SourcePath()
+        /// <param name="capacity">The initial capacity of path items to allocate.</param>
+        public SourcePath(int? capacity = null)
         {
-            _segments = new List<object>();
+            if (capacity.HasValue)
+                _segments = new List<object>(capacity.Value);
+            else
+                _segments = new List<object>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourcePath" /> class.
         /// </summary>
-        /// <param name="pathItems">The path items.</param>
-        private SourcePath(IEnumerable<object> pathItems)
-            : this()
+        /// <param name="capacity">The initial capacity of path items to allocate.</param>
+        /// <param name="pathItems">The items to add to the initial path.</param>
+        private SourcePath(int capacity, IEnumerable<object> pathItems)
+            : this(capacity)
         {
             _segments.AddRange(pathItems);
         }
@@ -102,7 +107,7 @@ namespace GraphQL.AspNet.Common.Source
         /// <returns>SourcePath.</returns>
         public SourcePath Clone()
         {
-            return new SourcePath(_segments);
+            return new SourcePath(_segments.Count, _segments);
         }
 
         /// <summary>
@@ -136,7 +141,7 @@ namespace GraphQL.AspNet.Common.Source
             if (parentIndex < 0)
                 return new SourcePath();
 
-            return new SourcePath(_segments.Take(parentIndex + 1));
+            return new SourcePath(parentIndex + 1, _segments.Take(parentIndex + 1));
         }
 
         /// <summary>

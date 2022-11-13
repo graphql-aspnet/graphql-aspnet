@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Execution.Exceptions
         /// <param name="innerException">The exception that is the cause of the current exception if any.</param>
         public GraphExecutionException(
             string message,
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception innerException = null)
             : base(message, innerException)
         {

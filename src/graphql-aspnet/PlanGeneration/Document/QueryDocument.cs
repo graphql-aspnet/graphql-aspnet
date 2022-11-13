@@ -18,7 +18,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document
     using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.PlanGeneration.Document.Parts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
     using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
 
     /// <summary>
@@ -38,7 +37,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             this.Children = new DocumentPartsCollection(this);
 
             this.Path = new SourcePath();
-            this.Origin = new SourceOrigin(SourceLocation.None, this.Path);
+            this.Origin = new SourceOrigin();
             _fragmentCollection = new DocumentNamedFragmentCollection(this);
             _operations = new DocumentOperationCollection(this);
         }
@@ -57,7 +56,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         {
             throw new NotSupportedException("No graph type exists that can be used for the root document");
         }
-
 
         /// <inheritdoc />
         public IGraphMessageCollection Messages { get; }

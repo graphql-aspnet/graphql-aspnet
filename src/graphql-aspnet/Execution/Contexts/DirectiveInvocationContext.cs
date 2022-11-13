@@ -33,10 +33,10 @@ namespace GraphQL.AspNet.Execution.Contexts
         public DirectiveInvocationContext(
             IDirective directiveType,
             DirectiveLocation location,
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             IInputArgumentCollection args = null)
         {
-            this.Origin = origin ?? SourceOrigin.None;
+            this.Origin = origin;
             this.Location = location;
             this.Directive = Validation.ThrowIfNullOrReturn(directiveType, nameof(directiveType));
             this.Arguments = args ?? new InputArgumentCollection();

@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Add(GraphMessageSeverity severity, string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Add(GraphMessageSeverity severity, string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the critical message to the collection.
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Critical(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Critical(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the warning message to the collection.
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Warn(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Warn(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the info message to the collection.
@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Info(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Info(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the debug message to the collection.
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Debug(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Debug(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Adds the trace message to the collection.
@@ -93,7 +93,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="origin">The origin in the source text where this message was generated.</param>
         /// <param name="exceptionThrown">An exception that may have been thrown and caused this message to be created.</param>
         /// <returns>IGraphExecutionMessage.</returns>
-        IGraphMessage Trace(string message, string errorCode = "", SourceOrigin origin = null, Exception exceptionThrown = null);
+        IGraphMessage Trace(string message, string errorCode = "", SourceOrigin origin = default, Exception exceptionThrown = null);
 
         /// <summary>
         /// Gets the highest level severity of all the messages tracked in this collection.

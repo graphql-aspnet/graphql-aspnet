@@ -41,6 +41,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     public class GraphqlWsLegacyClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GraphqlWsLegacyMessage>
         where TSchema : class, ISchema
     {
+        private static readonly JsonSerializerOptions _serializerOptions;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="GraphqlWsLegacyClientProxy{TSchema}"/> class.
+        /// </summary>
+        static GraphqlWsLegacyClientProxy()
+        {
+            _serializerOptions = new JsonSerializerOptions();
+            _serializerOptions.PropertyNameCaseInsensitive = true;
+            _serializerOptions.AllowTrailingCommas = true;
+            _serializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+        }
+
         private readonly bool _enableMetrics;
         private readonly GraphqlWsLegacyMessageConverterFactory<TSchema> _messageConverterFactory;
 
@@ -70,26 +83,34 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         }
 
         /// <inheritdoc />
-        protected override GraphqlWsLegacyMessage DeserializeMessage(Stream stream)
+        protected override async Task<GraphqlWsLegacyMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default)
         {
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            var text = reader.ReadToEnd();
-
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
 
             GraphqlWsLegacyMessage recievedMessage;
 
             try
             {
-                var partialMessage = JsonSerializer.Deserialize<GraphqlWsLegacyClientPartialMessage>(text, options);
+                var partialMessage = await JsonSerializer.DeserializeAsync<GraphqlWsLegacyClientPartialMessage>(stream, _serializerOptions, cancelToken);
                 recievedMessage = partialMessage.Convert();
             }
             catch (Exception ex)
             {
                 this.Logger.EventLogger?.UnhandledExceptionEvent(ex);
+
+                string text = "~unreadable~";
+                try
+                {
+                    if (stream.CanSeek)
+                    {
+                        stream.Seek(0, SeekOrigin.Begin);
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                            text = reader.ReadToEnd();
+                    }
+                }
+                catch
+                {
+                }
+
                 recievedMessage = new GraphqlWsLegacyUnknownMessage(text);
             }
 

@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Execution.Contexts
     [DebuggerDisplay("Field Context: {Name} (Restict To: {ExpectedSourceTypeName}, Children = {ChildContexts.Count})")]
     public class FieldInvocationContext : IGraphFieldInvocationContext
     {
-        private SourceOrigin _origin = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldInvocationContext" /> class.
@@ -38,7 +37,6 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// <param name="name">The name to apply to this data set once resolution is complete.</param>
         /// <param name="field">The field.</param>
         /// <param name="fieldPart">The field document part which declared the field to be resolved.</param>
-        /// <param name="origin">The origin, in the source text, that this context was generated from.</param>
         public FieldInvocationContext(
             ISchema schema,
             Type expectedSourceType,

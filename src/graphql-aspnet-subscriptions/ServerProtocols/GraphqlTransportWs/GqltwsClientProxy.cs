@@ -42,6 +42,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     internal sealed class GqltwsClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GqltwsMessage>
         where TSchema : class, ISchema
     {
+        private static readonly JsonSerializerOptions _serializerOptions;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="GqltwsClientProxy{TSchema}"/> class.
+        /// </summary>
+        static GqltwsClientProxy()
+        {
+            _serializerOptions = new JsonSerializerOptions();
+            _serializerOptions.PropertyNameCaseInsensitive = true;
+            _serializerOptions.AllowTrailingCommas = true;
+            _serializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+        }
+
         private readonly bool _enableMetrics;
         private readonly GqltwsMessageConverterFactory<TSchema> _converterFactory;
 
@@ -178,29 +191,40 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         }
 
         /// <inheritdoc />
-        protected override GqltwsMessage DeserializeMessage(Stream stream)
+        protected async override Task<GqltwsMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default)
         {
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            var text = reader.ReadToEnd();
-
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.AllowTrailingCommas = true;
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
-
             GqltwsMessage recievedMessage;
 
             try
             {
                 // partially deserailize the message to extract the "type" field
                 // to determine how to fully deserialize this message
-                var partialMessage = JsonSerializer.Deserialize<GqltwsClientPartialMessage>(text, options);
+                var partialMessage = await JsonSerializer.DeserializeAsync<GqltwsClientPartialMessage>(
+                    stream,
+                    _serializerOptions,
+                    cancelToken);
                 recievedMessage = partialMessage.Convert();
             }
             catch (Exception ex)
             {
-                // TODO: Capture deserialization errors as a structured event
                 this.Logger?.EventLogger?.UnhandledExceptionEvent(ex);
+
+                string text = "~unreadable~";
+
+                try
+                {
+                    if (stream.CanSeek)
+                    {
+                        stream.Seek(0, SeekOrigin.Begin);
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                            text = reader.ReadToEnd();
+                    }
+                }
+                catch
+                {
+                }
+
+                // TODO: Capture deserialization errors as a structured event
                 recievedMessage = new GqltwsUnknownMessage(text);
             }
 

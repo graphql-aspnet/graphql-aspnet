@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Execution
             IGraphOperationRequest parentOperationRequest,
             IGraphFieldInvocationContext invocationContext,
             GraphDataContainer dataSource,
-            SourceOrigin origin = null)
+            SourceOrigin origin = default)
         {
             this.OperationRequest = Validation.ThrowIfNullOrReturn(parentOperationRequest, nameof(parentOperationRequest));
             this.Id = Guid.NewGuid();
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Execution
 
             // this may be different than the source indicated by teh parent operation request
             // do to child item resolution on arrays
-            this.Origin = origin ?? SourceOrigin.None;
+            this.Origin = origin;
         }
 
         /// <inheritdoc />

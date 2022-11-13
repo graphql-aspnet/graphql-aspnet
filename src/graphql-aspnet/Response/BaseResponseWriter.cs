@@ -61,30 +61,34 @@ namespace GraphQL.AspNet.Response
             writer.WriteStartObject();
             this.WritePreEncodedString(writer, "message", message.Message);
 
-            if (!message.Origin.Location.Equals(SourceLocation.None))
+            if (!message.Origin.Equals(default(SourceOrigin)))
             {
-                writer.WriteStartArray("locations");
-                writer.WriteStartObject();
-                writer.WriteNumber("line", message.Origin.Location.LineNumber);
-                writer.WriteNumber("column", message.Origin.Location.LinePosition);
-                writer.WriteEndObject();
-                writer.WriteEndArray(); // locations
-            }
-
-            if (message.Origin.Path != SourcePath.None)
-            {
-                writer.WriteStartArray("path");
-                foreach (var loc in message.Origin.Path)
+                if (!message.Origin.Location.Equals(SourceLocation.None))
                 {
-                    if (loc is int i)
-                        writer.WriteNumberValue(i);
-                    else if (loc is string str)
-                        this.WritePreEncodedStringValue(writer, str);
-                    else
-                        writer.WriteNullValue();
+                    writer.WriteStartArray("locations");
+                    writer.WriteStartObject();
+                    writer.WriteNumber("line", message.Origin.Location.LineNumber);
+                    writer.WriteNumber("column", message.Origin.Location.LinePosition);
+                    writer.WriteEndObject();
+                    writer.WriteEndArray(); // locations
                 }
 
-                writer.WriteEndArray(); // path
+                if (message.Origin.Path != null
+                    && message.Origin.Path != SourcePath.None)
+                {
+                    writer.WriteStartArray("path");
+                    foreach (var loc in message.Origin.Path)
+                    {
+                        if (loc is int i)
+                            writer.WriteNumberValue(i);
+                        else if (loc is string str)
+                            this.WritePreEncodedStringValue(writer, str);
+                        else
+                            writer.WriteNullValue();
+                    }
+
+                    writer.WriteEndArray(); // path
+                }
             }
 
             writer.WriteStartObject("extensions");

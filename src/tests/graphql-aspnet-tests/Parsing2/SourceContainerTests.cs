@@ -160,7 +160,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
         [Test]
         public void SourceOrigin_Empty_PropertyCheck()
         {
-            var origin = new SourceOrigin();
+            SourceOrigin origin = SourceOrigin.None;
             Assert.AreEqual(SourcePath.None, origin.Path);
             Assert.AreEqual(SourceLocation.None, origin.Location);
         }

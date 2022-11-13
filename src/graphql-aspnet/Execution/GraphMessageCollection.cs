@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Execution
             GraphMessageSeverity severity,
             string message,
             string errorCode = "",
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
             var graphMessage = new GraphExecutionMessage(
@@ -103,7 +103,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessage Critical(
             string message,
             string errorCode = "",
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
             return this.Add(GraphMessageSeverity.Critical, message, errorCode, origin, exceptionThrown);
@@ -113,7 +113,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessage Warn(
             string message,
             string errorCode = "",
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
             return this.Add(GraphMessageSeverity.Warning, message, errorCode, origin, exceptionThrown);
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessage Info(
             string message,
             string errorCode = "",
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
             return this.Add(GraphMessageSeverity.Information, message, errorCode, origin, exceptionThrown);
@@ -133,7 +133,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessage Debug(
             string message,
             string errorCode = "",
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
             return this.Add(GraphMessageSeverity.Debug, message, errorCode, origin, exceptionThrown);
@@ -143,7 +143,7 @@ namespace GraphQL.AspNet.Execution
         public IGraphMessage Trace(
             string message,
             string errorCode = "",
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception exceptionThrown = null)
         {
             return this.Add(GraphMessageSeverity.Trace, message, errorCode, origin, exceptionThrown);

@@ -409,12 +409,10 @@ namespace GraphQL.AspNet.Tests.Framework
             DirectiveLocation location,
             object directiveTarget,
             DirectiveInvocationPhase phase = DirectiveInvocationPhase.SchemaGeneration,
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             object[] arguments = null)
             where TDirective : class
         {
-            origin = origin ?? SourceOrigin.None;
-
             var server = new TestServerBuilder()
                 .AddType<TDirective>()
                 .Build();

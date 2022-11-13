@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
 
             if (!(resolvableItem is IResolvableFieldSet suppliedFields))
             {
-                SourceOrigin origin = null;
+                SourceOrigin origin = default;
                 if (resolvableItem is IDocumentPart docPart)
                 {
                     origin = docPart.SourceLocation.AsOrigin();
@@ -128,11 +128,9 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                         // the document validation rules
                         // should prevent this scenario from ever happening
                         // but trap it just in case to give a helpful exception
-                        SourceOrigin origin = null;
+                        SourceOrigin origin = default;
                         if (resolvableItem is IDocumentPart docPart)
-                        {
-                            origin = docPart.SourceLocation.AsOrigin();
-                        }
+                            origin = docPart.Origin;
 
                         throw new GraphExecutionException(
                             $"Unable to resolve type '{_graphType.Name}'. Field " +
@@ -157,7 +155,7 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
                     // the document validation rules
                     // should prevent this scenario from ever happening
                     // but trap it just in case to give a helpful exception
-                    SourceOrigin origin = null;
+                    SourceOrigin origin = default;
                     if (resolvableItem is IDocumentPart docPart)
                     {
                         origin = docPart.SourceLocation.AsOrigin();

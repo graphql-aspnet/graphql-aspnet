@@ -23,7 +23,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
     internal abstract class DocumentPartBase : IDocumentPart
     {
         private SourcePath _path = null;
-        private SourceOrigin _origin = null;
+        private SourceOrigin _origin;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentPartBase"/> class.
@@ -87,15 +87,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         }
 
         /// <inheritdoc />
-        public SourceOrigin Origin
-        {
-            get
-            {
-                if (_origin == null)
-                    _origin = new SourceOrigin(this.SourceLocation, this.Path);
-
-                return _origin;
-            }
-        }
+        public SourceOrigin Origin => new SourceOrigin(this.SourceLocation, this.Path);
     }
 }

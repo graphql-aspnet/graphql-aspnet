@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Execution
         internal static IGraphMessage FromValidationRule(
             IValidationRule validationRule,
             string messageText,
-            SourceOrigin messageOrigin = null,
+            SourceOrigin messageOrigin = default,
             Exception exception = null)
         {
             return FromValidationRule(
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Execution
             string url,
             string errorCode,
             string messageText,
-            SourceOrigin messageOrigin = null,
+            SourceOrigin messageOrigin = default,
             Exception exception = null)
         {
             var graphMessage = new GraphExecutionMessage(
@@ -88,10 +88,10 @@ namespace GraphQL.AspNet.Execution
             GraphMessageSeverity severity,
             string message,
             string code = null,
-            SourceOrigin origin = null,
+            SourceOrigin origin = default,
             Exception exception = null)
         {
-            this.Origin = origin ?? SourceOrigin.None;
+            this.Origin = origin;
             this.Code = code?.Trim() ?? "-unknown-";
             this.Message = message?.Trim();
             this.Severity = severity;
