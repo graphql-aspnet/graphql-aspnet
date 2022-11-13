@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
 {
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -28,11 +29,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             var schema = connection.ServiceProvider.GetService<TSchema>();
             var router = connection.ServiceProvider.GetService<ISubscriptionEventRouter>();
             var logger = connection.ServiceProvider.GetService<IGraphEventLogger>();
+            var writer = connection.ServiceProvider.GetService<IGraphResponseWriter<TSchema>>();
 
             var client = new GqltwsClientProxy<TSchema>(
                 connection,
                 schema,
                 router,
+                writer,
                 logger,
                 schema.Configuration.ExecutionOptions.EnableMetrics);
 

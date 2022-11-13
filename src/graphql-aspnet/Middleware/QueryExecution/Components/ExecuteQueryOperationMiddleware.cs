@@ -152,7 +152,8 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     context,
                     fieldRequest,
                     context.ResolvedVariables,
-                    context.DefaultFieldSources);
+                    context.DefaultFieldSources,
+                    resultCapacity: 1);
 
                 var fieldTask = _fieldExecutionPipeline.InvokeAsync(
                     fieldContext,

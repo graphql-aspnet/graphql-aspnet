@@ -18,8 +18,10 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -42,21 +44,21 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     internal sealed class GqltwsClientProxy<TSchema> : SubscriptionClientProxyBase<TSchema, GqltwsMessage>
         where TSchema : class, ISchema
     {
-        private static readonly JsonSerializerOptions _serializerOptions;
+        private static readonly JsonSerializerOptions _deserializerOptions;
 
         /// <summary>
         /// Initializes static members of the <see cref="GqltwsClientProxy{TSchema}"/> class.
         /// </summary>
         static GqltwsClientProxy()
         {
-            _serializerOptions = new JsonSerializerOptions();
-            _serializerOptions.PropertyNameCaseInsensitive = true;
-            _serializerOptions.AllowTrailingCommas = true;
-            _serializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+            _deserializerOptions = new JsonSerializerOptions();
+            _deserializerOptions.PropertyNameCaseInsensitive = true;
+            _deserializerOptions.AllowTrailingCommas = true;
+            _deserializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
         }
 
         private readonly bool _enableMetrics;
-        private readonly GqltwsMessageConverterFactory<TSchema> _converterFactory;
+        private readonly JsonSerializerOptions _serializerOptions;
 
         private SemaphoreSlim _initSyncLock = new SemaphoreSlim(1);
         private bool _initReceived;
@@ -74,12 +76,19 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             IClientConnection clientConnection,
             TSchema schema,
             ISubscriptionEventRouter router,
+            IGraphResponseWriter<TSchema> responseWriter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
             : base(Guid.NewGuid().ToString(), schema, clientConnection, router, logger)
         {
-            _converterFactory = new GqltwsMessageConverterFactory<TSchema>(clientConnection?.ServiceProvider);
             _enableMetrics = enableMetrics;
+
+            Validation.ThrowIfNull(responseWriter, nameof(responseWriter));
+
+            _serializerOptions = new JsonSerializerOptions();
+            _serializerOptions.Converters.Add(new GqltwsServerDataMessageConverter(schema, responseWriter));
+            _serializerOptions.Converters.Add(new GqltwsServerCompleteMessageConverter());
+            _serializerOptions.Converters.Add(new GqltwsServerErrorMessageConverter(schema));
         }
 
         /// <summary>
@@ -201,7 +210,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
                 // to determine how to fully deserialize this message
                 var partialMessage = await JsonSerializer.DeserializeAsync<GqltwsClientPartialMessage>(
                     stream,
-                    _serializerOptions,
+                    _deserializerOptions,
                     cancelToken);
                 recievedMessage = partialMessage.Convert();
             }
@@ -234,13 +243,29 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// <inheritdoc />
         protected override byte[] SerializeMessage(GqltwsMessage message)
         {
-            // create and register the proper serializer for this message
-            var options = new JsonSerializerOptions();
-            (var converter, var asType) = _converterFactory.CreateConverter(message);
-            options.Converters.Add(converter);
+            // how should we serialize this message?
+            Type matchedType = typeof(GqltwsMessage);
+
+            if (message != null)
+            {
+                switch (message.Type)
+                {
+                    case GqltwsMessageType.NEXT:
+                        matchedType = typeof(GqltwsServerNextDataMessage);
+                        break;
+
+                    case GqltwsMessageType.COMPLETE:
+                        matchedType = typeof(GqltwsSubscriptionCompleteMessage);
+                        break;
+
+                    case GqltwsMessageType.ERROR:
+                        matchedType = typeof(GqltwsServerErrorMessage);
+                        break;
+                }
+            }
 
             // graphql is defined to communcate in UTF-8, serialize the result to that
-            return JsonSerializer.SerializeToUtf8Bytes(message, asType, options);
+            return JsonSerializer.SerializeToUtf8Bytes(message, matchedType, _serializerOptions);
         }
 
         /// <inheritdoc />

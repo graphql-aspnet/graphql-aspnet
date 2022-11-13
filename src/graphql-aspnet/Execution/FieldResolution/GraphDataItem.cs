@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     "a list of items, a child field context cannot be directly added to it.");
             }
 
-            _childFields = _childFields ?? new List<GraphDataItem>();
+            _childFields = _childFields ?? new List<GraphDataItem>(1);
 
             var path = this.Origin.Path.Clone();
             path.AddFieldName(childInvocationContext.Field.Name);

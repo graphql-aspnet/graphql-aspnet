@@ -15,6 +15,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy;
@@ -24,6 +25,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.Subscriptions.Tests.Mocks;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
+    using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
 
@@ -49,7 +51,9 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
                 server.Schema,
                 connection,
                 router.Object,
-                GraphqlWsLegacyConstants.PROTOCOL_NAME);
+                GraphqlWsLegacyConstants.PROTOCOL_NAME,
+                server.ServiceProvider.GetService<IGraphResponseWriter<GraphSchema>>());
+
             return (connection, subClient, router);
         }
 

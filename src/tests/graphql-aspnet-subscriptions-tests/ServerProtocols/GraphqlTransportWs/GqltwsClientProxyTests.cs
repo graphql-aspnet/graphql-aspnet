@@ -17,6 +17,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs;
@@ -53,7 +54,8 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             var subClient = new GqltwsClientProxy<GraphSchema>(
                 connection,
                 server.Schema,
-                router.Object);
+                router.Object,
+                server.ServiceProvider.GetService<IGraphResponseWriter<GraphSchema>>());
             return (connection, subClient, router);
         }
 

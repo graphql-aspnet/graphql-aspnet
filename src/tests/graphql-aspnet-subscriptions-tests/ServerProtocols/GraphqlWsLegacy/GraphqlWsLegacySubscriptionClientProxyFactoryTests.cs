@@ -11,6 +11,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
+    using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Schemas;
@@ -37,6 +38,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             collection.AddSingleton(new SubscriptionServerOptions<GraphSchema>());
             collection.AddSingleton(new Mock<IGraphEventLogger>().Object);
             collection.AddSingleton(new Mock<ISubscriptionEventRouter>().Object);
+            collection.AddSingleton(new Mock<IGraphResponseWriter<GraphSchema>>().Object);
 
             var connect = new Mock<IClientConnection>();
             connect.Setup(x => x.ServiceProvider).Returns(collection.BuildServiceProvider());
