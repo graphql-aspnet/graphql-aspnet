@@ -52,29 +52,6 @@ namespace GraphQL.Tests.Common
         }
 
         [Test]
-        public async Task TimerCallBackIsCalledAfterInterval()
-        {
-            var total = 0;
-            using var timer = new TimerAsync(
-                (token) =>
-                {
-                    total++;
-                    return Task.CompletedTask;
-                },
-                TimeSpan.Zero,
-                TimeSpan.FromMilliseconds(1));
-
-            timer.Start();
-            while (total < 3)
-            {
-                await Task.Yield();
-            }
-
-            await timer.Stop();
-            Assert.AreEqual(3, total);
-        }
-
-        [Test]
         public async Task ActionThrowsException_ExceptionIsbubbled()
         {
             var exceptionToThrow = new Exception("Test Exception");
