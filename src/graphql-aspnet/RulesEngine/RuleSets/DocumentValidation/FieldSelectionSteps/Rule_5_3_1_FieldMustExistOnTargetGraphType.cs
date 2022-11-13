@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
                     // special error message for union types
                     this.ValidationError(
                         context,
-                        $"The field '{docPart.Name.ToString()}' cannot be directly selected from type '{selectionSetGraphType.Name}'. " +
+                        $"The field '{docPart.Name}' cannot be directly selected from type '{selectionSetGraphType.Name}'. " +
                         $"Fields cannot be directly selected from {nameof(TypeKind.UNION)} type selection sets.");
                 }
                 else if (selectionSetGraphType != null)
@@ -81,7 +81,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
                     // should be impossible given field selection set validation
                     this.ValidationError(
                         context,
-                        $"The document field '{docPart.Name.ToString()}' cannot be validated. Its parent selection set " +
+                        $"The document field '{docPart.Name}' cannot be validated. Its parent selection set " +
                         $"does not declare a graph type to validate against.");
                 }
 

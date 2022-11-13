@@ -17,5 +17,11 @@ namespace GraphQL.AspNet.Tests.RulesEngine.RuleCheckTestData
         int Id { get; }
 
         string Name { get; }
+
+        [GraphField]
+        int Speed(bool inMeters)
+        {
+            return 0;
+        }
     }
 }

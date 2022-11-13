@@ -38,61 +38,61 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
         public override bool Execute(DocumentValidationContext context)
         {
             var docPart = (IFieldDocumentPart)context.ActivePart;
-            var selectionSet = context.ParentPart as IFieldSelectionSetDocumentPart;
 
-            var metadata = this.GetOrAddMetaData(
-                context,
-                () => new Dictionary<IFieldSelectionSetDocumentPart, HashSet<string>>());
-
-            HashSet<string> checkedAliases;
-            if (metadata.ContainsKey(selectionSet))
-            {
-                checkedAliases = metadata[selectionSet];
-            }
-            else
-            {
-                checkedAliases = new HashSet<string>();
-                metadata.Add(selectionSet, checkedAliases);
-            }
-
-            // this rule will execute against every field in a selection
-            // we don't need to validate it more than once if there are mergable fields found
-            if (checkedAliases.Contains(docPart.Alias))
+            if (docPart.FieldSelectionSet == null)
                 return true;
 
-            checkedAliases.Add(docPart.Alias);
+            bool isValid = true;
 
-            var fields = selectionSet.FindFieldsOfAlias(docPart.Alias).ToList();
-            if (fields.Count == 1)
-                return true;
+            // Every pair of fields with the same alias must be checked
+            // to ensure compatability: super slow runtime :(
+            var aliasGroups = docPart.FieldSelectionSet.ExecutableFields.ByAlias();
 
-            var isValid = true;
-            for (var i = 0; i <= fields.Count - 2; i++)
+            foreach (var aliasGroup in aliasGroups)
             {
-                // we may iterate through the field we are adding, it can exist with itself
-                // just skip it
-                var leftField = fields[i];
-                var rightField = fields[i + 1];
-
-                // fields with the same name in a given context
-                // but targeting non-intersecting types can safely co-exist
-                // in the same selection set.
-                if (this.CanCoExist(context.Schema, leftField, rightField))
+                var executableFields = aliasGroup.Value;
+                if (executableFields.Count < 2)
                     continue;
 
-                // fields that could cause a name collision for a type
-                // must be mergable (i.e. have the same shape/signature).
-                if (this.AreSameShape(leftField, rightField))
-                    continue;
+                for (var i = 0; i < executableFields.Count - 1; i++)
+                {
+                    for (var j = i + 1; j < executableFields.Count; j++)
+                    {
+                        var leftField = executableFields[i];
+                        var rightField = executableFields[j];
 
-                this.ValidationError(
-                    context,
-                    $"The selection set already contains a field with a name or alias of '{docPart.Alias}'. " +
-                    "An attempt was made to add another field with the same name or alias to the selection set but with a different " +
-                    "return graph type or input arguments. Fields with the same output name must have identicial signatures " +
-                    "within a single selection set.");
+                        if (leftField.Alias != rightField.Alias)
+                            continue;
 
-                isValid = false;
+                        // fields with the same name in a given context
+                        // but targeting non-intersecting types can safely co-exist
+                        // in the same selection set.
+                        if (this.CanCoExist(context.Schema, leftField, rightField))
+                            continue;
+
+                        // fields that could cause a name collision for a type
+                        // must be mergable (i.e. have the same shape/signature).
+                        if (this.AreSameShape(leftField, rightField))
+                            continue;
+
+                        string parentType = "targeting the same graph type";
+                        if (leftField.Parent is IFieldSelectionSetDocumentPart fss)
+                        {
+                            parentType = $"for graph type {fss.GraphType.Name}";
+                        }
+
+                        this.ValidationError(
+                            context,
+                            leftField.SourceLocation,
+                            $"The selection set for field '{docPart.Alias}' contains multiple fields " +
+                            $"named '{leftField.Alias}', {parentType}, that do not have " +
+                            "identical signatures. Fields with the same output name for " +
+                            "a given type must have identicial signatures " +
+                            "within a single selection set. Use different aliases if this was intentional.");
+
+                        isValid = false;
+                    }
+                }
             }
 
             return isValid;

@@ -39,12 +39,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _executionSet = new ExecutionFieldSet(this);
         }
 
-        /// <inheritdoc />
-        public IEnumerable<IFieldDocumentPart> FindFieldsOfAlias(string alias)
-        {
-            return this.ExecutableFields.FilterByAlias(alias);
-        }
-
         /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />
         void IDecdendentDocumentPartSubscriber.OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {

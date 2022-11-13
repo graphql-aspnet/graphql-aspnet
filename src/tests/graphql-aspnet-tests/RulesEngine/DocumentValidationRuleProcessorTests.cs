@@ -70,6 +70,37 @@ namespace GraphQL.AspNet.Tests.RulesEngine
                               "     elevator: escalator(id: 5) { id, name } " +
                               "}}");
 
+            // return names at same level must be identical
+            // ---
+            // the inline frag and ElevFragment both define the "speed"
+            // field but with different arguments, these are not mergable
+            // and should fail since both speed fields belong to the same
+            // selection set on allPeopleMovers
+            AddQuery("5.3.2", @"query {
+                                    peopleMovers {
+                                       allPeopleMovers {
+                                           ... on Elevator {
+                                                   id
+                                                   name
+                                                   speed(inMeters: false)
+                                           }
+                                           ... EscaFragment
+                                           ... ElevFragment
+                                       }
+                                    }
+                                }
+
+                                fragment EscaFragment on Escalator {
+                                    id
+                                    name
+                                }
+
+                                fragment ElevFragment on Elevator {
+                                    id
+                                    name
+                                    speed(inMeters: true)
+                                }");
+
             // leaf fields must not have a child field set (name is a string, it has no fields)
             AddQuery("5.3.3", "query Operation1{ peopleMovers { elevator(id: 5){id, name { lastName } } } }");
 

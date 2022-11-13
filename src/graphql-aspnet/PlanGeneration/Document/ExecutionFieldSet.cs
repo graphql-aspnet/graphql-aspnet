@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
             _cachedExecutableFields = null;
-           _lastBuiltSequence = -1;
+            _lastBuiltSequence = -1;
             _sequence = 0;
         }
 
@@ -54,20 +54,30 @@ namespace GraphQL.AspNet.PlanGeneration.Document
             if (_lastBuiltSequence == _sequence && _cachedExecutableFields != null)
                 return;
 
-            _cachedExecutableFields = new ((_cachedExecutableFields?.Count + 16) ?? 16);
+            var newList = new List<IFieldDocumentPart>((_cachedExecutableFields?.Count ?? 8) * 2);
 
             var iterator = new ExecutableFieldSetEnumerator(this.Owner);
             while (iterator.MoveNext())
-                _cachedExecutableFields.Add(iterator.Current);
+                newList.Add(iterator.Current);
 
             _lastBuiltSequence = _sequence;
+            _cachedExecutableFields = newList;
         }
 
         /// <inheritdoc />
-        public IEnumerable<IFieldDocumentPart> FilterByAlias(string alias)
+        public IReadOnlyDictionary<string, IList<IFieldDocumentPart>> ByAlias()
         {
-            this.EnsureCurrentSnapshot();
-            return _cachedExecutableFields.Where(x => x.Alias == alias);
+            var dic = new Dictionary<string, IList<IFieldDocumentPart>>();
+
+            foreach (var field in this)
+            {
+                if (!dic.ContainsKey(field.Alias))
+                    dic.Add(field.Alias, new List<IFieldDocumentPart>(1));
+
+                dic[field.Alias].Add(field);
+            }
+
+            return dic;
         }
 
         /// <inheritdoc />
@@ -105,5 +115,16 @@ namespace GraphQL.AspNet.PlanGeneration.Document
 
         /// <inheritdoc />
         public IFieldSelectionSetDocumentPart Owner { get; }
+
+        /// <inheritdoc />
+        public int Count
+        {
+
+            get
+            {
+                this.EnsureCurrentSnapshot();
+                return _cachedExecutableFields.Count;
+            }
+        }
     }
 }

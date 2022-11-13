@@ -96,6 +96,12 @@ namespace GraphQL.AspNet.Tests.RulesEngine.RuleCheckTestData
             return null;
         }
 
+        [Query("allPeopleMovers")]
+        public List<IPeopleMover> FetchAllPeopleMovers()
+        {
+            return null;
+        }
+
         [Query("search", "ElevatorOrEscalator", typeof(Escalator), typeof(Elevator), TypeExpression = TypeExpressions.IsNotNullList)]
         public IGraphActionResult SearchPeopleMovers(string name = "*")
         {

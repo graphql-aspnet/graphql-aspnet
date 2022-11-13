@@ -19,14 +19,15 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// includes fields that would be added via an inline fragment or a
     /// spread of a named fragment.
     /// </summary>
-    public interface IExecutableFieldSelectionSet : IEnumerable<IFieldDocumentPart>
+    public interface IExecutableFieldSelectionSet : IReadOnlyList<IFieldDocumentPart>
     {
+
         /// <summary>
-        /// Filters the set of executable fields to those that match the provided alias.
+        /// Creates a set of all fields in this executable set, grouped by
+        /// their alias.
         /// </summary>
-        /// <param name="alias">The alias to search for.</param>
-        /// <returns>IReadOnlyList&lt;IFieldDocumentPart&gt;.</returns>
-        IEnumerable<IFieldDocumentPart> FilterByAlias(string alias);
+        /// <returns>IReadOnlyDictionary&lt;System.String, IList&lt;IFieldDocumentPart&gt;&gt;.</returns>
+        public IReadOnlyDictionary<string, IList<IFieldDocumentPart>> ByAlias();
 
         /// <summary>
         /// Gets the subset of executable fields that are marked as being included
@@ -40,18 +41,5 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// </summary>
         /// <value>The owner.</value>
         IFieldSelectionSetDocumentPart Owner { get; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="IFieldDocumentPart"/> at the specified index. This index
-        /// represents its position in the resultant field. This may be a field in a child
-        /// fragment spread or inline fragment and will not necessarily coorispond to a direct child
-        /// of the owner selection set.
-        /// </summary>
-        /// <remarks>
-        /// This method works in the same capacity as as <c>ElementAt()</c> and
-        /// exists only for convience reasons. Avoid using it for performance critical operations.</remarks>
-        /// <param name="index">The index of the field.</param>
-        /// <returns>IFieldDocumentPart.</returns>
-        IFieldDocumentPart this[int index] { get; }
     }
 }
