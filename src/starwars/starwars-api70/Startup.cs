@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.StarWarsAPI3X
+namespace GraphQL.AspNet.StarWarsAPI7X
 {
     using System;
     using GraphQL.AspNet;
@@ -67,17 +67,22 @@ namespace GraphQL.AspNet.StarWarsAPI3X
             // you can control which assemblies are scanned and which classes are registered using
             // the schema configuration options set here.
             //
-            // in this example because of the two test projects (netcore2.2 and netcore3.0)
+            // in this example because of the two test projects (netcore3.1 and net5.0)
             // we have moved all the shared code to a common assembly (starwars-common) and are injecting it
             // as a single unit
+            //
+            // we then add subscription services to the schema builder returned from .AddGraphQL()
             services.AddGraphQL(options =>
-             {
-                 options.ResponseOptions.ExposeExceptions = true;
-                 options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
+            {
+                options.ResponseOptions.ExposeExceptions = true;
+                options.ResponseOptions.MessageSeverityLevel = GraphMessageSeverity.Information;
 
-                 var assembly = typeof(StarWarsDataRepository).Assembly;
-                 options.AddAssembly(assembly);
-             })
+                options.ExecutionOptions.EnableMetrics = true;
+                options.ResponseOptions.ExposeMetrics = true;
+
+                var assembly = typeof(StarWarsDataRepository).Assembly;
+                options.AddAssembly(assembly);
+            })
              .AddSubscriptions(options =>
              {
                  // this route path is set by default
@@ -90,25 +95,33 @@ namespace GraphQL.AspNet.StarWarsAPI3X
                  // still others (like graphql-playground running in electron) do not respond/configure
                  // for socket-level ping/pong frames to allow for socket-level keep alives
                  //
-                 // here we set this demo project websocket keep-alive (at the graphql-ws server level)
+                 // here we set this demo project websocket keep-alive (at the server level)
                  // to be below all those thresholds to ensure a hassle free experience.
-                 // In practice, you should configure your server (both graphql-ws keep alives and socket keep alives)
+                 // In practice, you should configure your server (both subscription keep alives and socket keep alives)
                  // with an interval that is compatiable with your client side environment.
                  options.ConnectionKeepAliveInterval = SOCKET_CONNECTION_KEEPALIVE;
              });
 
             services.AddControllers();
+
+
+            // ASP.NET websockets implementation must also be added to the runtime
             services.AddWebSockets((options) =>
             {
-                // add some common origins of various tools that may be
+                // here add some common origins of various tools that may be
                 // used for running this demo
                 // do not add these in a production app
                 options.AllowedOrigins.Add("http://localhost:5000");
                 options.AllowedOrigins.Add("http://localhost:4000");
                 options.AllowedOrigins.Add("http://localhost:3000");
+                options.AllowedOrigins.Add("null");
 
-                // sent by some electron-based graphql tools
+                // some electron-based graphql tools send a file reference
+                // as their origin
+                // do not add these in a production app
                 options.AllowedOrigins.Add("file://");
+                options.AllowedOrigins.Add("ws://");
+
             });
         }
 
@@ -132,15 +145,20 @@ namespace GraphQL.AspNet.StarWarsAPI3X
             // schema otherwise the subscriptions may not register correctly
             app.UseWebSockets();
 
+            // if you have no rest controllers this item can be safely skipped
+            // graphql and rest can live side by side in the same project without issue
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
             // ************************************************************
-            // Finalize the graphql setup by load the schema, build out the templates for all found graph types
+            // Finalize the graphql setup by loading the schema, build out the templates for all found graph types
             // and publish the route to hook the graphql runtime to the web.
             // be sure to register it after "UseAuthorization" if you require access to this.User
+            //
+            // If the construction of your runtime schema has any errors they will be thrown here
+            // before your application starts listening for requests.
             // ************************************************************
             app.UseGraphQL();
         }

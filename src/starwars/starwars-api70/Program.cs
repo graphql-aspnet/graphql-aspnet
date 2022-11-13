@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.StarWarsAPI3X
+namespace GraphQL.AspNet.StarWarsAPI7X
 {
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
