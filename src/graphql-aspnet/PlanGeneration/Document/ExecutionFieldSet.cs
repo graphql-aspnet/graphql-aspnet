@@ -65,22 +65,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document
         }
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, IList<IFieldDocumentPart>> ByAlias()
-        {
-            var dic = new Dictionary<string, IList<IFieldDocumentPart>>();
-
-            foreach (var field in this)
-            {
-                if (!dic.ContainsKey(field.Alias))
-                    dic.Add(field.Alias, new List<IFieldDocumentPart>(1));
-
-                dic[field.Alias].Add(field);
-            }
-
-            return dic;
-        }
-
-        /// <inheritdoc />
         public IEnumerator<IFieldDocumentPart> GetEnumerator()
         {
             this.EnsureCurrentSnapshot();

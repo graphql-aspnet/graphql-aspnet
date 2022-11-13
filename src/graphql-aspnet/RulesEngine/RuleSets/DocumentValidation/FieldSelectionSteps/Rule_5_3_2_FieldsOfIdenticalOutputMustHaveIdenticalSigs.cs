@@ -27,6 +27,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
     internal class Rule_5_3_2_FieldsOfIdenticalOutputMustHaveIdenticalSigs
         : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
+        private const int OPTIMIZE_COMPARRISON_FIELD_THRESHOLD = 30;
+
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
@@ -39,63 +41,141 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
         {
             var docPart = (IFieldDocumentPart)context.ActivePart;
 
-            if (docPart.FieldSelectionSet == null)
+            if (docPart.FieldSelectionSet == null
+                || docPart.FieldSelectionSet.ExecutableFields == null
+                || docPart.FieldSelectionSet.ExecutableFields.Count < 2)
                 return true;
 
-            bool isValid = true;
 
-            // Every pair of fields with the same alias must be checked
-            // to ensure compatability: super slow runtime :(
-            var aliasGroups = docPart.FieldSelectionSet.ExecutableFields.ByAlias();
+            // Every pair of fields with the same alias in the selection set
+            // must be checked to ensure compatability: super slow runtime :(
+            //
+            // when the number of fields is low
+            // performing a brute force comparrison of all fields ,O(n^2),
+            // is faster and performs less allocations than any
+            // sort of pre-organizing
+            //
+            // However, above a certian threshold doing some pre-sort work
+            // to cut down the number of permutations is benefical to speed
+            var executableFields = docPart.FieldSelectionSet.ExecutableFields;
 
-            foreach (var aliasGroup in aliasGroups)
+
+            bool isValid;
+            if (executableFields.Count < OPTIMIZE_COMPARRISON_FIELD_THRESHOLD)
+                isValid = this.CompareAllFields(context, docPart, executableFields);
+            else
+                isValid = this.HighCountFieldCheck(context, docPart, executableFields);
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Compares each field to every other field in the set for
+        /// compatiability.
+        /// </summary>
+        private bool CompareAllFields(
+            DocumentValidationContext context,
+            IFieldDocumentPart ownerField,
+            IReadOnlyList<IFieldDocumentPart> fields)
+        {
+            if (fields.Count < 2)
+                return true;
+
+            for (var i = 0; i < fields.Count - 1; i++)
             {
-                var executableFields = aliasGroup.Value;
-                if (executableFields.Count < 2)
-                    continue;
-
-                for (var i = 0; i < executableFields.Count - 1; i++)
+                for (var j = i + 1; j < fields.Count; j++)
                 {
-                    for (var j = i + 1; j < executableFields.Count; j++)
-                    {
-                        var leftField = executableFields[i];
-                        var rightField = executableFields[j];
+                    var passedValidation = this.CheckFieldValidation(
+                        context,
+                        ownerField,
+                        fields[i],
+                        fields[j]);
 
-                        if (leftField.Alias != rightField.Alias)
-                            continue;
-
-                        // fields with the same name in a given context
-                        // but targeting non-intersecting types can safely co-exist
-                        // in the same selection set.
-                        if (this.CanCoExist(context.Schema, leftField, rightField))
-                            continue;
-
-                        // fields that could cause a name collision for a type
-                        // must be mergable (i.e. have the same shape/signature).
-                        if (this.AreSameShape(leftField, rightField))
-                            continue;
-
-                        string parentType = "targeting the same graph type";
-                        if (leftField.Parent is IFieldSelectionSetDocumentPart fss)
-                        {
-                            parentType = $"for graph type {fss.GraphType.Name}";
-                        }
-
-                        this.ValidationError(
-                            context,
-                            leftField.SourceLocation,
-                            $"The selection set for field '{docPart.Alias}' contains multiple fields " +
-                            $"named '{leftField.Alias}', {parentType}, that do not have " +
-                            "identical signatures. Fields with the same output name for " +
-                            "a given type must have identicial signatures " +
-                            "within a single selection set. Use different aliases if this was intentional.");
-
-                        isValid = false;
-                    }
+                    if (!passedValidation)
+                        return false;
                 }
             }
 
-            return isValid;
+            return true;
+        }
+
+        /// <summary>
+        /// For larger number of fields to check, first seperate the fields
+        /// by their id to cut down on the number of permutations.
+        /// </summary>
+        private bool HighCountFieldCheck(
+            DocumentValidationContext context,
+            IFieldDocumentPart ownerField,
+            IReadOnlyList<IFieldDocumentPart> fields)
+        {
+            // first group fields by alias
+            var dic = new Dictionary<string, List<IFieldDocumentPart>>();
+
+            foreach (var field in fields)
+            {
+                if (!dic.ContainsKey(field.Alias))
+                    dic.Add(field.Alias, new List<IFieldDocumentPart>(2));
+
+                dic[field.Alias].Add(field);
+            }
+
+            // no duplicates alias values? just skip all validation its fine
+            if (dic.Count == fields.Count)
+                return true;
+
+            // compare each set of "same-aliased" fields
+            foreach (var kvp in dic)
+            {
+                var fieldSetValid = this.CompareAllFields(
+                    context,
+                    ownerField,
+                    kvp.Value);
+
+                if (!fieldSetValid)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool CheckFieldValidation(
+            DocumentValidationContext context,
+            IFieldDocumentPart ownerField,
+            IFieldDocumentPart leftField,
+            IFieldDocumentPart rightField)
+        {
+            // fields that don't share the same output alias can exist
+            // with no issue
+            if (string.Compare(leftField.Alias, rightField.Alias) != 0)
+                return true;
+
+            // fields with the same alias in a given context
+            // but targeting non-intersecting types can safely co-exist
+            // in the same selection set.
+            if (this.CanCoExist(context.Schema, leftField, rightField))
+                return true;
+
+            // fields that could cause a name collision for a type
+            // must be mergable (i.e. have the same shape/signature).
+            if (this.AreSameShape(leftField, rightField))
+                return true;
+
+            string parentType = "targeting the same graph type";
+            if (leftField.Parent is IFieldSelectionSetDocumentPart fss)
+            {
+                parentType = $"for graph type {fss.GraphType.Name}";
+            }
+
+            this.ValidationError(
+                context,
+                leftField.SourceLocation,
+                $"The selection set for field '{ownerField.Alias}' contains multiple fields " +
+                $"named '{leftField.Alias}', {parentType}, that do not have " +
+                "identical signatures. Fields with the same output name for " +
+                "a given type must have identicial signatures " +
+                "within a single selection set. Use different aliases if this was intentional.");
+
+            return false;
         }
 
         /// <summary>

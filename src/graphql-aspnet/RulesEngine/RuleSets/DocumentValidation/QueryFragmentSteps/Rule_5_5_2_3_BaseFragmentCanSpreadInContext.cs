@@ -25,8 +25,6 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSt
         /// <inheritdoc />
         public override bool ShouldExecute(DocumentValidationContext context)
         {
-            var str = this.RuleNumber;
-
             if (!(context.ActivePart is IFragmentSpreadDocumentPart) && !(context.ActivePart is IInlineFragmentDocumentPart))
                 return false;
 

@@ -21,14 +21,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// </summary>
     public interface IExecutableFieldSelectionSet : IReadOnlyList<IFieldDocumentPart>
     {
-
-        /// <summary>
-        /// Creates a set of all fields in this executable set, grouped by
-        /// their alias.
-        /// </summary>
-        /// <returns>IReadOnlyDictionary&lt;System.String, IList&lt;IFieldDocumentPart&gt;&gt;.</returns>
-        public IReadOnlyDictionary<string, IList<IFieldDocumentPart>> ByAlias();
-
         /// <summary>
         /// Gets the subset of executable fields that are marked as being included
         /// in a query result.
