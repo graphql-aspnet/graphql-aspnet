@@ -20,8 +20,6 @@ on:
       
 env: 
   SLN_PATH: ./src/graphql-aspnet.sln
-  DOTNET_CURRENT: 6.x
-  DOTNET_LTS: 3.1.x
 
 jobs:
   build:
@@ -36,14 +34,12 @@ jobs:
       # Install .NET Versions
       # ---------------------------------------
       - uses: actions/setup-dotnet@v2
-        name: Install .NET (${{ env.DOTNET_LTS }})
+        name: Install .NET
         with:
-          dotnet-version: ${{ env.DOTNET_LTS }}
-
-      - uses: actions/setup-dotnet@v2
-        name: Install .NET (${{ env.DOTNET_CURRENT }})
-        with:
-          dotnet-version: ${{ env.DOTNET_CURRENT }}
+          dotnet-version: |
+            3.1.x
+            6.x
+            7.x
 
       # ---------------------------------------
       # Configure the build environment
