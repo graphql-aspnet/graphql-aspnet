@@ -311,7 +311,8 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             var processor = new SubscriptionEventProcessor<TSchema>(_clientConnection.ServiceProvider);
 
-            var combinedToken = CancellationTokenSource.CreateLinkedTokenSource(cancelToken, _clientConnection.RequestAborted);
+            using var combinedToken = CancellationTokenSource
+                .CreateLinkedTokenSource(cancelToken, _clientConnection.RequestAborted);
 
             var context = await processor.ProcessEvent(
                     _clientConnection.SecurityContext,

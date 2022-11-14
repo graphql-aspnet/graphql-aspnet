@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.PlanGeneration;
@@ -60,12 +61,18 @@ namespace GraphQL.AspNet.PlanGeneration.Contexts
         /// <returns>IEnumerable&lt;TContext&gt;.</returns>
         public IEnumerable<DocumentValidationContext> CreateChildContexts()
         {
+            if (this.ActivePart.Children.Count == 0)
+                return Enumerable.Empty<DocumentValidationContext>();
+
+            var children = new List<DocumentValidationContext>(this.ActivePart.Children.Count);
             foreach (var docPart in this.ActivePart.Children)
             {
                 // use the private constructor
                 var newContext = new DocumentValidationContext(this, docPart);
-                yield return newContext;
+                children.Add(newContext);
             }
+
+            return children;
         }
 
         /// <summary>

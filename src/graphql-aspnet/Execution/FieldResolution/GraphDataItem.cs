@@ -52,6 +52,11 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             this.Origin = new SourceOrigin(context.Location, path);
             this.TypeExpression = context.Field.TypeExpression;
             this.Schema = Validation.ThrowIfNullOrReturn(context.Schema, nameof(context.Schema));
+
+            if (context.Field.Mode == FieldResolutionMode.Batch)
+                _expectedChildFieldCount = 1;
+            else
+                _expectedChildFieldCount = context.ChildContexts.Count;
         }
 
         /// <summary>
@@ -69,7 +74,7 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                     "a list of items, a child field context cannot be directly added to it.");
             }
 
-            _childFields = _childFields ?? new List<GraphDataItem>(1);
+            _childFields = _childFields ?? new List<GraphDataItem>(_expectedChildFieldCount);
 
             var path = this.Origin.Path.Clone();
             path.AddFieldName(childInvocationContext.Field.Name);
@@ -303,6 +308,8 @@ namespace GraphQL.AspNet.Execution.FieldResolution
         /// </summary>
         /// <value>The schema.</value>
         public ISchema Schema { get; }
+
+        private readonly int _expectedChildFieldCount;
 
         /// <summary>
         /// Gets the list items of this instance that were generated from resolved data, if any.

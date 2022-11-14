@@ -46,25 +46,23 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
                 || docPart.FieldSelectionSet.ExecutableFields.Count < 2)
                 return true;
 
-
             // Every pair of fields with the same alias in the selection set
             // must be checked to ensure compatability: super slow runtime :(
             //
             // when the number of fields is low
             // performing a brute force comparrison of all fields ,O(n^2),
-            // is faster and performs less allocations than any
-            // sort of pre-organizing
+            // is faster and requires less allocations than sort pre-organizing
+            // to reduce the number of comparisons
             //
-            // However, above a certian threshold doing some pre-sort work
-            // to cut down the number of permutations is benefical to speed
+            // However, above a certian threshold, doing some pre-work
+            // to cut down the number of comparisons is benefical
             var executableFields = docPart.FieldSelectionSet.ExecutableFields;
-
 
             bool isValid;
             if (executableFields.Count < OPTIMIZE_COMPARRISON_FIELD_THRESHOLD)
                 isValid = this.CompareAllFields(context, docPart, executableFields);
             else
-                isValid = this.HighCountFieldCheck(context, docPart, executableFields);
+                isValid = this.CompareAllFieldsWithPreSort(context, docPart, executableFields);
 
             return isValid;
         }
@@ -85,7 +83,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             {
                 for (var j = i + 1; j < fields.Count; j++)
                 {
-                    var passedValidation = this.CheckFieldValidation(
+                    var passedValidation = this.ValidateFieldPare(
                         context,
                         ownerField,
                         fields[i],
@@ -103,7 +101,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
         /// For larger number of fields to check, first seperate the fields
         /// by their id to cut down on the number of permutations.
         /// </summary>
-        private bool HighCountFieldCheck(
+        private bool CompareAllFieldsWithPreSort(
             DocumentValidationContext context,
             IFieldDocumentPart ownerField,
             IReadOnlyList<IFieldDocumentPart> fields)
@@ -119,7 +117,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
                 dic[field.Alias].Add(field);
             }
 
-            // no duplicates alias values? just skip all validation its fine
+            // no duplicates alias values?
+            // then there can be no collisions
             if (dic.Count == fields.Count)
                 return true;
 
@@ -138,7 +137,7 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             return true;
         }
 
-        private bool CheckFieldValidation(
+        private bool ValidateFieldPare(
             DocumentValidationContext context,
             IFieldDocumentPart ownerField,
             IFieldDocumentPart leftField,
@@ -155,7 +154,8 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.FieldSelectionS
             if (this.CanCoExist(context.Schema, leftField, rightField))
                 return true;
 
-            // fields that could cause a name collision for a type
+            // fields that have the same output alias
+            // that target intersecting types
             // must be mergable (i.e. have the same shape/signature).
             if (this.AreSameShape(leftField, rightField))
                 return true;
