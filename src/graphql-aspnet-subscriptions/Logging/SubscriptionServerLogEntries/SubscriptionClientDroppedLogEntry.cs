@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             _clientTypeShortName = client?.GetType().FriendlyName();
             this.ClientTypeName = client?.GetType().FriendlyName(true);
             this.ClientProtocol = client?.Protocol;
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
         }
 
         /// <summary>

@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Common.Extensions
 {
     using System;
+    using System.Collections.Concurrent;
     using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>

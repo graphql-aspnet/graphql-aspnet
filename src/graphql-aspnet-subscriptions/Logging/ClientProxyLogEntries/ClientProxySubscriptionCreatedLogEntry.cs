@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         public ClientProxySubscriptionCreatedLogEntry(ISubscriptionClientProxy client, ISubscription subscription)
             : base(SubscriptionLogEventIds.ClientSubscriptionStarted)
         {
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
             this.SubscriptionId = subscription?.Id;
             this.SubscriptionPath = subscription?.Route?.Path;
         }

@@ -47,7 +47,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
 
             this.ClientConnection = connection.Object;
 
-            this.Id = Guid.NewGuid().ToString();
+            this.Id = Guid.NewGuid();
             this.ReceivedEvents = new List<SubscriptionEvent>();
             this.SentMessages = new List<object>();
         }
@@ -87,7 +87,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         }
 
         /// <inheritdoc />
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Gets the events this client recieved from the server that it would

@@ -10,10 +10,10 @@
 namespace GraphQL.AspNet.Schemas
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas
     public static class SchemaSubscriptionEventMap
     {
         private static readonly ConcurrentHashSet<Type> PARSED_SCHEMA_TYPES;
-        private static readonly Dictionary<SubscriptionEventName, SchemaItemPath> SUBSCRIPTION_EVENTNAME_CATALOG;
+        private static readonly ConcurrentDictionary<string, SchemaItemPath> SUBSCRIPTION_EVENTNAME_CATALOG;
         private static readonly object _syncLock = new object();
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         static SchemaSubscriptionEventMap()
         {
-            SUBSCRIPTION_EVENTNAME_CATALOG = new Dictionary<SubscriptionEventName, SchemaItemPath>(SubscriptionEventNameEqualityComparer.Instance);
+            SUBSCRIPTION_EVENTNAME_CATALOG = new ();
             PARSED_SCHEMA_TYPES = new ConcurrentHashSet<Type>();
         }
 
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Schemas
                     if (!PARSED_SCHEMA_TYPES.Contains(schema.GetType()))
                     {
                         foreach (var kvp in CreateEventMap(schema))
-                            SUBSCRIPTION_EVENTNAME_CATALOG.Add(kvp.Key, kvp.Value);
+                            SUBSCRIPTION_EVENTNAME_CATALOG.TryAdd(kvp.Key, kvp.Value);
 
                         PARSED_SCHEMA_TYPES.Add(schema.GetType());
                     }
@@ -83,9 +83,9 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <returns>Dictionary&lt;System.String, SchemaItemPath&gt;.</returns>
-        public static Dictionary<SubscriptionEventName, SchemaItemPath> CreateEventMap(ISchema schema)
+        public static Dictionary<string, SchemaItemPath> CreateEventMap(ISchema schema)
         {
-            var dic = new Dictionary<SubscriptionEventName, SchemaItemPath>(SubscriptionEventNameEqualityComparer.Instance);
+            var dic = new Dictionary<string, SchemaItemPath>();
 
             if (schema == null || !schema.Operations.ContainsKey(GraphOperationType.Subscription))
                 return dic;
@@ -96,38 +96,35 @@ namespace GraphQL.AspNet.Schemas
                 var route = field.Route.Clone();
 
                 var eventName = SubscriptionEventName.FromGraphField(schema, field);
-                if (dic.ContainsKey(eventName))
+                var fqeventName = eventName.SchemaQualifiedEventName;
+                if (dic.ContainsKey(fqeventName))
                 {
-                    var path = dic[eventName];
+                    var path = dic[fqeventName];
                     throw new GraphTypeDeclarationException(
                         $"Duplciate Subscription Event Name. Unable to register the field '{route.Path}' " +
                         $"with event name '{eventName.EventName}'. The schema '{schema.Name}' already contains " +
                         $"a field with the event name '{eventName.EventName}'. (Event Owner: {path.Path}).");
                 }
 
-                dic.Add(eventName, route);
+                dic.Add(fqeventName, route);
             }
 
             return dic;
         }
 
         /// <summary>
-        /// Attempts to find the fully qualifed <see cref="SchemaItemPath"/> that is pointed at by the supplied event name.
+        /// Attempts to find the fully qualifed <see cref="SchemaItemPath" /> that is pointed at by the supplied event name.
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <param name="eventName">The formally named event.</param>
-        /// <returns>System.String.</returns>
+        /// <returns>SchemaItemPath.</returns>
         public static SchemaItemPath RetrieveSubscriptionFieldPath(this ISchema schema, SubscriptionEventName eventName)
         {
             Validation.ThrowIfNull(schema, nameof(schema));
             Validation.ThrowIfNull(eventName, nameof(eventName));
 
-            if (eventName.OwnerSchemaType != schema.FullyQualifiedSchemaTypeName())
-                return null;
-
             EnsureSubscriptionEventsOrThrow(schema);
-
-            if (SUBSCRIPTION_EVENTNAME_CATALOG.TryGetValue(eventName, out var routePath))
+            if (SUBSCRIPTION_EVENTNAME_CATALOG.TryGetValue(eventName.SchemaQualifiedEventName, out var routePath))
                 return routePath;
 
             return null;

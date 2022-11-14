@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
             this.SubscriptionPath = fieldPath?.Path;
             this.SubscriptionCount = subscriptionsToReceive?.Count;
             this.SubscriptionIds = subscriptionsToReceive?.Select(x => x.Id).ToList();
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
         }
 
         /// <summary>

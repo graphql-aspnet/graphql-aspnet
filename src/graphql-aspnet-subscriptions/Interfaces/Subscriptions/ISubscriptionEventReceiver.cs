@@ -9,6 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
         /// Gets the globally unique id assigned to this instance.
         /// </summary>
         /// <value>The instance's unique id.</value>
-        string Id { get; }
+        Guid Id { get; }
 
         /// <summary>
         /// Called by an outside source, typically an <see cref="ISubscriptionEventRouter" />,

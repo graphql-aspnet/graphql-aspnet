@@ -56,13 +56,13 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="router">The router component that will send this client event data.</param>
         /// <param name="logger">The primary logger object to record events to.</param>
         protected SubscriptionClientProxyBase(
-            string id,
+            Guid id,
             TSchema schema,
             IClientConnection clientConnection,
             ISubscriptionEventRouter router,
             IGraphEventLogger logger = null)
         {
-            this.Id = Validation.ThrowIfNullWhiteSpaceOrReturn(id, nameof(id));
+            this.Id = id;
             this.Logger = new ClientProxyEventLogger<TSchema>(this, logger);
 
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
@@ -528,7 +528,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         public IReadOnlyDictionary<string, ISubscription<TSchema>> Subscriptions => _subscriptions;
 
         /// <inheritdoc />
-        public string Id { get; }
+        public Guid Id { get; }
 
         /// <inheritdoc />
         public abstract string Protocol { get; }

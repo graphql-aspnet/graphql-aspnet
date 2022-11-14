@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         public ClientProxyMessageSentLogEntry(ISubscriptionClientProxy client, ILoggableClientProxyMessage message)
             : base(SubscriptionLogEventIds.ClientMessageSent)
         {
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
             this.MessageType = message?.Type.ToString();
             this.MessageId = message?.Id;
         }

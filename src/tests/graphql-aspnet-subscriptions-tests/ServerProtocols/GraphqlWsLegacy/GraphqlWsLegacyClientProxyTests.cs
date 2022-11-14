@@ -63,8 +63,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();
 
-            Assert.IsNotNull(string.IsNullOrWhiteSpace(client.Id));
-            Assert.AreNotEqual(Guid.Empty.ToString(), client.Id);
+            Assert.AreNotEqual(Guid.Empty, client.Id);
         }
 
         [Test]

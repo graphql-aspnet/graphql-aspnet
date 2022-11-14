@@ -65,8 +65,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var connection, var graphqlWsClient, var router) = this.CreateConnection();
 
-            Assert.IsNotNull(string.IsNullOrWhiteSpace(graphqlWsClient.Id));
-            Assert.AreNotEqual(Guid.Empty.ToString(), graphqlWsClient.Id);
+            Assert.AreNotEqual(Guid.Empty, graphqlWsClient.Id);
             graphqlWsClient.Dispose();
         }
 

@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionEventLogEntries
             this.SchemaTypeName = typeof(TSchema).FriendlyName(true);
             this.ClientTypeName = client?.GetType().FriendlyName(true);
             this.ClientProtocol = client?.Protocol;
-            this.ClientId = client?.Id;
+            this.ClientId = client?.Id.ToString();
         }
 
         /// <summary>

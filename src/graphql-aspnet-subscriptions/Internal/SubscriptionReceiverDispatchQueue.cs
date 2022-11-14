@@ -18,18 +18,13 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
+    using QueuedEvent = System.ValueTuple<AspNet.Interfaces.Subscriptions.ISubscriptionEventReceiver, Execution.Subscriptions.SubscriptionEvent>;
+
     /// <summary>
     /// The default dispatch queue to throttle subscription events being sent to expectant receivers.
     /// </summary>
     internal sealed class SubscriptionReceiverDispatchQueue : ISubscriptionReceiverDispatchQueue
     {
-        private class QueuedEvent
-        {
-            public ISubscriptionEventReceiver Receiver { get; set; }
-
-            public SubscriptionEvent EventData { get; set; }
-        }
-
         private readonly Channel<QueuedEvent> _queue;
         private readonly CancellationTokenSource _stopRequested;
         private readonly SemaphoreSlim _throttle;
@@ -61,11 +56,7 @@ namespace GraphQL.AspNet.Internal
         {
             Validation.ThrowIfNull(receiver, nameof(receiver));
             Validation.ThrowIfNull(eventData, nameof(eventData));
-            var evt = new QueuedEvent()
-            {
-                Receiver = receiver,
-                EventData = eventData,
-            };
+            var evt = new QueuedEvent(receiver, eventData);
 
             var queued = _queue.Writer.TryWrite(evt);
             if (closeAfter || !queued)
@@ -128,7 +119,9 @@ namespace GraphQL.AspNet.Internal
                 if (_isDisposed)
                     return;
 
-                await evt.Receiver.ReceiveEvent(evt.EventData, cancelToken);
+                var receiver = evt.Item1;
+                var eventData = evt.Item2;
+                await receiver.ReceiveEvent(eventData, cancelToken);
             }
             finally
             {

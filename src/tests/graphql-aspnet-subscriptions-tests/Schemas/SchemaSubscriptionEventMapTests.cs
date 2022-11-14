@@ -42,9 +42,9 @@ namespace GraphQL.Subscriptions.Tests.Schemas
             var eventName = new SubscriptionEventName(typeof(EventMapSchema), "TestActionMethod");
 
             Assert.AreEqual(1, map.Count);
-            Assert.IsTrue(map.ContainsKey(eventName));
-            Assert.IsNotNull(map[eventName]);
-            Assert.AreEqual(pathName, map[eventName].Path);
+            Assert.IsTrue(map.ContainsKey(eventName.SchemaQualifiedEventName));
+            Assert.IsNotNull(map[eventName.SchemaQualifiedEventName]);
+            Assert.AreEqual(pathName, map[eventName.SchemaQualifiedEventName].Path);
         }
 
         [Test]

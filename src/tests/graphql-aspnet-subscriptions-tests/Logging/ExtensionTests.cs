@@ -65,16 +65,18 @@ namespace GraphQL.Subscriptions.Tests.Logging
                 });
 
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
-            client.Setup(x => x.Id).Returns("clientId1");
+
+            var id = Guid.NewGuid();
+            client.Setup(x => x.Id).Returns(id);
 
             mock.Object.SubscriptionClientRegistered<GraphSchema>(client.Object);
 
             var entry = recordedlogEntry as SubscriptionClientRegisteredLogEntry<GraphSchema>;
             Assert.IsNotNull(entry);
             Assert.AreEqual(LogLevel.Debug, recordedLogLevel);
-            Assert.AreEqual(entry.SchemaTypeName, typeof(GraphSchema).FriendlyName(true));
-            Assert.AreEqual(entry.ClientTypeName, client.Object.GetType().FriendlyName(true));
-            Assert.AreEqual(entry.ClientId, "clientId1");
+            Assert.AreEqual(typeof(GraphSchema).FriendlyName(true), entry.SchemaTypeName);
+            Assert.AreEqual(client.Object.GetType().FriendlyName(true), entry.ClientTypeName);
+            Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
 
@@ -94,15 +96,17 @@ namespace GraphQL.Subscriptions.Tests.Logging
                 });
 
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
-            client.Setup(x => x.Id).Returns("clientId1");
+
+            var id = Guid.NewGuid();
+            client.Setup(x => x.Id).Returns(id);
 
             mock.Object.SubscriptionClientDropped(client.Object);
 
             var entry = recordedlogEntry as SubscriptionClientDroppedLogEntry;
             Assert.IsNotNull(entry);
             Assert.AreEqual(LogLevel.Debug, recordedLogLevel);
-            Assert.AreEqual(entry.ClientTypeName, client.Object.GetType().FriendlyName(true));
-            Assert.AreEqual(entry.ClientId, "clientId1");
+            Assert.AreEqual(client.Object.GetType().FriendlyName(true), entry.ClientTypeName);
+            Assert.AreEqual(id.ToString(), entry.ClientId);
             Assert.AreNotEqual(entry.ToString(), entry.GetType().Name);
         }
 
