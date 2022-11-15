@@ -79,7 +79,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
             IGraphResponseWriter<TSchema> responseWriter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
-            : base(Guid.NewGuid(), schema, clientConnection, router, logger)
+            : base(SubscriptionClientId.NewClientId(), schema, clientConnection, router, logger)
         {
             _enableMetrics = enableMetrics;
 

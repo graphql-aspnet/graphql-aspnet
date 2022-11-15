@@ -78,7 +78,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             IGraphResponseWriter<TSchema> responseWriter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
-            : base(Guid.NewGuid(), schema, clientConnection, router, logger)
+            : base(SubscriptionClientId.NewClientId(), schema, clientConnection, router, logger)
         {
             this.Protocol = Validation.ThrowIfNullWhiteSpaceOrReturn(protocolName, nameof(protocolName));
 

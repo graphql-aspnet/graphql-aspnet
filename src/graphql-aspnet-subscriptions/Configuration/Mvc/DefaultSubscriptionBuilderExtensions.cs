@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Configuration.Mvc
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
@@ -111,18 +110,16 @@ namespace GraphQL.AspNet.Configuration.Mvc
         {
             return new ServiceDescriptor(
                 typeof(ISubscriptionEventRouter),
-                (sp) =>
-                        {
-                            var logger = sp.CreateScope().ServiceProvider.GetService<IGraphEventLogger>();
-                            return new DefaultSubscriptionEventRouter(logger);
-                        },
+                typeof(DefaultSubscriptionEventRouter),
                 ServiceLifetime.Singleton);
         }
 
         private static ServiceDescriptor CreateDefaultSubscriptionPublisherDescriptor()
         {
             return new ServiceDescriptor(
-                 typeof(ISubscriptionEventPublisher), typeof(InProcessSubscriptionPublisher), ServiceLifetime.Scoped);
+                 typeof(ISubscriptionEventPublisher),
+                 typeof(InProcessSubscriptionPublisher),
+                 ServiceLifetime.Scoped);
         }
     }
 }

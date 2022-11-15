@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Schemas
     public static class SchemaSubscriptionEventMap
     {
         private static readonly ConcurrentHashSet<Type> PARSED_SCHEMA_TYPES;
-        private static readonly ConcurrentDictionary<string, SchemaItemPath> SUBSCRIPTION_EVENTNAME_CATALOG;
+        private static readonly ConcurrentDictionary<SubscriptionEventName, SchemaItemPath> SUBSCRIPTION_EVENTNAME_CATALOG;
         private static readonly object _syncLock = new object();
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         static SchemaSubscriptionEventMap()
         {
-            SUBSCRIPTION_EVENTNAME_CATALOG = new ();
+            SUBSCRIPTION_EVENTNAME_CATALOG = new (SubscriptionEventNameEqualityComparer.Instance);
             PARSED_SCHEMA_TYPES = new ConcurrentHashSet<Type>();
         }
 
@@ -83,9 +83,9 @@ namespace GraphQL.AspNet.Schemas
         /// </summary>
         /// <param name="schema">The schema.</param>
         /// <returns>Dictionary&lt;System.String, SchemaItemPath&gt;.</returns>
-        public static Dictionary<string, SchemaItemPath> CreateEventMap(ISchema schema)
+        public static Dictionary<SubscriptionEventName, SchemaItemPath> CreateEventMap(ISchema schema)
         {
-            var dic = new Dictionary<string, SchemaItemPath>();
+            var dic = new Dictionary<SubscriptionEventName, SchemaItemPath>();
 
             if (schema == null || !schema.Operations.ContainsKey(GraphOperationType.Subscription))
                 return dic;
@@ -96,17 +96,16 @@ namespace GraphQL.AspNet.Schemas
                 var route = field.Route.Clone();
 
                 var eventName = SubscriptionEventName.FromGraphField(schema, field);
-                var fqeventName = eventName.SchemaQualifiedEventName;
-                if (dic.ContainsKey(fqeventName))
+                if (dic.ContainsKey(eventName))
                 {
-                    var path = dic[fqeventName];
+                    var path = dic[eventName];
                     throw new GraphTypeDeclarationException(
                         $"Duplciate Subscription Event Name. Unable to register the field '{route.Path}' " +
                         $"with event name '{eventName.EventName}'. The schema '{schema.Name}' already contains " +
                         $"a field with the event name '{eventName.EventName}'. (Event Owner: {path.Path}).");
                 }
 
-                dic.Add(fqeventName, route);
+                dic.Add(eventName, route);
             }
 
             return dic;
@@ -124,7 +123,7 @@ namespace GraphQL.AspNet.Schemas
             Validation.ThrowIfNull(eventName, nameof(eventName));
 
             EnsureSubscriptionEventsOrThrow(schema);
-            if (SUBSCRIPTION_EVENTNAME_CATALOG.TryGetValue(eventName.SchemaQualifiedEventName, out var routePath))
+            if (SUBSCRIPTION_EVENTNAME_CATALOG.TryGetValue(eventName, out var routePath))
                 return routePath;
 
             return null;

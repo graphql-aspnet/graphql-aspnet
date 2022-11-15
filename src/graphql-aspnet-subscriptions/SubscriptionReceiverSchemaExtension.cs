@@ -14,7 +14,9 @@ namespace GraphQL.AspNet
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Exceptions;
+    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -130,14 +132,6 @@ namespace GraphQL.AspNet
             _schemaBuilder.Options.ServiceCollection.AddGraphqlWsLegacysProtocol();
             _schemaBuilder.Options.ServiceCollection.AddGqltwsProtocol();
 
-            // register the global counter that imposes limits on the number of connected
-            // clients supported by this server instance
-            _schemaBuilder.Options.ServiceCollection.TryAdd(
-                new ServiceDescriptor(
-                typeof(GlobalConnectedSubscriptionClientCounter),
-                (sp) => new GlobalConnectedSubscriptionClientCounter(SubscriptionServerSettings.MaxConnectedClientCount),
-                ServiceLifetime.Singleton));
-
             // register the primary factory that will generate client proxies for the
             // supported messaging protocols
             _schemaBuilder.Options.ServiceCollection.TryAdd(
@@ -145,6 +139,18 @@ namespace GraphQL.AspNet
                  typeof(ISubscriptionServerClientFactory),
                  typeof(DefaultSubscriptionServerClientFactory),
                  ServiceLifetime.Singleton));
+
+            // register the global collection of active client proxies
+            _schemaBuilder.Options.ServiceCollection.TryAdd(
+             new ServiceDescriptor(
+                 typeof(IGlobalSubscriptionClientProxyCollection),
+                 (sp) => new DefaultGlobalSubscriptionClientProxyCollection(SubscriptionServerSettings.MaxConnectedClientCount),
+                 ServiceLifetime.Singleton));
+
+            _schemaBuilder.Options.ServiceCollection.AddSingleton<ISubscriptionEventDispatchQueue, SubscriptionClientDispatchQueue>();
+
+            // add the dispatch service for distributing events to clients
+            _schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionClientDispatchService>();
         }
 
         /// <summary>

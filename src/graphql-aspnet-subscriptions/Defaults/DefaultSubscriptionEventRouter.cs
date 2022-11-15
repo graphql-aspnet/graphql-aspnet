@@ -16,10 +16,9 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Internal;
-    using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Logging;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The default listener for raised subscription events. This object routes recieved subscription
@@ -28,33 +27,19 @@ namespace GraphQL.AspNet.Defaults
     /// </summary>
     public sealed class DefaultSubscriptionEventRouter : ISubscriptionEventRouter, IDisposable
     {
-        private readonly IGraphEventLogger _logger;
+        private readonly ILogger _logger;
         private readonly SubscribedEventRecievers _allReceivers;
-        private readonly ISubscriptionReceiverDispatchQueue _dispatchQueue;
+        private readonly ISubscriptionEventDispatchQueue _dispatchQueue;
         private readonly Task _dispatchQueueExecutionTask;
         private bool _isDisposed;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultSubscriptionEventRouter" /> class.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="dispatchQueue">The queue to throttle the rate at which
-        /// events are dispatched to receivers. The default, internal implementation is
-        /// used if an instance is not provided.</param>
         public DefaultSubscriptionEventRouter(
-            IGraphEventLogger logger = null,
-            ISubscriptionReceiverDispatchQueue dispatchQueue = null)
+            ISubscriptionEventDispatchQueue dispatchQueue,
+            ILogger logger = null)
         {
+            _dispatchQueue = Validation.ThrowIfNullOrReturn(dispatchQueue, nameof(dispatchQueue));
             _logger = logger;
             _allReceivers = new SubscribedEventRecievers();
-
-            _dispatchQueue = dispatchQueue;
-            if (_dispatchQueue == null)
-            {
-                var maxReceiverCount = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
-                _dispatchQueue = dispatchQueue ?? new SubscriptionReceiverDispatchQueue(maxReceiverCount);
-                _dispatchQueueExecutionTask = _dispatchQueue.BeginProcessingQueue();
-            }
         }
 
         /// <inheritdoc />
@@ -66,7 +51,7 @@ namespace GraphQL.AspNet.Defaults
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
             _logger?.SubscriptionEventReceived(eventData);
-            List<ISubscriptionEventReceiver> receivers = null;
+            List<SubscriptionClientId> receivers = null;
 
             // capture a list of all listeners to this event
             lock (_allReceivers)
@@ -76,7 +61,7 @@ namespace GraphQL.AspNet.Defaults
                 if (!_allReceivers.ContainsKey(eventName))
                     return;
 
-                receivers = new List<ISubscriptionEventReceiver>(_allReceivers[eventName].Count);
+                receivers = new List<SubscriptionClientId>(_allReceivers[eventName].Count);
                 receivers.AddRange(_allReceivers[eventName]);
             }
 
@@ -89,7 +74,7 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public void AddReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
+        public void AddClient(ISubscriptionClientProxy receiver, SubscriptionEventName eventName)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
@@ -100,27 +85,27 @@ namespace GraphQL.AspNet.Defaults
             lock (_allReceivers)
             {
                 if (!_allReceivers.ContainsKey(eventName))
-                    _allReceivers.Add(eventName, new HashSet<ISubscriptionEventReceiver>());
+                    _allReceivers.Add(eventName, new HashSet<SubscriptionClientId>());
 
-                _allReceivers[eventName].Add(receiver);
+                _allReceivers[eventName].Add(receiver.Id);
             }
         }
 
         /// <inheritdoc />
-        public void RemoveReceiver(ISubscriptionEventReceiver receiver, SubscriptionEventName eventName)
+        public void RemoveClient(ISubscriptionClientProxy receiver, SubscriptionEventName eventName)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
 
-            if (receiver == null || eventName == null)
+            if (eventName == null)
                 return;
 
             lock (_allReceivers)
             {
                 if (_allReceivers.ContainsKey(eventName))
                 {
-                    if (_allReceivers[eventName].Contains(receiver))
-                        _allReceivers[eventName].Remove(receiver);
+                    if (_allReceivers[eventName].Contains(receiver.Id))
+                        _allReceivers[eventName].Remove(receiver.Id);
                     if (_allReceivers[eventName].Count == 0)
                         _allReceivers.Remove(eventName);
                 }
@@ -128,21 +113,20 @@ namespace GraphQL.AspNet.Defaults
         }
 
         /// <inheritdoc />
-        public void RemoveReceiver(ISubscriptionEventReceiver receiver)
+        public void RemoveClient(ISubscriptionClientProxy receiver)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
 
-            if (receiver == null)
-                return;
+            Validation.ThrowIfNull(receiver, nameof(receiver));
 
             lock (_allReceivers)
             {
                 var toRemove = new List<SubscriptionEventName>();
                 foreach (var kvp in _allReceivers)
                 {
-                    if (kvp.Value.Contains(receiver))
-                        kvp.Value.Remove(receiver);
+                    if (kvp.Value.Contains(receiver.Id))
+                        kvp.Value.Remove(receiver.Id);
 
                     if (kvp.Value.Count == 0)
                         toRemove.Add(kvp.Key);

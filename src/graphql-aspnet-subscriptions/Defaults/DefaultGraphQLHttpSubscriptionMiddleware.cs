@@ -19,6 +19,7 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Exceptions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Interfaces.TypeSystem;
@@ -40,8 +41,8 @@ namespace GraphQL.AspNet.Defaults
         private readonly ISubscriptionServerClientFactory _clientFactory;
         private readonly TSchema _schema;
         private readonly string _routePath;
+        private readonly IGlobalSubscriptionClientProxyCollection _clientTracker;
         private readonly SubscriptionServerOptions<TSchema> _options;
-        private readonly GlobalConnectedSubscriptionClientCounter _counter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQLHttpSubscriptionMiddleware{TSchema}" /> class.
@@ -51,14 +52,15 @@ namespace GraphQL.AspNet.Defaults
         /// <param name="schema">The schema targeted by this middleware component.</param>
         /// <param name="clientFactory">The client factory used to instantiate
         /// client proxies.</param>
-        /// <param name="counter">The global counter to track connected clients across all schemas.</param>
+        /// <param name="clientTracker">The global client tracker that monitors
+        /// all active clients on this server instance.</param>
         /// <param name="options">The configuration options the developer
         /// assigned for this schema.</param>
         public DefaultGraphQLHttpSubscriptionMiddleware(
             RequestDelegate next,
             TSchema schema,
             ISubscriptionServerClientFactory clientFactory,
-            GlobalConnectedSubscriptionClientCounter counter,
+            IGlobalSubscriptionClientProxyCollection clientTracker,
             SubscriptionServerOptions<TSchema> options)
         {
             _next = next;
@@ -66,7 +68,7 @@ namespace GraphQL.AspNet.Defaults
             _options = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _clientFactory = Validation.ThrowIfNullOrReturn(clientFactory, nameof(clientFactory));
             _routePath = Validation.ThrowIfNullOrReturn(_options.Route, nameof(_options.Route));
-            _counter = Validation.ThrowIfNullOrReturn(counter, nameof(counter));
+            _clientTracker = Validation.ThrowIfNullOrReturn(clientTracker, nameof(clientTracker));
         }
 
         /// <summary>
@@ -97,16 +99,8 @@ namespace GraphQL.AspNet.Defaults
             ISubscriptionClientProxy<TSchema> subscriptionClient = null;
             IClientConnection clientConnection = null;
 
-            bool connectionAllowed = false;
             try
             {
-                // check the connection against the configured global max for this
-                // server instance
-                // ----------------------------
-                connectionAllowed = _counter.IncreaseCount();
-                if (!connectionAllowed)
-                    throw new MaxConcurrentClientConnectionsReachedException();
-
                 clientConnection = new WebSocketClientConnection(context);
 
                 // if this schema instance only allows pre-authenticaed clients
@@ -127,6 +121,10 @@ namespace GraphQL.AspNet.Defaults
                 subscriptionClient = await _clientFactory.CreateSubscriptionClient<TSchema>(clientConnection);
                 if (subscriptionClient == null)
                     throw new InvalidOperationException("No client proxy could be configred for the connection.");
+
+                var clientAdded = _clientTracker.TryAddClient(subscriptionClient);
+                if (!clientAdded)
+                    throw new MaxConcurrentClientConnectionsReachedException();
 
                 // begin listening for messages through the connection
                 // hold the client connection until operations complete
@@ -185,11 +183,12 @@ namespace GraphQL.AspNet.Defaults
             }
             finally
             {
-                if (connectionAllowed)
-                    _counter.DecreaseCount();
-
-                subscriptionClient?.Dispose();
-                subscriptionClient = null;
+                if (subscriptionClient != null)
+                {
+                    _clientTracker.RemoveClient(subscriptionClient);
+                    subscriptionClient.Dispose();
+                    subscriptionClient = null;
+                }
             }
         }
 

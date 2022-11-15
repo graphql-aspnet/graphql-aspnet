@@ -9,14 +9,16 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
+    using System;
     using System.Collections.Generic;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// A dictionary wrapper to associate <see cref="SubscriptionEventName"/> to a
     /// unique set of <see cref="ISubscriptionEventReceiver"/> that will receive the event.
     /// </summary>
-    internal class SubscribedEventRecievers : Dictionary<SubscriptionEventName, HashSet<ISubscriptionEventReceiver>>
+    internal class SubscribedEventRecievers : Dictionary<SubscriptionEventName, HashSet<SubscriptionClientId>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscribedEventRecievers"/> class.
@@ -29,7 +31,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscribedEventRecievers"/> class.
         /// </summary>
-        /// <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"></see> implementation to use when comparing keys, or null to use the default <see cref="T:System.Collections.Generic.EqualityComparer`1"></see> for the type of the key.</param>
+        /// <param name="comparer">An equality comparer to compare sameness of subscription events.</param>
         public SubscribedEventRecievers(IEqualityComparer<SubscriptionEventName> comparer)
             : base(comparer)
         {

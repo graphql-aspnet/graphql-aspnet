@@ -17,7 +17,6 @@ namespace GraphQL.AspNet.ServerProtocols.Common
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
@@ -56,7 +55,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         /// <param name="router">The router component that will send this client event data.</param>
         /// <param name="logger">The primary logger object to record events to.</param>
         protected SubscriptionClientProxyBase(
-            Guid id,
+            SubscriptionClientId id,
             TSchema schema,
             IClientConnection clientConnection,
             ISubscriptionEventRouter router,
@@ -282,11 +281,13 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 return;
 
             // find the subscriptions that are registered for the received data
+            // its possible a client discontinued after the data was dispatched
+            // but before the client processed...just stop if this is the case
             var targetSubscriptions = _subscriptions.RetreiveByRoute(field);
             if (targetSubscriptions.Count == 0)
                 return;
 
-            this.Logger.SubscriptionEventReceived(field, targetSubscriptions);
+            this.Logger?.SubscriptionEventReceived(field, targetSubscriptions);
 
             // execute the individual subscription queries
             // using the provided source data as an input
@@ -311,35 +312,43 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             var processor = new SubscriptionEventProcessor<TSchema>(_clientConnection.ServiceProvider);
 
-            using var combinedToken = CancellationTokenSource
-                .CreateLinkedTokenSource(cancelToken, _clientConnection.RequestAborted);
+            var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(
+                cancelToken,
+                _clientConnection.RequestAborted);
 
-            var context = await processor.ProcessEvent(
-                    _clientConnection.SecurityContext,
-                    eventData,
-                    subscription,
-                    combinedToken.Token);
-
-            // ------------------------------
-            // send the message with the resultant data package
-            // ------------------------------
-            var shouldSkip = context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.SKIP_EVENT);
-            if (!shouldSkip)
+            try
             {
-                var message = this.CreateDataMessage(subscription.Id, context.Result);
-                await this.SendMessage(message, combinedToken.Token);
+                var context = await processor.ProcessEvent(
+                        _clientConnection.SecurityContext,
+                        eventData,
+                        subscription,
+                        cancelSource.Token);
+
+                // ------------------------------
+                // send the message with the resultant data package
+                // ------------------------------
+                var shouldSkip = context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.SKIP_EVENT);
+                if (!shouldSkip)
+                {
+                    var message = this.CreateDataMessage(subscription.Id, context.Result);
+                    await this.SendMessage(message, cancelSource.Token);
+                }
+
+                // ------------------------------
+                // stop the subscription if requested
+                // ------------------------------
+                var shouldComplete = context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION);
+                if (shouldComplete)
+                {
+                    var completeMessage = this.CreateCompleteMessage(subscription.Id);
+                    if (completeMessage != null)
+                        await this.SendMessage(completeMessage, cancelSource.Token);
+                    this.ReleaseSubscription(subscription.Id);
+                }
             }
-
-            // ------------------------------
-            // stop the subscription if requested
-            // ------------------------------
-            var shouldComplete = context.Session.Items.ContainsKey(SubscriptionConstants.ContextDataKeys.COMPLETE_SUBSCRIPTION);
-            if (shouldComplete)
+            finally
             {
-                var completeMessage = this.CreateCompleteMessage(subscription.Id);
-                if (completeMessage != null)
-                    await this.SendMessage(completeMessage, combinedToken.Token);
-                this.ReleaseSubscription(subscription.Id);
+                cancelSource.Dispose();
             }
         }
 
@@ -361,7 +370,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     ClientMessageType.Text,
                     true,
                     cancelToken);
-                this.Logger.MessageSent(message);
+                this.Logger?.MessageSent(message);
             }
         }
 
@@ -408,7 +417,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                 metrics: metricsPackage,
                 logger: logger);
 
-            var result = await runtime.ExecuteRequest(context).ConfigureAwait(false);
+            var result = await runtime.ExecuteRequest(context, _clientConnection.RequestAborted).ConfigureAwait(false);
 
             if (context.IsSubscriptionOperation)
             {
@@ -419,7 +428,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
                     if (totalTracked == 1)
                     {
                         var eventName = SubscriptionEventName.FromGraphField<TSchema>(subscription.Field);
-                        _router.AddReceiver(this, eventName);
+                        _router.AddClient(this, eventName);
                     }
 
                     this.Logger?.SubscriptionCreated(subscription);
@@ -453,7 +462,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
             if (totalRemaining == 0)
             {
                 var eventName = SubscriptionEventName.FromGraphField<TSchema>(subFound.Field);
-                _router.RemoveReceiver(this, eventName);
+                _router.RemoveClient(this, eventName);
             }
 
             this.Logger?.SubscriptionStopped(subFound);
@@ -482,7 +491,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         {
             // discontinue all client registered subscriptions
             // and acknowledge the terminate request
-            _router.RemoveReceiver(this);
+            _router.RemoveClient(this);
             _subscriptions.Clear();
             _reservedSubscriptionIds.Clear();
         }
@@ -528,7 +537,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
         public IReadOnlyDictionary<string, ISubscription<TSchema>> Subscriptions => _subscriptions;
 
         /// <inheritdoc />
-        public Guid Id { get; }
+        public SubscriptionClientId Id { get; }
 
         /// <inheritdoc />
         public abstract string Protocol { get; }

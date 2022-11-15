@@ -66,7 +66,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(25),
+                new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new DefaultHttpContext();
@@ -95,7 +95,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(25),
+                new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new DefaultHttpContext();
@@ -134,7 +134,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(25),
+                new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -165,7 +165,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(25),
+                new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -198,7 +198,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(25),
+                new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -236,7 +236,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(25),
+                new DefaultGlobalSubscriptionClientProxyCollection(25),
                 options);
 
             var context = new FakeWebSocketHttpContext();
@@ -276,7 +276,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
                 next,
                 new GraphSchema(),
                 factory.Object,
-                new GlobalConnectedSubscriptionClientCounter(0),
+                new DefaultGlobalSubscriptionClientProxyCollection(0),
                 options);
 
             var context1 = new FakeWebSocketHttpContext();

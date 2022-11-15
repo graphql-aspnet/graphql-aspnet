@@ -12,6 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
 
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -20,7 +21,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
     /// A dispatch queue that will forward events to receivers on a
     /// throttled, asyncronous scheduled.
     /// </summary>
-    public interface ISubscriptionReceiverDispatchQueue : IDisposable
+    public interface ISubscriptionEventDispatchQueue : IDisposable
     {
         /// <summary>
         /// Enqueues the event to be processed as resources become available.
@@ -31,7 +32,7 @@ namespace GraphQL.AspNet.Interfaces.Internal
         /// and no further events will be accepted after this event is scheduled.</param>
         /// <returns><c>true</c> if the event data was successfully queued,
         /// <c>false</c> otherwise.</returns>
-        bool EnqueueEvent(ISubscriptionEventReceiver receiver, SubscriptionEvent eventData, bool closeAfter = false);
+        bool EnqueueEvent(SubscriptionClientId clientId, SubscriptionEvent eventData, bool closeAfter = false);
 
         /// <summary>
         /// Instructs this queue to stop processing events,forever. The queue should not be started

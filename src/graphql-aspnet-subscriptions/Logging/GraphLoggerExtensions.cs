@@ -78,12 +78,21 @@ namespace GraphQL.AspNet.Logging
         /// <param name="logger">The logger doing the logging.</param>
         /// <param name="eventData">The event data that was received from a data source.</param>
         public static void SubscriptionEventReceived(
-            this IGraphEventLogger logger,
+            this ILogger logger,
             SubscriptionEvent eventData)
         {
+            if (!logger.IsEnabled(LogLevel.Debug))
+                return;
+
+            // note this event is ILogger not IGraphEventLogger
+            // its consumed from a global singleton (IGraphEventLogger is a scoped service due to the scope id property)
+            var data = new SubscriptionEventReceivedLogEntry(eventData);
             logger.Log(
                 LogLevel.Debug,
-                () => new SubscriptionEventReceivedLogEntry(eventData));
+                SubscriptionLogEventIds.GlobalEventReceived,
+                data,
+                null,
+                (s, e) => s.ToString());
         }
 
         /// <summary>

@@ -46,7 +46,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public void SubscribedReceiver_ReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            var dispatcher = new Mock<ISubscriptionReceiverDispatchQueue>();
+            var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
 
@@ -68,7 +68,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public void SubscribedReceiveer_TwoEvents_BothEventsAreDispatchedToTheReceiver()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            var dispatcher = new Mock<ISubscriptionReceiverDispatchQueue>();
+            var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
 
@@ -102,7 +102,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public void UnsubscribedReceiver_DoesNotReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            var dispatcher = new Mock<ISubscriptionReceiverDispatchQueue>();
+            var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
 
@@ -138,7 +138,7 @@ namespace GraphQL.Subscriptions.Tests.Execution
         public void UnsubscribedAllReceiver_DoesNotReceivesRaisedEvent()
         {
             var receiver = new Mock<ISubscriptionEventReceiver>();
-            var dispatcher = new Mock<ISubscriptionReceiverDispatchQueue>();
+            var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
 

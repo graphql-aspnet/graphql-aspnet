@@ -89,7 +89,7 @@ namespace GraphQL.Subscriptions.Tests
             // primary server objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServerClientFactory)));
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(GlobalConnectedSubscriptionClientCounter)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(DefaultGlobalSubscriptionClientProxyCollection)));
 
             // graphql-transport-ws objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqltwsSubscriptionClientProxyFactory)));

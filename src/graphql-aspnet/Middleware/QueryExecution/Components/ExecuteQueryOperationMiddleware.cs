@@ -83,9 +83,15 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // on the context as well as the configured timeout for the schema
             using var monitor = new QueryCancellationMonitor(context.CancellationToken, _queryTimeout);
 
+            var expectedTopLevelFieldCount = context
+                .QueryPlan
+                .Operation
+                .FieldContexts
+                .Count;
+
             var operation = context.QueryPlan.Operation;
-            var fieldInvocations = new List<FieldPipelineInvocation>();
-            var fieldInvocationTasks = new List<Task>();
+            var fieldInvocations = new List<FieldPipelineInvocation>(expectedTopLevelFieldCount);
+            var fieldInvocationTasks = new List<Task>(expectedTopLevelFieldCount);
 
             monitor.Start();
             context.CancellationToken = monitor.CancellationToken;

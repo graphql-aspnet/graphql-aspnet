@@ -55,11 +55,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         }
 
         /// <summary>
-        /// Polls the queue.
+        /// An offload method for the primary Execute of this background service.
+        /// Used to gain an entry point for unit testing.
         /// </summary>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>ValueTask.</returns>
-        public async ValueTask PollQueue(CancellationToken cancelToken = default)
+        internal async ValueTask PollQueue(CancellationToken cancelToken = default)
         {
             try
             {

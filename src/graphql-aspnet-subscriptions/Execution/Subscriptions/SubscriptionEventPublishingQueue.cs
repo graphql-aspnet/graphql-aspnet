@@ -17,9 +17,12 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
     /// <summary>
     /// A globally shared, intermediate queue of <see cref="SubscriptionEvent"/> items waiting to be published. When
-    /// controllers publish events they are initially staged to this queue where an additional
-    /// service dequeue's them and publishes them using the server's configured <see cref="ISubscriptionEventPublisher"/>.
+    /// controllers publish events they are initially staged to this queue where an additional, continuous,
+    /// service dequeues them and publishes them using the server's configured <see cref="ISubscriptionEventPublisher"/>.
     /// </summary>
+    /// <remarks>
+    /// This class is a wrapper on the built in Channel{T} queue provided by dotnet.
+    /// </remarks>
     public sealed class SubscriptionEventPublishingQueue
     {
         private Channel<SubscriptionEvent> _publishChannel;
@@ -35,7 +38,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <summary>
         /// Enqueues the event to the queue.
         /// </summary>
-        /// <param name="evt">The evt.</param>
+        /// <param name="evt">The event to enqueue.</param>
         /// <returns><c>true</c> if the event was queued, <c>false</c> otherwise.</returns>
         public bool Enqueue(SubscriptionEvent evt)
         {
