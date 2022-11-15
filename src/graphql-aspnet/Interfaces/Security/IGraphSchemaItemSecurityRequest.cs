@@ -21,6 +21,6 @@ namespace GraphQL.AspNet.Interfaces.Security
         /// Gets the secured schema item being checked with this request.
         /// </summary>
         /// <value>The field.</value>
-        ISecureSchemaItem SecureSchemaItem { get; }
+        ISecurableSchemaItem SecureSchemaItem { get; }
     }
 }

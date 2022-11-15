@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Execution.Contexts
         /// Gets the secured schema item being queried with this request.
         /// </summary>
         /// <value>The field.</value>
-        public ISecureSchemaItem SecureSchemaItem => this.Request.SecureSchemaItem;
+        public ISecurableSchemaItem SecureSchemaItem => this.Request.SecureSchemaItem;
 
         /// <summary>
         /// Gets or sets the user principal that was authenticated and will be used for

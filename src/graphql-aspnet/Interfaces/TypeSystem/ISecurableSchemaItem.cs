@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// <summary>
     /// A schema item that implements some security parameters.
     /// </summary>
-    public interface ISecureSchemaItem : ISchemaItem
+    public interface ISecurableSchemaItem : ISchemaItem
     {
         /// <summary>
         /// Gets the security groups, a collection of policy requirements, of which each must be met,

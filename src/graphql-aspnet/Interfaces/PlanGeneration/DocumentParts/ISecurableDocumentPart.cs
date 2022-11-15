@@ -16,12 +16,12 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// A document part that carries security requirements which must the active
     /// user must be authorized before (or as) the query is executed.
     /// </summary>
-    public interface ISecureDocumentPart : IDocumentPart
+    public interface ISecurableDocumentPart : IDocumentPart
     {
         /// <summary>
         /// Gets the secure schema item this document part represents.
         /// </summary>
         /// <value>The secure item.</value>
-        ISecureSchemaItem SecureItem { get; }
+        ISecurableSchemaItem SecureItem { get; }
     }
 }

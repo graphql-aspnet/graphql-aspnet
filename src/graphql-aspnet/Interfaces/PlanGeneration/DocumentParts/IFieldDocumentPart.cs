@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
     /// <summary>
     /// A single field of data from a source object selected to be returned as part of a graph query.
     /// </summary>
-    public interface IFieldDocumentPart : ISecureDocumentPart, IDirectiveContainerDocumentPart, IIncludeableDocumentPart, IDocumentPart, IInputArgumentCollectionContainer
+    public interface IFieldDocumentPart : ISecurableDocumentPart, IDirectiveContainerDocumentPart, IIncludeableDocumentPart, IDocumentPart, IInputArgumentCollectionContainer
     {
         /// <summary>
         /// Gets or sets a function that, when supplied, will be called immediately after

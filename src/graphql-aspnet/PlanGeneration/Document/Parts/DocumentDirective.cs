@@ -76,6 +76,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public override string Description => $"Directive {this.DirectiveName ?? "-unknown-"}";
 
         /// <inheritdoc />
-        public ISecureSchemaItem SecureItem => this.GraphType as IDirective;
+        public ISecurableSchemaItem SecureItem => this.GraphType as IDirective;
     }
 }

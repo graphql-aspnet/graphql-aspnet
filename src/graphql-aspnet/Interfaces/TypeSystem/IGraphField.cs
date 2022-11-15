@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
     /// Describes a single field in the type system. This describes how a given field is to be represented with its
     /// accepted arguments, any nullable or list modifiers and publication and depreciation information.
     /// </summary>
-    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISecureSchemaItem, IGraphFieldBase
+    public interface IGraphField : IDeprecatable, IGraphArgumentContainer, ISecurableSchemaItem, IGraphFieldBase
     {
         /// <summary>
         /// Updates the field resolver used by this graph field.

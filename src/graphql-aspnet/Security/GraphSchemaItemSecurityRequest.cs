@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Security
         /// </summary>
         /// <param name="securedDocumentPart">The secured document part that must
         /// be authorized.</param>
-        public GraphSchemaItemSecurityRequest(ISecureDocumentPart securedDocumentPart)
+        public GraphSchemaItemSecurityRequest(ISecurableDocumentPart securedDocumentPart)
         {
             Validation.ThrowIfNull(securedDocumentPart, nameof(securedDocumentPart));
             this.Id = Guid.NewGuid();
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Security
         /// Gets the secured item being checked with this request.
         /// </summary>
         /// <value>The field.</value>
-        public ISecureSchemaItem SecureSchemaItem { get; }
+        public ISecurableSchemaItem SecureSchemaItem { get; }
 
         /// <summary>
         /// Gets the origin point in the source text where this request was generated.

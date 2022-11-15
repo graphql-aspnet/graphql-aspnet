@@ -56,6 +56,6 @@ namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
         /// a secured item (typically a field or directive).
         /// </summary>
         /// <value>The secure items.</value>
-        IReadOnlyList<ISecureDocumentPart> SecureItems { get; }
+        IReadOnlyList<ISecurableDocumentPart> SecureItems { get; }
     }
 }

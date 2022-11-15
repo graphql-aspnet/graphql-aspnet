@@ -31,7 +31,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         private readonly DocumentVariableUsageCollection _variableUsages = null;
         private readonly DocumentDirectiveCollection _directives = null;
         private readonly List<IDirectiveDocumentPart> _allDirectives;
-        private readonly List<ISecureDocumentPart> _allSecuredDocParts;
+        private readonly List<ISecurableDocumentPart> _allSecuredDocParts;
 
         private IFieldSelectionSetDocumentPart _fieldSelectionSet;
 
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             _directives = new DocumentDirectiveCollection(this);
             _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
             _allDirectives = new List<IDirectiveDocumentPart>();
-            _allSecuredDocParts = new List<ISecureDocumentPart>();
+            _allSecuredDocParts = new List<ISecurableDocumentPart>();
 
         }
 
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
                 _fragmentSpreads.Add(fragSpread);
             }
 
-            if (decendentPart is ISecureDocumentPart sdp)
+            if (decendentPart is ISecurableDocumentPart sdp)
                 _allSecuredDocParts.Add(sdp);
         }
 
@@ -121,6 +121,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
         public override string Description => $"Operation: {this.Name}";
 
         /// <inheritdoc />
-        public IReadOnlyList<ISecureDocumentPart> SecureItems => _allSecuredDocParts;
+        public IReadOnlyList<ISecurableDocumentPart> SecureItems => _allSecuredDocParts;
     }
 }
