@@ -10,8 +10,10 @@
 namespace GraphQL.Subscriptions.Tests.Execution
 {
     using System;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Internal;
@@ -27,7 +29,8 @@ namespace GraphQL.Subscriptions.Tests.Execution
         [Test]
         public void NullEventResultsInException()
         {
-            var router = new DefaultSubscriptionEventRouter();
+            var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
+            var router = new DefaultSubscriptionEventRouter(dispatcher.Object);
 
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -38,14 +41,17 @@ namespace GraphQL.Subscriptions.Tests.Execution
         [Test]
         public void RemovingANullReceiverDoesNothing()
         {
-            var router = new DefaultSubscriptionEventRouter();
-            router.RemoveReceiver(null);
+            var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
+            var router = new DefaultSubscriptionEventRouter(dispatcher.Object);
+
+            router.RemoveClient(null);
         }
 
         [Test]
         public void SubscribedReceiver_ReceivesRaisedEvent()
         {
-            var receiver = new Mock<ISubscriptionEventReceiver>();
+            var receiver = new Mock<ISubscriptionClientProxy>();
+            receiver.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
             var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
@@ -58,16 +64,18 @@ namespace GraphQL.Subscriptions.Tests.Execution
                 Data = new TwoPropertyObject(),
             };
 
-            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddClient(receiver.Object, evt.ToSubscriptionEventName());
             router.RaisePublishedEvent(evt);
 
-            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object, evt, false), Times.Once, "Event1 never received");
+            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Once, "Event1 never received");
         }
 
         [Test]
         public void SubscribedReceiveer_TwoEvents_BothEventsAreDispatchedToTheReceiver()
         {
-            var receiver = new Mock<ISubscriptionEventReceiver>();
+            var receiver = new Mock<ISubscriptionClientProxy>();
+            receiver.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+
             var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
@@ -89,19 +97,21 @@ namespace GraphQL.Subscriptions.Tests.Execution
             };
 
             // add two events but remove the one being raised
-            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
-            router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
+            router.AddClient(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddClient(receiver.Object, evt2.ToSubscriptionEventName());
             router.RaisePublishedEvent(evt);
             router.RaisePublishedEvent(evt2);
 
-            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object, evt, false), Times.Once, "Event1 never received");
-            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object, evt2, false), Times.Once, "Event2 never received");
+            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Once, "Event1 never received");
+            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt2, false), Times.Once, "Event2 never received");
         }
 
         [Test]
         public void UnsubscribedReceiver_DoesNotReceivesRaisedEvent()
         {
-            var receiver = new Mock<ISubscriptionEventReceiver>();
+            var receiver = new Mock<ISubscriptionClientProxy>();
+            receiver.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+
             var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
@@ -124,20 +134,22 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             // add two events but remove the one being raised
             // to ensure its not processed
-            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
-            router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
-            router.RemoveReceiver(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddClient(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddClient(receiver.Object, evt2.ToSubscriptionEventName());
+            router.RemoveClient(receiver.Object, evt.ToSubscriptionEventName());
             router.RaisePublishedEvent(evt);
             router.RaisePublishedEvent(evt2);
 
-            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object, evt, false), Times.Never, "Event1 was received");
-            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object, evt2, false), Times.Once, "Event2 never received");
+            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Never, "Event1 was received");
+            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt2, false), Times.Once, "Event2 never received");
         }
 
         [Test]
         public void UnsubscribedAllReceiver_DoesNotReceivesRaisedEvent()
         {
-            var receiver = new Mock<ISubscriptionEventReceiver>();
+            var receiver = new Mock<ISubscriptionClientProxy>();
+            receiver.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+
             var dispatcher = new Mock<ISubscriptionEventDispatchQueue>();
 
             var router = new DefaultSubscriptionEventRouter(dispatchQueue: dispatcher.Object);
@@ -159,14 +171,14 @@ namespace GraphQL.Subscriptions.Tests.Execution
             };
 
             // add two events and ensure both are removed when not directly named
-            router.AddReceiver(receiver.Object, evt.ToSubscriptionEventName());
-            router.AddReceiver(receiver.Object, evt2.ToSubscriptionEventName());
-            router.RemoveReceiver(receiver.Object);
+            router.AddClient(receiver.Object, evt.ToSubscriptionEventName());
+            router.AddClient(receiver.Object, evt2.ToSubscriptionEventName());
+            router.RemoveClient(receiver.Object);
             router.RaisePublishedEvent(evt);
             router.RaisePublishedEvent(evt2);
 
-            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object, evt, false), Times.Never, "Event1 was received");
-            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object, evt2, false), Times.Never, "Event2 was received");
+            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt, false), Times.Never, "Event1 was received");
+            dispatcher.Verify(x => x.EnqueueEvent(receiver.Object.Id, evt2, false), Times.Never, "Event2 was received");
         }
     }
 }

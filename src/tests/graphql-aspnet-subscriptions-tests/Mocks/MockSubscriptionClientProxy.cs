@@ -14,6 +14,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Security;
@@ -47,7 +48,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
 
             this.ClientConnection = connection.Object;
 
-            this.Id = Guid.NewGuid();
+            this.Id = SubscriptionClientId.NewClientId();
             this.ReceivedEvents = new List<SubscriptionEvent>();
             this.SentMessages = new List<object>();
         }
@@ -87,7 +88,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
         }
 
         /// <inheritdoc />
-        public Guid Id { get; }
+        public SubscriptionClientId Id { get; }
 
         /// <summary>
         /// Gets the events this client recieved from the server that it would

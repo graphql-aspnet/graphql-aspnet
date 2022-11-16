@@ -22,7 +22,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
         {
             var id = new SubscriptionEventName("schema", "abc");
             Assert.AreEqual("schema:abc", id.ToString());
-            Assert.AreEqual("schema:abc".GetHashCode(), id.GetHashCode());
         }
 
         [Test]
@@ -31,27 +30,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var schema = new GraphSchema();
             var id = new SubscriptionEventName(typeof(GraphSchema), "abc");
             Assert.AreEqual($"{schema.FullyQualifiedSchemaTypeName()}:abc", id.ToString());
-            Assert.AreEqual($"{schema.FullyQualifiedSchemaTypeName()}:abc".GetHashCode(), id.GetHashCode());
-        }
-
-        [TestCase("schema:abc", "schema", "abc")]
-        [TestCase("schema:", null)]
-        [TestCase(":abc", null)]
-        [TestCase("schema", null)]
-        [TestCase("schema:  ", null)]
-        [TestCase("  :abc", null)]
-        public void UnPack(string packedValue, string schema, string value = null)
-        {
-            var result = SubscriptionEventName.UnPack(packedValue);
-
-            if (schema == null)
-            {
-                Assert.IsNull(result);
-            }
-            else
-            {
-                Assert.AreEqual(new SubscriptionEventName(schema, value), result);
-            }
         }
 
         [Test]
@@ -68,13 +46,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
         {
             var id = new SubscriptionEventName("schema", "abc");
             Assert.IsFalse(id.Equals(null as object));
-        }
-
-        [Test]
-        public void EqualsMethodAgainstNullAsEvent_DoesNotMatch()
-        {
-            var id = new SubscriptionEventName("schema", "abc");
-            Assert.IsFalse(id.Equals(null as SubscriptionEventName));
         }
 
         [Test]
@@ -107,15 +78,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
             var secondId = new SubscriptionEventName("schema", "abc");
 
             Assert.IsTrue(id.Equals((object)secondId));
-        }
-
-        [Test]
-        public void EqualsMethodAgainstStringObject_Matches()
-        {
-            var id = new SubscriptionEventName("schema", "abc");
-
-            var obj = (object)"schema:abc";
-            Assert.IsTrue(id.Equals(obj));
         }
 
         [TestCase("schema", "123", "schema", "123", true)]
@@ -161,17 +123,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
 #pragma warning restore CS1718 // Comparison made to same variable
         }
 
-        [TestCase("schema", "123", "schema:123", true)]
-        [TestCase("schema", "123", 123, false)]
-        [TestCase("schema", "123", null, false)]
-        public void EqualsOperator_AgainstObject(string schema1, string value1, object value2, bool isSuccess)
-        {
-            var id1 = new SubscriptionEventName(schema1, value1);
-
-            Assert.AreEqual(isSuccess, id1 == value2);
-            Assert.AreEqual(isSuccess, value2 == id1);
-        }
-
         [TestCase("schema", "123", "schema", "123", false)]
         [TestCase("schema", "123", "schema", "345", true)]
         [TestCase("schema", "123", "schema1", "123", true)]
@@ -182,17 +133,6 @@ namespace GraphQL.Subscriptions.Tests.Execution
 
             Assert.AreEqual(isSuccess, id1 != id2);
             Assert.AreEqual(isSuccess, id2 != id1);
-        }
-
-        [TestCase("schema", "123", "schema:123", false)]
-        [TestCase("schema", "123", 123, true)]
-        [TestCase("schema", "123", null, true)]
-        public void NotEqualsOperator_AgainstObject(string schema1, string value1, object value2, bool isSuccess)
-        {
-            var id1 = new SubscriptionEventName(schema1, value1);
-
-            Assert.AreEqual(isSuccess, id1 != value2);
-            Assert.AreEqual(isSuccess, value2 != id1);
         }
 
         [Test]

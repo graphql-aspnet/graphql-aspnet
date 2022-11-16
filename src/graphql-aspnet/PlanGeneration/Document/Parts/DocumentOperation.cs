@@ -84,7 +84,9 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts
             }
 
             if (decendentPart is ISecurableDocumentPart sdp)
+            {
                 _allSecuredDocParts.Add(sdp);
+            }
         }
 
         /// <inheritdoc />

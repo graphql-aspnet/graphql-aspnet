@@ -172,6 +172,21 @@ namespace GraphQL.AspNet.Internal
         /// <inheritdoc />
         public bool IsProcessing { get; private set; }
 
+        /// <summary>
+        /// Gets the number of events currently in the queue.
+        /// </summary>
+        /// <value>The count of queued events.</value>
+        public int Count
+        {
+            get
+            {
+                if (_isDisposed)
+                    throw new ObjectDisposedException(nameof(SubscriptionClientDispatchQueue));
+
+                return _queue.Reader.Count;
+            }
+        }
+
         /// <inheritdoc />
         public int MaxConcurrentEvents { get; }
 

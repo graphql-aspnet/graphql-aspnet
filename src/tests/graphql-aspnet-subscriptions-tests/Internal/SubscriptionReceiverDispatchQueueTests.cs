@@ -12,25 +12,36 @@ namespace GraphQL.Subscriptions.Tests.Internal
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Internal;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
-    public class SubscriptionReceiverDispatchQueueTests
+    public class SubscriptionClientDispatchQueueTests
     {
         [Test]
-        public async Task QueuedEvents_AreDispatchedWithQueueIsProcessed()
+        public async Task QueuedEvents_AreDispatchedWhenQueueIsProcessed()
         {
-            var receiver = new Mock<ISubscriptionEventReceiver>();
+            var receiver = new Mock<ISubscriptionClientProxy>();
+            receiver.Setup(x => x.Id).Returns(SubscriptionClientId.NewClientId());
+
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            collection.Setup(x => x.TryGetClient(It.IsAny<SubscriptionClientId>(), out It.Ref<ISubscriptionClientProxy>.IsAny))
+                .Returns((SubscriptionClientId id, out ISubscriptionClientProxy proxy) =>
+                {
+                    proxy = receiver.Object;
+                    return true;
+                });
 
             var evt = new SubscriptionEvent();
             var evt2 = new SubscriptionEvent();
 
-            var queue = new SubscriptionReceiverDispatchQueue(1);
-            var wasQueued = queue.EnqueueEvent(receiver.Object, evt, true);
+            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
+            var wasQueued = queue.EnqueueEvent(receiver.Object.Id, evt, true);
 
             await queue.BeginProcessingQueue();
 
@@ -38,18 +49,39 @@ namespace GraphQL.Subscriptions.Tests.Internal
             receiver.Verify(x => x.ReceiveEvent(evt, It.IsAny<CancellationToken>()), Times.Once);
         }
 
+        [Test]
+        public async Task QueuedEvents_AgainstANotFOundCLient_AreNotDispatched()
+        {
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+
+            var evt = new SubscriptionEvent();
+            var evt2 = new SubscriptionEvent();
+
+            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
+            var wasQueued = queue.EnqueueEvent(SubscriptionClientId.NewClientId(), evt, true);
+
+            await queue.BeginProcessingQueue();
+
+            Assert.True(wasQueued);
+            Assert.AreEqual(0, queue.Count);
+        }
+
         [TestCase(0)]
         [TestCase(-45)]
         public void CreatingWithMaxConcurrentLessThan1_CreatesWith1(int maxConcurrent)
         {
-            var queue = new SubscriptionReceiverDispatchQueue(maxConcurrent);
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+
+            var queue = new SubscriptionClientDispatchQueue(collection.Object, maxConcurrent);
             Assert.AreEqual(1, queue.MaxConcurrentEvents);
         }
 
         [Test]
         public void StartingAStoppedQueue_ThrowsException()
         {
-            var queue = new SubscriptionReceiverDispatchQueue(1);
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+
+            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
 
             queue.StopQueue();
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
@@ -61,7 +93,8 @@ namespace GraphQL.Subscriptions.Tests.Internal
         [Test]
         public void StartingADisposedQueue_ThrowsException()
         {
-            var queue = new SubscriptionReceiverDispatchQueue(1);
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
             queue.Dispose();
             Assert.ThrowsAsync<ObjectDisposedException>(async () =>
             {
@@ -70,14 +103,12 @@ namespace GraphQL.Subscriptions.Tests.Internal
         }
 
         [Test]
-        public void StoppingADisposedQueue_ThrowsException()
+        public void StoppingADisposedQueue_DoesNothing()
         {
-            var queue = new SubscriptionReceiverDispatchQueue(1);
+            var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
+            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
             queue.Dispose();
-            Assert.Throws<ObjectDisposedException>(() =>
-            {
-                queue.StopQueue();
-            });
+            queue.StopQueue();
         }
     }
 }

@@ -46,7 +46,8 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
         /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
         public SchemaItemSecurityPipelineHelper<TSchema> AddDefaultMiddlewareComponents(Configuration.SchemaOptions options = null)
         {
-            return this.AddPolicyAggregationMiddleware()
+            return this.AddGateKeeperMiddleware()
+                       .AddPolicyAggregationMiddleware()
                        .AddAuthenticationMiddleware()
                        .AddAuthorizationMiddleware();
         }
@@ -98,6 +99,17 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity
         public SchemaItemSecurityPipelineHelper<TSchema> AddAuthorizationMiddleware()
         {
             _pipelineBuilder.AddMiddleware<SchemaItemAuthorizationMiddleware>();
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the middleware component that performs an initial gate check to ensure
+        /// authorization is required before executing the rest of the pipeline.
+        /// </summary>
+        /// <returns>FieldAuthorizationPipelineHelper&lt;TSchema&gt;.</returns>
+        public SchemaItemSecurityPipelineHelper<TSchema> AddGateKeeperMiddleware()
+        {
+            _pipelineBuilder.AddMiddleware<SchemaItemSecurityGateMiddleware>();
             return this;
         }
     }

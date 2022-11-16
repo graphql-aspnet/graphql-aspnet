@@ -15,6 +15,8 @@ namespace GraphQL.AspNet.Tests.Logging.LoggerTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Controllers;
+    using Microsoft.AspNetCore.Authorization;
+    using NUnit.Framework;
 
     public class LogTestController : GraphController
     {

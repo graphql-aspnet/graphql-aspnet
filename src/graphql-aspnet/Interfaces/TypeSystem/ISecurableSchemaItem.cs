@@ -23,6 +23,6 @@ namespace GraphQL.AspNet.Interfaces.TypeSystem
         /// in order to access this schema item.
         /// </summary>
         /// <value>The security groups.</value>
-        IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
+        IAppliedSecurityPolicyGroups SecurityGroups { get; }
     }
 }

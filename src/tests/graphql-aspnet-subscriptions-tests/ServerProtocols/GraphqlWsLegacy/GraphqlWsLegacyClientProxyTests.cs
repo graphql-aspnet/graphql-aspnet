@@ -126,7 +126,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_ACK);
             socketClient.AssertClientClosedConnection();
 
-            router.Verify(x => x.AddReceiver(client, It.IsAny<SubscriptionEventName>()), Times.Once());
+            router.Verify(x => x.AddClient(client, It.IsAny<SubscriptionEventName>()), Times.Once());
         }
 
         [Test]
@@ -361,7 +361,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
             socketClient.AssertGraphqlWsLegacyResponse(GraphqlWsLegacyMessageType.CONNECTION_KEEP_ALIVE);
             socketClient.AssertClientClosedConnection();
 
-            router.Verify(x => x.AddReceiver(client, It.IsAny<SubscriptionEventName>()), Times.Once());
+            router.Verify(x => x.AddClient(client, It.IsAny<SubscriptionEventName>()), Times.Once());
         }
 
         [Test]

@@ -25,6 +25,7 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using GraphQL.Subscriptions.Tests.Configuration.ConfigurationTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -175,6 +176,15 @@ namespace GraphQL.Subscriptions.Tests.Configuration
             GraphQLProviders.GraphTypeMakerProvider = new DefaultGraphTypeMakerProvider();
 
             var serviceCollection = new ServiceCollection();
+
+            // the internal publisher (added by default)
+            // requires the router (1) which requires the client collection (2)
+            // both of which are not "publishing specific"
+            //
+            // register this mock one to remove the dependency
+            var externalPublisher = new Mock<ISubscriptionEventPublisher>();
+            serviceCollection.AddSingleton(externalPublisher.Object);
+
             var returned = serviceCollection.AddGraphQL(options =>
             {
                 options.AddType<FanController>();

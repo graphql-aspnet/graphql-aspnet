@@ -127,10 +127,9 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         /// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
         public bool Equals(SubscriptionEventName other)
         {
-            if (ReferenceEquals(null, other))
-                return false;
+            return string.Compare(this.EventName, other.EventName) == 0
+                && string.Compare(this.OwnerSchemaType, other.OwnerSchemaType) == 0;
 
-            return this.Equals(other);
         }
 
         /// <summary>
@@ -145,8 +144,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
 
             if (obj is SubscriptionEventName subEventName)
             {
-                return this.OwnerSchemaType == subEventName.OwnerSchemaType
-                    && this.EventName == subEventName.EventName;
+                return this.Equals(subEventName);
             }
 
             return false;

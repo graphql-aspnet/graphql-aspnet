@@ -63,8 +63,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
             this.AppliedDirectives = directives?.Clone(this) ?? new AppliedDirectiveCollection(this);
 
-            securityPolicies = securityPolicies ?? Enumerable.Empty<AppliedSecurityPolicyGroup>();
-            this.SecurityGroups = new List<AppliedSecurityPolicyGroup>(securityPolicies);
+            this.SecurityGroups = new AppliedSecurityPolicyGroups(securityPolicies);
 
             this.UpdateResolver(resolver, mode);
             this.Publish = true;
@@ -172,7 +171,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         public GraphTypeExpression TypeExpression { get; protected set; }
 
         /// <inheritdoc/>
-        public IEnumerable<AppliedSecurityPolicyGroup> SecurityGroups { get; }
+        public IAppliedSecurityPolicyGroups SecurityGroups { get; }
 
         /// <inheritdoc/>
         public IGraphArgumentCollection Arguments { get; }

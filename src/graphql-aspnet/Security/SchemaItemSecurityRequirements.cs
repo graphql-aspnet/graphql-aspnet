@@ -9,6 +9,7 @@
 namespace GraphQL.AspNet.Security
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     /// <summary>
@@ -17,6 +18,7 @@ namespace GraphQL.AspNet.Security
     /// various levels of security that can ultimately be applied to a field
     /// at runtime.
     /// </summary>
+    [DebuggerDisplay("Policy: {EnforcedPolicies.Count} (Allow Anon: {AllowAnonymous})")]
     public class SchemaItemSecurityRequirements
     {
         /// <summary>

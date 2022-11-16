@@ -12,6 +12,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Subscriptions;
     using GraphQL.AspNet.Logging.ClientProxyLogEntries;
@@ -28,7 +29,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
         {
             var client = new Mock<ISubscriptionClientProxy>();
 
-            var id = Guid.NewGuid();
+            var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);
 
             var message = new Mock<ILoggableClientProxyMessage>();
@@ -49,7 +50,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
             var client = new Mock<ISubscriptionClientProxy>();
             var result = new Mock<IGraphOperationResult>();
 
-            var id = Guid.NewGuid();
+            var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);
 
             var message = new Mock<ILoggableClientProxyMessage>();
@@ -69,7 +70,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
         {
             var client = new Mock<ISubscriptionClientProxy>();
 
-            var id = Guid.NewGuid();
+            var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);
 
             var sub = new Mock<ISubscription>();
@@ -89,7 +90,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
         {
             var client = new Mock<ISubscriptionClientProxy>();
 
-            var id = Guid.NewGuid();
+            var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);
 
             var sub = new Mock<ISubscription>();
@@ -110,7 +111,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
             var connection = new Mock<IClientConnection>();
             var proxy = new Mock<ISubscriptionClientProxy<GraphSchema>>();
 
-            var id = Guid.NewGuid();
+            var id = SubscriptionClientId.NewClientId();
             proxy.Setup(x => x.Id).Returns(id);
 
             var sub = new Mock<ISubscription>();

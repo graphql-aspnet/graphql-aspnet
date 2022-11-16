@@ -155,7 +155,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
             // execute the connection sequence
             await graphqlWsClient.StartConnection();
 
-            router.Verify(x => x.AddReceiver(graphqlWsClient, It.IsAny<SubscriptionEventName>()), Times.Once());
+            router.Verify(x => x.AddClient(graphqlWsClient, It.IsAny<SubscriptionEventName>()), Times.Once());
             graphqlWsClient.Dispose();
         }
 

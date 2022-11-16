@@ -68,10 +68,6 @@ namespace GraphQL.AspNet.Tests.Logging
             requestEvents.Add(LogEventIds.QueryCacheAdd);
             requestEvents.Add(LogEventIds.QueryPlanGenerationCompleted);
             requestEvents.Add(LogEventIds.FieldResolutionStarted);
-            requestEvents.Add(LogEventIds.SchemaItemAuthenticationStarted);
-            requestEvents.Add(LogEventIds.SchemaItemAuthenticationCompleted);
-            requestEvents.Add(LogEventIds.SchemaItemAuthorizationStarted);
-            requestEvents.Add(LogEventIds.SchemaItemAuthorizationCompleted);
             requestEvents.Add(LogEventIds.FieldResolutionCompleted);
             requestEvents.Add(LogEventIds.ControllerInvocationStarted);
             requestEvents.Add(LogEventIds.ControllerModelValidated);

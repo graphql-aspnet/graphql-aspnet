@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Defaults
     public sealed class DefaultSubscriptionEventRouter : ISubscriptionEventRouter, IDisposable
     {
         private readonly ILogger _logger;
-        private readonly SubscribedEventRecievers _allReceivers;
+        private readonly SubscribedEventRecievers _allclients;
         private readonly ISubscriptionEventDispatchQueue _dispatchQueue;
         private readonly Task _dispatchQueueExecutionTask;
         private bool _isDisposed;
@@ -39,7 +39,7 @@ namespace GraphQL.AspNet.Defaults
         {
             _dispatchQueue = Validation.ThrowIfNullOrReturn(dispatchQueue, nameof(dispatchQueue));
             _logger = logger;
-            _allReceivers = new SubscribedEventRecievers();
+            _allclients = new SubscribedEventRecievers();
         }
 
         /// <inheritdoc />
@@ -51,82 +51,82 @@ namespace GraphQL.AspNet.Defaults
             Validation.ThrowIfNull(eventData, nameof(eventData));
 
             _logger?.SubscriptionEventReceived(eventData);
-            List<SubscriptionClientId> receivers = null;
+            List<SubscriptionClientId> clients = null;
 
             // capture a list of all listeners to this event
-            lock (_allReceivers)
+            lock (_allclients)
             {
                 // if no one is listening for the event, just let it go
                 var eventName = eventData.ToSubscriptionEventName();
-                if (!_allReceivers.ContainsKey(eventName))
+                if (!_allclients.ContainsKey(eventName))
                     return;
 
-                receivers = new List<SubscriptionClientId>(_allReceivers[eventName].Count);
-                receivers.AddRange(_allReceivers[eventName]);
+                clients = new List<SubscriptionClientId>(_allclients[eventName].Count);
+                clients.AddRange(_allclients[eventName]);
             }
 
-            // queue all events to be dispatched to the receivers
-            if (receivers.Count > 0)
+            // queue all events to be dispatched to the clients
+            if (clients.Count > 0)
             {
-                foreach (var receiver in receivers)
-                    _dispatchQueue.EnqueueEvent(receiver, eventData);
+                foreach (var client in clients)
+                    _dispatchQueue.EnqueueEvent(client, eventData);
             }
         }
 
         /// <inheritdoc />
-        public void AddClient(ISubscriptionClientProxy receiver, SubscriptionEventName eventName)
+        public void AddClient(ISubscriptionClientProxy client, SubscriptionEventName eventName)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
 
             Validation.ThrowIfNull(eventName, nameof(eventName));
-            Validation.ThrowIfNull(receiver, nameof(receiver));
+            Validation.ThrowIfNull(client, nameof(client));
 
-            lock (_allReceivers)
+            lock (_allclients)
             {
-                if (!_allReceivers.ContainsKey(eventName))
-                    _allReceivers.Add(eventName, new HashSet<SubscriptionClientId>());
+                if (!_allclients.ContainsKey(eventName))
+                    _allclients.Add(eventName, new HashSet<SubscriptionClientId>());
 
-                _allReceivers[eventName].Add(receiver.Id);
+                _allclients[eventName].Add(client.Id);
             }
         }
 
         /// <inheritdoc />
-        public void RemoveClient(ISubscriptionClientProxy receiver, SubscriptionEventName eventName)
+        public void RemoveClient(ISubscriptionClientProxy client, SubscriptionEventName eventName)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
 
-            if (eventName == null)
-                return;
+            Validation.ThrowIfNull(client, nameof(client));
 
-            lock (_allReceivers)
+            lock (_allclients)
             {
-                if (_allReceivers.ContainsKey(eventName))
+                if (_allclients.ContainsKey(eventName))
                 {
-                    if (_allReceivers[eventName].Contains(receiver.Id))
-                        _allReceivers[eventName].Remove(receiver.Id);
-                    if (_allReceivers[eventName].Count == 0)
-                        _allReceivers.Remove(eventName);
+                    if (_allclients[eventName].Contains(client.Id))
+                        _allclients[eventName].Remove(client.Id);
+                    if (_allclients[eventName].Count == 0)
+                        _allclients.Remove(eventName);
                 }
             }
         }
 
         /// <inheritdoc />
-        public void RemoveClient(ISubscriptionClientProxy receiver)
+        public void RemoveClient(ISubscriptionClientProxy client)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(DefaultSubscriptionEventRouter));
 
-            Validation.ThrowIfNull(receiver, nameof(receiver));
+            if (client == null)
+                return;
 
-            lock (_allReceivers)
+            lock (_allclients)
             {
                 var toRemove = new List<SubscriptionEventName>();
-                foreach (var kvp in _allReceivers)
+                foreach (var kvp in _allclients)
                 {
-                    if (kvp.Value.Contains(receiver.Id))
-                        kvp.Value.Remove(receiver.Id);
+                    if (kvp.Value.Contains(client.Id))
+                        kvp.Value.Remove(client.Id);
 
                     if (kvp.Value.Count == 0)
                         toRemove.Add(kvp.Key);
@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Defaults
 
                 // remove any collections that no longer have listeners
                 foreach (var key in toRemove)
-                    _allReceivers.Remove(key);
+                    _allclients.Remove(key);
             }
         }
 

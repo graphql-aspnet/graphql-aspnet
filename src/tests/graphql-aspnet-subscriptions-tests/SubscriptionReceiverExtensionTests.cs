@@ -16,7 +16,9 @@ namespace GraphQL.Subscriptions.Tests
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Defaults;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Internal;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Interfaces.Subscriptions;
@@ -84,12 +86,14 @@ namespace GraphQL.Subscriptions.Tests
 
             Assert.IsTrue(primaryOptions.DeclarationOptions.AllowedOperations.Contains(GraphOperationType.Subscription));
 
-            Assert.AreEqual(6, primaryOptions.ServiceCollection.Count);
+            Assert.AreEqual(8, primaryOptions.ServiceCollection.Count);
 
             // primary server objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(SubscriptionServerOptions<GraphSchema>)));
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionServerClientFactory)));
-            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(DefaultGlobalSubscriptionClientProxyCollection)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(IGlobalSubscriptionClientProxyCollection)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ServiceType == typeof(ISubscriptionEventDispatchQueue)));
+            Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(SubscriptionClientDispatchService)));
 
             // graphql-transport-ws objects
             Assert.IsNotNull(primaryOptions.ServiceCollection.SingleOrDefault(x => x.ImplementationType == typeof(GqltwsSubscriptionClientProxyFactory)));

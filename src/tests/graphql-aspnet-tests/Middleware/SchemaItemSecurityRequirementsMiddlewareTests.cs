@@ -73,7 +73,12 @@ namespace GraphQL.AspNet.Tests.Middleware
         private void SetupFieldMock(List<AppliedSecurityPolicyGroup> securityGroups)
         {
             var field = new Mock<IGraphField>();
-            field.Setup(x => x.SecurityGroups).Returns(securityGroups);
+
+            AppliedSecurityPolicyGroups policyGroups = null;
+            if (securityGroups != null)
+                policyGroups = new AppliedSecurityPolicyGroups(securityGroups);
+
+            field.Setup(x => x.SecurityGroups).Returns(policyGroups);
             field.Setup(x => x.Route).Returns(new SchemaItemPath(AspNet.Execution.GraphCollection.Query, "some", "path"));
             _field = field.Object;
         }
@@ -358,9 +363,12 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WhenNoSecurityGroupsDefined_AutoDenyIsSet()
         {
+            // register the method to execute with security groups on
+            // the target field
             this.ExtractPoliciesAndSetupFieldForTest<NothingOnClass>(
                 nameof(NothingOnClass.AuthorizeOnMethod));
 
+            // reissue the field mock with no security groups
             this.SetupFieldMock(null);
 
             var result = await this.ExecuteTest();

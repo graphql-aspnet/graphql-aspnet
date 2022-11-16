@@ -10,6 +10,7 @@
 namespace GraphQL.Subscriptions.Tests.Logging
 {
     using System;
+    using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Interfaces.Logging;
@@ -66,7 +67,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
 
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
 
-            var id = Guid.NewGuid();
+            var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);
 
             mock.Object.SubscriptionClientRegistered<GraphSchema>(client.Object);
@@ -97,7 +98,7 @@ namespace GraphQL.Subscriptions.Tests.Logging
 
             var client = new Mock<ISubscriptionClientProxy<GraphSchema>>();
 
-            var id = Guid.NewGuid();
+            var id = SubscriptionClientId.NewClientId();
             client.Setup(x => x.Id).Returns(id);
 
             mock.Object.SubscriptionClientDropped(client.Object);
@@ -117,13 +118,25 @@ namespace GraphQL.Subscriptions.Tests.Logging
             IGraphLogEntry recordedlogEntry = null;
 
             // fake a log to recieve the event generated on the extension method
-            var mock = new Mock<IGraphEventLogger>();
-            mock.Setup(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<Func<IGraphLogEntry>>()))
-                .Callback((LogLevel logLevel, Func<IGraphLogEntry> entryMaker) =>
+            var mock = new Mock<ILogger>();
+            mock.Setup(x => x.Log(
+                It.IsAny<LogLevel>(),
+                It.IsAny<EventId>(),
+                It.IsAny<SubscriptionEventReceivedLogEntry>(),
+                null,
+                It.IsAny<Func<SubscriptionEventReceivedLogEntry, Exception, string>>()))
+                .Callback((
+                    LogLevel logLevel,
+                    EventId eventId,
+                    SubscriptionEventReceivedLogEntry state,
+                    Exception ex,
+                    Func<SubscriptionEventReceivedLogEntry, Exception, string> entryMaker) =>
                 {
                     recordedLogLevel = logLevel;
-                    recordedlogEntry = entryMaker();
+                    recordedlogEntry = state;
                 });
+
+            mock.Setup(x => x.IsEnabled(LogLevel.Debug)).Returns(true);
 
             var eventData = new SubscriptionEvent()
             {

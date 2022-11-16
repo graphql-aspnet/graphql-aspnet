@@ -57,8 +57,8 @@ namespace GraphQL.AspNet.Tests.Framework
             _schemaBuilderAdditions = new List<Action<ISchemaBuilder<TSchema>>>();
             _initialSetup = initialSetup;
 
-            this.Authorization = new TestAuthorizationBuilder();
             this.Authentication = new TestAuthenticationBuilder();
+            this.Authorization = new TestAuthorizationBuilder();
             this.UserContext = new TestUserSecurityContextBuilder(this);
             this.Logging = new TestLoggingBuilder();
 
