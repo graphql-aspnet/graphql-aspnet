@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// Places a restriction on this context such that it will only be executed if the provided
         /// source item can be successfully cast to the provided type. Pass null to indicate no restrictions.
         /// </summary>
-        /// <param name="restrictToType">A .NEt type to restrict this invocation to.</param>
+        /// <param name="restrictToType">A .NET type to restrict this invocation to.</param>
         void Restrict(Type restrictToType);
 
         /// <summary>

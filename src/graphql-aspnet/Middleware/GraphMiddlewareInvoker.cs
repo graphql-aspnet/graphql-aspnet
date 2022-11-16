@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Middleware
         /// Initializes a new instance of the <see cref="GraphMiddlewareInvoker{TContext}" /> class.
         /// </summary>
         /// <param name="middlewareComponent">The middleware component.</param>
-        /// <param name="next">The next.</param>
+        /// <param name="next">The next component to invoke.</param>
         public GraphMiddlewareInvoker(
             GraphMiddlewareDefinition<TContext> middlewareComponent,
             GraphMiddlewareInvocationDelegate<TContext> next = null)

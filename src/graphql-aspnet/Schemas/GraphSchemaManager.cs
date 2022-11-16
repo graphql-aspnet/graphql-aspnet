@@ -29,12 +29,11 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// Manages the relationships between <see cref="GraphController"/> and a <see cref="ISchema"/>.
-    /// Assists with the conversion, creation and assignment of <see cref="IGraphType"/> data
-    /// parsed from any <see cref="GraphController"/> or added manually <see cref="Type"/> to the <see cref="ISchema"/> this instance is
-    /// managing.
+    /// Assists with the creation of <see cref="IGraphType"/> data
+    /// parsed from any <see cref="GraphController"/> or any manually added <see cref="Type"/>
+    /// to the <see cref="ISchema"/> this instance is managing.
     /// </summary>
-    public sealed class GraphSchemaManager
+    internal sealed class GraphSchemaManager
     {
         private readonly GraphNameFormatter _formatter;
 
@@ -57,11 +56,14 @@ namespace GraphQL.AspNet.Schemas
         private void EnsureSchemaDependencies()
         {
             // all schemas depend on String because of the __typename field
-            // applied to various graphtypes included the required query operation
             this.EnsureGraphType<string>();
 
             // ensure top level schema directives are accounted for
-            this.Schema.EnsureAppliedDirectives();
+            foreach (var directive in this.Schema.GetType().ExtractAppliedDirectives())
+            {
+                this.Schema.AppliedDirectives.Add(directive);
+            }
+
             foreach (var appliedDirective in this.Schema.AppliedDirectives.Where(x => x.DirectiveType != null))
             {
                 this.EnsureGraphType(
@@ -356,7 +358,8 @@ namespace GraphQL.AspNet.Schemas
         /// on the type. The type kind will be automatically inferred or an error will be thrown.
         /// </summary>
         /// <typeparam name="TItem">The type of the item to add to the schema.</typeparam>
-        /// <param name="kind">The kind of graph type to create from the supplied concrete type.</param>
+        /// <param name="kind">The kind of graph type to create from the supplied concrete type.
+        /// Only necessary to differentiate between OBJECT and INPUT_OBJECT types.</param>
         public void EnsureGraphType<TItem>(TypeKind? kind = null)
         {
             this.EnsureGraphType(typeof(TItem), kind);

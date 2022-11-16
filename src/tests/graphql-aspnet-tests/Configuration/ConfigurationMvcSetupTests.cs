@@ -69,9 +69,9 @@ namespace GraphQL.AspNet.Tests.Configuration
 
             // objects injected for by standard pipeline components
             Assert.IsNotNull(sp.GetService(typeof(IGraphQueryPlanGenerator<GraphSchema>)) as DefaultGraphQueryPlanGenerator<GraphSchema>);
-            Assert.IsNotNull(sp.GetService(typeof(IGraphResponseWriter<GraphSchema>)) as DefaultResponseWriter<GraphSchema>);
+            Assert.IsNotNull(sp.GetService(typeof(IGraphQueryResponseWriter<GraphSchema>)) as DefaultQueryResponseWriter<GraphSchema>);
             Assert.IsNotNull(sp.GetService(typeof(IGraphQueryExecutionMetricsFactory<GraphSchema>)) as DefaultGraphQueryExecutionMetricsFactory<GraphSchema>);
-            Assert.IsNotNull(sp.GetService(typeof(IGraphQLDocumentParser)) as GraphQLParser2);
+            Assert.IsNotNull(sp.GetService(typeof(IGraphQLDocumentParser)) as GraphQLParser);
 
             GraphQLProviders.TemplateProvider.Clear();
         }

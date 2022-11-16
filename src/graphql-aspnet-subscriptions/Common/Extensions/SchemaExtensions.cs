@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Common.Extensions
 
             // the 'Type.AssemblyQualifiedName' property allocates a new
             // string on each invocation of the property instead of using an interned
-            // or static value
+            // or static value "because reasons"
             //
             // in a high volume subscription server this produces A LOT
             // of unecessary strings and adds a lot of GC pressure unecessarily.

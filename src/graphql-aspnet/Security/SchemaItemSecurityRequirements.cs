@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Security
     /// at runtime.
     /// </summary>
     [DebuggerDisplay("Policy: {EnforcedPolicies.Count} (Allow Anon: {AllowAnonymous})")]
-    public class SchemaItemSecurityRequirements
+    public sealed class SchemaItemSecurityRequirements
     {
         /// <summary>
         /// Gets a set of requirements that automatically denies and will never approve

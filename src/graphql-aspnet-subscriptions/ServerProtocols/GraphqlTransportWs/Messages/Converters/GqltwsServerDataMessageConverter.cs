@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters
                 _responseWriter.Write(
                        writer,
                        value.Payload,
-                       new GraphQLResponseOptions()
+                       new ResponseOptions()
                        {
                            ExposeExceptions = _schema.Configuration.ResponseOptions.ExposeExceptions,
                            ExposeMetrics = _schema.Configuration.ResponseOptions.ExposeMetrics,

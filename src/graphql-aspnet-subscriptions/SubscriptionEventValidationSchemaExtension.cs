@@ -22,7 +22,7 @@ namespace GraphQL.AspNet
     /// server comes online.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema to validate.</typeparam>
-    public class SubscriptionEventValidationSchemaExtension<TSchema> : IGraphQLServerExtension
+    public sealed class SubscriptionEventValidationSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         /// <inheritdoc />

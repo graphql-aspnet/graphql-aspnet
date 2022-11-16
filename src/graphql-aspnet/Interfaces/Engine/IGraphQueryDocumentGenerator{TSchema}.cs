@@ -28,7 +28,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// </summary>
         /// <param name="syntaxTree">The syntax tree to create a document for.</param>
         /// <returns>IGraphQueryDocument.</returns>
-        IGraphQueryDocument CreateDocument(SourceText sourceText, SynTree syntaxTree);
+        IGraphQueryDocument CreateDocument(SourceText sourceText, SyntaxTree syntaxTree);
 
         /// <summary>
         /// Validates a query document as being valid against the given <typeparamref name="TSchema"/>.

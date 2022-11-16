@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             IClientConnection clientConnection,
             ISubscriptionEventRouter router,
             string protocolName,
-            IGraphResponseWriter<TSchema> responseWriter,
+            IGraphQueryResponseWriter<TSchema> responseWriter,
             IGraphEventLogger logger = null,
             bool enableMetrics = false)
             : base(SubscriptionClientId.NewClientId(), schema, clientConnection, router, logger)

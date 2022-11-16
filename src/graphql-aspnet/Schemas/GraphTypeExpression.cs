@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Schemas
     /// <summary>
     /// A declaration of the usage of a single graph type (with appropriate wrappers).
     /// This is an object represention of the field and variable declaration
-    /// schema syntax (e.g. '[SomeType]!').
+    /// syntax used by GraphQL (e.g. '[SomeType]!').
     /// </summary>
     [Serializable]
     public partial class GraphTypeExpression

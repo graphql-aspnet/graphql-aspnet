@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Security
     /// The default implementation of the logic behind a collected set of <see cref="AppliedSecurityPolicyGroup"/>
     /// items.
     /// </summary>
-    internal class AppliedSecurityPolicyGroups : IAppliedSecurityPolicyGroups
+    public class AppliedSecurityPolicyGroups : IAppliedSecurityPolicyGroups
     {
         private readonly List<AppliedSecurityPolicyGroup> _allGroups;
 

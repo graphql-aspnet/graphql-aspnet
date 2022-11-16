@@ -14,14 +14,15 @@ namespace GraphQL.AspNet.Security
     using GraphQL.AspNet.Interfaces.Security;
 
     /// <summary>
-    /// A result generated after testing a <see cref="IUserSecurityContext"/> ability to access
-    /// a requested schema item.
+    /// A result generated after verifying the ability of a <see cref="IUserSecurityContext"/>
+    /// to access a requested schema item.
     /// </summary>
     [DebuggerDisplay("Status: {Status}")]
-    public class SchemaItemSecurityChallengeResult
+    public sealed class SchemaItemSecurityChallengeResult
     {
         /// <summary>
-        /// Creates an authorization result indicating that the user was successfully authorized to the field.
+        /// Creates an authorization result indicating that the user was successfully
+        /// authorized to the field.
         /// </summary>
         /// <param name="user">The user that was authorized by the challenge.</param>
         /// <returns>SchemaItemSecurityChallengeResult.</returns>
@@ -36,7 +37,7 @@ namespace GraphQL.AspNet.Security
         /// <summary>
         /// Creates an authorization result indicating that no authorization was necessary.
         /// </summary>
-        /// <param name="user">The user credentials present on the security context
+        /// <param name="user">The user credentials present on the security context, if any,
         /// at the time it was determined that authorization could be skipped.</param>
         /// <returns>SchemaItemSecurityChallengeResult.</returns>
         public static SchemaItemSecurityChallengeResult Skipped(ClaimsPrincipal user)
@@ -45,10 +46,11 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Creates an authorization result indicating that authorization failed to complete, along with an optional, internally scoped
-        /// message.
+        /// Creates an authorization result indicating that authorization failed
+        /// to complete, along with an optional, internally scoped message.
         /// </summary>
-        /// <param name="internalMessage">The internal message.</param>
+        /// <param name="internalMessage">An internal message indicating why the challenge
+        /// failed. This message may end up in log entries.</param>
         /// <returns>SchemaItemSecurityChallengeResult.</returns>
         public static SchemaItemSecurityChallengeResult Fail(string internalMessage)
         {
@@ -62,7 +64,8 @@ namespace GraphQL.AspNet.Security
         /// was unauthorized, along with an optional, internally scoped
         /// message.
         /// </summary>
-        /// <param name="internalMessage">The internal message.</param>
+        /// <param name="internalMessage">An internal message indicating why the challenge
+        /// failed. This message may end up in log entries.</param>
         /// <returns>SchemaItemSecurityChallengeResult.</returns>
         public static SchemaItemSecurityChallengeResult Unauthorized(string internalMessage)
         {
@@ -76,7 +79,8 @@ namespace GraphQL.AspNet.Security
         /// was unauthenticated based on a required authentication scheme.
         /// message.
         /// </summary>
-        /// <param name="internalMessage">The internal message.</param>
+        /// <param name="internalMessage">An internal message indicating why the challenge
+        /// failed. This message may end up in log entries.</param>
         /// <returns>SchemaItemSecurityChallengeResult.</returns>
         public static SchemaItemSecurityChallengeResult UnAuthenticated(string internalMessage)
         {
@@ -86,7 +90,8 @@ namespace GraphQL.AspNet.Security
         }
 
         /// <summary>
-        /// Creates a default, failed result with a generic message indicating no other result existed.
+        /// Creates a default, failed result with a generic message indicating no other
+        /// result existed.
         /// </summary>
         /// <returns>SchemaItemSecurityChallengeResult.</returns>
         public static SchemaItemSecurityChallengeResult Default()

@@ -199,7 +199,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
 
             var converter = new GqltwsServerDataMessageConverter(
                 server.Schema,
-                server.ServiceProvider.GetRequiredService<IGraphResponseWriter<GraphSchema>>());
+                server.ServiceProvider.GetRequiredService<IGraphQueryResponseWriter<GraphSchema>>());
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(converter);

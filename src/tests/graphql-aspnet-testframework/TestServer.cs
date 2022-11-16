@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// </summary>
         /// <param name="queryText">The query text to create a syntax tree for.</param>
         /// <returns>ISyntaxTree.</returns>
-        public SynTree CreateSyntaxTree(ref SourceText source)
+        public SyntaxTree CreateSyntaxTree(ref SourceText source)
         {
             var parser = this.ServiceProvider.GetService<IGraphQLDocumentParser>();
             return parser.ParseQueryDocument(ref source);
@@ -546,13 +546,13 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <returns>Task&lt;System.String&gt;.</returns>
         private async Task<string> RenderResult(IGraphOperationResult result)
         {
-            var options = new GraphQLResponseOptions()
+            var options = new ResponseOptions()
             {
                 ExposeExceptions = this.Schema.Configuration.ResponseOptions.ExposeExceptions,
                 ExposeMetrics = this.Schema.Configuration.ResponseOptions.ExposeMetrics,
             };
 
-            var writer = this.ServiceProvider.GetService<IGraphResponseWriter<TSchema>>();
+            var writer = this.ServiceProvider.GetService<IGraphQueryResponseWriter<TSchema>>();
             using (var memStream = new MemoryStream())
             {
                 await writer.WriteAsync(memStream, result, options).ConfigureAwait(false);

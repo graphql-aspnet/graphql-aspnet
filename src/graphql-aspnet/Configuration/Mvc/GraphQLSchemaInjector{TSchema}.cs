@@ -156,7 +156,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             // "per schema" engine components
             _options.ServiceCollection.TryAddSingleton<IQueryOperationComplexityCalculator<TSchema>, DefaultOperationComplexityCalculator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IQueryOperationDepthCalculator<TSchema>, DefaultOperationDepthCalculator<TSchema>>();
-            _options.ServiceCollection.TryAddSingleton<IGraphResponseWriter<TSchema>, DefaultResponseWriter<TSchema>>();
+            _options.ServiceCollection.TryAddSingleton<IGraphQueryResponseWriter<TSchema>, DefaultQueryResponseWriter<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryDocumentGenerator<TSchema>, DefaultGraphQueryDocumentGenerator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryPlanGenerator<TSchema>, DefaultGraphQueryPlanGenerator<TSchema>>();
             _options.ServiceCollection.TryAddSingleton<IGraphQueryExecutionMetricsFactory<TSchema>, DefaultGraphQueryExecutionMetricsFactory<TSchema>>();
@@ -165,7 +165,7 @@ namespace GraphQL.AspNet.Configuration.Mvc
             _options.ServiceCollection.TryAddTransient(typeof(IGraphQLHttpProcessor<TSchema>), _options.QueryHandler.HttpProcessorType);
 
             // "per application server" instance
-            _options.ServiceCollection.TryAddSingleton<IGraphQLDocumentParser, GraphQLParser2>();
+            _options.ServiceCollection.TryAddSingleton<IGraphQLDocumentParser, GraphQLParser>();
             _options.ServiceCollection.TryAddScoped<IGraphLogger>(sp => sp?.GetService<IGraphEventLogger>());
             _options.ServiceCollection.TryAddScoped<IGraphEventLogger>((sp) =>
             {

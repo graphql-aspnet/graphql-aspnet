@@ -37,7 +37,7 @@ namespace GraphQL.AspNet
     /// subscription events for those clients.
     /// </summary>
     /// <typeparam name="TSchema">The type of the schema this extension is built for.</typeparam>
-    public class SubscriptionReceiverSchemaExtension<TSchema> : IGraphQLServerExtension
+    public sealed class SubscriptionReceiverSchemaExtension<TSchema> : IGraphQLServerExtension
         where TSchema : class, ISchema
     {
         /// <summary>
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet
         /// service collection before being incorporated with the DI container.
         /// </summary>
         /// <param name="options">The parent options which owns this extension.</param>
-        public virtual void Configure(SchemaOptions options)
+        public void Configure(SchemaOptions options)
         {
             _primaryOptions = Validation.ThrowIfNullOrReturn(options, nameof(options));
             _primaryOptions.DeclarationOptions.AllowedOperations.Add(GraphOperationType.Subscription);

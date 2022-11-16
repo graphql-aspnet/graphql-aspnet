@@ -63,7 +63,11 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
                 false);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates input argument for this template given the parameter info supplied.
+        /// </summary>
+        /// <param name="paramInfo">The parameter information.</param>
+        /// <returns>IGraphFieldArgumentTemplate.</returns>
         protected virtual GraphArgumentTemplate CreateInputArgument(ParameterInfo paramInfo)
         {
             return new GraphArgumentTemplate(this, paramInfo);

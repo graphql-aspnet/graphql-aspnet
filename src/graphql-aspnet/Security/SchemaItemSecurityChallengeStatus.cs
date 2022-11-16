@@ -16,29 +16,34 @@ namespace GraphQL.AspNet.Security
     public enum SchemaItemSecurityChallengeStatus
     {
         /// <summary>
-        /// Indicates that no challange occured. THe user was neither authorized
-        /// nor unauthorized
+        /// An unknown state, this item indicates an error and unauthorized condition.
         /// </summary>
-        Skipped,
+        Unknown = 0,
 
         /// <summary>
         /// Indicates that the challenge failed to complete successfully.
         /// </summary>
-        Failed,
+        Failed = 10,
 
         /// <summary>
         /// Indicates that the challenge completed and the user was not authenticated with an expected or required scheme.
         /// </summary>
-        Unauthenticated,
+        Unauthenticated = 20,
 
         /// <summary>
         /// Indicates that the challenge completed and the user was deemed unauthorized.
         /// </summary>
-        Unauthorized,
+        Unauthorized = 30,
+
+        /// <summary>
+        /// Indicates that no challange occured. THe user was neither authorized
+        /// nor unauthorized
+        /// </summary>
+        Skipped = 100,
 
         /// <summary>
         /// Inidcates that the challenge completed and the user was authorized.
         /// </summary>
-        Authorized,
+        Authorized = 110,
     }
 }

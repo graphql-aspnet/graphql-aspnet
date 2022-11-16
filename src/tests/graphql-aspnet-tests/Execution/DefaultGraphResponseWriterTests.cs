@@ -30,10 +30,10 @@ namespace GraphQL.AspNet.Tests.Execution
     [TestFixture]
     public class DefaultGraphResponseWriterTests
     {
-        private async Task<string> WriteResponse(IGraphQueryResponseWriter writer, IGraphOperationResult result, GraphQLResponseOptions options = null)
+        private async Task<string> WriteResponse(IGraphQueryResponseWriter writer, IGraphOperationResult result, ResponseOptions options = null)
         {
             var stream = new MemoryStream();
-            options = options ?? new GraphQLResponseOptions()
+            options = options ?? new ResponseOptions()
             {
                 ExposeExceptions = true,
                 ExposeMetrics = true,
@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Tests.Execution
             queryBuilder.AddQueryText("query Operation1{  simple \n {{  simpleQueryMethod { property1} } }");
 
             var response = await server.ExecuteQuery(queryBuilder);
-            var writer = new DefaultResponseWriter<GraphSchema>(server.Schema);
+            var writer = new DefaultQueryResponseWriter<GraphSchema>(server.Schema);
             var result = await this.WriteResponse(writer, response);
 
             var expectedData = @"
@@ -111,7 +111,7 @@ namespace GraphQL.AspNet.Tests.Execution
             queryBuilder.AddQueryText("query Operation1{  simple  {  customMessage  } }");
 
             var response = await server.ExecuteQuery(queryBuilder);
-            var writer = new DefaultResponseWriter<GraphSchema>(server.Schema);
+            var writer = new DefaultQueryResponseWriter<GraphSchema>(server.Schema);
             var result = await this.WriteResponse(writer, response);
 
             var expectedData = @"
@@ -157,7 +157,7 @@ namespace GraphQL.AspNet.Tests.Execution
             queryBuilder.AddQueryText("query Operation1{  simple  {  customMessageKeyClash  } }");
 
             var response = await server.ExecuteQuery(queryBuilder);
-            var writer = new DefaultResponseWriter<GraphSchema>(server.Schema);
+            var writer = new DefaultQueryResponseWriter<GraphSchema>(server.Schema);
             var result = await this.WriteResponse(writer, response);
 
             var expectedData = @"
@@ -202,7 +202,7 @@ namespace GraphQL.AspNet.Tests.Execution
             queryBuilder.AddQueryText("query Operation1{  simple  {  throwsException  } }");
 
             var response = await server.ExecuteQuery(queryBuilder);
-            var writer = new DefaultResponseWriter<GraphSchema>(server.Schema);
+            var writer = new DefaultQueryResponseWriter<GraphSchema>(server.Schema);
             var result = await this.WriteResponse(writer, response);
 
             var exceptionStackTrace = JsonEncodedText.Encode(response.Messages[0].Exception.StackTrace, JavaScriptEncoder.UnsafeRelaxedJsonEscaping).ToString();
@@ -268,7 +268,7 @@ namespace GraphQL.AspNet.Tests.Execution
             mockResult.Setup(x => x.Messages).Returns(new GraphMessageCollection());
             mockResult.Setup(x => x.Request).Returns(queryBuilder.OperationRequest);
 
-            var writer = new DefaultResponseWriter<GraphSchema>(server.Schema);
+            var writer = new DefaultQueryResponseWriter<GraphSchema>(server.Schema);
             var result = await this.WriteResponse(writer, mockResult.Object);
 
             var expected = @"

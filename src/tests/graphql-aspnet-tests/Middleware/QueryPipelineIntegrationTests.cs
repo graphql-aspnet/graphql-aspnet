@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Middleware
         [Test]
         public async Task WithAttachedQueryCache_RendersPlanToCache()
         {
-            var keyManager = new DefaultQueryPlanCacheKeyManager(new GraphQLParser2());
+            var keyManager = new DefaultQueryPlanCacheKeyManager(new GraphQLParser());
 
             var cacheInstance = new MemoryCache(nameof(WithAttachedQueryCache_RendersPlanToCache));
             var cache = new DefaultQueryPlanCacheProvider(cacheInstance);

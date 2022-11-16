@@ -55,7 +55,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlTransportWs
                 connection,
                 server.Schema,
                 router.Object,
-                server.ServiceProvider.GetService<IGraphResponseWriter<GraphSchema>>());
+                server.ServiceProvider.GetService<IGraphQueryResponseWriter<GraphSchema>>());
             return (connection, subClient, router);
         }
 

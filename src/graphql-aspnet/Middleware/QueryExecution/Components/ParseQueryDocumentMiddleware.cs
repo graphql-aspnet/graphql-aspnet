@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
                     }
                     finally
                     {
-                        SynTreeOperations.Release(ref syntaxTree);
+                        SyntaxTreeOperations.Release(ref syntaxTree);
                     }
                 }
                 catch (GraphQLSyntaxException2 syntaxException)

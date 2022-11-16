@@ -52,7 +52,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
                 connection,
                 router.Object,
                 GraphqlWsLegacyConstants.PROTOCOL_NAME,
-                server.ServiceProvider.GetService<IGraphResponseWriter<GraphSchema>>());
+                server.ServiceProvider.GetService<IGraphQueryResponseWriter<GraphSchema>>());
 
             return (connection, subClient, router);
         }

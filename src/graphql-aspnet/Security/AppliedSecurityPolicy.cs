@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Security
     /// The application of a policy or set of roles derived from an attribute implementing <see cref="IAuthorizeData"/>
     /// against an entity such as a controller or action method.
     /// </summary>
-    public class AppliedSecurityPolicy
+    public sealed class AppliedSecurityPolicy
     {
         private readonly IAuthorizeData _authData;
 

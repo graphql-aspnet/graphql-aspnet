@@ -14,11 +14,11 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
 
     public class SynNodeTestCase
     {
-        public static SynNodeTestCase NoChildren { get; } = new SynNodeTestCase(SynNodeType.Empty);
+        public static SynNodeTestCase NoChildren { get; } = new SynNodeTestCase(SyntaxNodeType.Empty);
 
         [DebuggerStepperBoundary]
         public SynNodeTestCase(
-             SynNodeType nodeType,
+             SyntaxNodeType nodeType,
              params SynNodeTestCase[] children)
             : this(nodeType, string.Empty, null, string.Empty, children)
         {
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
 
         [DebuggerStepperBoundary]
         public SynNodeTestCase(
-             SynNodeType nodeType = SynNodeType.Empty,
+             SyntaxNodeType nodeType = SyntaxNodeType.Empty,
              string primaryText = "",
              params SynNodeTestCase[] children)
             : this(nodeType, primaryText, null, string.Empty, children)
@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
 
         [DebuggerStepperBoundary]
         public SynNodeTestCase(
-          SynNodeType nodeType,
+          SyntaxNodeType nodeType,
           string primaryText,
           ScalarValueType primaryValueType,
           params SynNodeTestCase[] children)
@@ -45,7 +45,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
 
         [DebuggerStepperBoundary]
         public SynNodeTestCase(
-            SynNodeType? nodeType = null,
+            SyntaxNodeType? nodeType = null,
             string primaryText = "",
             string secondaryText = "",
             params SynNodeTestCase[] children)
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
 
         [DebuggerStepperBoundary]
         public SynNodeTestCase(
-            SynNodeType? nodeType = null,
+            SyntaxNodeType? nodeType = null,
             string primaryText = "",
             ScalarValueType? primaryValueType = null,
             string secondaryText = "",
@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             this.PrimaryValueType = primaryValueType;
         }
 
-        public SynNodeType? NodeType { [DebuggerStepThrough] get; }
+        public SyntaxNodeType? NodeType { [DebuggerStepThrough] get; }
 
         public string PrimaryText { [DebuggerStepThrough] get; }
 
