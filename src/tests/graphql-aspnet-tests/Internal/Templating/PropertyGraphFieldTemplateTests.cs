@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Address1));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -53,7 +53,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Address2));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
         }
@@ -67,7 +67,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Hair));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             // wigs is List<HairData>
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.Wigs));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.LastName));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -117,7 +117,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
 
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.City));
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var parent = obj.Object;
             var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.State));
 
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -155,7 +155,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var parent = obj.Object;
             var propInfo = typeof(NoGetterOnProperty).GetProperty(nameof(NoGetterOnProperty.Prop1));
 
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
 
             Assert.Throws<GraphTypeDeclarationException>(() =>
@@ -178,7 +178,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var parent = obj.Object;
             var propInfo = typeof(ArrayPropertyObject).GetProperty(nameof(ArrayPropertyObject.PropertyA));
 
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -201,7 +201,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var parent = obj.Object;
             var propInfo = typeof(ArrayKeyValuePairObject).GetProperty(nameof(ArrayKeyValuePairObject.PropertyA));
 
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
 
@@ -224,7 +224,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var parent = obj.Object;
             var propInfo = typeof(PropertyClassWithDirective).GetProperty(nameof(PropertyClassWithDirective.Prop1));
 
-            var template = new AspNet.Internal.TypeTemplates.PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
             template.Parse();
             template.ValidateOrThrow();
             Assert.AreEqual(1, template.AppliedDirectives.Count());

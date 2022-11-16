@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Execution
         public object[] PrepareArguments(IGraphMethod graphMethod)
         {
             var preparedParams = new List<object>();
-            var paramInfos = graphMethod.Method.GetParameters();
+            var paramInfos = graphMethod.Parameters;
 
             for (var i = 0; i < graphMethod.Arguments.Count; i++)
             {

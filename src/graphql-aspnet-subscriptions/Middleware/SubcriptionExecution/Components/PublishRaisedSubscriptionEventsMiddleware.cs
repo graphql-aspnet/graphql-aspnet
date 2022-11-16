@@ -53,7 +53,10 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
             GraphMiddlewareInvocationDelegate<GraphQueryExecutionContext> next,
             CancellationToken cancelToken)
         {
-            if (context?.Session?.Items != null && context.IsValid && !context.IsCancelled)
+            if (context?.Session?.Items != null
+                && context.Session.Items.Count > 0
+                && context.IsValid
+                && !context.IsCancelled)
             {
                 // if a context item for the subscription event key was added by one of the extension methods
                 // inspect it to try and find the events that were registered

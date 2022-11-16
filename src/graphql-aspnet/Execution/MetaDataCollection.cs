@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Execution
         // This class was originally a wrapper on ConcurrentDictionary
         // however, after a performance analysis, the speed at which this
         // object is created (at least 1 per request) performs 2 orders of magnitude
-        // more allocations than any other object while containing 0 objects
+        // more allocations than any other object while mostly containing 0 objects
         // this was causing an enormous amount of GC pressure(at 5k requests/sec).
         //
         // It was decided to push this object back to a standard
@@ -187,7 +187,6 @@ namespace GraphQL.AspNet.Execution
             {
                 if (_localDictionary.ContainsKey(key))
                     return _localDictionary[key];
-
 
                 var value = valueFactory(key);
                 _localDictionary.Add(key, value);

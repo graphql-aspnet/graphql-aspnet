@@ -45,6 +45,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
             this.Method = Validation.ThrowIfNullOrReturn(method, nameof(method));
+            this.Parameters = this.Method.GetParameters().ToList();
             _arguments = new List<GraphArgumentTemplate>();
         }
 
@@ -250,6 +251,9 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public MethodInfo Method { get; }
 
         /// <inheritdoc />
+        public IReadOnlyList<ParameterInfo> Parameters { get; }
+
+        /// <inheritdoc />
         public GraphFieldSource FieldSource => GraphFieldSource.Method;
 
         /// <inheritdoc />
@@ -263,5 +267,6 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public IEnumerable<IAppliedDirectiveTemplate> AppliedDirectives { get; private set; }
+
     }
 }

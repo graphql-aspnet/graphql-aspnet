@@ -48,6 +48,13 @@ namespace GraphQL.AspNet.Interfaces.Execution
         MethodInfo Method { get; }
 
         /// <summary>
+        /// Gets the raw parameters (in order) that exist on the <see cref="Method"/>
+        /// that must be supplied at invocation.
+        /// </summary>
+        /// <value>The parameters of the target <see cref="Method"/>.</value>
+        IReadOnlyList<ParameterInfo> Parameters { get; }
+
+        /// <summary>
         /// Gets a value indicating whether the method described by this instance should be.
         /// invoked asyncronously.
         /// </summary>
