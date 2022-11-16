@@ -39,6 +39,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
             _allParts = new List<IDocumentPart>();
         }
 
+        /// <inheritdoc />
         public void Add(IDocumentPart documentPart)
         {
             var part = Validation.ThrowIfNullOrReturn(documentPart, nameof(documentPart));

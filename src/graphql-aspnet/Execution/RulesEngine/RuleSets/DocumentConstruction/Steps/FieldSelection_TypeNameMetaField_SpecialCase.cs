@@ -26,6 +26,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
     {
         private static readonly string TYPENAME_STRING = Constants.ReservedNames.TYPENAME_FIELD.AsSpan().ToString();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FieldSelection_TypeNameMetaField_SpecialCase"/> class.
+        /// </summary>
         public FieldSelection_TypeNameMetaField_SpecialCase()
             : base(SyntaxNodeType.Field)
         {

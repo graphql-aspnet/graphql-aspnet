@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
 
     /// <summary>
-    /// Checks to ensure that when a spread of a named fragment occurs (<see cref="FragmentSpreadNode"/>) that the named
+    /// Checks to ensure that when a spread of a named fragment occurs that the named
     /// fragment it targets exists in the document.
     /// </summary>
     internal class Rule_5_5_2_1_SpreadOfNamedFragmentMustExist

@@ -61,10 +61,13 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction
             this.BuildInlineFragmentSteps();
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Fetches the construction rules that apply to the provided <paramref name="nodeType"/>.
+        /// </summary>
+        /// <param name="nodeType">Type of the node.</param>
+        /// <returns>IEnumerable&lt;BaseDocumentConstructionRuleStep&gt;.</returns>
         public IEnumerable<BaseDocumentConstructionRuleStep> FetchRules(SyntaxNodeType nodeType)
         {
-            ;
             if (!_stepCollection.ContainsKey(nodeType))
                 return Enumerable.Empty<BaseDocumentConstructionRuleStep>();
 

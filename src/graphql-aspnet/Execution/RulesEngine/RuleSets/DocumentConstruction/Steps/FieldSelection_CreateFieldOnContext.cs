@@ -24,7 +24,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
     /// </summary>
     internal class FieldSelection_CreateFieldOnContext : DocumentConstructionStep
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldSelection_CreateFieldOnContext"/> class.
         /// </summary>
@@ -60,10 +59,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
             var docPart = new DocumentField(
                 context.ParentPart,
                 fieldName,
+                aliasName,
                 graphField,
                 fieldReturnGraphType,
-                node.Location,
-                aliasName);
+                node.Location);
 
             context = context.AssignPart(docPart);
             return true;

@@ -7,15 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     using System;
@@ -74,6 +65,8 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// <param name="clientConnection">The underlying client connection that this proxy communicates with.</param>
         /// <param name="router">The router component that will send this client event data.</param>
         /// <param name="protocolName">Name of the protocol this client presents as.</param>
+        /// <param name="responseWriter">A response writer instance that can generate
+        /// query responses for any outbound messages this proxy generates.</param>
         /// <param name="logger">The primary logger object to record events to.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>

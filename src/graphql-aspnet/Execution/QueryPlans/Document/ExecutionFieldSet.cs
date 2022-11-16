@@ -102,7 +102,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
         /// <inheritdoc />
         public int Count
         {
-
             get
             {
                 this.EnsureCurrentSnapshot();

@@ -128,7 +128,6 @@ namespace GraphQL.AspNet.Execution.Subscriptions
         {
             return string.Compare(this.EventName, other.EventName) == 0
                 && string.Compare(this.OwnerSchemaType, other.OwnerSchemaType) == 0;
-
         }
 
         /// <summary>

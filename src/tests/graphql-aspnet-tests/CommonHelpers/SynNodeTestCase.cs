@@ -68,14 +68,34 @@ namespace GraphQL.AspNet.Tests.CommonHelpers
             this.PrimaryValueType = primaryValueType;
         }
 
-        public SyntaxNodeType? NodeType { [DebuggerStepThrough] get; }
+        public SyntaxNodeType? NodeType
+        {
+            [DebuggerStepThrough]
+            get;
+        }
 
-        public string PrimaryText { [DebuggerStepThrough] get; }
+        public string PrimaryText
+        {
+            [DebuggerStepThrough]
+            get;
+        }
 
-        public string SecondaryText { [DebuggerStepThrough] get; }
+        public string SecondaryText
+        {
+            [DebuggerStepThrough]
+            get;
+        }
 
-        public SynNodeTestCase[] Children { [DebuggerStepThrough] get; }
+        public SynNodeTestCase[] Children
+        {
+            [DebuggerStepThrough]
+            get;
+        }
 
-        public ScalarValueType? PrimaryValueType { [DebuggerStepThrough] get; }
+        public ScalarValueType? PrimaryValueType
+        {
+            [DebuggerStepThrough]
+            get;
+        }
     }
 }

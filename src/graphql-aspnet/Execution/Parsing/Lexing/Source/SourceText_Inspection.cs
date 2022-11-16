@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules;
-    using CHARS = ParserConstants.Characters;
+    using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
 
     /// <summary>
     /// A wrapper for <see cref="Span{T}"/> to provide some context sensitive helper methods for parsing through it.
@@ -259,6 +259,12 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
             return SourceRuleFactory.FindRule(ruleToCheck).Validate(this);
         }
 
+        /// <summary>
+        /// Slices the source text and returns the characters identified by the supplied
+        /// block. This method is non-destructive.
+        /// </summary>
+        /// <param name="block">The block of text to slice.</param>
+        /// <returns>ReadOnlySpan&lt;System.Char&gt;.</returns>
         public ReadOnlySpan<char> Slice(SourceTextBlockPointer block)
         {
             if (block.Length == 0)

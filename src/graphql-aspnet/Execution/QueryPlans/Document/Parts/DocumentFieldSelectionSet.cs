@@ -29,7 +29,9 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFieldSelectionSet" /> class.
         /// </summary>
-        /// <param name="parent">The parent document part that owns this set.</param>
+        /// <param name="parent">The document part that owns this instance.</param>
+        /// <param name="location">The location in the source text where this
+        /// document part originated.</param>
         public DocumentFieldSelectionSet(IDocumentPart parent, SourceLocation location)
             : base(parent, location)
         {

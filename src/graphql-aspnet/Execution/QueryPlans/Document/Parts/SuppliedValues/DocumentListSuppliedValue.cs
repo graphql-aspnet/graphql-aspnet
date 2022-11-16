@@ -26,6 +26,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     {
         private List<ISuppliedValueDocumentPart> _listItems;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentListSuppliedValue"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="location">The location in the source text where
+        /// this list originated.</param>
+        /// <param name="key">A key value identifying this instance in the document, if any.</param>
         public DocumentListSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
             : base(parentPart, location, key)
         {

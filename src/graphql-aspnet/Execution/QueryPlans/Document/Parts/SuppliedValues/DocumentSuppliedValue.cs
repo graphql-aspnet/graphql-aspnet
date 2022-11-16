@@ -22,6 +22,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     [Serializable]
     internal abstract class DocumentSuppliedValue : DocumentPartBase, ISuppliedValueDocumentPart
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentSuppliedValue" /> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="location">The location in the source text where this
+        /// document part originated.</param>
+        /// <param name="key">A key value uniquely identifying this document part, if any.</param>
         protected DocumentSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
             : base(parentPart, location)
         {

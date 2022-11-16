@@ -21,6 +21,9 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
     /// </summary>
     internal class FragmentNamed_CreateFragmentOnDocument : DocumentConstructionStep
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FragmentNamed_CreateFragmentOnDocument"/> class.
+        /// </summary>
         public FragmentNamed_CreateFragmentOnDocument()
             : base(SyntaxNodeType.NamedFragment)
         {

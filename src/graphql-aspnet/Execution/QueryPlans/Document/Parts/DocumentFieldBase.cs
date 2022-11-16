@@ -28,16 +28,25 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         private readonly DocumentInputArgumentCollection _arguments;
         private readonly DocumentDirectiveCollection _directives;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentFieldBase"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this field.</param>
+        /// <param name="fieldName">Name of the field as declared in the source text.</param>
+        /// <param name="alias">The alias applied to this field. Value should be set
+        /// to the <paramref name="fieldName"/> if no formal alias was supplied.</param>
+        /// <param name="field">A reference to the target field, found in the schema.</param>
+        /// <param name="fieldGraphType">The graph type returned by this field.</param>
+        /// <param name="location">The location in the source text where this field originated.</param>
         protected DocumentFieldBase(
             IDocumentPart parentPart,
             string fieldName,
+            string alias,
             IGraphField field,
             IGraphType fieldGraphType,
-            SourceLocation location,
-            string alias)
+            SourceLocation location)
             : base(parentPart, location)
         {
-
             this.Name = fieldName;
             this.Alias = alias;
 

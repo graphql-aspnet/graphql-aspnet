@@ -82,7 +82,6 @@ namespace GraphQL.AspNet.Middleware.SubcriptionExecution.Components
                                 SchemaTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(typeof(TSchema)),
                                 Data = proxy.DataObject,
                                 DataTypeName = SchemaExtensions.RetrieveFullyQualifiedTypeName(proxy.DataObject?.GetType()),
-
                             };
 
                             _eventQueue.Enqueue(eventData);

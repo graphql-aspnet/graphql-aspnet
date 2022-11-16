@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
-    using CHARS = ParserConstants.Characters;
+    using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
 
     /// <summary>
     /// A validator that will inspect a span to ensure its characters

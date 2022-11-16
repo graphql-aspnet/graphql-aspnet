@@ -20,8 +20,17 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
     [DebuggerDisplay("{NodeType} ({Coordinates})")]
     public readonly struct SyntaxNode : IEquatable<SyntaxNode>
     {
+        /// <summary>
+        /// Gets a syntax node that represents nothing.
+        /// </summary>
+        /// <value>The none.</value>
         public static SyntaxNode None { get; } = new SyntaxNode(SyntaxNodeType.Empty, SourceLocation.None);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode"/> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="location">The location in the source text where this node originated.</param>
         [DebuggerStepperBoundary]
         public SyntaxNode(
             SyntaxNodeType nodeType,
@@ -30,7 +39,12 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
         }
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode"/> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="location">The location in the source text where this node originated.</param>
+        /// <param name="primaryValue">The primary text value of this node.</param>
         [DebuggerStepperBoundary]
         public SyntaxNode(
             SyntaxNodeType nodeType,
@@ -40,7 +54,13 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
         }
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode"/> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="location">The location in the source text where this node originated.</param>
+        /// <param name="primaryValue">The primary text value of this node.</param>
+        /// <param name="coords">The coordinates of this node within the tree.</param>
         [DebuggerStepperBoundary]
         public SyntaxNode(
             SyntaxNodeType nodeType,
@@ -51,7 +71,12 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
         }
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode" /> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="location">The location in the source text where this node originated.</param>
+        /// <param name="coords">The coordinates of this node within the tree.</param>
         [DebuggerStepperBoundary]
         public SyntaxNode(
             SyntaxNodeType nodeType,
@@ -61,7 +86,11 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
         }
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode" /> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="primaryValue">The primary text value of this node.</param>
         [DebuggerStepperBoundary]
         public SyntaxNode(
             SyntaxNodeType nodeType,
@@ -70,6 +99,12 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode" /> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="primaryValue">The primary text value of this node.</param>
+        /// <param name="secondaryValue">The secondary text value of this node.</param>
         public SyntaxNode(
             SyntaxNodeType nodeType,
             SyntaxNodeValue primaryValue,
@@ -78,6 +113,13 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode" /> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="location">The location in the source text where this node originated.</param>
+        /// <param name="primaryValue">The primary text value of this node.</param>
+        /// <param name="secondaryValue">The secondary text value of this node.</param>
         [DebuggerStepperBoundary]
         public SyntaxNode(
             SyntaxNodeType nodeType,
@@ -88,6 +130,14 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNode"/> struct.
+        /// </summary>
+        /// <param name="nodeType">The type of node this instance represents.</param>
+        /// <param name="location">The location in the source text where this node originated.</param>
+        /// <param name="primaryValue">The primary text value of this node.</param>
+        /// <param name="secondaryValue">The secondary text value of this node.</param>
+        /// <param name="coords">The coordinates of this node within the tree.</param>
         public SyntaxNode(
             SyntaxNodeType nodeType,
             SourceLocation location,
@@ -133,13 +183,13 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         public SyntaxNodeCoordinates Coordinates { get; }
 
         /// <summary>
-        /// Gets the primary value block assigned to this node.
+        /// Gets the primary text block assigned to this node.
         /// </summary>
         /// <value>The primary value.</value>
         public SyntaxNodeValue PrimaryValue { get; }
 
         /// <summary>
-        /// Gets the secondary value block assigned to this node.
+        /// Gets the secondary text block assigned to this node.
         /// </summary>
         /// <value>The secondary value.</value>
         public SyntaxNodeValue SecondaryValue { get; }

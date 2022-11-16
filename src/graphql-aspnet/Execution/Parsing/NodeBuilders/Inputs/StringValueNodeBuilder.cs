@@ -14,6 +14,9 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
 
+    /// <summary>
+    /// A syntax node builder that creates string value nodes from a given token stream.
+    /// </summary>
     internal class StringValueNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
@@ -22,6 +25,9 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
         /// <value>The instance.</value>
         public static ISyntaxNodeBuilder Instance { get; } = new StringValueNodeBuilder();
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="StringValueNodeBuilder"/> class from being created.
+        /// </summary>
         private StringValueNodeBuilder()
         {
         }

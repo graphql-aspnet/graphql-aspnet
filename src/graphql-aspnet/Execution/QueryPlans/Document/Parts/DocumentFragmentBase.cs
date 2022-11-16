@@ -17,11 +17,16 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     /// <summary>
     /// A fragment that was parsed out of a submitted query document.
     /// </summary>
-    /// <typeparam name="TSyntaxNode">The type of the syntax node from which the fragment is created.</typeparam>
     internal abstract class DocumentFragmentBase : DocumentPartBase, IFragmentDocumentPart, IDecdendentDocumentPartSubscriber
     {
         private readonly DocumentDirectiveCollection _directives;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentFragmentBase"/> class.
+        /// </summary>
+        /// <param name="parentPart">The parent document part that owns this instance.</param>
+        /// <param name="sourceLocation">The location where this document part
+        /// originated in the query.</param>
         public DocumentFragmentBase(IDocumentPart parentPart, SourceLocation sourceLocation)
             : base(parentPart, sourceLocation)
         {
@@ -43,7 +48,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         /// any information.
         /// </remarks>
         /// <param name="decendentPart">The decendent part that was added.</param>
-        /// <param name="relativeDepth">The depth of the part relative to this part. (1 == a direct child)</param>
+        /// <param name="relativeDepth">The depth of the part relative to this part. (1 == a direct child).</param>
         protected virtual void OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth)
         {
             if (decendentPart.Parent == this)

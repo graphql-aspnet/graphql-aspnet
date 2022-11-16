@@ -14,8 +14,18 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Interfaces.Execution;
 
+    /// <summary>
+    /// A factory that will choose the correct builder to build the proper value
+    /// node from hte token stream.
+    /// </summary>
     public class ValueNodeBuilderFactory
     {
+        /// <summary>
+        /// Inspects the token stream and generates the appropriate builder to
+        /// build the next syntax node.
+        /// </summary>
+        /// <param name="tokenStream">The token stream to inspect.</param>
+        /// <returns>ISyntaxNodeBuilder.</returns>
         public static ISyntaxNodeBuilder CreateBuilder(TokenStream tokenStream)
         {
             // an input value could be:

@@ -21,7 +21,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     [DebuggerDisplay("{Description}")]
     internal class DocumentEnumSuppliedValue : DocumentSuppliedValue, IEnumSuppliedValueDocumentPart
     {
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentEnumSuppliedValue"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="enumValue">The enum value parsed from the soruce text.</param>
+        /// <param name="location">The location in the source text where this part originated.</param>
+        /// <param name="key">The key.</param>
         public DocumentEnumSuppliedValue(IDocumentPart parentPart, string enumValue, SourceLocation location, string key = null)
             : base(parentPart, location, key)
         {

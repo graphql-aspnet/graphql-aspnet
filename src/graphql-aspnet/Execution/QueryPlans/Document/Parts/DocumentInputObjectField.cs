@@ -24,6 +24,14 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     [DebuggerDisplay("{Description}")]
     internal class DocumentInputObjectField : DocumentPartBase, IInputObjectFieldDocumentPart
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentInputObjectField"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this input field.</param>
+        /// <param name="suppliedName">Name of the input object as supplied in the source text.</param>
+        /// <param name="field">The formal input field, from the target schema,
+        /// this document part references.</param>
+        /// <param name="location">The location in the source text where this field originated.</param>
         public DocumentInputObjectField(
         IDocumentPart parentPart,
         string suppliedName,

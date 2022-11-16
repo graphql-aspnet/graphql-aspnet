@@ -133,6 +133,5 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
 
         /// <inheritdoc />
         public override string InternalName => this.Property.Name;
-
     }
 }

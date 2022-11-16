@@ -173,6 +173,8 @@ namespace GraphQL.AspNet.Execution.Parsing
         /// Prints out the syntax tree into a structured json document.
         /// </summary>
         /// <param name="synTree">The syntax tree to convert.</param>
+        /// <param name="sourceText">The source text containing the various
+        /// blocks of text referenced by the syntax tree.</param>
         /// <returns>System.String.</returns>
         public static string ToJsonString(this SyntaxTree synTree, SourceText sourceText)
         {

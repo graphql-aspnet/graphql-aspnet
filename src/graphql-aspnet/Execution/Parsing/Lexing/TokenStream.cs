@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
-    using CHARS = ParserConstants.Characters;
+    using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
     using SR = GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
 
     /// <summary>
@@ -288,7 +288,10 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing
         /// <value>the <see cref="TokenType"/> at the top of the stream.</value>
         public TokenType TokenType => this.ActiveToken.TokenType;
 
-
+        /// <summary>
+        /// Gets the original, unedited source this stream is iterating over.
+        /// </summary>
+        /// <value>The source.</value>
         public SourceText Source => _sourceText;
     }
 }

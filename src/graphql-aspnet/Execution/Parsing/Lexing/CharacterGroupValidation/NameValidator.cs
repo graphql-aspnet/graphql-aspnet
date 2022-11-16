@@ -70,7 +70,12 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
             }
         }
 
-        public static SourceNextFilterDelegate IsValidNameCharacterDelegate { get; } = IsValidNameCharacter;
+        /// <summary>
+        /// Gets a delegate that points to a source text filter to validate
+        /// if the token is a letter or not.
+        /// </summary>
+        /// <value>The valid name character delegate.</value>
+        public static SourceTextNextCharacterFilterDelegate IsValidNameCharacterDelegate { get; } = IsValidNameCharacter;
 
         /// <summary>
         /// Determines whether the given character is valid in a graphql name..

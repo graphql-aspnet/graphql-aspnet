@@ -25,17 +25,21 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         /// Initializes a new instance of the <see cref="DocumentField" /> class.
         /// </summary>
         /// <param name="parentPart">The parent part that owns this field.</param>
-        /// <param name="node">The node representing the field in the query document.</param>
+        /// <param name="fieldName">Name of the field as declared in the query text.</param>
+        /// <param name="alias">The alias applied to this field. Value should be set
+        /// to the <paramref name="fieldName"/> if no formal alias was supplied.</param>
         /// <param name="field">The field as its defined in the target schema.</param>
         /// <param name="fieldGraphType">The qualified graph type returned by the field.</param>
+        /// <param name="location">The location in the source text where the field
+        /// originated.</param>
         public DocumentField(
             IDocumentPart parentPart,
             string fieldName,
+            string alias,
             IGraphField field,
             IGraphType fieldGraphType,
-            SourceLocation location,
-            string alias)
-            : base(parentPart, fieldName, field, fieldGraphType, location, alias)
+            SourceLocation location)
+            : base(parentPart, fieldName, alias, field, fieldGraphType, location)
         {
         }
 

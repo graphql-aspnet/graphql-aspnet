@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
-    using CHARS = ParserConstants.Characters;
+    using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
 
     /// <summary>
     /// Validates that a group of characters conforms the specification for a comment

@@ -18,6 +18,10 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
     /// </summary>
     public readonly struct SyntaxNodeValue : IEquatable<SyntaxNodeValue>
     {
+        /// <summary>
+        /// Gets a node value that represents no typed text block within a source text.
+        /// </summary>
+        /// <value>The none.</value>
         public static SyntaxNodeValue None { get; } = new SyntaxNodeValue(SourceTextBlockPointer.None);
 
         /// <summary>
@@ -30,6 +34,10 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
             this.ValueType = ScalarValueType.Unknown;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNodeValue"/> struct.
+        /// </summary>
+        /// <param name="textBlock">The text block this value points to.</param>
         [DebuggerStepperBoundary]
         public SyntaxNodeValue(SourceTextBlockPointer textBlock)
         {
@@ -37,6 +45,11 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
             this.ValueType = ScalarValueType.Unknown;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNodeValue"/> struct.
+        /// </summary>
+        /// <param name="textBlock">The text block this value points to.</param>
+        /// <param name="valueType">The type of text contained in the block (e.g. number, string etc.).</param>
         [DebuggerStepperBoundary]
         public SyntaxNodeValue(SourceTextBlockPointer textBlock, ScalarValueType valueType)
         {

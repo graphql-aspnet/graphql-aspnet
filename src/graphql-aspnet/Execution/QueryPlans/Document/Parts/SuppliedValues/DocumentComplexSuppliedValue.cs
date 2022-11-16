@@ -24,7 +24,17 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     {
         private readonly DocumentInputObjectFieldCollection _fields;
 
-        public DocumentComplexSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentComplexSuppliedValue"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this input field.</param>
+        /// <param name="location">The location in the source text where this field originated.</param>
+        /// <param name="key">A unique key assigned to this instance. Used by various look up
+        /// functions during execution. Typically this key is the input argument name.</param>
+        public DocumentComplexSuppliedValue(
+            IDocumentPart parentPart,
+            SourceLocation location,
+            string key = null)
             : base(parentPart, location, key)
         {
             _fields = new DocumentInputObjectFieldCollection(this);

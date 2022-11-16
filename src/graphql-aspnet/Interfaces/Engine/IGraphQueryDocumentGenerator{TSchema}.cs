@@ -26,7 +26,8 @@ namespace GraphQL.AspNet.Interfaces.Engine
         /// Interpretes the syntax tree and generates a contextual document that can be transformed into
         /// a query plan.
         /// </summary>
-        /// <param name="syntaxTree">The syntax tree to create a document for.</param>
+        /// <param name="sourceText">The source text from which to generate a document.</param>
+        /// <param name="syntaxTree">The syntax tree describing the structure of the provided <paramref name="sourceText"/>.</param>
         /// <returns>IGraphQueryDocument.</returns>
         IGraphQueryDocument CreateDocument(SourceText sourceText, SyntaxTree syntaxTree);
 

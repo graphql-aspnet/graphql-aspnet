@@ -9,14 +9,13 @@
 
 namespace GraphQL.AspNet.Execution.Subscriptions
 {
-    using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// A dictionary wrapper to associate <see cref="SubscriptionEventName"/> to a
-    /// unique set of <see cref="ISubscriptionEventReceiver"/> that will receive the event.
+    /// unique set of <see cref="SubscriptionClientId"/> representing clients
+    /// that will receive the event.
     /// </summary>
     internal class SubscribedEventRecievers : Dictionary<SubscriptionEventName, HashSet<SubscriptionClientId>>
     {

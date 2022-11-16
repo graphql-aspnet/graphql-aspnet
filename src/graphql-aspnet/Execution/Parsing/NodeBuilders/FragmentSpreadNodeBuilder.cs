@@ -15,8 +15,11 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
-    using KEYWORDS = ParserConstants.Keywords;
+    using KEYWORDS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Keywords;
 
+    /// <summary>
+    /// A syntax node builder that builds fragment spread nodes from a token stream.
+    /// </summary>
     public class FragmentSpreadNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>

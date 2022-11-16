@@ -20,6 +20,14 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     [DebuggerDisplay("{Description}")]
     internal class DocumentVariableUsageValue : DocumentSuppliedValue, IVariableUsageDocumentPart
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentVariableUsageValue" /> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="variableName">Name of the variable as declared in the source text.</param>
+        /// <param name="location">The location in the source text where this
+        /// document part originated.</param>
+        /// <param name="key">A key value uniquely identifying this document part, if any.</param>
         public DocumentVariableUsageValue(IDocumentPart parentPart, string variableName, SourceLocation location, string key = null)
             : base(parentPart, location, key)
         {

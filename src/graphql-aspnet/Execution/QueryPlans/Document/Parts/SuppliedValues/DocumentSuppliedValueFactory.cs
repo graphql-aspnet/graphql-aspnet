@@ -24,11 +24,17 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
         /// Converts a node read on a query document into a value representation that can be resolved
         /// to a usable .NET type in a query plan.
         /// </summary>
+        /// <param name="sourceText">The source text to use when needing to parse
+        /// text values from the query.</param>
         /// <param name="ownerPart">The document part which will own the created value.</param>
         /// <param name="valueNode">The AST node from which the value should be created.</param>
         /// <param name="key">A key value, if any, to assign to the value node.</param>
         /// <returns>IQueryInputValue.</returns>
-        public static ISuppliedValueDocumentPart CreateInputValue(SourceText sourceText, IDocumentPart ownerPart, SyntaxNode valueNode, string key = null)
+        public static ISuppliedValueDocumentPart CreateInputValue(
+            SourceText sourceText,
+            IDocumentPart ownerPart,
+            SyntaxNode valueNode,
+            string key = null)
         {
             switch (valueNode.NodeType)
             {

@@ -121,7 +121,6 @@ namespace GraphQL.AspNet.Tests.Parsing2
 
             var result = source.NextString(out var location);
 
-
             Assert.IsNotNull(location);
             Assert.AreEqual(expectedCursorLocation, source.Cursor);
             Assert.AreEqual(expectedResultLength, result.Length);

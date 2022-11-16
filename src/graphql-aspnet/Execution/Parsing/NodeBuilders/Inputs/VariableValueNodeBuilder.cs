@@ -14,8 +14,16 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
 
+    /// <summary>
+    /// A syntax node builder that creates variable value nodes (i.e. a variable usage)
+    /// for a given token stream.
+    /// </summary>
     public class VariableValueNodeBuilder : ISyntaxNodeBuilder
     {
+        /// <summary>
+        /// Gets the singleton instance of this node builder.
+        /// </summary>
+        /// <value>The instance.</value>
         public static ISyntaxNodeBuilder Instance { get; } = new VariableValueNodeBuilder();
 
         private VariableValueNodeBuilder()

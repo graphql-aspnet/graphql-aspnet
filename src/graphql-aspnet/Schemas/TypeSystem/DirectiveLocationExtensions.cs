@@ -71,7 +71,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
         /// Determines the directive location corrisponding with this syntax node in the AST representing
         /// a query document. (Execution Locations).
         /// </summary>
-        /// <param name="node">The node to inspect.</param>
+        /// <param name="docPart">The document part to inspect.</param>
         /// <returns>DirectiveLocation.</returns>
         public static DirectiveLocation AsDirectiveLocation(this IDocumentPart docPart)
         {

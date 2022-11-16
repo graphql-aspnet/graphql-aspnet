@@ -35,21 +35,21 @@ using System.Diagnostics.CodeAnalysis;
     "SA1134:Attributes must not share line",
     Justification = "Readability of description text for a given value is improved by single lineing them",
     Scope = "type",
-    Target = "~T:GraphQL.AspNet.Parsing.Lexing.Tokens.TokenType")]
+    Target = "~T:GraphQL.AspNet.Execution.Parsing.Lexing.Tokens.TokenType")]
 
 [assembly: SuppressMessage(
     "StyleCop.CSharp.DocumentationRules",
     "SA1600:Elements should be documented",
     Justification = "Token Type names are self explanitory.",
     Scope = "type",
-    Target = "~T:GraphQL.AspNet.Parsing.Lexing.Tokens.TokenTypeNames")]
+    Target = "~T:GraphQL.AspNet.Execution.Parsing.Lexing.Tokens.TokenTypeNames")]
 
 [assembly: SuppressMessage(
     "StyleCop.CSharp.DocumentationRules",
     "SA1600:Elements should be documented",
     Justification = "Parser constant characters are self explanitory",
     Scope = "type",
-    Target = "~T:GraphQL.AspNet.Parsing.ParserConstants")]
+    Target = "~T:GraphQL.AspNet.Execution.Parsing.ParserConstants")]
 
 [assembly: SuppressMessage(
     "StyleCop.CSharp.SpacingRules",

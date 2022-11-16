@@ -25,12 +25,21 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         private readonly DocumentVariableUsageCollection _variableUsages;
         private readonly List<IDirectiveDocumentPart> _allDirectives;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentNamedFragment"/> class.
+        /// </summary>
+        /// <param name="ownerDocumentPart">The document part that owns this instance.</param>
+        /// <param name="fragmentName">Name of the fragment as defined in the source query.</param>
+        /// <param name="targetGraphTypeName">Name of the graph type this fragment
+        /// is supposed to target.</param>
+        /// <param name="location">The location in the source document that generated
+        /// this fragment.</param>
         public DocumentNamedFragment(
-            IDocumentPart ownerDocument,
+            IDocumentPart ownerDocumentPart,
             string fragmentName,
             string targetGraphTypeName,
             SourceLocation location)
-            : base(ownerDocument, location)
+            : base(ownerDocumentPart, location)
         {
             this.Name = fragmentName;
             this.TargetGraphTypeName = targetGraphTypeName;
@@ -38,7 +47,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
             _variableUsages = new DocumentVariableUsageCollection(this);
             _allDirectives = new List<IDirectiveDocumentPart>();
-
         }
 
         /// <inheritdoc />

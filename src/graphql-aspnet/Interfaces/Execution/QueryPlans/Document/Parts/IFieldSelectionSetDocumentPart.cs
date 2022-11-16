@@ -25,6 +25,5 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
         /// </summary>
         /// <value>The executable fields of this selection set.</value>
         IExecutableFieldSelectionSet ExecutableFields { get; }
-
     }
 }

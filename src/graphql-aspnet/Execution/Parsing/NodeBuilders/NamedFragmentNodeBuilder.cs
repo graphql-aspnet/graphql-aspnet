@@ -14,10 +14,17 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
-    using KEYWORDS = ParserConstants.Keywords;
+    using KEYWORDS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Keywords;
 
+    /// <summary>
+    /// A syntax node builder that builds named fragment nodes from a token stream.
+    /// </summary>
     public class NamedFragmentNodeBuilder : ISyntaxNodeBuilder
     {
+        /// <summary>
+        /// Gets the single global instance of this builder.
+        /// </summary>
+        /// <value>The node builder instance.</value>
         public static ISyntaxNodeBuilder Instance { get; } = new NamedFragmentNodeBuilder();
 
         /// <summary>

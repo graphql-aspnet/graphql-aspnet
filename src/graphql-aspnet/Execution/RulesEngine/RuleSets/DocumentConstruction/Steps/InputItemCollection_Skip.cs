@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// A step to pass through the <see cref="InputItemCollectionNode"/> effectively
+    /// A step to pass through an input item collection node effectively
     /// allowing the attachment of input items directly to their parent field, directive
     /// or other input argument.
     /// </summary>

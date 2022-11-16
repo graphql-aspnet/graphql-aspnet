@@ -162,6 +162,13 @@ namespace GraphQL.AspNet.Execution.Contexts
                 newOperation);
         }
 
+        /// <summary>
+        /// Create a child construction context using the contents of this context
+        /// along with the newly supplied child node.
+        /// </summary>
+        /// <param name="childNode">The node to incorporate in the
+        /// new construction context.</param>
+        /// <returns>DocumentConstructionContext.</returns>
         public DocumentConstructionContext CreateChildContext(SyntaxNode childNode)
         {
             return new DocumentConstructionContext(

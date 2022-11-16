@@ -26,7 +26,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
         /// </summary>
         public InputArgument_B_AssignInputArgumentForDirective()
             : base(SyntaxNodeType.InputItem)
-
         {
         }
 

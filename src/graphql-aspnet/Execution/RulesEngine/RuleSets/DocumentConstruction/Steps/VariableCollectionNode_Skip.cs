@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Ste
     using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
-    /// A step to pass through the <see cref="VariableCollectionNode"/> effectively
+    /// A step to pass through the variable collection nodes effectively
     /// allowing the attachment of variables directly to their assigned operation.
     /// </summary>
     internal class VariableCollectionNode_Skip : DocumentConstructionStep

@@ -46,8 +46,8 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.Helpers
         /// <summary>
         /// Asserts that the token meets common checks.
         /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="expectedText">The expected text.</param>
+        /// <param name="tokenStream">The token stream to inspect.</param>
+        /// <param name="expectedText">The expected text at the cursor in the stream.</param>
         /// <param name="expectedType">The expected type of the 'TokenType' property.</param>
         /// <param name="expectedAbsolutePosition">The expected absolute position.</param>
         public static void AssertActiveToken(ref TokenStream tokenStream, string expectedText, TokenType expectedType, int? expectedAbsolutePosition = null)

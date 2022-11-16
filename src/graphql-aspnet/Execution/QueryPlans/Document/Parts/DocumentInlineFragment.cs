@@ -21,7 +21,14 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     [DebuggerDisplay("Inline Fragment. Target Type: {GraphType?.Name}")]
     internal class DocumentInlineFragment : DocumentFragmentBase, IInlineFragmentDocumentPart
     {
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentInlineFragment"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="targetType">A string identifying the graph type that
+        /// restricts this inline fragment.</param>
+        /// <param name="sourceLocation">The location in the source text
+        /// where this fragment originated.</param>
         public DocumentInlineFragment(
             IDocumentPart parentPart,
             string targetType,

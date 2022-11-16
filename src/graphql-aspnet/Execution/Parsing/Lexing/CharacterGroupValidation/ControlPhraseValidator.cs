@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
     using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
-    using CHARS = ParserConstants.Characters;
+    using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
 
     /// <summary>
     /// Validation logic for validating a set of characters as a control group or not.

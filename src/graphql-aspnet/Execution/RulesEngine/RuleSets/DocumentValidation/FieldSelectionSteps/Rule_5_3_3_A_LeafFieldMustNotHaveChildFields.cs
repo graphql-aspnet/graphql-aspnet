@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
     internal class Rule_5_3_3_A_LeafFieldMustNotHaveChildFields
         : DocumentPartValidationRuleStep<IFieldDocumentPart>
     {
-
         /// <inheritdoc />
         public override bool Execute(DocumentValidationContext context)
         {

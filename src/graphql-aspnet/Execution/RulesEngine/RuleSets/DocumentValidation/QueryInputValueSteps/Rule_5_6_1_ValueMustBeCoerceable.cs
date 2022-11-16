@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Query
             {
                 this.ValidationError(
                     context,
-                    inputValue.Value?.SourceLocation?? inputValue.SourceLocation,
+                    inputValue.Value?.SourceLocation ?? inputValue.SourceLocation,
                     $"Invalid input value. The value for the input item named '{inputValue.Name}' could " +
                     $"not be coerced to the required type of '{inputValue.TypeExpression}'.");
 

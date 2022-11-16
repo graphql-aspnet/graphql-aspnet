@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document
             this.Children = new DocumentPartsCollection(this);
 
             this.Path = new SourcePath();
-            this.Origin = new SourceOrigin();
+            this.Origin = new SourceOrigin(new SourceLocation(0, 0, 0));
             _fragmentCollection = new DocumentNamedFragmentCollection(this);
             _operations = new DocumentOperationCollection(this);
         }

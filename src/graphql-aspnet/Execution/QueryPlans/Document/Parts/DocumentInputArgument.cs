@@ -24,14 +24,23 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     [DebuggerDisplay("{Description}")]
     internal class DocumentInputArgument : DocumentPartBase, IInputArgumentDocumentPart
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentInputArgument" /> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="argument">The formal argument definition found in the target schema.</param>
+        /// <param name="inputName">The name of hte input argument as it was declared in the source
+        /// text.</param>
+        /// <param name="location">The location in the source text where this
+        /// document part originated.</param>
         public DocumentInputArgument(
            IDocumentPart parentPart,
            IGraphArgument argument,
-           string inputNanme,
+           string inputName,
            SourceLocation location)
            : base(parentPart, location)
         {
-            this.Name = inputNanme;
+            this.Name = inputName;
             this.Argument = argument;
         }
 

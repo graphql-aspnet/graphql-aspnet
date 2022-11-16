@@ -15,6 +15,10 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
 
+    /// <summary>
+    /// A node builder that creates syntax nodes for a variable declaration on an
+    /// operation.
+    /// </summary>
     public class VariableNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>
@@ -23,6 +27,9 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
         /// <value>The instance.</value>
         public static ISyntaxNodeBuilder Instance { get; } = new VariableNodeBuilder();
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="VariableNodeBuilder"/> class from being created.
+        /// </summary>
         private VariableNodeBuilder()
         {
         }

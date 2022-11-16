@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     using System;
-    using CHARS = ParserConstants.Characters;
+    using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
 
     /// <summary>
     /// A wrapper for a block of characters to provide some context sensitive inspection and navigation support
@@ -77,7 +77,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <returns>System.ReadOnlySpan&lt;System.Char&gt;.</returns>
-        public ReadOnlySpan<char> NextFilter(SourceNextFilterDelegate predicate)
+        public ReadOnlySpan<char> NextFilter(SourceTextNextCharacterFilterDelegate predicate)
         {
             var index = this.Cursor;
             while (index < _sourceText.Length && predicate(_sourceText[index]))

@@ -14,6 +14,9 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
 
+    /// <summary>
+    /// A syntax node builder that builds field nodes from a token stream.
+    /// </summary>
     internal class FieldNodeBuilder : ISyntaxNodeBuilder
     {
         /// <summary>

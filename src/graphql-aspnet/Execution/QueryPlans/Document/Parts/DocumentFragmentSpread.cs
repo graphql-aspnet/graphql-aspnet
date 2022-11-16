@@ -25,6 +25,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     {
         private DocumentDirectiveCollection _directives;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentFragmentSpread"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="pointsToFragmentName">Name of the points to fragment.</param>
+        /// <param name="location">The location in the source text where this
+        /// document part originated.</param>
         public DocumentFragmentSpread(
             IDocumentPart parentPart,
             string pointsToFragmentName,

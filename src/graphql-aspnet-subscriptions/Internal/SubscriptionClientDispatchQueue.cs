@@ -16,7 +16,6 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Internal.Interfaces;
-    using QueuedEvent = System.ValueTuple<Common.SubscriptionClientId, Execution.Subscriptions.SubscriptionEvent>;
 
     /// <summary>
     /// The default dispatch queue to throttle subscription events being sent to expectant receivers.
@@ -26,14 +25,12 @@ namespace GraphQL.AspNet.Internal
     internal sealed class SubscriptionClientDispatchQueue : ISubscriptionEventDispatchQueue
     {
         private readonly IGlobalSubscriptionClientProxyCollection _clientCollection;
-        private readonly Channel<QueuedEvent> _queue;
+        private readonly Channel<ValueTuple<SubscriptionClientId, SubscriptionEvent>> _queue;
         private readonly CancellationTokenSource _stopRequested;
         private readonly SemaphoreSlim _throttle;
-        private readonly Timer _timer;
 
         private CancellationTokenSource _combinedTokenSource;
         private bool _isDisposed;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionClientDispatchQueue" /> class.
@@ -52,8 +49,8 @@ namespace GraphQL.AspNet.Internal
             _clientCollection = Validation.ThrowIfNullOrReturn(clientCollection, nameof(clientCollection));
 
             _queue = maxOverallEvents.HasValue
-                ? Channel.CreateBounded<QueuedEvent>(maxOverallEvents.Value)
-                : Channel.CreateUnbounded<QueuedEvent>();
+                ? Channel.CreateBounded<ValueTuple<SubscriptionClientId, SubscriptionEvent>>(maxOverallEvents.Value)
+                : Channel.CreateUnbounded<ValueTuple<SubscriptionClientId, SubscriptionEvent>>();
 
             if (!maxConcurrentEvents.HasValue)
                 maxConcurrentEvents = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
@@ -64,13 +61,6 @@ namespace GraphQL.AspNet.Internal
             this.MaxConcurrentEvents = maxConcurrentEvents.Value;
             _stopRequested = new CancellationTokenSource();
             _throttle = new SemaphoreSlim(this.MaxConcurrentEvents);
-
-            _timer = new Timer(Callback, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
-        }
-
-        private void Callback(object state)
-        {
-            Console.WriteLine($"Current Queue: {_queue.Reader.Count}");
         }
 
         /// <inheritdoc />
@@ -80,7 +70,7 @@ namespace GraphQL.AspNet.Internal
                 throw new ObjectDisposedException(nameof(SubscriptionClientDispatchQueue));
 
             Validation.ThrowIfNull(eventData, nameof(eventData));
-            var evt = new QueuedEvent(clientId, eventData);
+            var evt = (clientId, eventData);
 
             var queued = _queue.Writer.TryWrite(evt);
             if (closeAfter || !queued)
@@ -137,7 +127,10 @@ namespace GraphQL.AspNet.Internal
                         // wait for an execution slot
                         await _throttle.WaitAsync(_combinedTokenSource.Token);
 
-                        _ = this.DispatchEvent(evt, _combinedTokenSource.Token);
+                        _ = this.DispatchEvent(
+                                evt.Item1,
+                                evt.Item2,
+                                _combinedTokenSource.Token);
                     }
                 }
             }
@@ -147,15 +140,12 @@ namespace GraphQL.AspNet.Internal
             }
         }
 
-        private async ValueTask DispatchEvent(QueuedEvent evt, CancellationToken cancelToken = default)
+        private async ValueTask DispatchEvent(SubscriptionClientId clientId, SubscriptionEvent eventData, CancellationToken cancelToken = default)
         {
             try
             {
                 if (_isDisposed)
                     return;
-
-                var clientId = evt.Item1;
-                var eventData = evt.Item2;
 
                 if (_clientCollection.TryGetClient(clientId, out var client))
                 {

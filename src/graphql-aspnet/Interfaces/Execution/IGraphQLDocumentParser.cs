@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
     using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
 

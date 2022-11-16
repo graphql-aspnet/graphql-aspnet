@@ -308,7 +308,7 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing
         public void SourceText_NextLine_WithMultipleLineDataEndingInLineTerminator_SegmentsCorrectly()
         {
             var source = new SourceText("1234\r\n567\n8910\n111213\n".AsSpan());
-            Assert.AreEqual("1234",source.RetrieveText(source.NextLine()).ToString());
+            Assert.AreEqual("1234", source.RetrieveText(source.NextLine()).ToString());
             Assert.AreEqual("567", source.RetrieveText(source.NextLine()).ToString());
             Assert.AreEqual("8910", source.RetrieveText(source.NextLine()).ToString());
             Assert.AreEqual("111213", source.RetrieveText(source.NextLine()).ToString());

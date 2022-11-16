@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Parsing
     using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
-    using KEYWORDS = ParserConstants.Keywords;
+    using KEYWORDS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Keywords;
 
     /// <summary>
     /// A parse that will convert a graphql query into valid
@@ -64,7 +64,6 @@ namespace GraphQL.AspNet.Execution.Parsing
             // 5) Single line comments have been parsed but the delimiters have not been removed
             //    5a) All comments start with '#' and are always only one line
             // ----------------------------------
-
             var tokenStream = Lexer.Tokenize(sourceText);
             tokenStream.Prime();
 

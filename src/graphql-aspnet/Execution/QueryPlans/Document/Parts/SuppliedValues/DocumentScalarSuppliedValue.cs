@@ -22,6 +22,15 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     [DebuggerDisplay("Scalar: {Value.ToString()} (Type: {ValueType})")]
     internal class DocumentScalarSuppliedValue : DocumentSuppliedValue, IScalarSuppliedValue
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentScalarSuppliedValue" /> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="scalarValue">The scalar value as declared in the source text.</param>
+        /// <param name="valueType">The value type of the supplied <paramref name="scalarValue"/>. (e.g. number, string etc.).</param>
+        /// <param name="location">The location in the source text where this
+        /// document part originated.</param>
+        /// <param name="key">A key value uniquely identifying this document part, if any.</param>
         public DocumentScalarSuppliedValue(
             IDocumentPart parentPart,
             string scalarValue,

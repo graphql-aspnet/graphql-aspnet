@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common
         /// as a decendent.
         /// </summary>
         /// <param name="decendentPart">The decendent part that was added.</param>
-        /// <param name="relativeDepth">The depth of the part relative to this part. (1 == a direct child)</param>
+        /// <param name="relativeDepth">The depth of the part relative to this part. (1 == a direct child).</param>
         void OnDecendentPartAdded(IDocumentPart decendentPart, int relativeDepth);
     }
 }

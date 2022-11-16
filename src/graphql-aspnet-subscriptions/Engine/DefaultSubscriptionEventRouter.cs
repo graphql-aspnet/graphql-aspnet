@@ -30,9 +30,15 @@ namespace GraphQL.AspNet.Engine
         private readonly ILogger _logger;
         private readonly SubscribedEventRecievers _allclients;
         private readonly ISubscriptionEventDispatchQueue _dispatchQueue;
-        private readonly Task _dispatchQueueExecutionTask;
         private bool _isDisposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultSubscriptionEventRouter"/> class.
+        /// </summary>
+        /// <param name="dispatchQueue">The dispatch queue this router
+        /// will schedule newly received events with.</param>
+        /// <param name="logger">A logger instance to record errors or other
+        /// messages to.</param>
         public DefaultSubscriptionEventRouter(
             ISubscriptionEventDispatchQueue dispatchQueue,
             ILogger logger = null)

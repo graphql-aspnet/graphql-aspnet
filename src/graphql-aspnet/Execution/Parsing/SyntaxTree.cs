@@ -107,9 +107,8 @@ namespace GraphQL.AspNet.Execution.Parsing
         /// Clones this tree instance. Any supplied not supplied to this method
         /// are instead pulled from this instance.
         /// </summary>
-        /// <param name="rootNode">The new root node, if any.</param>
-        /// <param name="nodePool">The new node pool, if any.</param>
-        /// <param name="blockLength">Length of the set of nodes in the pool.</param>
+        /// <param name="nodePool">The new node pool to clone  this instance into.</param>
+        /// <param name="blockLength">Length of the set of nodes in the <paramref name="nodePool"/>.</param>
         /// <returns>SynTree.</returns>
         public SyntaxTree Clone(
             SyntaxNode[][] nodePool,

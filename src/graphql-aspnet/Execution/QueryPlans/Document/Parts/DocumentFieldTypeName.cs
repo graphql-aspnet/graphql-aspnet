@@ -22,13 +22,22 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     [DebuggerDisplay("{Description}")]
     internal class DocumentFieldTypeName : DocumentField, IFieldTypeNameDocumentPart
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentFieldTypeName"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this input field.</param>
+        /// <param name="field">The formal field instancne as declared in the target schema.</param>
+        /// <param name="fieldGraphType">The returned field graph of the <paramref name="field"/>.</param>
+        /// <param name="location">The location where this field was encountered in the source text.</param>
+        /// <param name="alias">The alias supplied to this field in the source text. Use the
+        /// field name if no alias was supplied.</param>
         public DocumentFieldTypeName(
             IDocumentPart parentPart,
             IGraphField field,
             IGraphType fieldGraphType,
             SourceLocation location,
             string alias)
-            : base(parentPart, Constants.ReservedNames.TYPENAME_FIELD, field, fieldGraphType, location, alias)
+            : base(parentPart, Constants.ReservedNames.TYPENAME_FIELD, alias, field, fieldGraphType, location)
         {
         }
 

@@ -23,7 +23,6 @@ namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
     [TestFixture]
     public class InputValueNodeBuilderTests
     {
-
         [Test]
         public void KnownTokenValueType_ParsesCorrectly()
         {

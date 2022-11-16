@@ -232,7 +232,6 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans
                 }
             }
 
-
             var inputValue = DocumentSuppliedValueFactory.CreateInputValue(
                 source,
                 owner.Object,

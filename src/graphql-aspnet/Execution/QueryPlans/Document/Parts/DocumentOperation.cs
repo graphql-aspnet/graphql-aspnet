@@ -18,7 +18,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
-    /// An wrapper for a <see cref="OperationNode"/> to track additional details needed during the validation
+    /// An wrapper for an operation syntax node to track additional details needed during the validation
     /// and construction phase.
     /// </summary>
     [DebuggerDisplay("Operation: {Name} (Type = {OperationType})")]
@@ -33,6 +33,15 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
 
         private IFieldSelectionSetDocumentPart _fieldSelectionSet;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentOperation"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this operation (typically the root query document).</param>
+        /// <param name="operationTypeName">Name of the operation type as it was defined in the source
+        /// text (this may or may not be a real operation type).</param>
+        /// <param name="operationType">The operation type value parsed from the provided name, if any.</param>
+        /// <param name="location">The location in the source text where this operation was declared.</param>
+        /// <param name="operationName">An optional name used to alias the operation within the document.</param>
         public DocumentOperation(
            IDocumentPart parentPart,
            string operationTypeName,
@@ -51,7 +60,6 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             _fragmentSpreads = new DocumentFragmentSpreadCollection(this);
             _allDirectives = new List<IDirectiveDocumentPart>();
             _allSecuredDocParts = new List<ISecurableDocumentPart>();
-
         }
 
         /// <inheritdoc cref="IDecdendentDocumentPartSubscriber.OnDecendentPartAdded" />

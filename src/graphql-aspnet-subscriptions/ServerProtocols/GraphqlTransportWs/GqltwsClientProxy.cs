@@ -67,9 +67,11 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
         /// <summary>
         /// Initializes a new instance of the <see cref="GqltwsClientProxy{TSchema}" /> class.
         /// </summary>
-        /// <param name="schema">The schema this client listens for.</param>
         /// <param name="clientConnection">The underlying client connection that this proxy communicates with.</param>
+        /// <param name="schema">The schema this client listens for.</param>
         /// <param name="router">The router component that will send this client event data.</param>
+        /// <param name="responseWriter">A response writer instance to
+        /// generate query data payloads for outbound data messages.</param>
         /// <param name="logger">The primary logger object to record events to.</param>
         /// <param name="enableMetrics">if set to <c>true</c> any queries this client
         /// executes will have metrics attached.</param>

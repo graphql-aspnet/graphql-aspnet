@@ -28,7 +28,6 @@ namespace GraphQL.AspNet.Execution.Contexts
     [DebuggerDisplay("Field Context: {Name} (Restict To: {ExpectedSourceTypeName}, Children = {ChildContexts.Count})")]
     public class FieldInvocationContext : IGraphFieldInvocationContext
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldInvocationContext" /> class.
         /// </summary>

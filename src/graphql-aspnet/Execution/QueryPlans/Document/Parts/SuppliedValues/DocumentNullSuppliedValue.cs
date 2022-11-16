@@ -20,6 +20,13 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
     [DebuggerDisplay("{Description}")]
     internal class DocumentNullSuppliedValue : DocumentSuppliedValue, INullSuppliedValueDocumentPart
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentNullSuppliedValue"/> class.
+        /// </summary>
+        /// <param name="parentPart">The document part that owns this instance.</param>
+        /// <param name="location">The location in the source text where this
+        /// document part originated.</param>
+        /// <param name="key">A key value uniquely identifying this document part, if any.</param>
         public DocumentNullSuppliedValue(IDocumentPart parentPart, SourceLocation location, string key = null)
             : base(parentPart, location, key)
         {

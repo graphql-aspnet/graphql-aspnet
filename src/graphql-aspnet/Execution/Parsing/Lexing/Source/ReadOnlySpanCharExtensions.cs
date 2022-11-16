@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     using System;
-    using CHARS = ParserConstants.Characters;
+    using CHARS = GraphQL.AspNet.Execution.Parsing.ParserConstants.Characters;
 
     /// <summary>
     /// Helper methods against a span of characters.

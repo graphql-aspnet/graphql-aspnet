@@ -51,9 +51,6 @@ namespace GraphQL.AspNet.Execution
         public float EstimatedComplexity { get; set; }
 
         /// <inheritdoc />
-        public int MaxDepth { get; set; }
-
-        /// <inheritdoc />
         public Type SchemaType => typeof(TSchema);
 
         /// <inheritdoc />

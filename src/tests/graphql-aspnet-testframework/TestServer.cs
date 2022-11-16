@@ -21,6 +21,7 @@ namespace GraphQL.AspNet.Tests.Framework
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Controllers;
     using GraphQL.AspNet.Directives;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
@@ -132,7 +133,7 @@ namespace GraphQL.AspNet.Tests.Framework
         /// <summary>
         /// Renders a syntax tree in the same manner that the graphql server would as part of fulfilling a request.
         /// </summary>
-        /// <param name="queryText">The query text to create a syntax tree for.</param>
+        /// <param name="source">The source text to generate the AST for.</param>
         /// <returns>ISyntaxTree.</returns>
         public SyntaxTree CreateSyntaxTree(ref SourceText source)
         {

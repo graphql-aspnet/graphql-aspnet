@@ -33,8 +33,13 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         /// <param name="blockPosition">The 0-based position within the given
         /// block where this node is located.</param>
         /// <param name="childBlockIndex">Index of the child block in the master syntax tree.</param>
+        /// <param name="childBlockLength">Length of the child block within the master syntax tree.</param>
         [DebuggerStepperBoundary]
-        public SyntaxNodeCoordinates(int blockIndex, int blockPosition, int childBlockIndex = -1, int childBlockLength = 0)
+        public SyntaxNodeCoordinates(
+            int blockIndex,
+            int blockPosition,
+            int childBlockIndex = -1,
+            int childBlockLength = 0)
         {
             this.BlockIndex = blockIndex;
             this.BlockPosition = blockPosition;
@@ -42,6 +47,9 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
             this.ChildBlockLength = childBlockLength;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxNodeCoordinates"/> struct.
+        /// </summary>
         [DebuggerStepperBoundary]
         public SyntaxNodeCoordinates()
         {
@@ -51,6 +59,13 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
             this.ChildBlockLength = 0;
         }
 
+        /// <summary>
+        /// Clones this instance into a new instance. For any supplied values (i.e. not null)
+        /// those values will be used in the cloned instance.
+        /// </summary>
+        /// <param name="childBlockIndex">Index of the child block within the syntax tree.</param>
+        /// <param name="childBlockLength">Length of the child block within the syntax tree.</param>
+        /// <returns>SyntaxNodeCoordinates.</returns>
         public SyntaxNodeCoordinates Clone(
             int? childBlockIndex = null,
             int? childBlockLength = null)
@@ -76,6 +91,12 @@ namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
         {
             return obj is SyntaxNodeCoordinates snc
                 && this.Equals(snc);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return (this.BlockIndex, this.BlockPosition, this.ChildBlockIndex, this.ChildBlockLength).GetHashCode();
         }
 
         /// <summary>

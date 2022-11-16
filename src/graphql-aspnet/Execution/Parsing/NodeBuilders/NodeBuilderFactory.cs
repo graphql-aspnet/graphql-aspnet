@@ -16,6 +16,9 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
     using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Interfaces.Execution;
 
+    /// <summary>
+    /// A global factory that generates a syntax node builder for an expected <see cref="SyntaxNodeType"/>.
+    /// </summary>
     public class NodeBuilderFactory
     {
         private static readonly Dictionary<SyntaxNodeType, ISyntaxNodeBuilder> BUILDERS;
@@ -39,7 +42,8 @@ namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
         }
 
         /// <summary>
-        /// Creates the maker.
+        /// Creates the builder for the given node type. If no builder is found an exception
+        /// is thrown.
         /// </summary>
         /// <param name="nodeType">Type of the node to create.</param>
         /// <returns>ISyntaxNodeMaker.</returns>

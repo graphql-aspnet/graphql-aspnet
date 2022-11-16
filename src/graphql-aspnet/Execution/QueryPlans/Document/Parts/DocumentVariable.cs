@@ -31,7 +31,10 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         /// Initializes a new instance of the <see cref="DocumentVariable" /> class.
         /// </summary>
         /// <param name="parentPart">The part, typically an operation, that owns this variable declaration.</param>
-        /// <param name="node">The AST node from which this instance is created.</param>
+        /// <param name="variableName">Name of the variable as declared in the source document.</param>
+        /// <param name="typeExpression">The type expression assigned to the variable.</param>
+        /// <param name="location">The location in the source text where this
+        /// variable originated.</param>
         public DocumentVariable(
             IDocumentPart parentPart,
             string variableName,

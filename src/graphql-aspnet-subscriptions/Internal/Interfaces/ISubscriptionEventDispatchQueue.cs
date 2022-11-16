@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Internal.Interfaces
         /// <summary>
         /// Enqueues the event to be processed as resources become available.
         /// </summary>
-        /// <param name="receiver">The receiver.</param>
+        /// <param name="clientId">The id of the client that should receive the event.</param>
         /// <param name="eventData">The event data.</param>
         /// <param name="closeAfter">if set to <c>true</c> The queue will be closed
         /// and no further events will be accepted after this event is scheduled.</param>

@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentNamedFragmentCollection"/> class.
         /// </summary>
-        /// <param name="parent">The parent.</param>
+        /// <param name="parent">The document part that owns this instance.</param>
         public DocumentNamedFragmentCollection(IDocumentPart parent)
         {
             this.Parent = Validation.ThrowIfNullOrReturn(parent, nameof(parent));
