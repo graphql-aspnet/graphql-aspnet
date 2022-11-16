@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
+namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
 {
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
 
     /// <summary>
     /// An input value representing a single enumeration value of data.

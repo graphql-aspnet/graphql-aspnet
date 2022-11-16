@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2
+namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
 
     /// <summary>
     /// A struct representing a block of characters from a query text.

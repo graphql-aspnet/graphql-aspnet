@@ -7,15 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.ValidationRules
+namespace GraphQL.Subscriptions.Tests.Execution.RulesEngine
 {
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.RulesEngine;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.RulesEngine;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.Subscriptions.Tests.Execution.RulesEngine.RuleCheckTestData;
     using GraphQL.Subscriptions.Tests.Mocks;
-    using GraphQL.Subscriptions.Tests.ValidationRules.RuleCheckTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -72,9 +73,8 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
             // inspect for error codes
             if (document.Messages.Count != 1)
             {
-                var errors = document.Messages.Where(
-                    x => x.MetaData != null &&
-                    x.MetaData.ContainsKey("Rule"))
+                var errors = Enumerable.Where<IGraphMessage>(document.Messages, x => x.MetaData != null &&
+                                                                         x.MetaData.ContainsKey("Rule"))
                         .Select(x => x.MetaData["Rule"]);
 
                 string errorMessage = $"Expected 1 error ({expectedRuleError}) but recieved {document.Messages.Count}: '{string.Join(", ", errors)}'";
@@ -83,7 +83,7 @@ namespace GraphQL.Subscriptions.Tests.ValidationRules
 
             var message = document.Messages[0];
             Assert.IsNotNull(message.MetaData);
-            Assert.IsTrue(message.MetaData.ContainsKey("Rule"));
+            Assert.IsTrue((bool)message.MetaData.ContainsKey("Rule"));
 
             var ruleBroke = message.MetaData["Rule"];
             Assert.AreEqual(expectedRuleError, ruleBroke.ToString());

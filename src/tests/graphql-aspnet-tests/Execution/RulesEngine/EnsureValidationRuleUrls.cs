@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.RulesEngine
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
     using System.Text;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
     using NUnit.Framework;
 
     [TestFixture]

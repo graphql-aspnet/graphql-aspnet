@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A collection of extension <see cref="IGraphField"/>s that are queued and waiting to be

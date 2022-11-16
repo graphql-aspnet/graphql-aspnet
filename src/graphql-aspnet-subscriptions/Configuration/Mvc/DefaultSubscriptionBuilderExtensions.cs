@@ -11,11 +11,12 @@ namespace GraphQL.AspNet.Configuration.Mvc
 {
     using System;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
     using GraphQL.AspNet.Interfaces.Configuration;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SubcriptionExecution.Components;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.DirectiveProcessorTypeSystemLocationTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.DirectiveProcessorTypeSystemLocationTestData
 {
     using GraphQL.AspNet.Attributes;
 

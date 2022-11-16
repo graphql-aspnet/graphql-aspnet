@@ -7,11 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
 {
-    using System;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
 
     /// <summary>
     /// A supplied value to an query document that represents a scalar.

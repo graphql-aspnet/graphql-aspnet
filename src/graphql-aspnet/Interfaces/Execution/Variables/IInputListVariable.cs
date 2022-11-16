@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Variables
+namespace GraphQL.AspNet.Interfaces.Execution.Variables
 {
     using System.Collections.Generic;
 

@@ -11,7 +11,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
 {
     using System;
     using System.Text;
-    using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A fake message mimicing what would be generated when

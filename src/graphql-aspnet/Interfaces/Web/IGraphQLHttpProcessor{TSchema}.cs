@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Web
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A processor that is created from a DI container by a runtime handler to handle the individual

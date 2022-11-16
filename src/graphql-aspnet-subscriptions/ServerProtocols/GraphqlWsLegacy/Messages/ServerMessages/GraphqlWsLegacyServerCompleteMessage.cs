@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages
 {
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Payloads;
 
     /// <summary>
     /// A message sent by the GraphqlWsLegacy server when a given subscription (indicated by its client provided id)

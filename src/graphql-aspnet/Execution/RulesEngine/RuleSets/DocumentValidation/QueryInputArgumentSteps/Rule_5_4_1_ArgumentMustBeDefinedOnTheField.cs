@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgumentSteps
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputArgumentSteps
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A rule that ensures that for any given input node, the name of the node exists as a valid named argument

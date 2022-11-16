@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     public class UnionTestProxy : IGraphUnionProxy
     {

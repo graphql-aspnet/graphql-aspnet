@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
+namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
 {
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
 
     /// <summary>
     /// An input value representing a complex input object read from a user's query document.

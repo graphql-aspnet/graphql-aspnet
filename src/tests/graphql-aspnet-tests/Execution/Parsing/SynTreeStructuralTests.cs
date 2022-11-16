@@ -7,10 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2
+namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using NUnit.Framework;
 
     [TestFixture]
@@ -43,7 +44,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(0, tree.RootNode.Coordinates.ChildBlockIndex);
 
             // child node exists at the right block position
-            Assert.IsTrue(childNode.PrimaryValue == tree.NodePool[0][0].PrimaryValue);
+            Assert.IsTrue((bool)(childNode.PrimaryValue == tree.NodePool[0][0].PrimaryValue));
 
             // child node coordinates are set
             Assert.AreEqual(0, childNode.Coordinates.BlockIndex);
@@ -94,7 +95,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(0, tree.RootNode.Coordinates.ChildBlockIndex);
 
             // child1 node exists at the right block position
-            Assert.IsTrue(childNode1.PrimaryValue == tree.NodePool[0][1].PrimaryValue);
+            Assert.IsTrue((bool)(childNode1.PrimaryValue == tree.NodePool[0][1].PrimaryValue));
 
             // child1 node coordinates are set
             Assert.AreEqual(0, childNode1.Coordinates.BlockIndex);
@@ -152,10 +153,10 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual(2, tree.BlockLength);
 
             // check contents of Node-0 child block
-            Assert.IsTrue(childNode0 == tree.NodePool[0][0]);
+            Assert.IsTrue((bool)(childNode0 == tree.NodePool[0][0]));
 
             // check contents of Node-0-0 child block
-            Assert.IsTrue(childNode1 == tree.NodePool[1][0]);
+            Assert.IsTrue((bool)(childNode1 == tree.NodePool[1][0]));
 
             // check coords of child0
             Assert.AreEqual(0, childNode0.Coordinates.BlockIndex);

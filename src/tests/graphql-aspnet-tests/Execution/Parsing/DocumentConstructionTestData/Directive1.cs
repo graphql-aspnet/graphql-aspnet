@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.DocumentConstructionTestData
+namespace GraphQL.AspNet.Tests.Execution.Parsing.DocumentConstructionTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;

@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A collection of <see cref="IInputValue"/> to be used to invoke a method or action field type on the graph. Keyed

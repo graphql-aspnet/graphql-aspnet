@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.AuthenticatedUserTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.AuthenticatedUserTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;

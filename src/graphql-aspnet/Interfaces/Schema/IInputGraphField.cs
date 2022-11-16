@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Interfaces.Schema
 {
     /// <summary>
     /// A field of data on an INPUT_OBJECT graph type.

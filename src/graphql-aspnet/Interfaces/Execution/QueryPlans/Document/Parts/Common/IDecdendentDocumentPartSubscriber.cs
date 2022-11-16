@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common
 {
     /// <summary>
     /// An interface describing a call back method to be invoked

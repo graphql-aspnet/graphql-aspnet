@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
     using GraphQL.AspNet.Schemas;
 
     /// <summary>

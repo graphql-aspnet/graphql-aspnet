@@ -7,15 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Variables
+namespace GraphQL.AspNet.Execution.Variables
 {
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Text.Json;
     using System.Text.Json.Serialization;
     using GraphQL.AspNet.Common.Json;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A collection of variables supplied by user to be used when resolving

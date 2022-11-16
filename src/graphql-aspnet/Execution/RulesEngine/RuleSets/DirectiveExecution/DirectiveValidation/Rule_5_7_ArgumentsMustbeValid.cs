@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -15,10 +15,10 @@ namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.DirectiveValida
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Common;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common;
 
     /// <summary>
     /// A rule to ensure that the location where the directive is being

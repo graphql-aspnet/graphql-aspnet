@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.InheritanceTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.InheritanceTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;

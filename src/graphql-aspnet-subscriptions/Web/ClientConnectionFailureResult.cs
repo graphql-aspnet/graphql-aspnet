@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Connections.Clients
+namespace GraphQL.AspNet.Web
 {
     using System;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Web;
 
     /// <summary>
     /// A result issued by a client when the receive operation fails to complete

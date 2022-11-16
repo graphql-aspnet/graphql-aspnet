@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Variables
+namespace GraphQL.AspNet.Execution.Variables
 {
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A variable that represents a set/list of items supplied as a collection or an array by the user.

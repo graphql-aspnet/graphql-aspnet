@@ -7,18 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.QueryPlans;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A plan generator capable of converting an operation document part into an

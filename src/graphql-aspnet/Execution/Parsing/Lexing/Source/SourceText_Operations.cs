@@ -7,14 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     using System;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
-    using CHARS = GraphQL.AspNet.Parsing2.ParserConstants.Characters;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using CHARS = ParserConstants.Characters;
 
     /// <summary>
     /// Extension methods for custom business logic related phrase token parsing.

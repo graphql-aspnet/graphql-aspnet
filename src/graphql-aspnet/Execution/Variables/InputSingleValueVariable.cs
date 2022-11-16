@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Variables
+namespace GraphQL.AspNet.Execution.Variables
 {
     using System;
     using System.Diagnostics;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A variable representing one singular value. Be that a number, a string, boolean etc.

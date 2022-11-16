@@ -8,7 +8,7 @@
 // *************************************************************
 
 #pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
-namespace GraphQL.AspNet.PlanGeneration.Document
+namespace GraphQL.AspNet.Execution.QueryPlans.Document
 {
     /// <summary>
     /// An enumeration depicting the various parts of a parsed query document.

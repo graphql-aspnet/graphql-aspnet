@@ -7,13 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.Common
 {
     using System;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.RulesEngine;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
 
     /// <summary>
     /// A base field resolution step with additional specification rule logic.

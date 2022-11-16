@@ -7,8 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common
 {
+    using GraphQL.AspNet.Execution.Contexts;
+
     /// <summary>
     /// A base step from which all doc construction steps must inherit to properly
     /// process a <see cref="DocumentConstructionContext"/>.

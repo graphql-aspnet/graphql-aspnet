@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Interfaces.Schema
 {
     /// <summary>
     /// <para>A marker interface used to identify some schema items as being part of the GraphQL.AspNet internal structural

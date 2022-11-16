@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Variables
+namespace GraphQL.AspNet.Execution.Variables
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.PlanGeneration;
+    using GraphQL.AspNet.Execution.QueryPlans;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Attempts to convert the untyped keyvalue pairs supplied with a request into context-sensitive variables for a

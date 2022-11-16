@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An object that generates guaranteed unique keys "per query, per schema".

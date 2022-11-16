@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// The default implementation of the cache key manager. This key manager is used unless overriden by

@@ -7,13 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Tokens
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Tokens
 {
-    using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
 
     /// <summary>
     /// A lexical token, representing a meaningful character or set of characters

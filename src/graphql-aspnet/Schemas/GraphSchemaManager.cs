@@ -15,18 +15,18 @@ namespace GraphQL.AspNet.Schemas
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Internal.Introspection.Fields;
-    using GraphQL.AspNet.Internal.Introspection.Model;
-    using GraphQL.AspNet.Internal.Introspection.Types;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
 
     /// <summary>
     /// Assists with the creation of <see cref="IGraphType"/> data

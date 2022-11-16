@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.Scalars
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An internal reference to the primary details about a scalar used for

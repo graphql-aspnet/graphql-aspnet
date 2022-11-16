@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps
 {
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
 
     /// <summary>
     /// Ensures that where ever a named fragment is spread that it is not, in the current path,

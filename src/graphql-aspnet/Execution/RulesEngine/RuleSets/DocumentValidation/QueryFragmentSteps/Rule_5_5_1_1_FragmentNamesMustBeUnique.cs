@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryFragmentSteps
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
 
     /// <summary>
     /// <para>(5.5.1.1) Validate that each named fragment has a unique name within the document scope.</para>

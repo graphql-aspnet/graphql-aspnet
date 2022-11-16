@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Exceptions
+namespace GraphQL.AspNet.Execution.Parsing.Exceptions
 {
     using System;
     using GraphQL.AspNet.Common.Source;

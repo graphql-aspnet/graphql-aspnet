@@ -7,12 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Interfaces.Schema
 {
-    using System.Collections.Generic;
-    using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Security;
-
     /// <summary>
     /// A schema item that implements some security parameters.
     /// </summary>

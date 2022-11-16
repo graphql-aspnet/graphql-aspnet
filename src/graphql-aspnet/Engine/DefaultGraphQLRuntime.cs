@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
     using System;
     using System.Threading;
@@ -19,8 +19,8 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Middleware;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// The default implementation of the core runtime.

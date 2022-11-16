@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules.Rules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
 {
     /// <summary>
     /// A rule that determines if the character on the glyph is a string delimiter or not (the double quote).

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
 {
     /// <summary>
     /// A document part representing the special '__typename' field applicable to any

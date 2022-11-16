@@ -12,8 +12,9 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using System.Threading.Tasks;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

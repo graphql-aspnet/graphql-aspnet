@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData
 {
     using GraphQL.AspNet.Attributes;
 

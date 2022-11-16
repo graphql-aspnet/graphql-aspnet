@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Variables.ResolvedVariableTestData
+namespace GraphQL.AspNet.Tests.Execution.Variables.ResolvedVariableTestData
 {
     public enum VariableTestEnum
     {

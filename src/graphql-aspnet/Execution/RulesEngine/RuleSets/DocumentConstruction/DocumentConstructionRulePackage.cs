@@ -7,11 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction
 {
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps;
 
     /// <summary>
     /// A rule package containing rules for processing a nested hierarchy of syntax nodes.

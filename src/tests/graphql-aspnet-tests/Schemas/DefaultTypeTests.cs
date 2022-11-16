@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Schemas
 {
     using System.Linq;
     using System.Reflection;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using NUnit.Framework;
 
     [TestFixture]

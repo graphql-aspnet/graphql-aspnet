@@ -12,9 +12,9 @@ namespace GraphQL.AspNet.Web
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Response;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

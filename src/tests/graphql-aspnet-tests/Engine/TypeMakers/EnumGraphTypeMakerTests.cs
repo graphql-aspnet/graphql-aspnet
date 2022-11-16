@@ -6,18 +6,18 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System;
     using System.Linq;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Formatting;
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -38,8 +38,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             var graphType = maker.CreateGraphType(typeof(EnumWithUndeclaredValues)).GraphType as IEnumGraphType;
             Assert.AreEqual(2, graphType.Values.Count);
-            Assert.IsTrue(graphType.Values.ContainsKey("DECLAREDVALUE1"));
-            Assert.IsTrue(graphType.Values.ContainsKey("VALUE_AWESOME"));
+            Assert.IsTrue((bool)graphType.Values.ContainsKey("DECLAREDVALUE1"));
+            Assert.IsTrue((bool)graphType.Values.ContainsKey("VALUE_AWESOME"));
         }
 
         [Test]
@@ -56,12 +56,12 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphType = maker.CreateGraphType(typeof(EnumWithUndeclaredValues)).GraphType as IEnumGraphType;
 
             Assert.AreEqual(3, graphType.Values.Count);
-            Assert.IsTrue(graphType.Values.ContainsKey("DECLAREDVALUE1"));
+            Assert.IsTrue((bool)graphType.Values.ContainsKey("DECLAREDVALUE1"));
 
-            Assert.IsTrue(graphType.Values.ContainsKey("VALUE_AWESOME"));
-            Assert.IsFalse(graphType.Values.ContainsKey("DECLAREDVALUE2"));
+            Assert.IsTrue((bool)graphType.Values.ContainsKey("VALUE_AWESOME"));
+            Assert.IsFalse((bool)graphType.Values.ContainsKey("DECLAREDVALUE2"));
 
-            Assert.IsTrue(graphType.Values.ContainsKey("UNDECLAREDVALUE1"));
+            Assert.IsTrue((bool)graphType.Values.ContainsKey("UNDECLAREDVALUE1"));
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             Assert.AreEqual(graphType, graphType.AppliedDirectives.Parent);
 
-            var appliedDirective = graphType.AppliedDirectives.Single();
+            var appliedDirective = Enumerable.Single(graphType.AppliedDirectives);
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 23, "enum arg" }, appliedDirective.ArgumentValues);
@@ -130,7 +130,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(0, value1.AppliedDirectives.Count);
             Assert.AreEqual(1, value2.AppliedDirectives.Count);
 
-            var appliedDirective = value2.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(value2.AppliedDirectives);
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(value2, value2.AppliedDirectives.Parent);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);

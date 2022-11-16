@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
+namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
 
     /// <summary>
     /// An input value that is a pointer to a variable defined in the operation that contains it.
@@ -43,6 +43,6 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         public string PointsTo => this.VariableName.ToString();
 
         /// <inheritdoc />
-        public override string Description => $"Variable Usage: {VariableName}";
+        public override string Description => $"Variable Usage: {this.VariableName}";
     }
 }

@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Engine
 {
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An entity that can take a <see cref="IGraphOperationResult" /> and generate a graphql compliant

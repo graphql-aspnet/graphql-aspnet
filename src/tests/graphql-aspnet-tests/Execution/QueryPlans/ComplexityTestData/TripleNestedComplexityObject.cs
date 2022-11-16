@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration.ComplexityTestData
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans.ComplexityTestData
 {
     using System;
 

@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Interfaces.Engine
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Response;
 
     /// <summary>
     /// An entity that can take a <see cref="IGraphOperationResult" /> and generate a graphql compliant

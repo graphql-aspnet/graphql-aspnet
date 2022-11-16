@@ -7,14 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.QueryInputArgumentSteps
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.QueryInputArgumentSteps
 {
     using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
 
     /// <summary>
     /// A rule that ensures that for any given input node, the name of the node is unique among the defined set of inputs

@@ -9,8 +9,8 @@
 
 namespace GraphQL.AspNet.Interfaces.Execution
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An interface describing aclass that can calulate a complexity metric score for a given

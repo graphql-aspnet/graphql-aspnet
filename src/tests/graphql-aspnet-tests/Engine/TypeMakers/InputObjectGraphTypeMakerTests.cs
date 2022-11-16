@@ -6,14 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -37,9 +38,9 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.IsNotNull(field);
 
             // string, OneMarkedProperty
-            Assert.AreEqual(2, typeResult.DependentTypes.Count());
-            Assert.IsTrue(typeResult.DependentTypes.Any(x => x.Type == typeof(OneMarkedProperty) && x.ExpectedKind == TypeKind.INPUT_OBJECT));
-            Assert.IsTrue(typeResult.DependentTypes.Any(x => x.Type == typeof(string) && x.ExpectedKind == TypeKind.SCALAR));
+            Assert.AreEqual(2, Enumerable.Count<DependentType>(typeResult.DependentTypes));
+            Assert.IsTrue(Enumerable.Any<DependentType>(typeResult.DependentTypes, x => x.Type == typeof(OneMarkedProperty) && x.ExpectedKind == TypeKind.INPUT_OBJECT));
+            Assert.IsTrue(Enumerable.Any<DependentType>(typeResult.DependentTypes, x => x.Type == typeof(string) && x.ExpectedKind == TypeKind.SCALAR));
         }
 
         [Test]
@@ -78,8 +79,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var inputType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(inputType);
-            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsFalse(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(inputType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsFalse(Enumerable.Any(inputType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
@@ -89,8 +90,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var inputType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(inputType);
-            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(inputType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(inputType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
@@ -101,8 +102,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.DeclaredProperty)));
-            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.DeclaredProperty)));
+            Assert.IsFalse(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.UndeclaredProperty)));
         }
 
         [Test]
@@ -113,8 +114,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var inputType = result.GraphType as IInputObjectGraphType;
 
             Assert.IsNotNull(inputType);
-            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.DeclaredProperty)));
-            Assert.IsTrue(inputType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(inputType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.DeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(inputType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.UndeclaredProperty)));
         }
 
         [Test]
@@ -144,7 +145,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, inputType.AppliedDirectives.Count);
             Assert.AreEqual(inputType, inputType.AppliedDirectives.Parent);
 
-            var appliedDirective = inputType.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(inputType.AppliedDirectives);
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 44, "input arg" }, appliedDirective.ArgumentValues);

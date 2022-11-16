@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
+namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
 {
     using System;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
 
     /// <summary>
     /// A base class providing common functionality for any "supplied value" to an argument

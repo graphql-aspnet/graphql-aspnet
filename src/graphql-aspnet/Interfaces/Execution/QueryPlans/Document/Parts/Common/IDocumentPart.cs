@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common
 {
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document;
+    using GraphQL.AspNet.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A general interface describing part of a query document and the document parts it may contain.

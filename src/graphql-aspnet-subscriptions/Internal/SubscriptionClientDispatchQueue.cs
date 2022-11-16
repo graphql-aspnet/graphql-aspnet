@@ -15,8 +15,7 @@ namespace GraphQL.AspNet.Internal
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
-    using GraphQL.AspNet.Interfaces.Internal;
-
+    using GraphQL.AspNet.Internal.Interfaces;
     using QueuedEvent = System.ValueTuple<Common.SubscriptionClientId, Execution.Subscriptions.SubscriptionEvent>;
 
     /// <summary>

@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Web
     using System.Text.Json;
     using System.Threading.Tasks;
     using System.Web;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;

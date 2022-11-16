@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Middleware.SchemaItemSecurity.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Security;
     using Microsoft.AspNetCore.Authorization;
 

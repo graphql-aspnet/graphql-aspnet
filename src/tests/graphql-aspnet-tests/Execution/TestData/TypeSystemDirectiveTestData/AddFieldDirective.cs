@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
                 item.Extend(
                     "property3",
                     GraphTypeExpression.FromDeclaration(stringType.Name),
-                    ResolverForNewProperty,
+                    this.ResolverForNewProperty,
                     "retrieves a prop 3");
             }
 

@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection.Types
+namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Internal.Introspection.Model;
-    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
 
     /// <summary>
     /// Represents the meta graph type '__InputValue.

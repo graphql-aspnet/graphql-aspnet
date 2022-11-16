@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
 {
     using System;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Schemas.TypeSystem.Scalars;
 
     [ApplyDirective(typeof(ScalarMarkerDirective))]
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
             return null;
         }
 
-        public override ScalarValueType ValueType => ScalarValueType.StringOrNumber;
+        public override ScalarValueType ValueType => ScalarValueType.Boolean;
 
         public override TypeCollection OtherKnownTypes => TypeCollection.Empty;
     }

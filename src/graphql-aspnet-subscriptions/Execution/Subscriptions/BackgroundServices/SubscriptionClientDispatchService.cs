@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions.BackgroundServices
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Internal;
+    using GraphQL.AspNet.Internal.Interfaces;
     using Microsoft.Extensions.Hosting;
 
     /// <summary>

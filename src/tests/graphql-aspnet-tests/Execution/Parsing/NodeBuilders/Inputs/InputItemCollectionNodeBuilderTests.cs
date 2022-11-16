@@ -7,18 +7,19 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
+namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
 {
     using System;
-    using GraphQL.AspNet.Parsing2.Lexing;
-    using GraphQL.AspNet.Parsing2.Exceptions;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.NodeBuilders;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.Lexing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using GraphQL.AspNet.Tests.CommonHelpers;
+    using GraphQL.AspNet.Tests.Execution.Parsing.Helpers;
     using NUnit.Framework;
-    using GraphQL.AspNet.Tests.Parsing2.Helpers;
 
     [TestFixture]
     public class InputItemCollectionNodeBuilderTests

@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Connections.Clients
+namespace GraphQL.AspNet.Web
 {
     /// <summary>
     /// Indicates the message type recieved by a client connection.

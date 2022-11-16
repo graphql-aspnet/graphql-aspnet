@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine
+namespace GraphQL.AspNet.Execution.RulesEngine
 {
     using System.Text;
 

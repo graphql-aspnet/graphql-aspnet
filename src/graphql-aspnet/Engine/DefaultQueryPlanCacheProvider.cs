@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
     using System;
     using System.Runtime.Caching;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// The default query cache implementation using local memory to store query plan data.

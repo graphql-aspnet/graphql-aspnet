@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Attributes
 {
     using System;
     using GraphQL.AspNet.Directives.Global;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An attribute that applies the @specifiedBy directive to the target scalar.

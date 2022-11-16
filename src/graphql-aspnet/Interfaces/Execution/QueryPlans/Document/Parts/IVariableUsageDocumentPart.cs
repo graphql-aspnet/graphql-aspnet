@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
 {
-    using System;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
 
     /// <summary>
     /// A supplied value in a query document representing a variable defined on the

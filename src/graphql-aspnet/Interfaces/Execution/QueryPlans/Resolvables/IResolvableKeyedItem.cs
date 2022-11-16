@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables
 {
     /// <summary>
     /// A resolvable value that has been assigned an explicit key value.

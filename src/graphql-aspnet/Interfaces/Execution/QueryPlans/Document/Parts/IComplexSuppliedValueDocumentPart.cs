@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
 
     /// <summary>
     /// A value supplied in a query document representing a complex input object with its

@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2
+namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
-    using System;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Exceptions;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
 
@@ -21,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
     /// source query into a properly formatted syntaxTree that can be executed by a schema.
     /// </summary>
     [TestFixture]
-    public class GraphQLParser2Tests
+    public class GraphQLParserTests
     {
         [Test]
         public void ParseDocument_NonQueryThrowsException()

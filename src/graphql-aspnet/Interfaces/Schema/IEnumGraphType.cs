@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Interfaces.Schema
 {
     using System;
-    using System.Collections.Generic;
     using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>

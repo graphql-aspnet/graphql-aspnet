@@ -7,11 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;
-    using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
     public class ControllerWithInputObject : GraphController
     {

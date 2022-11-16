@@ -9,12 +9,10 @@
 
 namespace GraphQL.AspNet.ServerProtocols.Common
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A result encapsulating the execution of graph query that could be a subscription.

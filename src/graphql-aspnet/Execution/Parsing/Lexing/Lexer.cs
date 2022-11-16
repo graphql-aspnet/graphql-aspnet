@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing
+namespace GraphQL.AspNet.Execution.Parsing.Lexing
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
 
     /// <summary>
     /// A tokenizer programmed with the symbols of graphql, capable of walking a string,

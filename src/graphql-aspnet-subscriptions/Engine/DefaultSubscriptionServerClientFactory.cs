@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
     using System;
     using System.Collections.Generic;
@@ -15,9 +15,10 @@ namespace GraphQL.AspNet.Defaults
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Exceptions;
+    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Web;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>

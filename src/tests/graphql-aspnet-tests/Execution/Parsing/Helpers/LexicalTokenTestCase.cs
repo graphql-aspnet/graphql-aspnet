@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.Helpers
+namespace GraphQL.AspNet.Tests.Execution.Parsing.Helpers
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
 
     public class LexicalTokenTestCase
     {

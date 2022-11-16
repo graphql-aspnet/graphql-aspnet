@@ -9,7 +9,7 @@
 namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A template containing the necessary information to create an apply

@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A set of configurations that will be applied to the execution of a graphql query through

@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Parsing2.Lexing.Source
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     /// <summary>
     /// A reference to where in the source text the seek operation should begin from.

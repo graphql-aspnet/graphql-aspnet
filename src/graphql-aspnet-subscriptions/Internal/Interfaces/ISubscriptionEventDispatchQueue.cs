@@ -7,15 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Internal
+namespace GraphQL.AspNet.Internal.Interfaces
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
-
-    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// A dispatch queue that will forward events to receivers on a

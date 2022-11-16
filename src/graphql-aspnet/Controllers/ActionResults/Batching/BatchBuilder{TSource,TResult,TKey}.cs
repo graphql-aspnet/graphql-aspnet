@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Controllers.ActionResults.Batching
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A builder to help construct a batch result for a field that can be properly dispursed to the source items in the batch.

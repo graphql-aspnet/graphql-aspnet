@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2
+namespace GraphQL.AspNet.Execution.Parsing
 {
     using System;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
 
     /// <summary>
     /// A set of constants scoped to the library.

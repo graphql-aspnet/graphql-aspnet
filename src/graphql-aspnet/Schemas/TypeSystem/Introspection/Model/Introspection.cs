@@ -7,11 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection.Model
+namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 {
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

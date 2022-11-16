@@ -7,13 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.NodeBuilders
+namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
 {
     using System;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.Execution;
 
     public class NodeBuilderFactory
     {

@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Subscriptions
+namespace GraphQL.AspNet.Interfaces.Web
 {
-    using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// An instance of this class represents the result of performing a single ReceiveAsync

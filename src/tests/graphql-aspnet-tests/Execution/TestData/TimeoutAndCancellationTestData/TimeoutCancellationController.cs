@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TimeoutAndCancellationTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.TimeoutAndCancellationTestData
 {
     using System;
     using System.Threading.Tasks;

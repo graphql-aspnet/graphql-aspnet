@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Execution
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.FieldResolution;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// The default implementation of <see cref="IGraphFieldRequest"/>. Provides a container

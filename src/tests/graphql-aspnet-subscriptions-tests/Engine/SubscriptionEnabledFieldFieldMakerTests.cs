@@ -6,15 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.Subscriptions.Tests.Defaults
+namespace GraphQL.Subscriptions.Tests.Engine
 {
     using System.Linq;
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Defaults.TestData;
+    using GraphQL.Subscriptions.Tests.Engine.TestData;
     using Moq;
     using NUnit.Framework;
 
@@ -44,7 +44,7 @@ namespace GraphQL.Subscriptions.Tests.Defaults
             Assert.AreEqual(field, field.AppliedDirectives.Parent);
             Assert.AreEqual(1, field.AppliedDirectives.Count);
 
-            var appliedDirective = field.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(field.AppliedDirectives);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 99, "sub action arg" }, appliedDirective.ArgumentValues);
         }

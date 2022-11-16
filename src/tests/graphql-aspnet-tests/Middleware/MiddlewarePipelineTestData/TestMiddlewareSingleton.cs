@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
+namespace GraphQL.AspNet.Tests.Middleware.MiddlewarePipelineTestData
 {
     using System;
     using System.Threading;

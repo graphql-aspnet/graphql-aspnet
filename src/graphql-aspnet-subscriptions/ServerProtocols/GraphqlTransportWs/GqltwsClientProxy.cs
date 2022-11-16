@@ -19,13 +19,13 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.ServerProtocols.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages;
@@ -34,6 +34,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Converters;
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide

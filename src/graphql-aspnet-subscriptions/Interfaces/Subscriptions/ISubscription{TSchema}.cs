@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A client subscription containing the details of what event is being listened for.

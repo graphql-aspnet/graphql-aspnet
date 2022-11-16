@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Configuration
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Configuration;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A builder for constructing hte individual pipelines the schema will use when executing a query.

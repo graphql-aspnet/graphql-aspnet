@@ -17,9 +17,10 @@ namespace GraphQL.Subscriptions.Tests.Mocks
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.Web;
     using Microsoft.AspNetCore.Http.Extensions;
     using Moq;
 

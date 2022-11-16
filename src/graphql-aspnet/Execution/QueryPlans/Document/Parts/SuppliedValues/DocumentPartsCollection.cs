@@ -7,16 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
+namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
 {
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.PlanGeneration.Document;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
 
     /// <inheritdoc cref="IDocumentPartsCollection" />
     [DebuggerDisplay("Count = {Count}, Owner: {Owner.GetType().Name}")]

@@ -9,8 +9,8 @@
 namespace GraphQL.AspNet.Directives
 {
     using System;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An enumeration depicting when a directive might be invoked against a target item.

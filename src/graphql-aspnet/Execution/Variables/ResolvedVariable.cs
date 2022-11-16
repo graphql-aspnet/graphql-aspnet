@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Variables
+namespace GraphQL.AspNet.Execution.Variables
 {
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Schemas;
 
     /// <summary>

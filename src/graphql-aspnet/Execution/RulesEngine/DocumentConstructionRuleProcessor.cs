@@ -7,11 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.DocumentGeneration
+namespace GraphQL.AspNet.Execution.RulesEngine
 {
     using GraphQL.AspNet.Common.Extensions;
+    using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction;
 
     /// <summary>
     /// A rule processor that handles rules related to constructing a query document from source text

@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.InputArguments
+namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
 {
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments;
 
     /// <summary>
     /// The result of attempting to resolve an input argument in a query document.

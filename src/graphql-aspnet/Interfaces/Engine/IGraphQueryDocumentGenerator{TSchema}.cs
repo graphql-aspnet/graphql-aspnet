@@ -9,10 +9,10 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Called by the runtime to convert an AST into an unvalidated query document

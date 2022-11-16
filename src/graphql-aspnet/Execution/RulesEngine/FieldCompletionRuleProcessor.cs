@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine
+namespace GraphQL.AspNet.Execution.RulesEngine
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution;
 
     /// <summary>
     /// A rule processor that handles a set of rules relating to the immediate completion of a field

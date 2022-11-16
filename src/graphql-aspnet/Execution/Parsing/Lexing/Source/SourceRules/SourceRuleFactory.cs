@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules
 {
     using System;
-    using GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules.Rules;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules;
 
     /// <summary>
     /// Factory container for finding a source rule from an enumeration.

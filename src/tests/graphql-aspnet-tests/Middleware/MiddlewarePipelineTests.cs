@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.Pipelining
+namespace GraphQL.AspNet.Tests.Middleware
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -17,8 +17,8 @@ namespace GraphQL.AspNet.Tests.Execution.Pipelining
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Middleware.Exceptions;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.Execution.Pipelining.Data;
     using GraphQL.AspNet.Tests.Framework;
+    using GraphQL.AspNet.Tests.Middleware.MiddlewarePipelineTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;

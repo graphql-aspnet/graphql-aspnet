@@ -7,13 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders.Inputs
+namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders.Inputs
 {
     using System;
-    using GraphQL.AspNet.Parsing2.Lexing;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
-    using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
+    using GraphQL.AspNet.Execution.Parsing.Lexing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
     using NUnit.Framework;
 
     [TestFixture]

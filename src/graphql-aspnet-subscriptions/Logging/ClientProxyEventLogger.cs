@@ -12,8 +12,8 @@ namespace GraphQL.AspNet.Logging
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.ClientProxyLogEntries;
     using GraphQL.AspNet.Schemas.Structural;
     using Microsoft.Extensions.Logging;

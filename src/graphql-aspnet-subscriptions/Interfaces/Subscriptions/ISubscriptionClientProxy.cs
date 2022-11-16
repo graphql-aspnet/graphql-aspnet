@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Interfaces.Subscriptions
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// An interface representing an established connection to a client that can process

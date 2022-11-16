@@ -6,15 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Defaults.TypeMakers
+namespace GraphQL.AspNet.Engine.TypeMakers
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Configuration.Formatting;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
-    using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;
 

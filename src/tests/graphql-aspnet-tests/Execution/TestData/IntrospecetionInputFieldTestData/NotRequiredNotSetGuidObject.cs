@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestData
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
 
     public class NotRequiredNotSetGuidObject
     {

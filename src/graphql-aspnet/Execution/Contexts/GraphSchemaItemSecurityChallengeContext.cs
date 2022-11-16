@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Security.Claims;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Security;
 
     /// <summary>

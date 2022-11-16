@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldValidation
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldValidation
 {
     using System.Linq;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.Common;
 
     /// <summary>
     /// A rule that inspects a completed result against its completed children to ensure it conforms

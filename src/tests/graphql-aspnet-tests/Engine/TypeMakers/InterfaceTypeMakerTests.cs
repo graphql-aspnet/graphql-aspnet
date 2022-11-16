@@ -6,13 +6,13 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(TypeKind.INTERFACE, graphType.Kind);
 
             // Property1, Property2, __typename
-            Assert.AreEqual(3, graphType.Fields.Count());
+            Assert.AreEqual(3, Enumerable.Count(graphType.Fields));
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, interfaceType.AppliedDirectives.Count);
             Assert.AreEqual(interfaceType, interfaceType.AppliedDirectives.Parent);
 
-            var appliedDirective = interfaceType.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(interfaceType.AppliedDirectives);
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 58, "interface arg" }, appliedDirective.ArgumentValues);
@@ -63,13 +63,13 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             // __typename and Field3
             // only those declared on the interface, not those inherited
-            Assert.AreEqual(2, interfaceType.Fields.Count());
+            Assert.AreEqual(2, Enumerable.Count(interfaceType.Fields));
 
             // should reference the two additional interfaces
             // ITestInterface1 ITestInterface2
-            Assert.AreEqual(2, interfaceType.InterfaceNames.Count());
-            Assert.IsTrue(interfaceType.InterfaceNames.Any(x => x == "ITestInterface1"));
-            Assert.IsTrue(interfaceType.InterfaceNames.Any(x => x == "ITestInterface2"));
+            Assert.AreEqual(2, Enumerable.Count<string>(interfaceType.InterfaceNames));
+            Assert.IsTrue(Enumerable.Any<string>(interfaceType.InterfaceNames, x => x == "ITestInterface1"));
+            Assert.IsTrue(Enumerable.Any<string>(interfaceType.InterfaceNames, x => x == "ITestInterface2"));
         }
     }
 }

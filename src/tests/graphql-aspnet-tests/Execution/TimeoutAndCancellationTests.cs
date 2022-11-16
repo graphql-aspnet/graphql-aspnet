@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Logging;
-    using GraphQL.AspNet.Tests.Execution.TimeoutAndCancellationTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.TimeoutAndCancellationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;

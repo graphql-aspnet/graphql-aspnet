@@ -15,14 +15,14 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.Metrics;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Interfaces.Engine;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-
-    using GraphQLSyntaxException2 = GraphQL.AspNet.Parsing2.Exceptions.GraphQLSyntaxException;
+    using GraphQLSyntaxException2 = GraphQL.AspNet.Execution.Parsing.Exceptions.GraphQLSyntaxException;
 
     /// <summary>
     /// Attempts to generate a valid syntax tree for the incoming query text when needed. Skipped if a query plan was pulled

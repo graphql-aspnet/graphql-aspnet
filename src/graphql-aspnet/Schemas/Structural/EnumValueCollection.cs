@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A collection of enum values on a single enum graph type.

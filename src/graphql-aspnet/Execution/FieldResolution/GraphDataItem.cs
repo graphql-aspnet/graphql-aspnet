@@ -19,12 +19,12 @@ namespace GraphQL.AspNet.Execution.FieldResolution
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.Interfaces.Response;
-    using GraphQL.AspNet.Response;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// An ecapsulation of a piece of source data submitted for processing by the field execution pipeline.

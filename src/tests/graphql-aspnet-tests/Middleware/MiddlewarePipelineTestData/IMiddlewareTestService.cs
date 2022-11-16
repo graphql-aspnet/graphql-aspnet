@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.Pipelining.Data
+namespace GraphQL.AspNet.Tests.Middleware.MiddlewarePipelineTestData
 {
     /// <summary>
     /// A test service interface that will be mocked that is invoked by the middleware test objects

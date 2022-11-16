@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Defaults.TypeMakers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Engine.TypeMakers;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework;

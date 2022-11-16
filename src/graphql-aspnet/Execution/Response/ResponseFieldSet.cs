@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Response
+namespace GraphQL.AspNet.Execution.Response
 {
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Generics;
-    using GraphQL.AspNet.Interfaces.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
     /// A collection of keyed items included as a result to a graphql query.

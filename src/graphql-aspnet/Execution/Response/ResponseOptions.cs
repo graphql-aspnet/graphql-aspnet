@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Response
+namespace GraphQL.AspNet.Execution.Response
 {
     using GraphQL.AspNet.Interfaces.Execution;
 

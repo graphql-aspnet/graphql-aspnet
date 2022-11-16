@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Tests.Internal.Templating.ObjectTypeTests
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     public class InputObjectWithUnionProxyProperty
     {

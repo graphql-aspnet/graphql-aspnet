@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using System;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;

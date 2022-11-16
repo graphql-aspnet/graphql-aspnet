@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules;
-    using CHARS = GraphQL.AspNet.Parsing2.ParserConstants.Characters;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules;
+    using CHARS = ParserConstants.Characters;
 
     /// <summary>
     /// A wrapper for <see cref="Span{T}"/> to provide some context sensitive helper methods for parsing through it.

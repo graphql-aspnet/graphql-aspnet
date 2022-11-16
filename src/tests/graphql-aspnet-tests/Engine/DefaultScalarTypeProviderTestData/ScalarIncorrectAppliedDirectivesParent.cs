@@ -6,9 +6,9 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
+namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
 

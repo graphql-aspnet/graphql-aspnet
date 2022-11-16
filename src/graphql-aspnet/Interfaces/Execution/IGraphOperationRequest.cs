@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A request to execute a query through the runtime.

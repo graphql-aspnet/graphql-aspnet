@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules.Rules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
 {
     /// <summary>
     /// Validates that a source text is currently pointed at a character that can be the start

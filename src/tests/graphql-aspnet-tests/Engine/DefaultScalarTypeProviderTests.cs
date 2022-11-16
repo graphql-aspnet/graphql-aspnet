@@ -6,13 +6,15 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults
+
+namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData;
+    using GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -32,9 +34,9 @@ namespace GraphQL.AspNet.Tests.Defaults
 
             Assert.AreEqual(3, instances.Count);
 
-            Assert.IsFalse(object.ReferenceEquals(instances[0], instances[1]));
-            Assert.IsFalse(object.ReferenceEquals(instances[0], instances[2]));
-            Assert.IsFalse(object.ReferenceEquals(instances[1], instances[2]));
+            Assert.IsFalse(ReferenceEquals(instances[0], instances[1]));
+            Assert.IsFalse(ReferenceEquals(instances[0], instances[2]));
+            Assert.IsFalse(ReferenceEquals(instances[1], instances[2]));
         }
 
         [Test]
@@ -45,7 +47,7 @@ namespace GraphQL.AspNet.Tests.Defaults
             var primary = provider.CreateScalar(typeof(int));
             var secondary = provider.CreateScalar(typeof(int?));
 
-            Assert.IsFalse(object.ReferenceEquals(primary, secondary));
+            Assert.IsFalse(ReferenceEquals(primary, secondary));
             Assert.AreEqual(primary.Name, secondary.Name);
         }
 

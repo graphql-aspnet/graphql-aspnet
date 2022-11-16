@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection.Model
+namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 {
     /// <summary>
     /// A marker object used to represent "no default value" on an <see cref="IntrospectedInputValueType"/> type.

@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
 {
     public class NonNullInputField
     {
         public NonNullInputField()
         {
-            Id = 33;
+            this.Id = 33;
         }
 
         public int Id { get; set; }

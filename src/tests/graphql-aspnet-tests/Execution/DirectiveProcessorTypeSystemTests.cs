@@ -21,7 +21,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Middleware;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Execution.GraphSchemaProcessorTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.GraphSchemaProcessorTestData;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;

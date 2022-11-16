@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Interfaces.Response
+namespace GraphQL.AspNet.Interfaces.Execution.Response
 {
     /// <summary>
     /// An interface representing a single scalar or enum value generated

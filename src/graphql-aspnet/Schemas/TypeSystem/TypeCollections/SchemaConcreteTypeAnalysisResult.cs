@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem.TypeCollections
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A result generated from an operation involving an attempt to map one <see cref="Type"/> to another

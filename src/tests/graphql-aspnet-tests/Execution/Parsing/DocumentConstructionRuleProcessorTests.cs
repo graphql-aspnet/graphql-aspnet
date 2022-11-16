@@ -7,24 +7,24 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2
+namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
     using System;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.DocumentGeneration;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.PlanGeneration.Document;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Execution.RulesEngine;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Parsing2.DocumentConstructionTestData;
+    using GraphQL.AspNet.Tests.Execution.Parsing.DocumentConstructionTestData;
     using NUnit.Framework;
-
-    using DocumentConstructionContext = GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstructionContext;
 
     [TestFixture]
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]

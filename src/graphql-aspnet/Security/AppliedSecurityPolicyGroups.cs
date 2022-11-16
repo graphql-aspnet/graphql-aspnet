@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Security
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// The default implementation of the logic behind a collected set of <see cref="AppliedSecurityPolicyGroup"/>

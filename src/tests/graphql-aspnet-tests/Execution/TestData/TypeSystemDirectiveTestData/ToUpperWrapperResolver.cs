@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
 {
     using System;
     using System.Threading;

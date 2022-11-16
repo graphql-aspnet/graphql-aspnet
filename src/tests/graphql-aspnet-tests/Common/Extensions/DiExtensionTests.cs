@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Extensions
+namespace GraphQL.AspNet.Tests.Common.Extensions
 {
     using System;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Tests.Extensions.DiExtensionTestData;
+    using GraphQL.AspNet.Tests.Common.Extensions.DiExtensionTestData;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 

@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
     using System.Threading.Tasks;
+    using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Internal.Interfaces;
 
     /// <summary>

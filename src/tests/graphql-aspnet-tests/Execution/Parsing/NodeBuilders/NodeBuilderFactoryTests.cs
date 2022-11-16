@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.NodeBuilders
+namespace GraphQL.AspNet.Tests.Execution.Parsing.NodeBuilders
 {
     using System;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.NodeBuilders;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
     using NUnit.Framework;
 
     [TestFixture]

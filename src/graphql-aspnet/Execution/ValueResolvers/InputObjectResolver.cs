@@ -18,10 +18,10 @@ namespace GraphQL.AspNet.Execution.ValueResolvers
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Execution.Exceptions;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A resolver capable of converting a supplied JSON data into a concrete object using

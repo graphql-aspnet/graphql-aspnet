@@ -9,7 +9,7 @@
 
 namespace GraphQL.Subscriptions.Tests.Mocks
 {
-    using GraphQL.AspNet.Connections.Clients;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A queueable message that, when encountered by <see cref="MockClientConnection"/>,

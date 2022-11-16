@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules.Rules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
 {
     /// <summary>
     /// A rule that determines if the character pointed to by the source can be the start of a number.

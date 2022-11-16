@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Interfaces.Engine
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An interface describing the scalar collection classes used by a schema, at runtime. Scalars are a fundimental unit of graphql

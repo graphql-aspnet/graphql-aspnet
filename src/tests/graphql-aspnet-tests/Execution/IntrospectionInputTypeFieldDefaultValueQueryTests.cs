@@ -14,9 +14,9 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 

@@ -7,22 +7,18 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
-    using System.Collections.Generic;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Execution.RulesEngine;
     using GraphQL.AspNet.Interfaces.Engine;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.PlanGeneration.Contexts;
-    using GraphQL.AspNet.PlanGeneration.Document;
-    using GraphQL.AspNet.RulesEngine;
-
-    using DocumentConstructionContext = GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstructionContext;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using DocumentConstructionContext = GraphQL.AspNet.Execution.Contexts.DocumentConstructionContext;
 
     /// <summary>
     /// Validates that a lexed syntax tree, intended to execute a query on a target schema,
@@ -35,7 +31,7 @@ namespace GraphQL.AspNet.Defaults
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
-        private readonly Parsing2.DocumentGeneration.DocumentConstructionRuleProcessor _nodeProcessor;
+        private readonly DocumentConstructionRuleProcessor _nodeProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGraphQueryDocumentGenerator{TSchema}" /> class.
@@ -44,7 +40,7 @@ namespace GraphQL.AspNet.Defaults
         public DefaultGraphQueryDocumentGenerator(TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
-            _nodeProcessor = new GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstructionRuleProcessor();
+            _nodeProcessor = new DocumentConstructionRuleProcessor();
         }
 
         /// <inheritdoc />

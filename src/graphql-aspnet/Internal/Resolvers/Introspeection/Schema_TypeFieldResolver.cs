@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection.Resolvers
+namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
 {
     using System;
     using System.Threading;
@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Internal.Introspection.Resolvers
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Introspection.Model;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
 
     /// <summary>
     /// A resolver for the '__type' meta field returning an <see cref="IntrospectedType"/> model item

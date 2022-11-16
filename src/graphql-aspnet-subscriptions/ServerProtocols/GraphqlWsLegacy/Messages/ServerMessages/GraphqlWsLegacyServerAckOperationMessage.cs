@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages
 {
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Payloads;
 
     /// <summary>
     /// A message sent by the server to a client to acknowledge receipt of a message when no other

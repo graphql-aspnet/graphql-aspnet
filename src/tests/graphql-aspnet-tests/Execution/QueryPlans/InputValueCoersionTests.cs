@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var operation = document.Operations[string.Empty];
             Assert.IsNotNull(operation);
 
-            Assert.AreEqual(1, operation.FieldSelectionSet.ExecutableFields.Count());
+            Assert.AreEqual(1, Enumerable.Count(operation.FieldSelectionSet.ExecutableFields));
             var field = operation.FieldSelectionSet.ExecutableFields[0];
             Assert.AreEqual("singleScalarIntInput", field.Name.ToString());
 

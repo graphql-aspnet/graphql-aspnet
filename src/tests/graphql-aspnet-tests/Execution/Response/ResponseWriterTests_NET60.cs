@@ -8,18 +8,18 @@
 // *************************************************************
 
 #if NET6_0_OR_GREATER
-namespace GraphQL.AspNet.Tests.Response
+namespace GraphQL.AspNet.Tests.Execution.Response
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Response;
-    using GraphQL.AspNet.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Moq;

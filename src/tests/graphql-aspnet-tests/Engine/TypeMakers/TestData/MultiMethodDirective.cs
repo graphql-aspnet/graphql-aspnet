@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
 {
     using System.ComponentModel;
     using GraphQL.AspNet.Attributes;

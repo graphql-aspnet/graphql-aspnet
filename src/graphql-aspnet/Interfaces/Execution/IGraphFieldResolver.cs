@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An interface describing an entity, attached to a <see cref="IGraphField"/> that is capable of

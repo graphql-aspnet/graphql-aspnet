@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.UnionTypeExecutionTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.UnionTypeExecutionTestData
 {
     using System;
     using GraphQL.AspNet.Common;

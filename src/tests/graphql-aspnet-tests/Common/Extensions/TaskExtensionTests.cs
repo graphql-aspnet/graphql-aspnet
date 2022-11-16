@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Extensions
+namespace GraphQL.AspNet.Tests.Common.Extensions
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using NUnit.Framework;
     using GraphQL.AspNet.Common.Extensions;
+    using NUnit.Framework;
 
     [TestFixture]
     public class TaskExtensionTests

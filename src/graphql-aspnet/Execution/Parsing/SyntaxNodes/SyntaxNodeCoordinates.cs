@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2
+namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
 {
     using System;
     using System.Diagnostics;
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Parsing2
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{BlockIndex}, {BlockPosition}, {ChildBlockIndex}, {ChildBlockLength}";
+            return $"{this.BlockIndex}, {this.BlockPosition}, {this.ChildBlockIndex}, {this.ChildBlockLength}";
         }
 
         /// <summary>

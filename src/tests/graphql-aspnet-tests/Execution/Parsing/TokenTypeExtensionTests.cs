@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2
+namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
     using System;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
     using NUnit.Framework;
 
     [TestFixture]

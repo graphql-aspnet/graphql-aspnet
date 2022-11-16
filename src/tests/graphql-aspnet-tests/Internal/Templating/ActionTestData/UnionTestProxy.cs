@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     public class UnionTestProxy : IGraphUnionProxy
     {

@@ -9,7 +9,7 @@
 namespace GraphQL.AspNet.Attributes
 {
     using System;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// When applied to a graph type, field or argument the directive

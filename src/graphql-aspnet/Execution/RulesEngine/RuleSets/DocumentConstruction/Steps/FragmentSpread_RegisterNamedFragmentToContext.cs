@@ -7,10 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
-    using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// Assigns the active query fragment on the current context to be the fragment pointed to by the spread.

@@ -1,8 +1,6 @@
-﻿namespace GraphQL.AspNet.Interfaces.TypeSystem
+﻿namespace GraphQL.AspNet.Interfaces.Schema
 {
-    using System;
     using System.Collections.Generic;
-    using System.Text;
     using GraphQL.AspNet.Security;
 
     /// <summary>

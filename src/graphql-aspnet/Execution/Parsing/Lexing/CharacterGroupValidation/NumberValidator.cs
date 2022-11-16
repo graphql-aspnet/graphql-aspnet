@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
 {
     using System;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing2.Exceptions;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
 
     /// <summary>
     /// A validator that will inspect a span to ensure its characters

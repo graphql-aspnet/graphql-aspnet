@@ -7,13 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2
+namespace GraphQL.AspNet.Execution.Parsing
 {
     using System;
     using System.Buffers;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// An abstract syntax tree containing <see cref="SyntaxNode"/> elements

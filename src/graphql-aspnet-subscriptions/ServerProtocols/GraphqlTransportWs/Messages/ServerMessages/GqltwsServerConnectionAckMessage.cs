@@ -10,7 +10,6 @@
 namespace GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.ServerMessages
 {
     using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Common;
-    using GraphQL.AspNet.ServerProtocols.GraphqlTransportWs.Messages.Payloads;
 
     /// <summary>
     /// A message sent by the server to a client acknowledging the start of a connection. This

@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     using System;
-    using CHARS = GraphQL.AspNet.Parsing2.ParserConstants.Characters;
+    using CHARS = ParserConstants.Characters;
 
     /// <summary>
     /// A wrapper for a block of characters to provide some context sensitive inspection and navigation support

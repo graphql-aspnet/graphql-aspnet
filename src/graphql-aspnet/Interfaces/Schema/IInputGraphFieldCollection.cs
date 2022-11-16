@@ -7,10 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.TypeSystem
+namespace GraphQL.AspNet.Interfaces.Schema
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// A collection of fields on a given graph type.
     /// </summary>

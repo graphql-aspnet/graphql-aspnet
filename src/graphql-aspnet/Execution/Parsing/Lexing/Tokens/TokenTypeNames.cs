@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Parsing2.Lexing.Tokens
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Tokens
 {
     /// <summary>
     /// Character constants for common token characters.

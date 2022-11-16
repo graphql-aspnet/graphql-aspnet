@@ -7,23 +7,21 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Defaults
+namespace GraphQL.Subscriptions.Tests.Engine
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Exceptions;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
     using NUnit.Framework;
-    using NUnit.Framework.Constraints;
 
     [TestFixture]
     public class DefaultSubscriptionServerClientFactoryTests

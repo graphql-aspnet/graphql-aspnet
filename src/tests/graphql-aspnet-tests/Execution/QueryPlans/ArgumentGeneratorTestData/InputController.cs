@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration.ArgumentGeneratorTestData
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans.ArgumentGeneratorTestData
 {
     using System.Collections.Generic;
     using System.Linq;

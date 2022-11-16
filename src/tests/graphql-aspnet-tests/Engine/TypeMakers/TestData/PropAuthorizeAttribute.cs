@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
 {
     using System;
     using Microsoft.AspNetCore.Authorization;

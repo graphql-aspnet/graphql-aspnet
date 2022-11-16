@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Directives.DirectiveTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class OperationSwapDirective : GraphDirective

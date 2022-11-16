@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Tests.Logging
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Logging.ExecutionEvents;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
@@ -24,6 +23,7 @@ namespace GraphQL.AspNet.Tests.Logging
     using NUnit.Framework;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Logging.ExecutionEvents.PropertyItems;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     [TestFixture]
     public class ActionMethodModelStateValidatedLogEntryTests

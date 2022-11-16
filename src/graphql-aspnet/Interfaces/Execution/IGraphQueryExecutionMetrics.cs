@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Interfaces.Execution
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
     /// An interface capable of recieving events related to datapoints that can be tracked

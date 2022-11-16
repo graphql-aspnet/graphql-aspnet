@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2
+namespace GraphQL.AspNet.Execution.Parsing
 {
     using System;
     using System.Buffers;
@@ -15,7 +15,8 @@ namespace GraphQL.AspNet.Parsing2
     using System.IO;
     using System.Text;
     using System.Text.Json;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// Extension methods for <see cref="SyntaxTree"/>.

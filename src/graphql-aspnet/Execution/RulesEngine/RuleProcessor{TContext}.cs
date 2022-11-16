@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine
+namespace GraphQL.AspNet.Execution.RulesEngine
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
 
     /// <summary>
     /// A processor that will execute a set of hierarchial rules against a context.

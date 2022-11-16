@@ -6,9 +6,9 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
     using NUnit.Framework;
 
     [TestFixture]

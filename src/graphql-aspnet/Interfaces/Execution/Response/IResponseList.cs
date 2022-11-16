@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Response
+namespace GraphQL.AspNet.Interfaces.Execution.Response
 {
     using System.Collections.Generic;
 

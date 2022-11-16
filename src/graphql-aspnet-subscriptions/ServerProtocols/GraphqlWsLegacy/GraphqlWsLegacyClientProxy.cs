@@ -7,10 +7,18 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -19,12 +27,12 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
     using GraphQL.AspNet.ServerProtocols.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages;
@@ -32,8 +40,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Common;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.Converters;
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ServerMessages;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// This object wraps a connected websocket to characterize it and provide
@@ -95,7 +102,6 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
         /// <inheritdoc />
         protected override async Task<GraphqlWsLegacyMessage> DeserializeMessage(Stream stream, CancellationToken cancelToken = default)
         {
-
             GraphqlWsLegacyMessage recievedMessage;
 
             try
@@ -250,6 +256,7 @@ namespace GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy
             switch (result.Status)
             {
                 case SubscriptionOperationResultType.SubscriptionRegistered:
+
                     // nothing to do in this case
                     break;
 

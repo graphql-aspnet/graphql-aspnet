@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.DefaultScalarTypeProviderTestData
+namespace GraphQL.AspNet.Tests.Engine.DefaultScalarTypeProviderTestData
 {
     public class ScalarInvalidGraphName : ScalarTestBase
     {

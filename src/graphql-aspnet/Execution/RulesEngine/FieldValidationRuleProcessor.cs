@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine
+namespace GraphQL.AspNet.Execution.RulesEngine
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution;
 
     /// <summary>
     /// A child first rule processor that starts at the bottom of a set of executed fields

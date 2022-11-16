@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
     using GraphQL.AspNet.Interfaces.Configuration;
     using Microsoft.Extensions.DependencyInjection;

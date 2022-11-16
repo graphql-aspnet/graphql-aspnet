@@ -7,14 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document
+namespace GraphQL.AspNet.Execution.QueryPlans.Document
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
 
     /// <summary>
     /// An execution set that manages the actual fields to be resolved within

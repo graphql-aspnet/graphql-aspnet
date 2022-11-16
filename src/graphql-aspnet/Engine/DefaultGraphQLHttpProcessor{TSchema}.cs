@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
     using System;
     using System.Net;
@@ -19,13 +19,13 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Logging.Extensions;
-    using GraphQL.AspNet.Security.Web;
     using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.Exceptions;
+    using GraphQL.AspNet.Web.Security;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

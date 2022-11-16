@@ -10,7 +10,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using Moq;
     using NUnit.Framework;
 

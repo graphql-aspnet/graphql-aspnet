@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
-    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCompletion;
 
     /// <summary>
     /// A rule package with the necessary rules to completion the execution of a single field context.

@@ -7,13 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.NodeBuilders
+namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders
 {
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing2.Lexing;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
-    using KEYWORDS = GraphQL.AspNet.Parsing2.ParserConstants.Keywords;
+    using GraphQL.AspNet.Execution.Parsing.Lexing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.Execution;
+    using KEYWORDS = ParserConstants.Keywords;
 
     public class NamedFragmentNodeBuilder : ISyntaxNodeBuilder
     {

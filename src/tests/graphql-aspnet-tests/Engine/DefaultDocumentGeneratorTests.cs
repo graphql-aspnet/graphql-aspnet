@@ -7,17 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Defaults
+namespace GraphQL.AspNet.Tests.Engine
 {
     using System;
     using System.Linq;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Execution.RulesEngine.DocumentConstructionTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.RulesEngine.DocumentConstructionTestData;
     using NUnit.Framework;
 
     [TestFixture]
@@ -48,15 +48,15 @@ namespace GraphQL.AspNet.Tests.Defaults
 
             var document = generator.CreateDocument(source, syntaxTree);
 
-            var spread = document.Operations[string.Empty].FieldSelectionSet
-                .Children.OfType<IFieldDocumentPart>().Single().FieldSelectionSet
-                .Children.OfType<IFragmentSpreadDocumentPart>().Single();
+            var spread = Enumerable.OfType<IFragmentSpreadDocumentPart>(Enumerable.OfType<IFieldDocumentPart>(document.Operations[string.Empty].FieldSelectionSet
+                        .Children).Single().FieldSelectionSet
+                    .Children).Single();
 
             var fragment = document.NamedFragments[0];
 
             Assert.AreEqual("myFrag", spread.FragmentName.ToString());
             Assert.AreEqual(fragment, spread.Fragment);
-            Assert.IsTrue(fragment.IsReferenced);
+            Assert.IsTrue((bool)fragment.IsReferenced);
         }
 
         [Test]
@@ -84,9 +84,9 @@ namespace GraphQL.AspNet.Tests.Defaults
 
             var document = generator.CreateDocument(source, syntaxTree);
 
-            var spread = document.Operations[string.Empty].FieldSelectionSet
-                .Children.OfType<IFieldDocumentPart>().Single().FieldSelectionSet
-                .Children.OfType<IFragmentSpreadDocumentPart>().Single();
+            var spread = Enumerable.OfType<IFragmentSpreadDocumentPart>(Enumerable.OfType<IFieldDocumentPart>(document.Operations[string.Empty].FieldSelectionSet
+                        .Children).Single().FieldSelectionSet
+                    .Children).Single();
 
             var fragment = document.NamedFragments[0];
 
@@ -94,7 +94,7 @@ namespace GraphQL.AspNet.Tests.Defaults
             Assert.IsNull(spread.Fragment);
 
             Assert.AreEqual("myFrag", fragment.Name);
-            Assert.IsFalse(fragment.IsReferenced);
+            Assert.IsFalse((bool)fragment.IsReferenced);
         }
 
         [Test]
@@ -136,12 +136,12 @@ namespace GraphQL.AspNet.Tests.Defaults
 
             // childen are the field, the inline frag and frag1 spread
             Assert.AreEqual(4, retrieveDonut.Children.Count);
-            Assert.AreEqual(2, retrieveDonut.Children.OfType<IFieldDocumentPart>().Count());
-            Assert.AreEqual(1, retrieveDonut.Children.OfType<IInlineFragmentDocumentPart>().Count());
-            Assert.AreEqual(1, retrieveDonut.Children.OfType<IFragmentSpreadDocumentPart>().Count());
+            Assert.AreEqual(2, Enumerable.OfType<IFieldDocumentPart>(retrieveDonut.Children).Count());
+            Assert.AreEqual(1, Enumerable.OfType<IInlineFragmentDocumentPart>(retrieveDonut.Children).Count());
+            Assert.AreEqual(1, Enumerable.OfType<IFragmentSpreadDocumentPart>(retrieveDonut.Children).Count());
 
             // executable fields are the combined field set in expected order
-            Assert.AreEqual(5, retrieveDonut.ExecutableFields.Count());
+            Assert.AreEqual(5, Enumerable.Count(retrieveDonut.ExecutableFields));
             Assert.AreEqual("id", retrieveDonut.ExecutableFields[0].Name.ToString());
             Assert.AreEqual("__typename", retrieveDonut.ExecutableFields[1].Name.ToString());
             Assert.AreEqual("name", retrieveDonut.ExecutableFields[2].Name.ToString());

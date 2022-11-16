@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Interfaces.Configuration
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A builder for performing advanced configuration of a schema's pipeline and processing settings.

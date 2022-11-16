@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts
 {
     using System.Collections.Generic;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
 
     /// <summary>
     /// A collection of operations defined on a given user supplied query document.

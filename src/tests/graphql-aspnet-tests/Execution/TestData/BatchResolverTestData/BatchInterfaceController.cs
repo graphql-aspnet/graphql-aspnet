@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;
@@ -38,7 +38,7 @@ namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
         [Query("fetchData", typeof(IEnumerable<ITwoPropertyObject>))]
         public IGraphActionResult PrimaryDataFetch()
         {
-            AddCounter(nameof(this.PrimaryDataFetch));
+            this.AddCounter(nameof(this.PrimaryDataFetch));
 
             var list = new List<ITwoPropertyObject>();
             list.Add(new TwoPropertyObject()
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
         [BatchTypeExtension(typeof(ITwoPropertyObject), "kids", typeof(IEnumerable<ChildTestObject>))]
         public IGraphActionResult FetchChildren(IEnumerable<ITwoPropertyObject> sourceData)
         {
-            AddCounter(nameof(this.FetchChildren));
+            this.AddCounter(nameof(this.FetchChildren));
 
             var listResult = new List<ChildTestObject>();
 
@@ -90,7 +90,7 @@ namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
         [BatchTypeExtension(typeof(ITwoPropertyObject), "sybling", typeof(SyblingTestObject))]
         public IGraphActionResult FetchSibling(IEnumerable<ITwoPropertyObject> sourceData)
         {
-            AddCounter(nameof(this.FetchSibling));
+            this.AddCounter(nameof(this.FetchSibling));
 
             var listResult = new List<SyblingTestObject>();
 

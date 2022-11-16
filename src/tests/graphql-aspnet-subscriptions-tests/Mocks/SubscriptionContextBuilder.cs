@@ -13,14 +13,15 @@ namespace GraphQL.Subscriptions.Tests.Mocks
     using System.Collections.Generic;
     using System.Text.Json;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Middleware.SubcriptionExecution;
     using GraphQL.AspNet.Schemas.Structural;
-    using GraphQL.AspNet.Variables;
     using Moq;
 
     /// <summary>
@@ -160,7 +161,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
             foreach (var kvp in _sourceData)
             {
                 var mockField = new Mock<IGraphField>();
-                mockField.Setup(x => x.FieldSource).Returns(AspNet.Internal.TypeTemplates.GraphFieldSource.Action);
+                mockField.Setup(x => x.FieldSource).Returns(GraphFieldSource.Action);
                 mockField.Setup(x => x.Route).Returns(kvp.Key);
                 context.DefaultFieldSources.AddSource(mockField.Object, kvp.Value);
             }

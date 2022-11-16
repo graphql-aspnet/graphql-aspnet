@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.RulesEngine.RuleCheckTestData
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData
 {
     using System.ComponentModel.DataAnnotations;
     using GraphQL.AspNet.Attributes;

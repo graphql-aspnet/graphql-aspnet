@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Connections
+namespace GraphQL.Subscriptions.Tests.Web
 {
     using System.Net.WebSockets;
-    using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Connections.WebSockets;
+    using GraphQL.AspNet.Web;
+    using GraphQL.AspNet.Web.WebSockets;
     using NUnit.Framework;
 
     [TestFixture]

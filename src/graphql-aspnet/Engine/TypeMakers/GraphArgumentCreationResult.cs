@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults.TypeMakers
+namespace GraphQL.AspNet.Engine.TypeMakers
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A pairing of a generated graph type with the concrete type its associcated with.

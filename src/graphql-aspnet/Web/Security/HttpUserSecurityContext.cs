@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Security.Web
+namespace GraphQL.AspNet.Web.Security
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading;

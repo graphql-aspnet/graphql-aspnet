@@ -9,7 +9,7 @@
 namespace GraphQL.AspNet.Tests.Execution
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Tests.Execution.AuthenticatedUserTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.AuthenticatedUserTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;

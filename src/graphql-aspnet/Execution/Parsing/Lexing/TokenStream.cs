@@ -7,17 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing
+namespace GraphQL.AspNet.Execution.Parsing.Lexing
 {
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Parsing2.Exceptions;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
-
-    using CHARS = GraphQL.AspNet.Parsing2.ParserConstants.Characters;
-    using SR = GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules.GraphQLSourceRule;
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using CHARS = ParserConstants.Characters;
+    using SR = GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.GraphQLSourceRule;
 
     /// <summary>
     /// A continuous flow of parsed <see cref="LexicalToken"/> items. Keeps a pointer to the

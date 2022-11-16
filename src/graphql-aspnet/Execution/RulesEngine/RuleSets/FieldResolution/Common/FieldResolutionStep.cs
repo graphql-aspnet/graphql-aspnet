@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.Common
 {
     using System;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
 
     /// <summary>
     /// A general rule step for resolving a field <see cref="GraphDataItem"/> through a runner.

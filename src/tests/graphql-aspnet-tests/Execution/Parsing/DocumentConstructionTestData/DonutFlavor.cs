@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.DocumentConstructionTestData
+namespace GraphQL.AspNet.Tests.Execution.Parsing.DocumentConstructionTestData
 {
     public enum DonutFlavor
     {

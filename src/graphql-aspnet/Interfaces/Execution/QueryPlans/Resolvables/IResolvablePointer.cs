@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables
 {
     /// <summary>
     /// A serialized item that represents a pointer to another, already resolved item.

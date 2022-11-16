@@ -7,10 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection
+namespace GraphQL.AspNet.Schemas.Structural
 {
-    using GraphQL.AspNet.Schemas.Structural;
-
     /// <summary>
     /// An internal overload of <see cref="SchemaItemPath"/> that allows reserved names
     /// as part of the path segment.

@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Security.Web
+namespace GraphQL.AspNet.Web.Security
 {
     using System.Security.Claims;
     using GraphQL.AspNet.Interfaces.Security;

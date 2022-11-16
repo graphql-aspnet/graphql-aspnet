@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Response
+namespace GraphQL.AspNet.Web
 {
     using System;
     using System.Text.Encodings.Web;
@@ -16,8 +16,9 @@ namespace GraphQL.AspNet.Response
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Configuration.Formatting;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A class containing many shared methods for writing all or part of a <see cref="IGraphOperationResult"/>

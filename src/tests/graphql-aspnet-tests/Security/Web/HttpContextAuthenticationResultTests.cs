@@ -9,7 +9,7 @@
 namespace GraphQL.AspNet.Tests.Security.Web
 {
     using System.Security.Claims;
-    using GraphQL.AspNet.Security.Web;
+    using GraphQL.AspNet.Web.Security;
     using Microsoft.AspNetCore.Authentication;
     using NUnit.Framework;
 

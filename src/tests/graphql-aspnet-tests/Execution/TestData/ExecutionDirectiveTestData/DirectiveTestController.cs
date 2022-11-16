@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionDirectiveTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;

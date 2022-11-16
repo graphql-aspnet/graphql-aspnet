@@ -7,13 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
-    using System;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using Moq;
     using NUnit.Framework;
 
@@ -49,8 +48,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var colllection = new DocumentOperationCollection(owner.Object);
             colllection.AddOperation(operation.Object);
 
-            Assert.AreEqual(1, colllection.Keys.Count());
-            Assert.AreEqual("thename", colllection.Keys.First());
+            Assert.AreEqual(1, Enumerable.Count<string>(colllection.Keys));
+            Assert.AreEqual("thename", Enumerable.First<string>(colllection.Keys));
         }
 
         [Test]
@@ -67,7 +66,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.AddOperation(operation.Object);
 
             var result = colllection.ContainsKey(name);
-            Assert.IsTrue(result);
+            Assert.IsTrue((bool)result);
         }
 
         [Test]
@@ -84,7 +83,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.AddOperation(operation.Object);
 
             var result = colllection.ContainsKey("otherName");
-            Assert.IsFalse(result);
+            Assert.IsFalse((bool)result);
         }
 
         [Test]
@@ -101,7 +100,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.AddOperation(operation.Object);
 
             Assert.AreEqual(1, colllection.Count);
-            Assert.IsTrue(colllection.ContainsKey(string.Empty));
+            Assert.IsTrue((bool)colllection.ContainsKey(string.Empty));
         }
 
         [Test]
@@ -118,7 +117,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.AddOperation(operation.Object);
 
             Assert.AreEqual(1, colllection.Count);
-            Assert.IsTrue(colllection.ContainsKey("long name"));
+            Assert.IsTrue((bool)colllection.ContainsKey("long name"));
         }
 
         [Test]

@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Tests.Execution
 {
     using System;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Tests.Execution.UnionTypeExecutionTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.UnionTypeExecutionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;

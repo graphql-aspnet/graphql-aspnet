@@ -14,9 +14,9 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Introspection.Fields;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.Structural;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields;
 
     /// <summary>
     /// A graph type used to expose an abstract item, not tied to a physical object, as an object type on the graph.

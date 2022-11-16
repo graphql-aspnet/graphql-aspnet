@@ -6,12 +6,12 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation;
 
     /// <summary>
     /// A rule package for validating a request to execute a directive against

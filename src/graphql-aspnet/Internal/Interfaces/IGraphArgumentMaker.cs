@@ -8,8 +8,8 @@
 // *************************************************************
 namespace GraphQL.AspNet.Internal.Interfaces
 {
-    using GraphQL.AspNet.Defaults.TypeMakers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Engine.TypeMakers;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A maker that can generate input arguments.

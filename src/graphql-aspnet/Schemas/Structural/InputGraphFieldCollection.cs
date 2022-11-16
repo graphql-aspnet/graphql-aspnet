@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Schemas.Structural
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A collection of <see cref="IInputGraphField" /> owned by a <see cref="IInputObjectGraphType" />.

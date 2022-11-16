@@ -7,14 +7,14 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.Subscriptions
+namespace GraphQL.AspNet.Interfaces.Web
 {
     using System;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// An interface for standarizing the needed interaction points of a connected

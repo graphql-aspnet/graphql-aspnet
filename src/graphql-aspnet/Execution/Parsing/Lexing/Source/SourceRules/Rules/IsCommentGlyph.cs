@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules.Rules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
 {
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
 
     /// <summary>
     /// Checks to see if the source text is currently pointed at the start of a comment or not.

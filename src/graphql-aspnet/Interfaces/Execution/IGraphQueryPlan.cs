@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Interfaces
+namespace GraphQL.AspNet.Interfaces.Execution
 {
     using System;
-    using GraphQL.AspNet.Interfaces.Execution;
 
     /// <summary>
     /// A represention of a set of operations to be fulfilled to generate data for a

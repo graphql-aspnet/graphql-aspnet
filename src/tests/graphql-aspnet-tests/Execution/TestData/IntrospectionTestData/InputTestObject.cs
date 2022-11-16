@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.IntrospectionTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData
 {
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;

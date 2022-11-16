@@ -7,12 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.NodeBuilders.Inputs
+namespace GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs
 {
-    using GraphQL.AspNet.Internal.Interfaces;
-    using GraphQL.AspNet.Parsing2.Lexing;
-    using GraphQL.AspNet.Parsing2.Exceptions;
-    using GraphQL.AspNet.Parsing2.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.Lexing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Tokens;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.Execution;
 
     public class ListValueNodeBuilder : ISyntaxNodeBuilder
     {

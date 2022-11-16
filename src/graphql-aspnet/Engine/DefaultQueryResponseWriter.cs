@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Engine
 {
     using System;
     using System.IO;
@@ -18,11 +18,12 @@ namespace GraphQL.AspNet.Defaults
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
+    using GraphQL.AspNet.Execution.Response;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.Response;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A standard implementation that writes the results of an executed document

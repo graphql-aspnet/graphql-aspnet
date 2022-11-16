@@ -12,7 +12,8 @@ namespace GraphQL.AspNet.Configuration
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
+
 #pragma warning disable CS0618 // Type or member is obsolete
 
     /// <summary>

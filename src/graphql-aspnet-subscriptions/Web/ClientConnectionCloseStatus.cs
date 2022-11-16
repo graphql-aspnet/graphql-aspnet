@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Connections.Clients
+namespace GraphQL.AspNet.Web
 {
     /// <summary>
     /// A list of common reasons why the client or server terminated the connection.

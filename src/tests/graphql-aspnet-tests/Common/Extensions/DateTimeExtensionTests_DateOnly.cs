@@ -8,10 +8,9 @@
 // *************************************************************
 
 #if NET6_0_OR_GREATER
-namespace GraphQL.AspNet.Tests.Extensions
+namespace GraphQL.AspNet.Tests.Common.Extensions
 {
     using System;
-    using System.Globalization;
     using GraphQL.AspNet.Common.Extensions;
     using NUnit.Framework;
 

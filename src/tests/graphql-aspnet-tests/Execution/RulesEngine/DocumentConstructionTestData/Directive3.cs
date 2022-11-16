@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.RulesEngine.DocumentConstructionTestData
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine.DocumentConstructionTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;

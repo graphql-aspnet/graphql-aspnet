@@ -9,8 +9,9 @@
 
 namespace GraphQL.Subscriptions.Tests.Mocks
 {
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.Web;
 
     /// <summary>
     /// A fake result mimicing what would be generating when

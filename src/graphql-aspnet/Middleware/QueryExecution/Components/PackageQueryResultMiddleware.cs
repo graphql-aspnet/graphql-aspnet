@@ -14,9 +14,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
     using GraphQL.AspNet.Interfaces.Middleware;
-    using GraphQL.AspNet.Interfaces.Response;
-    using GraphQL.AspNet.Response;
 
     /// <summary>
     /// Compiles the final graphql result from the individually resolved fields. This result can then be serialized.

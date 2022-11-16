@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration.ExecutionFieldSetTestData
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans.ExecutionFieldSetTestData
 {
     public enum GameType
     {

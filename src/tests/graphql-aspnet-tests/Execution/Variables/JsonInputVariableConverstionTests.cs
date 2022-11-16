@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Variables
+namespace GraphQL.AspNet.Tests.Execution.Variables
 {
     using System.Linq;
     using System.Text.Json;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using NUnit.Framework;
 
     [TestFixture]
@@ -43,7 +43,7 @@ namespace GraphQL.AspNet.Tests.Variables
 
             Assert.AreEqual(1, result.Count);
             var found = result.TryGetVariable("var1", out var variable);
-            Assert.IsTrue(found);
+            Assert.IsTrue((bool)found);
             Assert.AreEqual("var1", variable.Name);
 
             var castVariable = variable as IInputSingleValueVariable;
@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Tests.Variables
 
             Assert.AreEqual(1, result.Count);
             var found = result.TryGetVariable("var1", out var variable);
-            Assert.IsTrue(found);
+            Assert.IsTrue((bool)found);
             Assert.AreEqual("var1", variable.Name);
 
             var castVariable = variable as IInputSingleValueVariable;
@@ -85,7 +85,7 @@ namespace GraphQL.AspNet.Tests.Variables
 
             Assert.AreEqual(1, result.Count);
             var found = result.TryGetVariable("var1", out var variable);
-            Assert.IsTrue(found);
+            Assert.IsTrue((bool)found);
             Assert.AreEqual("var1", variable.Name);
 
             var castVariable = variable as IInputSingleValueVariable;
@@ -101,7 +101,7 @@ namespace GraphQL.AspNet.Tests.Variables
 
             Assert.AreEqual(1, result.Count);
             var found = result.TryGetVariable("var1", out var variable);
-            Assert.IsTrue(found);
+            Assert.IsTrue((bool)found);
             Assert.AreEqual("var1", variable.Name);
 
             var castVariable = variable as IInputSingleValueVariable;
@@ -117,14 +117,14 @@ namespace GraphQL.AspNet.Tests.Variables
 
             Assert.AreEqual(1, result.Count);
             var found = result.TryGetVariable("var1", out var variable);
-            Assert.IsTrue(found);
+            Assert.IsTrue((bool)found);
             Assert.AreEqual("var1", variable.Name);
 
             var castVariable = variable as IInputListVariable;
             Assert.AreEqual(3, castVariable.Items.Count);
-            Assert.IsTrue(castVariable.Items.OfType<IInputSingleValueVariable>().Any(x => x.Value == "55"));
-            Assert.IsTrue(castVariable.Items.OfType<IInputSingleValueVariable>().Any(x => x.Value == "18"));
-            Assert.IsTrue(castVariable.Items.OfType<IInputSingleValueVariable>().Any(x => x.Value == "22"));
+            Assert.IsTrue(Enumerable.OfType<IInputSingleValueVariable>(castVariable.Items).Any(x => x.Value == "55"));
+            Assert.IsTrue(Enumerable.OfType<IInputSingleValueVariable>(castVariable.Items).Any(x => x.Value == "18"));
+            Assert.IsTrue(Enumerable.OfType<IInputSingleValueVariable>(castVariable.Items).Any(x => x.Value == "22"));
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace GraphQL.AspNet.Tests.Variables
 
             Assert.AreEqual(1, result.Count);
             var found = result.TryGetVariable("var1", out var variable);
-            Assert.IsTrue(found);
+            Assert.IsTrue((bool)found);
             Assert.AreEqual("var1", variable.Name);
 
             var castVariable = variable as IInputFieldSetVariable;

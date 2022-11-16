@@ -7,13 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Schema;
     using Moq;
     using NUnit.Framework;
 
@@ -138,7 +138,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.AddArgument(arg);
 
             var result = colllection.TryGetValue("thename", out var argOut);
-            Assert.IsTrue(result);
+            Assert.IsTrue((bool)result);
             Assert.AreEqual(arg, argOut);
         }
 
@@ -163,7 +163,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.AddArgument(arg);
 
             var result = colllection.TryGetValue("theOthername", out var argOut);
-            Assert.IsFalse(result);
+            Assert.IsFalse((bool)result);
             Assert.IsNull(argOut);
         }
     }

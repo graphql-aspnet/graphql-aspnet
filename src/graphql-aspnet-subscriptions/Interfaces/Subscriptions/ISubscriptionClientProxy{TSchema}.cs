@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An interface representing an established connection to a client that can send and receive

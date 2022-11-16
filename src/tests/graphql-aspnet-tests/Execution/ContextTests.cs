@@ -13,9 +13,9 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Logging;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.Variables;
     using GraphQL.AspNet.Schemas;
     using Moq;
     using NUnit.Framework;

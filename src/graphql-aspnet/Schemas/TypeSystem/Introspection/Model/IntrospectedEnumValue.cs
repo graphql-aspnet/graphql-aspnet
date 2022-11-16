@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection.Model
+namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A model object containing data for the __EnumValue type of one enum value in an <see cref="IEnumGraphType"/>.

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.RulesEngine.DocumentConstructionTestData
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine.DocumentConstructionTestData
 {
     public enum DonutFlavor
     {

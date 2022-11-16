@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestData
 {
     public class NotRequiredSetGraphIdObject
     {

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Execution.Subscriptions
+namespace GraphQL.AspNet.Execution.Subscriptions.BackgroundServices
 {
     using System;
     using System.Threading;

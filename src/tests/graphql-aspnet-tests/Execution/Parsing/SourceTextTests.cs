@@ -7,13 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2
+namespace GraphQL.AspNet.Tests.Execution.Parsing
 {
     using System;
-    using GraphQL.AspNet.Parsing2.Lexing;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules;
-    using GraphQL.AspNet.Tests.Parsing2.Helpers;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules;
+    using GraphQL.AspNet.Tests.Execution.Parsing.Helpers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -313,7 +312,7 @@ namespace GraphQL.AspNet.Tests.Parsing2
             Assert.AreEqual("567", source.RetrieveText(source.NextLine()).ToString());
             Assert.AreEqual("8910", source.RetrieveText(source.NextLine()).ToString());
             Assert.AreEqual("111213", source.RetrieveText(source.NextLine()).ToString());
-            Assert.IsTrue(!source.HasData);
+            Assert.IsTrue((bool)!source.HasData);
         }
 
         [TestCase("", 0, -1)]

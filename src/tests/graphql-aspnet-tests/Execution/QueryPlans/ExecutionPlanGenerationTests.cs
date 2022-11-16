@@ -7,22 +7,22 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.PlanGeneration;
-    using GraphQL.AspNet.Internal.Interfaces;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document;
     using GraphQL.AspNet.Internal.Resolvers;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.PlanGeneration.PlanGenerationTestData;
-    using GraphQL.AspNet.Variables;
     using NUnit.Framework;
 
     [TestFixture]
@@ -313,7 +313,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var makeHybridData = fragTester.ChildContexts[0];
             Assert.IsNotNull(makeHybridData);
             Assert.AreEqual(2, makeHybridData.ChildContexts.Count);
-            Assert.IsTrue(makeHybridData.ChildContexts.Any(x => x.ExpectedSourceType == typeof(FragmentDataA) && x.Field.Name == "property1"));
+            Assert.IsTrue(makeHybridData.ChildContexts.Any<IGraphFieldInvocationContext>(x => x.ExpectedSourceType == typeof(FragmentDataA) && x.Field.Name == "property1"));
             Assert.IsTrue(makeHybridData.ChildContexts.Any(x => x.ExpectedSourceType == typeof(FragmentDataB) && x.Field.Name == "property2"));
         }
 

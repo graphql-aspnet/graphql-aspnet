@@ -13,7 +13,7 @@ namespace GraphQL.AspNet.Configuration
     using System.Diagnostics;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Interfaces.Configuration;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A set of configurations that will be applied to any outgoing response to a graphql query made through

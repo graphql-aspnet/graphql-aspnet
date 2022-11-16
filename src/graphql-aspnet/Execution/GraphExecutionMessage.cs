@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Execution
     using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common.Source;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
 
     /// <summary>
     /// A default, concrete implementation of a <see cref="IGraphMessage"/> used

@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Variables
+namespace GraphQL.AspNet.Tests.Execution.Variables
 {
-    using GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using Moq;
     using NUnit.Framework;
 
@@ -29,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Variables
 
             var found = ((IResolvableFieldSet)variable).TryGetField("var1Data", out var fieldOut);
 
-            Assert.IsTrue(found);
+            Assert.IsTrue((bool)found);
             Assert.AreEqual(mockvar.Object, fieldOut);
         }
 
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.Variables
 
             var found = ((IResolvableFieldSet)variable).TryGetField("var1Data", out var fieldOut);
 
-            Assert.IsFalse(found);
+            Assert.IsFalse((bool)found);
             Assert.IsNull(fieldOut);
         }
     }

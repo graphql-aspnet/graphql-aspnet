@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using System;
     using System.Linq;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.Structural;
     using Moq;

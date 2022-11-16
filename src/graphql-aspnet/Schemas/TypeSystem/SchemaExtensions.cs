@@ -10,7 +10,7 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System.Collections.Generic;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Extensions for working <see cref="ISchema"/> objects.

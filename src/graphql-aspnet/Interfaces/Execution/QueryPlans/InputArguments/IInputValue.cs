@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.InputArguments
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A represenetation of an input value, resolved from a request, marrying the value provided on the request

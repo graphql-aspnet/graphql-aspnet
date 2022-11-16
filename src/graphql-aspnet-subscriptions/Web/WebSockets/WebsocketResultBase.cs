@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Connections.WebSockets
+namespace GraphQL.AspNet.Web.WebSockets
 {
-    using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Web;
 
     /// <summary>
     /// A base class abstracting data related to a recieved message through a websocket.

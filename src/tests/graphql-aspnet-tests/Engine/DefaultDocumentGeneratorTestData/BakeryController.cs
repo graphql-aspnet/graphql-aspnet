@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Defaults.DefaultDocumentGeneratorTestData
+namespace GraphQL.AspNet.Tests.Engine.DefaultDocumentGeneratorTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Controllers;

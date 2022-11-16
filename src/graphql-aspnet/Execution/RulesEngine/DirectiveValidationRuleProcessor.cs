@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine
+namespace GraphQL.AspNet.Execution.RulesEngine
 {
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A rule processor that handles rules related to the invocation of directives at runtime,

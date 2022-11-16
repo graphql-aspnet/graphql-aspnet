@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Connections.Clients
+namespace GraphQL.AspNet.Web
 {
     using System.Net.WebSockets;
 

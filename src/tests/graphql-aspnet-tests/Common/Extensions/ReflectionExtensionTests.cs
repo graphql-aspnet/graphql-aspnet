@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Extensions
+namespace GraphQL.AspNet.Tests.Common.Extensions
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Extensions
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Tests.Extensions.ReflectionExtensionTestData;
+    using GraphQL.AspNet.Tests.Common.Extensions.ReflectionExtensionTestData;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using GraphQL.AspNet.Tests.ThirdPartyDll;
     using GraphQL.AspNet.Tests.ThirdPartyDll.Model;

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables
 {
     using System.Collections.Generic;
 

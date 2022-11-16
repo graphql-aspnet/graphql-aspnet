@@ -7,14 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
+namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.Common
 {
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.PlanGeneration.Document;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A base class with common functionality of all <see cref="IDocumentPart" />
@@ -33,7 +32,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.Common
         /// originated in the query.</param>
         protected DocumentPartBase(IDocumentPart parentPart, SourceLocation sourceLocation)
         {
-            this.Parent = Validation.ThrowIfNullOrReturn(parentPart, nameof(Parent));
+            this.Parent = Validation.ThrowIfNullOrReturn(parentPart, nameof(this.Parent));
             this.SourceLocation = sourceLocation;
 
             this.Children = new DocumentPartsCollection(this);

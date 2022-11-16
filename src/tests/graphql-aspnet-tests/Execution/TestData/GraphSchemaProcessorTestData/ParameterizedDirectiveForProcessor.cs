@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.GraphSchemaProcessorTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.GraphSchemaProcessorTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;

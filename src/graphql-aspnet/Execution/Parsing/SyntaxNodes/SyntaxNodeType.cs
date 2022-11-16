@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2
+namespace GraphQL.AspNet.Execution.Parsing.SyntaxNodes
 {
     /// <summary>
     /// An enumeration of all the types of nodes that can exist within

@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Tests.Security.Web
     using System;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Security.Web;
+    using GraphQL.AspNet.Web.Security;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Moq;

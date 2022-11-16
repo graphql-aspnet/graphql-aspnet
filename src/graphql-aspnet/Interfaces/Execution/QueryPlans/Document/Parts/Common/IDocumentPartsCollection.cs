@@ -7,11 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common
 {
-    using System.Collections.Generic;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.Common;
-
     /// <summary>
     /// An collection of document parts with a common owner.
     /// </summary>

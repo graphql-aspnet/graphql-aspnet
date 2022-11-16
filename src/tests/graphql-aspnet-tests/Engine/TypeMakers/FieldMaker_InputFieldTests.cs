@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
-    using GraphQL.AspNet.Defaults.TypeMakers;
-    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
+    using GraphQL.AspNet.Engine.TypeMakers;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
@@ -32,7 +32,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("notRequiredValueTypeField", graphField.Name);
-            Assert.IsFalse(graphField.IsRequired);
+            Assert.IsFalse((bool)graphField.IsRequired);
 
             // even though its not required, its still "Int!" because its a
             // non-nullable value type
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(typeof(int), graphField.DeclaredReturnType);
 
             Assert.AreEqual(1, graphField.AppliedDirectives.Count);
-            Assert.AreEqual("DirectiveForNotRequiredValueTypeField", graphField.AppliedDirectives.First().DirectiveName);
+            Assert.AreEqual("DirectiveForNotRequiredValueTypeField", Enumerable.First(graphField.AppliedDirectives).DirectiveName);
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredValueTypeField", graphField.Name);
-            Assert.IsTrue(graphField.IsRequired);
+            Assert.IsTrue((bool)graphField.IsRequired);
 
             Assert.AreEqual("Int!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/RequiredValueTypeField", graphField.Route.ToString());
@@ -83,7 +83,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("notRequiredReferenceTypeField", graphField.Name);
-            Assert.IsFalse(graphField.IsRequired);
+            Assert.IsFalse((bool)graphField.IsRequired);
 
             // teh field is not required and the type is a reference type (which is nullable)
             // meaning the type expression should also be "nullable"
@@ -109,7 +109,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredReferenceTypeField", graphField.Name);
-            Assert.IsTrue(graphField.IsRequired);
+            Assert.IsTrue((bool)graphField.IsRequired);
 
             // because its marked as required, even though its a reference type (which is nullable)
             // the type expression is automatically hoisted to be "non-nullable"
@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("requiredReferenceExplicitNonNullTypeField", graphField.Name);
-            Assert.IsTrue(graphField.IsRequired);
+            Assert.IsTrue((bool)graphField.IsRequired);
 
             // because its marked as required, even though its a reference type (which is nullable)
             // the type expression is automatically hoisted to be "non-nullable"
@@ -161,7 +161,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("graphIdRequired", graphField.Name);
-            Assert.IsTrue(graphField.IsRequired);
+            Assert.IsTrue((bool)graphField.IsRequired);
 
             Assert.AreEqual("ID", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdRequired", graphField.Route.ToString());
@@ -185,7 +185,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("graphIdNotRequired", graphField.Name);
-            Assert.IsFalse(graphField.IsRequired);
+            Assert.IsFalse((bool)graphField.IsRequired);
 
             Assert.AreEqual("ID", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNotRequired", graphField.Route.ToString());
@@ -209,7 +209,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(fieldTemplate).Field;
 
             Assert.AreEqual("graphIdNonNullable", graphField.Name);
-            Assert.IsFalse(graphField.IsRequired);
+            Assert.IsFalse((bool)graphField.IsRequired);
 
             Assert.AreEqual("ID!", graphField.TypeExpression.ToString());
             Assert.AreEqual("[type]/Input_InputTestObject/GraphIdNonNullable", graphField.Route.ToString());

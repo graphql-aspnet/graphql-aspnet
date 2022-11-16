@@ -7,20 +7,20 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System;
     using System.Collections.Generic;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.PlanGeneration.InputArguments;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.QueryPlans.InputArguments;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Execution.QueryPlans.ArgumentGeneratorTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.PlanGeneration.ArgumentGeneratorTestData;
-    using GraphQL.AspNet.Variables;
     using NUnit.Framework;
 
     [TestFixture]
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = argGenerator.CreateInputArgument(arg1);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue((bool)result.IsValid);
             Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
 
             Assert.IsNull(result.Message);
@@ -86,7 +86,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = argGenerator.CreateInputArgument(arg2);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue((bool)result.IsValid);
             Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
             Assert.IsNull(result.Message);
 
@@ -123,7 +123,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = argGenerator.CreateInputArgument(arg1);
 
             Assert.IsNotNull(result);
-            Assert.IsFalse(result.IsValid);
+            Assert.IsFalse((bool)result.IsValid);
             Assert.IsNull(result.Argument as ResolvedInputArgumentValue);
 
             Assert.IsNotNull(result.Message);
@@ -158,7 +158,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = argGenerator.CreateInputArgument(arg3);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue((bool)result.IsValid);
             Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
             Assert.IsNull(result.Message);
 
@@ -197,7 +197,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = argGenerator.CreateInputArgument(arg3);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue((bool)result.IsValid);
             Assert.IsNotNull(result.Argument as DeferredInputArgumentValue);
             Assert.IsNull(result.Message);
         }
@@ -239,7 +239,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = argGenerator.CreateInputArgument(arg3);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue((bool)result.IsValid);
             Assert.IsNotNull(result.Argument as ResolvedInputArgumentValue);
             Assert.IsNull(result.Message);
 
@@ -287,7 +287,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var result = argGenerator.CreateInputArgument(arg3);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue((bool)result.IsValid);
             Assert.IsNotNull(result.Argument as DeferredInputArgumentValue);
             Assert.IsNull(result.Message);
         }

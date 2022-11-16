@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.DirectiveProcessorTypeSystemLocationTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.DirectiveProcessorTypeSystemLocationTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
@@ -26,7 +26,7 @@ namespace GraphQL.AspNet.Tests.Execution.DirectiveProcessorTypeSystemLocationTes
         [DirectiveLocations(DirectiveLocation.AllTypeSystemLocations)]
         public IGraphActionResult Execute()
         {
-            ExecutedLocation = this.DirectiveLocation;
+            this.ExecutedLocation = this.DirectiveLocation;
             return this.Ok();
         }
     }

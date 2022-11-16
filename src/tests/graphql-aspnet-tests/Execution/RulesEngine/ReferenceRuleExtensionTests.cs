@@ -6,9 +6,9 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.RulesEngine
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 {
-    using GraphQL.AspNet.RulesEngine;
+    using GraphQL.AspNet.Execution.RulesEngine;
     using NUnit.Framework;
 
     [TestFixture]

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Defaults
+namespace GraphQL.Subscriptions.Tests.Engine
 {
     using System;
     using System.Collections.Generic;
@@ -17,12 +17,11 @@ namespace GraphQL.Subscriptions.Tests.Defaults
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Exceptions;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Internal;
+    using GraphQL.AspNet.Interfaces.Web;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.Framework;
     using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;

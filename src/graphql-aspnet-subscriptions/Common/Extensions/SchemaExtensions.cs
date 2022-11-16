@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Common.Extensions
 {
     using System;
     using System.Collections.Concurrent;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// Extension methods for working with <see cref="ISchema"/>.

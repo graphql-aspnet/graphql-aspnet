@@ -7,11 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.DirectiveValidation
 {
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution.Contexts;
-    using GraphQL.AspNet.RulesEngine.RuleSets.DirectiveExecution.Common;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DirectiveExecution.Common;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>

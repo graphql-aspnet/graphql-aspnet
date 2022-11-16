@@ -7,12 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
-    using System;
     using System.Linq;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using Moq;
     using NUnit.Framework;
 
@@ -65,7 +64,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var refs = colllection.FindReferences("thename");
 
-            Assert.AreEqual(1, refs.Count());
+            Assert.AreEqual(1, Enumerable.Count(refs));
         }
 
         [Test]
@@ -83,7 +82,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var refs = colllection.FindReferences("theOthername");
 
-            Assert.AreEqual(0, refs.Count());
+            Assert.AreEqual(0, Enumerable.Count(refs));
         }
 
         [Test]
@@ -101,7 +100,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var refs = colllection.FindReferences(null);
 
-            Assert.AreEqual(0, refs.Count());
+            Assert.AreEqual(0, Enumerable.Count(refs));
         }
 
         [Test]
@@ -118,7 +117,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.Add(varUsage.Object);
 
             var result = colllection.HasUsages("thename");
-            Assert.IsTrue(result);
+            Assert.IsTrue((bool)result);
         }
 
         [Test]
@@ -135,7 +134,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.Add(varUsage.Object);
 
             var result = colllection.HasUsages("theOthername");
-            Assert.IsFalse(result);
+            Assert.IsFalse((bool)result);
         }
 
         [Test]
@@ -152,7 +151,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             colllection.Add(varUsage.Object);
 
             var result = colllection.HasUsages(null);
-            Assert.IsFalse(result);
+            Assert.IsFalse((bool)result);
         }
     }
 }

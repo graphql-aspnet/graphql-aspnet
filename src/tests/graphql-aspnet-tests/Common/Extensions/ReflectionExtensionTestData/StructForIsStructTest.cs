@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Extensions.ReflectionExtensionTestData
+namespace GraphQL.AspNet.Tests.Common.Extensions.ReflectionExtensionTestData
 {
     public struct StructForIsStructTest
     {

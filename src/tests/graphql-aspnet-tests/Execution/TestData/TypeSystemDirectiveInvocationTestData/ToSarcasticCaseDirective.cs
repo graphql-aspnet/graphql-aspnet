@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveInvocationTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveInvocationTestData
 {
     using System.Text;
     using System.Threading;
@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveInvocationTestData
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class ToSarcasticCaseDirective : GraphDirective
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveInvocationTestData
 
                 // update the resolver to execute the orignal
                 // resolver then upper case any string result
-                var resolver = item.Resolver.Extend(ConvertToSarcastic);
+                var resolver = ExecutionExtensionMethods.Extend(item.Resolver, ConvertToSarcastic);
                 item.UpdateResolver(resolver);
             }
 

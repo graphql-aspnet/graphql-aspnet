@@ -10,7 +10,8 @@
 namespace GraphQL.AspNet.Interfaces.Subscriptions
 {
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Interfaces.Web;
 
     /// <summary>
     /// A factory used to create client proxy instances that support a specific

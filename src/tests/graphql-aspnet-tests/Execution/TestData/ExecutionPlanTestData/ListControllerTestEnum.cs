@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
 {
     public enum ListControllerTestEnum
     {

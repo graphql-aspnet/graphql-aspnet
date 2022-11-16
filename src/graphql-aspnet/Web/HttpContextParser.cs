@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Defaults
+namespace GraphQL.AspNet.Web
 {
     using System;
     using System.IO;
@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Defaults
     using System.Text.Json;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
 

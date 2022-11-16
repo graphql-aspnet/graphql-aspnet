@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection.Resolvers
+namespace GraphQL.AspNet.Internal.Resolvers.Introspeection
 {
     using System;
     using System.Linq;
@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Internal.Introspection.Resolvers
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Internal.Introspection.Model;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
 
     /// <summary>
     /// A resolver to extract fields from a __Type during an introspection query.

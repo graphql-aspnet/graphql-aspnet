@@ -7,12 +7,13 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
+namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues
 {
     using System;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Parsing2;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
 
     /// <summary>
     /// A factory to generate appropriate query input values for a parsed document.
@@ -27,7 +28,7 @@ namespace GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues
         /// <param name="valueNode">The AST node from which the value should be created.</param>
         /// <param name="key">A key value, if any, to assign to the value node.</param>
         /// <returns>IQueryInputValue.</returns>
-        public static ISuppliedValueDocumentPart CreateInputValue(Parsing2.Lexing.Source.SourceText sourceText, IDocumentPart ownerPart, SyntaxNode valueNode, string key = null)
+        public static ISuppliedValueDocumentPart CreateInputValue(SourceText sourceText, IDocumentPart ownerPart, SyntaxNode valueNode, string key = null)
         {
             switch (valueNode.NodeType)
             {

@@ -13,12 +13,12 @@ namespace GraphQL.AspNet.Tests.Controllers.ActionResults
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Controllers.ActionResults;
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.InputModel;
     using GraphQL.AspNet.Interfaces.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Tests.Controllers.ActionResults.ActuionResultTestData;
     using GraphQL.AspNet.Tests.Framework;
     using Moq;

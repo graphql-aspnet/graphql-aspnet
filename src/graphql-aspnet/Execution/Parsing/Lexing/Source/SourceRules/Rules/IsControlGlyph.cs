@@ -7,9 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules.Rules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules.Rules
 {
-    using GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation;
 
     /// <summary>
     /// A rule validating if the current character is an operational character or just part of a name. Makes

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules
 {
     /// <summary>
     /// Implemented by classes wishing to act as a source rule for validating <see cref="SourceText"/>.

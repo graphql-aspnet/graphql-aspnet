@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.InterfaceExtensionTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.InterfaceExtensionTestData
 {
     using System.Collections.Generic;
     using GraphQL.AspNet.Attributes;

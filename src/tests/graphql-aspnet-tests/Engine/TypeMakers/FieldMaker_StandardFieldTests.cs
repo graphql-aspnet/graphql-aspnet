@@ -6,15 +6,16 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Internal.TypeTemplates;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
+    using GraphQL.AspNet.Security;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using Moq;
     using NUnit.Framework;
@@ -60,9 +61,9 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(0, actionMethod.SecurityPolicies.Count());
 
             var graphField = new GraphFieldMaker(server.Schema).CreateField(actionMethod).Field;
-            Assert.AreEqual(1, graphField.SecurityGroups.Count());
+            Assert.AreEqual(1, Enumerable.Count<AppliedSecurityPolicyGroup>(graphField.SecurityGroups));
 
-            var group = graphField.SecurityGroups.First();
+            var group = Enumerable.First<AppliedSecurityPolicyGroup>(graphField.SecurityGroups);
             Assert.AreEqual(template.SecurityPolicies.First(), group.First());
         }
 
@@ -81,11 +82,11 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
 
             var graphField = new GraphFieldMaker(server.Schema).CreateField(actionMethod).Field;
 
-            Assert.AreEqual(2, graphField.SecurityGroups.Count());
+            Assert.AreEqual(2, Enumerable.Count<AppliedSecurityPolicyGroup>(graphField.SecurityGroups));
 
             // ensure policy order of controller -> method
-            var controllerTemplateGroup = graphField.SecurityGroups.First();
-            var fieldTemplateGroup = graphField.SecurityGroups.Skip(1).First();
+            var controllerTemplateGroup = Enumerable.First<AppliedSecurityPolicyGroup>(graphField.SecurityGroups);
+            var fieldTemplateGroup = Enumerable.Skip<AppliedSecurityPolicyGroup>(graphField.SecurityGroups, 1).First();
             Assert.AreEqual(template.SecurityPolicies.First(), controllerTemplateGroup.First());
             Assert.AreEqual(actionMethod.SecurityPolicies.First(), fieldTemplateGroup.First());
         }
@@ -109,7 +110,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var graphField = new GraphFieldMaker(server.Schema).CreateField(field).Field;
             Assert.IsNotNull(graphField);
 
-            var graphArg = graphField.Arguments.FirstOrDefault();
+            var graphArg = Enumerable.FirstOrDefault(graphField.Arguments);
             Assert.IsNotNull(graphArg);
             Assert.IsEmpty(graphArg.TypeExpression.Wrappers);
             Assert.AreEqual(GraphArgumentModifiers.None, graphArg.ArgumentModifiers);
@@ -178,7 +179,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, field.AppliedDirectives.Count);
             Assert.AreEqual(field, field.AppliedDirectives.Parent);
 
-            var appliedDirective = field.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(field.AppliedDirectives);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 13, "prop field arg" }, appliedDirective.ArgumentValues);
         }
@@ -202,7 +203,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, field.AppliedDirectives.Count);
             Assert.AreEqual(field, field.AppliedDirectives.Parent);
 
-            var appliedDirective = field.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(field.AppliedDirectives);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 14, "method field arg" }, appliedDirective.ArgumentValues);
         }
@@ -230,7 +231,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, arg.AppliedDirectives.Count);
             Assert.AreEqual(arg, arg.AppliedDirectives.Parent);
 
-            var appliedDirective = field.Arguments["arg1"].AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(field.Arguments["arg1"].AppliedDirectives);
 
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 15, "arg arg" }, appliedDirective.ArgumentValues);

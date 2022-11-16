@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Interfaces.PlanGeneration.Resolvables
+namespace GraphQL.AspNet.Interfaces.Execution.QueryPlans.Resolvables
 {
     /// <summary>
     /// A marker interface identifying an object as being one of several types of "resolvable items".

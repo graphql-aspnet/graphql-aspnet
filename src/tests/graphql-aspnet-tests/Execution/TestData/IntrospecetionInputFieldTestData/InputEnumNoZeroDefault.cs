@@ -7,10 +7,8 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestData
 {
-    using GraphQL.AspNet.Attributes;
-
     public enum InputEnumNoZeroDefault
     {
         Value1 = 1,

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.IntrospecetionInputFieldTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestData
 {
     using System.ComponentModel.DataAnnotations;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;

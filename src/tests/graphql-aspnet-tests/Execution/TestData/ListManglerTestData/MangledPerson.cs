@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.ListManglerTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.ListManglerTestData
 {
     public class MangledPerson
     {

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.TypeSystemDirectiveTestData
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     [GraphType(Name = "ToUpper")]
@@ -34,7 +34,7 @@ namespace GraphQL.AspNet.Tests.Execution.TypeSystemDirectiveTestData
 
                 // update the resolver to execute the orignal
                 // resolver then upper case any string result
-                var resolver = item.Resolver.Extend(ConvertToupper);
+                var resolver = ExecutionExtensionMethods.Extend(item.Resolver, ConvertToupper);
                 item.UpdateResolver(resolver);
             }
 

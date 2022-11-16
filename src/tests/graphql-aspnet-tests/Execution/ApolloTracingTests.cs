@@ -13,11 +13,11 @@ namespace GraphQL.AspNet.Tests.Execution
     using System.Linq;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Metrics;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.Execution.BatchResolverTestData;
-    using GraphQL.AspNet.Tests.Execution.ExecutionPlanTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData;
+    using GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using Microsoft.Extensions.DependencyInjection;

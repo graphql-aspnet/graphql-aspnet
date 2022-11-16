@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Exceptions
+namespace GraphQL.AspNet.Execution.Subscriptions.Exceptions
 {
     using System;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
+    using GraphQL.AspNet.Interfaces.Web;
 
     /// <summary>
     /// An exception thrown by a subscription server when its asked to

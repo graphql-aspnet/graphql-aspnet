@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
     using System.Linq;
     using GraphQL.AspNet.Common.Generics;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Internal.Templating.GraphTypeNameTestData;

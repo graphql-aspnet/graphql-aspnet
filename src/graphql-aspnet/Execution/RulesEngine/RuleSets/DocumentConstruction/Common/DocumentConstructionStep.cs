@@ -7,9 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common
 {
     using System.Collections.Generic;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
 
     /// <summary>
     /// A base construction step containing common logic for most active steps (not validators).

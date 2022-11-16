@@ -7,16 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Variables
+namespace GraphQL.AspNet.Tests.Execution.Variables
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Interfaces.Variables;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Execution.Variables.ResolvedVariableTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.Variables.ResolvedVariableTestData;
-    using GraphQL.AspNet.Variables;
     using NUnit.Framework;
 
     [TestFixture]
@@ -372,9 +372,9 @@ namespace GraphQL.AspNet.Tests.Variables
             collection.AddVariable(new ResolvedVariable("key2", new GraphTypeExpression("BOB"), "bob2"));
 
             var keys = collection.Keys;
-            Assert.AreEqual(2, keys.Count());
-            Assert.IsTrue(keys.Contains("key1"));
-            Assert.IsTrue(keys.Contains("key2"));
+            Assert.AreEqual(2, Enumerable.Count<string>(keys));
+            Assert.IsTrue(Enumerable.Contains(keys, "key1"));
+            Assert.IsTrue(Enumerable.Contains(keys, "key2"));
         }
 
         [Test]
@@ -383,8 +383,8 @@ namespace GraphQL.AspNet.Tests.Variables
             var collection = new ResolvedVariableCollection();
             collection.AddVariable(new ResolvedVariable("key1", new GraphTypeExpression("BOB"), "bob"));
 
-            Assert.IsTrue(collection.ContainsKey("key1"));
-            Assert.IsFalse(collection.ContainsKey("key2"));
+            Assert.IsTrue((bool)collection.ContainsKey("key1"));
+            Assert.IsFalse((bool)collection.ContainsKey("key2"));
         }
 
         [Test]
@@ -397,9 +397,9 @@ namespace GraphQL.AspNet.Tests.Variables
             collection.AddVariable(val2);
 
             var values = collection.Values;
-            Assert.AreEqual(2, values.Count());
-            Assert.IsTrue(values.Contains(val1));
-            Assert.IsTrue(values.Contains(val2));
+            Assert.AreEqual(2, Enumerable.Count(values));
+            Assert.IsTrue(Enumerable.Contains(values, val1));
+            Assert.IsTrue(Enumerable.Contains(values, val2));
         }
     }
 }

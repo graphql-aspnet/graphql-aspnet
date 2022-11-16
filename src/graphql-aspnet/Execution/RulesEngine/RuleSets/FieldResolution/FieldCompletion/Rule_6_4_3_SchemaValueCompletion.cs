@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.FieldCompletion
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.FieldCompletion
 {
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Execution.FieldResolution;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.FieldResolution.Common;
     using GraphQL.AspNet.Internal;
-    using GraphQL.AspNet.RulesEngine.RuleSets.FieldResolution.Common;
     using GraphQL.AspNet.Schemas;
 
     /// <summary>

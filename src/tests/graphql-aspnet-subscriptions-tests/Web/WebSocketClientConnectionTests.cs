@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Connections
+namespace GraphQL.Subscriptions.Tests.Web
 {
     using System;
     using System.IO;
@@ -15,9 +15,9 @@ namespace GraphQL.Subscriptions.Tests.Connections
     using System.Security.Claims;
     using System.Threading.Tasks;
     using GraphQL.AspNet;
-    using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Connections.WebSockets;
     using GraphQL.AspNet.Interfaces.Security;
+    using GraphQL.AspNet.Web;
+    using GraphQL.AspNet.Web.WebSockets;
     using GraphQL.Subscriptions.Tests.Mocks;
     using Microsoft.AspNetCore.Http;
     using Moq;
@@ -89,7 +89,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
 
             await client.CloseAsync(ConnectionCloseStatus.Unknown, string.Empty);
 
-            Assert.IsTrue(client.ClosedForever);
+            Assert.IsTrue((bool)client.ClosedForever);
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             await client.OpenAsync("some protocol");
             await client.CloseAsync(ConnectionCloseStatus.Unknown, string.Empty);
 
-            Assert.IsTrue(client.ClosedForever);
+            Assert.IsTrue((bool)client.ClosedForever);
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             });
 
             Assert.AreSame(exceptionToThrow, thrownException);
-            Assert.IsTrue(client.ClosedForever);
+            Assert.IsTrue((bool)client.ClosedForever);
         }
 
         [Test]
@@ -174,7 +174,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
             });
 
             Assert.AreSame(exceptionToThrow, thrownException);
-            Assert.IsTrue(client.ClosedForever);
+            Assert.IsTrue((bool)client.ClosedForever);
         }
 
         [Test]
@@ -401,7 +401,7 @@ namespace GraphQL.Subscriptions.Tests.Connections
 
             Assert.IsNotNull(fakeSocket);
             Assert.AreEqual(1, fakeSocket.TotalCallsToReceive);
-            Assert.IsFalse(result.CloseStatus.HasValue);
+            Assert.IsFalse((bool)result.CloseStatus.HasValue);
             Assert.IsTrue(stream.Length > 0);
         }
 

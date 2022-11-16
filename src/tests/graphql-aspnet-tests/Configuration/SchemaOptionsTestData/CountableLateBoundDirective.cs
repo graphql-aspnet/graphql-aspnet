@@ -12,7 +12,7 @@ namespace GraphQL.AspNet.Tests.Configuration.SchemaOptionsTestData
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     internal class CountableLateBoundDirective : GraphDirective

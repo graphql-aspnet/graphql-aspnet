@@ -15,13 +15,13 @@ namespace GraphQL.AspNet.Execution.Contexts
     using System.Linq;
     using System.Security.Claims;
     using GraphQL.AspNet.Common;
+    using GraphQL.AspNet.Execution.RulesEngine.Interfaces;
+    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Execution;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Logging;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.RulesEngine.Interfaces;
-    using GraphQL.AspNet.Variables;
 
     /// <summary>
     /// A set of information needed to successiful execute a directive as part of a field resolution.

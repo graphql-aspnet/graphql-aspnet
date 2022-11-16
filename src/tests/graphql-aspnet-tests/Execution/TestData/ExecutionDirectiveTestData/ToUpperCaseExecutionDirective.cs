@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionDirectiveTestData
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.ExecutionDirectiveTestData
     using GraphQL.AspNet.Directives;
     using GraphQL.AspNet.Execution.Contexts;
     using GraphQL.AspNet.Interfaces.Controllers;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts;
     using GraphQL.AspNet.Schemas.TypeSystem;
 
     public class ToUpperCaseExecutionDirective : GraphDirective

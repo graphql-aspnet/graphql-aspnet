@@ -13,8 +13,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
-    using GraphQL.AspNet.Interfaces.Schema.TypeSystem;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// A qualified subscription name representing both the unique path in a schema

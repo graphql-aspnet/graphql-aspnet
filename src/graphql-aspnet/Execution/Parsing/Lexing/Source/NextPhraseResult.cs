@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.Lexing.Source
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source
 {
     /// <summary>
     /// A result used in processing a batch of characters from a source text file.

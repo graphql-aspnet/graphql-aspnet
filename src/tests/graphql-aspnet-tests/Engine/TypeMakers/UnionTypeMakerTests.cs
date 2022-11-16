@@ -6,15 +6,16 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
+    using System;
     using System.Linq;
-    using GraphQL.AspNet.Defaults.TypeMakers;
+    using GraphQL.AspNet.Engine.TypeMakers;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using NUnit.Framework;
 
@@ -36,13 +37,13 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual("FragmentData", union.Name);
             Assert.IsNull(union.Description);
 
-            Assert.AreEqual(2, union.PossibleGraphTypeNames.Count());
-            Assert.AreEqual(2, union.PossibleConcreteTypes.Count());
+            Assert.AreEqual(2, Enumerable.Count<string>(union.PossibleGraphTypeNames));
+            Assert.AreEqual(2, Enumerable.Count<Type>(union.PossibleConcreteTypes));
 
-            Assert.IsTrue(union.PossibleGraphTypeNames.Contains(nameof(UnionDataA)));
-            Assert.IsTrue(union.PossibleGraphTypeNames.Contains(nameof(UnionDataB)));
-            Assert.IsTrue(union.PossibleConcreteTypes.Contains(typeof(UnionDataA)));
-            Assert.IsTrue(union.PossibleConcreteTypes.Contains(typeof(UnionDataB)));
+            Assert.IsTrue((bool)union.PossibleGraphTypeNames.Contains(nameof(UnionDataA)));
+            Assert.IsTrue((bool)union.PossibleGraphTypeNames.Contains(nameof(UnionDataB)));
+            Assert.IsTrue((bool)union.PossibleConcreteTypes.Contains(typeof(UnionDataA)));
+            Assert.IsTrue((bool)union.PossibleConcreteTypes.Contains(typeof(UnionDataB)));
         }
 
         [Test]
@@ -59,7 +60,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, unionType.AppliedDirectives.Count);
             Assert.AreEqual(unionType, unionType.AppliedDirectives.Parent);
 
-            var appliedDirective = unionType.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(unionType.AppliedDirectives);
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 121, "union directive" }, appliedDirective.ArgumentValues);

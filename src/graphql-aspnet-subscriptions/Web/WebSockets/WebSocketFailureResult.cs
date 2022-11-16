@@ -7,11 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Connections.WebSockets
+namespace GraphQL.AspNet.Web.WebSockets
 {
     using System.Net.WebSockets;
-    using GraphQL.AspNet.Connections.Clients;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
 
     /// <summary>
     /// A receive result returned by a client when the recieve message fails to complete

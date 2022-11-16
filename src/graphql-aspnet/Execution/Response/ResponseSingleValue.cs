@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Response
+namespace GraphQL.AspNet.Execution.Response
 {
     using System.Diagnostics;
-    using GraphQL.AspNet.Interfaces.Response;
+    using GraphQL.AspNet.Interfaces.Execution.Response;
 
     /// <summary>
     /// An instance of a resolved scalar or enum included in a response package.

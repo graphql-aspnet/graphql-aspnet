@@ -7,24 +7,24 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using GraphQL.AspNet.Common.Source;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.PlanGeneration.DocumentParts.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Parsing2;
-    using GraphQL.AspNet.Parsing2.Lexing;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
-    using GraphQL.AspNet.Parsing2.NodeBuilders.Inputs;
-    using GraphQL.AspNet.PlanGeneration;
-    using GraphQL.AspNet.PlanGeneration.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Execution.Parsing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.NodeBuilders.Inputs;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.QueryPlans;
+    using GraphQL.AspNet.Execution.QueryPlans.Document.Parts.SuppliedValues;
+    using GraphQL.AspNet.Interfaces.Execution.QueryPlans.Document.Parts.Common;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Tests.CommonHelpers;
     using GraphQL.AspNet.Tests.Framework;
     using Moq;
     using NUnit.Framework;
@@ -200,7 +200,7 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
         [SetCulture("de-DE")]
         public void DefaultScalarValueResolvers_WithGermanCulture(string expressionText, string inputText, object expectedOutput)
         {
-            DefaultScalarValueResolvers(expressionText, inputText, expectedOutput);
+            this.DefaultScalarValueResolvers(expressionText, inputText, expectedOutput);
         }
 
         [TestCaseSource(nameof(_inputValueResolverTestCases_WithInvalidData))]
@@ -253,8 +253,8 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
             var listOwner = new Mock<IDocumentPart>();
 
             var sourceList = new DocumentListSuppliedValue(listOwner.Object, SourceLocation.None);
-            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "15", ScalarValueType.Number, SourceLocation.None));
-            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "12", ScalarValueType.Number, SourceLocation.None));
+            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "15", ScalarValueType.Unknown, SourceLocation.None));
+            sourceList.Children.Add(new DocumentScalarSuppliedValue(sourceList, "12", ScalarValueType.Unknown, SourceLocation.None));
 
             var typeExpression = GraphTypeExpression.FromDeclaration("[Int]");
             var generator = new InputResolverMethodGenerator(this.CreateSchema());
@@ -272,12 +272,12 @@ namespace GraphQL.AspNet.Tests.PlanGeneration
 
             var outerList = new DocumentListSuppliedValue(listOwner.Object, SourceLocation.None);
             var innerList1 = new DocumentListSuppliedValue(outerList, SourceLocation.None);
-            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "15", ScalarValueType.Number, SourceLocation.None));
-            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "12", ScalarValueType.Number, SourceLocation.None));
+            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "15", ScalarValueType.Unknown, SourceLocation.None));
+            innerList1.Children.Add(new DocumentScalarSuppliedValue(innerList1, "12", ScalarValueType.Unknown, SourceLocation.None));
 
             var innerList2 = new DocumentListSuppliedValue(outerList, SourceLocation.None);
-            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "30", ScalarValueType.Number, SourceLocation.None));
-            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "40", ScalarValueType.Number, SourceLocation.None));
+            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "30", ScalarValueType.Unknown, SourceLocation.None));
+            innerList2.Children.Add(new DocumentScalarSuppliedValue(innerList2, "40", ScalarValueType.Unknown, SourceLocation.None));
 
             outerList.Children.Add(innerList1);
             outerList.Children.Add(innerList2);

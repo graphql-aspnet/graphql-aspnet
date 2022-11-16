@@ -11,7 +11,7 @@ namespace GraphQL.AspNet.Execution
 {
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An encapsulated object destined to be used as an input parameter to a method or controller action

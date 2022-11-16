@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Interfaces.Response
+namespace GraphQL.AspNet.Interfaces.Execution.Response
 {
     /// <summary>
     /// A marker interface identifying an item as being part of a generated

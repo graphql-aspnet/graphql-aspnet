@@ -9,7 +9,7 @@
 
 namespace GraphQL.AspNet.Interfaces.Engine
 {
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Interfaces.Schema;
 
     /// <summary>
     /// An interface representing an object acting as the runtime for the core graphql

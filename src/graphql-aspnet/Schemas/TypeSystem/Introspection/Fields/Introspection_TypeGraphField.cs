@@ -7,17 +7,16 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Internal.Introspection.Fields
+namespace GraphQL.AspNet.Schemas.TypeSystem.Introspection.Fields
 {
     using System;
     using System.Diagnostics;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Introspection.Model;
-    using GraphQL.AspNet.Internal.Introspection.Resolvers;
-    using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Interfaces.Schema;
+    using GraphQL.AspNet.Internal.Resolvers.Introspeection;
     using GraphQL.AspNet.Schemas.Structural;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
 
     /// <summary>
     /// Represents the meta-field called '__type' allowing for introspection of a single type in the schema. This field

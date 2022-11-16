@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.BatchResolverTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
 {
     using System.Collections.Generic;
 

@@ -12,10 +12,9 @@ namespace GraphQL.AspNet.Tests.Parsing2
 {
     using System;
     using System.Linq;
-    using GraphQL.AspNet.Parsing2.Exceptions;
-    using GraphQL.AspNet.Parsing2.Lexing;
-    using GraphQL.AspNet.Parsing2.Lexing.CharacterGroupValidation;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Exceptions;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
     using GraphQL.AspNet.Tests.CommonHelpers;
     using NUnit.Framework;
 

@@ -13,11 +13,12 @@ namespace GraphQL.Subscriptions.Tests.Configuration
     using GraphQL.AspNet;
     using GraphQL.AspNet.Configuration;
     using GraphQL.AspNet.Configuration.Mvc;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Exceptions;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Subscriptions;
+    using GraphQL.AspNet.Execution.Subscriptions.BackgroundServices;
+    using GraphQL.AspNet.Execution.Subscriptions.Exceptions;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Security;

@@ -13,7 +13,6 @@ namespace GraphQL.AspNet.Attributes
     using System.Linq;
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
 
     /// <summary>
     /// A decorator attribute to identify a method as being attached directly to the subscription root operation,

@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Tests.Web
     using System.Text;
     using System.Threading.Tasks;
     using System.Web;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Web;
     using GraphQL.AspNet.Web.Exceptions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;

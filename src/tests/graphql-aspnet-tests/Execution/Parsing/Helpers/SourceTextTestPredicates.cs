@@ -7,10 +7,10 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.Helpers
+namespace GraphQL.AspNet.Tests.Execution.Parsing.Helpers
 {
     using System;
-    using GraphQL.AspNet.Parsing2.Lexing.Source;
+    using GraphQL.AspNet.Execution.Parsing.Lexing.Source;
 
     /// <summary>
     /// Various test delegates for seting hte NextPhrase method on <see cref="SourceText"/>.

@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Execution.InheritanceTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.InheritanceTestData
 {
     public class BigBox : Box
     {

@@ -13,8 +13,8 @@ namespace GraphQL.AspNet.Common.Json
     using System.Globalization;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using GraphQL.AspNet.Interfaces.Variables;
-    using GraphQL.AspNet.Variables;
+    using GraphQL.AspNet.Execution.Variables;
+    using GraphQL.AspNet.Interfaces.Execution.Variables;
 
     /// <summary>
     /// A object that can convert a <see cref="JsonDocument"/> into a <see cref="IInputVariableCollection"/>

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.Interfaces
+namespace GraphQL.AspNet.Execution.RulesEngine.Interfaces
 {
     /// <summary>
     /// An interface describing a type of rule that may be executed in the rule processors.

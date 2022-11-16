@@ -12,13 +12,13 @@ namespace GraphQL.AspNet.Tests.Execution
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using GraphQL.AspNet.Defaults;
+    using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Exceptions;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.Internal.Introspection.Model;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Execution.IntrospectionTestData;
+    using GraphQL.AspNet.Schemas.TypeSystem.Introspection.Model;
+    using GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;

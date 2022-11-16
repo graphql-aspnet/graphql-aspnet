@@ -7,17 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.RulesEngine
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine
 {
     using GraphQL.AspNet.Common.Extensions;
     using GraphQL.AspNet.Common.Source;
     using GraphQL.AspNet.Directives;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
-    using GraphQL.AspNet.RulesEngine;
+    using GraphQL.AspNet.Execution.RulesEngine;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Schemas.TypeSystem;
+    using GraphQL.AspNet.Tests.Execution.RulesEngine.DirectiveTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.AspNet.Tests.RulesEngine.DirectiveTestData;
     using Moq;
     using NUnit.Framework;
 
@@ -40,7 +40,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
 
-            Assert.IsFalse(complete);
+            Assert.IsFalse((bool)complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
         }
@@ -61,7 +61,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
 
-            Assert.IsFalse(complete);
+            Assert.IsFalse((bool)complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
         }
@@ -82,7 +82,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
 
-            Assert.IsFalse(complete);
+            Assert.IsFalse((bool)complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
             Assert.AreEqual("5.7.2", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
@@ -104,7 +104,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
 
-            Assert.IsFalse(complete);
+            Assert.IsFalse((bool)complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
             Assert.AreEqual("5.7.1", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
@@ -128,7 +128,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
 
-            Assert.IsTrue(complete);
+            Assert.IsTrue((bool)complete);
             Assert.IsTrue(context.Messages.IsSucessful);
             Assert.AreEqual(0, context.Messages.Count);
         }
@@ -152,7 +152,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
 
-            Assert.IsFalse(complete);
+            Assert.IsFalse((bool)complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
             Assert.AreEqual("5.7", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);
@@ -177,7 +177,7 @@ namespace GraphQL.AspNet.Tests.RulesEngine
             var ruleSet = new DirectiveValidationRuleProcessor();
             var complete = ruleSet.Execute(context.AsEnumerable());
 
-            Assert.IsFalse(complete);
+            Assert.IsFalse((bool)complete);
             Assert.IsFalse(context.Messages.IsSucessful);
             Assert.AreEqual(1, context.Messages.Count);
             Assert.AreEqual("5.7", context.Messages[0].MetaData[Constants.Messaging.REFERENCE_RULE_NUMBER_KEY]);

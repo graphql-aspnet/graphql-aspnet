@@ -15,8 +15,8 @@ namespace GraphQL.AspNet.Tests.Middleware
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
     using GraphQL.AspNet.Middleware.SchemaItemSecurity.Components;
     using GraphQL.AspNet.Security;
     using GraphQL.AspNet.Tests.Framework;

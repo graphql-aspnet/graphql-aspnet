@@ -7,9 +7,11 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction
+namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Steps
 {
-    using GraphQL.AspNet.Parsing2.DocumentGeneration.DocumentConstruction.Common;
+    using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Parsing.SyntaxNodes;
+    using GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentConstruction.Common;
 
     /// <summary>
     /// A step to pass through the <see cref="VariableCollectionNode"/> effectively

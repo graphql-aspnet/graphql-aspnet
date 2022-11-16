@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Parsing2.Lexing.Source.SourceRules
+namespace GraphQL.AspNet.Execution.Parsing.Lexing.Source.SourceRules
 {
     /// <summary>
     /// A list of rules that a <see cref="SourceText"/> can process, at its current location.

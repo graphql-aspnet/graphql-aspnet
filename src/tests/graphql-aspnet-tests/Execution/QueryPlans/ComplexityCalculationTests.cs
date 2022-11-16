@@ -7,12 +7,12 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.PlanGeneration
+namespace GraphQL.AspNet.Tests.Execution.QueryPlans
 {
     using System.Threading.Tasks;
     using GraphQL.AspNet.Schemas;
+    using GraphQL.AspNet.Tests.Execution.QueryPlans.ComplexityTestData;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.AspNet.Tests.PlanGeneration.ComplexityTestData;
     using NUnit.Framework;
 
     [TestFixture]

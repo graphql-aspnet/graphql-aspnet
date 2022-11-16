@@ -7,10 +7,9 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.RulesEngine.Interfaces
+namespace GraphQL.AspNet.Execution.RulesEngine.Interfaces
 {
     using System;
-    using GraphQL.AspNet.RulesEngine;
 
     /// <summary>
     /// A Rule that can be executed by a <see cref="RuleProcessor{TContext}"/>.

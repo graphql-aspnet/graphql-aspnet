@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Extensions.DiExtensionTestData
+namespace GraphQL.AspNet.Tests.Common.Extensions.DiExtensionTestData
 {
     public class TestObjectB : ITestInterface
     {

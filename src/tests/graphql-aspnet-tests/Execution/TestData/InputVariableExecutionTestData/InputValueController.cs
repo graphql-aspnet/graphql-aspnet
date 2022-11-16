@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Execution.InputVariableExecutionTestData
+namespace GraphQL.AspNet.Tests.Execution.TestData.InputVariableExecutionTestData
 {
     using System.Collections.Generic;
     using System.Linq;

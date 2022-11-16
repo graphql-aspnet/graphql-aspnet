@@ -6,16 +6,16 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
+namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 {
     using System.Linq;
     using GraphQL.AspNet.Configuration;
-    using GraphQL.AspNet.Defaults;
-    using GraphQL.AspNet.Interfaces.TypeSystem;
+    using GraphQL.AspNet.Engine;
+    using GraphQL.AspNet.Interfaces.Schema;
     using GraphQL.AspNet.Internal.Interfaces;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Schemas.TypeSystem;
-    using GraphQL.AspNet.Tests.Defaults.TypeMakers.TestData;
+    using GraphQL.AspNet.Tests.Engine.TypeMakers.TestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
@@ -117,8 +117,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFields), TypeKind.OBJECT, TemplateDeclarationRequirements.Method).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredMethod)));
-            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredMethod)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredMethod)));
+            Assert.IsFalse(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredMethod)));
         }
 
         [Test]
@@ -127,8 +127,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFields), TypeKind.OBJECT, TemplateDeclarationRequirements.None).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredMethod)));
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredMethod)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredMethod)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredMethod)));
         }
 
         [Test]
@@ -137,8 +137,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFields), TypeKind.OBJECT, TemplateDeclarationRequirements.Property).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsFalse(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
@@ -147,8 +147,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFields), TypeKind.OBJECT, TemplateDeclarationRequirements.None).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
@@ -157,8 +157,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFieldsWithOverride), TypeKind.OBJECT, TemplateDeclarationRequirements.None).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.DeclaredMethod)));
-            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.UndeclaredMethod)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.DeclaredMethod)));
+            Assert.IsFalse(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverride.UndeclaredMethod)));
         }
 
         [Test]
@@ -167,8 +167,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFieldsWithOverrideNone), TypeKind.OBJECT, TemplateDeclarationRequirements.Method).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.DeclaredMethod)));
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.UndeclaredMethod)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.DeclaredMethod)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFieldsWithOverrideNone.UndeclaredMethod)));
         }
 
         [Test]
@@ -177,8 +177,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFieldsWithOverride), TypeKind.OBJECT, TemplateDeclarationRequirements.None).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsFalse(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsFalse(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
@@ -187,8 +187,8 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             var objectGraphType = this.MakeGraphType(typeof(TypeWithUndeclaredFieldsWithOverrideNone), TypeKind.OBJECT, TemplateDeclarationRequirements.Property).GraphType as IObjectGraphType;
 
             Assert.IsNotNull(objectGraphType);
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
-            Assert.IsTrue(objectGraphType.Fields.Any(x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.DeclaredProperty)));
+            Assert.IsTrue(Enumerable.Any(objectGraphType.Fields, x => x.Name == nameof(TypeWithUndeclaredFields.UndeclaredProperty)));
         }
 
         [Test]
@@ -215,7 +215,7 @@ namespace GraphQL.AspNet.Tests.Defaults.TypeMakers
             Assert.AreEqual(1, objectType.AppliedDirectives.Count);
             Assert.AreEqual(objectType, objectType.AppliedDirectives.Parent);
 
-            var appliedDirective = objectType.AppliedDirectives.FirstOrDefault();
+            var appliedDirective = Enumerable.FirstOrDefault(objectType.AppliedDirectives);
             Assert.IsNotNull(appliedDirective);
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             CollectionAssert.AreEqual(new object[] { 12, "object directive" }, appliedDirective.ArgumentValues);

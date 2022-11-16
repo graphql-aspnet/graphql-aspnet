@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Tests.Parsing2.Helpers
+namespace GraphQL.AspNet.Tests.Execution.Parsing.Helpers
 {
     public class TokenStream2
     {

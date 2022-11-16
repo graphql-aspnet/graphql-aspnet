@@ -7,19 +7,17 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.AspNet.Connections.WebSockets
+namespace GraphQL.AspNet.Web.WebSockets
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Net.WebSockets;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
-    using GraphQL.AspNet.Connections.Clients;
     using GraphQL.AspNet.Interfaces.Security;
-    using GraphQL.AspNet.Interfaces.Subscriptions;
-    using GraphQL.AspNet.Security.Web;
+    using GraphQL.AspNet.Interfaces.Web;
+    using GraphQL.AspNet.Web.Security;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

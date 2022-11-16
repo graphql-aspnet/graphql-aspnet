@@ -6,7 +6,7 @@
 // --
 // License:  MIT
 // *************************************************************
-namespace GraphQL.AspNet.Tests.RulesEngine.DirectiveTestData
+namespace GraphQL.AspNet.Tests.Execution.RulesEngine.DirectiveTestData
 {
     using GraphQL.AspNet.Attributes;
     using GraphQL.AspNet.Directives;
