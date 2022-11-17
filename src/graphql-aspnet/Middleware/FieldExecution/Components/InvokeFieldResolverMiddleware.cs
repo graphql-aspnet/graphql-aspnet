@@ -30,6 +30,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         where TSchema : class, ISchema
     {
         private readonly TSchema _schema;
+        private readonly FieldCompletionRuleProcessor _completionProcessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvokeFieldResolverMiddleware{TSchema}" /> class.
@@ -39,6 +40,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             TSchema schema)
         {
             _schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
+            _completionProcessor = new FieldCompletionRuleProcessor();
         }
 
         /// <summary>
@@ -55,7 +57,11 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             var validationContexts = new List<FieldValidationContext>(context.Request.Data.Items.Count);
             foreach (var dataItem in context.Request.Data.Items)
             {
-                var validationContext = new FieldValidationContext(_schema, dataItem, context.Messages);
+                var validationContext = new FieldValidationContext(
+                    _schema,
+                    dataItem,
+                    context.Messages);
+
                 validationContexts.Add(validationContext);
             }
 
@@ -72,8 +78,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             }
 
             // validate the resolution of the field in whatever manner that means for its current state
-            var completionProcessor = new FieldCompletionRuleProcessor();
-            completionProcessor.Execute(validationContexts);
+            _completionProcessor.Execute(validationContexts);
 
             // end profiling of this single field of data
             context.Metrics?.EndFieldResolution(context);

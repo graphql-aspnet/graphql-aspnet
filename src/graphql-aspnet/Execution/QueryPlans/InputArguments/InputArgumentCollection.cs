@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         /// <inheritdoc />
         public IExecutionArgumentCollection Merge(IResolvedVariableCollection variableData)
         {
-            var collection = new ExecutionArgumentCollection();
+            var collection = new ExecutionArgumentCollection(_arguments.Count);
             foreach (var arg in _arguments.Values)
             {
                 var resolvedValue = arg.Value.Resolve(variableData);

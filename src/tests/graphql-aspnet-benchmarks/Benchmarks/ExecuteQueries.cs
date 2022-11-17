@@ -19,10 +19,10 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     using GraphQL.AspNet.Configuration.Mvc;
     using GraphQL.AspNet.Execution;
     using GraphQL.AspNet.Execution.Contexts;
+    using GraphQL.AspNet.Execution.Variables;
     using GraphQL.AspNet.Interfaces.Engine;
     using GraphQL.AspNet.Interfaces.Middleware;
     using GraphQL.AspNet.Schemas;
-    using GraphQL.AspNet.Variables;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -30,6 +30,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     /// graphql-aspnet.
     /// </summary>
     [Config(typeof(BenchmarkConfiguration))]
+    [MemoryDiagnoser]
     public class ExecuteQueries
     {
         private IServiceProvider _serviceProvider;
@@ -92,7 +93,7 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         {
             // top level services to execute the query
             var queryPipeline = _serviceProvider.GetService<ISchemaPipeline<GraphSchema, GraphQueryExecutionContext>>();
-            var writer = _serviceProvider.GetService<IGraphResponseWriter<GraphSchema>>();
+            var writer = _serviceProvider.GetService<IGraphQueryResponseWriter<GraphSchema>>();
 
             // parse the json doc, simulating a request recieved to the QueryController
             var inputVars = InputVariableCollection.FromJsonDocument(jsonText);
@@ -105,7 +106,11 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
 
             // execute the request
             var request = new GraphOperationRequest(query);
-            var context = new GraphQueryExecutionContext(request, _serviceProvider, null);
+            var context = new GraphQueryExecutionContext(
+                request,
+                _serviceProvider,
+                new QuerySession());
+
             await queryPipeline.InvokeAsync(context, default);
 
             var response = context.Result;

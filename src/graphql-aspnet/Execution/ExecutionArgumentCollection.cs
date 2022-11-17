@@ -30,11 +30,14 @@ namespace GraphQL.AspNet.Execution
         private readonly GraphFieldExecutionContext _fieldContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecutionArgumentCollection"/> class.
+        /// Initializes a new instance of the <see cref="ExecutionArgumentCollection" /> class.
         /// </summary>
-        public ExecutionArgumentCollection()
+        /// <param name="capacity">The initial capacity of the collection, if known.</param>
+        public ExecutionArgumentCollection(int? capacity = null)
         {
-            _arguments = new Dictionary<string, ExecutionArgument>();
+            _arguments = capacity.HasValue
+                ? new Dictionary<string, ExecutionArgument>(capacity.Value)
+                : new Dictionary<string, ExecutionArgument>();
         }
 
         /// <summary>

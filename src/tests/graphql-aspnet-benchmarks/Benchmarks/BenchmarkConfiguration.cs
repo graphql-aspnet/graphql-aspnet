@@ -25,26 +25,6 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
 
             this.AddJob(Job.InProcess
                     .WithPlatform(Platform.X64)
-                    .WithRuntime(CoreRuntime.Core31)
-                    .WithUnrollFactor(unrollFactor)
-                    .WithLaunchCount(launchCount)
-                    .WithWarmupCount(warmupCount)
-                    .WithInvocationCount(invocationCount)
-                    .WithIterationTime(TimeInterval.Millisecond * 200)
-                    .WithId("x64 .NET Core 3.1"));
-
-            this.AddJob(Job.InProcess
-                    .WithPlatform(Platform.X64)
-                    .WithRuntime(MonoRuntime.Default)
-                    .WithUnrollFactor(unrollFactor)
-                    .WithLaunchCount(launchCount)
-                    .WithWarmupCount(warmupCount)
-                    .WithInvocationCount(invocationCount)
-                    .WithIterationTime(TimeInterval.Millisecond * 200)
-                    .WithId("x64 Mono"));
-
-            this.AddJob(Job.InProcess
-                    .WithPlatform(Platform.X64)
                     .WithRuntime(CoreRuntime.Core60)
                     .WithUnrollFactor(unrollFactor)
                     .WithLaunchCount(launchCount)
@@ -52,6 +32,16 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                     .WithInvocationCount(invocationCount)
                     .WithIterationTime(TimeInterval.Millisecond * 200)
                     .WithId("x64 .NET 6"));
+
+            this.AddJob(Job.InProcess
+                    .WithPlatform(Platform.X64)
+                    .WithRuntime(CoreRuntime.Core70)
+                    .WithUnrollFactor(unrollFactor)
+                    .WithLaunchCount(launchCount)
+                    .WithWarmupCount(warmupCount)
+                    .WithInvocationCount(invocationCount)
+                    .WithIterationTime(TimeInterval.Millisecond * 200)
+                    .WithId("x64 .NET 7"));
         }
     }
 }
