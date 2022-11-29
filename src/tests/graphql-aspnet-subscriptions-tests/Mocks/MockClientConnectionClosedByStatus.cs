@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mocks
+namespace GraphQL.Subscriptions.Tests.Mock
 {
     /// <summary>
     /// A status indicating how a <see cref="MockClientConnection"/> was cloded.

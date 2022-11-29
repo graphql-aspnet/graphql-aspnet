@@ -115,7 +115,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             await task.ConfigureAwait(false);
             context.Messages.AddRange(resolutionContext.Messages);
 
-            await this.OnFieldResolutionComplete(context, resolutionContext, cancelToken);
+            await this.CompletePostFieldResolutionWork(context, resolutionContext, cancelToken);
 
             context.Logger?.FieldResolutionCompleted(resolutionContext);
 
@@ -135,7 +135,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// that was just resolved.</param>
         /// <param name="cancelToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task.</returns>
-        protected virtual async Task OnFieldResolutionComplete(
+        protected virtual async Task CompletePostFieldResolutionWork(
             GraphFieldExecutionContext fieldExecutionContext,
             FieldResolutionContext fieldResolutionContext,
             CancellationToken cancelToken)
@@ -151,8 +151,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
         /// <summary>
         /// Assigns the results of resolving the field to the items on the execution context.
         /// </summary>
-        /// <param name="executionContext">The execution context.</param>
-        /// <param name="resolutionContext">The resolution context.</param>
+        /// <param name="executionContext">The field execution context governing the field resolution.</param>
+        /// <param name="resolutionContext">The resolution context that just completed processing
+        /// a field resolver.</param>
         private void AssignResults(GraphFieldExecutionContext executionContext, FieldResolutionContext resolutionContext)
         {
             // transfer the result to the execution context

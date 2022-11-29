@@ -108,5 +108,21 @@ namespace GraphQL.AspNet.Logging
         /// A collection of subscription ids being reported on.
         /// </summary>
         public const string SUBSCRIPTION_IDS = "subscriptionIds";
+
+        /// <summary>
+        /// The specific event threshold, in number of events, that must be queued
+        /// for the event to be raised.
+        /// </summary>
+        public const string SUBSCRIPTION_DISPATCH_QUEUE_THRESHOLD_LEVEL = "eventQueueThresholdLevel";
+
+        /// <summary>
+        /// The exact count of messages in the queue at the time the event was raised.
+        /// </summary>
+        public const string SUBSCRIPTION_DISPATCH_QUEUE_COUNT = "eventQueueCount";
+
+        /// <summary>
+        /// A custom configured message carried along with the raised event. May be null.
+        /// </summary>
+        public const string SUBSCRIPTION_DISPATCH_QUEUE_THRESHOLD_MESSAGE = "eventQueueThresholdMessage";
     }
 }

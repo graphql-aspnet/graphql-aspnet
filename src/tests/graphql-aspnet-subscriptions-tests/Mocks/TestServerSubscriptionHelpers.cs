@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mocks
+namespace GraphQL.Subscriptions.Tests.Mock
 {
     using System;
     using System.Threading.Tasks;
@@ -23,7 +23,7 @@ namespace GraphQL.Subscriptions.Tests.Mocks
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.Interfaces;
     using GraphQL.AspNet.Web;
-    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.Mock;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 

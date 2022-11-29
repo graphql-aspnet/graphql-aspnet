@@ -97,6 +97,41 @@ namespace GraphQL.AspNet.Logging
         }
 
         /// <summary>
+        /// Recorded by this instance's <see cref="ISubscriptionEventRouter" /> when it receives a new subscription event from
+        /// an externally connected source such as a message queue or service or bus. For single server configurations this event
+        /// is recorded when an event is passed from the internal publishing queue directly to the <see cref="ISubscriptionEventRouter" />.
+        /// </summary>
+        /// <param name="logger">The logger doing the logging.</param>
+        /// <param name="eventCount">The current event count of the dispatch queue.</param>
+        /// <param name="queueCountThreshold">The threshold configuration object that caused
+        /// this event to be raised.</param>
+        public static void SubscriptionEventDispatchQueueThresholdReached(
+            this ILogger logger,
+            int eventCount,
+            SubscriptionEventAlertThreshold queueCountThreshold)
+        {
+            if (queueCountThreshold == null)
+                return;
+
+            if (!logger.IsEnabled(queueCountThreshold.LogLevel))
+                return;
+
+            // note this event is ILogger not IGraphEventLogger
+            // its consumed from a global singleton (IGraphEventLogger is a scoped service due to the scope id property)
+            var alertMessage = new SubscriptionEventDispatchQueueAlertLogEntry(
+                queueCountThreshold.SubscriptionEventCountThreshold,
+                eventCount,
+                queueCountThreshold.CustomMessage);
+
+            logger.Log(
+                    queueCountThreshold.LogLevel,
+                    SubscriptionLogEventIds.EventDispatchQueueThresholdReached,
+                    alertMessage,
+                    null,
+                    (s, e) => s.ToString());
+        }
+
+        /// <summary>
         /// Recorded when this server successfully publishes a subscription event to the configured <see cref="ISubscriptionEventPublisher"/>
         /// for this instance.
         /// </summary>

@@ -7,6 +7,15 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.Internal
 {
     using System;
@@ -16,6 +25,7 @@ namespace GraphQL.AspNet.Internal
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Internal.Interfaces;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The default dispatch queue to throttle subscription events being sent to expectant receivers.
@@ -26,23 +36,33 @@ namespace GraphQL.AspNet.Internal
     {
         private readonly IGlobalSubscriptionClientProxyCollection _clientCollection;
         private readonly Channel<ValueTuple<SubscriptionClientId, SubscriptionEvent>> _queue;
+        private readonly SubscriptionClientDispatchQueueAlerter _alerter;
         private readonly CancellationTokenSource _stopRequested;
         private readonly SemaphoreSlim _throttle;
 
         private CancellationTokenSource _combinedTokenSource;
         private bool _isDisposed;
+        private int _countPassed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionClientDispatchQueue" /> class.
         /// </summary>
         /// <param name="clientCollection">The global collection containing a reference to
         /// all actively connected clients.</param>
+        /// <param name="alertSettings">A configured collection of settings
+        /// used to instruct the dispatch queue on when it should raise alerts about the
+        /// number of queued events.</param>
+        /// <param name="loggerFactory">The logger factory from which
+        /// a logger instance will be made to record events from this dispatch queue instance.</param>
         /// <param name="maxConcurrentEvents">The maximum number of concurrent events
         /// that can be executing simultaniously. When null, the globally configured default is used.</param>
         /// <param name="maxOverallEvents">The maximum number of events this queue can process. Once reached, no
-        /// additional events can be processed. (null == no limit).</param>
+        /// additional events can be processed. (null == no limit). In general, this value should be
+        /// passed as <c>null</c> in all production scenarios.</param>
         public SubscriptionClientDispatchQueue(
             IGlobalSubscriptionClientProxyCollection clientCollection,
+            ISubscriptionClientDispatchQueueAlertSettings alertSettings = null,
+            ILoggerFactory loggerFactory = null,
             int? maxConcurrentEvents = null,
             int? maxOverallEvents = null)
         {
@@ -51,6 +71,13 @@ namespace GraphQL.AspNet.Internal
             _queue = maxOverallEvents.HasValue
                 ? Channel.CreateBounded<ValueTuple<SubscriptionClientId, SubscriptionEvent>>(maxOverallEvents.Value)
                 : Channel.CreateUnbounded<ValueTuple<SubscriptionClientId, SubscriptionEvent>>();
+
+            if (loggerFactory != null)
+            {
+                var logger = loggerFactory.CreateLogger(Constants.Logging.LOG_CATEGORY);
+                alertSettings = alertSettings ?? SubscriptionConstants.Alerts.DEFAULT_DISPATCH_QUEUE_ALERT_SETTINGS;
+                _alerter = new SubscriptionClientDispatchQueueAlerter(logger, alertSettings);
+            }
 
             if (!maxConcurrentEvents.HasValue)
                 maxConcurrentEvents = SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount;
@@ -75,6 +102,11 @@ namespace GraphQL.AspNet.Internal
             var queued = _queue.Writer.TryWrite(evt);
             if (closeAfter || !queued)
                 _queue.Writer.Complete();
+
+            if (_alerter != null && _queue.Reader.CanCount)
+            {
+                _alerter.CheckQueueCount(_queue.Reader.Count);
+            }
 
             return queued;
         }

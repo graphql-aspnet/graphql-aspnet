@@ -26,7 +26,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
-    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.Mock;
 
     [TestFixture]
     public class GraphqlWsLegacyConverterTests

@@ -58,7 +58,7 @@ namespace GraphQL.AspNet
         /// <summary>
         /// Gets or sets the variables being supplied on the request, if any.
         /// </summary>
-        /// <value>The variables.</value>
+        /// <value>The variables provided on the request.</value>
         public InputVariableCollection Variables { get; set; }
     }
 }

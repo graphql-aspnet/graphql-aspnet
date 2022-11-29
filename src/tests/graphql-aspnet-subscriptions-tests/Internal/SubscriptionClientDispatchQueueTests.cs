@@ -40,7 +40,9 @@ namespace GraphQL.Subscriptions.Tests.Internal
             var evt = new SubscriptionEvent();
             var evt2 = new SubscriptionEvent();
 
-            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                maxConcurrentEvents: 1);
             var wasQueued = queue.EnqueueEvent(receiver.Object.Id, evt, true);
 
             await queue.BeginProcessingQueue();
@@ -57,7 +59,9 @@ namespace GraphQL.Subscriptions.Tests.Internal
             var evt = new SubscriptionEvent();
             var evt2 = new SubscriptionEvent();
 
-            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                maxConcurrentEvents: 1);
             var wasQueued = queue.EnqueueEvent(SubscriptionClientId.NewClientId(), evt, true);
 
             await queue.BeginProcessingQueue();
@@ -72,7 +76,9 @@ namespace GraphQL.Subscriptions.Tests.Internal
         {
             var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
 
-            var queue = new SubscriptionClientDispatchQueue(collection.Object, maxConcurrent);
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                maxConcurrentEvents: maxConcurrent);
             Assert.AreEqual(1, queue.MaxConcurrentEvents);
         }
 
@@ -81,7 +87,9 @@ namespace GraphQL.Subscriptions.Tests.Internal
         {
             var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
 
-            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                maxConcurrentEvents: 1);
 
             queue.StopQueue();
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
@@ -94,7 +102,9 @@ namespace GraphQL.Subscriptions.Tests.Internal
         public void StartingADisposedQueue_ThrowsException()
         {
             var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
-            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                maxConcurrentEvents: 1);
             queue.Dispose();
             Assert.ThrowsAsync<ObjectDisposedException>(async () =>
             {
@@ -106,7 +116,9 @@ namespace GraphQL.Subscriptions.Tests.Internal
         public void StoppingADisposedQueue_DoesNothing()
         {
             var collection = new Mock<IGlobalSubscriptionClientProxyCollection>();
-            var queue = new SubscriptionClientDispatchQueue(collection.Object, 1);
+            var queue = new SubscriptionClientDispatchQueue(
+                collection.Object,
+                maxConcurrentEvents: 1);
             queue.Dispose();
             queue.StopQueue();
         }

@@ -7,7 +7,7 @@
 // License:  MIT
 // *************************************************************
 
-namespace GraphQL.Subscriptions.Tests.Mocks
+namespace GraphQL.Subscriptions.Tests.Mock
 {
     using System;
     using System.Net.WebSockets;

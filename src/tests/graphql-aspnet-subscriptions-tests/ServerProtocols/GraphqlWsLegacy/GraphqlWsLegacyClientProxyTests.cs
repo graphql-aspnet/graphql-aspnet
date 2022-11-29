@@ -23,7 +23,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
     using GraphQL.AspNet.ServerProtocols.GraphqlWsLegacy.Messages.ClientMessages;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
-    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.Mock;
     using GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy.GraphqlWsLegacyData;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
@@ -234,7 +234,7 @@ namespace GraphQL.Subscriptions.Tests.ServerProtocols.GraphqlWsLegacy
         }
 
         [Test]
-        public async Task ReceiveEvent_OnNonSubscribedEventNAme_YieldsNothing()
+        public async Task ReceiveEvent_OnNonSubscribedEventName_YieldsNothing()
         {
             using var restorePoint = new GraphQLGlobalRestorePoint();
             (var socketClient, var client, var router) = this.CreateConnection();

@@ -39,10 +39,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         }
 
         /// <summary>
-        /// Convert the data items that were generated pushing their results into a final top level dictionary
+        /// Convert the data items that were generated, pushing their results into a final top level dictionary
         /// to be returned as the graph projection. Takes care of an final messaging in case one of the tasks failed.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The execution context to extract reponse info from.</param>
         /// <returns>GraphQL.AspNet.Interfaces.Response.IResponseFieldSet.</returns>
         private IResponseFieldSet CreateFinalDictionary(GraphQueryExecutionContext context)
         {

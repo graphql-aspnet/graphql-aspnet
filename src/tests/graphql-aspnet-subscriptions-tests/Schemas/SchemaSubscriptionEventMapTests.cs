@@ -14,7 +14,7 @@ namespace GraphQL.Subscriptions.Tests.Schemas
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.Mock;
     using GraphQL.Subscriptions.Tests.Schemas.SchemaTestData;
     using NUnit.Framework;
 

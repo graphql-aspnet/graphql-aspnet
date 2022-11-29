@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Security
     using NUnit.Framework;
 
     [TestFixture]
-    public class FieldSecurityGroupTests
+    public class AppliedSecurityPolicyGroupTests
     {
         [Test]
         public void PolicyName_YieldsPolicyNameInRule()

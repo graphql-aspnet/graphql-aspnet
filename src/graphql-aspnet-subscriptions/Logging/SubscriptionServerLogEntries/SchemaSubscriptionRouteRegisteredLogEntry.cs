@@ -56,10 +56,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionServerLogEntries
             private set => this.SetProperty(SubscriptionLogPropertyNames.SCHEMA_SUBSCRIPTION_ROUTE_PATH, value);
         }
 
-        /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"Subscription Route Registered | Schema Type: '{_schemaTypeShortName}', Route: '{this.SchemaSubscriptionRoutePath}' ";

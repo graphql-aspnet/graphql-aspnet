@@ -12,7 +12,7 @@ namespace GraphQL.Subscriptions.Tests.Security
     using System.Threading.Tasks;
     using GraphQL.AspNet;
     using GraphQL.AspNet.Tests.Framework;
-    using GraphQL.Subscriptions.Tests.Mocks;
+    using GraphQL.Subscriptions.Tests.Mock;
     using GraphQL.Subscriptions.Tests.Security.SecurityTestData;
     using NUnit.Framework;
 

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// A data processor that handles internal batch operations for items being processed through a graph query.
     /// </summary>
-    public class BatchResultProcessor
+    internal sealed class BatchResultProcessor
     {
         private readonly SourceOrigin _origin;
         private readonly IGraphField _field;
