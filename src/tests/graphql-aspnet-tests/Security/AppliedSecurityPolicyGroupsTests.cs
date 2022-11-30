@@ -35,7 +35,8 @@ namespace GraphQL.AspNet.Tests.Security
             var secureGroup = AppliedSecurityPolicyGroup.FromAttributeCollection(
                 typeof(TestClass).GetMethod(nameof(TestClass.HasAuthorize)));
 
-            var groups = new AppliedSecurityPolicyGroups(new List<AppliedSecurityPolicyGroup>() {
+            var groups = new AppliedSecurityPolicyGroups(new List<AppliedSecurityPolicyGroup>()
+            {
                 secureGroup,
             });
 
@@ -119,7 +120,7 @@ namespace GraphQL.AspNet.Tests.Security
         [Test]
         public void NoSuppliedPoliciesSupplied_NoSecurityChecksDiscovered()
         {
-            var group = new AppliedSecurityPolicyGroups(Enumerable.Empty<AppliedSecurityPolicyGroup>()); ;
+            var group = new AppliedSecurityPolicyGroups(Enumerable.Empty<AppliedSecurityPolicyGroup>());
             Assert.IsFalse(group.HasSecurityChecks);
             Assert.AreEqual(0, group.Count);
         }

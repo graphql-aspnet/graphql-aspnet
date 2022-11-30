@@ -7,15 +7,6 @@
 // License:  MIT
 // *************************************************************
 
-// *************************************************************
-// project:  graphql-aspnet
-// --
-// repo: https://github.com/graphql-aspnet
-// docs: https://graphql-aspnet.github.io
-// --
-// License:  MIT
-// *************************************************************
-
 namespace GraphQL.AspNet.Internal
 {
     using System;
@@ -42,7 +33,6 @@ namespace GraphQL.AspNet.Internal
 
         private CancellationTokenSource _combinedTokenSource;
         private bool _isDisposed;
-        private int _countPassed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionClientDispatchQueue" /> class.

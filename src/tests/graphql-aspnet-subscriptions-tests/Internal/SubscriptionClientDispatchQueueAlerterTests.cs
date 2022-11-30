@@ -10,7 +10,6 @@
 namespace GraphQL.Subscriptions.Tests.Internal
 {
     using System;
-    using System.Security;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Execution.Subscriptions;
     using GraphQL.AspNet.Internal;
@@ -38,7 +37,6 @@ namespace GraphQL.Subscriptions.Tests.Internal
                     settings);
             });
         }
-
 
         [Test]
         public void NegativeTimeOnThreshold_ExceptionIsThrown()
@@ -376,10 +374,10 @@ namespace GraphQL.Subscriptions.Tests.Internal
                 10);
 
             alerter.CheckQueueCount(501); // no alert triggered
-            alerter.CheckQueueCount(10_001); // yes alert
+            alerter.CheckQueueCount(10_001); // alert should be triggered
             alerter.CheckQueueCount(10_001); // already alerted, skipped
             alerter.CheckQueueCount(100_001); // no more alert thresholds, skipped
-            alerter.CheckQueueCount(1_000_001);// no more alert thresholds, skipped
+            alerter.CheckQueueCount(1_000_001); // no more alert thresholds, skipped
 
             // ensure only single threshold event is fired
             logger.Verify(
