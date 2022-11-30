@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-load-server", "ancillary-projects\benchmarking\graphql-aspnet-load-server\graphql-aspnet-load-server.csproj", "{4333588B-B319-4348-B7DF-6BC2BAB7D82E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet", "graphql-aspnet\graphql-aspnet.csproj", "{FD3F4CFF-263D-44FB-ACD8-488DC81E5BD9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-subscriptions", "graphql-aspnet-subscriptions\graphql-aspnet-subscriptions.csproj", "{2379A2DD-BE01-4E6B-BD65-B9F1E3EDE267}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-load-models", "ancillary-projects\benchmarking\graphql-aspnet-load-models\graphql-aspnet-load-models.csproj", "{DFE7F105-92C8-4356-92B6-E420307E1BA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "graphql-aspnet-load-console", "ancillary-projects\benchmarking\graphql-aspnet-load-console\graphql-aspnet-load-console.csproj", "{18AB8859-1C11-4A2E-879D-6C85403BE6EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9419E319-6582-40E9-905A-1B0032D25A26}"
+	ProjectSection(SolutionItems) = preProject
+		ancillary-projects\benchmarking\README.md = ancillary-projects\benchmarking\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libraries", "libraries", "{1771D4B7-B7A5-4113-936D-5CE11A157EFB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4333588B-B319-4348-B7DF-6BC2BAB7D82E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4333588B-B319-4348-B7DF-6BC2BAB7D82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4333588B-B319-4348-B7DF-6BC2BAB7D82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4333588B-B319-4348-B7DF-6BC2BAB7D82E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD3F4CFF-263D-44FB-ACD8-488DC81E5BD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD3F4CFF-263D-44FB-ACD8-488DC81E5BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD3F4CFF-263D-44FB-ACD8-488DC81E5BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD3F4CFF-263D-44FB-ACD8-488DC81E5BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2379A2DD-BE01-4E6B-BD65-B9F1E3EDE267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2379A2DD-BE01-4E6B-BD65-B9F1E3EDE267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2379A2DD-BE01-4E6B-BD65-B9F1E3EDE267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2379A2DD-BE01-4E6B-BD65-B9F1E3EDE267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE7F105-92C8-4356-92B6-E420307E1BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE7F105-92C8-4356-92B6-E420307E1BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE7F105-92C8-4356-92B6-E420307E1BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE7F105-92C8-4356-92B6-E420307E1BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18AB8859-1C11-4A2E-879D-6C85403BE6EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18AB8859-1C11-4A2E-879D-6C85403BE6EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18AB8859-1C11-4A2E-879D-6C85403BE6EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18AB8859-1C11-4A2E-879D-6C85403BE6EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FD3F4CFF-263D-44FB-ACD8-488DC81E5BD9} = {1771D4B7-B7A5-4113-936D-5CE11A157EFB}
+		{2379A2DD-BE01-4E6B-BD65-B9F1E3EDE267} = {1771D4B7-B7A5-4113-936D-5CE11A157EFB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A0D13A78-F3B3-40B2-B7DF-E76008551B22}
+	EndGlobalSection
+EndGlobal

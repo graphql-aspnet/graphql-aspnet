@@ -13,6 +13,7 @@ appsettings.development.json
 *.userosscache
 *.sln.docstates
 **/*.DS_Store
+**/graphql-aspnet-load-jmeter/results/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

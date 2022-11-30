@@ -30,7 +30,6 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
     /// graphql-aspnet.
     /// </summary>
     [Config(typeof(BenchmarkConfiguration))]
-    [MemoryDiagnoser]
     public class ExecuteQueries
     {
         private IServiceProvider _serviceProvider;
@@ -151,34 +150,6 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         }
 
         /// <summary>
-        /// Represents multiple controller action invocations in single query (3 instances: artist 2, artist 1, artist search) along
-        /// with the processing of a variable (creation, validation, resolving etc.)
-        /// </summary>
-        /// <returns>Task.</returns>
-        [Benchmark]
-        public Task MultiActionMethodQuery()
-        {
-            return ExecuteQueryOrFail(
-                @"query MultiArtistQuery($var1: String){
-                    artist1: artist(id: 2){
-                        id
-                        recordCompanyId
-                        name
-                    }
-                    artist2: artist(id: 1){
-                        id
-                        recordCompanyId
-                        name
-                    }
-                    allArtists: artists(searchText: $var1){
-                        id
-                        name
-                    }
-                }",
-                "{\"var1\": \"que\" }");
-        }
-
-        /// <summary>
         /// Represents field requests through type extensions. i.e. A secondary controller method invocation.
         /// </summary>
         /// <returns>Task.</returns>
@@ -204,14 +175,31 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
         }
 
         /// <summary>
-        /// Represents a standard introspection query usually submitted by
-        /// graphql tooling like GraphQL Playground or Graphiql.
+        /// Represents multiple controller action invocations in single query (3 instances: artist 2, artist 1, artist search) along
+        /// with the processing of a variable (creation, validation, resolving etc.)
         /// </summary>
         /// <returns>Task.</returns>
         [Benchmark]
-        public Task IntrospectionQuery()
+        public Task MultiActionMethodQuery()
         {
-            return ExecuteQueryOrFail(_introspectionQuery);
+            return ExecuteQueryOrFail(
+                @"query MultiArtistQuery($var1: String){
+                    artist1: artist(id: 2){
+                        id
+                        recordCompanyId
+                        name
+                    }
+                    artist2: artist(id: 1){
+                        id
+                        recordCompanyId
+                        name
+                    }
+                    allArtists: artists(searchText: $var1){
+                        id
+                        name
+                    }
+                }",
+                "{\"var1\": \"que\" }");
         }
 
         /// <summary>
@@ -279,6 +267,17 @@ namespace GraphQL.AspNet.Benchmarks.Benchmarks
                 }";
 
             return ExecuteQueryOrFail(queryText, variables);
+        }
+
+        /// <summary>
+        /// Represents a standard introspection query usually submitted by
+        /// graphql tooling like GraphQL Playground or Graphiql.
+        /// </summary>
+        /// <returns>Task.</returns>
+        /// [Benchmark]
+        public Task FullIntrospectionQuery()
+        {
+            return ExecuteQueryOrFail(_introspectionQuery);
         }
     }
 }

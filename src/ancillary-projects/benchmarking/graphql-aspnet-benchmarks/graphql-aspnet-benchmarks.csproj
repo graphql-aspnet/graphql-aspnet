@@ -26,12 +26,13 @@
   <ItemGroup>
     <EmbeddedResource Include="QueryText\introspectionQuery.graphql" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\graphql-aspnet\graphql-aspnet.csproj" />
+    <ProjectReference Include="..\..\..\graphql-aspnet\graphql-aspnet.csproj" />
   </ItemGroup>
 
 </Project>
