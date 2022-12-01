@@ -38,28 +38,28 @@ namespace GraphQL.AspNet.SubscriberLoadTest.Server
             builder.Services.AddWebSockets((options) => { });
             builder.Services.AddControllers();
 
-            var alerts = new SubscriptionClientDispatchQueueAlertSettings();
-            alerts.AddThreshold(
-                LogLevel.Debug,
-                1000,
-                TimeSpan.FromSeconds(30));
+            //var alerts = new SubscriptionClientDispatchQueueAlertSettings();
+            //alerts.AddThreshold(
+            //    LogLevel.Debug,
+            //    1000,
+            //    TimeSpan.FromSeconds(30));
 
-            alerts.AddThreshold(
-                LogLevel.Information,
-                5000,
-                TimeSpan.FromSeconds(60));
+            //alerts.AddThreshold(
+            //    LogLevel.Information,
+            //    5000,
+            //    TimeSpan.FromSeconds(60));
 
-            alerts.AddThreshold(
-                LogLevel.Warning,
-                10_000,
-                TimeSpan.FromSeconds(120));
+            //alerts.AddThreshold(
+            //    LogLevel.Warning,
+            //    10_000,
+            //    TimeSpan.FromSeconds(120));
 
-            alerts.AddThreshold(
-                LogLevel.Critical,
-                100_000,
-                TimeSpan.FromSeconds(15));
+            //alerts.AddThreshold(
+            //    LogLevel.Critical,
+            //    100_000,
+            //    TimeSpan.FromSeconds(15));
 
-            builder.Services.AddSingleton<ISubscriptionClientDispatchQueueAlertSettings>(alerts);
+            //builder.Services.AddSingleton<ISubscriptionClientDispatchQueueAlertSettings>(alerts);
 
             SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = 5000;
 
