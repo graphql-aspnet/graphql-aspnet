@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.ServerProtocols.Common
 
         /// <summary>
         /// Generates a result indicating that the subscription enabled query was
-        /// successfully executed a single query and no subscription was created.
+        /// successfully executed and no subscription was created.
         /// </summary>
         /// <param name="subscriptionId">The subscription id that was executed.</param>
         /// <param name="operationResult">The completed query operation result.</param>
