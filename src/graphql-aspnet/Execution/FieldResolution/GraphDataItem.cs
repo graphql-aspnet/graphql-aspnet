@@ -479,8 +479,10 @@ namespace GraphQL.AspNet.Execution.FieldResolution
             // this instance represents a set of key/value pair fields
             // create a dictionary of those kvps as the result
             var fieldSet = new ResponseFieldSet();
-            foreach (var field in _childFields)
+
+            for (var i = 0; i < _childFields.Count; i++)
             {
+                var field = _childFields[i];
                 var includeChildResult = field.GenerateResult(out var childResult);
                 includeResult = includeResult || includeChildResult;
                 if (includeChildResult)

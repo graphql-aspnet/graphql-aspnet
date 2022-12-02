@@ -11,6 +11,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Common;
@@ -43,20 +44,15 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             _completionProcessor = new FieldCompletionRuleProcessor();
         }
 
-        /// <summary>
-        /// Invoke the action item as an asyncronous operation.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="next">The next.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken = default)
         {
             // create a set of validation contexts for every incoming source graph item
             // to capture and validate every item regardless of it being successfully resolved or failed
             var validationContexts = new List<FieldValidationContext>(context.Request.Data.Items.Count);
-            foreach (var dataItem in context.Request.Data.Items)
+            for (var i = 0; i < context.Request.Data.Items.Count; i++)
             {
+                var dataItem = context.Request.Data.Items[i];
                 var validationContext = new FieldValidationContext(
                     _schema,
                     dataItem,
@@ -74,10 +70,14 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             if (!continueExecution)
             {
                 context.Cancel();
-                context.Request.Data.Items.ForEach(x => x.Cancel());
+                for (var i = 0; i < context.Request.Data.Items.Count; i++)
+                {
+                    context.Request.Data.Items[i].Cancel();
+                }
             }
 
-            // validate the resolution of the field in whatever manner that means for its current state
+            // validate the resolution of the field in whatever manner is necessary
+            // for its current state
             _completionProcessor.Execute(validationContexts);
 
             // end profiling of this single field of data

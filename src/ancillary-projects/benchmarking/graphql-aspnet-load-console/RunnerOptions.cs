@@ -69,12 +69,12 @@ namespace GraphQL.AspNet.SubscriberLoadTest.TestConsole
                 scriptNumber),
 
             StartupDelay = TimeSpan.FromSeconds(2),
-            TotalClientInstances = 10,
+            TotalClientInstances = 5,
             ClientCreationCooldown = TimeSpan.FromMilliseconds(45),
             IterationsPerClient = 2,
             IterationCooldown = TimeSpan.FromMilliseconds(300),
 
-            CallsPerIteration = 200000,
+            CallsPerIteration = 10_000,
             MinDelayBetweenCallsMs = 5,
             MaxDelayBetweenCallsMs = 15,
         };

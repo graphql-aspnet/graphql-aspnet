@@ -69,7 +69,7 @@ namespace GraphQL.AspNet.Execution
                 _acceptableTypes.Add(context.ExpectedSourceType);
             }
 
-            if (context.Field.SecurityGroups.Any())
+            if (context.Field.SecurityGroups.Count > 0)
                 _secureContexts.Add(context);
         }
 

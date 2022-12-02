@@ -28,12 +28,27 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
     {
         private readonly Dictionary<string, InputArgument> _arguments;
 
+        // keep a list of arguments for when we need to enumerate between them
+        // enumerator on dictionary values is 3x slower than a list's enumerator
+        private readonly List<InputArgument> _argumentList;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InputArgumentCollection"/> class.
         /// </summary>
         public InputArgumentCollection()
         {
             _arguments = new Dictionary<string, InputArgument>();
+            _argumentList = new List<InputArgument>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputArgumentCollection" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of arguments this collection will contain.</param>
+        public InputArgumentCollection(int capacity)
+        {
+            _arguments = new Dictionary<string, InputArgument>(capacity);
+            _argumentList = new List<InputArgument>(capacity);
         }
 
         /// <inheritdoc />
@@ -41,6 +56,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         {
             Validation.ThrowIfNull(input, nameof(input));
             _arguments.Add(input.Name, input);
+            _argumentList.Add(input);
         }
 
         /// <inheritdoc />
@@ -57,9 +73,15 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         }
 
         /// <inheritdoc />
+        public bool Contains(string name)
+        {
+            return _arguments.ContainsKey(name);
+        }
+
+        /// <inheritdoc />
         public IEnumerator<InputArgument> GetEnumerator()
         {
-            return _arguments.Values.GetEnumerator();
+            return _argumentList.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -69,21 +91,12 @@ namespace GraphQL.AspNet.Execution.QueryPlans.InputArguments
         }
 
         /// <inheritdoc />
-        public bool Contains(string name)
-        {
-            return _arguments.ContainsKey(name);
-        }
-
-        /// <inheritdoc />
-        public bool TryGetValue(string name, out InputArgument value)
-        {
-            return _arguments.TryGetValue(name, out value);
-        }
-
-        /// <inheritdoc />
         public InputArgument this[string name] => _arguments[name];
 
         /// <inheritdoc />
-        public int Count => _arguments.Count;
+        public int Count => _argumentList.Count;
+
+        /// <inheritdoc />
+        public InputArgument this[int index] => _argumentList[index];
     }
 }

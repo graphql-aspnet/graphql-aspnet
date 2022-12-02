@@ -212,7 +212,7 @@ namespace GraphQL.AspNet.Execution
 
         private IInputArgumentCollection GatherInputArguments(IDirective targetDirective, object[] arguments)
         {
-            var argCollection = new InputArgumentCollection();
+            var argCollection = new InputArgumentCollection(targetDirective.Arguments.Count);
             for (var i = 0; i < targetDirective.Arguments.Count; i++)
             {
                 if (arguments.Length <= i)

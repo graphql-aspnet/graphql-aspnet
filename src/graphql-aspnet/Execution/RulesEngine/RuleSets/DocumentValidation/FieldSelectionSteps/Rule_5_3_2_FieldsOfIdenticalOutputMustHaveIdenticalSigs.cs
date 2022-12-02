@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             {
                 for (var j = i + 1; j < fields.Count; j++)
                 {
-                    var passedValidation = this.ValidateFieldPare(
+                    var passedValidation = this.ValidateFieldPair(
                         context,
                         ownerField,
                         fields[i],
@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             return true;
         }
 
-        private bool ValidateFieldPare(
+        private bool ValidateFieldPair(
             DocumentValidationContext context,
             IFieldDocumentPart ownerField,
             IFieldDocumentPart leftField,
@@ -187,7 +187,7 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             // one field could be referencing through an interface
             // and another through a concrete type so we cant check the IGraphField references.
             // Instead check to ensure the method invocation signatures are the same (field name, input args and return type).
-            if (rightField.Name != leftField.Name)
+            if (string.Compare(rightField.Name, leftField.Name) != 0)
                 return false;
 
             if (leftField.GraphType != rightField.GraphType)
@@ -215,10 +215,10 @@ namespace GraphQL.AspNet.Execution.RulesEngine.RuleSets.DocumentValidation.Field
             foreach (var leftArg in leftArgs.Values)
             {
                 // ensure input arg names exist on the new field
-                var rightArg = rightArgs.ContainsKey(leftArg.Name) ? rightArgs[leftArg.Name] : null;
-                if (rightArg == null)
+                if (!rightArgs.ContainsKey(leftArg.Name))
                     return false;
 
+                var rightArg = rightArgs[leftArg.Name];
                 if (!leftArg.Value.IsEqualTo(rightArg.Value))
                     return false;
             }

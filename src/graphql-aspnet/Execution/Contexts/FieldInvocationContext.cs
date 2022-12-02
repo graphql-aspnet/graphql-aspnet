@@ -48,7 +48,7 @@ namespace GraphQL.AspNet.Execution.Contexts
             this.FieldDocumentPart = Validation.ThrowIfNullOrReturn(fieldPart, nameof(fieldPart));
             this.ExpectedSourceType = expectedSourceType;
             this.ChildContexts = new FieldInvocationContextCollection();
-            this.Arguments = new InputArgumentCollection();
+            this.Arguments = new InputArgumentCollection(fieldPart.Arguments.Count);
             this.Schema = Validation.ThrowIfNullOrReturn(schema, nameof(schema));
         }
 

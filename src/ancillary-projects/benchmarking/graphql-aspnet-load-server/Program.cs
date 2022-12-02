@@ -64,7 +64,6 @@ namespace GraphQL.AspNet.SubscriberLoadTest.Server
             SubscriptionServerSettings.MaxConcurrentSubscriptionReceiverCount = 5000;
 
             // Add services to the container.
-            // builder.Services.AddSingleton<Repository>();
             builder.Services
                 .AddGraphQL()
                 .AddSubscriptions(options =>

@@ -55,13 +55,7 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             _fieldExecutionPipeline = Validation.ThrowIfNullOrReturn(fieldExecutionPipeline, nameof(fieldExecutionPipeline));
         }
 
-        /// <summary>
-        /// Invokes this middleware component allowing it to perform its work against the supplied context.
-        /// </summary>
-        /// <param name="context">The context containing the request passed through the pipeline.</param>
-        /// <param name="next">The delegate pointing to the next piece of middleware to be invoked.</param>
-        /// <param name="cancelToken">The cancel token.</param>
-        /// <returns>Task.</returns>
+        /// <inheritdoc />
         public async Task InvokeAsync(GraphFieldExecutionContext context, GraphMiddlewareInvocationDelegate<GraphFieldExecutionContext> next, CancellationToken cancelToken)
         {
             if (context.IsValid && context.Result != null && !context.IsCancelled)
@@ -126,8 +120,10 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
             // all the child field contexts that need to execute
             var executableChildContexts = new SortedFieldExecutionContextList();
 
-            foreach (var childInvocationContext in context.InvocationContext.ChildContexts)
+            for (var i = 0; i < context.InvocationContext.ChildContexts.Count; i++)
             {
+                var childInvocationContext = context.InvocationContext.ChildContexts[i];
+
                 // Step 1A
                 // ----------------------------
                 // figure out which child items need to be processed through it
@@ -153,9 +149,9 @@ namespace GraphQL.AspNet.Middleware.FieldExecution.Components
                 // on the context for the field in question
                 if (context.DefaultFieldSources.TryRetrieveSource(childInvocationContext.Field, out var defaultSource))
                 {
-                    for (var i = 0; i < sourceItemsToInclude.Count; i++)
+                    for (var j = 0; j < sourceItemsToInclude.Count; j++)
                     {
-                        var current = sourceItemsToInclude[i];
+                        var current = sourceItemsToInclude[j];
                         if (current.ResultData is VirtualResolvedObject)
                             current.AssignResult(defaultSource);
                     }

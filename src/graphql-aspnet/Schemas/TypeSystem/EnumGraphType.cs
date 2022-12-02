@@ -7,10 +7,18 @@
 // License:  MIT
 // *************************************************************
 
+// *************************************************************
+// project:  graphql-aspnet
+// --
+// repo: https://github.com/graphql-aspnet
+// docs: https://graphql-aspnet.github.io
+// --
+// License:  MIT
+// *************************************************************
+
 namespace GraphQL.AspNet.Schemas.TypeSystem
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Common.Extensions;
@@ -26,6 +34,8 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
     [DebuggerDisplay("ENUM {Name}")]
     public class EnumGraphType : IEnumGraphType
     {
+        private EnumValueCollection _options;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumGraphType" /> class.
         /// </summary>
@@ -120,8 +130,6 @@ namespace GraphQL.AspNet.Schemas.TypeSystem
 
         /// <inheritdoc />
         public IAppliedDirectiveCollection AppliedDirectives { get; }
-
-        private EnumValueCollection _options;
 
         /// <inheritdoc />
         public SchemaItemPath Route { get; }

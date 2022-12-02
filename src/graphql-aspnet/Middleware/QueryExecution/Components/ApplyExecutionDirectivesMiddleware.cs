@@ -238,7 +238,7 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             var argGenerator = new ArgumentGenerator(_schema, directivePart.Arguments);
 
-            var collection = new InputArgumentCollection();
+            var collection = new InputArgumentCollection(targetDirective.Arguments.Count);
             foreach (var directiveArg in targetDirective.Arguments)
             {
                 var argResult = argGenerator.CreateInputArgument(directiveArg);

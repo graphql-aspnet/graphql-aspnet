@@ -43,9 +43,9 @@ public static class Program
             // test runs to perform
             // ----------------------------
             // RunnerOptions.RestQuery,
-            // RunnerOptions.GraphQLQuery,
+            RunnerOptions.GraphQLQuery
             // RunnerOptions.GraphQLMutation,
-            RunnerOptions.GraphQlSubscription
+            // RunnerOptions.GraphQlSubscription
         );
 
         var cancelSource = new CancellationTokenSource();

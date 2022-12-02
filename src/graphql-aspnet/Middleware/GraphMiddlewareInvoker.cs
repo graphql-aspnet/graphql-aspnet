@@ -33,8 +33,8 @@ namespace GraphQL.AspNet.Middleware
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphMiddlewareInvoker{TContext}" /> class.
         /// </summary>
-        /// <param name="middlewareComponent">The middleware component.</param>
-        /// <param name="next">The next component to invoke.</param>
+        /// <param name="middlewareComponent">The middleware component being invoked.</param>
+        /// <param name="next">A delegate pointing to the next component to invoke, if any.</param>
         public GraphMiddlewareInvoker(
             GraphMiddlewareDefinition<TContext> middlewareComponent,
             GraphMiddlewareInvocationDelegate<TContext> next = null)
@@ -60,7 +60,6 @@ namespace GraphQL.AspNet.Middleware
                 return;
 
             // create and use the component, depending on the scope
-            // invoke it and return
             var instance = _singletonInstance;
             if (instance == null)
             {
@@ -88,6 +87,7 @@ namespace GraphQL.AspNet.Middleware
                     "or one could not be created from the service provider on the request context.");
             }
 
+            // invoke it and return
             var task = instance.InvokeAsync(context, this.Next, cancelToken);
             await task.ConfigureAwait(false);
         }

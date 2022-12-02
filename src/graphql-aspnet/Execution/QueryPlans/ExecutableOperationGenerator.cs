@@ -73,7 +73,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
         /// <param name="sourceGraphType">The source type for which fields requests should be generated.</param>
         /// <param name="fieldsToReturn">The set of fields to return from the source type.</param>
         /// <returns>Task.</returns>
-        private async Task<IEnumerable<IGraphFieldInvocationContext>> CreateContextsForFieldSelectionSet(
+        private async Task<List<IGraphFieldInvocationContext>> CreateContextsForFieldSelectionSet(
             IObjectGraphType sourceGraphType,
             IFieldSelectionSetDocumentPart fieldsToReturn)
         {
@@ -94,14 +94,19 @@ namespace GraphQL.AspNet.Execution.QueryPlans
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
-            foreach (var task in tasks.Where(x => x.IsFaulted))
+
+            var results = new List<IGraphFieldInvocationContext>(tasks.Count);
+            foreach (var task in tasks)
             {
                 // reawait failed tasks so they can throw in context.
                 if (task.IsFaulted)
                     await task.ConfigureAwait(false);
+
+                if (task.Result != null)
+                    results.Add(task.Result);
             }
 
-            return tasks.Where(x => x.Result != null).Select(x => x.Result);
+            return results;
         }
 
         /// <summary>
@@ -148,7 +153,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
 
                 // maintain the order of completion to ensure that child contexts are added to this context
                 // in the order they were declared on the query
-                var orderedFieldTasks = new List<Task<IEnumerable<IGraphFieldInvocationContext>>>();
+                var orderedFieldTasks = new List<Task<List<IGraphFieldInvocationContext>>>();
                 foreach (var childGraphType in allKnownTypes)
                 {
                     var childrenTask = this.CreateContextsForFieldSelectionSet(childGraphType, fieldPart.FieldSelectionSet);
@@ -184,7 +189,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans
             IGraphArgumentContainer argumentContainer,
             IInputArgumentCollectionDocumentPart querySuppliedArguments)
         {
-            var collection = new InputArgumentCollection();
+            var collection = new InputArgumentCollection(argumentContainer.Arguments.Count);
             var argGenerator = new ArgumentGenerator(_schema, querySuppliedArguments);
 
             foreach (var argument in argumentContainer.Arguments)

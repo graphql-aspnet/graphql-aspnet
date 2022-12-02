@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Interfaces.Execution
     /// <summary>
     /// An interface representing a group of <see cref="IGraphFieldInvocationContext" />.
     /// </summary>
-    public interface IFieldInvocationContextCollection : IEnumerable<IGraphFieldInvocationContext>
+    public interface IFieldInvocationContextCollection : IReadOnlyList<IGraphFieldInvocationContext>
     {
         /// <summary>
         /// Adds the specified context to the collection.
