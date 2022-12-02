@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
     [DebuggerDisplay("Count = {Count}")]
     internal class DocumentFragmentSpreadCollection : IFragmentSpreadCollectionDocumentPart
     {
-        private Dictionary<string, List<IFragmentSpreadDocumentPart>> _spreads;
+        private List<IFragmentSpreadDocumentPart> _allSpreads;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentFragmentSpreadCollection"/> class.
@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         public DocumentFragmentSpreadCollection(IDocumentPart owner)
         {
             this.Owner = Validation.ThrowIfNullOrReturn(owner, nameof(owner));
-            _spreads = new Dictionary<string, List<IFragmentSpreadDocumentPart>>();
+            _allSpreads = new List<IFragmentSpreadDocumentPart>();
         }
 
         /// <summary>
@@ -45,36 +45,14 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
             Validation.ThrowIfNull(fragmentSpread, nameof(fragmentSpread));
             if (fragmentSpread.FragmentName.Length > 0)
             {
-                var fragName = fragmentSpread.FragmentName.ToString();
-                if (!_spreads.ContainsKey(fragName))
-                    _spreads.Add(fragName, new List<IFragmentSpreadDocumentPart>());
-
-                _spreads[fragName].Add(fragmentSpread);
-                this.Count += 1;
+                _allSpreads.Add(fragmentSpread);
             }
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<IFragmentSpreadDocumentPart> FindReferences(string fragmentName)
-        {
-            fragmentName = Validation.ThrowIfNullWhiteSpaceOrReturn(fragmentName, nameof(fragmentName));
-            if (_spreads.ContainsKey(fragmentName))
-                return _spreads[fragmentName];
-
-            return Enumerable.Empty<IFragmentSpreadDocumentPart>();
-        }
-
-        /// <inheritdoc />
-        public bool IsSpread(string fragmentName)
-        {
-            fragmentName = Validation.ThrowIfNullWhiteSpaceOrReturn(fragmentName, nameof(fragmentName));
-            return _spreads.ContainsKey(fragmentName);
         }
 
         /// <inheritdoc />
         public IEnumerator<IFragmentSpreadDocumentPart> GetEnumerator()
         {
-            return _spreads.Values.SelectMany(x => x).GetEnumerator();
+            return _allSpreads.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -84,9 +62,12 @@ namespace GraphQL.AspNet.Execution.QueryPlans.Document.Parts
         }
 
         /// <inheritdoc />
-        public int Count { get; private set; }
+        public int Count => _allSpreads.Count;
 
         /// <inheritdoc />
         public IDocumentPart Owner { get; }
+
+        /// <inheritdoc />
+        public IFragmentSpreadDocumentPart this[int index] => _allSpreads[index];
     }
 }

@@ -496,9 +496,10 @@ namespace GraphQL.AspNet.Execution.FieldResolution
                             $"for target type '{field.FieldContext.ExpectedSourceType?.FriendlyName() ?? "-all-"}' when the field " +
                             "name was already present in the output dictionary.",
                             this.Origin,
-                            new InvalidOperationException($"The source object '{this.SourceData}' successfully resolved a field name of '{field.Name}' more than once when it shouldn't. This may occur if a source " +
-                                                                          "object type is referenced to to multiple target graph types in fragment references. Ensure that your source data uniquely maps to one fragment per field collection " +
-                                                                          "or that the fragments do not share property names."));
+                            new InvalidOperationException(
+                                $"The source object '{this.SourceData}' successfully resolved a field name of '{field.Name}' more than once when it shouldn't. This may occur if a source " +
+                                "object type is referenced to to multiple target graph types in fragment references. Ensure that your source data uniquely maps to one fragment per field collection " +
+                                "or that the fragments do not share property names."));
                     }
 
                     fieldSet.Add(field.FieldContext.Name, childResult);

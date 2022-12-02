@@ -83,13 +83,17 @@ namespace GraphQL.AspNet.Engine
             // Ensure this is a socket request targeted at the url
             // the schema is listening on
             // ---------------------------------
-            var isListeningToPath = context?.Request?.Path != null && string.Compare(
-                context.Request.Path,
-                _routePath,
-                CultureInfo.InvariantCulture,
-                CompareOptions.OrdinalIgnoreCase) == 0;
+            var isListeningToPath =
+                context.WebSockets != null
+                && context.WebSockets.IsWebSocketRequest
+                && context?.Request?.Path != null
+                && string.Compare(
+                    context.Request.Path,
+                    _routePath,
+                    CultureInfo.InvariantCulture,
+                    CompareOptions.OrdinalIgnoreCase) == 0;
 
-            if (!isListeningToPath || !context.WebSockets.IsWebSocketRequest)
+            if (!isListeningToPath)
             {
                 await _next(context).ConfigureAwait(false);
                 return;

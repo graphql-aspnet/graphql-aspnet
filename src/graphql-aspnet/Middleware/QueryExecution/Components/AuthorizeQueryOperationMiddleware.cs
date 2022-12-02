@@ -61,8 +61,10 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
         {
             var authTasks = new List<Task>();
             bool isAuthorized = true;
-            foreach (var securePart in context.Operation.SecureItems)
+            for (var i = 0; i < context.Operation.SecureItems.Count; i++)
             {
+                var securePart = context.Operation.SecureItems[i];
+
                 // should be caught by validation but just in case prevent an auth
                 if (securePart?.SecureItem == null)
                     continue;

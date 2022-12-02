@@ -104,8 +104,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             // fragments may be spread more than once in a single operation
             // but we dont want to execute the directives of the fragment more than once
             var includedFragments = new HashSet<string>();
-            foreach (var spread in context.Operation.FragmentSpreads)
+            for (var i = 0; i < context.Operation.FragmentSpreads.Count; i++)
             {
+                var spread = context.Operation.FragmentSpreads[i];
                 if (string.IsNullOrWhiteSpace(spread.Fragment?.Name))
                     continue;
 
@@ -239,8 +240,9 @@ namespace GraphQL.AspNet.Middleware.QueryExecution.Components
             var argGenerator = new ArgumentGenerator(_schema, directivePart.Arguments);
 
             var collection = new InputArgumentCollection(targetDirective.Arguments.Count);
-            foreach (var directiveArg in targetDirective.Arguments)
+            for (var i = 0; i < targetDirective.Arguments.Count; i++)
             {
+                var directiveArg = targetDirective.Arguments[i];
                 var argResult = argGenerator.CreateInputArgument(directiveArg);
                 if (argResult.IsValid)
                     collection.Add(new InputArgument(directiveArg, argResult.Argument));

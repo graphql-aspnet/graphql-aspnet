@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.Tokens
         /// </summary>
         /// <param name="charCode">The character code.</param>
         /// <returns><c>true</c> if the token type represents a control glyph otherwise, <c>false</c>.</returns>
-        public static bool IsControlerGlyph(char charCode)
+        public static bool IsControllerGlyph(char charCode)
         {
             switch ((int)charCode)
             {

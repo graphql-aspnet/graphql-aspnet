@@ -27,6 +27,7 @@ namespace GraphQL.AspNet.Logging.SubscriptionServerLogEntries
             int thresholdLevelReached,
             int queueCount,
             string customMessage = null)
+            : base(SubscriptionLogEventIds.EventDispatchQueueThresholdReached)
         {
             this.ThresholdLevelReached = thresholdLevelReached;
             this.EventQueueCount = queueCount;

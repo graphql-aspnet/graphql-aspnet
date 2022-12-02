@@ -116,7 +116,7 @@ namespace GraphQL.AspNet.Execution.Parsing.Lexing.CharacterGroupValidation
         /// <returns><c>true</c> if [is accepted token glyph] [the specified c]; otherwise, <c>false</c>.</returns>
         public static bool IsAcceptedTokenGlyph(char c)
         {
-            return TokenTypeExtensions.IsControlerGlyph(c);
+            return TokenTypeExtensions.IsControllerGlyph(c);
         }
     }
 }
