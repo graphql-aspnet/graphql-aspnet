@@ -29,18 +29,5 @@ namespace GraphQL.AspNet.Interfaces.Execution
         /// <param name="type">The type.</param>
         /// <returns><c>true</c> if an item in this instance can accept the specified type; otherwise, <c>false</c>.</returns>
         bool CanAcceptSourceType(Type type);
-
-        /// <summary>
-        /// Gets the number of contexts in this collection.
-        /// </summary>
-        /// <value>The count.</value>
-        int Count { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IGraphFieldInvocationContext"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>IGraphFieldExecutionContext.</returns>
-        IGraphFieldInvocationContext this[int index] { get; }
     }
 }
