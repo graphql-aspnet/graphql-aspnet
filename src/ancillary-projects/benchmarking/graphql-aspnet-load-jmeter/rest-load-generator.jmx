@@ -12,39 +12,30 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="GraphQL Query Users" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="GET Request Users" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">10000</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">300</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">15</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="QUERY Donut" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;query&quot;: &quot;query { retrieveDonut(id: \&quot;1\&quot;) { id name flavor } }&quot;	&#xd;
-}	</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET  Donut" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
           <stringProp name="HTTPSampler.port">3000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/graphql</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <stringProp name="HTTPSampler.path">/api/donuts/1</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -52,7 +43,7 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="TestPlan.comments">Performs a GraphQL query to retrieve a single donut</stringProp>
+          <stringProp name="TestPlan.comments">Performs a GET request to retrieve a single donut</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
           <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="true">
@@ -183,8 +174,8 @@
         </ResponseAssertion>
         <hashTree/>
         <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert Data Item Value" enabled="true">
-          <stringProp name="JSON_PATH">$.data.retrieveDonut.flavor</stringProp>
-          <stringProp name="EXPECTED_VALUE">CHOCOLATE</stringProp>
+          <stringProp name="JSON_PATH">$.data.singleDonut.flavor</stringProp>
+          <stringProp name="EXPECTED_VALUE">vanilla</stringProp>
           <boolProp name="JSONVALIDATION">true</boolProp>
           <boolProp name="EXPECT_NULL">false</boolProp>
           <boolProp name="INVERT">false</boolProp>
@@ -229,29 +220,31 @@
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="GraphQL Mutation Users" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="PUT Request Users" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">10000</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">300</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">15</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="MUTATION Donut" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PUT  Donut" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;query&quot;: &quot;mutation { addOrUpdateDonut(donut: { id: \&quot;1\&quot;  name: \&quot;BIG PINK\&quot;, flavor: STRAWBERRY }) { id name flavor } }&quot;	&#xd;
-}	</stringProp>
+	&quot;id&quot;: &quot;1&quot;,&#xd;
+	&quot;name&quot;: &quot;donut 1&quot;,&#xd;
+	&quot;flavor&quot;: &quot;vanilla&quot;&#xd;
+}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -260,22 +253,32 @@
           <stringProp name="HTTPSampler.port">3000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/graphql</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <stringProp name="HTTPSampler.path">/api/donuts/1</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.BROWSER_COMPATIBLE_MULTIPART">true</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="TestPlan.comments">Performs a GraphQL query to mutate a single donut</stringProp>
+          <stringProp name="TestPlan.comments">Performs a POST request to mutate a single donut</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
           <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="true">
             <stringProp name="ConstantTimer.delay">0</stringProp>
             <stringProp name="RandomTimer.range">75.0</stringProp>
           </UniformRandomTimer>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
           <hashTree/>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -400,8 +403,8 @@
         </ResponseAssertion>
         <hashTree/>
         <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert Data Item Value" enabled="true">
-          <stringProp name="JSON_PATH">$.data.addOrUpdateDonut.flavor</stringProp>
-          <stringProp name="EXPECTED_VALUE">CHOCOLATE</stringProp>
+          <stringProp name="JSON_PATH">$.data.singleDonut.flavor</stringProp>
+          <stringProp name="EXPECTED_VALUE">vanilla	</stringProp>
           <boolProp name="JSONVALIDATION">true</boolProp>
           <boolProp name="EXPECT_NULL">false</boolProp>
           <boolProp name="INVERT">false</boolProp>

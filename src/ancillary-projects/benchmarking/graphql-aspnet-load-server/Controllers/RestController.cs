@@ -18,15 +18,21 @@ namespace GraphQL.AspNet.SubscriberLoadTest.Server.Controllers
     [ApiController]
     public class RestController : Controller
     {
-        private static readonly Donut _donut;
+        private static readonly RestResponsePayload _payload;
 
         static RestController()
         {
-            _donut = new Donut()
+            _payload = new RestResponsePayload()
             {
-                Id = "5",
-                Name = "Static Rest Donut",
-                Flavor = "vanilla",
+                Data = new DonutPayload
+                {
+                    SingleDonut = new Donut()
+                    {
+                        Id = "5",
+                        Name = "Static Rest Donut",
+                        Flavor = "vanilla",
+                    },
+                },
             };
         }
 
@@ -38,7 +44,22 @@ namespace GraphQL.AspNet.SubscriberLoadTest.Server.Controllers
         [HttpGet("/api/donuts/{id}")]
         public IActionResult RetrieveDonut(string id)
         {
-            return this.Ok(_donut);
+            return this.Ok(_payload);
+        }
+
+        /// <summary>
+        /// POST - /api/donuts/{id}.
+        /// </summary>
+        /// <param name="id">The donut id being updated.</param>
+        /// <param name="donut">The inbound donut object.</param>
+        /// <returns>Donut.</returns>
+        [HttpPut("/api/donuts/{id}")]
+        public IActionResult UpdateDonut(string id, [FromBody] Donut donut)
+        {
+            if (string.IsNullOrWhiteSpace(donut?.Id))
+                return this.BadRequest();
+
+            return this.Ok(_payload);
         }
     }
 }
