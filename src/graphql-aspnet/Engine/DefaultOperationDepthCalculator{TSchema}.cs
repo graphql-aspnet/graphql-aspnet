@@ -36,8 +36,9 @@ namespace GraphQL.AspNet.Engine
             int maxDepth = 0;
             if (selectionSet != null)
             {
-                foreach (var child in selectionSet.Children)
+                for (var i = 0; i < selectionSet.Children.Count; i++)
                 {
+                    var child = selectionSet.Children[i];
                     if (child is IFieldDocumentPart fd)
                     {
                         var depth = 1;

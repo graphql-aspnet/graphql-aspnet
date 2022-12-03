@@ -32,10 +32,11 @@ namespace GraphQL.AspNet
         public static class Alerts
         {
             /// <summary>
-            /// The default dispatch queue alert settings used if none are provided by
+            /// Gets the default dispatch queue alert settings used if none are provided by
             /// the user.
             /// </summary>
-            public static ISubscriptionClientDispatchQueueAlertSettings DEFAULT_DISPATCH_QUEUE_ALERT_SETTINGS;
+            /// <value>The default alert settings for the dispatch queue.</value>
+            public static ISubscriptionClientDispatchQueueAlertSettings DefaultDispatchQueueAlertSettings { get; }
 
             /// <summary>
             /// Initializes static members of the <see cref="Alerts"/> class.
@@ -48,7 +49,7 @@ namespace GraphQL.AspNet
                     10_000,
                     System.TimeSpan.FromMinutes(5));
 
-                DEFAULT_DISPATCH_QUEUE_ALERT_SETTINGS = settings;
+                DefaultDispatchQueueAlertSettings = settings;
             }
         }
 

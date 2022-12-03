@@ -19,14 +19,14 @@ namespace GraphQL.AspNet.Execution
     /// <summary>
     /// A collection of messages produced while completing a requested graph operation. Messages generated
     /// by the runtime or by custom code on field requests are aggregated and inspected for severity levels to
-    /// deteremine if processing should cease or when a response needs to be sent to the request.
+    /// deteremine if processing should cease or when a response needs to be sent to the requestor.
     /// </summary>
     [DebuggerDisplay("Count = {Count}, Severity = {Severity}")]
     [DebuggerTypeProxy(typeof(GraphMessageCollectionDebugProxy))]
     [DebuggerStepThrough]
     public class GraphMessageCollection : IGraphMessageCollection
     {
-        private readonly List<IGraphMessage> _messages;
+        private List<IGraphMessage> _messages;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphMessageCollection"/> class.
@@ -44,17 +44,17 @@ namespace GraphQL.AspNet.Execution
 
             lock (_messages)
             {
-                // resize once then add all messages
-                var newCapacity = messagesToAdd.Count + _messages.Count;
-                if (newCapacity > _messages.Capacity)
+                // instead of letting the list dynamicly size itself
+                // as messages are added in, ensure its only ever resized
+                // once for the whole operation.
+                var newCount = messagesToAdd.Count + _messages.Count;
+                if (newCount < _messages.Capacity)
                 {
-                    // ensure we increase capacity by at least double the current
-                    // message capacity
-                    if (newCapacity < _messages.Capacity * 2)
-                        newCapacity = _messages.Capacity * 2;
+                    var newCapacity = _messages.Capacity * 2;
+                    while (newCount < newCapacity)
+                        newCapacity = newCapacity * 2;
 
-                    var newMessages = new List<IGraphMessage>(newCapacity);
-                    newMessages.AddRange(_messages);
+                    _messages.Capacity = newCapacity;
                 }
 
                 for (var i = 0; i < messagesToAdd.Count; i++)

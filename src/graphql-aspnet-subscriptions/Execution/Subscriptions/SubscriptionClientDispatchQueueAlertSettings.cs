@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Execution.Subscriptions
     /// <summary>
     /// A default implementation of <see cref="ISubscriptionClientDispatchQueueAlertSettings"/>.
     /// </summary>
-    public class SubscriptionClientDispatchQueueAlertSettings : ISubscriptionClientDispatchQueueAlertSettings
+    public sealed class SubscriptionClientDispatchQueueAlertSettings : ISubscriptionClientDispatchQueueAlertSettings
     {
         private List<SubscriptionEventAlertThreshold> _allSettings;
 

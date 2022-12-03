@@ -65,7 +65,7 @@ namespace GraphQL.AspNet.Internal
             if (loggerFactory != null)
             {
                 var logger = loggerFactory.CreateLogger(Constants.Logging.LOG_CATEGORY);
-                alertSettings = alertSettings ?? SubscriptionConstants.Alerts.DEFAULT_DISPATCH_QUEUE_ALERT_SETTINGS;
+                alertSettings = alertSettings ?? SubscriptionConstants.Alerts.DefaultDispatchQueueAlertSettings;
                 _alerter = new SubscriptionClientDispatchQueueAlerter(logger, alertSettings);
             }
 

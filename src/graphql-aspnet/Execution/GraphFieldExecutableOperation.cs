@@ -24,7 +24,7 @@ namespace GraphQL.AspNet.Execution
     /// </summary>
     [Serializable]
     [DebuggerDisplay("{OperationName} (Type = {OperationType})")]
-    public class GraphFieldExecutableOperation : IGraphFieldExecutableOperation
+    public sealed class GraphFieldExecutableOperation : IGraphFieldExecutableOperation
     {
         private IOperationDocumentPart _operation;
         private IVariableCollectionDocumentPart _variableCollection;
