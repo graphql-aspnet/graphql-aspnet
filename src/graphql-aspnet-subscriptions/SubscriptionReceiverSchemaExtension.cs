@@ -147,7 +147,7 @@ namespace GraphQL.AspNet
                  (sp) => new DefaultGlobalSubscriptionClientProxyCollection(SubscriptionServerSettings.MaxConnectedClientCount),
                  ServiceLifetime.Singleton));
 
-            _schemaBuilder.Options.ServiceCollection.AddSingleton<ISubscriptionEventDispatchQueue, SubscriptionClientDispatchQueue>();
+            _schemaBuilder.Options.ServiceCollection.TryAddSingleton<ISubscriptionEventDispatchQueue, SubscriptionClientDispatchQueue>();
 
             // add the dispatch service for distributing events to clients
             _schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionClientDispatchService>();

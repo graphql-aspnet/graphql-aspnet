@@ -10,6 +10,7 @@
 namespace GraphQL.AspNet.Configuration.Mvc
 {
     using System;
+    using System.Linq;
     using GraphQL.AspNet.Common;
     using GraphQL.AspNet.Engine;
     using GraphQL.AspNet.Execution.Subscriptions;
@@ -61,20 +62,26 @@ namespace GraphQL.AspNet.Configuration.Mvc
 
             var publishingExtension = new SubscriptionPublisherSchemaExtension<TSchema>();
 
-            // register the in-process publisher to the service collection before
-            // if one is not already registered
-            var defaultPublisher = CreateDefaultSubscriptionPublisherDescriptor();
-            schemaBuilder.Options.ServiceCollection.TryAdd(defaultPublisher);
-
             // register the internal queueing mechanism that will asyncrounously transfer
             // raised events from controller methods to the registered subscription publisher
             schemaBuilder.Options.ServiceCollection.AddSingleton<SubscriptionEventPublishingQueue>();
             schemaBuilder.Options.ServiceCollection.AddHostedService<SubscriptionPublicationService>();
-            schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
+
+            // register the in-process publisher (and related services) to the service collection before
+            // if one is not already registered. The in process publisher relies on the
+            // dispatch queue
+            var registeredPublisherDescriptor = schemaBuilder.Options.ServiceCollection.FirstOrDefault(x => x.ServiceType == typeof(ISubscriptionEventPublisher));
+            if (registeredPublisherDescriptor == null)
+            {
+                var defaultPublisher = CreateDefaultSubscriptionPublisherDescriptor();
+                schemaBuilder.Options.ServiceCollection.TryAdd(defaultPublisher);
+                schemaBuilder.Options.ServiceCollection.TryAdd(CreateDefaultSubscriptionRouterDescriptor());
+            }
 
             schemaBuilder.Options.RegisterExtension(publishingExtension);
             schemaBuilder.QueryExecutionPipeline.AddMiddleware<PublishRaisedSubscriptionEventsMiddleware<TSchema>>(
                 ServiceLifetime.Singleton);
+
 
             return schemaBuilder;
         }
