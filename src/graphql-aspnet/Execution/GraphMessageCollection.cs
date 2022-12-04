@@ -44,9 +44,12 @@ namespace GraphQL.AspNet.Execution
 
             lock (_messages)
             {
+                // since we have to iterate all incoming messags
+                // in this method to do do a severity check anyways...
+                //
                 // instead of letting the list dynamicly size itself
-                // as messages are added in, ensure its only ever resized
-                // once for the whole operation.
+                // as messages are added in 1 by 1, ensure its only ever resized
+                // once for the whole iterated operation.
                 var newCount = messagesToAdd.Count + _messages.Count;
                 if (newCount < _messages.Capacity)
                 {
