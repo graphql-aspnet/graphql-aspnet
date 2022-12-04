@@ -59,6 +59,25 @@ namespace GraphQL.AspNet.StarWarsAPI7X
                     });
             });
 
+            // ASP.NET websockets implementation must also be added to the runtime
+            services.AddWebSockets((options) =>
+            {
+                // here add some common origins of various tools that may be
+                // used for running this demo
+                // do not add these in a production app
+                options.AllowedOrigins.Add("http://localhost:5000");
+                options.AllowedOrigins.Add("http://localhost:4000");
+                options.AllowedOrigins.Add("http://localhost:3000");
+                options.AllowedOrigins.Add("null");
+
+                // some electron-based graphql tools send a file reference
+                // as their origin
+                // do not add these in a production app
+                options.AllowedOrigins.Add("file://");
+                options.AllowedOrigins.Add("ws://");
+
+            });
+
             // ----------------------------------------------------------
             // Register GraphQL with the application
             // ----------------------------------------------------------
@@ -103,26 +122,6 @@ namespace GraphQL.AspNet.StarWarsAPI7X
              });
 
             services.AddControllers();
-
-
-            // ASP.NET websockets implementation must also be added to the runtime
-            services.AddWebSockets((options) =>
-            {
-                // here add some common origins of various tools that may be
-                // used for running this demo
-                // do not add these in a production app
-                options.AllowedOrigins.Add("http://localhost:5000");
-                options.AllowedOrigins.Add("http://localhost:4000");
-                options.AllowedOrigins.Add("http://localhost:3000");
-                options.AllowedOrigins.Add("null");
-
-                // some electron-based graphql tools send a file reference
-                // as their origin
-                // do not add these in a production app
-                options.AllowedOrigins.Add("file://");
-                options.AllowedOrigins.Add("ws://");
-
-            });
         }
 
         /// <summary>

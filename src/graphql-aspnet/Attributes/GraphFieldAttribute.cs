@@ -14,7 +14,6 @@ namespace GraphQL.AspNet.Attributes
     using System.Diagnostics;
     using System.Linq;
     using GraphQL.AspNet.Execution;
-    using GraphQL.AspNet.Schemas.TypeSystem;
 
     /// <summary>
     /// An attribute used to mark a property as being a graph field that should appear in the object graph.
@@ -23,9 +22,6 @@ namespace GraphQL.AspNet.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class GraphFieldAttribute : BaseGraphAttribute
     {
-        private TypeExpressions? _typeModifiers;
-        private MetaGraphTypes[] _typeWrappers;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldAttribute"/> class.
         /// </summary>
@@ -124,51 +120,23 @@ namespace GraphQL.AspNet.Attributes
         public float Complexity { get; set; }
 
         /// <summary>
-        /// Gets or sets a short cut value to expression the set of wrappers required to to declare this graph field.
-        /// For more complex list/nullability requirements use <see cref="TypeDefinition"/>.
+        /// Gets or sets a type expression, in graphql's syntax language, that defines
+        /// the meta types for this field (e.g. <c>"[Type]!"</c>, <c>"Type!"</c> etc.).
         /// </summary>
-        /// <value>The options.</value>
-        public TypeExpressions TypeExpression
-        {
-            get
-            {
-                return _typeModifiers ?? TypeExpressions.Auto;
-            }
-
-            set
-            {
-                if (value == TypeExpressions.Auto)
-                {
-                    _typeModifiers = null;
-                    _typeWrappers = null;
-                    return;
-                }
-
-                // ensure that if the developer declared this shouldnt be a nullable list that the flag for being a list in the
-                // first place was also set (the null check doesnt make sense without the list check).
-                if (value.HasFlag(TypeExpressions.IsNotNullList) && !value.HasFlag(TypeExpressions.IsList))
-                    value |= TypeExpressions.IsList;
-
-                _typeModifiers = value;
-                _typeWrappers = value.ToTypeWrapperSet();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the actual type wrappers used to generate a type expression for this field.
-        /// Setting this value overrides <see cref="TypeExpression"/>. This list represents the type requirements
-        /// of the field.
-        /// </summary>
-        /// <value>The custom wrappers.</value>
-        public MetaGraphTypes[] TypeDefinition
-        {
-            get => _typeWrappers;
-            set
-            {
-                _typeWrappers = value;
-                _typeModifiers = null;
-            }
-        }
+        /// <remarks>
+        /// <para>
+        /// The supplied type name is a placeholder; it is replaced at runtime with the
+        /// actual type name of this field as its declared in the target schema.
+        /// <br />
+        /// For Example, <c>"[Type!]"</c>, <c>"[Song!]"</c> and
+        /// <c>"[Donut!]"</c> are all equivilant values for this property. (Default: <c>null</c>).
+        /// </para>
+        /// <para>
+        /// When <c>null</c>, the type expression extracted from source code is used.
+        /// </para>
+        /// </remarks>
+        /// <value>The type expression to assign to this field.</value>
+        public string TypeExpression { get; set; }
 
         /// <summary>
         /// Gets the mode indicating how the type system should interprete and process the results of this method.

@@ -150,6 +150,17 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override string InternalName => this.Property.Name;
 
         /// <inheritdoc />
-        public MetaGraphTypes[] DeclaredTypeWrappers => _fieldDeclaration?.TypeDefinition;
+        public MetaGraphTypes[] DeclaredTypeWrappers
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_fieldDeclaration?.TypeExpression))
+                    return null;
+
+                return GraphTypeExpression
+                    .FromDeclaration(_fieldDeclaration.TypeExpression)
+                    .Wrappers;
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestDa
             this.Property1 = 3;
         }
 
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public int? Property1 { get; set; }
     }
 }

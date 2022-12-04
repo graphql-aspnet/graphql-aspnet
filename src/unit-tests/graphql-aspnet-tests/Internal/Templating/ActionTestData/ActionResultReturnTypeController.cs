@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
             return null;
         }
 
-        [Query("path3", typeof(List<TwoPropertyObject>), TypeExpression = TypeExpressions.IsList | TypeExpressions.IsNotNull | TypeExpressions.IsNotNullList)]
+        [Query("path3", typeof(List<TwoPropertyObject>), TypeExpression = "[Type!]!")]
         public IGraphActionResult ActionResultMethodWithListReturnTypeAndOptions()
         {
             return null;

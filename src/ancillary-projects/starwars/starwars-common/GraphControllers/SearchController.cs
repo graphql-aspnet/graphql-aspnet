@@ -41,7 +41,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// </summary>
         /// <param name="searchText">The text to search for.</param>
         /// <returns>Task&lt;IGraphActionResult&gt;.</returns>
-        [QueryRoot("search", "SearchResults", typeof(Droid), typeof(Human), typeof(Starship), TypeExpression = TypeExpressions.IsList)]
+        [QueryRoot("search", "SearchResults", typeof(Droid), typeof(Human), typeof(Starship), TypeExpression = "[Type]")]
         [Description("Searches for the specified text as the name of a starship or or character (not case sensitive).")]
         [Authorize]
         public async Task<IGraphActionResult> GlobalSearch(string searchText = "*")

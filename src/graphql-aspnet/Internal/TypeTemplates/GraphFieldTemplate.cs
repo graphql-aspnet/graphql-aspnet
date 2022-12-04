@@ -36,6 +36,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
     {
         private AppliedSecurityPolicyGroup _securityPolicies;
         private GraphFieldAttribute _fieldDeclaration;
+        private bool _invalidTypeExpression;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphFieldTemplate" /> class.
@@ -64,6 +65,23 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
             this.Mode = _fieldDeclaration?.ExecutionMode ?? FieldResolutionMode.PerSourceItem;
             this.Complexity = _fieldDeclaration?.Complexity;
             this.Description = this.AttributeProvider.SingleAttributeOfTypeOrDefault<DescriptionAttribute>()?.Description;
+
+            if (_fieldDeclaration?.TypeExpression == null)
+            {
+                this.DeclaredTypeWrappers = null;
+            }
+            else
+            {
+                var expression = GraphTypeExpression.FromDeclaration(_fieldDeclaration.TypeExpression);
+                if (!expression.IsValid)
+                {
+                    _invalidTypeExpression = true;
+                }
+                else
+                {
+                    this.DeclaredTypeWrappers = expression.Wrappers;
+                }
+            }
 
             var objectType = GraphValidation.EliminateWrappersFromCoreType(this.DeclaredReturnType);
             var typeExpression = GraphTypeExpression.FromType(this.DeclaredReturnType, this.DeclaredTypeWrappers);
@@ -164,6 +182,13 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         public override void ValidateOrThrow()
         {
             base.ValidateOrThrow();
+
+            if (_invalidTypeExpression)
+            {
+                throw new GraphTypeDeclarationException(
+                    $"The field  '{this.InternalFullName}' defines an invalid {nameof(GraphFieldAttribute.TypeExpression)} (Value = '{_fieldDeclaration.TypeExpression}'). " +
+                    $"The provided type expression must be a valid query language type expression or null.");
+            }
 
             if (this.DeclaredReturnType == typeof(void))
             {
@@ -452,7 +477,7 @@ namespace GraphQL.AspNet.Internal.TypeTemplates
         protected List<Type> PossibleTypes { get; private set; }
 
         /// <inheritdoc />
-        public MetaGraphTypes[] DeclaredTypeWrappers => _fieldDeclaration?.TypeDefinition;
+        public MetaGraphTypes[] DeclaredTypeWrappers { get; private set; }
 
         /// <inheritdoc />
         public float? Complexity { get; set; }

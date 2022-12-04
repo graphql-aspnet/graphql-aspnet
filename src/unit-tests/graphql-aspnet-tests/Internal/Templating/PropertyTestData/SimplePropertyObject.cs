@@ -59,8 +59,11 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.PropertyTestData
 
         public List<HairData> Wigs { get; set; }
 
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public ShoeData Shoes { get; set; }
+
+        [GraphField(TypeExpression = "[Type!")]
+        public ShoeData InvalidTypeExpression { get; set; }
 
         public IPropInterface InterfaceProperty { get; set; }
 

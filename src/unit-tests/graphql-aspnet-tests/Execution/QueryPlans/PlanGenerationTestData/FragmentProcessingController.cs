@@ -18,7 +18,12 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData
     [GraphRoute("fragTester")]
     public class FragmentProcessingController : GraphController
     {
-        [Query("makeHybridData", "FragmentData", typeof(FragmentDataA), typeof(FragmentDataB), TypeExpression = TypeExpressions.IsList)]
+        [Query(
+            "makeHybridData",
+            "FragmentData",
+            typeof(FragmentDataA),
+            typeof(FragmentDataB),
+            TypeExpression = "[Type]")]
         public IGraphActionResult GenerateHybridDataSet()
         {
             var list = new List<IFragmentDataItem>();
@@ -46,7 +51,13 @@ namespace GraphQL.AspNet.Tests.Execution.QueryPlans.PlanGenerationTestData
             return this.Ok(list);
         }
 
-        [Query("sourceDataInheritance", "FragmentData3", typeof(FragmentDataA), typeof(FragmentDataB), typeof(FragmentDataC), TypeExpression = TypeExpressions.IsList)]
+        [Query(
+            "sourceDataInheritance",
+            "FragmentData3",
+            typeof(FragmentDataA),
+            typeof(FragmentDataB),
+            typeof(FragmentDataC),
+            TypeExpression = "[Type]")]
         public IGraphActionResult SourceDataWithInheritedObjects()
         {
             var list = new List<IFragmentDataItem>();

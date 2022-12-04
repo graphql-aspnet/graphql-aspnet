@@ -68,7 +68,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             var prop1 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(TypeCreationItem.Prop1));
             Assert.IsNotNull(prop1);
-            CollectionAssert.AreEqual(TypeExpressions.None.ToTypeWrapperSet(), prop1.TypeExpression.Wrappers);
+            Assert.AreEqual(0, prop1.TypeExpression.Wrappers.Length);
             Assert.AreEqual(Constants.ScalarNames.STRING, prop1.TypeExpression.TypeName);
         }
 

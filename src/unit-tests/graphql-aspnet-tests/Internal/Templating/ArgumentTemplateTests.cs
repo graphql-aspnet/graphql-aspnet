@@ -208,7 +208,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void EnumerableArrayOfArrryOfObjects_ThrowsException()
+        public void EnumerableArrayOfArrryOfObjects_ParsesTypeExpression()
         {
             var template = this.ExtractParameterTemplate("arrayOfEnumerableOfArrayOfObjects", out var paramInfo);
             Assert.AreEqual(typeof(IEnumerable<Person[]>[]), template.Parameter.ParameterType);
@@ -217,7 +217,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
         }
 
         [Test]
-        public void StupidDeepArray_ThrowsException()
+        public void StupidDeepArray_ParsesCorrectTypeExpression()
         {
             var template = this.ExtractParameterTemplate("deepArray", out var paramInfo);
             Assert.AreEqual(typeof(Person[][][][][][][][][][][][][][][][][][][]), template.Parameter.ParameterType);
@@ -234,6 +234,60 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             var appliedDirective = template.AppliedDirectives.First();
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 77, "param arg" }, appliedDirective.Arguments);
+        }
+
+        [Test]
+        public void CompatiableDeclaredTypeExpression_IsAllowed()
+        {
+            // actual type expression "Int"
+            // declared as Int!
+            var template = this.ExtractParameterTemplate("compatiableTypeExpressionSingle", out var paramInfo);
+            Assert.AreEqual("Int!", template.TypeExpression.ToString());
+        }
+
+        [Test]
+        public void CompatiableDeclaredTypeExpressionOnList_IsAllowed()
+        {
+            // actual type expression [Int]
+            // declared as [Int!]!
+            var template = this.ExtractParameterTemplate("compatiableTypeExpressionList", out var paramInfo);
+            Assert.AreEqual("[Int!]!", template.TypeExpression.ToString());
+        }
+
+        [Test]
+        public void InvalidTypeExpression_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("invalidTypeExpression", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void IncompatiableTypeExpressionListToSingle_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("incompatiableTypeExpressionListToSingle", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void IncompatiableTypeExpressionSingleToList_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("incompatiableTypeExpressionSingleToList", out var paramInfo);
+            });
+        }
+
+        [Test]
+        public void IncompatiableTypeExpressionNullToNotNull_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                var template = this.ExtractParameterTemplate("incompatiableTypeExpressionNullToNotNull", out var paramInfo);
+            });
         }
     }
 }

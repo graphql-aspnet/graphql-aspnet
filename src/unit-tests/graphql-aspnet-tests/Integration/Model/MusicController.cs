@@ -66,7 +66,7 @@ namespace GraphQL.AspNet.Tests.Integration.Model
             return this.Ok(song);
         }
 
-        [BatchTypeExtension(typeof(Artist), "records", typeof(Record), TypeExpression = TypeExpressions.IsList)]
+        [BatchTypeExtension(typeof(Artist), "records", typeof(Record), TypeExpression = "[Type]")]
         public async Task<IGraphActionResult> RetrieveArtistRecords(IEnumerable<Artist> artists, string searchText = null)
         {
             var songs = await _musicService.RetrieveRecords(searchText, artists.ToArray());

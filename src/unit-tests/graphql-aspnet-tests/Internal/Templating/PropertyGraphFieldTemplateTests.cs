@@ -233,5 +233,24 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.AreEqual(typeof(DirectiveWithArgs), appliedDirective.DirectiveType);
             Assert.AreEqual(new object[] { 55, "property arg" }, appliedDirective.Arguments);
         }
+
+        [Test]
+        public void InvalidTypeExpression_ThrowsException()
+        {
+            var obj = new Mock<IObjectGraphTypeTemplate>();
+            obj.Setup(x => x.Route).Returns(new SchemaItemPath("[type]/Item0"));
+            obj.Setup(x => x.InternalFullName).Returns("Item0");
+
+            var parent = obj.Object;
+            var propInfo = typeof(SimplePropertyObject).GetProperty(nameof(SimplePropertyObject.InvalidTypeExpression));
+
+            var template = new PropertyGraphFieldTemplate(parent, propInfo, TypeKind.OBJECT);
+            template.Parse();
+
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                template.ValidateOrThrow();
+            });
+        }
     }
 }

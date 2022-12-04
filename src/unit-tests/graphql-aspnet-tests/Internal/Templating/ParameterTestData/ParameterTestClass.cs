@@ -29,18 +29,24 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ParameterTestData
             int? nullableIntArg,
             List<int> listIntArg,
             Person objectArg,
-            [FromGraphQL(TypeExpressions.IsNotNull)] Person objectArgNotNull,
+            [FromGraphQL(TypeExpression = "Type!")] Person objectArgNotNull,
             IEnumerable<int> enumerableIntArg,
             IEnumerable<int?> enumerableIntArgWithNullableItemButNoDefault,
-            [Description("This Graph Field is Amazing")][FromGraphQL("validArgNameOverride1", TypeExpressions.IsNotNullList)] IEnumerable<Person> __lotsOfAttributes,
-            [FromGraphQL(TypeExpressions.IsNotNullList)] IEnumerable<int> enumerableWithNonNullableArg, // int cant be null
-            [FromGraphQL(TypeExpressions.IsNotNull | TypeExpressions.IsNotNullList)] IEnumerable<int> enumerableIntArgWithAttribForbidsNullItems,
+            [Description("This Graph Field is Amazing")][FromGraphQL("validArgNameOverride1", TypeExpression = "[Type]!")] IEnumerable<Person> __lotsOfAttributes,
+            [FromGraphQL(TypeExpression = "[Type]!")] IEnumerable<int> enumerableWithNonNullableArg, // int cant be null
+            [FromGraphQL(TypeExpression = "[Type!]!")] IEnumerable<int> enumerableIntArgWithAttribForbidsNullItems,
             Person[] arrayOfObjects,
             [ApplyDirective(typeof(DirectiveWithArgs), 77, "param arg")] int paramDirective,
             IEnumerable<Person>[] arrayOfEnumerableOfObject,
             IEnumerable<Person[]> enumerableOfArrayOfObjects,
             IEnumerable<Person[]>[] arrayOfEnumerableOfArrayOfObjects,
             Person[][][][][][][][][][][][][][][][][][][] deepArray,
+            [FromGraphQL(TypeExpression = "[Type!")] int invalidTypeExpression,
+            [FromGraphQL(TypeExpression = "Type!")] int? compatiableTypeExpressionSingle, // add more specificity
+            [FromGraphQL(TypeExpression = "[Type!]!")] int?[] compatiableTypeExpressionList, // add more specificity
+            [FromGraphQL(TypeExpression = "[Type]")] int incompatiableTypeExpressionListToSingle,
+            [FromGraphQL(TypeExpression = "Type!")] int[] incompatiableTypeExpressionSingleToList,
+            [FromGraphQL(TypeExpression = "Type")] int incompatiableTypeExpressionNullToNotNull, // nullable expression, actual type is not nullable
             Person defaultValueObjectArg = null,
             string defaultValueStringArg = null,
             string defaultValueStringArgWithValue = "abc",

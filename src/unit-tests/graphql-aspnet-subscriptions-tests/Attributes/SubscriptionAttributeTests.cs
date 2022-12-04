@@ -26,7 +26,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -39,7 +39,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("mySubscriptionRoute", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -52,7 +52,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(1, attrib.Types.Count);
             Assert.AreEqual(typeof(SubscriptionAttributeTests), attrib.Types[0]);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
@@ -66,7 +66,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(SubscriptionAttributeTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -81,7 +81,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(SubscriptionAttributeTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -96,7 +96,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(SubscriptionAttributeTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -111,7 +111,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -124,7 +124,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("mySubscriptionRootRoute", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -137,7 +137,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(1, attrib.Types.Count);
             Assert.AreEqual(typeof(SubscriptionAttributeTests), attrib.Types[0]);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
@@ -151,7 +151,7 @@ namespace GraphQL.Subscriptions.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(SubscriptionAttributeTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);

@@ -27,7 +27,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
 
         public GraphId GraphIdNotRequired { get; set; }
 
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public GraphId GraphIdNonNullable { get; set; }
 
         public TwoPropertyObject NotRequiredReferenceTypeField { get; set; }
@@ -36,7 +36,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers.TestData
         public TwoPropertyObject RequiredReferenceTypeField { get; set; }
 
         [Required]
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public TwoPropertyObject RequiredReferenceExplicitNonNullTypeField { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionDirectiveTestData
         }
 
         [DirectiveLocations(DirectiveLocation.AllExecutionLocations)]
-        public IGraphActionResult Execute([FromGraphQL(TypeExpressions.IsNotNull)] string arg1)
+        public IGraphActionResult Execute([FromGraphQL(TypeExpression = "Type!")] string arg1)
         {
             this.ValuesReceived.Add((this.DirectiveLocation, this.DirectivePhase, arg1));
             return arg1 == "abort" ? this.Cancel() : this.Ok();

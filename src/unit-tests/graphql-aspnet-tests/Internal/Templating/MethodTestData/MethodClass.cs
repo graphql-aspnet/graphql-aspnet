@@ -13,6 +13,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
     using System.ComponentModel;
     using System.Threading.Tasks;
     using GraphQL.AspNet.Attributes;
+    using GraphQL.AspNet.Interfaces.Controllers;
     using GraphQL.AspNet.Schemas.TypeSystem;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
 
@@ -28,7 +29,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
             };
         }
 
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public string ForceNotNull()
         {
             return null;
@@ -154,6 +155,12 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.MethodTestData
         public Task<TwoPropertyObject> InterfaceAsInputParam(ITwoPropertyObject data)
         {
             return Task.FromResult(new TwoPropertyObject());
+        }
+
+        [GraphField("invalidField", TypeExpression = "[Type")]
+        public TwoPropertyObject InvalidTypeExpression()
+        {
+            return null;
         }
     }
 }

@@ -59,7 +59,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var method1 = objectGraphType.Fields.FirstOrDefault(x => x.Name == nameof(TypeCreationItem.Method1));
 
             Assert.IsNotNull(method1);
-            CollectionAssert.AreEqual(TypeExpressions.IsNotNull.ToTypeWrapperSet(), method1.TypeExpression.Wrappers); // double cant return as null
+            CollectionAssert.AreEqual(new MetaGraphTypes[] { MetaGraphTypes.IsNotNull }, method1.TypeExpression.Wrappers); // double cant return as null
             Assert.AreEqual(Constants.ScalarNames.DOUBLE, method1.TypeExpression.TypeName);
             Assert.AreEqual(3, method1.Arguments.Count);
 
@@ -96,7 +96,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
 
             Assert.IsNotNull(arg1);
             Assert.AreEqual(typeof(long), arg1.ObjectType);
-            CollectionAssert.AreEqual(TypeExpressions.IsNotNull.ToTypeWrapperSet(), arg1.TypeExpression.Wrappers);
+            CollectionAssert.AreEqual(new MetaGraphTypes[] { MetaGraphTypes.IsNotNull }, arg1.TypeExpression.Wrappers);
             Assert.AreEqual(null, arg1.DefaultValue);
 
             // is a nullable<T> type therefor can be null even without a supplied value

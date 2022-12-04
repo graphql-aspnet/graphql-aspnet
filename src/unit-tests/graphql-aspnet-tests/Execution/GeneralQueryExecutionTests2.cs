@@ -14,6 +14,7 @@ namespace GraphQL.AspNet.Tests.Execution
     using GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData;
     using GraphQL.AspNet.Tests.Framework;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
+    using Newtonsoft.Json.Linq;
     using NUnit.Framework;
 
     // So many general integration tests this is a second file

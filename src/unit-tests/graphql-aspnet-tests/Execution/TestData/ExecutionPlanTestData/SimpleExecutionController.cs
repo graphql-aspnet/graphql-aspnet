@@ -97,7 +97,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
 
         [Query("nonNullableIntArg")]
         public int nonNullableArgumentWithDefaultValue(
-            [FromGraphQL(TypeExpressions.IsNotNull)] int id = 3)
+            [FromGraphQL(TypeExpression = "Type!")] int id = 3)
         {
             return id == 3 ? 22 : -1;
         }

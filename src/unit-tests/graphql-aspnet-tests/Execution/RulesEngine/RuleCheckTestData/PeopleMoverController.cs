@@ -25,7 +25,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData
             return new Elevator(id, "Some Vator");
         }
 
-        [Query("requiredElevator", TypeExpression = TypeExpressions.IsNotNull)]
+        [Query("requiredElevator", TypeExpression = "Type!")]
         public Elevator RetrieveRequiredElevator()
         {
             return null;
@@ -37,7 +37,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData
             return this.Ok(new Elevator(5, "Some Vator"));
         }
 
-        [Query("allElevatorsWithANull", typeof(IEnumerable<Elevator>), TypeExpression = TypeExpressions.IsList | TypeExpressions.IsNotNull)]
+        [Query("allElevatorsWithANull", typeof(IEnumerable<Elevator>), TypeExpression = "[Type!]")]
         public IGraphActionResult RetrieveAllElevatorsWithNullItem()
         {
             var list = new List<Elevator>();
@@ -102,7 +102,7 @@ namespace GraphQL.AspNet.Tests.Execution.RulesEngine.RuleCheckTestData
             return null;
         }
 
-        [Query("search", "ElevatorOrEscalator", typeof(Escalator), typeof(Elevator), TypeExpression = TypeExpressions.IsNotNullList)]
+        [Query("search", "ElevatorOrEscalator", typeof(Escalator), typeof(Elevator), TypeExpression = "[Type]!")]
         public IGraphActionResult SearchPeopleMovers(string name = "*")
         {
             return null;

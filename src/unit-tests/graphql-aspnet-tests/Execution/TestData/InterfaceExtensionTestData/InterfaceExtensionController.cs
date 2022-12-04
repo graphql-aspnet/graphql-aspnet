@@ -17,7 +17,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InterfaceExtensionTestData
 
     public class InterfaceExtensionController : GraphController
     {
-        [QueryRoot("multiObjects", typeof(IInterfaceA), TypeExpression = TypeExpressions.IsList)]
+        [QueryRoot("multiObjects", typeof(IInterfaceA), TypeExpression = "[Type]")]
         public IGraphActionResult RetrieveObjects()
         {
             var list = new List<IInterfaceA>();
@@ -49,7 +49,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.InterfaceExtensionTestData
             return this.Ok(list);
         }
 
-        [QueryRoot("multiObjectsWithC", typeof(IInterfaceA), TypeExpression = TypeExpressions.IsList)]
+        [QueryRoot("multiObjectsWithC", typeof(IInterfaceA), TypeExpression = "[Type]")]
         public IGraphActionResult InvalidReturn()
         {
             var list = new List<IInterfaceA>();

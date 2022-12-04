@@ -32,21 +32,9 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem,  attrib.ExecutionMode);
-        }
-
-        [Test]
-        public void GraphFieldAttribute_EmptyConstructor_TypeModifersAdded_PropertyCheck()
-        {
-            // simulate a user supplying "TypeModifiers = XXXX" in an attribute initializer
-            // and esnure the logic of setting notnull list etc.
-            var attrib = new GraphFieldAttribute();
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
-
-            attrib.TypeExpression = TypeExpressions.IsNotNullList;
-            CollectionAssert.AreEqual(GraphTypeExpression.RequiredList, attrib.TypeDefinition);
         }
 
         [Test]
@@ -57,7 +45,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myFieldName", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -70,7 +58,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -83,7 +71,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myQueryRoute", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -96,7 +84,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(1, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
@@ -110,7 +98,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -125,7 +113,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -140,7 +128,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -155,7 +143,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -168,7 +156,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myMutationRoute", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -181,7 +169,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(1, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
@@ -195,7 +183,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -210,7 +198,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -225,7 +213,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(false, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -240,7 +228,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -253,7 +241,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myQueryRootRoute", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -266,7 +254,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(1, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
@@ -280,7 +268,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -323,7 +311,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -336,7 +324,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myMutationRootRoute", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(0, attrib.Types.Count);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
         }
@@ -349,7 +337,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(1, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(FieldResolutionMode.PerSourceItem, attrib.ExecutionMode);
@@ -363,7 +351,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual(Constants.Routing.ACTION_METHOD_META_NAME, attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -378,7 +366,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual(null, attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -393,7 +381,7 @@ namespace GraphQL.AspNet.Tests.Attributes
             Assert.AreEqual(true, attrib.IsRootFragment);
             Assert.AreEqual("myUnionType", attrib.UnionTypeName);
             Assert.AreEqual("myField", attrib.Template);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
             Assert.AreEqual(2, attrib.Types.Count);
             Assert.AreEqual(typeof(AttributeDataIntegrityTests), attrib.Types[0]);
             Assert.AreEqual(typeof(GraphFieldAttribute), attrib.Types[1]);
@@ -556,32 +544,27 @@ namespace GraphQL.AspNet.Tests.Attributes
         {
             var attrib = new FromGraphQLAttribute("myArg");
             Assert.AreEqual("myArg", attrib.ArgumentName);
-            Assert.AreEqual(TypeExpressions.Auto, attrib.TypeExpression);
+            Assert.AreEqual(null, attrib.TypeExpression);
         }
 
         [Test]
         public void FromGraphQL_ModifiersContructor_PropertyCheck()
         {
-            var attrib = new FromGraphQLAttribute(TypeExpressions.IsList);
+            var attrib = new FromGraphQLAttribute()
+            {
+                TypeExpression = "[Type]",
+            };
+
             Assert.AreEqual(Constants.Routing.PARAMETER_META_NAME, attrib.ArgumentName);
-            CollectionAssert.AreEqual(GraphTypeExpression.List, attrib.TypeDefinition);
+            CollectionAssert.AreEqual("[Type]", attrib.TypeExpression);
         }
 
         [Test]
         public void FromGraphQL_FullContructor_ArgNameTrimmed_PropertyCheck()
         {
-            var attrib = new FromGraphQLAttribute("myName  ", TypeExpressions.IsList);
-            Assert.AreEqual("myName", attrib.ArgumentName);
-            CollectionAssert.AreEqual(GraphTypeExpression.List, attrib.TypeDefinition);
-        }
+            var attrib = new FromGraphQLAttribute("myName  ");
 
-        [Test]
-        public void FromGraphQL_TypeModifersAdded_PropertyCheck()
-        {
-            // simulate a user supplying "TypeModifiers = XXXX" in an attribute initializer
-            // and esnure the logic of setting notnull list etc.
-            var attrib = new FromGraphQLAttribute(TypeExpressions.IsNotNullList);
-            CollectionAssert.AreEqual(GraphTypeExpression.RequiredList, attrib.TypeDefinition);
+            Assert.AreEqual("myName", attrib.ArgumentName);
         }
 
         [Test]

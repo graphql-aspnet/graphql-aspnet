@@ -217,5 +217,14 @@ namespace GraphQL.AspNet.Tests.Internal.Templating
             Assert.IsTrue(arg.HasDefaultValue);
             Assert.AreEqual(5, arg.DefaultValue);
         }
+
+        [Test]
+        public void InvalidTypeExpression_ThrowsException()
+        {
+            Assert.Throws<GraphTypeDeclarationException>(() =>
+            {
+                this.CreateMethodTemplate<MethodClass>(nameof(MethodClass.InvalidTypeExpression));
+            });
+        }
     }
 }

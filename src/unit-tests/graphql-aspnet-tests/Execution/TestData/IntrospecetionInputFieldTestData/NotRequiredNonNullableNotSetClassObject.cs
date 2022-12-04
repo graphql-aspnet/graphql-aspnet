@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestDa
 
     public class NotRequiredNonNullableNotSetClassObject
     {
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public TwoPropertyObject Property1 { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospectionTestData
     [GraphRoute("fountain")]
     public class SodaFountainController : GraphController
     {
-        [Query(typeof(SodaTypeUnionProxy), TypeExpression = TypeExpressions.IsList)]
+        [Query(typeof(SodaTypeUnionProxy), TypeExpression = "[Type]")]
         public Task<IGraphActionResult> RetrieveSodaTypes()
         {
             var list = new List<ISodaType>()

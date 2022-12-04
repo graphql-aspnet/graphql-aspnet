@@ -134,7 +134,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var field = this.MakeGraphField(template);
             Assert.IsNotNull(field);
             Assert.AreEqual(Constants.ScalarNames.STRING, field.TypeExpression.TypeName);
-            CollectionAssert.AreEqual(TypeExpressions.None.ToTypeWrapperSet(), field.TypeExpression.Wrappers);
+            Assert.AreEqual(0, field.TypeExpression.Wrappers.Length);
         }
 
         [Test]
@@ -157,7 +157,7 @@ namespace GraphQL.AspNet.Tests.Engine.TypeMakers
             var field = this.MakeGraphField(template);
             Assert.IsNotNull(field);
             Assert.AreEqual(Constants.ScalarNames.INT, field.TypeExpression.TypeName);
-            CollectionAssert.AreEqual(TypeExpressions.IsNotNull.ToTypeWrapperSet(), field.TypeExpression.Wrappers);
+            CollectionAssert.AreEqual(new MetaGraphTypes[] { MetaGraphTypes.IsNotNull }, field.TypeExpression.Wrappers);
         }
 
         [Test]

@@ -35,7 +35,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.BatchResolverTestData
             _counterService.CallCount[name] += 1;
         }
 
-        [Query("fetchData", typeof(TwoPropertyStruct), TypeExpression = TypeExpressions.IsList)]
+        [Query("fetchData", typeof(TwoPropertyStruct), TypeExpression = "[Type]")]
         public IGraphActionResult PrimaryDataFetch()
         {
             this.AddCounter(nameof(this.PrimaryDataFetch));

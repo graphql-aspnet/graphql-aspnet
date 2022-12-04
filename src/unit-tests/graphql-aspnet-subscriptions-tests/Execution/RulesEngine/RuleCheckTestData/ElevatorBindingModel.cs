@@ -17,7 +17,7 @@ namespace GraphQL.Subscriptions.Tests.Execution.RulesEngine.RuleCheckTestData
     {
         public int Id { get; set; }
 
-        [GraphField("name", TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField("name", TypeExpression = "Type!")]
         public string Name { get; set; }
     }
 }

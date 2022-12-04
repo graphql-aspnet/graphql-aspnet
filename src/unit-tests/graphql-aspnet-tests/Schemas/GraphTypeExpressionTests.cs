@@ -15,7 +15,7 @@ namespace GraphQL.AspNet.Tests.Schemas
     using GraphQL.AspNet.Schemas;
     using GraphQL.AspNet.Tests.Framework.CommonHelpers;
     using NUnit.Framework;
-    using GTW = GraphQL.AspNet.Schemas.TypeSystem.MetaGraphTypes;
+    using MGT = GraphQL.AspNet.Schemas.TypeSystem.MetaGraphTypes;
 
     [TestFixture]
     public class GraphTypeExpressionTests
@@ -25,16 +25,16 @@ namespace GraphQL.AspNet.Tests.Schemas
         static GraphTypeExpressionTests()
         {
             TypeExpressionObjectTests = new List<object[]>();
-            TypeExpressionObjectTests.Add(new object[] { 5, new GTW[0], true, });
-            TypeExpressionObjectTests.Add(new object[] { (int?)5, new GTW[0], true, });
-            TypeExpressionObjectTests.Add(new object[] { null, new GTW[0], true, });
-            TypeExpressionObjectTests.Add(new object[] { default(int?), new GTW[0], true, });
-            TypeExpressionObjectTests.Add(new object[] { default(int?), new[] { GTW.IsNotNull }, false, });
-            TypeExpressionObjectTests.Add(new object[] { "bobSmith", new[] { GTW.IsList }, false, });
-            TypeExpressionObjectTests.Add(new object[] { "bobSmith", new[] { GTW.IsNotNull }, true, });
-            TypeExpressionObjectTests.Add(new object[] { "bobSmith", new GTW[0], true, });
-            TypeExpressionObjectTests.Add(new object[] { null, new[] { GTW.IsList }, true, });
-            TypeExpressionObjectTests.Add(new object[] { new List<int>(), new[] { GTW.IsList }, true, });
+            TypeExpressionObjectTests.Add(new object[] { 5, new MGT[0], true, });
+            TypeExpressionObjectTests.Add(new object[] { (int?)5, new MGT[0], true, });
+            TypeExpressionObjectTests.Add(new object[] { null, new MGT[0], true, });
+            TypeExpressionObjectTests.Add(new object[] { default(int?), new MGT[0], true, });
+            TypeExpressionObjectTests.Add(new object[] { default(int?), new[] { MGT.IsNotNull }, false, });
+            TypeExpressionObjectTests.Add(new object[] { "bobSmith", new[] { MGT.IsList }, false, });
+            TypeExpressionObjectTests.Add(new object[] { "bobSmith", new[] { MGT.IsNotNull }, true, });
+            TypeExpressionObjectTests.Add(new object[] { "bobSmith", new MGT[0], true, });
+            TypeExpressionObjectTests.Add(new object[] { null, new[] { MGT.IsList }, true, });
+            TypeExpressionObjectTests.Add(new object[] { new List<int>(), new[] { MGT.IsList }, true, });
             TypeExpressionObjectTests.Add(new object[]
             {
                 new List<int>
@@ -42,7 +42,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                     5,
                     5,
                 },
-                new[] { GTW.IsList, GTW.IsNotNull }, true,
+                new[] { MGT.IsList, MGT.IsNotNull }, true,
             });
             TypeExpressionObjectTests.Add(new object[]
             {
@@ -51,7 +51,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                     5,
                     null,
                 },
-                new[] { GTW.IsList, GTW.IsNotNull }, false,
+                new[] { MGT.IsList, MGT.IsNotNull }, false,
             });
             TypeExpressionObjectTests.Add(new object[]
             {
@@ -63,7 +63,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                         5,
                     },
                 },
-                new[] { GTW.IsList, GTW.IsList, GTW.IsNotNull }, true,
+                new[] { MGT.IsList, MGT.IsList, MGT.IsNotNull }, true,
             });
             TypeExpressionObjectTests.Add(new object[]
             {
@@ -75,7 +75,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                         null,
                     },
                 },
-                new[] { GTW.IsList, GTW.IsList, GTW.IsNotNull }, false,
+                new[] { MGT.IsList, MGT.IsList, MGT.IsNotNull }, false,
             });
             TypeExpressionObjectTests.Add(new object[]
             {
@@ -87,7 +87,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                         null,
                     },
                 },
-                new[] { GTW.IsList, GTW.IsList, }, true,
+                new[] { MGT.IsList, MGT.IsList, }, true,
             });
             TypeExpressionObjectTests.Add(new object[]
             {
@@ -99,7 +99,7 @@ namespace GraphQL.AspNet.Tests.Schemas
                         null,
                     },
                 },
-                new[] { GTW.IsList, GTW.IsNotNull, GTW.IsList, }, true,
+                new[] { MGT.IsList, MGT.IsNotNull, MGT.IsList, }, true,
             });
             TypeExpressionObjectTests.Add(new object[]
             {
@@ -112,12 +112,12 @@ namespace GraphQL.AspNet.Tests.Schemas
                     },
                     null,
                 },
-                new[] { GTW.IsList, GTW.IsNotNull, GTW.IsList, }, false,
+                new[] { MGT.IsList, MGT.IsNotNull, MGT.IsList, }, false,
             });
         }
 
         [TestCaseSource(nameof(TypeExpressionObjectTests))]
-        public void Matches_TestObject(object objectToTest, IEnumerable<GTW> wrappers, bool expectedResult)
+        public void Matches_TestObject(object objectToTest, IEnumerable<MGT> wrappers, bool expectedResult)
         {
             var typeExpression = new GraphTypeExpression("SomeType", wrappers?.ToArray());
 
@@ -132,21 +132,21 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase("]", false, null, null)]
         [TestCase("!", false, null, null)]
         [TestCase("", false, null, null)]
-        [TestCase("a", true, new GTW[0], "a")]
+        [TestCase("a", true, new MGT[0], "a")]
         [TestCase("[SomeType!", false, null, null)]
-        [TestCase("Some!Type", true, new GTW[0], "Some!Type")]
+        [TestCase("Some!Type", true, new MGT[0], "Some!Type")]
         [TestCase("SomeType!!", false, null, null)]
         [TestCase("[[SomeType!]!", false, null, null)]
-        [TestCase("[[SomeType!]]!", true, new[] { GTW.IsNotNull, GTW.IsList, GTW.IsList, GTW.IsNotNull }, "SomeType")]
-        [TestCase("[SomeType!]!", true, new[] { GTW.IsNotNull, GTW.IsList, GTW.IsNotNull }, "SomeType")]
-        [TestCase("[SomeType]!", true, new[] { GTW.IsNotNull, GTW.IsList }, "SomeType")]
-        [TestCase("[SomeType!]", true, new[] { GTW.IsList, GTW.IsNotNull }, "SomeType")]
-        [TestCase("[SomeType]", true, new[] { GTW.IsList }, "SomeType")]
-        [TestCase("SomeType", true, new GTW[0], "SomeType")]
+        [TestCase("[[SomeType!]]!", true, new[] { MGT.IsNotNull, MGT.IsList, MGT.IsList, MGT.IsNotNull }, "SomeType")]
+        [TestCase("[SomeType!]!", true, new[] { MGT.IsNotNull, MGT.IsList, MGT.IsNotNull }, "SomeType")]
+        [TestCase("[SomeType]!", true, new[] { MGT.IsNotNull, MGT.IsList }, "SomeType")]
+        [TestCase("[SomeType!]", true, new[] { MGT.IsList, MGT.IsNotNull }, "SomeType")]
+        [TestCase("[SomeType]", true, new[] { MGT.IsList }, "SomeType")]
+        [TestCase("SomeType", true, new MGT[0], "SomeType")]
         public void ParseDeclaration(
             string declarationText,
             bool isValid,
-            GTW[] expectedModifiers,
+            MGT[] expectedModifiers,
             string expectedTypeName)
         {
             var declaration = GraphTypeExpression.FromDeclaration(declarationText.AsSpan());
@@ -213,11 +213,11 @@ namespace GraphQL.AspNet.Tests.Schemas
         [TestCase(typeof(KeyValuePair<string, int>[]), "[KeyValuePair_string_int_!]", null)]
         [TestCase(typeof(List<KeyValuePair<string, int>>), "[KeyValuePair_string_int_!]", null)]
         [TestCase(typeof(IEnumerable<IEnumerable<int>>), "[[int!]]", null)]
-        [TestCase(typeof(IEnumerable<IEnumerable<int>>), "int!", new GTW[] { GTW.IsNotNull })]
+        [TestCase(typeof(IEnumerable<IEnumerable<int>>), "int!", new MGT[] { MGT.IsNotNull })]
         public void GenerateTypeExpression(
             Type type,
             string expectedExpression,
-            GTW[] wrappers)
+            MGT[] wrappers)
         {
             var typeExpression = GraphTypeExpression.FromType(type, wrappers);
             Assert.AreEqual(expectedExpression, typeExpression.ToString());

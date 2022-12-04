@@ -19,7 +19,7 @@ namespace GraphQL.AspNet.Tests.Internal.Templating.ActionTestData
     [GraphRoute("unionTest")]
     public class UnionTestController : GraphController
     {
-        [Query("[action]", "FragmentData", typeof(UnionDataA), typeof(UnionDataB), TypeExpression = TypeExpressions.IsList)]
+        [Query("[action]", "FragmentData", typeof(UnionDataA), typeof(UnionDataB), TypeExpression = "[Type]")]
         public IGraphActionResult TwoTypeUnion()
         {
             throw new NotImplementedException();

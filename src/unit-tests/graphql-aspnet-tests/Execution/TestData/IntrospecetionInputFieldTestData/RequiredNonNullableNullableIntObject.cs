@@ -16,7 +16,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.IntrospecetionInputFieldTestDa
     public class RequiredNonNullableNullableIntObject
     {
         [Required]
-        [GraphField(TypeExpression = TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public int? Property1 { get; set; }
     }
 }

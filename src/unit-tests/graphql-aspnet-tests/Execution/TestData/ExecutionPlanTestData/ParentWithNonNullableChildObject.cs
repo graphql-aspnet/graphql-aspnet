@@ -20,7 +20,7 @@ namespace GraphQL.AspNet.Tests.Execution.TestData.ExecutionPlanTestData
 
         public string Property1 { get; set; }
 
-        [GraphField(TypeExpression = AspNet.Schemas.TypeSystem.TypeExpressions.IsNotNull)]
+        [GraphField(TypeExpression = "Type!")]
         public NullableChildObject Child { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// <param name="episode">The episode.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         [PossibleTypes(typeof(Human), typeof(Droid))]
-        [QueryRoot("hero", typeof(ICharacter), TypeExpression = TypeExpressions.IsNotNull)]
+        [QueryRoot("hero", typeof(ICharacter), TypeExpression = "Type!")]
         public async Task<IGraphActionResult> RetrieveHero(MovieEpisode episode)
         {
             ICharacter hero = null;
@@ -80,7 +80,7 @@ namespace GraphQL.AspNet.StarwarsAPI.Common.GraphControllers
         /// <param name="characters">The characters to retrieve friends for.</param>
         /// <returns>IEnumerable&lt;ICharacter&gt;.</returns>
         [Description("This character's friends, or an empty list if they have none")]
-        [BatchTypeExtension(typeof(ICharacter), "friends", typeof(ICharacter), TypeExpression = TypeExpressions.IsList)]
+        [BatchTypeExtension(typeof(ICharacter), "friends", typeof(ICharacter), TypeExpression = "[Type]")]
         public async Task<IGraphActionResult> RetrieveACharactersFriends(IEnumerable<ICharacter> characters)
         {
             var allFriends = await _starWarsData.RetrieveCharacters(characters.SelectMany(x => x.FriendIds)).ConfigureAwait(false);

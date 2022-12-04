@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Schemas
         public GraphTypeExpression(string typeName, IEnumerable<MetaGraphTypes> wrappers)
         {
             this.TypeName = typeName;
-            Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
+            this.Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace GraphQL.AspNet.Schemas
         public GraphTypeExpression(string typeName, params MetaGraphTypes[] wrappers)
         {
             this.TypeName = typeName;
-            Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
+            this.Wrappers = wrappers?.ToArray() ?? new MetaGraphTypes[0];
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace GraphQL.AspNet.Schemas
         public GraphTypeExpression WrapExpression(MetaGraphTypes wrapper)
         {
             var newArray = new MetaGraphTypes[Wrappers.Length + 1];
-            Wrappers.CopyTo(newArray, 1);
+            this.Wrappers.CopyTo(newArray, 1);
             newArray[0] = wrapper;
             return new GraphTypeExpression(this.TypeName, newArray);
         }
