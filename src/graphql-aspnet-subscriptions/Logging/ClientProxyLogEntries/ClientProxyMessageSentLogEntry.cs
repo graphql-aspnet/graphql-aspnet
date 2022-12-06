@@ -14,7 +14,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
     using GraphQL.AspNet.Logging.Common;
 
     /// <summary>
-    /// Recorded when an GraphqlWsLegacy client proxy sends a message down to its connected client.
+    /// Recorded when a client proxy sends a message down to its connected client.
     /// </summary>
     public class ClientProxyMessageSentLogEntry : GraphLogEntry
     {
@@ -52,7 +52,7 @@ namespace GraphQL.AspNet.Logging.ClientProxyLogEntries
         }
 
         /// <summary>
-        /// Gets the id that was supplied by the client with the GraphqlWsLegacy message, if any.
+        /// Gets the id that was supplied by the client with the message, if any.
         /// </summary>
         /// <value>The message identifier.</value>
         public string MessageId

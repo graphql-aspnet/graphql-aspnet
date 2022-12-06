@@ -33,7 +33,7 @@ namespace GraphQL.AspNet.Logging
         /// Initializes a new instance of the <see cref="ClientProxyEventLogger{TSchema}" /> class.
         /// </summary>
         /// <param name="client">The client being logged.</param>
-        /// <param name="logger">The root graph logger to send GraphqlWsLegacy events to.</param>
+        /// <param name="logger">The root graph logger to send events to.</param>
         public ClientProxyEventLogger(ISubscriptionClientProxy<TSchema> client, IGraphEventLogger logger)
         {
             _client = Validation.ThrowIfNullOrReturn(client, nameof(client));

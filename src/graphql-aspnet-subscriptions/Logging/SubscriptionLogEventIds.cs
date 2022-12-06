@@ -73,12 +73,12 @@ namespace GraphQL.AspNet.Logging
         public static EventId UnsupportedClientProtocol = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 640, "GraphQL Server Unsupported Client Protocol");
 
         /// <summary>
-        /// A client proxy received a new GraphqlWsLegacy formatted message from its connected client.
+        /// A client proxy received a new formatted message from its connected client.
         /// </summary>
         public static EventId ClientMessageReceived = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 710, "Client Message Received");
 
         /// <summary>
-        /// A client proxy generated a GraphqlWsLegacy message and sent it to its connected client.
+        /// A client proxy generated a message and sent it to its connected client.
         /// </summary>
         public static EventId ClientMessageSent = new EventId(BASE_SUBSCRIPTION_EVENT_ID + 720, "Client Message Sent");
 
